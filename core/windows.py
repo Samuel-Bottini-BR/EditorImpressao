@@ -4,7 +4,8 @@ O QUE É
     O único lugar do programa que conversa com o Windows: pedir a licença de administrador, lançar um processo solto,
     rodar e esperar uma ferramenta do Windows ou um script do PowerShell, criar/apagar/rodar/ler tarefas do
     Agendador, a pasta de troca, a pasta segura, ler licenças de pasta e marcas, e ler a assinatura digital de um
-    arquivo (`ler_assinatura_digital`, desde o passo 2, para o publicar). O porteiro (`regras_dos_agentes`,
+    arquivo (`ler_assinatura_digital`, desde o passo 2, para o publicar), e abrir um programa num grupo do Windows que
+    fecha junto tudo o que ele abrir (`abrir_em_grupo`, passo 2, para a vigia do espaço do publicar). O porteiro (`regras_dos_agentes`,
     conferência K01) só deixa essa conversa acontecer aqui. Nenhum chamador do programa usa esta peça ainda: eles
     mudam nos passos 3 a 5 do plano; hoje só o `main.py` (a entrada do trabalho de administrador), a janela de prova e
     os testes a usam.
@@ -302,6 +303,16 @@ class _JOB_EXTENDED(ctypes.Structure):
                 ("PeakProcessMemoryUsed", ctypes.c_size_t), ("PeakJobMemoryUsed", ctypes.c_size_t)]
 
 
+class _JOB_CONTAS(ctypes.Structure):
+    """JOBOBJECT_BASIC_ACCOUNTING_INFORMATION (classe 1 do QueryInformationJobObject): quantos processos o grupo tem
+    vivos agora (ActiveProcesses)."""
+
+    _fields_ = [("TotalUserTime", ctypes.c_longlong), ("TotalKernelTime", ctypes.c_longlong),
+                ("ThisPeriodTotalUserTime", ctypes.c_longlong), ("ThisPeriodTotalKernelTime", ctypes.c_longlong),
+                ("TotalPageFaultCount", wintypes.DWORD), ("TotalProcesses", wintypes.DWORD),
+                ("ActiveProcesses", wintypes.DWORD), ("TotalTerminatedProcesses", wintypes.DWORD)]
+
+
 class _Bibliotecas:
     """As funções do Windows que a peça usa, com os tipos certos e `use_last_error=True` (o erro de cada chamada
     fica guardado e é lido por `_ler_erro`, nunca um erro velho de outra chamada)."""
@@ -326,6 +337,11 @@ class _Bibliotecas:
             (k.IsProcessInJob, [wintypes.HANDLE, wintypes.HANDLE, ctypes.POINTER(wintypes.BOOL)], wintypes.BOOL),
             (k.QueryInformationJobObject, [wintypes.HANDLE, ctypes.c_int, P, wintypes.DWORD,
                                            ctypes.POINTER(wintypes.DWORD)], wintypes.BOOL),
+            (k.CreateJobObjectW, [P, wintypes.LPCWSTR], wintypes.HANDLE),
+            (k.SetInformationJobObject, [wintypes.HANDLE, ctypes.c_int, P, wintypes.DWORD], wintypes.BOOL),
+            (k.AssignProcessToJobObject, [wintypes.HANDLE, wintypes.HANDLE], wintypes.BOOL),
+            (k.TerminateJobObject, [wintypes.HANDLE, wintypes.UINT], wintypes.BOOL),
+            (k.OpenProcess, [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD], wintypes.HANDLE),
             (a.GetNamedSecurityInfoW, [wintypes.LPCWSTR, ctypes.c_int, wintypes.DWORD, ctypes.POINTER(P),
                                        ctypes.POINTER(P), ctypes.POINTER(P), ctypes.POINTER(P), ctypes.POINTER(P)],
              wintypes.DWORD),
@@ -1104,6 +1120,123 @@ def _rodar(comando: list, limite_s: float = 120, entrada: bytes | None = None, l
                    codigo=feito.returncode, saida=saida, erros=erros)
 
 
+# ---------------------------------------------------------------------------------------------------------------------
+# Rodar um programa num grupo do Windows (job): fechar ele fecha também o que ele abriu (passo 2, achado 2 de quem
+# tentou quebrar: a vigia do espaço fechava o vpk e deixava o cmd.exe e o wix.exe que ele abre escrevendo no C:)
+# ---------------------------------------------------------------------------------------------------------------------
+
+_JOB_LIMITES_ESTENDIDOS = 9                 # JobObjectExtendedLimitInformation
+_JOB_CONTAS_BASICAS = 1                     # JobObjectBasicAccountingInformation
+_JOB_FECHA_TUDO_AO_FECHAR = 0x2000          # JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+_PODE_POR_NO_GRUPO_E_FECHAR = 0x0100 | 0x0001 | 0x00100000   # PROCESS_SET_QUOTA | PROCESS_TERMINATE | SYNCHRONIZE
+
+
+class ProgramaEmGrupo:
+    """Um programa aberto por `abrir_em_grupo`, num grupo do Windows só dele, junto com tudo o que ele abrir.
+
+    Lido na Microsoft (Learn, "Job Objects" e "AssignProcessToJobObject"): depois que um processo entra num grupo, os
+    processos que ele cria entram no mesmo grupo; `TerminateJobObject` fecha todos os processos do grupo; com
+    JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE, fechar a última alça do grupo fecha todos (assim, se este programa cair, o
+    grupo não fica rodando sozinho); grupos dentro de grupos valem desde o Windows 8 (o Python dos testes do GitHub já
+    roda num grupo). Há um instante, entre abrir o programa e pô-lo no grupo, em que um filho escaparia; o vpk só abre
+    os dele minutos depois (no .msi), e o `fechar_tudo` confere o que ficou.
+    Usar sempre com `with` (ou `soltar()` no fim). Seguro mexer: as frases. Arriscado: tirar o fechar-ao-fechar."""
+
+    def __init__(self, processo: subprocess.Popen, grupo: int):
+        """Guarda o processo e a alça do grupo (quem cria é `abrir_em_grupo`)."""
+        self.processo = processo
+        self._grupo = grupo
+
+    @property
+    def pid(self) -> int:
+        """O número do processo principal."""
+        return self.processo.pid
+
+    def esperar(self, limite_s: float) -> int | None:
+        """Espera o programa principal terminar, no máximo `limite_s`: o código de saída, ou None se ainda roda."""
+        try:
+            return self.processo.wait(timeout=limite_s)
+        except subprocess.TimeoutExpired:
+            return None
+
+    def vivos(self) -> int | None:
+        """Quantos processos do grupo estão vivos agora, lido do Windows (None se não deu para ler)."""
+        contas = _JOB_CONTAS()
+        if not self._grupo or not _win().kernel32.QueryInformationJobObject(
+                self._grupo, _JOB_CONTAS_BASICAS, ctypes.byref(contas), ctypes.sizeof(contas), None):
+            return None
+        return int(contas.ActiveProcesses)
+
+    def fechar_tudo(self, espera_s: float = 15) -> Resposta:
+        """Fecha o programa e tudo o que ele abriu, e CONFERE no Windows que nada do grupo ficou vivo."""
+        w = _win()
+        if self._grupo and not w.kernel32.TerminateJobObject(self._grupo, 1):
+            erro = _ler_erro()
+            self.processo.kill()
+            return _falhou("não consegui fechar os programas do grupo", f"TerminateJobObject: erro {erro}")
+        try:
+            self.processo.wait(timeout=espera_s)
+        except subprocess.TimeoutExpired:
+            pass
+        fim = time.monotonic() + espera_s
+        while time.monotonic() < fim:
+            if self.vivos() == 0:
+                return _certo("fechados o programa e tudo o que ele abriu (conferido)")
+            time.sleep(0.2)
+        return _falhou("pedi para fechar o programa e o que ele abriu, e algum continua rodando",
+                       f"vivos no grupo: {self.vivos()}")
+
+    def soltar(self) -> None:
+        """Fecha a alça do grupo (o que ainda estiver vivo nele é fechado pelo Windows: fechar-ao-fechar)."""
+        if self._grupo:
+            _win().kernel32.CloseHandle(self._grupo)
+            self._grupo = 0
+
+    def __enter__(self) -> "ProgramaEmGrupo":
+        """Para usar com `with`."""
+        return self
+
+    def __exit__(self, *_erro) -> None:
+        """No fim do `with`, solta o grupo (o que ficou vivo nele é fechado)."""
+        self.soltar()
+
+
+def abrir_em_grupo(comando: list, pasta: Path | str | None = None,
+                   ambiente: dict[str, str] | None = None) -> tuple[ProgramaEmGrupo | None, Resposta]:
+    """Abre um programa (com a janela de console de quem chama, para a saída dele aparecer) num grupo do Windows só
+    dele. Devolve (o programa, DEU_CERTO) ou (None, FALHOU com o motivo). RECUSA os programas que têm função própria
+    na peça (como o rodar genérico). Quem usa: `empacotar.rodar_vpk` (o vpk e o que ele abre)."""
+    if not comando or _programa_com_funcao_propria(str(comando[0])):
+        return None, _recusa_de_programa(str(comando[0]) if comando else "(nada)")
+    w = _win()
+    grupo = w.kernel32.CreateJobObjectW(None, None)
+    if not grupo:
+        return None, _falhou("o Windows não deixou criar o grupo do programa", f"CreateJobObjectW: erro {_ler_erro()}")
+    info = _JOB_EXTENDED()
+    info.BasicLimitInformation.LimitFlags = _JOB_FECHA_TUDO_AO_FECHAR
+    if not w.kernel32.SetInformationJobObject(grupo, _JOB_LIMITES_ESTENDIDOS, ctypes.byref(info), ctypes.sizeof(info)):
+        erro = _ler_erro()
+        w.kernel32.CloseHandle(grupo)
+        return None, _falhou("o Windows não deixou preparar o grupo do programa", f"SetInformationJobObject: {erro}")
+    try:
+        processo = subprocess.Popen([str(c) for c in comando], cwd=str(pasta) if pasta else None, env=ambiente)
+    except OSError as erro:
+        w.kernel32.CloseHandle(grupo)
+        return None, _falhou("não consegui abrir o programa", f"{comando[0]}: {erro!r}")
+    alca = w.kernel32.OpenProcess(_PODE_POR_NO_GRUPO_E_FECHAR, False, processo.pid)
+    posto = bool(alca) and bool(w.kernel32.AssignProcessToJobObject(grupo, alca))
+    erro = _ler_erro()
+    if alca:
+        w.kernel32.CloseHandle(alca)
+    if not posto:
+        processo.kill()
+        processo.wait()
+        w.kernel32.CloseHandle(grupo)
+        return None, _falhou("o Windows não deixou pôr o programa no grupo (ele foi fechado)",
+                             f"AssignProcessToJobObject: erro {erro}")
+    return ProgramaEmGrupo(processo, grupo), _certo()
+
+
 def rodar_powershell(texto: str, limite_s: float = 600, segredo: str | None = None) -> Resposta:
     """Roda um script do PowerShell (pelo caminho inteiro, em arquivo com a marca de UTF-8, numa pasta de troca que é
     apagada no fim) e espera.
@@ -1238,26 +1371,35 @@ _APAGAR_SEM_SEGUIR_ATALHO = (
 def lancar_powershell_solto(texto: str, espera_s: float = 30) -> Resposta:
     """Lança solto um script do PowerShell (em arquivo com a marca de UTF-8, numa pasta de troca) e espera o sinal de
     vida. O script dá o sinal na primeira linha e apaga a própria pasta de troca no fim, deu certo ou não, sem seguir
-    atalho (`_APAGAR_SEM_SEGUIR_ATALHO`, D-809)."""
+    atalho (`_APAGAR_SEM_SEGUIR_ATALHO`, D-809).
+
+    O sinal de vida fica numa SEGUNDA pasta de troca, que o script não apaga: só a peça, depois de ver o sinal (ou de
+    desistir). Antes ele ficava na pasta que o script apaga no fim, e um script curto apagava o sinal antes de a peça
+    olhar: "saiu sem começar" de uma coisa que rodou (bug de 19/11, 12 de 20 vezes com um script vazio). Se este
+    processo cair antes, a pasta do sinal é limpa pela limpeza das trocas velhas (`_limpar_trocas_velhas`)."""
     try:
         pasta = criar_pasta_de_troca()
+        pasta_do_sinal = criar_pasta_de_troca()
     except OSError as erro:
         return _falhou("não consegui preparar o script (o disco está cheio ou sem licença?)", repr(erro))
-    sinal = pasta / "comecei.txt"
+    sinal = pasta_do_sinal / "comecei.txt"
     script = pasta / "solto.ps1"
     try:
-        _gravar_script(script, _CABECA_DO_SCRIPT + _APAGAR_SEM_SEGUIR_ATALHO
-                       + f"[System.IO.File]::WriteAllText({aspas_do_powershell(sinal)}, 'comecei')\n"
-                       + "try {\n" + texto + "\n} finally {\n"
-                       + f"  try {{ Apagar-SemSeguirAtalho {aspas_do_powershell(pasta)} }} catch {{ }}\n"
-                       + "}\n")
-    except (OSError, ValueError) as erro:
-        apagar_pasta_de_troca(pasta)
-        return _falhou("não consegui preparar o script", repr(erro))
-    resposta = _lancar_solto(_comando_do_powershell(script), sinal, espera_s, _ambiente_do_powershell())
-    if not resposta.deu_certo:
-        apagar_pasta_de_troca(pasta)
-    return resposta
+        try:
+            _gravar_script(script, _CABECA_DO_SCRIPT + _APAGAR_SEM_SEGUIR_ATALHO
+                           + f"[System.IO.File]::WriteAllText({aspas_do_powershell(sinal)}, 'comecei')\n"
+                           + "try {\n" + texto + "\n} finally {\n"
+                           + f"  try {{ Apagar-SemSeguirAtalho {aspas_do_powershell(pasta)} }} catch {{ }}\n"
+                           + "}\n")
+        except (OSError, ValueError) as erro:
+            apagar_pasta_de_troca(pasta)
+            return _falhou("não consegui preparar o script", repr(erro))
+        resposta = _lancar_solto(_comando_do_powershell(script), sinal, espera_s, _ambiente_do_powershell())
+        if not resposta.deu_certo:
+            apagar_pasta_de_troca(pasta)
+        return resposta
+    finally:
+        apagar_pasta_de_troca(pasta_do_sinal)
 
 
 # ---------------------------------------------------------------------------------------------------------------------

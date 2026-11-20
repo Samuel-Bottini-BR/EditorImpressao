@@ -1114,3 +1114,70 @@ def test_o_lancado_solto_apaga_a_pasta_de_troca_sem_seguir_atalho(tmp_path):
     # voltar é o script lançado não usar o apagar recursivo e conferir o atalho antes (o que o porteiro também acusa).
     lancado = copia.read_text(encoding="utf-8-sig")
     assert "-Recurse" not in lancado and "ReparsePoint" in lancado, lancado
+
+
+def test_o_lancado_solto_curto_nunca_vira_saiu_sem_comecar():
+    """Bug de 19/11/2026 (anotado no passo 2 e medido por quem tentou quebrar: 4 de 15 com um script vazio): o script
+    lançado solto dava o sinal de vida DENTRO da pasta que ele mesmo apaga no fim; um script curto apagava o sinal antes
+    de a peça olhar, e a peça dizia "o processo lançado saiu sem começar" de uma coisa que rodou (quem tentasse de novo
+    faria a coisa duas vezes). Agora o sinal fica numa pasta de troca à parte, que só a peça apaga depois de ver. A
+    falha era de tempo: o teste lança 20 vezes um script vazio, e todas têm de dar certo."""
+    falhas = [r for r in (windows.lancar_powershell_solto("") for _ in range(20)) if not r.deu_certo]
+    assert falhas == [], f"{len(falhas)} de 20: {falhas[0]}"
+
+
+_PAI_E_FILHO = r'''
+import subprocess, sys, time
+from pathlib import Path
+pasta = Path(sys.argv[1])
+if sys.argv[2] == "pai":
+    subprocess.Popen([sys.executable, __file__, str(pasta), "filho"])
+import os
+n = 0
+while True:
+    n += 1
+    provisorio = pasta / (sys.argv[2] + ".tmp")
+    provisorio.write_text(str(n))
+    try:
+        os.replace(provisorio, pasta / (sys.argv[2] + ".txt"))
+    except OSError:
+        pass
+    time.sleep(0.1)
+'''
+
+
+def _ainda_vive(arquivo: Path, espera_s: float = 1.5) -> bool:
+    """O processo que escreve neste arquivo a cada 0,1 s ainda escreve?"""
+    def ler() -> str:
+        """O número escrito agora (vazio se não deu para ler)."""
+        try:
+            return arquivo.read_text()
+        except OSError:
+            return ""
+
+    antes = ler()
+    time.sleep(espera_s)
+    return ler() not in ("", antes)
+
+
+def test_fechar_o_programa_em_grupo_fecha_tambem_o_que_ele_abriu(tmp_path):
+    """Passo 2, achado 2 de quem tentou quebrar: a vigia do espaço fechava o vpk e deixava o programa que ele abre para
+    fazer o .msi (cmd.exe e wix.exe) escrevendo no C:. Agora o programa roda num grupo do Windows (`abrir_em_grupo`), e
+    `fechar_tudo` fecha ele e tudo o que ele abriu, e confere no Windows que nenhum ficou vivo. De verdade: um processo
+    abre outro; os dois escrevem num arquivo a cada 0,1 s; depois de fechar, nenhum escreve mais."""
+    script = tmp_path / "pai_e_filho.py"
+    script.write_text(_PAI_E_FILHO, encoding="utf-8")
+    programa, r = windows.abrir_em_grupo([PY, str(script), str(tmp_path), "pai"])
+    assert r.deu_certo and programa is not None, r
+    with programa:
+        for _ in range(100):
+            if (tmp_path / "filho.txt").exists():
+                break
+            time.sleep(0.1)
+        assert _ainda_vive(tmp_path / "filho.txt", 0.5) and programa.vivos() >= 2   # o python do .venv abre outro
+        fechado = programa.fechar_tudo()
+        assert fechado.deu_certo, fechado
+        assert programa.vivos() == 0
+    assert not _ainda_vive(tmp_path / "pai.txt") and not _ainda_vive(tmp_path / "filho.txt")
+    recusado, r = windows.abrir_em_grupo([str(windows.pasta_do_sistema() / "cmd.exe"), "/c", "exit"])
+    assert recusado is None and r.desfecho == windows.FALHOU, "o grupo também recusa programa com função própria"

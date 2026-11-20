@@ -179,3 +179,38 @@ def test_a_porta_ocupada_vira_frase_e_a_janela_diz_que_nao_serve(servidor, tmp_p
     boa.close()
     assert servidor.fechado.is_set()
     assert "servindo" in (tmp_path / "registro.txt").read_text(encoding="utf-8")
+
+
+def test_n13_o_servidor_nao_serve_por_uma_juncao(tmp_path):
+    """N13 e achado 7 (quem tentou quebrar): uma "publicação" que é junção para outra pasta não é servida (a mesma
+    regra do publicar, `DestinoPasta.liberadas`, num lugar só)."""
+    import subprocess
+
+    alvo = tmp_path / "outra pasta"
+    alvo.mkdir()
+    (alvo / "segredo.nupkg").write_bytes(b"de outro lugar")
+    pasta = tmp_path / "versoes"
+    pasta.mkdir()
+    feito = subprocess.run(["cmd", "/c", "mklink", "/J", str(pasta / "v9.9.9"), str(alvo)], capture_output=True)
+    assert feito.returncode == 0
+    try:
+        s = srv.Servidor(pasta, porta=0, dizer=lambda t: None)
+        assert s.versoes.publicacoes() == [] and s.versoes.achar("segredo.nupkg") is None
+    finally:
+        subprocess.run(["cmd", "/c", "rmdir", str(pasta / "v9.9.9")], check=True)   # só o atalho
+    assert (alvo / "segredo.nupkg").is_file()
+
+
+def test_achado7_nome_repetido_em_duas_versoes_nao_e_entregue(tmp_path):
+    """Achado 7: o .msi do vpk tinha o mesmo nome em toda versão, e o servidor entregava o da primeira pasta. Agora o
+    publicar põe a versão no nome do .msi, e um nome repetido em duas publicações não é entregue (não se sabe qual)."""
+    import empacotar
+
+    pasta = tmp_path / "versoes"
+    _publicar_na_pasta(pasta, "v1.2.0", {"igual.msi": b"1.2.0", empacotar.nome_do_msi_publicado("1.2.0"): b"msi 1.2.0"})
+    _publicar_na_pasta(pasta, "v1.10.0", {"igual.msi": b"1.10.0",
+                                          empacotar.nome_do_msi_publicado("1.10.0"): b"msi 1.10.0"})
+    versoes = srv.Versoes(pasta)
+    assert versoes.achar("igual.msi") is None
+    assert versoes.achar(empacotar.nome_do_msi_publicado("1.2.0")).read_bytes() == b"msi 1.2.0"
+    assert empacotar.nome_do_msi_publicado("1.2.0") != empacotar.nome_do_msi_publicado("1.10.0")

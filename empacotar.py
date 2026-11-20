@@ -1124,10 +1124,18 @@ def nome_do_setup() -> str:
 
 
 def nome_do_msi() -> str:
-    """'<ID>-win.msi': o instalador .msi (so na saida INSTALADOR)."""
+    """'<ID>-win.msi': o instalador .msi como o vpk o grava (so na saida INSTALADOR). O mesmo nome em toda versao."""
     import versao
 
     return f"{versao.ID_DO_PACOTE}-win.msi"
+
+
+def nome_do_msi_publicado(versao_do_pacote: str) -> str:
+    """'<ID>-<versao>-win.msi': o nome com que o .msi e publicado e guardado (achado 7 de quem tentou quebrar: com o
+    nome do vpk, igual em toda versao, o servidor das versoes entregava o .msi de outra versao)."""
+    import versao
+
+    return f"{versao.ID_DO_PACOTE}-{versao_do_pacote}-win.msi"
 
 
 def achar_vpk() -> Path | None:
@@ -1281,20 +1289,27 @@ def espaco_que_vai_usar(tamanho_da_pasta_do_programa: int, saidas: tuple[Saida, 
                         tamanho_do_motor: int = 0) -> int:
     """A conta do que o vpk vai usar no disco do rascunho (D-776: "o que vai usar de verdade").
 
-    Conta (lida no codigo do vpk 1.2.161, PackageBuilder e WindowsPackCommandRunner,
-    e medida no estudo de publicar rapido, M2a: pico de 5,3 GB para uma pasta de
-    2,0 GB sem .msi, ou 2,65 vezes a pasta): para cada saida empacotada, uma copia
-    da pasta no pre-processo, outra para o pacote, o pacote e o Setup.exe (cada um
-    menor que a pasta): 3 vezes a pasta; com o .msi, mais uma copia e o .msi: 5
-    vezes. As saidas rodam uma depois da outra e a pasta temporaria do vpk e
-    apagada por ele no fim de cada uma; mas a conta soma, por seguranca, so tirando
-    o que o publicar apaga entre elas (fica o pacote da primeira, ate 1 vez a pasta).
+    Conta refeita na volta 2 (achado 9 de quem tentou quebrar), pela leitura do vpk 1.2.161:
+    - PackageBuilder.cs:76 (a pasta temporaria do pacote vive ate o FIM do pack) e
+      :117-162: a copia do pre-processo (P) e a copia do pacote (P) ficam ao mesmo
+      tempo que o pacote (C) e o Setup.exe, que leva o pacote dentro (C):
+      2P + 2C;
+    - WindowsPackCommandRunner.cs:230-250: o .msi copia a pasta MAIS uma vez (P) e o
+      WiX grava o .msi (C); MsiBuilder.cs:186-221: o WiX roda com a pasta temporaria
+      do vpk, e os pedacos comprimidos que ele junta no .msi (C, deduzido do WiX,
+      nao lido) ficam la ate o fim: mais P + 2C;
+    - o comprimido C e contado igual a pasta P (o arquivo do motor ja e comprimido e
+      nao encolhe; o resto encolhe para uns 53%, estudo do Kraken): a conta nunca
+      fica curta por compressao;
+    - entao: sem .msi, 4 vezes a pasta; com o .msi, 7 vezes (P com o motor). As
+      saidas rodam uma depois da outra e o vpk apaga a temporaria no fim de cada
+      uma; entre elas fica o pacote da primeira (ate 1 vez a pasta).
     A saida INSTALADOR leva tambem o arquivo do motor (tamanho_do_motor).
     Arriscado: diminuir os fatores sem medir (o C: enche); o .msi nunca foi medido."""
     total = 0
     for i, saida in enumerate(saidas):
         pasta = tamanho_da_pasta_do_programa + (tamanho_do_motor if saida.motor_em_instalar else 0)
-        total += pasta * (5 if saida.com_msi else 3) if i == len(saidas) - 1 else pasta
+        total += pasta * (7 if saida.com_msi else 4) if i == len(saidas) - 1 else pasta
     return total + MARGEM_DA_CONTA
 
 
@@ -1317,49 +1332,57 @@ def rodar_vpk(comando: list, rascunho: Path, reserva: int | None = None,
               intervalo_s: float = INTERVALO_DA_VIGIA_S, livre=None) -> str | None:
     """A UNICA funcao que roda o vpk (plano-v3, peca 8). None = terminou bem; senao o motivo, em portugues.
 
+    - o vpk roda num grupo do Windows (core/windows.abrir_em_grupo, a peca unica):
+      fechar o vpk fecha tambem o que ele abriu. Lido no vpk 1.2.161: o .msi sai
+      de outro programa, "cmd.exe /S /C wix.exe build ..." (MsiBuilder.cs:216,
+      Exe.cs:46); antes (achado 2 de quem tentou quebrar), fechar so o vpk deixava
+      o WiX gravando no C: abaixo da reserva;
     - a pasta temporaria do vpk (VELOPACK_TEMP, TEMP e TMP: o vpk 1.2.161 le nessa
       ordem, src/lib-csharp/Util/TempUtil.cs) fica em <rascunho>\\temp, no mesmo
       disco do rascunho (o C:, D-776) e e apagada junto com ele;
     - a vigia (D-776): a cada 'intervalo_s', le o espaco livre do disco do
-      rascunho; se cair abaixo da reserva, fecha o vpk que ESTA funcao abriu (so
-      ele, Popen.kill) e devolve o motivo. Quem chamou apaga o rascunho;
-    - Ctrl+C: fecha o vpk e repassa a interrupcao (quem chamou apaga o rascunho).
+      rascunho; se cair abaixo da reserva, fecha o grupo inteiro, CONFERE que nada
+      ficou vivo e devolve o motivo (dizendo se algo ficou). Quem chamou apaga o rascunho;
+    - Ctrl+C: fecha o grupo inteiro e repassa a interrupcao.
     'livre' e trocavel so nos testes (para simular o disco enchendo).
     Arriscado: rodar o vpk por outro caminho (era o defeito 56 do plano: dois
-    caminhos, a pasta temporaria desviada a mao)."""
+    caminhos, a pasta temporaria desviada a mao); fechar so o vpk (o achado 2)."""
     import os
+
+    from core import windows
 
     livre = livre or espaco_livre
     reserva = reserva or RESERVA_DO_DISCO
     temp = Path(rascunho) / "temp"
     temp.mkdir(parents=True, exist_ok=True)
     ambiente = {**os.environ, "VELOPACK_TEMP": str(temp), "TEMP": str(temp), "TMP": str(temp)}
-    try:
-        processo = subprocess.Popen([str(c) for c in comando], cwd=str(rascunho), env=ambiente)
-    except OSError as erro:
-        return f"não consegui abrir o vpk ({erro})"
-    try:
-        while True:
-            try:
-                codigo = processo.wait(timeout=intervalo_s)
-                break
-            except subprocess.TimeoutExpired:
-                pass
-            try:
-                sobra = livre(rascunho)
-            except OSError as erro:
-                processo.kill()
-                processo.wait()
-                return f"parei: não consegui ler o espaço livre durante o trabalho ({erro})"
-            if sobra < reserva:
-                processo.kill()
-                processo.wait()
-                return (f"parei: o disco do rascunho ficou com {sobra / GB:.1f} GB livres, abaixo da reserva de "
-                        f"{reserva / GB:.0f} GB (outro programa pode estar usando o disco)")
-    except BaseException:
-        processo.kill()
-        processo.wait()
-        raise
+    programa, aberto = windows.abrir_em_grupo(comando, rascunho, ambiente)
+    if programa is None:
+        return f"não consegui abrir o vpk ({aberto.motivo})"
+
+    def fechar(motivo: str) -> str:
+        """Fecha o vpk e o que ele abriu; a frase diz se ficou algum rodando (conferido no Windows)."""
+        fechado = programa.fechar_tudo()
+        if fechado.deu_certo:
+            return motivo + "; o vpk e os programas que ele abriu foram fechados (conferido)"
+        return motivo + f"; ATENÇÃO: {fechado.motivo} (veja no Gerenciador de Tarefas)"
+
+    with programa:
+        try:
+            while True:
+                codigo = programa.esperar(intervalo_s)
+                if codigo is not None:
+                    break
+                try:
+                    sobra = livre(rascunho)
+                except OSError as erro:
+                    return fechar(f"parei: não consegui ler o espaço livre durante o trabalho ({erro})")
+                if sobra < reserva:
+                    return fechar(f"parei: o disco do rascunho ficou com {sobra / GB:.1f} GB livres, abaixo da "
+                                  f"reserva de {reserva / GB:.0f} GB (outro programa pode estar usando o disco)")
+        except BaseException:
+            programa.fechar_tudo()
+            raise
     if codigo != 0:
         return f"o vpk parou com erro (código {codigo}); as mensagens dele estão acima"
     return None
@@ -1402,8 +1425,15 @@ def esperados_no_pacote_do_velopack(pecas: PecasDosDetectores | None, saida: Sai
 
 def proibidos_no_pacote_do_velopack(saida: Saida = ATUALIZACAO) -> list[str]:
     """Os comecos de caminho (relativos a pasta do programa, com /) que NAO podem
-    estar no pacote: o motor solto, na saida que nao o leva (D-768)."""
-    return [] if saida.motor_solto else [f"{PASTA_DO_MOTOR}/"]
+    estar no pacote, lidos de SAIDAS: o motor solto, na saida que nao o leva
+    (D-768); o arquivo do motor em instalar\\, na saida que nao o leva (a
+    atualizacao; achado 8 de quem tentou quebrar: so preparar_saida o tirava)."""
+    import atualizacao
+
+    proibidos = [] if saida.motor_solto else [f"{PASTA_DO_MOTOR}/"]
+    if not saida.motor_em_instalar:
+        proibidos.append(f"{atualizacao.PASTA_DO_QUE_SE_INSTALA}/motor-kraken-")
+    return proibidos
 
 
 def conferir_pacote_do_velopack(nupkg: Path, pecas: PecasDosDetectores | None,

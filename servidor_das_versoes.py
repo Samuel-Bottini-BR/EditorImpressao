@@ -14,10 +14,11 @@ http://, pede `<endereço>/releases.win.json?localVersion=...&id=...&stagingId=.
     - `/releases.win.json`: o índice de TODAS as publicações liberadas da pasta (cada uma traz o seu, gravado pelo vpk
       só com a versão dela), juntos num só, a mais nova primeiro (o GitHub faz o mesmo papel com os "releases");
     - `/<nome de um arquivo>`: o arquivo com esse nome em qualquer publicação liberada (o pacote, a assinatura, o
-      arquivo do motor; os nomes já trazem a versão, então não se repetem).
+      arquivo do motor, o .msi; o publicar põe a versão em todos os nomes). Nome repetido em duas publicações não é
+      entregue (404): não se sabe qual é.
     O desenho da pasta é o do `publicar_versao_kaique.DestinoPasta` (uma subpasta por etiqueta, `v1.2.0\\`,
     `motor-kraken-1\\`; o rascunho, `.rascunho-v1.2.0\\`, NÃO é servido: como no GitHub, rascunho não aparece). As regras
-    do desenho são lidas de lá (`ETIQUETA_ACEITA`), nunca copiadas.
+    do desenho são lidas de lá (`DestinoPasta.liberadas`), nunca copiadas.
     Recusa (404, com a linha na janela): nome com barra, "..", começo com ponto, ou que não está numa publicação.
 
 COMO ABRIR
@@ -72,7 +73,7 @@ def _ordem_da_versao(texto: str) -> tuple:
 
 
 class Versoes:
-    """O que a pasta tem para servir: só as publicações liberadas (as subpastas com nome de etiqueta, ETIQUETA_ACEITA
+    """O que a pasta tem para servir: só as publicações liberadas (as subpastas com nome de etiqueta, DestinoPasta
     do publicar); o rascunho e qualquer outra coisa ficam de fora. Lido a cada pedido (o publicar pode liberar uma
     versão com a janela aberta)."""
 
@@ -81,21 +82,18 @@ class Versoes:
         self.pasta = Path(pasta)
 
     def publicacoes(self) -> list[Path]:
-        """As subpastas liberadas (nome de etiqueta), em ordem de nome."""
-        if not self.pasta.is_dir():
-            return []
-        return sorted(p for p in self.pasta.iterdir()
-                      if p.is_dir() and not p.is_symlink() and pub.ETIQUETA_ACEITA.match(p.name))
+        """As subpastas liberadas, pela MESMA regra do publicar (`DestinoPasta.liberadas`: nome de etiqueta inteiro,
+        pasta de verdade, nunca atalho nem junção; achado 7 de quem tentou quebrar: antes a regra estava aqui também,
+        e a junção passava)."""
+        return pub.DestinoPasta(self.pasta).liberadas()
 
     def achar(self, nome: str) -> Path | None:
-        """O arquivo com este nome numa publicação liberada, ou None (nome com barra, "..", começo com ponto)."""
+        """O arquivo com este nome numa publicação liberada, ou None: nome com barra, "..", começo com ponto, ou o MESMO
+        nome em duas publicações (não se sabe qual entregar; achado 7: o .msi de outra versão saía)."""
         if not nome or "/" in nome or "\\" in nome or ".." in nome or nome.startswith(".") or ":" in nome:
             return None
-        for publicacao in self.publicacoes():
-            caminho = publicacao / nome
-            if caminho.is_file():
-                return caminho
-        return None
+        achados = [publicacao / nome for publicacao in self.publicacoes() if (publicacao / nome).is_file()]
+        return achados[0] if len(achados) == 1 else None
 
     def indice(self) -> bytes:
         """O índice de todas as publicações liberadas, juntos (sem repetir arquivo), a versão mais nova primeiro."""

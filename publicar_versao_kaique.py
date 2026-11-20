@@ -216,9 +216,16 @@ def criar_rascunho(base: Path | None = None) -> Path:
 # Os destinos (o lugar unico de "publicar num lugar")
 # ---------------------------------------------------------------------------------------------------------------------
 
+def e_etiqueta(nome: str) -> bool:
+    """O nome e uma etiqueta nossa (v1.2.0 ou motor-kraken-1), inteiro? (fullmatch: o "$" do re casa antes de uma
+    quebra de linha no fim, e "v1.2.0\\n" passava; achado 11 de quem tentou quebrar.) O lugar unico desta regra: o
+    publicar e o servidor das versoes usam este."""
+    return bool(ETIQUETA_ACEITA.fullmatch(nome or ""))
+
+
 def _conferir_etiqueta(etiqueta: str) -> str:
     """A etiqueta e uma das nossas (v1.2.0 ou motor-kraken-1)? Levanta Parou."""
-    if not ETIQUETA_ACEITA.match(etiqueta or ""):
+    if not e_etiqueta(etiqueta):
         raise Parou(f"etiqueta fora do formato: {etiqueta!r}")
     return etiqueta
 
@@ -250,6 +257,14 @@ class DestinoPasta:
             if pasta.is_dir():
                 return pasta
         raise Parou(f"não há publicação {etiqueta} em {self.nome}")
+
+    def liberadas(self) -> list[Path]:
+        """As publicacoes liberadas da pasta, em ordem de nome: as subpastas de verdade com nome de etiqueta. Atalho
+        (junção ou link) nao conta (o servidor das versoes nao o serve e o apagar o recusa: a mesma regra, aqui)."""
+        if not self.raiz.is_dir():
+            return []
+        return sorted(p for p in self.raiz.iterdir()
+                      if e_etiqueta(p.name) and p.is_dir() and not p.is_symlink() and not p.is_junction())
 
     def situacao(self, etiqueta: str) -> str | None:
         """None (nao existe), "liberada" ou "rascunho"."""
@@ -424,10 +439,25 @@ class DestinoGitHub:
         self._exigir(self._gh("release", "edit", _conferir_etiqueta(etiqueta), "--draft=false"),
                      f"liberar {etiqueta}")
 
-    def apagar(self, etiqueta: str) -> None:
-        """Apaga a publicacao e a etiqueta."""
-        self._exigir(self._gh("release", "delete", _conferir_etiqueta(etiqueta), "--yes", "--cleanup-tag"),
-                     f"apagar {etiqueta}")
+    def apagar(self, etiqueta: str) -> str | None:
+        """Pede ao GitHub para apagar a publicacao (e, se ja liberada, a etiqueta). Devolve o aviso do gh, se ele
+        reclamou, ou None. QUEM DIZ SE APAGOU E A LEITURA DE VOLTA (apagar_publicacao), nunca o codigo de saida do gh.
+
+        Lido no gh (cli/cli, pkg/cmd/release/delete/delete.go, deleteRun e deleteTag, 19/11): ele apaga a publicacao
+        e, com --cleanup-tag, apaga DEPOIS a etiqueta refs/tags/<etiqueta>, sem olhar se e rascunho, e sai com o erro
+        dessa segunda parte. Num rascunho a etiqueta ainda nao existe (o GitHub so a cria ao liberar; o fetch.go chama
+        de "pending tag"): pedir --cleanup-tag ali dava erro de uma publicacao que tinha sido apagada (achado 1 de quem
+        tentou quebrar). Por isso: rascunho sem --cleanup-tag; liberada com."""
+        situacao = self.situacao(etiqueta)
+        if situacao is None:
+            return None
+        pedido = ["release", "delete", _conferir_etiqueta(etiqueta), "--yes"]
+        if situacao == "liberada":
+            pedido.append("--cleanup-tag")
+        r = self._gh(*pedido)
+        if r.returncode != 0:
+            return f"o gh avisou ao apagar: {(r.stderr or r.stdout).strip()[:300]}"
+        return None
 
 
 def destino_de(destino_pasta: Path | None) -> DestinoPasta | DestinoGitHub:
@@ -435,13 +465,16 @@ def destino_de(destino_pasta: Path | None) -> DestinoPasta | DestinoGitHub:
     return DestinoPasta(destino_pasta) if destino_pasta is not None else DestinoGitHub()
 
 
-def apagar_publicacao(destino, etiqueta: str) -> None:
-    """Apaga uma publicacao do destino e CONFERE que sumiu (levanta Parou se ficou)."""
+def apagar_publicacao(destino, etiqueta: str) -> str | None:
+    """Apaga uma publicacao do destino e CONFERE, lendo de volta, que sumiu: sumiu = apagada, venha o pedido com
+    aviso ou nao (devolve o aviso, para a frase); continua la = Parou. (Achado 1: antes, o aviso do gh virava "nao
+    apagou" sem ler.)"""
     if destino.situacao(etiqueta) is None:
-        return
-    destino.apagar(etiqueta)
+        return None
+    aviso = destino.apagar(etiqueta)
     if destino.situacao(etiqueta) is not None:
-        raise Parou(f"pedi para apagar {etiqueta} em {destino.nome}, e ela continua lá")
+        raise Parou(f"pedi para apagar {etiqueta} em {destino.nome}, e ela continua lá" + (f" ({aviso})" if aviso else ""))
+    return aviso
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -458,8 +491,13 @@ def publicar_arquivos(destino, etiqueta: str, titulo: str, notas: str, arquivos:
        soma de cada um, lida do destino, a do arquivo local; depois conferir_lido() (a assinatura e o resto, lidos do
        destino; levanta Parou);
     4. so entao libera, e confere que ficou liberada.
-    Qualquer falha (ou Ctrl+C) antes de terminar apaga a publicacao do destino e confere que sumiu; se nao der para
-    apagar, a frase diz o que ficou e como apagar."""
+    Qualquer falha (ou Ctrl+C) ANTES de pedir para liberar apaga o rascunho do destino e confere que sumiu; se nao der
+    para apagar, a frase diz o que ficou e como apagar.
+    DEPOIS de pedir para liberar (decisao tecnica da gerente, 19/11, D-014; achado 4 de quem tentou quebrar): le a
+    situacao; so se ainda for rascunho, apaga; se ficou liberada (ou nao da para ler), NAO apaga e para dizendo
+    "liberada; nao deu para reconferir agora". Por que: quando o liberar e pedido, tudo ja foi lido de volta e
+    conferido; apagar uma versao liberada deixaria o numero dela livre para outro conteudo, e um programa que a pegou
+    naqueles segundos nunca pegaria a outra (mesmo numero: "um numero de versao so", peca 8)."""
     situacao = destino.situacao(etiqueta)
     if situacao == "liberada":
         raise Parou(f"{etiqueta} já está publicada em {destino.nome}: aumente o número (versao.py ou "
@@ -470,6 +508,7 @@ def publicar_arquivos(destino, etiqueta: str, titulo: str, notas: str, arquivos:
     nomes = [Path(a).name for a in arquivos]
     print(f"  {destino.nome}: rascunho {etiqueta} ({', '.join(nomes)})")
     destino.criar_rascunho(etiqueta, titulo, notas)
+    pediu_para_liberar = False
     try:
         for arquivo in arquivos:
             destino.enviar(etiqueta, Path(arquivo))
@@ -481,13 +520,29 @@ def publicar_arquivos(destino, etiqueta: str, titulo: str, notas: str, arquivos:
                 raise Parou(f"{Path(arquivo).name} chegou diferente em {destino.nome}")
         conferir_lido()
         print(f"  lido de volta de {destino.nome}: {len(nomes)} arquivo(s), somas e assinatura conferidas")
+        pediu_para_liberar = True
         destino.liberar(etiqueta)
         if destino.situacao(etiqueta) != "liberada":
             raise Parou(f"pedi para liberar {etiqueta} em {destino.nome}, e ela não ficou liberada")
     except BaseException as erro:
+        if pediu_para_liberar:
+            try:
+                agora = destino.situacao(etiqueta)
+            except Parou as sem_leitura:
+                agora = f"não deu para ler ({sem_leitura})"
+            if agora != "rascunho":
+                frase = (f"{etiqueta}: pedi para liberar em {destino.nome}; situação lida agora: "
+                         f"{agora or 'não existe'}. Se ficou liberada, ela está inteira (tudo foi lido de volta antes "
+                         f"de liberar); não deu para reconferir agora e NÃO apaguei (o número não pode ficar livre "
+                         f"para outro conteúdo). Confira com calma antes de publicar de novo")
+                if isinstance(erro, Parou):
+                    raise Parou(f"{erro}. {frase}") from erro
+                print(f"  {frase}")
+                raise
         try:
-            apagar_publicacao(destino, etiqueta)
-            desfeito = f"a publicação {etiqueta} foi apagada de {destino.nome} (conferido)"
+            aviso = apagar_publicacao(destino, etiqueta)
+            desfeito = f"a publicação {etiqueta} foi apagada de {destino.nome} (conferido)" + (
+                f"; {aviso}" if aviso else "")
         except Parou as outro:
             desfeito = f"ATENÇÃO: {outro}; apague com --apagar {etiqueta}"
         if isinstance(erro, Parou):
@@ -683,7 +738,9 @@ def publicar(versao_do_pacote: str, destino_pasta: Path | None = None, pasta_pro
                 problemas = empacotar.preparar_saida(pasta, empacotar.ATUALIZACAO, None, motor)
             if outro is None or problemas:
                 raise Parou("o empacotamento do instalador parou (o motivo está acima) " + "; ".join(problemas))
-            msi = rascunho / "instalador" / empacotar.nome_do_msi()
+            # o .msi do vpk tem o mesmo nome em toda versão; publicado com o número dela (achado 7)
+            msi = rascunho / "instalador" / empacotar.nome_do_msi_publicado(versao_do_pacote)
+            (rascunho / "instalador" / empacotar.nome_do_msi()).replace(msi)
         else:
             msi = None
         arquivo_assinado = assinar_pacote(chave, nupkg, versao_do_pacote, chave_publica)
@@ -799,6 +856,13 @@ def main(argumentos: list[str] | None = None) -> int:
         return 0
     except Parou as erro:
         print(f"\nPAREI: {erro}")
+        return 1
+    except OSError as erro:
+        # achado 5 de quem tentou quebrar: um erro do disco (pasta que não cria, arquivo preso pelo antivírus, cópia
+        # que falha) saía como a tela de erro do Python. O finally de cada caminho já apagou o rascunho.
+        onde = f" ({erro.filename})" if getattr(erro, "filename", None) else ""
+        print(f"\nPAREI: o disco não deixou terminar{onde}: {erro.strerror or erro}. O que esta vez fez pela metade "
+              "foi apagado (ver as linhas acima).")
         return 1
     except KeyboardInterrupt:
         print("\nPAREI: interrompido (Ctrl+C). O que esta vez fez pela metade foi apagado (ver as linhas acima).")

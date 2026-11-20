@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -49,7 +50,8 @@ ETIQUETA = versao.etiqueta_da_versao(VERSAO)
 
 # O vpk de mentira: escreve na pasta de saída o que o vpk 1.2.161 escreve (os nomes de DefaultName.cs), com o pacote
 # sendo um zip de verdade da pasta (em lib/app/), e anota cada vez que rodou. VPK_FALSO_FALHA=1: deixa o Setup.exe e
-# sai com erro. VPK_FALSO_ESPERA=N: espera N segundos antes (para a vigia).
+# sai com erro. VPK_FALSO_ESPERA=N: espera N segundos antes (para a vigia). VPK_FALSO_FILHO=<arquivo>: abre antes um
+# programa filho que escreve um número nesse arquivo a cada 0,1 s (como o vpk abre o cmd.exe e o wix.exe do .msi).
 VPK_FALSO = r'''
 import hashlib, json, os, sys, time, zipfile
 from pathlib import Path
@@ -58,6 +60,12 @@ def valor(nome):
     return a[a.index(nome) + 1]
 Path(os.environ["VPK_FALSO_DIARIO"]).open("a", encoding="utf-8").write(json.dumps(a) + "\n")
 Path(os.environ["VELOPACK_TEMP"], "vpk-usou-o-temp.txt").write_text("x")
+if os.environ.get("VPK_FALSO_FILHO"):
+    import subprocess
+    batida = ("import os, sys, time\nn = 0\nwhile True:\n    n += 1\n    open(sys.argv[1] + '.tmp', 'w').write(str(n))\n"
+              "    try:\n        os.replace(sys.argv[1] + '.tmp', sys.argv[1])\n    except OSError:\n        pass\n"
+              "    time.sleep(0.1)\n")
+    subprocess.Popen([sys.executable, "-c", batida, os.environ["VPK_FALSO_FILHO"]])
 time.sleep(float(os.environ.get("VPK_FALSO_ESPERA", "0")))
 pacote, ver, pasta, saida = valor("--packId"), valor("--packVersion"), Path(valor("--packDir")), Path(valor("--outputDir"))
 saida.mkdir(parents=True, exist_ok=True)
@@ -98,6 +106,7 @@ def ambiente(tmp_path, monkeypatch):
     monkeypatch.setenv("VPK_FALSO_DIARIO", str(diario))
     monkeypatch.delenv("VPK_FALSO_FALHA", raising=False)
     monkeypatch.delenv("VPK_FALSO_ESPERA", raising=False)
+    monkeypatch.delenv("VPK_FALSO_FILHO", raising=False)
     # muito espaço livre (o disco do teste pode ser pequeno); os testes do espaço trocam isto
     monkeypatch.setattr(empacotar, "espaco_livre", lambda pasta: 500 * empacotar.GB)
     motor = _motor_com_ficha(tmp_path / "motor")
@@ -289,8 +298,9 @@ def test_d777_o_instalador_so_quando_pedido_e_o_publicado_e_o_da_atualizacao(amb
     _publicar(a, com_instalador=True)
     vezes = _vezes_que_o_vpk_rodou(a)
     assert len(vezes) == 2 and "--msi" not in vezes[0] and "--msi" in vezes[1]
-    assert (a["saida"] / ETIQUETA / empacotar.nome_do_msi()).is_file()
-    assert (a["servidor"] / ETIQUETA / empacotar.nome_do_msi()).is_file(), "o .msi pedido vai à publicação (como antes)"
+    msi = empacotar.nome_do_msi_publicado(VERSAO)
+    assert VERSAO in msi and (a["saida"] / ETIQUETA / msi).is_file()
+    assert (a["servidor"] / ETIQUETA / msi).is_file(), "o .msi pedido vai à publicação (como antes), com o número"
     nome_do_motor = versao.arquivo_do_motor(ocr_kraken.VERSAO_DO_MOTOR)
     with zipfile.ZipFile(empacotar.nupkg_inteiro(a["servidor"] / ETIQUETA, VERSAO)) as z:
         assert not any(n.endswith(nome_do_motor) for n in z.namelist())
@@ -395,6 +405,7 @@ class _GitHubDeMentira:
         self.publicacoes: dict[str, dict] = {}
         self.pedidos: list[list[str]] = []
         self.falhar_ao_ver = falhar_ao_ver
+        self.etiquetas_apagadas: list[str] = []
 
     def __call__(self, *argumentos, limite_s=600):
         """Responde um pedido do gh (release view/create/upload/download/edit/delete)."""
@@ -426,7 +437,16 @@ class _GitHubDeMentira:
             assert "--draft=false" in a
             p["rascunho"] = False
         elif sub == "delete":
+            # Como o gh 2.99 (cli/cli, pkg/cmd/release/delete/delete.go, deleteRun e deleteTag): apaga a publicação e,
+            # com --cleanup-tag, apaga DEPOIS a etiqueta; num rascunho a etiqueta não existe ("pending tag") e o gh
+            # sai com o erro do GitHub, mesmo tendo apagado a publicação.
+            era_rascunho = p["rascunho"]
             del self.publicacoes[etiqueta]
+            if "--cleanup-tag" in a:
+                if era_rascunho:
+                    return feito(1, "", "HTTP 422: Reference does not exist (https://api.github.com/repos/x/y/git/refs/"
+                                        f"tags/{etiqueta})")
+                self.etiquetas_apagadas.append(etiqueta)
         return feito()
 
 
@@ -501,10 +521,10 @@ def test_d776_a_conta_do_espaco_e_a_reserva_de_20_gb(tmp_path, monkeypatch):
     um_gb = empacotar.GB
     so_atualizacao = empacotar.espaco_que_vai_usar(um_gb, (empacotar.ATUALIZACAO,))
     com_instalador = empacotar.espaco_que_vai_usar(um_gb, (empacotar.ATUALIZACAO, empacotar.INSTALADOR), um_gb // 2)
-    assert so_atualizacao == 3 * um_gb + empacotar.MARGEM_DA_CONTA
-    assert com_instalador == um_gb + 5 * (um_gb + um_gb // 2) + empacotar.MARGEM_DA_CONTA
+    assert so_atualizacao == 4 * um_gb + empacotar.MARGEM_DA_CONTA
+    assert com_instalador == um_gb + 7 * (um_gb + um_gb // 2) + empacotar.MARGEM_DA_CONTA
     assert empacotar.RESERVA_DO_DISCO == 20 * um_gb
-    monkeypatch.setattr(empacotar, "espaco_livre", lambda pasta: 24 * um_gb)
+    monkeypatch.setattr(empacotar, "espaco_livre", lambda pasta: 25 * um_gb)
     assert empacotar.conferir_espaco(tmp_path, so_atualizacao) is None
     assert "20 GB" in empacotar.conferir_espaco(tmp_path, com_instalador)
 
@@ -579,3 +599,270 @@ def test_d809_apagar_uma_publicacao_que_e_atalho_nao_apaga_o_outro_lado(tmp_path
                    capture_output=True)
     pub.apagar_publicacao(destino, ETIQUETA)
     assert not (servidor / ETIQUETA).exists() and (alvo / "importante.txt").is_file()
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Volta 2 (achados de quem tentou quebrar, relatorio-1.md, 19/11/2026)
+# ---------------------------------------------------------------------------------------------------------------------
+
+def _batida_viva(arquivo: Path, espera_s: float = 1.5) -> bool:
+    """O programa que escreve um número neste arquivo a cada 0,1 s ainda escreve?"""
+    def ler() -> str:
+        """O número de agora (vazio se não deu para ler)."""
+        try:
+            return arquivo.read_text()
+        except OSError:
+            return ""
+
+    antes = ler()
+    time.sleep(espera_s)
+    return ler() not in ("", antes)
+
+
+def _esperar_arquivo(arquivo: Path, limite_s: float = 15) -> None:
+    """Espera o arquivo aparecer (o filho do vpk de mentira começou)."""
+    fim = time.monotonic() + limite_s
+    while time.monotonic() < fim and not arquivo.exists():
+        time.sleep(0.1)
+
+
+def test_achado2_a_vigia_fecha_o_vpk_e_o_que_ele_abriu(ambiente, monkeypatch, tmp_path):
+    """Achado 2: a vigia do espaço fechava só o vpk; o programa que ele abre para o .msi (cmd.exe, wix.exe) continuava
+    gravando no C:. Agora o vpk roda num grupo do Windows e a vigia fecha tudo. De verdade: o vpk de mentira abre um
+    filho que escreve a cada 0,1 s; depois de a vigia parar, o filho não escreve mais, e a frase diz "conferido"."""
+    batida = tmp_path / "filho-do-vpk.txt"
+    monkeypatch.setenv("VPK_FALSO_ESPERA", "60")
+    monkeypatch.setenv("VPK_FALSO_FILHO", str(batida))
+    rascunho = tmp_path / "publicar-vigia2"
+    rascunho.mkdir()
+    leituras = []
+
+    def livre(_pasta):
+        """Bom enquanto o filho não começou; abaixo da reserva depois."""
+        leituras.append(1)
+        return 100 * empacotar.GB if not batida.exists() else 19 * empacotar.GB
+
+    motivo = empacotar.rodar_vpk(empacotar.comando_do_vpk(ambiente["vpk"], ambiente["pasta"], rascunho / "s", VERSAO,
+                                                          com_msi=False), rascunho, intervalo_s=0.3, livre=livre)
+    assert motivo and "reserva" in motivo and "fechados (conferido)" in motivo, motivo
+    assert not _batida_viva(batida), "o programa que o vpk abriu continuou rodando"
+
+
+def test_n10_ctrl_c_fecha_o_vpk_e_o_que_ele_abriu(ambiente, monkeypatch, tmp_path):
+    """N10: o Ctrl+C no meio do vpk fecha o vpk e o que ele abriu, e repassa a interrupção."""
+    batida = tmp_path / "filho-do-vpk.txt"
+    monkeypatch.setenv("VPK_FALSO_ESPERA", "60")
+    monkeypatch.setenv("VPK_FALSO_FILHO", str(batida))
+    rascunho = tmp_path / "publicar-ctrlc"
+    rascunho.mkdir()
+
+    def livre(_pasta):
+        """Simula o Ctrl+C assim que o filho começou."""
+        if batida.exists():
+            raise KeyboardInterrupt
+        return 100 * empacotar.GB
+
+    with pytest.raises(KeyboardInterrupt):
+        empacotar.rodar_vpk(empacotar.comando_do_vpk(ambiente["vpk"], ambiente["pasta"], rascunho / "s", VERSAO,
+                                                     com_msi=False), rascunho, intervalo_s=0.3, livre=livre)
+    assert not _batida_viva(batida)
+
+
+def test_achado1_apagar_um_rascunho_no_github_le_de_volta_e_nao_acusa_erro_falso(ambiente, monkeypatch):
+    """Achado 1: o gh, com --cleanup-tag num rascunho, apaga a publicação e sai com erro (a etiqueta de um rascunho não
+    existe; delete.go). Antes o publicar dizia "o GitHub não deixou apagar". Agora: rascunho sem --cleanup-tag, versão
+    liberada com, e quem decide é a leitura de volta. O gh de mentira imita o de verdade."""
+    gh = _GitHubDeMentira(ambiente["tmp"])
+    destino = pub.DestinoGitHub("dono/projeto")
+    monkeypatch.setattr(destino, "_gh", gh)
+    destino.criar_rascunho(ETIQUETA, "t", "n")
+    assert pub.apagar_publicacao(destino, ETIQUETA) is None and destino.situacao(ETIQUETA) is None
+    apagou = [p for p in gh.pedidos if p[1] == "delete"]
+    assert apagou and "--cleanup-tag" not in apagou[-1]
+    destino.criar_rascunho(ETIQUETA, "t", "n")
+    destino.liberar(ETIQUETA)
+    pub.apagar_publicacao(destino, ETIQUETA)
+    assert destino.situacao(ETIQUETA) is None and gh.etiquetas_apagadas == [ETIQUETA]
+
+
+def test_achado1_erro_antes_de_liberar_no_github_apaga_e_diz_que_apagou(ambiente, monkeypatch):
+    """Achado 1, o caminho da prova (o erro de propósito): a soma lida do GitHub não bate; o rascunho é apagado e a
+    frase diz "foi apagada (conferido)", nunca "ATENÇÃO ... apague à mão"."""
+    a = ambiente
+    gh = _GitHubDeMentira(a["tmp"])
+    destino = pub.DestinoGitHub("dono/projeto")
+    monkeypatch.setattr(destino, "_gh", gh)
+    _publicar_o_motor(a, destino=destino)
+    real = destino.soma
+    monkeypatch.setattr(destino, "soma", lambda e, n: "0" * 64 if n.endswith("-full.nupkg") else real(e, n))
+    with pytest.raises(pub.Parou) as erro:
+        _publicar(a, destino=destino)
+    assert "foi apagada" in str(erro.value) and "ATENÇÃO" not in str(erro.value), erro.value
+    assert destino.situacao(ETIQUETA) is None
+
+
+class _DestinoQueNaoLeDepoisDeLiberar(pub.DestinoPasta):
+    """Uma pasta de verdade em que a leitura da situação falha (a internet caindo) logo depois de liberar."""
+
+    def __init__(self, raiz):
+        """liberou: já pediu para liberar."""
+        super().__init__(raiz)
+        self.liberou = False
+
+    def liberar(self, etiqueta):
+        """Libera de verdade e marca."""
+        super().liberar(etiqueta)
+        self.liberou = True
+
+    def situacao(self, etiqueta):
+        """Depois de liberar, não responde (como sem internet)."""
+        if self.liberou:
+            raise pub.Parou("não consegui perguntar ao destino (sem internet, de mentira)")
+        return super().situacao(etiqueta)
+
+
+def test_achado4_depois_de_liberar_a_leitura_que_falha_nao_apaga_a_versao(ambiente):
+    """Achado 4 (decisão técnica da gerente, D-014, 19/11): se a leitura logo depois de liberar falhar, a versão
+    liberada NÃO é apagada (o número não pode ficar livre para outro conteúdo); a frase diz "não deu para reconferir
+    agora" e "NÃO apaguei"."""
+    a = ambiente
+    _publicar_o_motor(a)
+    destino = _DestinoQueNaoLeDepoisDeLiberar(a["servidor"])
+    with pytest.raises(pub.Parou) as erro:
+        _publicar(a, destino=destino)
+    assert "não deu para reconferir agora" in str(erro.value) and "NÃO apaguei" in str(erro.value)
+    assert (a["servidor"] / ETIQUETA).is_dir(), "a versão liberada foi apagada"
+
+
+def test_achado5_erro_do_disco_vira_frase(ambiente, monkeypatch, capsys):
+    """Achado 5: um erro do disco (o lugar do rascunho ocupado por um arquivo) saía como a tela de erro do Python.
+    Agora a linha de comando diz "PAREI: o disco não deixou terminar" e devolve 1."""
+    a = ambiente
+    ocupado = a["tmp"] / "rascunho-ocupado"
+    ocupado.write_text("sou um arquivo", encoding="utf-8")
+    monkeypatch.setattr(pub, "pasta_do_rascunho", lambda: ocupado)
+    monkeypatch.setattr(pub, "achar_chave", lambda *x, **k: CHAVE)
+    _publicar_o_motor(a)
+    assert pub.main(["--pasta", str(a["servidor"])]) == 1
+    saida = capsys.readouterr().out
+    assert "PAREI: o disco não deixou terminar" in saida and "Traceback" not in saida
+
+
+def test_achado8_o_arquivo_do_motor_em_instalar_e_recusado_na_atualizacao(tmp_path):
+    """Achado 8: a conferência do pacote da atualização recusa também o arquivo do motor em instalar\\ (lido de
+    SAIDAS), e o do instalador o exige."""
+    nupkg = tmp_path / "p.nupkg"
+    with zipfile.ZipFile(nupkg, "w") as z:
+        for relativo in empacotar.esperados_no_pacote_do_velopack(None, empacotar.ATUALIZACAO):
+            z.writestr(empacotar.PASTA_NO_NUPKG + relativo, b"x")
+        z.writestr(empacotar.PASTA_NO_NUPKG + "instalar/" + versao.arquivo_do_motor(1), b"x")
+    assert any("instalar/motor-kraken-" in p
+               for p in empacotar.conferir_pacote_do_velopack(nupkg, None, empacotar.ATUALIZACAO))
+    assert not empacotar.proibidos_no_pacote_do_velopack(empacotar.INSTALADOR)[1:]
+
+
+def test_achado11_etiqueta_com_quebra_de_linha_e_recusada():
+    """Achado 11: "v1.2.0" com quebra de linha no fim passava (o "$" casa antes dela); agora a etiqueta é conferida
+    inteira."""
+    assert pub.e_etiqueta("v1.2.0") and pub.e_etiqueta("motor-kraken-1")
+    for errada in ("v1.2.0\n", "v1.2.0\r\n", "motor-kraken-1\n", " v1.2.0", "v1.2", "../v1.2.0"):
+        assert not pub.e_etiqueta(errada), repr(errada)
+        with pytest.raises(pub.Parou):
+            pub.DestinoPasta(Path("x")).situacao(errada)
+
+
+class _DestinoQueMente(pub.DestinoPasta):
+    """Uma pasta de verdade que, na leitura de volta, mente de um jeito escolhido (para provar cada conferência)."""
+
+    def __init__(self, raiz, mentira: str, servidor: Path | None = None):
+        """mentira: 'arquivo a mais' | 'indice' | 'assinatura' | 'motor sumiu' | 'nao apaga'."""
+        super().__init__(raiz)
+        self.mentira = mentira
+        self.servidor = servidor
+        self.enviados = 0
+
+    def arquivos(self, etiqueta):
+        """'arquivo a mais': a lista lida tem um arquivo que não foi enviado."""
+        lidos = super().arquivos(etiqueta)
+        if self.mentira == "arquivo a mais" and etiqueta == ETIQUETA:
+            lidos[empacotar.nome_do_setup()] = 1
+        return lidos
+
+    def baixar(self, etiqueta, nome, pasta_local):
+        """'indice': o índice lido aponta para outra soma; 'assinatura': a assinatura lida é de outra chave."""
+        baixado = super().baixar(etiqueta, nome, pasta_local)
+        if etiqueta == ETIQUETA and self.mentira == "indice" and nome == empacotar.NOME_DO_INDICE:
+            baixado.write_text(baixado.read_text(encoding="utf-8").replace('"SHA256": "', '"SHA256": "00'),
+                               encoding="utf-8")
+        if etiqueta == ETIQUETA and self.mentira == "assinatura" and nome.endswith(".assinatura"):
+            nupkg = empacotar.nupkg_inteiro(Path("."), VERSAO).name
+            v = assinatura.VersaoAssinada(versao.ID_DO_PACOTE, VERSAO, nupkg, super().soma(etiqueta, nupkg))
+            baixado.write_text(assinatura.escrever_assinatura(OUTRA_CHAVE, v), encoding="utf-8")
+        return baixado
+
+    def enviar(self, etiqueta, arquivo):
+        """'motor sumiu': depois do primeiro envio da versão, a publicação do motor some do destino."""
+        super().enviar(etiqueta, arquivo)
+        if self.mentira == "motor sumiu" and etiqueta == ETIQUETA:
+            shutil.rmtree(self.raiz / versao.etiqueta_do_motor(ocr_kraken.VERSAO_DO_MOTOR), ignore_errors=True)
+
+    def apagar(self, etiqueta):
+        """'nao apaga': diz que apagou e não apaga."""
+        if self.mentira == "nao apaga":
+            return None
+        return super().apagar(etiqueta)
+
+
+@pytest.mark.parametrize("mentira, frase", [
+    ("arquivo a mais", "e o enviado foi"),              # N1: a lista lida do destino ("nada a mais")
+    ("indice", "não aponta para o pacote"),             # N3: o índice lido de volta
+    ("assinatura", "assinatura lida"),                  # N14: a assinatura lida de volta do destino
+    ("motor sumiu", "não está publicado"),              # N4: o motor lido de novo antes de liberar (D-790)
+])
+def test_n1_n3_n4_n14_cada_leitura_de_volta_errada_impede_liberar(ambiente, mentira, frase):
+    """N1, N3, N4, N14 (achado 3): cada conferência da leitura de volta tem o seu teste. O destino mente num ponto; a
+    versão não é liberada, a frase diz o quê, e o rascunho do destino é apagado."""
+    a = ambiente
+    _publicar_o_motor(a)
+    destino = _DestinoQueMente(a["servidor"], mentira)
+    with pytest.raises(pub.Parou, match=frase):
+        _publicar(a, destino=destino)
+    assert destino.situacao(ETIQUETA) is None
+
+
+def test_n5_o_apagar_que_nao_apaga_e_acusado(ambiente):
+    """N5 (achado 3): o --apagar confere, lendo de volta, que sumiu; um destino que diz que apagou e não apaga é
+    acusado ("continua lá")."""
+    a = ambiente
+    _publicar_o_motor(a)
+    destino = _DestinoQueMente(a["servidor"], "nao apaga")
+    with pytest.raises(pub.Parou, match="continua lá"):
+        pub.apagar_publicacao(destino, versao.etiqueta_do_motor(ocr_kraken.VERSAO_DO_MOTOR))
+
+
+def test_n6_a_conferencia_do_fim_acusa_o_setup_exe(tmp_path):
+    """N6 (achado 3): a conferência do fim (a tela da D-795) acusa o Setup.exe na pasta de saída e no destino."""
+    saida = tmp_path / "saida"
+    saida.mkdir()
+    (saida / empacotar.nome_do_setup()).write_bytes(b"x")
+    destino = pub.DestinoPasta(tmp_path / "servidor")
+    linhas = pub.conferencia_do_fim(destino, ETIQUETA, saida, None)
+    assert any("ATENÇÃO" in l and "pasta de saída" in l for l in linhas), linhas
+    (saida / empacotar.nome_do_setup()).unlink()
+    destino.criar_rascunho(ETIQUETA, "t", "n")
+    falso = tmp_path / empacotar.nome_do_setup()
+    falso.write_bytes(b"x")
+    destino.enviar(ETIQUETA, falso)
+    linhas = pub.conferencia_do_fim(destino, ETIQUETA, saida, None)
+    assert any("ATENÇÃO" in l and "no destino" in l for l in linhas), linhas
+
+
+def test_n8_o_msi_nao_fica_na_pasta_de_saida_se_a_versao_nao_saiu(ambiente):
+    """N8 (achado 3): com o instalador pedido e a publicação falhando depois, o .msi não fica na pasta de saída."""
+    a = ambiente
+    _publicar_o_motor(a)
+    destino = _DestinoQueMente(a["servidor"], "indice")
+    with pytest.raises(pub.Parou):
+        _publicar(a, destino=destino, com_instalador=True)
+    assert len(_vezes_que_o_vpk_rodou(a)) == 2, "as duas passadas do vpk tinham de rodar"
+    assert not any(n.endswith(".msi") for n in _tudo_em(a["saida"])), _tudo_em(a["saida"])
