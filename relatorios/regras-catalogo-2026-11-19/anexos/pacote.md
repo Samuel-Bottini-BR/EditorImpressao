@@ -1,6 +1,6 @@
 # Pacote de regras: Regras novas do catálogo dos erros (D-809 a D-814): regras dos agentes, conferência nova do porteiro e perguntas novas do formulário
 
-Papel: **implementador**. Tipo de trabalho (sai dos arquivos): git e arquivos, testes, Windows e instalador (e qualquer conversa com programa de fora).
+Papel: **implementador**. Tipo de trabalho (sai dos arquivos): git e arquivos, perguntas e relatórios ao Samuel, testes, Windows e instalador (e qualquer conversa com programa de fora).
 
 
 Copie as duas seções abaixo, sem mudar nada, para o começo do seu ONDE-PAREI: o porteiro lê dali quais arquivos você pode mexer, e a gerente compara com este pacote.
@@ -18,9 +18,12 @@ Copie as duas seções abaixo, sem mudar nada, para o começo do seu ONDE-PAREI:
 - `regras_dos_agentes/formulario.py`
 - `regras_dos_agentes/montar_pacote.py`
 - `regras_dos_agentes/leitura_do_codigo.py`
+- `regras_dos_agentes/protecao.py`
+- `relatorios/passo0-2026-11-19/anexos/juiz-no-workflow/porteiro_juiz.sh`
 - `tests/test_conferencias_codigo.py`
 - `tests/test_conferencias_formulario.py`
 - `tests/test_conferencias_pacote.py`
+- `tests/test_conferencias_protecao.py`
 - `relatorios/regras-catalogo-2026-11-19/`
 
 ## 1. Sempre (todo trabalho)
@@ -29,14 +32,14 @@ Copie as duas seções abaixo, sem mudar nada, para o começo do seu ONDE-PAREI:
 2. **O novo não estraga o que já funciona.** Antes de mexer, anote o que já está escolhido e testado ali. Teste antigo que quebra faz a entrega voltar; nunca mude um teste antigo para ele passar. *Por quê:* Ele disse: 'essa é uma nova regra que todos os agentes precisam ler' (D-605).
 3. **Sem gambiarra, em tudo.** Ache a causa, a função que decide, e todos os caminhos que chegam nela (grep). Mude num lugar só e faça todos os caminhos usarem esse lugar. Nada de desvio para um caso, nem conta ou lista copiada. *Por quê:* 17 remendos achados em 10/11 e os 33 defeitos do atualizador em 18/11 têm a mesma causa (§11.12).
 4. **Nada é feito sem conferir de verdade.** Só diga 'feito' do que você conferiu de verdade (abrindo o arquivo, olhando a imagem, perguntando ao Windows). Escreva toda ressalva. Nunca escreva 'APROVADO': só o Samuel aprova. *Por quê:* 57 commits 'feito' e zero aprovados; '10 de 10 corretas' com seis erradas; 'Desligado' gravado sem desligar.
-5. **Leia a peça de fora antes de usar.** Antes de usar uma peça que não é nossa (biblioteca, função do Windows, PowerShell, Velopack, Qt), leia a documentação e, se não bastar, o código. Anote o que ela faz em cada caso que usamos, com a fonte. Separe o lido do deduzido. *Por quê:* Na etapa 5 o atualizador foi escrito sem ler o Velopack nem o Windows (§11.12.6).
+5. **Leia a peça de fora antes de usar.** Antes de usar uma peça que não é nossa (biblioteca, função do Windows, PowerShell, Velopack, Qt), leia a documentação e, se não bastar, o código. Anote o que ela faz em cada caso que usamos, com a fonte. Separe o lido do deduzido. Quando o nosso código recusa, filtra ou procura algo, a leitura da peça de fora lista também tudo o que ela aceita como entrada, com a fonte (ex.: o Python importa `.py`, `.pyw`, `.pyd`, `.pyc`, pasta com e sem `__init__`, `.zip` no caminho; o Windows aceita `\\?\`, `\\localhost\C$`, nome curto), e a recusa compara a coisa de verdade, não o texto. *Por quê:* Na etapa 5 o atualizador foi escrito sem ler o Velopack nem o Windows (§11.12.6); no passo 1, a peça recusava C:\Windows e aceitava o mesmo lugar escrito de outros jeitos (D-813).
 6. **Decisões do Livro: cumprir e provar cada uma.** As decisões que o pedido traz (número e palavras dele) vão no começo do ONDE-PAREI; na entrega, como cumpriu cada uma, com teste ou print. Aparência não é prova. Palavras dele sempre copiadas do Livro, nunca de memória. *Por quê:* As decisões se perdiam entre o pedido e o código (§11.3 e §11.4).
 7. **Pense em quem usa e no livro que sai.** Antes de mexer, escreva o que o Kaique vê e faz, passo a passo, antes e depois, e o que muda no PDF. Na entrega, confira. *Por quê:* Regra do Samuel para todo agente (D-637).
 8. **Pergunta ao Samuel: no ONDE-PAREI, na hora, no jeito dele.** Pergunta vai na seção 'Perguntas para o Samuel' do ONDE-PAREI assim que surge. Começa pelo que é e onde fica, sem palavra de dentro (número, arquivo, etapa), com print do caso real e 'O que você escolhe', com a sua sugestão. Você nunca grava na Central. *Por quê:* 106 perguntas voltaram com 'Ainda não entendi' (§11.13); 8 perguntas ficaram escondidas num ONDE-PAREI (22/10).
 9. **Seu ramo, commit a cada passo, nada se apaga fora.** Trabalhe só na sua cópia e no seu ramo; commit e push a cada passo, com o ONDE-PAREI em dia. Fora de D:\programas\EditorImpressao nada se apaga; dentro, só o que você criou. Junção nunca com rm -rf. Acervo só para ler. *Por quê:* O limite da conta já derrubou agentes; em 29/09 um agente apagou D:\d inteira.
 10. **Não abra agente, não use a tela dele, entregue à gerente.** Não abra outros agentes. Não abra janela nem pergunta do Windows na tela do Samuel, e não feche processo que não é seu, a não ser numa prova que a gerente combinou com ele. Entregue sempre à gerente. *Por quê:* Cinco agentes rodando sem ele saber (10/11); caixas abertas na tela dele (30/09, 23/10).
 
-## 2. As regras do seu trabalho (29)
+## 2. As regras do seu trabalho (46)
 
 **Windows e instalador (e qualquer conversa com programa de fora)**
 - A janela nunca congela: Todo trabalho demorado em QThread, com barra e cancelar que funciona; esperar o Windows também (na etapa 5 a janela ficou parada 14 min). (CLAUDE.md §3)
@@ -52,13 +55,32 @@ Copie as duas seções abaixo, sem mudar nada, para o começo do seu ONDE-PAREI:
 - Máquina ou olho, item por item: Todo item diz se foi conferido por máquina ou por olho. (CLAUDE.md §4.3)
 - Onde roda cada teste: No PC, um arquivo de teste por vez; a suíte inteira e o teste_botoes no GitHub (push antes); a entrega traz o número da rodada. (CLAUDE.md §4.6) **Outro texto das regras diz diferente; resolvido pelo Samuel (D-787): vale a regra de 19/10: no PC, um arquivo de teste por vez; o conjunto inteiro no GitHub.**
 - Teste de reversão em todo conserto: Todo bug consertado ganha teste que FALHA no código antigo e passa no novo, com o bug na docstring; o verificador prova no antigo. Bug de imagem: uma medida, ou ressalva escrita. (CLAUDE.md §4.7)
+- Só páginas que vão ser impressas: Nunca lombada, capa ou contracapa de couro ou papelão nos testes. (CLAUDE.md §4.10)
 - Prova: caminho → função e o mesmo resultado em todos: Na entrega, a lista 'caminho → função' e uma prova em tests/ que cobra o mesmo resultado por todos os caminhos. (CLAUDE.md §11.12)
 - Teste escrito antes do código, quando der: Teste automático do que é objetivo, escrito antes do código quando der. (implementador.md 'O que você faz')
+- O teste do Windows roda em três computadores diferentes: GitHub: Windows em inglês ('Everyone', 'Administrators'), licença de administrador já ligada (o dono do que se cria é o grupo Administradores), pasta temporária no D:. PC do Samuel: português, sem a licença, o D: dá controle total a 'Todos'. Notebook do Kaique: a conferir. O teste compara a conta pelo número dela, nunca pelo nome escrito, e não supõe o estado de hoje da lista ou da versão de teste. (Três rodadas do GitHub perdidas no passo 1.) (DECISOES.md D-810)
+- Toda conferência diz de onde vem cada dado: Toda conferência (do porteiro, de um teste ou do programa) diz de onde vem cada dado que usa; dado que o próprio conferido escreve ou pode trocar (o ramo do agente, o ONDE-PAREI, a anotação do programa, a pasta de troca, o arquivo da vez anterior) não serve de prova. (O 'sim' forjável e o juiz escolhido pelo ramo, no passo 0; o arquivo da vez anterior, no passo 1.) (DECISOES.md D-812)
+
+**Perguntas e relatórios ao samuel**
+- Primeiro a frase, depois o número: Primeiro a frase que se entende ('estava estragando a capa'), o número depois, nunca no lugar. (CLAUDE.md §2)
+- Conciso: essencial no chat, detalhe em arquivo: O essencial no chat; o detalhe em arquivo. (CLAUDE.md §2)
+- Claro e direto com o Samuel: Poucas linhas, uma ideia por frase, os nomes da tela, no máximo uma pergunta sim/não com a sugestão; nada de tabela, número de decisão ou nome de arquivo. (CLAUDE.md §2)
+- Relatório em três formatos: Todo relatório sai com relatorio.gravar (.md, .html, .pdf). O Samuel não abre .md. (CLAUDE.md §2)
+- Cada foto diz o caminho e as opções: Toda foto diz por onde a página passou ('endireitada, cortada, Preto e branco + Só as letras'). (CLAUDE.md §4.10)
+- Modelo de print (o do girar): Imagem-resumo; faixas azul (antes), laranja e verde (as opções); as mesmas páginas em todas; o que olhar circulado em vermelho; imagens separadas com legenda. (CLAUDE.md §10.10)
+- Perguntar: print que prova: Toda pergunta e todo 'está feito' com print do caso real no modelo do girar; uma imagem por opção. (CLAUDE.md §11.13.3)
+- Perguntar: o caso que o Kaique encontra, print conferido: O livro e a página onde acontece de verdade, pelo caminho inteiro; abrir o print e conferir. (CLAUDE.md §11.13.4)
+- Perguntar: o caminho, e se é defeito ou escolha: Dizer o caminho que a página fez e, com todas as letras, se é defeito ou efeito de escolha (ou 'ainda não se sabe'). (CLAUDE.md §11.13.5)
+- Perguntar: curto, sem ficha: Poucas frases; nada de ficha com campos; responder cada pergunta dele na ordem; a resposta se explica sozinha. (CLAUDE.md §11.13.7)
+- Perguntar: ele continua no controle?: Dá para ligar e desligar? ajustar? onde aparece? quando age? (CLAUDE.md §11.13.8)
+- Perguntar: de onde veio: Pedido dele (data e palavras), ScanTailor, ou escolha de agente sem pedido (dito com todas as letras); como outros programas fazem. (CLAUDE.md §11.13.9)
+- Perguntar: a situação de agora, sem repetir: Em que pé está; procurar no Livro e na Central antes; se já respondeu, citar data e palavras. (CLAUDE.md §11.13.10)
 
 **Git e arquivos**
 - Handoff só com pedido do Samuel: Só atualizar o handoff de historico/ quando o Samuel pedir. (CLAUDE.md §7)
 - Commit na hora com o defeito por extenso; nunca segredo: Commit com o defeito resolvido escrito por extenso e push; revisar o que vai no commit; nunca segredo; nunca desfazer o .gitignore sem avisar. (CLAUDE.md §8 passo 10)
 - Cada papel no seu lugar: Implementador: core/ e scripts, não ui/ (salvo pedido). Layout: só ui/. Verificador e pesquisador: não mexem no código do programa. (CLAUDE.md §10.1) **Outro texto das regras diz diferente; resolvido pelo Samuel (D-796): o agente de tela mexe em core/ só nos arquivos que o pedido nomear; sem isso, só ui/.**
+- A cópia divide o .git com o Samuel: nada de comando que muda o .git inteiro: A sua cópia divide a pasta .git com o repositório do Samuel. Comando que muda o .git inteiro (fetch com --depth, gc, prune, stash, config, mexer em ramo que não é o seu) não roda na sua cópia, nem em script ou teste, a não ser num repositório de prova em pasta temporária (regras_dos_agentes/repositorio_de_prova.py). Atalho de pasta (junção) só sai com cmd /c rmdir, contando os arquivos da pasta de verdade antes e depois. (O repositório do PC ficou raso em 19/11 com um git fetch --depth=1; a pasta modelos/ foi esvaziada em 18/11 ao tirar um atalho. O porteiro acusa, K25.) (DECISOES.md D-809) **Atenção: outro texto das regras diz diferente; na dúvida, pergunte à gerente.**
 
 **Todo trabalho**
 - Ordem de leitura e quem manda: Quem manda: o Livro de decisões e o plano; o CLAUDE.md vem depois. O que ele disser contra o plano, vale o plano. (CLAUDE.md topo) **Atenção: outro texto das regras diz diferente; na dúvida, pergunte à gerente.**
@@ -126,6 +148,14 @@ Use estes títulos de seção, exatamente assim. "Não se aplica" só vale com o
 
 (a preencher; obrigatório antes de ir ao agente que tenta quebrar)
 
+## Cada proteção e o teste que falha sem ela
+
+(a preencher; obrigatório antes de ir ao agente que tenta quebrar)
+
+## De onde vem cada dado que a conferência usa
+
+(a preencher; obrigatório antes de ir ao agente que tenta quebrar)
+
 ## O que li da peça de fora e onde
 
 (a preencher; obrigatório antes de ir ao agente que tenta quebrar)
@@ -166,6 +196,10 @@ Use estes títulos de seção, exatamente assim. "Não se aplica" só vale com o
 
 (a preencher; obrigatório antes de ir ao agente que tenta quebrar)
 
+## Decisões procuradas antes de cada pergunta
+
+(a preencher; obrigatório antes de ir ao agente que tenta quebrar, se houver pergunta para o Samuel: um "###" por pergunta, com o mesmo título, as decisões do Livro procuradas e "Por que ainda não está respondida: ...")
+
 ## Commit
 
 (a preencher; obrigatório antes de ir ao agente que tenta quebrar)
@@ -184,4 +218,4 @@ Use estes títulos de seção, exatamente assim. "Não se aplica" só vale com o
 
 ## 5. O que você não recebeu, e quando parar
 
-Este pacote não traz as regras de: imagem, filtros e processamento do livro, perguntas e relatórios ao Samuel, pesquisa de peça de fora, tela (ui/). Se precisar mexer num arquivo fora da lista do pedido, pare e avise a gerente: o pacote muda. Se tiver pergunta para o Samuel, a regra 8 acima é o mínimo; a lista inteira está no CLAUDE.md §11.13, e a gerente devolve a pergunta que não passar. O texto que vale é o do CLAUDE.md: a fonte de cada regra está entre parênteses; leia lá quando tiver dúvida.
+Este pacote não traz as regras de: imagem, filtros e processamento do livro, pesquisa de peça de fora, tela (ui/). Se precisar mexer num arquivo fora da lista do pedido, pare e avise a gerente: o pacote muda. Se tiver pergunta para o Samuel, a regra 8 acima é o mínimo; a lista inteira está no CLAUDE.md §11.13, e a gerente devolve a pergunta que não passar. O texto que vale é o do CLAUDE.md (nas regras novas do catálogo dos erros, ainda não escritas lá, a decisão do Livro): a fonte de cada regra está entre parênteses; leia lá quando tiver dúvida.
