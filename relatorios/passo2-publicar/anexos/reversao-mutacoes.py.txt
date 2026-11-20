@@ -1,0 +1,93 @@
+"""Prova de reversão do passo 2: cada proteção desligada numa cópia à parte (git archive), e o teste dela tem de falhar.
+
+Uso: python mutacoes.py <pasta da cópia limpa> <python>
+"""
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+LIMPA = Path(sys.argv[1])
+PY = sys.argv[2]
+
+MUTACOES = [
+    ("M1 liberar antes de ler de volta", "publicar_versao_kaique.py",
+     "        conferir_lido()\n        print(f\"  lido de volta",
+     "        destino.liberar(etiqueta)\n        conferir_lido()\n        print(f\"  lido de volta",
+     "tests/test_publicar_versao.py::test_d53_nada_e_liberado_antes_da_assinatura_lida_de_volta"),
+    ("M2 o Setup.exe na lista do destino", "publicar_versao_kaique.py",
+     "            Path(arquivo_da_assinatura)]",
+     "            Path(arquivo_da_assinatura), Path(saida_do_vpk) / empacotar.nome_do_setup()]",
+     "tests/test_publicar_versao.py::test_d768_o_motor_e_a_versao_publicados_numa_pasta_sem_o_motor_no_pacote"),
+    ("M3 o rascunho do C: não é apagado", "publicar_versao_kaique.py",
+     "    for vez in range(tentativas):\n        shutil.rmtree(pasta, ignore_errors=True)",
+     "    for vez in range(0):\n        shutil.rmtree(pasta, ignore_errors=True)",
+     "tests/test_publicar_versao.py::test_d795_o_setup_exe_e_o_rascunho_somem_tambem_quando_da_erro"),
+    ("M4 a conta do espaço não barra", "empacotar.py",
+     "    if livre - precisa < reserva:", "    if False:",
+     "tests/test_publicar_versao.py::test_d776_sem_espaco_para_antes_do_vpk_e_nada_fica"),
+    ("M5 a vigia não fecha o vpk", "empacotar.py",
+     "            if sobra < reserva:", "            if False:",
+     "tests/test_publicar_versao.py::test_d776_a_vigia_fecha_o_vpk_quando_o_disco_cai_abaixo_da_reserva"),
+    ("M6 a assinatura do motor não é conferida", "publicar_versao_kaique.py",
+     "    if motivo is not None:\n        raise Parou(f\"o motor publicado em",
+     "    if False:\n        raise Parou(f\"o motor publicado em",
+     "tests/test_publicar_versao.py::test_d724_o_motor_com_a_assinatura_de_outra_chave_e_recusado"),
+    ("M7 o motor solto não é proibido na atualização", "empacotar.py",
+     "    return [] if saida.motor_solto else [f\"{PASTA_DO_MOTOR}/\"]", "    return []",
+     "tests/test_publicar_versao.py::test_d768_o_pacote_da_atualizacao_com_o_motor_solto_e_recusado"),
+    ("M8 a falha não apaga o rascunho do destino", "publicar_versao_kaique.py",
+     "            apagar_publicacao(destino, etiqueta)\n            desfeito",
+     "            pass\n            desfeito",
+     "tests/test_publicar_versao.py::test_a_leitura_de_volta_que_nao_bate_nao_libera_e_apaga_o_rascunho_do_destino"),
+    ("M9 erro do GitHub vira 'não existe'", "publicar_versao_kaique.py",
+     "            if \"release not found\" in (r.stderr or \"\").lower():", "            if True:",
+     "tests/test_publicar_versao.py::test_o_github_sem_resposta_nunca_vira_nao_publicada"),
+    ("M10 o servidor serve o rascunho", "servidor_das_versoes.py",
+     "if p.is_dir() and not p.is_symlink() and pub.ETIQUETA_ACEITA.match(p.name))",
+     "if p.is_dir())",
+     "tests/test_publicar_servidor.py::test_d773_o_indice_junta_as_versoes_liberadas_e_nao_mostra_o_rascunho"),
+    ("M11 o servidor deixa outra abrir a mesma porta", "servidor_das_versoes.py",
+     "    allow_reuse_address = False", "    allow_reuse_address = True",
+     "tests/test_publicar_servidor.py::test_a_porta_ocupada_vira_frase_e_a_janela_diz_que_nao_serve"),
+    ("M12 a ficha não confere o tamanho", "core/ocr_kraken.py",
+     "        elif achado != tamanho:", "        elif False:",
+     "tests/test_publicar_motor.py::test_o_motor_estragado_ou_de_outra_versao_nao_confere"),
+    ("M13 o vpk com a diferença", "empacotar.py",
+     "               \"--delta\", \"None\",\n", "",
+     "tests/test_publicar_versao.py::test_d789_d777_o_comando_do_vpk_sem_diferenca_sem_portatil_e_o_msi_so_quando_pedido"),
+    ("M14 o empacotar abre o PowerShell por conta própria de novo", "empacotar.py",
+     "    lido = windows.ler_assinatura_digital(arquivo)",
+     "    subprocess.run([\"x\"], capture_output=True)\n    lido = windows.ler_assinatura_digital(arquivo)",
+     "tests/test_windows_peca.py::test_o_empacotar_le_a_assinatura_pela_peca_e_nao_abre_o_powershell"),
+    ("M15 a versão sem o motor publicado é montada", "publicar_versao_kaique.py",
+     "    if destino.situacao(etiqueta) != \"liberada\" and exigir_liberado:",
+     "    if False:",
+     "tests/test_publicar_versao.py::test_d790_sem_o_motor_publicado_nada_e_montado"),
+    ("M16 a pasta pronta de outra versão passa", "empacotar.py",
+     "        if ficha.get(\"versao\") != versao_do_pacote:", "        if False:",
+     "tests/test_publicar_versao.py::test_a_pasta_pronta_de_outra_versao_e_recusada"),
+]
+
+resultado = []
+for nome, arquivo, velho, novo, teste in MUTACOES:
+    copia = LIMPA.parent / "mut"
+    shutil.rmtree(copia, ignore_errors=True)
+    shutil.copytree(LIMPA, copia)
+    alvo = copia / arquivo
+    texto = alvo.read_text(encoding="utf-8")
+    if texto.count(velho) != 1:
+        resultado.append(f"{nome}: NÃO APLICADA (o texto não está uma vez só)")
+        continue
+    alvo.write_text(texto.replace(velho, novo), encoding="utf-8")
+    r = subprocess.run([PY, "-m", "pytest", teste, "-q", "-p", "no:cacheprovider", "-x"], cwd=copia,
+                       capture_output=True, text=True, encoding="utf-8", errors="replace",
+                       env={**__import__("os").environ, "QT_QPA_PLATFORM": "offscreen"})
+    ultima = (r.stdout.strip().splitlines() or ["?"])[-1]
+    resultado.append(f"{nome}: {'ACUSADA' if r.returncode != 0 else 'PASSOU (não acusada)'} ({ultima}) [{teste}]")
+limpo = subprocess.run([PY, "-m", "pytest", "tests/test_publicar_versao.py", "tests/test_publicar_motor.py",
+                        "tests/test_publicar_servidor.py", "-q", "-p", "no:cacheprovider"], cwd=LIMPA,
+                       capture_output=True, text=True, encoding="utf-8", errors="replace",
+                       env={**__import__("os").environ, "QT_QPA_PLATFORM": "offscreen"})
+resultado.append(f"cópia limpa: {(limpo.stdout.strip().splitlines() or ['?'])[-1]}")
+print("\n".join(resultado))

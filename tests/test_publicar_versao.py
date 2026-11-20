@@ -138,12 +138,14 @@ def _pasta_pronta(pasta: Path, versao_da_pasta: str) -> Path:
 
 
 def _publicar_o_motor(a, destino=None, chave=None, publica=PUBLICA) -> str:
+    """Publica o motor de mentira (com a ficha de verdade) no destino do teste."""
     return pub.publicar_motor(motor_escolhido=a["motor"], arquivo_da_chave=chave or a["chave"],
                               chave_publica=publica, rascunho_base=a["rascunho"],
                               destino=destino or pub.DestinoPasta(a["servidor"]))
 
 
 def _publicar(a, destino=None, **extra) -> Path:
+    """Publica a versao de teste com a pasta pronta e o vpk de mentira."""
     opcoes = dict(pasta_pronta=a["pasta"], arquivo_da_chave=a["chave"], chave_publica=PUBLICA, vpk=a["vpk"],
                   rascunho_base=a["rascunho"], pasta_de_saida=a["saida"],
                   destino=destino or pub.DestinoPasta(a["servidor"]))
@@ -152,16 +154,19 @@ def _publicar(a, destino=None, **extra) -> Path:
 
 
 def _vezes_que_o_vpk_rodou(a) -> list[list[str]]:
+    """Os argumentos de cada vez que o vpk de mentira rodou."""
     if not a["diario"].exists():
         return []
     return [json.loads(linha) for linha in a["diario"].read_text(encoding="utf-8").splitlines()]
 
 
 def _tudo_em(pasta: Path) -> list[str]:
+    """Tudo o que ha dentro da pasta (caminhos relativos)."""
     return sorted(p.relative_to(pasta).as_posix() for p in pasta.rglob("*")) if pasta.exists() else []
 
 
 def _rascunhos_que_sobraram(a) -> list[str]:
+    """O que ficou na base do rascunho (tem de ficar vazia)."""
     base = a["rascunho"]
     return [p.name for p in base.iterdir()] if base.exists() else []
 
@@ -276,13 +281,15 @@ def test_d724_o_motor_com_a_assinatura_de_outra_chave_e_recusado(ambiente):
 def test_d777_o_instalador_so_quando_pedido_e_o_publicado_e_o_da_atualizacao(ambiente):
     """D-777 ("ok, fica assim") e D-788: com o instalador pedido, o vpk roda duas vezes (a atualização sem .msi; o
     instalador com o .msi e o arquivo do motor publicado em instalar\\). O .msi vai para a pasta de saída; o pacote
-    publicado é o da atualização (sem o arquivo do motor); a pasta do programa volta sem o arquivo do motor."""
+    publicado é o da atualização (sem o arquivo do motor) e o .msi vai junto à publicação; a pasta do programa volta
+    sem o arquivo do motor."""
     a = ambiente
     _publicar_o_motor(a)
     _publicar(a, com_instalador=True)
     vezes = _vezes_que_o_vpk_rodou(a)
     assert len(vezes) == 2 and "--msi" not in vezes[0] and "--msi" in vezes[1]
     assert (a["saida"] / ETIQUETA / empacotar.nome_do_msi()).is_file()
+    assert (a["servidor"] / ETIQUETA / empacotar.nome_do_msi()).is_file(), "o .msi pedido vai à publicação (como antes)"
     nome_do_motor = versao.arquivo_do_motor(ocr_kraken.VERSAO_DO_MOTOR)
     with zipfile.ZipFile(empacotar.nupkg_inteiro(a["servidor"] / ETIQUETA, VERSAO)) as z:
         assert not any(n.endswith(nome_do_motor) for n in z.namelist())
@@ -319,25 +326,30 @@ class _DestinoQueAnota(pub.DestinoPasta):
     """Uma pasta de verdade que anota a ordem dos pedidos (e pode errar a soma de um arquivo de propósito)."""
 
     def __init__(self, raiz, errar_soma_de: str | None = None):
+        """A pasta de verdade; errar_soma_de: o arquivo cuja soma "lida" sai errada."""
         super().__init__(raiz)
         self.pedidos: list[tuple[str, str]] = []
         self.errar_soma_de = errar_soma_de
 
     def enviar(self, etiqueta, arquivo):
+        """Anota e envia."""
         self.pedidos.append(("enviar", Path(arquivo).name))
         super().enviar(etiqueta, arquivo)
 
     def baixar(self, etiqueta, nome, pasta_local):
+        """Anota e lê de volta."""
         self.pedidos.append(("ler", nome))
         return super().baixar(etiqueta, nome, pasta_local)
 
     def soma(self, etiqueta, nome):
+        """Anota e soma (errada de propósito, se pedido)."""
         self.pedidos.append(("soma", nome))
         if nome == self.errar_soma_de:
             return "0" * 64
         return super().soma(etiqueta, nome)
 
     def liberar(self, etiqueta):
+        """Anota e libera."""
         self.pedidos.append(("liberar", etiqueta))
         super().liberar(etiqueta)
 
@@ -377,12 +389,14 @@ class _GitHubDeMentira:
     """Guarda as publicações em memória e responde como o gh 2.99 (o formato lido no código dele)."""
 
     def __init__(self, tmp: Path, falhar_ao_ver: bool = False):
+        """falhar_ao_ver: o "view" responde erro de rede (para o caso de o GitHub não responder)."""
         self.tmp = tmp
         self.publicacoes: dict[str, dict] = {}
         self.pedidos: list[list[str]] = []
         self.falhar_ao_ver = falhar_ao_ver
 
     def __call__(self, *argumentos, limite_s=600):
+        """Responde um pedido do gh (release view/create/upload/download/edit/delete)."""
         a = list(argumentos)
         self.pedidos.append(a)
         _, sub, etiqueta = a[0], a[1], a[2]
@@ -520,3 +534,17 @@ def test_o_publicar_sem_a_chave_continua_parando_antes_de_tudo(tmp_path, monkeyp
         with pytest.raises(pub.Parou, match="não achei a chave privada"):
             chamar()
     assert rodou == [] and not (tmp_path / "s").exists()
+
+
+def test_d776_a_reserva_so_aumenta_na_linha_de_comando(tmp_path, monkeypatch):
+    """D-776 (20 GB): o --reserva-gb existe só para a prova do aviso de pouco espaço e só AUMENTA a reserva; pedir
+    menos de 20 GB deixa os 20."""
+    monkeypatch.setattr(pub, "RAIZ", tmp_path / "repositorio")
+    monkeypatch.setattr(empacotar, "RESERVA_DO_DISCO", 20 * empacotar.GB)
+    sem_chave = ["--pasta", str(tmp_path / "s"), "--chave", str(tmp_path / "nao-existe.txt")]
+    assert pub.main(["--reserva-gb", "5", *sem_chave]) == 1
+    assert empacotar.RESERVA_DO_DISCO == 20 * empacotar.GB
+    assert pub.main(["--reserva-gb", "500", *sem_chave]) == 1
+    assert empacotar.RESERVA_DO_DISCO == 500 * empacotar.GB
+    monkeypatch.setattr(empacotar, "espaco_livre", lambda pasta: 100 * empacotar.GB)
+    assert "500 GB" in empacotar.conferir_espaco(tmp_path, 0)

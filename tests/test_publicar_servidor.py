@@ -43,6 +43,7 @@ def _publicar_na_pasta(pasta: Path, etiqueta: str, arquivos: dict[str, bytes], l
 
 
 def _indice(versao: str, nome: str) -> bytes:
+    """Um releases.win.json com uma versao (o formato que o vpk grava)."""
     return json.dumps({"Assets": [{"PackageId": "P", "Version": versao, "Type": "Full", "FileName": nome,
                                    "SHA256": "AA", "Size": 1}]}).encode()
 
@@ -67,6 +68,7 @@ def servidor(tmp_path):
 
 
 def _pedir(s: srv.Servidor, caminho: str) -> tuple[int, bytes]:
+    """Pede ao servidor como um cliente comum: (codigo, o que chegou)."""
     try:
         with urllib.request.urlopen(s.endereco + caminho, timeout=10) as r:
             return r.status, r.read()

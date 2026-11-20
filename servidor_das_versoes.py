@@ -122,6 +122,7 @@ class _ServidorHttp(ThreadingHTTPServer):
     daemon_threads = True
 
     def server_bind(self) -> None:
+        """Pede a porta exclusiva antes de abrir."""
         if hasattr(socket, "SO_EXCLUSIVEADDRUSE"):
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
         super().server_bind()
@@ -161,11 +162,13 @@ class Servidor:
             """Um pedido: o índice, um arquivo, ou 404."""
 
             def setup(self) -> None:
+                """Anota a conexao aberta (para fechar() poder corta-la)."""
                 super().setup()
                 with servidor._tranca:
                     servidor._conexoes.add(self.connection)
 
             def finish(self) -> None:
+                """Tira a conexao da lista."""
                 try:
                     super().finish()
                 finally:
@@ -182,6 +185,7 @@ class Servidor:
                 self._responder(corpo=True)
 
             def _responder(self, corpo: bool) -> None:
+                """O indice, o arquivo pedido, ou 404 (a linha na janela vem antes da resposta de erro)."""
                 nome = unquote(urlsplit(self.path).path).lstrip("/")
                 de_onde = self.client_address[0]
                 if nome == NOME_DO_INDICE:
@@ -196,18 +200,21 @@ class Servidor:
                 self._enviar_arquivo(nome, caminho, corpo, de_onde)
 
             def _cabecalho(self, tamanho: int, tipo: str) -> None:
+                """O 200 com o tamanho anunciado (quem baixa sabe quando chegou incompleto)."""
                 self.send_response(200)
                 self.send_header("Content-Type", tipo)
                 self.send_header("Content-Length", str(tamanho))
                 self.end_headers()
 
             def _enviar_dados(self, nome: str, dados: bytes, corpo: bool, de_onde: str) -> None:
+                """Envia um texto pequeno (o indice)."""
                 self._cabecalho(len(dados), "application/json")
                 if corpo:
                     self.wfile.write(dados)
                 servidor.dizer(f"{_agora()}  {de_onde}  {nome}: entregue ({len(dados):,} bytes)".replace(",", "."))
 
             def _enviar_arquivo(self, nome: str, caminho: Path, corpo: bool, de_onde: str) -> None:
+                """Envia o arquivo aos pedacos (com o limite de velocidade, se houver); a janela fechada corta."""
                 tamanho = caminho.stat().st_size
                 self._cabecalho(tamanho, "application/octet-stream")
                 if not corpo:

@@ -607,6 +607,7 @@ def dlls_de_lugar_errado(carregadas: list[str], motor: Path) -> list[str]:
 
 
 def main(argumentos: list[str] | None = None) -> int:
+    """A linha de comando (ver o cabecalho). 0 = montado, testado e com a ficha conferida; 1 = nao montou."""
     analisador = argparse.ArgumentParser(description="Monta o motor do Kraken (Python 3.12 à parte).")
     analisador.add_argument("--destino", type=Path, default=DESTINO_PADRAO,
                             help="pasta do motor (padrão: fora do git, em EditorImpressao-arquivos\\ferramentas)")

@@ -21,8 +21,8 @@ O QUE FAZ, PARA UMA VERSAO DO PROGRAMA, em ordem, parando no primeiro problema (
 5. empacota pela funcao unica do vpk (empacotar.construir_pacote_do_velopack -> rodar_vpk, com a vigia do espaco),
    sem o pacote de diferenca (D-789), sem .msi e sem zip portatil (D-777); o Setup.exe e apagado na hora (D-795).
    Com --com-instalador, empacota DE NOVO a mesma pasta com o arquivo do motor publicado em instalar\\ e o .msi
-   (empacotar.INSTALADOR): o .msi vai para a pasta de saida (PASTA_DE_SAIDA); o pacote dele NAO e publicado (o
-   publicado e sempre o da atualizacao, sem o motor);
+   (empacotar.INSTALADOR): o .msi vai para a pasta de saida (PASTA_DE_SAIDA) e para a publicacao (como antes); o
+   pacote dele NAO e publicado (o publicado e sempre o da atualizacao, sem o motor);
 6. assina o pacote inteiro e confere a propria assinatura;
 7. publica num destino (Destino): sobe como RASCUNHO so os arquivos da versao (arquivos_da_versao: o pacote, o indice
    releases.win.json e a assinatura; nunca o Setup.exe), le de volta (a lista do que esta la, a soma de cada
@@ -231,12 +231,15 @@ class DestinoPasta:
         return f"a pasta {self.raiz}"
 
     def _liberada(self, etiqueta: str) -> Path:
+        """A subpasta da publicacao liberada (o nome e a etiqueta, conferida)."""
         return self.raiz / _conferir_etiqueta(etiqueta)
 
     def _rascunho(self, etiqueta: str) -> Path:
+        """A subpasta do rascunho (escondida: comeca com ponto; o servidor nao serve)."""
         return self.raiz / (NOME_DO_RASCUNHO_NO_DESTINO + _conferir_etiqueta(etiqueta))
 
     def _onde(self, etiqueta: str) -> Path:
+        """A subpasta que existe (liberada ou rascunho); sem nenhuma, Parou."""
         for pasta in (self._liberada(etiqueta), self._rascunho(etiqueta)):
             if pasta.is_dir():
                 return pasta
@@ -333,11 +336,14 @@ class DestinoGitHub:
             raise Parou(f"não consegui falar com o GitHub pelo gh ({erro})") from erro
 
     def _exigir(self, r: subprocess.CompletedProcess, o_que: str) -> subprocess.CompletedProcess:
+        """O gh respondeu sem erro? Senao, Parou com o que ele disse."""
         if r.returncode != 0:
             raise Parou(f"o GitHub não deixou {o_que}: {(r.stderr or r.stdout).strip()[:300]}")
         return r
 
     def _ver(self, etiqueta: str, campos: str) -> dict | None:
+        """'release view --json <campos>': o lido, ou None so quando o gh diz "release not found" (qualquer outro
+        erro e Parou: falha nunca vira "nao existe", CLAUDE.md §11.12, ponto 2)."""
         r = self._gh("release", "view", _conferir_etiqueta(etiqueta), "--json", campos)
         if r.returncode != 0:
             if "release not found" in (r.stderr or "").lower():
@@ -367,6 +373,7 @@ class DestinoGitHub:
                      f"enviar {Path(arquivo).name}")
 
     def _assets(self, etiqueta: str) -> list[dict]:
+        """Os arquivos da publicacao, como o gh os descreve (nome, tamanho, digest)."""
         lido = self._ver(etiqueta, "assets")
         if lido is None:
             raise Parou(f"não há publicação {etiqueta} em {self.nome}")
@@ -506,14 +513,17 @@ def obter_motor_publicado(destino, pasta_local: Path, chave_publica: str | None 
     return empacotar.MotorPublicado(v, arquivo, soma, etiqueta)
 
 
-def arquivos_da_versao(saida_do_vpk: Path, versao_do_pacote: str, arquivo_da_assinatura: Path) -> list[Path]:
+def arquivos_da_versao(saida_do_vpk: Path, versao_do_pacote: str, arquivo_da_assinatura: Path,
+                       msi: Path | None = None) -> list[Path]:
     """O que vai ao destino numa versao do programa (o LUGAR UNICO): o pacote inteiro, o indice que o programa do
-    Kaique le (releases.win.json, gravado pelo vpk so com esta versao) e a assinatura. Nunca o Setup.exe (D-795),
-    nunca o .msi, nunca o assets.win.json nem o RELEASES antigo."""
+    Kaique le (releases.win.json, gravado pelo vpk so com esta versao), a assinatura e, so quando o instalador foi
+    pedido (D-777), o .msi (como antes deste passo, quando o vpk upload subia o .msi junto; o programa do Kaique nao o
+    usa para atualizar). Nunca o Setup.exe (D-795), nunca o zip portatil, o assets.win.json nem o RELEASES antigo."""
     import empacotar
 
-    return [empacotar.nupkg_inteiro(saida_do_vpk, versao_do_pacote), Path(saida_do_vpk) / empacotar.NOME_DO_INDICE,
-            Path(arquivo_da_assinatura)]
+    arquivos = [empacotar.nupkg_inteiro(saida_do_vpk, versao_do_pacote),
+                Path(saida_do_vpk) / empacotar.NOME_DO_INDICE, Path(arquivo_da_assinatura)]
+    return arquivos + ([Path(msi)] if msi is not None else [])
 
 
 def _conferir_versao_lida(destino, etiqueta: str, versao_do_pacote: str, nupkg: Path, motor,
@@ -524,6 +534,7 @@ def _conferir_versao_lida(destino, etiqueta: str, versao_do_pacote: str, nupkg: 
     import empacotar
 
     def conferir() -> None:
+        """Le de volta do destino e confere (levanta Parou)."""
         soma = destino.soma(etiqueta, nupkg.name)
         nome = assinatura.nome_do_arquivo_da_assinatura(versao.ID_DO_PACOTE, versao_do_pacote)
         texto = destino.baixar(etiqueta, nome, pasta_lida).read_text(encoding="utf-8", errors="replace")
@@ -660,11 +671,14 @@ def publicar(versao_do_pacote: str, destino_pasta: Path | None = None, pasta_pro
                 problemas = empacotar.preparar_saida(pasta, empacotar.ATUALIZACAO, None, motor)
             if outro is None or problemas:
                 raise Parou("o empacotamento do instalador parou (o motivo está acima) " + "; ".join(problemas))
+            msi = rascunho / "instalador" / empacotar.nome_do_msi()
             saida_final.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(rascunho / "instalador" / empacotar.nome_do_msi(), saida_final / empacotar.nome_do_msi())
-            print(f"  instalador: {saida_final / empacotar.nome_do_msi()}")
+            shutil.copyfile(msi, saida_final / msi.name)
+            print(f"  instalador: {saida_final / msi.name}")
+        else:
+            msi = None
         arquivo_assinado = assinar_pacote(chave, nupkg, versao_do_pacote, chave_publica)
-        arquivos = arquivos_da_versao(nupkg.parent, versao_do_pacote, arquivo_assinado)
+        arquivos = arquivos_da_versao(nupkg.parent, versao_do_pacote, arquivo_assinado, msi)
         publicar_arquivos(destino, etiqueta, f"Versão para o Kaique {versao_do_pacote}",
                           _notas(f"Versão {versao_do_pacote} do Editor de Impressão (pede o motor do Kraken "
                                  f"{motor.versao})"), arquivos,
@@ -745,9 +759,16 @@ def main(argumentos: list[str] | None = None) -> int:
     analisador.add_argument("--motor-kraken", type=Path, default=None, help="a pasta do motor a publicar")
     analisador.add_argument("--com-instalador", action="store_true",
                             help="faz também o instalador .msi (primeira entrega, ou quando o Samuel pedir)")
+    analisador.add_argument("--reserva-gb", type=float, default=None,
+                            help="só para a prova do aviso de pouco espaço: AUMENTA a reserva do C: (nunca abaixo de "
+                                 "20 GB, D-776)")
     analisador.add_argument("--apagar", default=None, metavar="ETIQUETA",
                             help="apaga uma publicação do destino (ex.: v1.2.0; o fim de uma prova)")
     lido = analisador.parse_args(argumentos)
+    import empacotar
+
+    if lido.reserva_gb is not None:
+        empacotar.RESERVA_DO_DISCO = max(empacotar.RESERVA_DO_DISCO, int(lido.reserva_gb * empacotar.GB))
     try:
         if lido.criar_chave:
             criar_chave(lido.chave)

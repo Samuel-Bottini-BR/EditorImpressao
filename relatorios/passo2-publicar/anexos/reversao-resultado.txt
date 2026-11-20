@@ -1,0 +1,19 @@
+Prova de reversão do passo 2 (19/11/2026), numa cópia à parte (git archive do commit 5a3ad9dc no rascunho da sessão, fora do projeto): cada proteção desligada, e o teste dela tem de falhar.
+
+M1 liberar antes de ler de volta: ACUSADA (1 failed in 1.12s) [tests/test_publicar_versao.py::test_d53_nada_e_liberado_antes_da_assinatura_lida_de_volta]
+M2 o Setup.exe na lista do destino: ACUSADA (1 failed in 1.52s) [tests/test_publicar_versao.py::test_d768_o_motor_e_a_versao_publicados_numa_pasta_sem_o_motor_no_pacote]
+M3 o rascunho do C: não é apagado: ACUSADA (1 failed in 1.21s) [tests/test_publicar_versao.py::test_d795_o_setup_exe_e_o_rascunho_somem_tambem_quando_da_erro]
+M4 a conta do espaço não barra: ACUSADA (1 failed in 1.30s) [tests/test_publicar_versao.py::test_d776_sem_espaco_para_antes_do_vpk_e_nada_fica]
+M5 a vigia não fecha o vpk: ACUSADA (1 failed in 61.10s (0:01:01)) [tests/test_publicar_versao.py::test_d776_a_vigia_fecha_o_vpk_quando_o_disco_cai_abaixo_da_reserva]
+M6 a assinatura do motor não é conferida: ACUSADA (1 failed in 1.16s) [tests/test_publicar_versao.py::test_d724_o_motor_com_a_assinatura_de_outra_chave_e_recusado]
+M7 o motor solto não é proibido na atualização: ACUSADA (1 failed in 0.78s) [tests/test_publicar_versao.py::test_d768_o_pacote_da_atualizacao_com_o_motor_solto_e_recusado]
+M8 a falha não apaga o rascunho do destino: ACUSADA (1 failed in 1.12s) [tests/test_publicar_versao.py::test_a_leitura_de_volta_que_nao_bate_nao_libera_e_apaga_o_rascunho_do_destino]
+M9 erro do GitHub vira 'não existe': ACUSADA (1 failed in 0.82s) [tests/test_publicar_versao.py::test_o_github_sem_resposta_nunca_vira_nao_publicada]
+M10 o servidor serve o rascunho: ACUSADA (1 failed in 0.80s) [tests/test_publicar_servidor.py::test_d773_o_indice_junta_as_versoes_liberadas_e_nao_mostra_o_rascunho]
+M11 o servidor deixa outra abrir a mesma porta: ACUSADA (1 error in 0.69s) [tests/test_publicar_servidor.py::test_a_porta_ocupada_vira_frase_e_a_janela_diz_que_nao_serve]
+M12 a ficha não confere o tamanho: ACUSADA (1 failed, 2 passed in 0.78s) [tests/test_publicar_motor.py::test_o_motor_estragado_ou_de_outra_versao_nao_confere]
+M13 o vpk com a diferença: ACUSADA (1 failed in 0.69s) [tests/test_publicar_versao.py::test_d789_d777_o_comando_do_vpk_sem_diferenca_sem_portatil_e_o_msi_so_quando_pedido]
+M14 o empacotar abre o PowerShell por conta própria de novo: ACUSADA (1 failed in 0.66s) [tests/test_windows_peca.py::test_o_empacotar_le_a_assinatura_pela_peca_e_nao_abre_o_powershell]
+M15 a versão sem o motor publicado é montada: ACUSADA (1 failed in 0.83s) [tests/test_publicar_versao.py::test_d790_sem_o_motor_publicado_nada_e_montado]
+M16 a pasta pronta de outra versão passa: ACUSADA (1 failed in 1.14s) [tests/test_publicar_versao.py::test_a_pasta_pronta_de_outra_versao_e_recusada]
+cópia limpa: 41 passed in 11.18s

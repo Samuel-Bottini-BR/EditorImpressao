@@ -1257,7 +1257,8 @@ def comando_do_vpk(vpk: Path, pasta: Path, saida: Path, versao_do_pacote: str, c
 GB = 1024 ** 3
 # A reserva do C: (D-776, Samuel 18/11: "ok" a 20 GB): o publicar nao comeca se,
 # somando o que vai usar, o disco do rascunho ficaria com menos que isto, e para
-# se, durante, o espaco livre cair abaixo disto.
+# se, durante, o espaco livre cair abaixo disto. Lida na hora por quem confere
+# (o publicar --reserva-gb so a AUMENTA, para a prova do aviso; nunca abaixo de 20).
 RESERVA_DO_DISCO = 20 * GB
 MARGEM_DA_CONTA = 1 * GB          # o que a conta acrescenta por cima (registros, a ficha, o .nupkg do instalador)
 INTERVALO_DA_VIGIA_S = 2.0
@@ -1297,8 +1298,10 @@ def espaco_que_vai_usar(tamanho_da_pasta_do_programa: int, saidas: tuple[Saida, 
     return total + MARGEM_DA_CONTA
 
 
-def conferir_espaco(pasta: Path, precisa: int, reserva: int = RESERVA_DO_DISCO) -> str | None:
-    """None se o disco da pasta aguenta 'precisa' bytes e ainda fica com a reserva; senao a frase (em GB)."""
+def conferir_espaco(pasta: Path, precisa: int, reserva: int | None = None) -> str | None:
+    """None se o disco da pasta aguenta 'precisa' bytes e ainda fica com a reserva (de fabrica, RESERVA_DO_DISCO,
+    lida na hora); senao a frase (em GB)."""
+    reserva = reserva or RESERVA_DO_DISCO
     try:
         livre = espaco_livre(pasta)
     except OSError as erro:
@@ -1310,7 +1313,7 @@ def conferir_espaco(pasta: Path, precisa: int, reserva: int = RESERVA_DO_DISCO) 
     return None
 
 
-def rodar_vpk(comando: list, rascunho: Path, reserva: int = RESERVA_DO_DISCO,
+def rodar_vpk(comando: list, rascunho: Path, reserva: int | None = None,
               intervalo_s: float = INTERVALO_DA_VIGIA_S, livre=None) -> str | None:
     """A UNICA funcao que roda o vpk (plano-v3, peca 8). None = terminou bem; senao o motivo, em portugues.
 
@@ -1327,6 +1330,7 @@ def rodar_vpk(comando: list, rascunho: Path, reserva: int = RESERVA_DO_DISCO,
     import os
 
     livre = livre or espaco_livre
+    reserva = reserva or RESERVA_DO_DISCO
     temp = Path(rascunho) / "temp"
     temp.mkdir(parents=True, exist_ok=True)
     ambiente = {**os.environ, "VELOPACK_TEMP": str(temp), "TEMP": str(temp), "TMP": str(temp)}
@@ -1536,7 +1540,7 @@ def conferir_pasta_pronta(pasta: Path, versao_do_pacote: str, saida: Saida = ATU
 
 # ---- o arquivo do motor (a publicacao propria do motor, D-768, D-788) ------
 
-def zipar_motor(pasta_do_motor: Path, destino: Path, reserva: int = RESERVA_DO_DISCO,
+def zipar_motor(pasta_do_motor: Path, destino: Path, reserva: int | None = None,
                 livre=None) -> str | None:
     """Comprime a pasta do motor num arquivo so (o que vai a publicacao do motor e,
     no instalador, a instalar\\). None = pronto e conferido; senao o motivo.
@@ -1549,6 +1553,7 @@ def zipar_motor(pasta_do_motor: Path, destino: Path, reserva: int = RESERVA_DO_D
 
     pasta_do_motor, destino = Path(pasta_do_motor), Path(destino)
     livre = livre or espaco_livre
+    reserva = reserva or RESERVA_DO_DISCO
     provisorio = destino.with_name(destino.name + ".fazendo")
     provisorio.unlink(missing_ok=True)
     arquivos = sorted(f for f in pasta_do_motor.rglob("*") if f.is_file())
