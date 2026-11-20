@@ -615,6 +615,15 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
    a frase do fechar só com o grupo lido; o motor baixado na conta e na vigia; a vigia num lugar só; o nome do motor
    num lugar só; os textos que não batiam; o vpk de mentira como programa de verdade.
 
+11. **Volta 4 (os achados do relatório 3):** depois do pedido de liberar, nada é apagado em nenhum destino, e a frase
+   diz o que pode ter ficado e os comandos (D-816); o apagar escreve a frase de cada desfecho e sabe se pediu; "não
+   achei" logo depois de criar não vira "sumiu"; o criar do rascunho entrou no caminho de erro; a peça lê o nome do
+   programa uma vez, como o Windows o completa (`pwsh.exe.`, `Update.exe.` e `whoami.exe.` passavam); o programa que
+   não deixa ler tem a frase própria; sem a soma pronta do GitHub, o download vai para o rascunho, pela vigia, e entra
+   na conta; o gh e o vpk passam pelo mesmo laço da peça (`windows.rodar_em_grupo`); a cópia, o motor comprimido e a
+   gravação da peça pedem ao Windows para gravar no disco antes de conferir e trocar o nome (`windows.gravar_no_disco`);
+   o caminho do teste do lote em texto cru; o teste da segunda olhada depois do PATH.
+
 ## Arquivos criados ou alterados
 
 - `core/windows.py`
@@ -636,6 +645,13 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
   `relatorios/passo2-publicar/anexos/reversao-volta3-mutacoes.py.txt`, `relatorios/passo2-publicar/anexos/variantes-do-lote.py.txt`,
   `relatorios/passo2-publicar/anexos/variantes-do-lote-resultado.txt` e `relatorios/passo2-publicar/anexos/lote-que-comeca-com-mz.py.txt`
   (volta 3: o resultado no código antigo, as mutações, o script e o ensaio dos jeitos de escrever um lote)
+
+- **Volta 4** (todos na lista do pacote da volta 4): `core/windows.py`, `empacotar.py`, `publicar_versao_kaique.py`,
+  `tests/test_windows_peca.py` (5 testes novos e o caminho do achado 9 em texto cru; nenhum antigo mudou no que cobra),
+  `tests/test_publicar_versao.py` (13 testes novos, 22 casos; o teste antigo do achado 5 da volta 3 saiu, com a nota no
+  lugar dele: ver "O que já está escolhido e testado aqui" e "Ressalvas"), e em `relatorios/passo2-publicar/`: este
+  formulário, `anexos/pacote-volta4.md`, `anexos/reversao-volta4-codigo-antigo.txt`, `anexos/reversao-volta4-mutacoes.py.txt`
+  e `anexos/reversao-volta4-resultado.txt`. `tests/test_empacotar.py` não mudou.
 
 ## Como cumpri cada uma
 
@@ -700,6 +716,36 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
   proteções acusadas, `anexos/reversao-volta3-resultado.txt`); D-812 (a seção "De onde vem cada dado", acrescentada);
   D-813 (o que o Windows aceita como programa, em "O que li", e a recusa pelo arquivo de verdade); D-815 (agente novo,
   começou por este formulário); D-798 (nenhum rótulo de pronto); D-809 (nenhuma junção nesta volta).
+
+- **Volta 4:**
+  - D-816 "A , mas onde estamos antes de você fazer qualquer processo": depois do pedido de liberar, nenhum apagar é
+    chamado, em nenhum destino, e a frase não lê nada. Provas: `tests/test_publicar_versao.py::test_d816_depois_do_pedido_de_liberar_nada_e_apagado_com_qualquer_atraso`
+    (1, 2, 3 e 10 leituras atrasadas, pasta e GitHub), `tests/test_publicar_versao.py::test_d816_o_motor_tambem_nunca_e_apagado_depois_do_pedido_de_liberar`,
+    `tests/test_publicar_versao.py::test_d816_o_liberar_que_falha_e_fica_rascunho_nao_apaga_e_diz_o_comando` (o
+    comportamento antigo saiu: o rascunho continua) e `tests/test_publicar_versao.py::test_d816_ctrl_c_depois_do_pedido_de_liberar_nao_apaga`.
+    "Antes do pedido de liberar, erro no meio continua apagando o rascunho na hora": os testes antigos
+    `test_achado1_erro_antes_de_liberar_no_github_apaga_e_diz_que_apagou`, `test_a_leitura_de_volta_que_nao_bate_nao_libera_e_apaga_o_rascunho_do_destino`
+    e `test_n1_n3_n4_n14_cada_leitura_de_volta_errada_impede_liberar` continuam passando, sem mudar.
+  - D-815 "ok": escritor novo nesta volta; comecei pelo formulário e pelo relatório 3.
+  - D-767 "não faça mais nada escodindo ou de mentira": o nome com ponto no fim, o programa trancado, o lote pelo PATH, o
+    laço com o grupo e a gravação no disco rodam de verdade no Windows nos testes; o GitHub é de mentira (só a lógica),
+    e o gh dos testes do laço é um programa de verdade de prova. O de verdade fica para a prova à vista.
+  - D-773 "A": a frase da D-816 diz como conferir e o comando de apagar o rascunho de prova
+    (`tests/test_publicar_versao.py::test_d816_o_liberar_que_falha_e_fica_rascunho_nao_apaga_e_diz_o_comando` roda o
+    comando da frase e confere que apagou).
+  - D-775 "ok": entrego à gerente, sem rótulo; o próximo é um agente novo que tenta quebrar.
+  - D-776 "Sim, no C só tem que cuidar para não encher o disco C inteiro": o download para somar no rascunho, na vigia e
+    na conta (`tests/test_publicar_versao.py::test_volta4_achado7_sem_a_soma_pronta_o_download_vai_ao_rascunho_pela_vigia`,
+    `tests/test_publicar_versao.py::test_volta4_achado7_a_conta_do_espaco_soma_o_que_a_soma_pode_baixar`,
+    `tests/test_publicar_versao.py::test_volta4_achado7_no_publicar_sem_a_soma_pronta_tudo_e_baixado_no_rascunho`).
+  - D-795 "ok": nada mudou no Setup.exe; os testes dele (`test_d795_o_setup_exe_e_o_rascunho_somem_tambem_quando_da_erro`,
+    `test_n6_a_conferencia_do_fim_acusa_o_setup_exe`) passam sem mudar.
+  - D-811 "ok": a seção "Cada proteção", "Volta 4": cada proteção desligada numa cópia, com o resultado em
+    `anexos/reversao-volta4-resultado.txt`.
+  - D-812 "ok": a seção "De onde vem cada dado", "Volta 4".
+  - D-813 "ok": o que o Windows faz com o nome (lido na Microsoft e rodado no PC, em "O que li") e a recusa pelo nome
+    completado, não pelo texto.
+  - D-798 "fechou": nenhum rótulo de pronto neste ramo.
 
 ## Testes
 
@@ -791,6 +837,41 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
   `tests/test_publicar_versao.py::test_volta3_achado7_o_motor_baixado_entra_na_conta_e_na_vigia` e
   `tests/test_publicar_versao.py::test_volta3_achado7_o_gh_que_baixa_e_fechado_pela_vigia`); o nome do motor →
   `versao.PREFIXO_DO_MOTOR` (prova: `tests/test_publicar_versao.py::test_volta3_achado7_o_nome_do_motor_so_em_versao_py`).
+
+- **Volta 4:**
+  - o caminho de erro depois do pedido de liberar, na versão e no motor, nos dois destinos →
+    `publicar_versao_kaique.publicar_arquivos` → `_frase_depois_do_pedido_de_liberar` (nenhum apagar). Prova, o mesmo
+    resultado em todos os caminhos (pasta e GitHub; versão e motor; 1, 2, 3 e 10 leituras atrasadas; o liberar que
+    falha; o Ctrl+C): `tests/test_publicar_versao.py::test_d816_depois_do_pedido_de_liberar_nada_e_apagado_com_qualquer_atraso`,
+    `tests/test_publicar_versao.py::test_d816_o_motor_tambem_nunca_e_apagado_depois_do_pedido_de_liberar`,
+    `tests/test_publicar_versao.py::test_d816_o_liberar_que_falha_e_fica_rascunho_nao_apaga_e_diz_o_comando` e
+    `tests/test_publicar_versao.py::test_d816_ctrl_c_depois_do_pedido_de_liberar_nao_apaga`;
+  - o caminho de erro de antes do pedido de liberar e o `--apagar` → `publicar_versao_kaique.apagar_publicacao` (a frase
+    de cada desfecho; prova: `tests/test_publicar_versao.py::test_volta4_achado3_a_frase_diz_se_pediu_para_apagar`,
+    `tests/test_publicar_versao.py::test_volta4_achado3_o_pedido_de_apagar_sem_resposta_diz_que_pediu`,
+    `tests/test_publicar_versao.py::test_volta4_achado3_liberada_no_meio_do_apagar_nunca_vira_apagada`,
+    `tests/test_publicar_versao.py::test_volta4_achado4_nao_achei_logo_depois_de_criar_nao_e_apagado`, e os testes antigos
+    do `--apagar`, que continuam);
+  - o rodar genérico, o lançar solto, o grupo (e por ele o vpk e o gh) → `windows._por_que_recusa`, com o nome de
+    `windows._caminho_do_programa` (prova, o mesmo nome recusado pelos três:
+    `tests/test_windows_peca.py::test_volta4_o_nome_com_ponto_no_fim_e_lido_como_o_windows_completa`,
+    `tests/test_windows_peca.py::test_volta4_o_programa_que_nao_deixa_ler_e_recusado_com_frase_propria`,
+    `tests/test_windows_peca.py::test_volta4_a_segunda_olhada_depois_do_path_recusa_o_lote_achado_pelo_pathext`);
+  - o vpk e todos os pedidos ao gh → `windows.rodar_em_grupo` (prova: os dois chamam o laço,
+    `tests/test_publicar_versao.py::test_volta4_achado8_o_gh_roda_pelo_laco_unico_da_peca_e_fecha_o_que_abriu`; o laço,
+    `tests/test_windows_peca.py::test_volta4_rodar_em_grupo_e_o_laco_unico_com_a_saida_a_vigia_e_o_tempo`; os testes
+    antigos do vpk, que continuam);
+  - a soma do GitHub sem a soma pronta (na leitura de volta da versão, do motor e do motor que a versão pede) →
+    `DestinoGitHub.soma` → `baixar_vigiado` no rascunho dado por `usar_rascunho` (prova:
+    `tests/test_publicar_versao.py::test_volta4_achado7_sem_a_soma_pronta_o_download_vai_ao_rascunho_pela_vigia` e
+    `tests/test_publicar_versao.py::test_volta4_achado7_no_publicar_sem_a_soma_pronta_tudo_e_baixado_no_rascunho`, este
+    pela versão e pelo motor); a conta → `publicar` e `publicar_motor`, com `soma_pode_baixar` de cada destino (prova:
+    `tests/test_publicar_versao.py::test_volta4_achado7_a_conta_do_espaco_soma_o_que_a_soma_pode_baixar` e o mesmo do
+    publicar sem a soma pronta);
+  - toda gravação num nome provisório com troca de nome (a cópia conferida, o motor comprimido, a gravação da peça) →
+    `windows.gravar_no_disco` (prova:
+    `tests/test_publicar_versao.py::test_volta4_achado11_a_copia_e_o_motor_gravam_no_disco_antes_de_conferir_e_trocar` e
+    `tests/test_windows_peca.py::test_volta4_a_peca_manda_gravar_no_disco_antes_de_trocar_o_nome`).
 
 ## Cada proteção e o teste que falha sem ela
 
@@ -912,12 +993,32 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
 - **Volta 3:** só o rascunho apagado: a situação lida do destino dentro do apagar, antes e depois de pedir (na pasta,
   a subpasta do rascunho é a única tocada).
 
+- **Volta 4, a frase da D-816:** não usa dado nenhum do destino (de propósito: uma leitura atrasada não entra nela).
+  O único dado que decide é se o próprio publicar já pediu para liberar (uma variável dele, `pediu_para_liberar`, que
+  ninguém de fora troca). Os comandos da frase vêm do destino (`como_conferir`, `comando_de_apagar`), que é o lugar
+  que o publicar recebeu na linha de comando.
+- **Volta 4, a frase do apagar:** "pedi" ou "não pedi" vem de por onde o apagar passou (antes do pedido, no pedido,
+  depois), nunca de uma anotação; "sumiu" vem da leitura do destino depois do pedido; "não achei logo depois de criar"
+  vem do próprio caminho de erro (`acabou_de_criar`).
+- **Volta 4, a recusa da peça:** o nome vem do Windows (o GetFullPathNameW, pelo `os.path.abspath`); o começo do arquivo,
+  lido do disco; "não deu para ler", o erro do Windows ao abrir.
+- **Volta 4, a soma sem a soma pronta:** o arquivo baixado do destino para o rascunho e somado ali; o lugar do download
+  vem do publicar (`usar_rascunho`), não do destino; a vigia lê o espaço do Windows na hora.
+- **Volta 4, o laço único:** se o programa terminou e com que código, do Windows (o processo); se algo ficou vivo, do
+  Windows (a leitura do grupo).
+- **Volta 4, gravar no disco:** o que o Windows responde ao pedido de gravar (erro vira erro do disco). Não há leitura que
+  prove que chegou ao disco (a leitura de volta vem da memória do Windows): isso está escrito em "Ressalvas".
+
 ## Máquina ou olho
 
 - Máquina: tudo o que está em "Testes" (a lógica, a pasta de verdade como destino, o servidor de verdade, a vigia com
   um processo de verdade, a assinatura digital lida pelo Windows de verdade).
 - Olho: nada nesta entrega. A prova à vista (o vpk de verdade no C:, o rascunho no GitHub de verdade, a janela do
   servidor na tela) é da gerente com o Samuel, depois de quem tenta quebrar.
+
+- **Volta 4:** máquina, tudo (os testes; a peça do Windows de verdade: o nome com ponto no fim, o programa trancado, o
+  lote pelo PATH, o grupo com o gh de prova, a gravação no disco). Olho: nada. A prova à vista continua com a gerente e o
+  Samuel (itens 10 a 12 acrescentados em "A prova de verdade").
 
 ## Ressalvas
 
@@ -997,6 +1098,42 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   (três .bat e um .exe de lote, de poucos bytes) fora da pasta de rascunho desta conversa. Não apaguei (regra de
   29/09): a gerente decide.
 
+- **Volta 4, um teste antigo saiu (para a gerente conferir):** `test_volta3_achado5_o_liberar_que_falha_e_continua_rascunho_apaga_o_rascunho`
+  cobrava que o rascunho é apagado quando o pedido de liberar falha. A D-816 tirou isso ("depois de pedir ao GitHub
+  para liberar a versão, o programa nunca apaga nada"; "Na pasta das provas (não no GitHub) vale a mesma regra"). No
+  lugar dele ficou uma nota, e o mesmo caso (o mesmo destino de prova, `_DestinoQueNaoLibera`) é cobrado do jeito
+  novo, com a prova de que o antigo saiu, em `test_d816_o_liberar_que_falha_e_fica_rascunho_nao_apaga_e_diz_o_comando`.
+  Nenhum outro teste antigo mudou no que cobra (o do achado 9 só passou a testar o caminho que está escrito nele).
+- **Volta 4, D-816 na prática:** se o pedido de liberar falhar com resposta clara (o GitHub diz "não liberei"), o
+  rascunho fica no GitHub até alguém rodar o comando da frase. Ele não aparece para o programa do Kaique (rascunho), mas
+  o próximo publicar da mesma versão para dizendo que sobrou um rascunho, como já fazia. É o que a D-816 escolheu.
+- **Volta 4, o `--apagar` apaga também uma versão liberada** (é o fim da prova, de propósito). A frase da D-816 diz
+  para conferir primeiro e só apagar se for rascunho; se a pessoa rodar o `--apagar` numa versão que ficou liberada, ela
+  é apagada. Não mudei (não foi pedido); fica escrito.
+- **Volta 4, o instante do GitHub continua, mas só antes do pedido de liberar:** no caminho de erro de antes de
+  liberar, se outra pessoa ou outro publicar liberar a mesma versão entre a leitura e o pedido de apagar, o gh apaga a
+  publicação que acha pela etiqueta (o gh não confere se é rascunho). Depois do pedido de liberar deste publicar, isso
+  não acontece mais (nada é pedido).
+- **Volta 4, achado 5, limite conhecido da peça (não consertado, pedido da gerente):** a recusa é pela pasta do
+  Windows e pela lista de nomes; uma CÓPIA de um programa do Windows fora da pasta do Windows, com outro nome (quem
+  tentou quebrar rodou um `meu-cmd.exe`, cópia do cmd.exe, pelo rodar genérico), passa. Só um código que copia um
+  programa do Windows de propósito faz isso. O jeito de pegar (o nome original gravado dentro do programa, ou quem o
+  assinou) fica para a gerente decidir.
+- **Volta 4, gravar no disco:** o pedido de gravar (o `os.fsync`) não prova que o arquivo chegou ao disco (a leitura de
+  volta vem da memória do Windows), e o nome trocado (a pasta) não é gravado à parte. O que muda: quando o nome certo
+  aparece, o conteúdo já foi mandado ao disco. Um disco com memória própria que mente para o Windows continua podendo
+  perder o fim de uma cópia numa queda de luz. A gravação da peça do passo 1 (o aviso, os scripts, a tarefa, a pasta
+  segura) também passou a pedir isso: ela roda também no lado com licença de administrador, que não rodei (a próxima
+  prova à vista que usar a peça confere). Alguns segundos a mais por arquivo grande no HD externo, não medidos.
+- **Volta 4, o gh no grupo do Windows:** rodado com um gh de prova (um programa de verdade, pelo lançador do pip), não
+  com o gh de verdade (o pedido proíbe). O gh de verdade nasce parado e é solto dentro do grupo, como o vpk; se o
+  Windows não deixar, o pedido ao GitHub para com a frase da peça ("não consegui falar com o GitHub pelo gh").
+- **Volta 4, a conta do espaço com o GitHub** soma o maior arquivo que a soma pode baixar, mesmo que o GitHub dê a soma
+  pronta (o publicar só sabe disso depois). É a conta pelo pior caso: pode recusar com espaço que bastaria (uns 0,8 GB
+  a mais na conta da versão; o tamanho da pasta do motor a mais no `--motor`).
+- **Volta 4, o nome sozinho com ponto no fim, pelo PATH:** rodado no PC com uma cópia do hostname.exe; o nome sozinho
+  que o Windows procura na pasta do programa que chama (a do Python) não foi rodado (o `which` não olha lá, como antes).
+
 ## Velocidade
 
 Não se aplica: nenhum arquivo do processamento das páginas do livro mudou; em `core/ocr_kraken.py` só
@@ -1023,11 +1160,28 @@ passos"). O tempo de publicar é medido na prova à vista.
 - Ideia (Lista de espera): a cópia do motor para instalar\ (`empacotar.preparar_saida`) pela cópia conferida também.
 - Bug (Lista de bugs, 20/11/2026, não impede; instável novo): na rodada 44675872042 do GitHub, primeira tentativa, `tests/test_caixinha_do_dividir_nao_volta.py` saiu com o código 3221226505 (0xC0000409) e "sem saída" (um travamento do Qt); na repetição passou. Não usa nada deste passo.
 
+- **Volta 4.** Bug (Lista de bugs, 20/11/2026, não impede; achado 12 do relatório 3 de quem tentou quebrar, família
+  F4): `tests/test_decisoes_desinstalar.py` (25 falham) e `tests/test_decisoes_desinstalar_pasta.py` (5 falham) falham
+  no PC do Samuel e passam no GitHub: a proteção do próprio teste (`tests/test_decisoes_desinstalar_pasta.py`, perto da
+  linha 96) recusa qualquer "C:\" no comando, e no PC a pasta temporária fica no C: (no GitHub, no D:). Falham igual no
+  código da volta 2 e no desta volta; não é deste passo. (Visto por quem tentou quebrar; não rodei de novo.)
+- Ideia (Lista de espera, volta 4): `montar_motor_kraken.py` também grava num nome provisório e troca
+  (`gravar_ficha_do_motor` e a montagem); passar a usar `windows.gravar_no_disco` (fora da lista de arquivos desta volta).
+- Ideia (Lista de espera, volta 4): o `--apagar` perguntar antes de apagar uma versão LIBERADA (hoje apaga qualquer uma,
+  de propósito, para o fim da prova).
+- Ideia (Lista de espera, volta 4): pegar a cópia de um programa do Windows fora da pasta do Windows (achado 5) pelo nome
+  original gravado dentro do programa ou por quem o assinou.
+
 ## Perguntas para o Samuel
 
 Nenhuma nesta entrega. Procurei no Livro antes: a D-773, a D-776, a D-777, a D-788, a D-789, a D-790 e a D-795 respondem
 tudo o que este passo precisou. O que depende de um "sim" dele é uma licença, não uma escolha (gravar a ficha na pasta
 de ferramentas dele, em "Ressalvas"): a gerente pergunta, se achar preciso.
+
+**Volta 4:** nenhuma pergunta nova. Procurei no pedido e no Livro antes: a D-816 responde o achado 1 (inclusive o caso
+do liberar que falha e fica rascunho, que a volta 3 apagava: "Na pasta das provas (não no GitHub) vale a mesma regra"),
+e a gerente decidiu os outros (os achados 5 e 12 ficam escritos). O que fica para a gerente olhar está em "Ressalvas":
+o teste antigo do achado 5 da volta 3, que saiu porque cobrava o que a D-816 tirou.
 
 ## Commit
 
@@ -1113,6 +1267,49 @@ de ferramentas dele, em "Ressalvas"): a gerente pergunta, se achar preciso.
 10. **O console do grupo chamado pelo programa do Kaique:** anotado para o passo 3 (Ressalvas), com o jeito de evitar
     (CREATE_NO_WINDOW quando quem chama não tem console). Não mudei.
 
+**Volta 4** (`quem-quebrou/relatorio-3.md`, commit `5f96975b`; escritor novo, D-815). Destino de cada achado (código em
+`783b6814`, `dfe5f70d` e seguintes; reversão em `anexos/reversao-volta4-codigo-antigo.txt` e
+`anexos/reversao-volta4-resultado.txt`):
+1. **No GitHub, duas leituras atrasadas depois de liberar apagavam a versão liberada:** consertado pela D-816 (Samuel,
+   20/11: "A , mas onde estamos antes de você fazer qualquer processo"): depois do pedido de liberar, nada é apagado,
+   em nenhum destino, sem ler. Testes com 1, 2, 3 e 10 atrasos, na pasta e no GitHub, na versão e no motor, o liberar
+   que falha e o Ctrl+C (`test_d816_*`, em `tests/test_publicar_versao.py`). O teste antigo de 1 atraso continua passando.
+2. **`pwsh.exe.`, `pwsh.exe..` e `Update.exe.` passavam pela peça:** consertado (o nome lido uma vez, como o Windows o
+   completa, e usado em todas as conferências). Achado junto: `whoami.exe.` (o nome sozinho) rodava o whoami da pasta
+   do Windows; o mesmo conserto. Teste:
+   `tests/test_windows_peca.py::test_volta4_o_nome_com_ponto_no_fim_e_lido_como_o_windows_completa` (os três caminhos,
+   pelo caminho e pelo PATH).
+3. **"NÃO apaguei" tendo pedido para apagar:** consertado (o apagar escreve a frase e sabe se pediu). No caso do
+   relatório (o liberar falha), a D-816 já não pede nada. Testes:
+   `tests/test_publicar_versao.py::test_volta4_achado3_a_frase_diz_se_pediu_para_apagar`,
+   `tests/test_publicar_versao.py::test_volta4_achado3_o_pedido_de_apagar_sem_resposta_diz_que_pediu` e
+   `tests/test_publicar_versao.py::test_volta4_achado3_liberada_no_meio_do_apagar_nunca_vira_apagada`.
+4. **"foi apagada (conferido)" sem ter pedido nada; o criar fora do try:** consertado. Teste:
+   `tests/test_publicar_versao.py::test_volta4_achado4_nao_achei_logo_depois_de_criar_nao_e_apagado` (os dois casos).
+5. **A cópia de um programa do Windows fora da pasta do Windows passa:** não consertado (pedido da gerente); limite
+   escrito em "Ressalvas" e em "Cada proteção", e no docstring da regra (`windows._por_que_recusa`).
+6. **Os atalhos da Loja recusados com frase falsa:** consertado (frase própria). Teste:
+   `tests/test_windows_peca.py::test_volta4_o_programa_que_nao_deixa_ler_e_recusado_com_frase_propria` (um programa
+   trancado de verdade pelo Windows, e os atalhos da Loja deste computador).
+7. **A soma do GitHub baixava para o C: fora da conta e da vigia:** consertado (o rascunho, `baixar_vigiado`, a conta).
+   Testes: `tests/test_publicar_versao.py::test_volta4_achado7_sem_a_soma_pronta_o_download_vai_ao_rascunho_pela_vigia`,
+   `tests/test_publicar_versao.py::test_volta4_achado7_a_conta_do_espaco_soma_o_que_a_soma_pode_baixar` e
+   `tests/test_publicar_versao.py::test_volta4_achado7_no_publicar_sem_a_soma_pronta_tudo_e_baixado_no_rascunho`.
+8. **O laço "rodar, olhar a vigia e fechar" em dois lugares:** consertado (`windows.rodar_em_grupo`, usado pelo vpk e
+   pelo gh; o gh passou para a peça e o grupo). Testes:
+   `tests/test_windows_peca.py::test_volta4_rodar_em_grupo_e_o_laco_unico_com_a_saida_a_vigia_e_o_tempo` e
+   `tests/test_publicar_versao.py::test_volta4_achado8_o_gh_roda_pelo_laco_unico_da_peca_e_fecha_o_que_abriu`.
+   Nada do que já estava escolhido mudou (a frase do vpk e a do gh na vigia são as mesmas; os testes antigos passam).
+9. **O caminho do teste do lote escrito errado:** consertado (texto cru).
+10. **A segunda olhada depois do PATH sem teste:** teste novo,
+    `tests/test_windows_peca.py::test_volta4_a_segunda_olhada_depois_do_path_recusa_o_lote_achado_pelo_pathext` (um lote
+    achado pelo PATHEXT). Passa também no código antigo (a proteção já existia); a mutação prova que ele a cobra.
+11. **"lida de volta do disco" sem gravar no disco:** consertado (`windows.gravar_no_disco`, na cópia, no motor
+    comprimido e na gravação da peça). Testes:
+    `tests/test_publicar_versao.py::test_volta4_achado11_a_copia_e_o_motor_gravam_no_disco_antes_de_conferir_e_trocar` e
+    `tests/test_windows_peca.py::test_volta4_a_peca_manda_gravar_no_disco_antes_de_trocar_o_nome`.
+12. **Os testes do desinstalar falham no PC:** não é deste passo; em "Ideias e bugs" para a Lista de bugs.
+
 ## A prova de verdade
 
 Roteiro para a gerente (não rodado; D-785, item 8; o plano: "0 perguntas do Windows"; o Samuel olha a janela, não
@@ -1137,10 +1334,21 @@ clica nada):
    uma com a assinatura de uma chave falsa; uma que pede o motor 2, com o motor 2 verdadeiro e o motor 2 com assinatura
    falsa (o motor 2 pede aumentar `core/ocr_kraken.VERSAO_DO_MOTOR` numa cópia); e uma boa para o atualizar de longe.
 
+**Volta 4, o que a prova à vista acrescenta (relatório 3, "O que falta", item 4, e a D-816):**
+10. No item 8, depois do `--apagar`, conferir também que a etiqueta sumiu do GitHub (a lista de etiquetas do
+    repositório), não só a publicação.
+11. Se der para provocar sem risco (desligar a internet logo depois de o publicar dizer "lido de volta ... somas e
+    assinatura conferidas", antes de liberar), conferir que nada é apagado e que a frase diz o que pode ter ficado, como
+    conferir e o comando de apagar; e rodar o comando de conferir da frase.
+12. O gh roda agora num grupo do Windows, como o vpk: olhar, no Gerenciador de Tarefas, que não sobra gh.exe depois de
+    publicar.
+
 ## Perguntas do Windows que o Samuel vê
 
 - Nesta entrega: 0 (nada pede licença; o publicar não pede).
 - Na prova à vista: 0 (o plano: "0 perguntas do Windows"). O servidor escuta só em 127.0.0.1: o firewall não pergunta.
+
+- Volta 4: 0 (nada desta volta pede licença; o gh e o vpk no grupo não pedem).
 
 ## Páginas em que foi conferido
 
