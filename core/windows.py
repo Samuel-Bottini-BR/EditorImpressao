@@ -1213,9 +1213,32 @@ def _lancar_solto(comando: list, sinal: Path, espera_s: float, ambiente: dict[st
                    codigo=processo.returncode)
 
 
+# O apagar do fim do script lançado solto (D-809, Samuel 19/11: "ok"; conferência K25 do porteiro). Cada item é
+# conferido antes: atalho (junção ou link) sai SÓ ele (DirectoryInfo/FileInfo.Delete chama o RemoveDirectory/DeleteFile
+# do Windows, que tira a junção sem tocar no que está do outro lado: Microsoft Learn, RemoveDirectoryW, "RemoveDirectory
+# removes a directory junction, even if the contents of the target are not empty"); pasta comum, primeiro o que tem
+# dentro, um por um; arquivo, apagado. Nunca o apagar recursivo do PowerShell (a Microsoft avisa do "known issue" do
+# -Recurse no Remove-Item; e foi um apagar que passou por uma junção que esvaziou a pasta modelos/ em 18/11).
+# Arriscado: trocar por um apagar recursivo; tirar a conferência do atalho.
+_APAGAR_SEM_SEGUIR_ATALHO = (
+    "function Apagar-SemSeguirAtalho([string]$caminho) {\n"
+    "  $item = Get-Item -LiteralPath $caminho -Force -ErrorAction SilentlyContinue\n"
+    "  if ($null -eq $item) { return }\n"
+    "  if ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) { $item.Delete(); return }\n"
+    "  if ($item.PSIsContainer) {\n"
+    "    foreach ($filho in @(Get-ChildItem -LiteralPath $caminho -Force -ErrorAction SilentlyContinue)) {\n"
+    "      Apagar-SemSeguirAtalho $filho.FullName\n"
+    "    }\n"
+    "  }\n"
+    "  $item.Delete()\n"
+    "}\n"
+)
+
+
 def lancar_powershell_solto(texto: str, espera_s: float = 30) -> Resposta:
     """Lança solto um script do PowerShell (em arquivo com a marca de UTF-8, numa pasta de troca) e espera o sinal de
-    vida. O script dá o sinal na primeira linha e apaga a própria pasta de troca no fim, deu certo ou não."""
+    vida. O script dá o sinal na primeira linha e apaga a própria pasta de troca no fim, deu certo ou não, sem seguir
+    atalho (`_APAGAR_SEM_SEGUIR_ATALHO`, D-809)."""
     try:
         pasta = criar_pasta_de_troca()
     except OSError as erro:
@@ -1223,10 +1246,10 @@ def lancar_powershell_solto(texto: str, espera_s: float = 30) -> Resposta:
     sinal = pasta / "comecei.txt"
     script = pasta / "solto.ps1"
     try:
-        _gravar_script(script, _CABECA_DO_SCRIPT
+        _gravar_script(script, _CABECA_DO_SCRIPT + _APAGAR_SEM_SEGUIR_ATALHO
                        + f"[System.IO.File]::WriteAllText({aspas_do_powershell(sinal)}, 'comecei')\n"
                        + "try {\n" + texto + "\n} finally {\n"
-                       + f"  Remove-Item -LiteralPath {aspas_do_powershell(pasta)} -Recurse -Force -ErrorAction SilentlyContinue\n"
+                       + f"  try {{ Apagar-SemSeguirAtalho {aspas_do_powershell(pasta)} }} catch {{ }}\n"
                        + "}\n")
     except (OSError, ValueError) as erro:
         apagar_pasta_de_troca(pasta)

@@ -1081,3 +1081,36 @@ def test_o_powershell_nao_herda_os_modulos_do_powershell_7(tmp_path, monkeypatch
             break
         time.sleep(0.1)
     assert saida.exists() and saida.read_text(encoding="utf-8-sig").strip(), "o lançado solto não leu a assinatura"
+
+
+def test_o_lancado_solto_apaga_a_pasta_de_troca_sem_seguir_atalho(tmp_path):
+    """D-809 (Samuel, 19/11: "ok"; o atalho de pasta só sai sem levar o que está do outro lado): o script lançado solto
+    apaga a própria pasta de troca no fim. Antes ele usava o apagar recursivo do PowerShell, que, no PowerShell do
+    Windows, entra num atalho (junção) que esteja dentro da pasta e apaga o que está do outro lado (o mesmo desenho
+    do caso da pasta modelos/ esvaziada em 18/11). Agora ele confere cada item: atalho sai só ele (o Windows tira só a
+    junção, RemoveDirectory), o resto é apagado. Aqui o próprio script põe na pasta de troca um atalho para uma pasta
+    de verdade com um arquivo; depois do fim, a pasta de troca sumiu e o arquivo do outro lado continua."""
+    alvo = tmp_path / "pasta de verdade"
+    alvo.mkdir()
+    (alvo / "importante.txt").write_text("fica", encoding="utf-8")
+    sinal = tmp_path / "pasta-de-troca.txt"
+    copia = tmp_path / "o-script-lancado.ps1"
+    r = windows.lancar_powershell_solto(
+        "New-Item -ItemType Junction -Path (Join-Path $PSScriptRoot 'atalho') "
+        f"-Target {windows.aspas_do_powershell(alvo)} | Out-Null\n"
+        f"[System.IO.File]::Copy($PSCommandPath, {windows.aspas_do_powershell(copia)}, $true)\n"
+        f"[System.IO.File]::WriteAllText({windows.aspas_do_powershell(sinal)}, $PSScriptRoot)\n"
+        "[System.Threading.Thread]::Sleep(1500)")
+    assert r.deu_certo, r
+    for _ in range(150):
+        if sinal.exists() and not Path(sinal.read_text(encoding="utf-8-sig").strip()).exists():
+            break
+        time.sleep(0.1)
+    troca = Path(sinal.read_text(encoding="utf-8-sig").strip())
+    assert not troca.exists(), "a pasta de troca tinha de ser apagada"
+    assert (alvo / "importante.txt").is_file(), "o apagar entrou no atalho e apagou o que estava do outro lado"
+    # O jeito antigo (o apagar recursivo do PowerShell) não entrou no atalho NESTE Windows (conferido em 19/11), mas o
+    # comportamento muda com a versão e a Microsoft avisa do "known issue" do -Recurse: o que o teste cobra para não
+    # voltar é o script lançado não usar o apagar recursivo e conferir o atalho antes (o que o porteiro também acusa).
+    lancado = copia.read_text(encoding="utf-8-sig")
+    assert "-Recurse" not in lancado and "ReparsePoint" in lancado, lancado
