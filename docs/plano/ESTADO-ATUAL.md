@@ -8,6 +8,14 @@ Escrito em 24/09/2026. A ordem de autoridade é:
 
 O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que vale é o Plano Definitivo.
 
+> **Onde o projeto está em 20/11/2026, tarde (vale sobre tudo abaixo; detalhe na [PARTE -41](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
+> - **Passo 2 (publicar, o Kraken à parte, o servidor das versões de prova): voltas 4 e 5 feitas.** A conferência da volta 5, por um agente novo, **não achou nada médio nem grave** (3 problemas pequenos, para depois da prova). As duas rodadas do GitHub passaram.
+> - **D-817:** o teste antigo que cobrava "a liberação falha → apaga o rascunho" saiu; o mesmo caso é cobrado do jeito novo (D-816).
+> - **Esperando ele:** o "sim" para gravar a ficha do motor do Kraken na pasta de ferramentas dele e a prova à vista do passo 2 (ele só olha). Pergunta sem resposta: pôr na Lista de espera a escolha automática dos testes.
+> - Depois da prova: os 3 problemas pequenos com um escritor novo, outra conferência, e a junção do passo 2 e das regras do catálogo na versão de teste.
+> - Nada do processamento das páginas mudou. O programa ainda não está pronto para o Kaique.
+>
+> **Antes (20/11, manhã), já superado:**
 > **Onde o projeto está em 20/11/2026, manhã (vale sobre tudo abaixo; detalhe na [PARTE -40](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
 > - **Passos 0 e 1 do plano da parte do Windows juntados** na versão de teste (sem mudança desde 19/11).
 > - **Passo 2 (publicar, o Kraken à parte, o servidor das versões de prova): três voltas feitas; a terceira conferência achou 2 problemas médios** (a versão já liberada podia ser apagada se o GitHub demorasse duas vezes; um nome de programa com ponto no fim passava pela recusa). O primeiro tem a escolha dele: **D-816 ("A")**, depois de pedir para liberar, nada é apagado. Falta a volta 4 (agente novo), a conferência 4 e a prova à vista.

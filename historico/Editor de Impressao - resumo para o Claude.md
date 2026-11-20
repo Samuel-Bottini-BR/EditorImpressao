@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 20/11/2026, manhã (PARTE -40; a anterior, PARTE -39, é de 19/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 20/11/2026, tarde (PARTE -41; a anterior, PARTE -40, é da manhã do mesmo dia). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -11,6 +11,93 @@ Pasta do projeto: `D:\programas\EditorImpressao` (mudou de
 `C:\Users\fotog\Desktop\EditorImpressao` em 07/09/2026; essa pasta antiga virou
 o backup). Repositório git ligado a
 `https://github.com/Samuel-Bottini-BR/EditorImpressao`.
+
+---
+
+# PARTE -41 — Checkpoint de 20/11/2026, tarde: passo 2 nas voltas 4 e 5 (consertos dos relatórios 3 e 4), a conferência da volta 5 sem achado médio ou grave, D-817; esperando o "sim" para a ficha do motor e a prova à vista (leia isto primeiro)
+
+Conversa `85bc5c33`, aberta pelo `/projeto` às 12h27 UTC (relógio do Samuel, UTC−4: 08h27) e fechada às 17h04 UTC. Escrito das falas salvas (`falas_da_conversa.py --todas --desde 2026-11-20T11:44`), do git de todos os ramos e da Central. O Samuel pediu: **"vou dar checkpoint para reiniciar o pc"** (17h04).
+
+- **Nada rodando no fechamento** (conferido 17h03: nenhum agente, nenhuma rodada do GitHub em andamento, nenhum python no PC).
+- A conversa `848d7b72` (PARTE -40) não tem fala dele depois do checkpoint de 11h44.
+- Nada mudou no processamento das páginas. O programa ainda não está pronto para o Kaique.
+
+## 0. Para recomeçar
+
+1. `git -C D:\programas\EditorImpressao fetch origin`; `rev-parse --is-shallow-repository` = false. Versão oficial `fase-1` (ponta: este checkpoint). Versão de teste `obra-2026-10-26` (worktree `.claude\worktrees\obra-juncao`, ponta `9f4da6cb`, Livro até a **D-817**). Passo 2: ramo `passo2-publicar-2026-11-19` (worktree `.claude\worktrees\passo2`, ponta `b9300da8`, código `35ec0c27`).
+2. **Pergunta aberta (chat, 16h57 UTC):** "Posso gravar a ficha e começar a preparar a prova?" (gravar o `motor.json` com `.venv\Scripts\python.exe montar_motor_kraken.py --so-ficha --destino D:\programas\EditorImpressao-arquivos\ferramentas\motor-kraken`, fora do projeto). **Sem resposta**: ele perguntou se ainda havia testes rodando e pediu o checkpoint. Retomar com a mesma pergunta.
+3. Com o "sim": a prova à vista do passo 2 pelo roteiro "A prova de verdade" do `relatorios/passo2-publicar/ONDE-PAREI.md` (itens 1 a 12; o 9 é do passo 3). O Samuel só olha (0 perguntas do Windows). Acrescentar o que o relatório 5 pede: provocar o gh que não abre no pedido de liberar (o rascunho é apagado, "foi apagada (conferido)"); conferir que toda frase com comando, na pasta das provas, traz o `--pasta`. Na prova, a gerente digita os comandos completos (o achado 2 do relatório 5 não atrapalha).
+4. Depois da prova (**sugestão da gerente, dita a ele às 16h57, sem resposta**: "Minha sugestão: consertar os 3 depois da prova"): os 3 achados baixos do relatório 5 com um **escritor novo** (o das voltas 4 e 5 já usou as duas voltas, D-815), um agente novo tenta quebrar, e então a junção: passo 2 no obra (rodada do GitHub antes, D-807) → `regras-catalogo-2026-11-19` → rodada do GitHub no obra → só então quem quebrou as regras pode escrever PRONTO (D-798). No fim do passo 2, a gerente põe os erros dele em `memoria/catalogo-de-erros.md` (D-803).
+
+## 1. Os trabalhos, pelo git (20/11, 17h04 UTC)
+
+| Trabalho | Situação |
+|---|---|
+| Passos 0 e 1 | Juntados no obra (PARTE -39). Sem mudança. |
+| **Passo 2**, ramo `passo2-publicar-2026-11-19` | **Volta 4** (escritor novo, D-815; `8d2edff1` a `c75566a1`, código `595cc293`): os 12 achados do relatório 3 consertados ou destinados; GitHub **44748591841 success na 3ª tentativa** (a parte 2 falhou em `tests/test_decisoes_so_as_letras.py`: na 1ª o Qt caiu, 0xC0000005; na 2ª o `test_d148` estourou o tempo; a gerente rodou o arquivo no PC com o código novo: 5 passaram). **Relatório 4** (agente novo, `277fe8fd`): "NÃO ESTÁ PRONTO", 1 médio (três frases mandavam `--apagar` sem o `--pasta`, o que apagaria a versão liberada no GitHub) e 5 baixos. **Volta 5** (o mesmo escritor, a segunda e última dele; `c11af23c` a `384df3f6`, código `35ec0c27`): os 6 consertados; GitHub **44766224353 success na 2ª tentativa** (a 1ª falhou só na parte 3, `test_d659_g_outros_filtros_a_mao...[original]` de `tests/test_decisoes_gravura_a_mao.py`; a gerente rodou o arquivo no PC com o código novo: 15 passaram). **Relatório 5** (agente novo, `b9300da8`): **"Nenhum achado médio ou grave."**, 3 baixos (o pedido de apagar em que o gh nem abre não tem teste; na pasta das provas a frase do motor que falta não traz o `--pasta`; o caminho de rede recusado com a frase errada) e 3 observações. Falta a prova à vista. |
+| Regras do catálogo (D-809 a D-814), ramo `regras-catalogo-2026-11-19` | Prontas (`3a63a918`), sem mudança; esperam o passo 2 entrar. |
+| Passos 3 a 6 | Não começados. |
+
+**O que a volta 4 mudou (escolhas técnicas da gerente, com o "Pode" dele para a volta):** depois de pedir para liberar, nada é apagado em nenhum destino (D-816); o nome do programa é lido uma vez só, como o Windows o completa (`pwsh.exe.` e o achado junto `whoami.exe.` deixam de passar); frases do apagar que só dizem o que aconteceu; o download para somar entra na conta e na vigia do C: (D-776); o gh e o vpk passam por um laço só da peça (`windows.rodar_em_grupo`); `windows.gravar_no_disco` (fsync) antes de conferir e renomear; a cópia de um programa do Windows fora da pasta do Windows ficou como **limite conhecido**. **Volta 5:** as frases do `--apagar` saem de `destino.comando_de_apagar`; o gh que nem abriu (`NadaSaiu`) não conta como pedido de liberar, e aí o caminho de erro apaga o rascunho (só antes do pedido, pela D-816); a peça recusa caminho com fluxo escondido (`:` depois da letra do disco).
+
+## 2. As falas do Samuel e o destino de cada uma
+
+- "/projeto" (12h27) → resumo com 21 itens numerados; pergunta "Posso começar a volta 4 do passo 2 com um agente novo?".
+- **"Pode"** (12h55) → volta 4 mandada com escritor novo; a gerente contou a ele, na mesma mensagem, o que ficava de fora (achado 5 como limite, achado 12 para a Lista de bugs).
+- "ok, quantos %?" (13h44) → "perto de 70%", pela conta dos commits.
+- "você tentou abrir alguma coisa no pc ?" (13h46) → não; só testes por trás e um gh de mentira; o aviso "navegador desconectado" é da extensão do navegador. Conferido pela lista de processos.
+- "quanto tempo até rodada do git hub acabar?" (14h46) → tinha acabado; a parte 2 falhou num teste de fora do passo.
+- "mas pera ai, porque você esta testando funções do app se estavamos fazendo o atualizador?" (14h47) → a regra dele (§11.8 e D-807: a rodada inteira no GitHub em toda entrega), e a peça do Windows é usada pelo programa todo.
+- **"é preciso rodar todos os testes de todas as ferramentas sempre? existe algum meio de programar uma coisa sem ela alterar outras coisas e testar só ela sem mexer no resto sem que altere o resto?"** (14h49) → explicado (peça usada por todos muda para todos; escolha automática dos testes pelo que o código mudado usa, ex. pytest-testmon; a rodada inteira continuaria antes de juntar). **Pergunta da gerente sem resposta:** "Ponho na lista de ideias para depois da entrega?" (sugestão dela: um agente estuda depois da entrega ao Kaique). Não foi para a Lista de espera.
+- "com assim por demora?" (14h50) → o teste espera 15 s o projeto ser gravado; a gerente **corrigiu** o que tinha dito: o mesmo arquivo falhou duas vezes, de jeitos diferentes, então não dava para dizer que era só demora.
+- **"não entendi o que conferiu? ele ficou esse tempo todo trabalhando e não conferiu o codigo que ele fez?"** (15h05) → o agente conferiu (26 de 27 testes novos falham no código antigo, 24 de 24 mutações acusadas, testes no PC, GitHub); a gerente rodou no PC o arquivo que falhou no GitHub (5 passaram).
+- "não entendi" (15h19) e "trocar qual testes, porque?" (15h36) → a explicação da troca do teste antigo, encurtada duas vezes.
+- "trocar não vai causar mais erros né?" (15h54) → não: o teste não muda o programa; o caso continua conferido.
+- **"pode"** (15h55) → **D-817** (Livro `9f4da6cb`, Plano `a52e8120`).
+- "ainda está rolando testes?" (17h03) → não, conferido.
+- "vou dar checkpoint para reiniciar o pc" (17h04) → este checkpoint.
+
+## 3. Decisões desta parte
+
+- **D-817** (20/11): o teste antigo `test_volta3_achado5_o_liberar_que_falha_e_continua_rascunho_apaga_o_rascunho` sai; o mesmo caso é cobrado por `test_d816_o_liberar_que_falha_e_fica_rascunho_nao_apaga_e_diz_o_comando`. Palavras: "trocar não vai causar mais erros né?" · "pode". Quem tentou quebrar a volta 4 conferiu que a troca muda só o que a D-816 mudou.
+- **Escolhas técnicas da gerente (não são decisões dele):** os destinos dos 12 achados do relatório 3 e dos 6 do relatório 4 (acima); levar os 3 baixos do relatório 5 para depois da prova (sugestão dita a ele, sem resposta).
+- **Lista de espera (20/11), 3 ideias do agente das voltas 4 e 5, sem pedido do Samuel:** a gravação no disco também na ficha do motor (`montar_motor_kraken.py`); o `--apagar` perguntar antes de apagar uma versão liberada; a peça reconhecer a cópia de um programa do Windows pelo nome gravado dentro dele ou por quem o assinou. **Lista de bugs (20/11):** os testes do desinstalar que falham no PC (achado 12 do relatório 3).
+- Continua faltando corrigir o texto do CLAUDE.md e dos agentes para D-796, D-797, D-798, D-807, D-813 e D-815, mostrando o texto a ele antes.
+
+## 4. Descobertas de comportamento real
+
+- O Windows tira o ponto do fim do nome e acha pelo PATH: `whoami.exe.` sozinho rodava o whoami da pasta do Windows (o `shutil.which` não acha). Provado pelo escritor da volta 4 (`relatorios/passo2-publicar/anexos/volta4-nome-e-loja*`).
+- O Windows roda um programa gravado como fluxo escondido de outro arquivo ou de uma pasta (`nada.txt:pwsh.exe`, `pasta:prog.exe`); 15 de 21 jeitos passavam pela peça antiga (`quem-quebrou/anexos-5/`).
+- Testes instáveis no GitHub, além dos já conhecidos: `tests/test_decisoes_so_as_letras.py` (o Qt cai, 0xC0000005, ou o `test_d148` estoura os 15 s) e `tests/test_decisoes_gravura_a_mao.py::test_d659_g_outros_filtros_a_mao...[original]` ("procurou: [0]"). Os dois passam no PC. Repetir só a parte: `gh run rerun <id> --failed`.
+
+## 5. Erros da gerente nesta parte
+
+- Disse "a falha foi por demora" antes de olhar a primeira tentativa (lá o Qt tinha caído). Corrigido no chat. Olhar todas as tentativas antes de dar a causa.
+- Explicou a troca do teste antigo com palavras de dentro e frase comprida; ele disse "não entendi" e perguntou de novo. A versão que funcionou: "Como era / Por que muda / Como fica", com os passos numerados.
+
+## 6. O que espera o Samuel
+
+1. O "sim" para gravar a ficha do motor e preparar a prova à vista (§0.2).
+2. A prova à vista do passo 2 (ele só olha; uns 15 a 20 min dele).
+3. "Ponho na lista de ideias para depois da entrega?" (escolha automática dos testes; §2).
+4. Arquivos fora do projeto deixados por agentes, **não apagados** (perguntar antes): `C:\Users\fotog\AppData\Local\Temp\tmpqhb16hsh`, `C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\markers-unused.txt` e as cópias de código e de prova nas pastas de rascunho das conversas (`...\85bc5c33-...\scratchpad\v4` e `\v5`, e as da `848d7b72`).
+5. O resto do §6 das PARTES -40 e -39 (D-709, D-710, Claude Code no PC do Kaique, as 4 da revisão do código, X3/X6/X9/X10, `C:\pr-medida` e `D:\agente_temp_testes`, reiniciar para sair `C:\Users\editortestes`) e as 11 perguntas da Central reabertas para ele responder de novo (au-d-018, au-d-484, au-d-489, au-d-492, lu-10, lu-12, lu-13, nm-desligar-marcadas, nm-jeito-pb, nm-tela-livros, v-capa-aviso).
+6. Testes dele que faltam (de antes): girar com a capa aberta e no Dividir; "Livros recentes" depois do F1; a folha espremida com a Mão.
+
+## 7. Central de decisões
+
+Lida no começo e no checkpoint: nenhuma ordem, teste ou ideia pendente; nenhuma resposta nova depois de 17/11; todas as respostas têm `lida` e `gerente`. **O quadro continua sem atualização desde 18/11** (falta o plano da parte do Windows e D-791 a D-817, pelo `fonte.json` → `para_a_central.py` → batch).
+
+## 8. Testes
+
+- GitHub do passo 2: 44748591841 (volta 4) e **44766224353 (volta 5), success**, com o trabalho do porteiro em success (ONDE-PAREI do passo 2: "PORTEIRO: success"). Código testado na volta 5: `2bb04bf2` (de `35ec0c27` só mudaram documentos).
+- No PC (agentes, um arquivo por vez): peça 68 e 2 pulados, publicar 78, servidor, motor, empacotar, atualização, ajudante, testes à distância, brasão, janela de prova e nome do pacote, todos passando. Pela gerente: `test_decisoes_so_as_letras.py` 5 passaram; `test_decisoes_gravura_a_mao.py` 15 passaram. `test_decisoes_desinstalar*.py` falham no PC (Lista de bugs, 20/11).
+- Comandos: PARTE -39 §8.
+
+## 9. Próximo passo recomendado
+
+Perguntar de novo "Posso gravar a ficha e começar a preparar a prova?" e, com o "sim", fazer a prova à vista do passo 2.
+
 
 ---
 
