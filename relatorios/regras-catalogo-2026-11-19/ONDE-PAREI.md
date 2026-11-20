@@ -254,7 +254,7 @@ Cada uma foi desligada na memória e o arquivo de teste rodou de novo (script e 
   `tests/test_conferencias_copia_inteira.py` 2. `tests/test_conferencias_excecoes.py` (no commit `ce3fa9c4`): 13
   passaram e 1 falhou, o esperado (abaixo). No PC, o porteiro do repositório inteiro acha só o `core/windows.py:1211`.
 - As provas das decisões (`tests/test_decisoes*.py`) e o resto: só no GitHub (não mexi em nada que elas usam).
-- GitHub: rodada RODADA_FINAL (commit `32ff536a`): VEREDITO_FINAL.
+- GitHub: rodada 44657609512 (commit `32ff536a`): falhou só numa parte (a 4 de 5), num teste só, o esperado: `test_o_repositorio_so_tem_os_erros_que_a_lista_deixa`, com os cinco lugares abaixo e nenhum outro. As outras partes, os botões e o juiz passaram.
   **O esperado:** falha só em `tests/test_conferencias_excecoes.py::test_o_repositorio_so_tem_os_erros_que_a_lista_deixa`,
   com estes lugares, até eles saírem do código:
   - `core/windows.py:1211`, até o passo 2 entrar;
@@ -263,7 +263,7 @@ Cada uma foi desligada na memória e o arquivo de teste rodou de novo (script e 
     `anexos/workflow/` para o ramo dos testes. O `git rm` da linha 32 não é mais acusado.
   Rodadas antigas: 44650587272 (commit `ce3fa9c4`, a que quem quebrou leu), 44645835672, 44644866610 e 44645456574
   (cancelada).
-- PORTEIRO: LINHA_PORTEIRO.
+- PORTEIRO: CONFERIDO (o juiz da versão de teste, rodada 44657609512).
 
 ## Caminho e função
 
