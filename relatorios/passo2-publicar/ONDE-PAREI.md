@@ -6,22 +6,21 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
 ## Pedido
 
 - Papel: implementador
-- Commit de partida: 03c91599
+- Commit de partida: 5f96975b
 - Ramo: passo2-publicar-2026-11-19
 
 ## Arquivos que vou mexer
 
 - `publicar_versao_kaique.py`
 - `empacotar.py`
-- `montar_motor_kraken.py`
-- `core/ocr_kraken.py`
-- `versao.py`
 - `core/windows.py`
 - `tests/test_windows_peca.py`
-- `servidor_das_versoes.py` (novo)
 - `tests/test_empacotar.py`
-- `tests/test_publicar_*.py` (novo)
+- `tests/test_publicar_*.py`
 - `relatorios/passo2-publicar/`
+
+(Volta 4, 20/11/2026: as duas seções acima são as do pacote da volta 4, `anexos/pacote-volta4.md`, copiadas sem mudar.
+As da primeira entrega, de `03c91599`, estão no `git log` deste arquivo.)
 
 ## Onde parei
 
@@ -54,6 +53,10 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
   24 de 24 proteções desligadas numa cópia, todas acusadas). `--is-shallow-repository` = false antes e depois; nenhuma
   junção criada. **Próximo:** a gerente manda a um agente novo que tenta quebrar (D-815); depois a prova à vista.
 
+- 20/11, **volta 4 (agente novo, D-815)**: começo pelo relatório 3 de quem tentou quebrar (`quem-quebrou/relatorio-3.md`,
+  12 achados). Pedido da gerente: consertar 1 a 4, 6 a 11 (o 1 pela D-816), anotar o 5 como limite da peça e o 12 para a
+  Lista de bugs. Leitura feita (implementador, CLAUDE.md, memória, catálogo, pacote da volta 4, este formulário, o
+  relatório 3 e os anexos Q1 a Q3 e E2). Andamento em "Volta 4" de cada seção.
 ## Decisões que esta tarefa precisa cumprir
 
 - D-767 "não faça mais nada escodindo ou de mentira" · "não quero fazer consertos quero que funcione". Aqui: o publicar
