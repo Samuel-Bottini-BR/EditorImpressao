@@ -52,6 +52,9 @@ ETIQUETA = versao.etiqueta_da_versao(VERSAO)
 # sendo um zip de verdade da pasta (em lib/app/), e anota cada vez que rodou. VPK_FALSO_FALHA=1: deixa o Setup.exe e
 # sai com erro. VPK_FALSO_ESPERA=N: espera N segundos antes (para a vigia). VPK_FALSO_FILHO=<arquivo>: abre antes um
 # programa filho que escreve um número nesse arquivo a cada 0,1 s (como o vpk abre o cmd.exe e o wix.exe do .msi).
+# VPK_FALSO_SEM=<começo>: deixa de fora do pacote os arquivos cujo caminho (com /) começa assim (passo 2, volta 7,
+# achado 3 do relatório 6: para a conferência do pacote depois do vpk ter o que acusar). Vazio: o pacote é a pasta
+# inteira, como sempre.
 VPK_FALSO = r'''
 import hashlib, json, os, sys, time, zipfile
 from pathlib import Path
@@ -74,8 +77,9 @@ if os.environ.get("VPK_FALSO_FALHA") == "1":
     sys.exit(3)
 nupkg = saida / f"{pacote}-{ver}-full.nupkg"
 with zipfile.ZipFile(nupkg, "w") as z:
+    sem = os.environ.get("VPK_FALSO_SEM", "")
     for f in sorted(pasta.rglob("*")):
-        if f.is_file():
+        if f.is_file() and not (sem and f.relative_to(pasta).as_posix().startswith(sem)):
             z.write(f, "lib/app/" + f.relative_to(pasta).as_posix())
 if "--msi" in a:
     (saida / f"{pacote}-win.msi").write_bytes(b"msi de mentira")
@@ -113,7 +117,14 @@ def _programa_de_prova(exe: Path, script: str) -> Path:
 @pytest.fixture
 def ambiente(tmp_path, monkeypatch):
     """Tudo o que um publicar de teste precisa: a chave fora do 'repositório', o vpk de mentira, o destino (uma pasta
-    de verdade), a base do rascunho, a pasta de saída, um motor com ficha e uma pasta do programa pronta."""
+    de verdade), a base do rascunho, a pasta de saída, um motor com ficha e uma pasta do programa pronta.
+
+    Passo 2, volta 7 (D-818, Samuel: "vai ter que reprogramar?" · "A"): a conferência da pasta passou a ler a
+    assinatura digital do Visual C++ (a régua da montagem). Os Visual C++ de prova (poucos bytes, reconhecidos pelo
+    conteúdo: `_VISUAL_C_DE_PROVA`) respondem como o Visual C++ oficial da Microsoft (`_ASSINATURA_DO_VISUAL_C_DE_PROVA`);
+    qualquer outro arquivo vai à leitura DE VERDADE do Windows (`empacotar.assinatura_do_arquivo`). É peça de mentira só
+    para a lógica em volta (D-767); a leitura de verdade tem os seus testes (tests/test_empacotar.py e
+    tests/test_windows_peca.py)."""
     monkeypatch.setattr(pub, "RAIZ", tmp_path / "repositorio")     # tmp_path pode estar dentro da cópia
     chave = tmp_path / "chave.txt"
     chave.write_text(assinatura.texto_da_chave_privada(CHAVE), encoding="utf-8")
@@ -125,6 +136,20 @@ def ambiente(tmp_path, monkeypatch):
     monkeypatch.delenv("VPK_FALSO_FALHA", raising=False)
     monkeypatch.delenv("VPK_FALSO_ESPERA", raising=False)
     monkeypatch.delenv("VPK_FALSO_FILHO", raising=False)
+    monkeypatch.delenv("VPK_FALSO_SEM", raising=False)
+    ler_de_verdade = empacotar.assinatura_do_arquivo
+
+    def assinatura_de_prova(arquivo):
+        """O Visual C++ de prova responde como o oficial; o resto, pela leitura de verdade."""
+        try:
+            conteudo = Path(arquivo).read_bytes()
+        except OSError:
+            conteudo = None
+        if conteudo in _VISUAL_C_DE_PROVA:
+            return dict(_ASSINATURA_DO_VISUAL_C_DE_PROVA)
+        return ler_de_verdade(arquivo)
+
+    monkeypatch.setattr(empacotar, "assinatura_do_arquivo", assinatura_de_prova)
     # muito espaço livre (o disco do teste pode ser pequeno); os testes do espaço trocam isto
     monkeypatch.setattr(empacotar, "espaco_livre", lambda pasta: 500 * empacotar.GB)
     motor = _motor_com_ficha(tmp_path / "motor")
@@ -146,9 +171,24 @@ def _motor_com_ficha(pasta: Path) -> Path:
     return pasta
 
 
+# Passo 2, volta 7 (D-818): o Visual C++ de prova da pasta de mentira e o que a leitura da assinatura responde por ele
+# (o mesmo que o Windows responde pelo vc_redist.x64.exe oficial; tests/test_empacotar.py::_assinatura).
+VERSAO_DO_VISUAL_C_DE_PROVA = "14.44.35211.0"
+_ASSINATURA_DO_VISUAL_C_DE_PROVA = {
+    "status": "Valid",
+    "assinante": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+    "produto": "Microsoft Visual C++ 2015-2022 Redistributable (x64) - 14.44.35211",
+    "versao": VERSAO_DO_VISUAL_C_DE_PROVA}
+
+
 def _pasta_pronta(pasta: Path, versao_da_pasta: str) -> Path:
     """Uma pasta do programa pronta (o que o empacotador confere no pacote: o .exe, os modelos, as DLLs, o Visual C++),
-    sem o motor solto, com a ficha da versão escrita pela função de verdade."""
+    sem o motor solto, com a ficha da versão escrita pela função de verdade.
+
+    Passo 2, volta 7 (D-818, Samuel: "vai ter que reprogramar?" · "A"; achado 1 do relatório 6): a pasta de mentira
+    passou a trazer o que a pasta de verdade traz e a conferência agora cobra: o arquivo da versão do Visual C++ e o
+    Tesseract (os mesmos caminhos que a montagem copia, lidos de `empacotar._destinos_das_pecas`). Antes ela só passava
+    porque a conferência não os procurava."""
     (pasta / empacotar.INTERNO).mkdir(parents=True)
     (pasta / f"{empacotar.NOME}.exe").write_bytes(b"MZ editor")
     for origem, destino in [*empacotar.modelos_do_programa(), *empacotar.nativos_do_programa()]:
@@ -158,6 +198,12 @@ def _pasta_pronta(pasta: Path, versao_da_pasta: str) -> Path:
     instalar = pasta / atualizacao.PASTA_DO_QUE_SE_INSTALA
     instalar.mkdir()
     (instalar / atualizacao.VC_REDIST_NOME).write_bytes(b"MZ visual c")
+    (instalar / atualizacao.VC_REDIST_VERSAO).write_text(VERSAO_DO_VISUAL_C_DE_PROVA, encoding="utf-8")
+    origem = pasta.parent / "origem-de-mentira"
+    pecas = empacotar.PecasDosDetectores(None, origem, origem / "doc", origem / "tessdata", origem / "vc", "")
+    for _, relativo in empacotar._destinos_das_pecas(pecas):
+        (pasta / relativo).parent.mkdir(parents=True, exist_ok=True)
+        (pasta / relativo).write_bytes(b"tesseract de prova: " + relativo.encode())
     empacotar.gravar_ficha_da_versao(pasta, empacotar.ATUALIZACAO)
     ficha = json.loads((pasta / empacotar.NOME_DA_FICHA_DA_VERSAO).read_text(encoding="utf-8"))
     ficha["versao"] = versao_da_pasta
@@ -2312,3 +2358,155 @@ def test_volta6_achado2_a_frase_do_motor_que_falta_da_o_comando_do_destino(ambie
     monkeypatch.setattr(pub.DestinoGitHub, "_gh", nao_pode)
     assert pub.main([p.strip('"') for p in shlex.split(comando, posix=False)][1:]) == 0
     assert pedidos == [a["servidor"]], pedidos
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Passo 2, volta 7 (D-818 e o relatório 6 de quem tentou quebrar, 20/11/2026)
+# ---------------------------------------------------------------------------------------------------------------------
+
+# Os Visual C++ de prova que a preparação (`ambiente`) dá como assinados pela Microsoft: o da pasta de mentira e o da
+# montagem de verdade do teste. Qualquer outro conteúdo vai à leitura de verdade do Windows.
+_VISUAL_C_DE_PROVA = (b"MZ visual c", VC_DE_PROVA)
+
+
+def _estragar(pasta: Path, defeito: str) -> None:
+    """Deixa a pasta com um dos defeitos que a D-818 manda recusar (o mesmo jeito para a pasta pronta e a montada)."""
+    instalar = pasta / atualizacao.PASTA_DO_QUE_SE_INSTALA
+    if defeito == "sem o Tesseract":
+        shutil.rmtree(pasta / empacotar.PASTA_DO_TESSERACT)
+    elif defeito == "sem um idioma do Tesseract":
+        (pasta / empacotar.PASTA_DO_TESSERACT / "tessdata" / "lat.traineddata").unlink()
+    elif defeito == "um Visual C++ falso":
+        (instalar / atualizacao.VC_REDIST_NOME).write_bytes(b"MZ nao sou o Visual C++ da Microsoft")
+    elif defeito == "sem a versao do Visual C++":
+        (instalar / atualizacao.VC_REDIST_VERSAO).unlink()
+    elif defeito == "a versao do Visual C++ errada":
+        (instalar / atualizacao.VC_REDIST_VERSAO).write_text("14.29.30133.0", encoding="utf-8")
+    else:
+        raise AssertionError(defeito)
+
+
+_DEFEITOS = {"sem o Tesseract": "não tem o Tesseract",
+             "sem um idioma do Tesseract": "tessdata/lat.traineddata",
+             "um Visual C++ falso": "não é o oficial da Microsoft",
+             "sem a versao do Visual C++": atualizacao.VC_REDIST_VERSAO,
+             "a versao do Visual C++ errada": "14.29.30133.0"}
+
+
+@pytest.mark.parametrize("defeito", list(_DEFEITOS))
+def test_d818_a_pasta_ja_montada_e_conferida_igual_a_montada_do_zero(ambiente, montar_de_verdade, defeito):
+    """D-818 (Samuel, 20/11/2026, à pergunta "A (sugiro): consertar. A pasta já montada passa a ser conferida igual à
+    montada do zero, e os testes antigos ganham as peças que faltam. [...]": "vai ter que reprogramar?" · "A"; achado 1
+    do relatório 6 de quem tentou quebrar): a pasta já montada (`--pasta-pronta`) sem o Tesseract, com um Visual C++
+    que não é o oficial (lido pela peça DE VERDADE do Windows: o arquivo não tem assinatura) ou sem o arquivo da versão
+    dele passava na conferência (só o nome do Visual C++ era olhado) e era publicada. Agora o publicar recusa antes do
+    vpk, e a frase é a mesma que a pasta montada do zero recebe com o mesmo defeito (é a mesma conferência). A pasta
+    montada do zero, inteira, continua passando. Rodado em db4b377a: a pasta estragada é publicada."""
+    a = ambiente
+    _publicar_o_motor(a)
+    montada = empacotar.construir_pasta(empacotar.ATUALIZACAO)
+    assert empacotar.conferir_pasta_pronta(montada, versao.VERSAO) == [], "a montada do zero tem de passar inteira"
+    pronta = _pasta_pronta(a["tmp"] / "ja-montada" / "EditorImpressao", versao.VERSAO)
+    assert empacotar.conferir_pasta_pronta(pronta, versao.VERSAO) == [], "a pasta de mentira inteira tem de passar"
+    _estragar(pronta, defeito)
+    _estragar(montada, defeito)
+    with pytest.raises(pub.Parou, match="a pasta do programa não serve") as erro:
+        pub.publicar(versao.VERSAO, pasta_pronta=pronta, arquivo_da_chave=a["chave"], chave_publica=PUBLICA,
+                     vpk=a["vpk"], rascunho_base=a["rascunho"], pasta_de_saida=a["saida"],
+                     destino=pub.DestinoPasta(a["servidor"]))
+    assert _DEFEITOS[defeito] in str(erro.value), str(erro.value)
+    assert _vezes_que_o_vpk_rodou(a) == [], "o vpk rodou com uma pasta que a D-818 manda recusar"
+    assert pub.DestinoPasta(a["servidor"]).situacao(versao.etiqueta_da_versao(versao.VERSAO)) is None
+    da_pronta = empacotar.conferir_pasta_pronta(pronta, versao.VERSAO)
+    da_montada = empacotar.conferir_pasta_pronta(montada, versao.VERSAO)
+    assert da_pronta and [p.replace(str(pronta), "<pasta>") for p in da_pronta] == \
+        [p.replace(str(montada), "<pasta>") for p in da_montada], (da_pronta, da_montada)
+
+
+@pytest.mark.parametrize("falta", ["instalar/vc_redist.x64.exe", "instalar/vc_redist.versao.txt", "tesseract/",
+                                   "tesseract/tessdata/script/Fraktur.traineddata"])
+def test_volta7_achado3_o_pacote_sem_uma_peca_e_recusado_depois_do_vpk(ambiente, monkeypatch, capsys, falta):
+    """Achado 3 do relatório 6 de quem tentou quebrar (20/11/2026, família F3: proteção sem teste): a conferência do
+    pacote depois do vpk (`conferir_pacote_do_velopack`) não tinha teste que a acusasse no Visual C++ nem no Tesseract
+    (o vpk de mentira copiava a pasta inteira; as mutações Z2 e Z4 passavam), e não procurava nunca a versão do Visual
+    C++ nem, com a pasta já montada, o Tesseract. Agora um vpk que deixa uma dessas peças de fora do pacote faz o publicar
+    parar ("o pacote do Velopack saiu errado", com a peça), e nada é publicado. Rodado em db4b377a: a versão do Visual C++
+    e o Tesseract que faltam no pacote passam."""
+    a = ambiente
+    _publicar_o_motor(a)
+    monkeypatch.setenv("VPK_FALSO_SEM", falta)
+    capsys.readouterr()
+    with pytest.raises(pub.Parou, match="empacotamento da atualização parou"):
+        _publicar(a)
+    saida = capsys.readouterr().out
+    assert "o pacote do Velopack saiu errado" in saida and falta.rstrip("/") in saida, saida
+    assert pub.DestinoPasta(a["servidor"]).situacao(ETIQUETA) is None
+    assert _rascunhos_que_sobraram(a) == []
+
+
+def test_volta7_achado3_o_pacote_montado_do_zero_sem_o_tesseract_e_recusado(ambiente, montar_de_verdade, monkeypatch,
+                                                                            capsys):
+    """Achado 3 do relatório 6, o outro caminho (a mutação Z4: o publicar montado do zero sem as peças): a pasta montada
+    do zero, com um vpk que deixa o Tesseract de fora, também para em "o pacote do Velopack saiu errado"; a conferência
+    do pacote cobra o Tesseract pela mesma lista, com ou sem as peças."""
+    a = ambiente
+    _publicar_o_motor(a)
+    monkeypatch.setenv("VPK_FALSO_SEM", "tesseract/")
+    capsys.readouterr()
+    with pytest.raises(pub.Parou, match="empacotamento da atualização parou"):
+        pub.publicar(versao.VERSAO, arquivo_da_chave=a["chave"], chave_publica=PUBLICA, vpk=a["vpk"],
+                     rascunho_base=a["rascunho"], pasta_de_saida=a["saida"], destino=pub.DestinoPasta(a["servidor"]))
+    assert "o pacote do Velopack saiu errado" in capsys.readouterr().out
+    assert pub.DestinoPasta(a["servidor"]).situacao(versao.etiqueta_da_versao(versao.VERSAO)) is None
+
+
+def test_volta7_achado4_o_empacotar_chamado_sozinho_recusa_antes_de_mexer_na_pasta(ambiente):
+    """Achado 4 do relatório 6 de quem tentou quebrar (20/11/2026): `construir_pacote_do_velopack` chamado sozinho com
+    uma pasta que a conferência recusa mexia nela antes de recusar (`preparar_saida` gravava o motor-exigido.json e
+    apagava o zip do motor de instalar\\). Agora a conferência vem antes: a pasta recusada fica exatamente como estava,
+    e o vpk não roda. Rodado em db4b377a: o zip some e o motor-exigido.json aparece."""
+    a = ambiente
+    de_fora = _pasta_pronta(a["tmp"] / "de-fora" / "EditorImpressao", VERSAO)
+    instalar = de_fora / atualizacao.PASTA_DO_QUE_SE_INSTALA
+    (instalar / atualizacao.VC_REDIST_NOME).unlink()
+    (instalar / versao.arquivo_do_motor(ocr_kraken.VERSAO_DO_MOTOR)).write_bytes(b"zip do motor de outra vez")
+    antes = {p: p.read_bytes() for p in de_fora.rglob("*") if p.is_file()}
+    motor = empacotar.MotorPublicado(ocr_kraken.VERSAO_DO_MOTOR, versao.arquivo_do_motor(ocr_kraken.VERSAO_DO_MOTOR),
+                                     "0" * 64, ETIQUETA_DO_MOTOR)
+    assert empacotar.construir_pacote_do_velopack(a["tmp"] / "saida-vpk", VERSAO, empacotar.ATUALIZACAO, de_fora, motor,
+                                                  vpk=a["vpk"]) is None
+    depois = {p: p.read_bytes() for p in de_fora.rglob("*") if p.is_file()}
+    assert depois == antes, "a pasta recusada foi mudada antes da recusa"
+    assert _vezes_que_o_vpk_rodou(a) == []
+
+
+def test_volta7_achado5_a_pasta_das_provas_com_espaco_no_nome(ambiente, monkeypatch):
+    """Achado 5 do relatório 6 de quem tentou quebrar (20/11/2026, família F3): as aspas do `--pasta "<pasta>"` nos
+    comandos das frases não tinham teste (as pastas dos testes não tinham espaço; a mutação Z6, sem as aspas, passava).
+    Aqui a pasta das provas tem espaço no nome: seguir ao pé da letra a frase do motor que falta publica o motor NESSA
+    pasta, e seguir a do rascunho que sobrou apaga o rascunho NELA; nenhuma fala com o GitHub."""
+    import shlex
+
+    a = ambiente
+    pasta = a["tmp"] / "versoes de prova"
+    destino = pub.DestinoPasta(pasta)
+    with pytest.raises(pub.Parou, match="publique o motor antes") as erro:
+        _publicar(a, destino=destino)
+    comando = destino.comando_de_publicar_o_motor()
+    assert comando in str(erro.value) and f'"{pasta}"' in comando, str(erro.value)
+    pedidos = []
+    publicar_de_verdade = pub.publicar_motor
+    monkeypatch.setattr(pub, "publicar_motor", lambda destino_pasta=None, *x, **k: pedidos.append(destino_pasta))
+
+    def nao_pode(self, *argumentos, **k):
+        """Seguir a frase da pasta não pode chegar ao GitHub."""
+        raise AssertionError(f"a frase da pasta foi ao GitHub: {argumentos}")
+
+    monkeypatch.setattr(pub.DestinoGitHub, "_gh", nao_pode)
+    assert pub.main([p.strip('"') for p in shlex.split(comando, posix=False)][1:]) == 0
+    assert pedidos == [pasta], pedidos
+    monkeypatch.setattr(pub, "publicar_motor", publicar_de_verdade)
+    destino.criar_rascunho(ETIQUETA, "t", "n")
+    with pytest.raises(pub.Parou, match="sobrou um rascunho") as erro:
+        pub.publicar_arquivos(destino, ETIQUETA, "t", "n", [], lambda: None)
+    _seguir_a_frase_sem_tocar_o_github(str(erro.value), destino, ETIQUETA, monkeypatch)
