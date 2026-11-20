@@ -1260,3 +1260,30 @@ def test_volta3_a_copia_conferida_le_de_volta_e_obedece_a_vigia(tmp_path, monkey
         empacotar.copiar_inteiro(origem, alvo, lambda: "parar (de mentira)")
     empacotar.copiar_inteiro(origem, alvo, lambda: None)
     assert alvo.read_bytes() == origem.read_bytes() and [p.name for p in alvo.parent.iterdir()] == ["copia.bin"]
+
+
+def test_volta3_achado4_a_vigia_fecha_o_filho_do_vpk_antes_de_soltar_o_grupo(ambiente, monkeypatch, tmp_path):
+    """Achado 4 do relatório 2 (família F3): com o fechamento do grupo desligado e a frase "conferido" posta direto, os
+    testes do achado 2 e do N10 passavam, porque quem fechava o filho era o fechar-ao-fechar do fim do `with`, depois
+    da frase. Aqui o soltar do grupo é segurado até o fim do teste: o filho do vpk tem de estar parado quando o
+    rodar_vpk devolve a frase, só pelo `fechar_tudo` (fechar só o vpk não passa)."""
+    from core import windows
+
+    batida = tmp_path / "filho-do-vpk.txt"
+    monkeypatch.setenv("VPK_FALSO_ESPERA", "60")
+    monkeypatch.setenv("VPK_FALSO_FILHO", str(batida))
+    segurados = []
+    verdadeiro = windows.ProgramaEmGrupo.soltar
+    monkeypatch.setattr(windows.ProgramaEmGrupo, "soltar", lambda self: segurados.append(self))
+    rascunho = tmp_path / "publicar-vigia4"
+    rascunho.mkdir()
+    try:
+        motivo = empacotar.rodar_vpk(empacotar.comando_do_vpk(ambiente["vpk"], ambiente["pasta"], rascunho / "s",
+                                                              VERSAO, com_msi=False), rascunho, intervalo_s=0.3,
+                                     livre=lambda _p: 19 * empacotar.GB if batida.exists() else 100 * empacotar.GB)
+        assert segurados, "o grupo não passou pelo soltar"
+        assert motivo and "fechados (conferido)" in motivo, motivo
+        assert not _batida_viva(batida), "o filho do vpk só pararia ao soltar o grupo"
+    finally:
+        for programa in segurados:
+            verdadeiro(programa)

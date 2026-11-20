@@ -1261,22 +1261,24 @@ def test_o_programa_nasce_parado_e_so_roda_dentro_do_grupo(tmp_path, monkeypatch
     """Achado 4 do relatório 2 de quem tentou quebrar (19/11/2026, família F5): o programa era aberto já rodando e
     posto no grupo depois; um filho aberto nesse instante ficava fora do grupo, e o `fechar_tudo` dizia "fechados
     (conferido)" com ele vivo. Agora ele nasce parado, entra no grupo, a peça confere que entrou e só então o solta. De
-    verdade: o pôr no grupo é atrasado de propósito em 3 s (mais que o Python leva para abrir o filho); mesmo assim o
-    filho nasce dentro do grupo e o `fechar_tudo` fecha os dois."""
-    k = windows._win().kernel32
-    verdadeiro = k.AssignProcessToJobObject
+    verdade: o instante entre abrir o programa e pô-lo no grupo é aumentado de propósito em 3 s (o abrir do Python
+    demora 3 s a mais para devolver; mais que o Python leva para abrir o filho); mesmo assim o filho nasce dentro do
+    grupo e o `fechar_tudo` fecha os dois."""
+    verdadeiro = subprocess.Popen
 
-    def atrasado(grupo, processo):
-        """Espera 3 s e põe no grupo (o instante de antes, aumentado)."""
-        time.sleep(3)
-        return verdadeiro(grupo, processo)
+    class PopenQueDemora(verdadeiro):
+        """O abrir de sempre, que só devolve 3 s depois (o instante de antes, aumentado)."""
+
+        def __init__(self, *argumentos, **opcoes):
+            super().__init__(*argumentos, **opcoes)
+            time.sleep(3)
 
     script = tmp_path / "pai_e_filho.py"
     script.write_text(_PAI_E_FILHO_QUE_ACABA, encoding="utf-8")
-    monkeypatch.setattr(k, "AssignProcessToJobObject", atrasado)
+    monkeypatch.setattr(windows.subprocess, "Popen", PopenQueDemora)
     try:
         programa, r = windows.abrir_em_grupo([PY, str(script), str(tmp_path), "pai"])
-        monkeypatch.setattr(k, "AssignProcessToJobObject", verdadeiro)
+        monkeypatch.setattr(windows.subprocess, "Popen", verdadeiro)
         assert r.deu_certo and programa is not None, r
         with programa:
             _esperar(tmp_path / "filho.txt")
@@ -1292,12 +1294,11 @@ def test_o_programa_nasce_parado_e_so_roda_dentro_do_grupo(tmp_path, monkeypatch
 def test_fechar_tudo_so_diz_conferido_quando_o_windows_diz_que_nenhum_ficou(tmp_path, monkeypatch):
     """Achado 4 do relatório 2 (a frase "conferido" sem teste que a acuse) e achado 9 (sem a leitura do grupo, a frase
     dizia "algum continua rodando"). Três casos, num programa de verdade no grupo: (1) o filho morre JÁ no
-    `fechar_tudo`, antes de soltar o grupo (o fechar-ao-fechar do fim do `with` não conta); (2) se o pedido de fechar
-    não fecha nada (trocado de propósito), a resposta é "continua(m) rodando", nunca "conferido"; (3) se o Windows não
-    responde à leitura do grupo, a resposta é "não deu para conferir"."""
+    `fechar_tudo`, antes de soltar o grupo (o fechar-ao-fechar do fim do `with` não conta); (2) se a leitura do grupo
+    diz que um continua vivo (trocada de propósito), a resposta é "continua(m) rodando", nunca "conferido"; (3) se o
+    Windows não responde à leitura do grupo, a resposta é "não deu para conferir"."""
     script = tmp_path / "pai_e_filho.py"
     script.write_text(_PAI_E_FILHO_QUE_ACABA, encoding="utf-8")
-    k = windows._win().kernel32
     try:
         programa, r = windows.abrir_em_grupo([PY, str(script), str(tmp_path), "pai"])
         assert r.deu_certo, r
@@ -1312,7 +1313,7 @@ def test_fechar_tudo_so_diz_conferido_quando_o_windows_diz_que_nenhum_ficou(tmp_
         assert r.deu_certo, r
         with programa:
             _esperar(tmp_path / "filho.txt")
-            monkeypatch.setattr(k, "TerminateJobObject", lambda grupo, codigo: True)   # "pedi", e nada fechou
+            monkeypatch.setattr(programa, "vivos", lambda: 1)                          # um continua vivo
             fechado = programa.fechar_tudo(espera_s=1)
             assert fechado.desfecho == windows.FALHOU and "continua" in fechado.motivo, fechado
             monkeypatch.setattr(programa, "vivos", lambda: None)                       # o Windows não responde
@@ -1342,3 +1343,14 @@ def test_o_lancado_solto_apaga_a_primeira_pasta_se_a_segunda_nao_nasce(monkeypat
     r = windows.lancar_powershell_solto("")
     assert r.desfecho == windows.FALHOU and criadas
     assert not criadas[0].exists(), f"a primeira pasta de troca ficou: {criadas[0]}"
+
+
+def test_um_lote_que_a_peca_nao_acha_tambem_e_recusado_pela_extensao(tmp_path):
+    """Achado 3 do relatório 2, a outra metade da regra: quando a peça não acha o arquivo (o Windows procura o nome
+    sozinho em lugares onde a peça não olha, como a pasta do programa que chama; CreateProcessW, "the system searches
+    for the executable file in the following sequence"), o começo do arquivo não pode ser lido; a extensão .bat ou .cmd,
+    lida do caminho completado pelo Windows, recusa mesmo assim. (Rodado: um .bat que começa com "MZ" não vai ao cmd.exe,
+    o Windows recusa com o erro 216; por isso o começo do arquivo basta quando ele existe.)"""
+    for nome in ("C:\nao\existe.bat", "C:\nao\existe.CMD", "C:\nao\existe.bat. ", "nao-existe-em-lugar-nenhum.cmd"):
+        r = windows.rodar_e_esperar([nome])
+        assert r.desfecho == windows.FALHOU and "função própria" in r.motivo, (nome, r)
