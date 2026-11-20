@@ -1141,6 +1141,10 @@ entraram a versão do motor, a ficha e a conferência, que o caminho do livro n�
 desligada, D-164). A gerente decide se roda o filtro de velocidade do GitHub (D-786; plano-v3, "Regras de todos os
 passos"). O tempo de publicar é medido na prova à vista.
 
+- Volta 4: não se aplica, pelo mesmo motivo: nenhum arquivo do processamento das páginas mudou (só o publicar, o
+  empacotar e a peça do Windows, que o caminho do livro não usa). A gravação no disco pede alguns segundos a mais por
+  arquivo grande ao publicar; o tempo de publicar é medido na prova à vista.
+
 ## Ideias e bugs
 
 - Ideia (Lista de espera): juntar as duas peças de conversa com o GitHub (a do publicar e a do porteiro) numa só.

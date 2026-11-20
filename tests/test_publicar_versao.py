@@ -1609,7 +1609,9 @@ if a[1] == "view":
     print(json.dumps({"isDraft": False, "tagName": a[2], "assets": [{"name": "grande.nupkg", "size": 10}]}))
     sys.exit(0)
 if a[1] == "download":
-    batida = ("import os, sys, time\nn = 0\nwhile True:\n    n += 1\n    open(sys.argv[1] + '.tmp', 'w').write(str(n))\n"
+    # o filho sai sozinho depois de 30 s: se um teste falhar e ele escapar do grupo, não fica rodando para sempre
+    batida = ("import os, sys, time\nn = 0\nfim = time.monotonic() + 30\nwhile time.monotonic() < fim:\n    n += 1\n"
+              "    open(sys.argv[1] + '.tmp', 'w').write(str(n))\n"
               "    try:\n        os.replace(sys.argv[1] + '.tmp', sys.argv[1])\n    except OSError:\n        pass\n"
               "    time.sleep(0.1)\n")
     subprocess.Popen([sys.executable, "-c", batida, os.environ["GH_DE_PROVA_FILHO"]])
@@ -1701,9 +1703,19 @@ def test_volta4_achado8_o_gh_roda_pelo_laco_unico_da_peca_e_fecha_o_que_abriu(tm
             raise KeyboardInterrupt
         return None
 
-    with pytest.raises(KeyboardInterrupt):
-        destino.baixar_vigiado(ETIQUETA, "grande.nupkg", tmp_path / "baixado", ctrl_c)
-    assert not _batida_viva(batida), "o filho do gh continuou rodando depois do Ctrl+C"
+    # o soltar do grupo é segurado: quem fecha no Ctrl+C tem de ser o laço, não o fechar-ao-fechar do fim do `with`
+    segurados = []
+    soltar_de_verdade = windows.ProgramaEmGrupo.soltar
+    monkeypatch.setattr(windows.ProgramaEmGrupo, "soltar", lambda self: segurados.append(self))
+    try:
+        with pytest.raises(KeyboardInterrupt):
+            destino.baixar_vigiado(ETIQUETA, "grande.nupkg", tmp_path / "baixado", ctrl_c)
+        assert segurados, "o grupo não passou pelo soltar"
+        assert not _batida_viva(batida), "o filho do gh continuou rodando depois do Ctrl+C"
+    finally:
+        monkeypatch.setattr(windows.ProgramaEmGrupo, "soltar", soltar_de_verdade)
+        for programa in segurados:
+            soltar_de_verdade(programa)
     vpk = _programa_de_prova(tmp_path / "vpk.exe", "import sys\nsys.exit(0)\n")
     rascunho = tmp_path / "publicar-laco"
     rascunho.mkdir()

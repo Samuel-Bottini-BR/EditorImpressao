@@ -1458,7 +1458,7 @@ def test_volta4_a_segunda_olhada_depois_do_path_recusa_o_lote_achado_pelo_pathex
     assert not marca.exists()
 
 
-def test_volta4_rodar_em_grupo_e_o_laco_unico_com_a_saida_a_vigia_e_o_tempo(tmp_path):
+def test_volta4_rodar_em_grupo_e_o_laco_unico_com_a_saida_a_vigia_e_o_tempo(tmp_path, monkeypatch):
     """Achado 8 do relatório 3 (§11.12, ponto 1: uma peça só para cada conversa com o que está fora): o laço "rodar um
     programa, olhar a vigia e fechar" estava escrito no `rodar_vpk` (pela peça, num grupo) e no gh do publicar (com o
     subprocess direto, sem grupo, fechando só o gh). Agora é `windows.rodar_em_grupo`, que os dois usam. De verdade:
@@ -1477,11 +1477,22 @@ def test_volta4_rodar_em_grupo_e_o_laco_unico_com_a_saida_a_vigia_e_o_tempo(tmp_
             """Manda parar quando o filho já escreve."""
             return "o disco ficou abaixo da reserva (de mentira)" if (tmp_path / "filho.txt").exists() else None
 
-        r = windows.rodar_em_grupo([PY, str(script), str(tmp_path), "pai"], vigia=vigia, intervalo_s=0.2,
-                                   capturar=True)
-        assert r.desfecho == windows.FALHOU and r.dados["parou"] == "o disco ficou abaixo da reserva (de mentira)", r
-        assert r.dados["codigo"] is None and r.dados["fechado"] is True, r
-        assert not _ainda_vive(tmp_path / "filho.txt") and not _ainda_vive(tmp_path / "pai.txt")
+        # o soltar do grupo é segurado (como no teste do achado 4 da volta 3): quem fecha o filho tem de ser o laço,
+        # não o fechar-ao-fechar do fim do `with` (com ele, fechar só o programa principal também passaria)
+        segurados = []
+        soltar_de_verdade = windows.ProgramaEmGrupo.soltar
+        monkeypatch.setattr(windows.ProgramaEmGrupo, "soltar", lambda self: segurados.append(self))
+        try:
+            r = windows.rodar_em_grupo([PY, str(script), str(tmp_path), "pai"], vigia=vigia, intervalo_s=0.2,
+                                       capturar=True)
+            assert segurados, "o grupo não passou pelo soltar"
+            assert r.desfecho == windows.FALHOU and r.dados["parou"] == "o disco ficou abaixo da reserva (de mentira)", r
+            assert r.dados["codigo"] is None and r.dados["fechado"] is True, r
+            assert not _ainda_vive(tmp_path / "filho.txt") and not _ainda_vive(tmp_path / "pai.txt")
+        finally:
+            monkeypatch.setattr(windows.ProgramaEmGrupo, "soltar", soltar_de_verdade)
+            for programa in segurados:
+                soltar_de_verdade(programa)
         for arquivo in tmp_path.glob("*.txt"):
             arquivo.unlink()
         inicio = time.monotonic()
