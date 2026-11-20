@@ -272,6 +272,10 @@ Máquina: tudo (testes em `tests/` e o exercício de desligar cada proteção). 
 
 - Ideia: uma etiqueta "conferência" na tabela (para a D-812 valer também para o teste comum que confere algo).
 - Ideia: a K25 seguir o comando guardado num texto que não começa com ele (o caso do `core/testes_a_distancia.py:601`).
+- Incidente meu (20/11, 00:33 UTC): a cota da conta no GitHub (5000 pedidos por hora) acabou; parte foi dos meus
+  vigias da rodada (consultavam a cada 30 a 60 segundos). A cota é a mesma do agente do passo 2. Parei os vigias e
+  esperei a cota voltar (01:00 UTC) sem consultar. Ideia: a regra dos testes no GitHub dizer "uma consulta à rodada a
+  cada 5 minutos, no máximo".
 - Bug que não impede (19/11): a conferência do F6 diz "ou escreva não se aplica: motivo", mas não aceita "não se aplica"
   (`regras_dos_agentes/formulario.py`, `_conferir_conteudo`, o laço de `CASOS_DE_FALHA`).
 
