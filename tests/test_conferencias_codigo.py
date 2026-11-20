@@ -347,8 +347,15 @@ def test_arquivo_com_marca_de_utf8_e_lido():
 
 
 def test_as_24_conferencias_tem_a_numeracao_da_tabela_da_proposta():
-    """As 24 conferências, K01 a K24, cada uma com a regra e o tipo (vale a numeração da tabela, plano-v3)."""
-    assert [c.codigo for c in porteiro.CONFERENCIAS] == [f"K{n:02d}" for n in range(1, 25)]
+    """As 24 conferências, K01 a K24, cada uma com a regra e o tipo (vale a numeração da tabela, plano-v3).
+
+    Mudado com a D-809 (19/11/2026: "Conferência nova do porteiro", com o "ok" do Samuel): as conferências novas do
+    catálogo dos erros continuam a numeração depois da K24, sem buraco, e cada uma cita a decisão que a criou. As 24
+    da tabela continuam as mesmas, na mesma ordem."""
+    numeros = [c.codigo for c in porteiro.CONFERENCIAS]
+    assert numeros[:24] == [f"K{n:02d}" for n in range(1, 25)]
+    assert numeros == [f"K{n:02d}" for n in range(1, len(numeros) + 1)]
+    assert all(re.search(r"\bD-\d{3,}\b", c.regra) for c in porteiro.CONFERENCIAS[24:])
     assert porteiro.POR_CODIGO["K05"].o_que.startswith("emoji")
     assert porteiro.POR_CODIGO["K08"].o_que.startswith("nome de arquivo com acento")
     assert all(c.tipo in ("codigo", "entrega") and c.regra for c in porteiro.CONFERENCIAS)
