@@ -6,9 +6,9 @@ O QUE É
     Agendador, a pasta de troca, a pasta segura, ler licenças de pasta e marcas, e ler a assinatura digital de um
     arquivo (`ler_assinatura_digital`, desde o passo 2, para o publicar), e abrir um programa num grupo do Windows que
     fecha junto tudo o que ele abrir (`abrir_em_grupo`, passo 2, para a vigia do espaço do publicar). O porteiro (`regras_dos_agentes`,
-    conferência K01) só deixa essa conversa acontecer aqui. Nenhum chamador do programa usa esta peça ainda: eles
-    mudam nos passos 3 a 5 do plano; hoje só o `main.py` (a entrada do trabalho de administrador), a janela de prova e
-    os testes a usam.
+    conferência K01) só deixa essa conversa acontecer aqui. Quem usa hoje: o `main.py` (a entrada do trabalho de
+    administrador), a janela de prova, os testes e, desde o passo 2, o `empacotar.py` (o grupo do vpk e a assinatura
+    digital do Visual C++), que o publicar chama. O programa do Kaique ainda não a usa: ele muda nos passos 3 a 5.
 
 AS TRÊS RESPOSTAS
     Toda função que pede algo ao Windows devolve uma `Resposta` com um de três desfechos: `DEU_CERTO`, `DISSE_NAO` (a
@@ -313,6 +313,15 @@ class _JOB_CONTAS(ctypes.Structure):
                 ("ActiveProcesses", wintypes.DWORD), ("TotalTerminatedProcesses", wintypes.DWORD)]
 
 
+class _THREADENTRY32(ctypes.Structure):
+    """THREADENTRY32 (Toolhelp32): uma linha de execução (thread) de um processo, para achar a linha principal do
+    programa aberto parado (`abrir_em_grupo`)."""
+
+    _fields_ = [("dwSize", wintypes.DWORD), ("cntUsage", wintypes.DWORD), ("th32ThreadID", wintypes.DWORD),
+                ("th32OwnerProcessID", wintypes.DWORD), ("tpBasePri", wintypes.LONG), ("tpDeltaPri", wintypes.LONG),
+                ("dwFlags", wintypes.DWORD)]
+
+
 class _Bibliotecas:
     """As funções do Windows que a peça usa, com os tipos certos e `use_last_error=True` (o erro de cada chamada
     fica guardado e é lido por `_ler_erro`, nunca um erro velho de outra chamada)."""
@@ -342,6 +351,11 @@ class _Bibliotecas:
             (k.AssignProcessToJobObject, [wintypes.HANDLE, wintypes.HANDLE], wintypes.BOOL),
             (k.TerminateJobObject, [wintypes.HANDLE, wintypes.UINT], wintypes.BOOL),
             (k.OpenProcess, [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD], wintypes.HANDLE),
+            (k.OpenThread, [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD], wintypes.HANDLE),
+            (k.ResumeThread, [wintypes.HANDLE], wintypes.DWORD),
+            (k.CreateToolhelp32Snapshot, [wintypes.DWORD, wintypes.DWORD], wintypes.HANDLE),
+            (k.Thread32First, [wintypes.HANDLE, ctypes.POINTER(_THREADENTRY32)], wintypes.BOOL),
+            (k.Thread32Next, [wintypes.HANDLE, ctypes.POINTER(_THREADENTRY32)], wintypes.BOOL),
             (a.GetNamedSecurityInfoW, [wintypes.LPCWSTR, ctypes.c_int, wintypes.DWORD, ctypes.POINTER(P),
                                        ctypes.POINTER(P), ctypes.POINTER(P), ctypes.POINTER(P), ctypes.POINTER(P)],
              wintypes.DWORD),
@@ -1047,15 +1061,61 @@ def _caminho_do_programa(programa: str) -> Path | None:
     return Path(texto)
 
 
+# Os arquivos que o Windows NÃO roda como programa e entrega ao cmd.exe (que é da pasta do Windows e tem função própria
+# na peça). Passo 2, volta 3: achado 3 do relatório 2 de quem tentou quebrar (19/11/2026, família F2: um `x.bat` fora
+# da pasta do Windows passava pela recusa, e o Windows o rodava pelo C:\Windows\System32\cmd.exe).
+# Lido (D-813, "tudo o que a peça aceita como entrada"):
+# - Microsoft Learn, CreateProcessW, lpApplicationName: o módulo é "a Windows-based application" ou, "if the appropriate
+#   subsystem is available", "some other type of module (for example, MS-DOS or OS/2)"; "To run a batch file, you must
+#   start the command interpreter" (o cmd.exe); sem extensão, ".exe is appended"; sem pasta, a busca é: a pasta do
+#   programa que chama, a pasta atual, System32, System, Windows, o PATH.
+# - Python 3.14, subprocess, "Security Considerations": "On Windows, batch files (*.bat or *.cmd) may be launched by the
+#   operating system in a system shell regardless of the arguments passed to this library". Ou seja: o próprio
+#   CreateProcess, chamado pelo subprocess sem shell, abre o cmd.exe para um .bat ou .cmd.
+# - Rust std (correção do CVE-2024-24576, "BatBadBut", abril de 2024): decide se é lote pela extensão .bat/.cmd DEPOIS de
+#   o Windows completar o caminho (GetFullPathNameW), porque o Windows tira os pontos e espaços do fim do nome ("x.bat."
+#   e "x.bat " são o x.bat).
+# Por isso a recusa olha a COISA DE VERDADE em dois jeitos (`_nao_e_programa_do_windows`): a extensão do caminho já
+# completado pelo Windows, e o começo do arquivo (todo programa do Windows começa com as letras "MZ"; o que não
+# começa ou é lote, que vai ao cmd.exe, ou é de um subsistema que este Windows de 64 bits não tem). Arriscado: tirar
+# uma das duas (a extensão pega o lote que não se acha pelo nome; o começo pega o nome escrito de outro jeito).
+_EXTENSOES_DE_LOTE = (".bat", ".cmd")
+_COMECO_DE_PROGRAMA = b"MZ"
+
+
+def _nao_e_programa_do_windows(caminho: Path) -> bool:
+    """O arquivo é algo que o Windows não roda como programa e entregaria a outro (o cmd.exe)? Sim se o nome, depois de
+    o Windows completar o caminho (tira pontos e espaços do fim), acaba em .bat ou .cmd; ou se o arquivo existe e não
+    começa com "MZ"; ou se existe e não deu para ler (na dúvida, sim). Arquivo que não existe: não (o Windows não acha
+    e o rodar devolve "não achei o programa")."""
+    try:
+        completo = os.path.abspath(str(caminho))            # GetFullPathNameW: "x.bat. " vira "x.bat"
+    except (OSError, ValueError):
+        return True
+    if completo.rstrip(". ").lower().endswith(_EXTENSOES_DE_LOTE):
+        return True
+    try:
+        if not os.path.isfile(completo):
+            return False
+        with open(completo, "rb") as arquivo:
+            return arquivo.read(len(_COMECO_DE_PROGRAMA)) != _COMECO_DE_PROGRAMA
+    except OSError:
+        return True
+
+
 def _programa_com_funcao_propria(programa: str) -> bool:
     """O programa tem função própria na peça? Sim se está na pasta do Windows (ou, dado só pelo nome, é achado lá: o
-    Windows procura primeiro na pasta do sistema), se o nome é de `PROGRAMAS_COM_FUNCAO_PROPRIA`, ou se é caminho de
-    rede (`_caminho_do_programa`). Na dúvida (não deu para saber onde fica a pasta do Windows), sim."""
+    Windows procura primeiro na pasta do sistema), se o nome é de `PROGRAMAS_COM_FUNCAO_PROPRIA`, se é caminho de
+    rede (`_caminho_do_programa`), ou se não é um programa do Windows de verdade (um .bat ou .cmd, que o Windows roda
+    pelo cmd.exe: `_nao_e_programa_do_windows`). Na dúvida (não deu para saber onde fica a pasta do Windows), sim.
+    É a regra única do rodar genérico, do lançar solto genérico e do grupo (`abrir_em_grupo`)."""
     caminho = _caminho_do_programa(programa)
     if caminho is None:
         return True
     nome = caminho.name.lower()
     if nome.removesuffix(".exe") in PROGRAMAS_COM_FUNCAO_PROPRIA:
+        return True
+    if _nao_e_programa_do_windows(caminho):
         return True
     try:
         sistema = pasta_do_sistema()
@@ -1074,7 +1134,9 @@ def _programa_com_funcao_propria(programa: str) -> bool:
         caminho = caminho.resolve()
     except OSError:
         return True
-    return caminho.is_relative_to(pasta_do_windows.resolve())
+    # de novo depois de achar o arquivo de verdade (o nome sozinho pode ter virado um .BAT pelo PATHEXT do which, ou o
+    # caminho ter passado por um atalho)
+    return caminho.is_relative_to(pasta_do_windows.resolve()) or _nao_e_programa_do_windows(caminho)
 
 
 def _recusa_de_programa(programa: str) -> Resposta:
@@ -1128,7 +1190,14 @@ def _rodar(comando: list, limite_s: float = 120, entrada: bytes | None = None, l
 _JOB_LIMITES_ESTENDIDOS = 9                 # JobObjectExtendedLimitInformation
 _JOB_CONTAS_BASICAS = 1                     # JobObjectBasicAccountingInformation
 _JOB_FECHA_TUDO_AO_FECHAR = 0x2000          # JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
-_PODE_POR_NO_GRUPO_E_FECHAR = 0x0100 | 0x0001 | 0x00100000   # PROCESS_SET_QUOTA | PROCESS_TERMINATE | SYNCHRONIZE
+# PROCESS_SET_QUOTA | PROCESS_TERMINATE | SYNCHRONIZE | PROCESS_QUERY_LIMITED_INFORMATION (este, para o IsProcessInJob
+# conferir que ele entrou: sem ele, o Windows responde "acesso negado", erro 5)
+_PODE_POR_NO_GRUPO_E_FECHAR = 0x0100 | 0x0001 | 0x00100000 | 0x1000
+_ABRIR_PARADO = 0x00000004                  # CREATE_SUSPENDED (process-creation-flags)
+_PODE_SOLTAR_A_LINHA = 0x0002               # THREAD_SUSPEND_RESUME
+_FOTO_DAS_LINHAS = 0x00000004               # TH32CS_SNAPTHREAD (CreateToolhelp32Snapshot)
+_ALCA_INVALIDA = ctypes.c_void_p(-1).value  # INVALID_HANDLE_VALUE
+_RESUME_FALHOU = 0xFFFFFFFF                 # (DWORD)-1, o ResumeThread que falhou
 
 
 class ProgramaEmGrupo:
@@ -1138,9 +1207,14 @@ class ProgramaEmGrupo:
     processos que ele cria entram no mesmo grupo; `TerminateJobObject` fecha todos os processos do grupo; com
     JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE, fechar a última alça do grupo fecha todos (assim, se este programa cair, o
     grupo não fica rodando sozinho); grupos dentro de grupos valem desde o Windows 8 (o Python dos testes do GitHub já
-    roda num grupo). Há um instante, entre abrir o programa e pô-lo no grupo, em que um filho escaparia; o vpk só abre
-    os dele minutos depois (no .msi), e o `fechar_tudo` confere o que ficou.
-    Usar sempre com `with` (ou `soltar()` no fim). Seguro mexer: as frases. Arriscado: tirar o fechar-ao-fechar."""
+    roda num grupo).
+    O programa nasce PARADO e só é solto depois de estar no grupo (`abrir_em_grupo`; passo 2, volta 3, achado 4 do
+    relatório 2 de quem tentou quebrar: antes, no instante entre abrir e pôr no grupo, um filho escapava, e o
+    `fechar_tudo` dizia "conferido" com ele vivo). Assim nada do que ele abre pelo CreateProcess fica fora do grupo. O
+    que fica fora, pela documentação ("Job Objects"): o que se cria pelo Win32_Process.Create (o WMI), que o vpk não
+    usa; e quem sair do grupo com a bandeira de sair, que este grupo não permite (o pedido falha).
+    Usar sempre com `with` (ou `soltar()` no fim). Seguro mexer: as frases. Arriscado: tirar o fechar-ao-fechar; abrir
+    sem ser parado (o instante volta)."""
 
     def __init__(self, processo: subprocess.Popen, grupo: int):
         """Guarda o processo e a alça do grupo (quem cria é `abrir_em_grupo`)."""
@@ -1168,23 +1242,35 @@ class ProgramaEmGrupo:
         return int(contas.ActiveProcesses)
 
     def fechar_tudo(self, espera_s: float = 15) -> Resposta:
-        """Fecha o programa e tudo o que ele abriu, e CONFERE no Windows que nada do grupo ficou vivo."""
+        """Fecha o programa e tudo o que ele abriu, e CONFERE no Windows que nada do grupo ficou vivo.
+
+        A frase "conferido" só sai quando a leitura do grupo diz 0 vivos (lido do Windows, `vivos`), nunca pelo pedido
+        de fechar. Sem leitura do grupo (o Windows não respondeu), a frase diz "não deu para conferir", nunca "algum
+        continua rodando" (achado 9 do relatório 2). Antes de soltar o grupo: quem chama decide com esta resposta."""
         w = _win()
-        if self._grupo and not w.kernel32.TerminateJobObject(self._grupo, 1):
+        if not self._grupo:
+            return _falhou("não deu para conferir se o programa e o que ele abriu fecharam: o grupo já foi solto")
+        if not w.kernel32.TerminateJobObject(self._grupo, 1):
             erro = _ler_erro()
             self.processo.kill()
-            return _falhou("não consegui fechar os programas do grupo", f"TerminateJobObject: erro {erro}")
+            return _falhou("não consegui fechar os programas do grupo (fechei só o programa principal; não deu para "
+                           "conferir o resto)", f"TerminateJobObject: erro {erro}")
         try:
             self.processo.wait(timeout=espera_s)
         except subprocess.TimeoutExpired:
             pass
         fim = time.monotonic() + espera_s
-        while time.monotonic() < fim:
-            if self.vivos() == 0:
-                return _certo("fechados o programa e tudo o que ele abriu (conferido)")
+        lido = self.vivos()
+        while lido != 0 and time.monotonic() < fim:
             time.sleep(0.2)
-        return _falhou("pedi para fechar o programa e o que ele abriu, e algum continua rodando",
-                       f"vivos no grupo: {self.vivos()}")
+            lido = self.vivos()
+        if lido == 0:
+            return _certo("fechados o programa e tudo o que ele abriu (conferido no Windows: nenhum vivo no grupo)")
+        if lido is None:
+            return _falhou("pedi para fechar o programa e o que ele abriu, e não deu para conferir (o Windows não "
+                           "respondeu à leitura do grupo)", f"QueryInformationJobObject: erro {_ler_erro()}")
+        return _falhou(f"pedi para fechar o programa e o que ele abriu, e {lido} continua(m) rodando",
+                       f"vivos no grupo: {lido}")
 
     def soltar(self) -> None:
         """Fecha a alça do grupo (o que ainda estiver vivo nele é fechado pelo Windows: fechar-ao-fechar)."""
@@ -1201,11 +1287,61 @@ class ProgramaEmGrupo:
         self.soltar()
 
 
+def _soltar_o_programa_parado(pid: int) -> tuple[bool, str]:
+    """Solta (ResumeThread) a linha principal de um programa aberto PARADO. Devolve (soltou?, o técnico).
+
+    O subprocess do Python fecha a alça da linha principal logo depois de abrir (Lib/subprocess.py, `_execute_child`:
+    `_winapi.CloseHandle(ht)`) e não guarda o número dela; então ela é achada pela foto das linhas do Windows
+    (CreateToolhelp32Snapshot com TH32CS_SNAPTHREAD, Thread32First/Next: as linhas com th32OwnerProcessID = pid). Um
+    programa aberto parado só tem a linha principal (as outras nascem quando ele roda). Soltou = o ResumeThread de
+    cada linha achada devolveu 1 ou mais (estava parada e agora roda). Lido na Microsoft: CreateProcess, flag
+    CREATE_SUSPENDED: "The primary thread of the new process is created in a suspended state, and does not run until
+    the ResumeThread function is called"; ResumeThread devolve a contagem de parada anterior, ou (DWORD)-1 se falhou."""
+    k = _win().kernel32
+    foto = k.CreateToolhelp32Snapshot(_FOTO_DAS_LINHAS, 0)
+    if not foto or foto == _ALCA_INVALIDA:
+        return False, f"CreateToolhelp32Snapshot: erro {_ler_erro()}"
+    linhas: list[int] = []
+    try:
+        linha = _THREADENTRY32()
+        linha.dwSize = ctypes.sizeof(linha)
+        existe = k.Thread32First(foto, ctypes.byref(linha))
+        while existe:
+            if linha.th32OwnerProcessID == pid:
+                linhas.append(int(linha.th32ThreadID))
+            existe = k.Thread32Next(foto, ctypes.byref(linha))
+    finally:
+        k.CloseHandle(foto)
+    if not linhas:
+        return False, f"nenhuma linha do processo {pid} na foto do Windows"
+    for numero in linhas:
+        alca = k.OpenThread(_PODE_SOLTAR_A_LINHA, False, numero)
+        if not alca:
+            return False, f"OpenThread {numero}: erro {_ler_erro()}"
+        try:
+            antes = k.ResumeThread(alca)
+            erro = _ler_erro()
+        finally:
+            k.CloseHandle(alca)
+        if antes == _RESUME_FALHOU or antes < 1:
+            return False, f"ResumeThread {numero}: devolveu {antes} (erro {erro})"
+    return True, f"{len(linhas)} linha(s) soltas"
+
+
 def abrir_em_grupo(comando: list, pasta: Path | str | None = None,
                    ambiente: dict[str, str] | None = None) -> tuple[ProgramaEmGrupo | None, Resposta]:
     """Abre um programa (com a janela de console de quem chama, para a saída dele aparecer) num grupo do Windows só
     dele. Devolve (o programa, DEU_CERTO) ou (None, FALHOU com o motivo). RECUSA os programas que têm função própria
-    na peça (como o rodar genérico). Quem usa: `empacotar.rodar_vpk` (o vpk e o que ele abre)."""
+    na peça (como o rodar genérico, pela mesma regra: `_programa_com_funcao_propria`). Quem usa: `empacotar.rodar_vpk`
+    (o vpk e o que ele abre).
+
+    Em ordem: cria o grupo (fechar-ao-fechar); abre o programa PARADO (CREATE_SUSPENDED); põe no grupo; CONFERE no
+    Windows que ele está no grupo (IsProcessInJob); e só então o solta. Qualquer passo que falha fecha o que abriu e
+    devolve FALHOU (nada fica rodando fora do grupo). Passo 2, volta 3 (achado 4 do relatório 2): antes ele nascia
+    rodando e era posto no grupo depois; um filho aberto nesse instante ficava de fora.
+    Observação para o passo 3 (achado 10 do relatório 2): o programa herda o console de quem chama. Chamado do programa
+    do Kaique (sem console), o Windows criaria uma janela preta nova para um programa de console. Ver o ONDE-PAREI do
+    passo 2."""
     if not comando or _programa_com_funcao_propria(str(comando[0])):
         return None, _recusa_de_programa(str(comando[0]) if comando else "(nada)")
     w = _win()
@@ -1219,21 +1355,40 @@ def abrir_em_grupo(comando: list, pasta: Path | str | None = None,
         w.kernel32.CloseHandle(grupo)
         return None, _falhou("o Windows não deixou preparar o grupo do programa", f"SetInformationJobObject: {erro}")
     try:
-        processo = subprocess.Popen([str(c) for c in comando], cwd=str(pasta) if pasta else None, env=ambiente)
+        processo = subprocess.Popen([str(c) for c in comando], cwd=str(pasta) if pasta else None, env=ambiente,
+                                    creationflags=_ABRIR_PARADO)
     except OSError as erro:
         w.kernel32.CloseHandle(grupo)
         return None, _falhou("não consegui abrir o programa", f"{comando[0]}: {erro!r}")
+
+    def desistir(motivo: str, tecnico: str) -> tuple[None, Resposta]:
+        """Fecha o programa (parado ou já no grupo) e o grupo, e devolve FALHOU."""
+        w.kernel32.TerminateJobObject(grupo, 1)
+        processo.kill()
+        try:
+            processo.wait(timeout=15)
+        except subprocess.TimeoutExpired:
+            tecnico += "; o programa não fechou em 15 s"
+        w.kernel32.CloseHandle(grupo)
+        return None, _falhou(motivo, tecnico)
+
     alca = w.kernel32.OpenProcess(_PODE_POR_NO_GRUPO_E_FECHAR, False, processo.pid)
     posto = bool(alca) and bool(w.kernel32.AssignProcessToJobObject(grupo, alca))
     erro = _ler_erro()
+    dentro = wintypes.BOOL()
+    conferido = posto and bool(w.kernel32.IsProcessInJob(alca, grupo, ctypes.byref(dentro))) and bool(dentro.value)
+    erro_da_conferencia = _ler_erro()
     if alca:
         w.kernel32.CloseHandle(alca)
     if not posto:
-        processo.kill()
-        processo.wait()
-        w.kernel32.CloseHandle(grupo)
-        return None, _falhou("o Windows não deixou pôr o programa no grupo (ele foi fechado)",
-                             f"AssignProcessToJobObject: erro {erro}")
+        return desistir("o Windows não deixou pôr o programa no grupo (ele foi fechado antes de começar)",
+                        f"AssignProcessToJobObject: erro {erro}")
+    if not conferido:
+        return desistir("o Windows não confirmou o programa no grupo (ele foi fechado antes de começar)",
+                        f"IsProcessInJob: erro {erro_da_conferencia}")
+    soltou, tecnico = _soltar_o_programa_parado(processo.pid)
+    if not soltou:
+        return desistir("não consegui soltar o programa depois de pô-lo no grupo (ele foi fechado)", tecnico)
     return ProgramaEmGrupo(processo, grupo), _certo()
 
 
@@ -1376,11 +1531,17 @@ def lancar_powershell_solto(texto: str, espera_s: float = 30) -> Resposta:
     O sinal de vida fica numa SEGUNDA pasta de troca, que o script não apaga: só a peça, depois de ver o sinal (ou de
     desistir). Antes ele ficava na pasta que o script apaga no fim, e um script curto apagava o sinal antes de a peça
     olhar: "saiu sem começar" de uma coisa que rodou (bug de 19/11, 12 de 20 vezes com um script vazio). Se este
-    processo cair antes, a pasta do sinal é limpa pela limpeza das trocas velhas (`_limpar_trocas_velhas`)."""
+    processo cair antes, a pasta do sinal é limpa pela limpeza das trocas velhas (`_limpar_trocas_velhas`).
+    Se a segunda pasta não nasce, a primeira é apagada na hora (volta 3, achado 9 do relatório 2: antes ficava para a
+    limpeza do dia seguinte)."""
     try:
         pasta = criar_pasta_de_troca()
+    except OSError as erro:
+        return _falhou("não consegui preparar o script (o disco está cheio ou sem licença?)", repr(erro))
+    try:
         pasta_do_sinal = criar_pasta_de_troca()
     except OSError as erro:
+        apagar_pasta_de_troca(pasta)
         return _falhou("não consegui preparar o script (o disco está cheio ou sem licença?)", repr(erro))
     sinal = pasta_do_sinal / "comecei.txt"
     script = pasta / "solto.ps1"

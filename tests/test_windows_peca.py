@@ -1181,3 +1181,164 @@ def test_fechar_o_programa_em_grupo_fecha_tambem_o_que_ele_abriu(tmp_path):
     assert not _ainda_vive(tmp_path / "pai.txt") and not _ainda_vive(tmp_path / "filho.txt")
     recusado, r = windows.abrir_em_grupo([str(windows.pasta_do_sistema() / "cmd.exe"), "/c", "exit"])
     assert recusado is None and r.desfecho == windows.FALHOU, "o grupo também recusa programa com função própria"
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Passo 2, volta 3 (relatório 2 de quem tentou quebrar, 19/11/2026)
+# ---------------------------------------------------------------------------------------------------------------------
+
+def test_bat_e_cmd_sao_recusados_pelo_rodar_pelo_lancar_e_pelo_grupo(tmp_path, monkeypatch):
+    """Achado 3 do relatório 2 de quem tentou quebrar (19/11/2026, família F2, "o vizinho passa"): a peça fechada
+    recusava os programas da pasta do Windows, mas um arquivo .bat ou .cmd de fora dela passava, e o Windows o rodava
+    pelo C:\\Windows\\System32\\cmd.exe (o próprio CreateProcess entrega o lote ao cmd.exe; documentação do subprocess:
+    "batch files (*.bat or *.cmd) may be launched by the operating system in a system shell"). Agora o rodar genérico,
+    o lançar solto e o grupo recusam pela MESMA regra o que não é programa do Windows de verdade: a extensão depois de
+    o Windows completar o caminho, e o começo do arquivo ("MZ"). De verdade: o lote escreveria um arquivo; nada é
+    escrito. Os jeitos de escrever: maiúscula, ponto e espaço no fim (o Windows tira), o prefixo de caminho longo, o
+    fluxo de dados (::$DATA), só o nome (pela pasta atual) e um lote com o nome de .exe."""
+    marca = tmp_path / "o-lote-rodou.txt"
+    lote = f'@echo %COMSPEC%> "{marca}"\r\n'
+    for nome in ("x.bat", "y.cmd", "Z.BAT", "disfarcado.exe"):
+        (tmp_path / nome).write_text(lote, encoding="ascii")
+    jeitos = [str(tmp_path / "x.bat"), str(tmp_path / "y.cmd"), str(tmp_path / "Z.BAT"), str(tmp_path / "x.bat") + ".",
+              str(tmp_path / "x.bat") + " ", "\\\\?\\" + str(tmp_path / "y.cmd"), str(tmp_path / "x.bat") + "::$DATA",
+              str(tmp_path / "disfarcado.exe"), "x.bat", "y.cmd"]
+    monkeypatch.chdir(tmp_path)
+    for jeito in jeitos:
+        r = windows.rodar_e_esperar([jeito])
+        assert r.desfecho == windows.FALHOU and "função própria" in r.motivo, (jeito, r)
+        r = windows.lancar_solto([jeito], tmp_path / "sinal.txt", espera_s=1)
+        assert r.desfecho == windows.FALHOU and "função própria" in r.motivo, (jeito, r)
+        programa, r = windows.abrir_em_grupo([jeito])
+        assert programa is None and "função própria" in r.motivo, (jeito, r)
+    time.sleep(0.5)
+    assert not marca.exists(), "um arquivo de lote rodou pelo cmd.exe: " + marca.read_text(errors="replace")
+    # o programa de verdade continua passando (a recusa não pega o que não devia)
+    assert windows.rodar_e_esperar([PY, "-c", "print(1)"], letras="utf-8").deu_certo
+    assert "não achei" in windows.rodar_e_esperar(["C:\\nao\\existe.exe"]).motivo
+
+
+# Um pai que abre um filho logo ao começar; os dois anotam o número do processo e escrevem uma batida a cada 0,1 s, e
+# saem sozinhos depois de 20 s (se algum escapar do grupo num teste, não fica rodando para sempre).
+_PAI_E_FILHO_QUE_ACABA = r'''
+import os, subprocess, sys, time
+from pathlib import Path
+pasta, papel = Path(sys.argv[1]), sys.argv[2]
+if papel == "pai":
+    subprocess.Popen([sys.executable, __file__, str(pasta), "filho"])
+(pasta / (papel + ".pid")).write_text(str(os.getpid()))
+fim = time.monotonic() + 20
+n = 0
+while time.monotonic() < fim:
+    n += 1
+    provisorio = pasta / (papel + ".tmp")
+    provisorio.write_text(str(n))
+    try:
+        os.replace(provisorio, pasta / (papel + ".txt"))
+    except OSError:
+        pass
+    time.sleep(0.1)
+'''
+
+
+def _esperar(arquivo: Path, limite_s: float = 20) -> None:
+    """Espera o arquivo aparecer (o processo começou)."""
+    fim = time.monotonic() + limite_s
+    while not arquivo.exists() and time.monotonic() < fim:
+        time.sleep(0.1)
+
+
+def _fechar_o_que_sobrou(pasta: Path) -> None:
+    """Fecha, pelo número anotado, os processos de teste que escaparam (só os deste teste)."""
+    for pid in pasta.glob("*.pid"):
+        try:
+            os.kill(int(pid.read_text()), 9)
+        except (OSError, ValueError):
+            pass
+
+
+def test_o_programa_nasce_parado_e_so_roda_dentro_do_grupo(tmp_path, monkeypatch):
+    """Achado 4 do relatório 2 de quem tentou quebrar (19/11/2026, família F5): o programa era aberto já rodando e
+    posto no grupo depois; um filho aberto nesse instante ficava fora do grupo, e o `fechar_tudo` dizia "fechados
+    (conferido)" com ele vivo. Agora ele nasce parado, entra no grupo, a peça confere que entrou e só então o solta. De
+    verdade: o pôr no grupo é atrasado de propósito em 3 s (mais que o Python leva para abrir o filho); mesmo assim o
+    filho nasce dentro do grupo e o `fechar_tudo` fecha os dois."""
+    k = windows._win().kernel32
+    verdadeiro = k.AssignProcessToJobObject
+
+    def atrasado(grupo, processo):
+        """Espera 3 s e põe no grupo (o instante de antes, aumentado)."""
+        time.sleep(3)
+        return verdadeiro(grupo, processo)
+
+    script = tmp_path / "pai_e_filho.py"
+    script.write_text(_PAI_E_FILHO_QUE_ACABA, encoding="utf-8")
+    monkeypatch.setattr(k, "AssignProcessToJobObject", atrasado)
+    try:
+        programa, r = windows.abrir_em_grupo([PY, str(script), str(tmp_path), "pai"])
+        monkeypatch.setattr(k, "AssignProcessToJobObject", verdadeiro)
+        assert r.deu_certo and programa is not None, r
+        with programa:
+            _esperar(tmp_path / "filho.txt")
+            assert _ainda_vive(tmp_path / "filho.txt", 0.5), "o filho não começou"
+            fechado = programa.fechar_tudo()
+            assert fechado.deu_certo and "conferido" in fechado.motivo, fechado
+            assert not _ainda_vive(tmp_path / "filho.txt") and not _ainda_vive(tmp_path / "pai.txt"), \
+                "o filho escapou do grupo e continua rodando"
+    finally:
+        _fechar_o_que_sobrou(tmp_path)
+
+
+def test_fechar_tudo_so_diz_conferido_quando_o_windows_diz_que_nenhum_ficou(tmp_path, monkeypatch):
+    """Achado 4 do relatório 2 (a frase "conferido" sem teste que a acuse) e achado 9 (sem a leitura do grupo, a frase
+    dizia "algum continua rodando"). Três casos, num programa de verdade no grupo: (1) o filho morre JÁ no
+    `fechar_tudo`, antes de soltar o grupo (o fechar-ao-fechar do fim do `with` não conta); (2) se o pedido de fechar
+    não fecha nada (trocado de propósito), a resposta é "continua(m) rodando", nunca "conferido"; (3) se o Windows não
+    responde à leitura do grupo, a resposta é "não deu para conferir"."""
+    script = tmp_path / "pai_e_filho.py"
+    script.write_text(_PAI_E_FILHO_QUE_ACABA, encoding="utf-8")
+    k = windows._win().kernel32
+    try:
+        programa, r = windows.abrir_em_grupo([PY, str(script), str(tmp_path), "pai"])
+        assert r.deu_certo, r
+        with programa:
+            _esperar(tmp_path / "filho.txt")
+            fechado = programa.fechar_tudo()
+            assert fechado.deu_certo, fechado
+            assert not _ainda_vive(tmp_path / "filho.txt"), "o filho só morreu ao soltar o grupo"
+        for arquivo in tmp_path.glob("*.txt"):
+            arquivo.unlink()
+        programa, r = windows.abrir_em_grupo([PY, str(script), str(tmp_path), "pai"])
+        assert r.deu_certo, r
+        with programa:
+            _esperar(tmp_path / "filho.txt")
+            monkeypatch.setattr(k, "TerminateJobObject", lambda grupo, codigo: True)   # "pedi", e nada fechou
+            fechado = programa.fechar_tudo(espera_s=1)
+            assert fechado.desfecho == windows.FALHOU and "continua" in fechado.motivo, fechado
+            monkeypatch.setattr(programa, "vivos", lambda: None)                       # o Windows não responde
+            fechado = programa.fechar_tudo(espera_s=1)
+            assert fechado.desfecho == windows.FALHOU and "não deu para conferir" in fechado.motivo, fechado
+            assert "continua rodando" not in fechado.motivo
+            monkeypatch.undo()
+            assert programa.fechar_tudo().deu_certo
+    finally:
+        _fechar_o_que_sobrou(tmp_path)
+
+
+def test_o_lancado_solto_apaga_a_primeira_pasta_se_a_segunda_nao_nasce(monkeypatch):
+    """Achado 9 do relatório 2 (a mesma linha de cuidado): se a segunda pasta de troca (a do sinal de vida) não pudesse
+    ser criada, a primeira ficava no disco até a limpeza do dia seguinte. Agora ela é apagada na hora."""
+    criadas = []
+    verdadeira = windows.criar_pasta_de_troca
+
+    def segunda_falha():
+        """A primeira nasce de verdade; a segunda, disco cheio."""
+        if criadas:
+            raise OSError(28, "No space left on device (de mentira)")
+        criadas.append(verdadeira())
+        return criadas[-1]
+
+    monkeypatch.setattr(windows, "criar_pasta_de_troca", segunda_falha)
+    r = windows.lancar_powershell_solto("")
+    assert r.desfecho == windows.FALHOU and criadas
+    assert not criadas[0].exists(), f"a primeira pasta de troca ficou: {criadas[0]}"
