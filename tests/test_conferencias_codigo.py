@@ -811,7 +811,10 @@ def test_k25_acusa_apagar_com_tudo_dentro_sem_conferir_o_atalho():
     """K25 (D-809): `rm -rf` e `Remove-Item -Recurse` sem conferir antes se é atalho, no Python e no terminal."""
     assert [n for _, n in codigos(conferir({"relatorios/x/a.py": ERRADO_K25_APAGAR_PY}), "K25")] == [6, 7]
     assert [n for _, n in codigos(conferir({"relatorios/x/a.sh": '#!/bin/sh\nrm -rf "$PASTA"\n'}), "K25")] == [2]
-    for linha in ("Remove-Item $p -Recurse -Force", "rm $p -r", "ri $p -Rec", "Remove-Item -Recurse -LiteralPath $p"):
+    # Cada exemplo vem depois de "$p = 'x'; " (o texto do teste não começa com o comando: senão o próprio teste seria
+    # acusado, ver `leitura_do_codigo.comandos`, jeito 3).
+    for linha in ("$p = 'x'; Remove-Item $p -Recurse -Force", "$p = 'x'; rm $p -r", "$p = 'x'; ri $p -Rec",
+                  "$p = 'x'; Remove-Item -Recurse -LiteralPath $p"):
         assert codigos(conferir({"relatorios/x/a.ps1": linha + "\n"}), "K25") == [("relatorios/x/a.ps1", 1)], linha
 
 

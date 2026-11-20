@@ -272,6 +272,10 @@ def comandos(raiz: ast.Module) -> list[tuple[int, str]]:
     3. o texto (ou f-string) que começa com o nome de um comando (`git `, `rm `, `Remove-Item `): a linha de comando
        guardada num texto. As docstrings não contam.
     O que não é texto escrito vira `<?>`. Não segue o comando que vai para outra função ou outro arquivo.
+
+    Cuidado nos testes (o jeito 3): um texto de exemplo que COMEÇA com o comando (`"git gc"`, `"rm -rf x"`) conta como
+    comando guardado, e o próprio teste é acusado. O exemplo vai dentro de um script maior (com outra linha ou outro
+    comando antes) ou numa linha de código (`'subprocess.run(["git", "gc"])'`).
     """
     modulos, nomes = _quem_roda(raiz)
     lidos = {id(d) for d in _docstrings(raiz)}     # o que já foi lido (ou não conta): não se lê duas vezes
