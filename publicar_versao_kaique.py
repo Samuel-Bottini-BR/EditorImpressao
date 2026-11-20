@@ -17,8 +17,9 @@ O QUE FAZ, PARA UMA VERSAO DO PROGRAMA, em ordem, parando no primeiro problema (
    e liberado no destino, com a assinatura do Samuel conferindo (D-790: nenhuma versao sem o motor que ela pede);
 4. monta a pasta do programa SEM o motor solto e COM o Visual C++ em instalar\\ (empacotar.construir_pasta(ATUALIZACAO);
    ou --pasta-pronta, que tem de trazer o mesmo), confere as duas pela mesma funcao (empacotar.conferir_pasta_pronta:
-   desta versao, com o Visual C++, sem o motor solto; volta 6: a pasta montada do zero era conferida antes de o
-   Visual C++ ser posto, e parava sempre), e so entao faz a conta do espaco: o rascunho fica no
+   desta versao, com o Visual C++ oficial pela assinatura da Microsoft e a versao dele, com o Tesseract, sem o motor
+   solto; volta 6: a pasta montada do zero era conferida antes de o Visual C++ ser posto, e parava sempre; volta 7,
+   D-818: a pasta ja montada era conferida so pelo nome do Visual C++), e so entao faz a conta do espaco: o rascunho fica no
    disco de dentro (o C:, D-776) e o comando nao comeca se o disco ficaria com menos de 20 GB livres;
 5. empacota pela funcao unica do vpk (empacotar.construir_pacote_do_velopack -> rodar_vpk, com a vigia do espaco),
    sem o pacote de diferenca (D-789), sem .msi e sem zip portatil (D-777); o Setup.exe e apagado na hora (D-795).

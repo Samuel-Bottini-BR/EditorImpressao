@@ -618,6 +618,19 @@ def vc_redist_confere(assinatura: dict) -> list[str]:
     return problemas
 
 
+def conferir_o_visual_c(arquivo: Path) -> tuple[str, list[str]]:
+    """O arquivo e o Visual C++ oficial da Microsoft? Devolve (a versao lida da assinatura, os problemas; vazio = e).
+
+    O LUGAR UNICO da regua do Visual C++ (passo 2, volta 7, D-818): a assinatura lida pelo Windows
+    (assinatura_do_arquivo, pela peca unica) e conferida por vc_redist_confere. Usada pela montagem
+    (preparar_vc_redist, no arquivo baixado e no achado) e pela conferencia da pasta (conferir_pasta_pronta, no
+    arquivo que esta em instalar\\ de qualquer pasta, montada do zero ou ja montada). Antes a montagem conferia pela
+    assinatura e a pasta ja montada so pelo nome do arquivo (achado 1 do relatorio 6). Arriscado: conferir o Visual
+    C++ por outra conta em qualquer lugar (duas reguas para a mesma regra, CLAUDE.md §11.12)."""
+    assinatura = assinatura_do_arquivo(arquivo)
+    return assinatura.get("versao", "") or "", vc_redist_confere(assinatura)
+
+
 def preparar_vc_redist(baixar: bool = True) -> tuple[Path | None, str, list[str]]:
     """Acha (ou baixa) o vc_redist.x64.exe oficial em DOWNLOADS e confere a assinatura.
 
@@ -643,16 +656,15 @@ def preparar_vc_redist(baixar: bool = True) -> tuple[Path | None, str, list[str]
         except OSError as erro:
             return None, "", [f"não consegui baixar o Visual C++ ({erro}); baixe à mão de {VC_REDIST_URL} "
                               f"para {arquivo}"]
-        problemas = vc_redist_confere(assinatura_do_arquivo(provisorio))
+        _, problemas = conferir_o_visual_c(provisorio)
         if problemas:
             return None, "", [f"o arquivo baixado ({provisorio}) não é o oficial: " + "; ".join(problemas)]
         provisorio.rename(arquivo)
-    assinatura = assinatura_do_arquivo(arquivo)
-    problemas = vc_redist_confere(assinatura)
+    versao, problemas = conferir_o_visual_c(arquivo)
     if problemas:
         return None, "", [f"{arquivo} não é o oficial da Microsoft: " + "; ".join(problemas)
                           + " (apague à mão e rode de novo para baixar outro)"]
-    return arquivo, assinatura.get("versao", ""), []
+    return arquivo, versao, []
 
 
 def juntar_pecas(motor_escolhido: Path | None = None, baixar: bool = True,
@@ -701,14 +713,26 @@ def _destinos_das_pecas(pecas: PecasDosDetectores) -> list[tuple[Path, str]]:
     """[(origem, caminho relativo dentro da pasta do programa)] de cada arquivo solto.
 
     O motor do Kraken nao entra aqui (vai a pasta inteira; ver copiar_pecas).
+    Os caminhos vem da lista unica relativos_do_tesseract (volta 7 do passo 2); aqui so se junta a origem de cada um.
     """
     from core import ocr_tesseract
 
-    saida = [(pecas.tesseract / nome, f"{PASTA_DO_TESSERACT}/{nome}") for nome in ARQUIVOS_DO_TESSERACT]
-    saida += [(pecas.licencas / nome, f"{PASTA_DO_TESSERACT}/{nome}") for nome in LICENCAS_DO_TESSERACT]
-    saida += [(pecas.tessdata / f"{idioma}.traineddata", f"{PASTA_DO_TESSERACT}/tessdata/{idioma}.traineddata")
-              for idioma in ocr_tesseract.IDIOMAS_DO_INSTALADOR]
-    return saida
+    origens = [pecas.tesseract / nome for nome in ARQUIVOS_DO_TESSERACT]
+    origens += [pecas.licencas / nome for nome in LICENCAS_DO_TESSERACT]
+    origens += [pecas.tessdata / f"{idioma}.traineddata" for idioma in ocr_tesseract.IDIOMAS_DO_INSTALADOR]
+    return list(zip(origens, relativos_do_tesseract(), strict=True))
+
+
+def relativos_do_tesseract() -> list[str]:
+    """Os caminhos (relativos a pasta do programa, com /) do Tesseract que vai ao lado do .exe: os 27 arquivos, as
+    licencas e os idiomas. A LISTA UNICA (passo 2, volta 7, D-818): o que a montagem copia (_destinos_das_pecas, na
+    mesma ordem), o que o Inno confere, o que a conferencia da pasta cobra de qualquer pasta (conferir_pasta_pronta) e
+    o que a conferencia do pacote cobra (esperados_no_pacote_do_velopack). Arriscado: escrever esta lista em outro
+    lugar."""
+    from core import ocr_tesseract
+
+    return ([f"{PASTA_DO_TESSERACT}/{nome}" for nome in (*ARQUIVOS_DO_TESSERACT, *LICENCAS_DO_TESSERACT)]
+            + [f"{PASTA_DO_TESSERACT}/tessdata/{idioma}.traineddata" for idioma in ocr_tesseract.IDIOMAS_DO_INSTALADOR])
 
 
 LEIA_ME_DO_TESSERACT = """TESSERACT - Editor de Impressão (item 1.3 da Fase 1)
@@ -1235,7 +1259,8 @@ def preparar_saida(pasta: Path, saida: Saida, pecas: PecasDosDetectores | None,
     - e tira de instalar\\ um arquivo de motor que nao deve ir (a mesma pasta
       serve as duas saidas, em sequencia: atualizacao e depois instalador).
     Devolve os problemas (vazio = feito). Quem diz se a pasta esta pronta para o
-    vpk e conferir_pasta_pronta (construir_pacote_do_velopack a chama depois).
+    vpk e conferir_pasta_pronta (construir_pacote_do_velopack a chama antes desta,
+    para uma pasta recusada nunca ser mexida; volta 7, achado 4 do relatorio 6).
 
     O Visual C++ NAO e posto aqui (passo 2, volta 6): ele e igual nas duas saidas
     e vem da montagem (construir_pasta) ou da pasta pronta. Antes era posto aqui,
@@ -1528,10 +1553,16 @@ def nupkg_inteiro(saida: Path, versao_do_pacote: str) -> Path:
 
 def esperados_no_pacote_do_velopack(pecas: PecasDosDetectores | None, saida: Saida = ATUALIZACAO) -> list[str]:
     """Os caminhos (relativos a pasta do programa, com /) que TEM de estar no
-    pacote do Velopack: o .exe, cada modelo, cada DLL, o Visual C++, e (com as
-    pecas) o Tesseract e os idiomas; o motor-exigido.json e o arquivo do
-    motor em instalar\\ quando a saida pede (SAIDAS). O motor solto so na saida
-    que o leva (nenhuma das do Velopack)."""
+    pacote do Velopack: o .exe, cada modelo, cada DLL, o Tesseract e os idiomas
+    (relativos_do_tesseract), o Visual C++ e o arquivo da versao dele; o
+    motor-exigido.json e o arquivo do motor em instalar\\ quando a saida pede
+    (SAIDAS). O motor solto so na saida que o leva (nenhuma das do Velopack).
+
+    Passo 2, volta 7 (achado 3 do relatorio 6, D-818): o Tesseract e cobrado
+    sempre (antes, so quando havia pecas: com a pasta ja montada ele nem era
+    procurado) e o arquivo da versao do Visual C++ tambem (o programa instalado
+    o le para decidir se instala). 'pecas' nao e mais usado; fica na assinatura
+    porque quem chama o passa pela posicao (tests/test_decisoes_atualizacao.py)."""
     import atualizacao
     import versao
     from core import ocr_kraken
@@ -1539,12 +1570,11 @@ def esperados_no_pacote_do_velopack(pecas: PecasDosDetectores | None, saida: Sai
     saida_ = [f"{NOME}.exe"]
     saida_ += [f"{INTERNO}/{destino}/{origem.name}" for origem, destino in modelos_do_programa()]
     saida_ += [f"{INTERNO}/{destino}/{origem.name}" for origem, destino in nativos_do_programa()]
-    if pecas is not None:
-        saida_ += [relativo for _, relativo in _destinos_das_pecas(pecas)]
-    # o Visual C++ (D-727) nas saidas que o levam (Saida.vc_em_instalar: as duas do Velopack), com ou sem as pecas
-    # (a pasta pronta tambem tem de trazer)
+    saida_ += relativos_do_tesseract()
+    # o Visual C++ (D-727) e a versao dele nas saidas que o levam (Saida.vc_em_instalar: as duas do Velopack)
     if saida.vc_em_instalar:
-        saida_ += [f"{atualizacao.PASTA_DO_QUE_SE_INSTALA}/{atualizacao.VC_REDIST_NOME}"]
+        saida_ += [f"{atualizacao.PASTA_DO_QUE_SE_INSTALA}/{atualizacao.VC_REDIST_NOME}",
+                   f"{atualizacao.PASTA_DO_QUE_SE_INSTALA}/{atualizacao.VC_REDIST_VERSAO}"]
     if saida.motor_solto:
         saida_ += [f"{PASTA_DO_MOTOR}/{a.replace(chr(92), '/')}" for a in AMOSTRA_DO_MOTOR]
     if saida.motor_exigido:
@@ -1592,10 +1622,11 @@ def construir_pacote_do_velopack(saida_do_vpk: Path, versao_do_pacote: str, said
                                  arquivo_do_motor: Path | None = None, rascunho: Path | None = None,
                                  vpk: Path | None = None, pecas: PecasDosDetectores | None = None) -> Path | None:
     """Monta o pacote do Velopack de uma saida (ATUALIZACAO ou INSTALADOR): a pasta
-    (construir_pasta, com todas as travas; ou a 'pasta' ja pronta), preparar_saida,
-    a conferencia da pasta (conferir_pasta_pronta, a mesma de todo caminho: o
-    Visual C++, a ficha desta versao, nada de motor solto; volta 6 do passo 2),
-    rodar_vpk (a funcao unica), apaga o Setup.exe na hora (D-795) e confere o
+    (construir_pasta, com todas as travas; ou a 'pasta' ja pronta), a
+    conferencia da pasta (conferir_pasta_pronta, a mesma de todo caminho: o
+    Visual C++ pela assinatura e a versao dele, o Tesseract, a ficha desta
+    versao, nada de motor solto; voltas 6 e 7 do passo 2) ANTES de mexer nela,
+    preparar_saida, rodar_vpk (a funcao unica), apaga o Setup.exe na hora (D-795) e confere o
     pacote. Devolve o .nupkg inteiro, ou None (o motivo foi impresso).
 
     saida_do_vpk: a pasta de saida do vpk (tem de ser nova: o vpk pergunta se ja
@@ -1613,10 +1644,12 @@ def construir_pacote_do_velopack(saida_do_vpk: Path, versao_do_pacote: str, said
         if pasta is None or _PECAS is None:
             return None
         pecas = _PECAS
-    problemas = preparar_saida(pasta, saida, pecas, motor, arquivo_do_motor)
     # a mesma conferencia de toda pasta, antes do vpk, em todo caminho que chega aqui (passo 2, volta 6: o publicar a
-    # chamava, mas quem chamasse esta funcao direto, com uma pasta de fora, chegava ao vpk sem ela)
-    problemas = problemas or conferir_pasta_pronta(pasta, versao_do_pacote, saida)
+    # chamava, mas quem chamasse esta funcao direto, com uma pasta de fora, chegava ao vpk sem ela), e ANTES de mexer
+    # na pasta (volta 7, achado 4 do relatorio 6: preparar_saida gravava o motor-exigido.json e apagava o zip do motor
+    # de uma pasta que depois era recusada). Ela nao depende de nada que preparar_saida faz.
+    problemas = conferir_pasta_pronta(pasta, versao_do_pacote, saida)
+    problemas = problemas or preparar_saida(pasta, saida, pecas, motor, arquivo_do_motor)
     if problemas:
         print("  PAREI: " + "; ".join(problemas))
         return None
@@ -1683,9 +1716,19 @@ def conferir_pasta_pronta(pasta: Path, versao_do_pacote: str, saida: Saida = ATU
     Cobra: o .exe; a ficha da versao, da MESMA versao e montada para uma saida
     sem o motor solto (o motor nao pode ir na atualizacao); o Visual C++ em
     instalar\\ (D-727), nas saidas que o levam (Saida.vc_em_instalar: as duas do
-    Velopack); e que a pasta motor-kraken\\ nao esteja la (D-768). Arriscado:
-    afrouxar qualquer uma (a pasta pronta vem de fora: so isto a confere antes
-    do vpk)."""
+    Velopack), conferido pela assinatura da Microsoft (conferir_o_visual_c, a
+    mesma regua da montagem), com o arquivo da versao dele igual a versao lida da
+    assinatura; o Tesseract inteiro (relativos_do_tesseract, cada arquivo nao
+    vazio); e que a pasta motor-kraken\\ nao esteja la (D-768).
+
+    Passo 2, volta 7 (D-818, Samuel: "vai ter que reprogramar?" · "A"; achado 1
+    do relatorio 6): antes, do Visual C++ so se olhava o nome do arquivo, e a
+    versao dele e o Tesseract nem eram procurados; uma pasta ja montada a mao
+    passava. A montada do zero continua passando (ela traz tudo isso). O
+    Tesseract nao e comparado com o original aqui (a pasta ja montada nao tem
+    origem); a montagem o compara na hora de copiar (conferir_pecas_no_pacote).
+    Arriscado: afrouxar qualquer uma (a pasta pronta vem de fora: so isto a
+    confere antes do vpk); ler a assinatura por outra conta."""
     import json
 
     import atualizacao
@@ -1706,9 +1749,30 @@ def conferir_pasta_pronta(pasta: Path, versao_do_pacote: str, saida: Saida = ATU
                              f"{versao_do_pacote}")
         if ficha.get("saida") == PORTATIL.nome:
             problemas.append(f"a pasta {pasta} foi montada como {PORTATIL.nome} (com o motor solto)")
-    visual_c = pasta / atualizacao.PASTA_DO_QUE_SE_INSTALA / atualizacao.VC_REDIST_NOME
+    instalar = pasta / atualizacao.PASTA_DO_QUE_SE_INSTALA
+    visual_c = instalar / atualizacao.VC_REDIST_NOME
     if saida.vc_em_instalar and not visual_c.is_file():
         problemas.append(f"a pasta {pasta} não tem o Visual C++ em {atualizacao.PASTA_DO_QUE_SE_INSTALA}\\")
+    elif saida.vc_em_instalar:
+        # a regua da montagem (D-818): a assinatura da Microsoft e a versao, lida dela, igual ao arquivo da versao
+        versao_do_vc, errado = conferir_o_visual_c(visual_c)
+        arquivo_da_versao = instalar / atualizacao.VC_REDIST_VERSAO
+        if errado:
+            problemas.append(f"o Visual C++ da pasta {pasta} ({atualizacao.PASTA_DO_QUE_SE_INSTALA}\\"
+                             f"{atualizacao.VC_REDIST_NOME}) não é o oficial da Microsoft: " + "; ".join(errado))
+        elif not arquivo_da_versao.is_file():
+            problemas.append(f"a pasta {pasta} não tem a versão do Visual C++ ({atualizacao.PASTA_DO_QUE_SE_INSTALA}\\"
+                             f"{atualizacao.VC_REDIST_VERSAO})")
+        else:
+            lida = arquivo_da_versao.read_text(encoding="utf-8", errors="replace").strip()
+            if lida != versao_do_vc:
+                problemas.append(f"a pasta {pasta} diz que o Visual C++ é o {lida} "
+                                 f"({atualizacao.VC_REDIST_VERSAO}), e o arquivo dele é o {versao_do_vc} (pela "
+                                 "assinatura)")
+    faltam = [r for r in relativos_do_tesseract() if not ((pasta / r).is_file() and (pasta / r).stat().st_size > 0)]
+    if faltam:
+        mais = f" e mais {len(faltam) - 5}" if len(faltam) > 5 else ""
+        problemas.append(f"a pasta {pasta} não tem o Tesseract inteiro: falta {', '.join(faltam[:5])}{mais}")
     if not saida.motor_solto and (pasta / PASTA_DO_MOTOR).exists():
         problemas.append(f"a pasta {pasta} tem o motor do Kraken solto ({PASTA_DO_MOTOR}\\), e a {saida.nome} "
                          "não leva")
