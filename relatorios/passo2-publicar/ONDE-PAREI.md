@@ -374,8 +374,8 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
 ## Testes
 
 - **No PC, um arquivo por vez** (19/11, com `QT_QPA_PLATFORM=offscreen`):
-  `tests/test_publicar_versao.py` 18 passaram; `tests/test_publicar_motor.py` 12; `tests/test_publicar_servidor.py` 11
-  (três vezes seguidas, para ver se o corte no meio é estável); `tests/test_windows_peca.py` 53 passaram e 2 pulados (os
+  `tests/test_publicar_versao.py` 20 passaram; `tests/test_publicar_motor.py` 12; `tests/test_publicar_servidor.py` 11
+  (três vezes seguidas, para ver se o corte no meio é estável); `tests/test_windows_peca.py` 55 passaram e 2 pulados (os
   que só rodam no GitHub); `tests/test_empacotar.py` 41; `tests/test_decisoes_atualizacao.py` 38;
   `tests/test_decisoes_brasao.py` 22; `tests/test_nome_do_pacote.py` 5; `tests/test_ocr_kraken.py` 27 e 6 pulados (o
   motor não está nesta cópia, o defeito antigo nº 330); `tests/test_ocr_diagnostico.py` 6;
@@ -391,7 +391,13 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
   44644488805 foram canceladas por mim (testavam commits já passados).
 - **No PC, depois do conserto:** `tests/test_windows_peca.py` 54 passaram e 2 pulados; o teste novo da lista de
   módulos falhou antes do conserto (CouldNotAutoloadMatchingModule) e passa depois.
-- **No GitHub, rodada final:** (preenchida no fim).
+- **No GitHub, rodada 4:** 44645740920, sobre o commit fa28ab5b (o conserto da lista de módulos): **success**, todas
+  as partes e os botões. PORTEIRO: success (o trabalho "Porteiro (juiz da versao de teste)").
+- **No GitHub, rodada final:** 44650408369, sobre o ramo em a14b7d55 (o código de 0ef0da17; depois só o formulário):
+  **success** na segunda tentativa (só a parte 3 rodou de novo). PORTEIRO: success (o trabalho "Porteiro (juiz da
+  versao de teste)"). Na primeira tentativa falhou só
+  `tests/test_decisoes_gravura_a_mao.py::test_d659_g_outros_filtros_a_mao_nada_e_procurado_e_sai_igual_ao_de_antes`
+  ("procurou: [0]"), o teste instável já conhecido (catálogo P1-gh-5), que não usa nada deste passo.
 
 ## Caminho e função
 
