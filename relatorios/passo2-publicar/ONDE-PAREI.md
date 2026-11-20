@@ -208,7 +208,7 @@ Código do Velopack na etiqueta 1.2.161 (commit `92d6a1c9`, MIT), cópia só par
   diferença (com `--delta None` não a faz); se a pasta de saída já tem versão igual ou maior, **pergunta** ("Do you want
   to continue...?"): por isso a pasta de saída é sempre nova; o portátil só sai sem `--noPortable`; o Setup.exe sai
   sempre que não houver `--noInst`; no fim move tudo para a pasta de saída e grava a lista dos arquivos
-  (assets.win.json), o índice (releases.win.json) e o RELEASES antigo.
+  dele, o índice das versões e o RELEASES antigo.
 - `src/vpk/Velopack.Packaging/PackOptionsValidator.cs:19`: "Cannot use 'noPortable' and 'noInst' options together"
   (por isso o Setup.exe sempre sai, D-795).
 - `src/vpk/Velopack.Vpk/Commands/Packaging/PackCommand.cs:89` a 117: `--delta` (de fábrica `BestSpeed`),
@@ -297,7 +297,6 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
 - `tests/conferencias_excecoes.json` (o item consertado saiu, pelo `python -m regras_dos_agentes excecoes --diminuir`;
   fora da lista do pedido: o porteiro avisa, K14; é o "tire esse item da lista no mesmo commit" do pedido)
 - `relatorios/passo2-publicar/` (este formulário e os anexos)
-- `tests/test_empacotar.py` não precisou mudar.
 
 ## Como cumpri cada uma
 
@@ -423,7 +422,7 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
 
 ## Velocidade
 
-Não se aplica ao caminho do livro: nenhum arquivo do processamento das páginas mudou; em `core/ocr_kraken.py` só
+Não se aplica: nenhum arquivo do processamento das páginas do livro mudou; em `core/ocr_kraken.py` só
 entraram a versão do motor, a ficha e a conferência, que o caminho do livro não chama (a segunda opinião do Kraken está
 desligada, D-164). A gerente decide se roda o filtro de velocidade do GitHub (D-786; plano-v3, "Regras de todos os
 passos"). O tempo de publicar é medido na prova à vista.
@@ -447,7 +446,7 @@ de ferramentas dele, em "Ressalvas"): a gerente pergunta, se achar preciso.
 
 ## Commit
 
-(preenchido no fim)
+ed04a79f (o último commit de código; depois dele só este formulário muda).
 
 ## O que o agente que tentou quebrar achou
 
