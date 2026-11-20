@@ -1000,17 +1000,14 @@ class _DestinoQueNaoLibera(pub.DestinoPasta):
         raise pub.Parou("o destino não deixou liberar (de mentira)")
 
 
-def test_volta3_achado5_o_liberar_que_falha_e_continua_rascunho_apaga_o_rascunho(ambiente):
-    """Achado 5 do relatório 2 (família F3, proteção sem teste): a outra metade da decisão da gerente (D-014) — quando
-    o liberar falha e a publicação continua rascunho, o rascunho é apagado do destino (conferido) e a frase diz isso.
-    Sem este apagar, o rascunho ficava no destino e o próximo publicar parava em "sobrou um rascunho"."""
-    a = ambiente
-    _publicar_o_motor(a)
-    destino = _DestinoQueNaoLibera(a["servidor"])
-    with pytest.raises(pub.Parou, match="foi apagada"):
-        _publicar(a, destino=destino)
-    assert destino.situacao(ETIQUETA) is None
-    assert not (a["servidor"] / (pub.NOME_DO_RASCUNHO_NO_DESTINO + ETIQUETA)).exists()
+# O teste da volta 3 "test_volta3_achado5_o_liberar_que_falha_e_continua_rascunho_apaga_o_rascunho" (achado 5 do
+# relatório 2) cobrava que, quando o PEDIDO de liberar falha e a publicação continua rascunho, o rascunho era apagado.
+# A D-816 (Samuel, 20/11/2026: "A , mas onde estamos antes de você fazer qualquer processo") tirou esse comportamento:
+# "depois de pedir ao GitHub para liberar a versão, o programa nunca apaga nada"; "Na pasta das provas (não no GitHub)
+# vale a mesma regra". O mesmo caso (o _DestinoQueNaoLibera, na pasta) e o do GitHub passaram a ser cobrados do jeito
+# novo, com a prova de que o antigo saiu (o rascunho continua e a frase diz o comando), em
+# test_d816_o_liberar_que_falha_e_fica_rascunho_nao_apaga_e_diz_o_comando (volta 4, mais abaixo). CLAUDE.md §11,
+# ponto 4: quando a decisão substitui um comportamento antigo, a prova confere que o antigo saiu.
 
 
 class _DestinoQueTrocaOMotor(pub.DestinoPasta):
@@ -1319,3 +1316,425 @@ def test_volta3_a_copia_cortada_no_meio_nunca_deixa_o_nome_certo(tmp_path):
         processo.kill()
         processo.wait()
     assert not alvo.exists(), "ficou um arquivo pela metade com o nome certo"
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Passo 2, volta 4 (relatório 3 de quem tentou quebrar, 20/11/2026)
+# ---------------------------------------------------------------------------------------------------------------------
+
+ETIQUETA_DO_MOTOR = versao.etiqueta_do_motor(ocr_kraken.VERSAO_DO_MOTOR)
+
+
+class _PastaQueLiberaEAtrasa(pub.DestinoPasta):
+    """Uma pasta de verdade em que o liberar da etiqueta escolhida MUDA a pasta e devolve erro (a resposta se perdeu),
+    e as `atrasos` leituras seguintes da situação ainda dizem "rascunho" (leituras atrasadas)."""
+
+    def __init__(self, raiz, alvo: str, atrasos: int, libera: bool = True, interromper: bool = False):
+        """alvo: a etiqueta; libera=False: o liberar falha sem mudar nada; interromper: o liberar vira Ctrl+C."""
+        super().__init__(raiz)
+        self.alvo, self.atrasos, self.libera, self.interromper = alvo, atrasos, libera, interromper
+        self.atrasadas = 0
+        self.apagar_pedido: list[str] = []
+
+    def liberar(self, etiqueta):
+        """Libera (ou não) e devolve erro (ou Ctrl+C)."""
+        if etiqueta != self.alvo:
+            return super().liberar(etiqueta)
+        if self.libera:
+            super().liberar(etiqueta)
+        self.atrasadas = self.atrasos
+        if self.interromper:
+            raise KeyboardInterrupt
+        raise pub.Parou("a resposta do liberar se perdeu (de mentira)")
+
+    def situacao(self, etiqueta):
+        """As leituras atrasadas depois de liberar."""
+        if etiqueta == self.alvo and self.atrasadas:
+            self.atrasadas -= 1
+            return "rascunho"
+        return super().situacao(etiqueta)
+
+    def apagar(self, etiqueta):
+        """Anota e apaga."""
+        self.apagar_pedido.append(etiqueta)
+        return super().apagar(etiqueta)
+
+    def apagar_rascunho(self, etiqueta):
+        """Anota e apaga o rascunho."""
+        self.apagar_pedido.append(etiqueta)
+        return super().apagar_rascunho(etiqueta)
+
+
+class _GitHubQueLiberaEAtrasa(_GitHubDeMentira):
+    """O gh de mentira em que o "edit --draft=false" da etiqueta escolhida libera (ou não) e devolve erro, e os
+    `atrasos` "view" seguintes ainda dizem isDraft (leituras atrasadas do GitHub). É o Q1 de quem tentou quebrar,
+    com o número de atrasos escolhido."""
+
+    def __init__(self, tmp, alvo: str, atrasos: int, libera: bool = True):
+        """alvo: a etiqueta; libera=False: o GitHub não libera (continua rascunho)."""
+        super().__init__(tmp)
+        self.alvo, self.atrasos, self.libera = alvo, atrasos, libera
+        self.atrasadas = 0
+
+    def __call__(self, *argumentos, limite_s=600):
+        """Como o gh de mentira, com o liberar que perde a resposta e as leituras atrasadas."""
+        a = list(argumentos)
+        if a[1] == "edit" and a[2] == self.alvo:
+            if self.libera:
+                super().__call__(*argumentos, limite_s=limite_s)
+            else:
+                self.pedidos.append(a)
+            self.atrasadas = self.atrasos
+            return subprocess.CompletedProcess(a, 1, "", "HTTP 502: a resposta se perdeu (de mentira)")
+        if a[1] == "view" and a[2] == self.alvo and self.atrasadas:
+            self.atrasadas -= 1
+            self.pedidos.append(a)
+            p = self.publicacoes[self.alvo]
+            return subprocess.CompletedProcess(a, 0, json.dumps({"isDraft": True, "tagName": self.alvo, "assets": [
+                {"name": n, "size": len(d)} for n, d in p["arquivos"].items()]}), "")
+        return super().__call__(*argumentos, limite_s=limite_s)
+
+
+def _publicar_um(a, o_que: str, destino):
+    """Publica a versão (o motor já publicado antes) ou o motor, no destino dado; devolve a exceção do publicar."""
+    if o_que == "versao":
+        with pytest.raises(pub.Parou) as erro:
+            _publicar(a, destino=destino)
+    else:
+        with pytest.raises(pub.Parou) as erro:
+            _publicar_o_motor(a, destino=destino)
+    return erro.value
+
+
+def _conferir_frase_d816(frase: str, destino, etiqueta: str) -> None:
+    """A frase da D-816: nada apagado, o que pode ter ficado, como conferir e o comando de apagar o rascunho."""
+    assert "NÃO apaguei" in frase and "foi apagada" not in frase, frase
+    assert "pode ter ficado" in frase and "liberada" in frase and "rascunho" in frase, frase
+    assert "não deu para reconferir agora" in frase, frase
+    assert destino.como_conferir(etiqueta) in frase, frase
+    assert destino.comando_de_apagar(etiqueta) in frase, frase
+
+
+@pytest.mark.parametrize("atrasos", [1, 2, 3, 10])
+@pytest.mark.parametrize("onde", ["pasta", "github"])
+def test_d816_depois_do_pedido_de_liberar_nada_e_apagado_com_qualquer_atraso(ambiente, monkeypatch, onde, atrasos):
+    """D-816 (Samuel, 20/11/2026: "A , mas onde estamos antes de você fazer qualquer processo"; achado 1 do relatório 3
+    de quem tentou quebrar, família F5): depois de pedir para liberar, o publicar nunca apaga nada, em nenhum destino,
+    sem depender de leitura. Antes, com DUAS leituras atrasadas do GitHub depois de um liberar cuja resposta se perdeu,
+    o publicar apagava a versão liberada e dizia "foi apagada (conferido)"; o teste do conserto anterior imitava só uma.
+    Aqui: 1, 2, 3 e 10 leituras atrasadas, na pasta das provas e no GitHub (gh de mentira; o de verdade é da prova à
+    vista): a versão liberada continua, nenhum pedido de apagar sai, e a frase diz o que pode ter ficado e os comandos."""
+    a = ambiente
+    if onde == "pasta":
+        destino = _PastaQueLiberaEAtrasa(a["servidor"], ETIQUETA, atrasos)
+    else:
+        gh = _GitHubQueLiberaEAtrasa(a["tmp"], ETIQUETA, atrasos)
+        destino = pub.DestinoGitHub("dono/projeto")
+        monkeypatch.setattr(destino, "_gh", gh)
+    _publicar_o_motor(a, destino=destino)
+    frase = str(_publicar_um(a, "versao", destino))
+    _conferir_frase_d816(frase, destino, ETIQUETA)
+    if onde == "pasta":
+        assert (a["servidor"] / ETIQUETA).is_dir() and any((a["servidor"] / ETIQUETA).iterdir())
+        assert ETIQUETA not in destino.apagar_pedido
+    else:
+        assert gh.publicacoes[ETIQUETA]["rascunho"] is False, "a versão liberada foi apagada"
+        assert not any(p[1] == "delete" and p[2] == ETIQUETA for p in gh.pedidos), "pediu para apagar"
+    assert _rascunhos_que_sobraram(a) == []
+
+
+@pytest.mark.parametrize("onde", ["pasta", "github"])
+def test_d816_o_motor_tambem_nunca_e_apagado_depois_do_pedido_de_liberar(ambiente, monkeypatch, onde):
+    """D-816, o outro caminho que chega em publicar_arquivos: a publicação do motor (--motor). O mesmo resultado da
+    versão: duas leituras atrasadas depois do liberar e nada é apagado; a frase é a mesma."""
+    a = ambiente
+    if onde == "pasta":
+        destino = _PastaQueLiberaEAtrasa(a["servidor"], ETIQUETA_DO_MOTOR, 2)
+    else:
+        gh = _GitHubQueLiberaEAtrasa(a["tmp"], ETIQUETA_DO_MOTOR, 2)
+        destino = pub.DestinoGitHub("dono/projeto")
+        monkeypatch.setattr(destino, "_gh", gh)
+    frase = str(_publicar_um(a, "motor", destino))
+    _conferir_frase_d816(frase, destino, ETIQUETA_DO_MOTOR)
+    if onde == "pasta":
+        assert (a["servidor"] / ETIQUETA_DO_MOTOR).is_dir()
+    else:
+        assert gh.publicacoes[ETIQUETA_DO_MOTOR]["rascunho"] is False
+        assert not any(p[1] == "delete" for p in gh.pedidos)
+
+
+@pytest.mark.parametrize("onde", ["pasta", "github"])
+def test_d816_o_liberar_que_falha_e_fica_rascunho_nao_apaga_e_diz_o_comando(ambiente, monkeypatch, onde):
+    """D-816 ("Se sobrar um rascunho, a tela diz exatamente o que ficou e o comando para apagar depois"; "Na pasta das
+    provas (não no GitHub) vale a mesma regra"): o pedido de liberar falha e a publicação continua rascunho. Antes
+    (volta 3, achado 5 do relatório 2), o rascunho era apagado; a D-816 tirou isso: depois do pedido de liberar, nada
+    se apaga. O rascunho fica, e a frase diz o comando de apagar."""
+    a = ambiente
+    if onde == "pasta":
+        destino = _DestinoQueNaoLibera(a["servidor"])           # o mesmo caso do teste antigo da volta 3
+        _publicar_o_motor(a)                                    # o motor, na mesma pasta, por uma que libera
+    else:
+        gh = _GitHubQueLiberaEAtrasa(a["tmp"], ETIQUETA, 0, libera=False)
+        destino = pub.DestinoGitHub("dono/projeto")
+        monkeypatch.setattr(destino, "_gh", gh)
+        _publicar_o_motor(a, destino=destino)
+    frase = str(_publicar_um(a, "versao", destino))
+    _conferir_frase_d816(frase, destino, ETIQUETA)
+    assert destino.situacao(ETIQUETA) == "rascunho", "o rascunho foi apagado depois do pedido de liberar"
+    if onde == "github":
+        assert not any(p[1] == "delete" and p[2] == ETIQUETA for p in gh.pedidos)
+    # e o comando da frase apaga mesmo (o fim da prova)
+    pub.apagar_publicacao(destino, ETIQUETA)
+    assert destino.situacao(ETIQUETA) is None
+
+
+def test_d816_ctrl_c_depois_do_pedido_de_liberar_nao_apaga(ambiente, capsys):
+    """D-816 com o Ctrl+C logo depois do pedido de liberar: a interrupção segue, nada é apagado, e a frase sai na tela."""
+    a = ambiente
+    destino = _PastaQueLiberaEAtrasa(a["servidor"], ETIQUETA, 2, interromper=True)
+    _publicar_o_motor(a, destino=destino)
+    with pytest.raises(KeyboardInterrupt):
+        _publicar(a, destino=destino)
+    assert (a["servidor"] / ETIQUETA).is_dir() and ETIQUETA not in destino.apagar_pedido
+    _conferir_frase_d816(capsys.readouterr().out, destino, ETIQUETA)
+
+
+class _GitHubQueCaiDepoisDeApagar(_GitHubDeMentira):
+    """O envio do pacote falha (antes do pedido de liberar); o apagar do rascunho dá certo; as leituras seguintes não
+    respondem (a rede caiu). É o Q2 de quem tentou quebrar, no caminho de antes de liberar."""
+
+    def __init__(self, tmp, cair_antes: bool = False):
+        """cair_antes: a rede cai já na leitura de antes de apagar (nada é pedido)."""
+        super().__init__(tmp)
+        self.cair_antes = cair_antes
+        self.caiu = False
+
+    def __call__(self, *argumentos, limite_s=600):
+        """O envio do .nupkg falha; depois do apagar (ou já no erro, com cair_antes), o "view" não responde."""
+        a = list(argumentos)
+        if a[1] == "upload" and a[2] == ETIQUETA and a[3].endswith(".nupkg"):
+            self.pedidos.append(a)
+            self.caiu = self.cair_antes
+            return subprocess.CompletedProcess(a, 1, "", "HTTP 502 ao enviar (de mentira)")
+        if a[1] == "view" and a[2] == ETIQUETA and self.caiu:
+            self.pedidos.append(a)
+            return subprocess.CompletedProcess(a, 1, "", "error connecting to api.github.com")
+        r = super().__call__(*argumentos, limite_s=limite_s)
+        if a[1] == "delete" and a[2] == ETIQUETA:
+            self.caiu = True
+        return r
+
+
+def test_volta4_achado3_a_frase_diz_se_pediu_para_apagar(ambiente, monkeypatch):
+    """Achado 3 do relatório 3 de quem tentou quebrar (família F5): a frase dizia "NÃO apaguei" tendo pedido para
+    apagar (e apagado). Agora quem escreve a frase é o apagar, que sabe se pediu: (1) pediu, apagou, e a leitura de
+    depois não respondeu: "pedi para apagar ... não deu para conferir se sumiu", nunca "NÃO apaguei"; (2) a leitura de
+    antes de apagar não respondeu: "NÃO pedi para apagar". Nos dois, o comando para conferir e apagar."""
+    a = ambiente
+    gh = _GitHubQueCaiDepoisDeApagar(a["tmp"])
+    destino = pub.DestinoGitHub("dono/projeto")
+    monkeypatch.setattr(destino, "_gh", gh)
+    _publicar_o_motor(a, destino=destino)
+    frase = str(_publicar_um(a, "versao", destino))
+    assert [p for p in gh.pedidos if p[1] == "delete" and p[2] == ETIQUETA], "o rascunho tinha de ser pedido para apagar"
+    assert "pedi para apagar" in frase and "não deu para conferir se sumiu" in frase, frase
+    assert "NÃO apaguei" not in frase and "NÃO pedi" not in frase and "foi apagada" not in frase, frase
+    assert destino.comando_de_apagar(ETIQUETA) in frase, frase
+    primeiro = gh
+    gh = _GitHubQueCaiDepoisDeApagar(a["tmp"], cair_antes=True)
+    gh.publicacoes = {ETIQUETA_DO_MOTOR: primeiro.publicacoes[ETIQUETA_DO_MOTOR]}    # o motor já publicado
+    monkeypatch.setattr(destino, "_gh", gh)
+    frase = str(_publicar_um(a, "versao", destino))
+    assert not [p for p in gh.pedidos if p[1] == "delete"], "pediu para apagar sem ler antes"
+    assert "NÃO pedi para apagar" in frase and "pedi para apagar o" not in frase, frase
+    assert destino.comando_de_apagar(ETIQUETA) in frase, frase
+
+
+class _GitHubQueNaoVeORascunhoNovo(_GitHubDeMentira):
+    """Logo depois de criar o rascunho da versão, o "view" ainda não o acha (leitura atrasada); o envio falha. É o Q3
+    de quem tentou quebrar. Com perder_o_criar: o "create" cria e devolve erro (a resposta se perdeu)."""
+
+    def __init__(self, tmp, perder_o_criar: bool = False):
+        """perder_o_criar: o rascunho é criado e a resposta se perde (o view o vê normalmente)."""
+        super().__init__(tmp)
+        self.perder_o_criar = perder_o_criar
+
+    def __call__(self, *argumentos, limite_s=600):
+        """O envio falha; o view não vê o rascunho novo (ou o criar perde a resposta)."""
+        a = list(argumentos)
+        if a[1] == "create" and a[2] == ETIQUETA and self.perder_o_criar:
+            super().__call__(*argumentos, limite_s=limite_s)
+            return subprocess.CompletedProcess(a, 1, "", "HTTP 502 ao criar (de mentira)")
+        if a[1] == "upload" and a[2] == ETIQUETA:
+            self.pedidos.append(a)
+            return subprocess.CompletedProcess(a, 1, "", "HTTP 502 ao enviar (de mentira)")
+        if a[1] == "view" and a[2] == ETIQUETA and ETIQUETA in self.publicacoes and not self.perder_o_criar:
+            self.pedidos.append(a)
+            return subprocess.CompletedProcess(a, 1, "", "release not found")
+        return super().__call__(*argumentos, limite_s=limite_s)
+
+
+def test_volta4_achado4_nao_achei_logo_depois_de_criar_nao_e_apagado(ambiente, monkeypatch):
+    """Achado 4 do relatório 3 de quem tentou quebrar (família F5): o rascunho acabou de ser criado, o envio falhou e a
+    leitura ainda não o achava; o apagar entendia "já sumiu", não pedia nada, e a frase dizia "foi apagada
+    (conferido)" com o rascunho no GitHub. Agora "não achei" logo depois de criar não é "sumiu": a frase diz "não achei
+    o rascunho para apagar" e o comando para conferir e apagar. E o criar_rascunho entrou no caminho de erro: se ele
+    cria e a resposta se perde, o rascunho é procurado e apagado (conferido), em vez de ficar calado no GitHub."""
+    a = ambiente
+    gh = _GitHubQueNaoVeORascunhoNovo(a["tmp"])
+    destino = pub.DestinoGitHub("dono/projeto")
+    monkeypatch.setattr(destino, "_gh", gh)
+    _publicar_o_motor(a, destino=destino)
+    frase = str(_publicar_um(a, "versao", destino))
+    assert "foi apagada" not in frase and "não achei o rascunho" in frase, frase
+    assert destino.comando_de_apagar(ETIQUETA) in frase, frase
+    assert not [p for p in gh.pedidos if p[1] == "delete" and p[2] == ETIQUETA]
+    perde = _GitHubQueNaoVeORascunhoNovo(a["tmp"], perder_o_criar=True)
+    perde.publicacoes = {ETIQUETA_DO_MOTOR: gh.publicacoes[ETIQUETA_DO_MOTOR]}
+    monkeypatch.setattr(destino, "_gh", perde)
+    frase = str(_publicar_um(a, "versao", destino))
+    assert ETIQUETA not in perde.publicacoes, "o rascunho criado (com a resposta perdida) ficou no GitHub"
+    assert "foi apagada" in frase and "(conferido)" in frase, frase
+
+
+# Um "gh" de prova DE VERDADE (um programa, pelo lançador do pip): anota os argumentos num arquivo; "view" responde a
+# publicação SEM a soma pronta ("digest"); "download" abre um filho que escreve uma batida a cada 0,1 s e espera 60 s
+# (para a vigia e o grupo).
+_GH_DE_PROVA = r'''
+import json, os, subprocess, sys, time
+from pathlib import Path
+a = sys.argv[1:]
+Path(os.environ["GH_DE_PROVA_DIARIO"]).open("a", encoding="utf-8").write(json.dumps(a) + "\n")
+if a[1] == "view":
+    print(json.dumps({"isDraft": False, "tagName": a[2], "assets": [{"name": "grande.nupkg", "size": 10}]}))
+    sys.exit(0)
+if a[1] == "download":
+    batida = ("import os, sys, time\nn = 0\nwhile True:\n    n += 1\n    open(sys.argv[1] + '.tmp', 'w').write(str(n))\n"
+              "    try:\n        os.replace(sys.argv[1] + '.tmp', sys.argv[1])\n    except OSError:\n        pass\n"
+              "    time.sleep(0.1)\n")
+    subprocess.Popen([sys.executable, "-c", batida, os.environ["GH_DE_PROVA_FILHO"]])
+    time.sleep(60)
+sys.exit(1)
+'''
+
+
+def _gh_de_prova(tmp_path: Path, monkeypatch) -> tuple[Path, Path, Path]:
+    """O gh de prova, o diário dos argumentos e o arquivo da batida do filho."""
+    diario, batida = tmp_path / "gh-rodou.txt", tmp_path / "filho-do-gh.txt"
+    monkeypatch.setenv("GH_DE_PROVA_DIARIO", str(diario))
+    monkeypatch.setenv("GH_DE_PROVA_FILHO", str(batida))
+    return _programa_de_prova(tmp_path / "gh.exe", _GH_DE_PROVA), diario, batida
+
+
+def test_volta4_achado7_sem_a_soma_pronta_o_download_vai_ao_rascunho_pela_vigia(tmp_path, monkeypatch):
+    """Achado 7 do relatório 3 de quem tentou quebrar (D-776, "no C só tem que cuidar para não encher o disco C
+    inteiro"): quando o GitHub não dá a soma pronta de um arquivo, a leitura de volta o baixava inteiro para a pasta
+    temporária da conta (%TEMP%, no C:), fora do rascunho, da vigia e da conta. Agora o download vai para o rascunho do
+    publicar, pela peça que já baixa vigiada (baixar_vigiado), com a vigia única. De verdade: um gh de prova que demora
+    60 s a baixar é fechado pela vigia, junto com o filho que ele abriu, e o pedido de download apontava para dentro do
+    rascunho. Sem rascunho dado, a soma para com a frase (nunca baixa para outro lugar)."""
+    gh, diario, batida = _gh_de_prova(tmp_path, monkeypatch)
+    monkeypatch.setattr(empacotar, "INTERVALO_DA_VIGIA_S", 0.2)
+    rascunho = tmp_path / "publicar-rascunho"
+    rascunho.mkdir()
+    destino = pub.DestinoGitHub("dono/projeto", gh=str(gh))
+    destino.usar_rascunho(rascunho, lambda: "o disco ficou abaixo da reserva (de mentira)" if batida.exists() else None)
+    inicio = time.perf_counter()
+    with pytest.raises(pub.Parou, match="abaixo da reserva"):
+        destino.soma(ETIQUETA, "grande.nupkg")
+    assert time.perf_counter() - inicio < 30, "a vigia não fechou o download"
+    assert not _batida_viva(batida), "o filho do gh continuou rodando"
+    pedidos = [json.loads(linha) for linha in diario.read_text(encoding="utf-8").splitlines()]
+    baixar = [p for p in pedidos if p[1] == "download"]
+    assert baixar and rascunho in Path(baixar[0][baixar[0].index("--dir") + 1]).parents, baixar
+    assert list(rascunho.iterdir()) == [], "a pasta do download para somar ficou no rascunho"
+    sem = pub.DestinoGitHub("dono/projeto", gh=str(gh))
+    with pytest.raises(pub.Parou, match="rascunho"):
+        sem.soma(ETIQUETA, "grande.nupkg")
+
+
+def test_volta4_achado7_a_conta_do_espaco_soma_o_que_a_soma_pode_baixar(ambiente, monkeypatch):
+    """Achado 7 do relatório 3, a conta (D-776): no GitHub, a leitura de volta pode baixar um arquivo para somar; a
+    conta do espaço soma o maior deles (a pasta do programa, ou o motor publicado). Na pasta das provas a soma nunca
+    baixa, e a conta continua a de antes (o teste da volta 3 cobra)."""
+    a = ambiente
+    gh = _GitHubDeMentira(a["tmp"])
+    destino = pub.DestinoGitHub("dono/projeto")
+    monkeypatch.setattr(destino, "_gh", gh)
+    _publicar_o_motor(a, destino=destino)
+    pedidos = []
+    verdadeira = empacotar.conferir_espaco
+    monkeypatch.setattr(empacotar, "conferir_espaco", lambda pasta, precisa, *x: pedidos.append(precisa) or
+                        verdadeira(pasta, precisa, *x))
+    pasta = empacotar.tamanho_da_pasta(a["pasta"])           # antes (o publicar acrescenta arquivos à pasta)
+    motor = len(gh.publicacoes[ETIQUETA_DO_MOTOR]["arquivos"][versao.arquivo_do_motor(ocr_kraken.VERSAO_DO_MOTOR)])
+    _publicar(a, destino=destino)
+    sem_o_download = empacotar.espaco_que_vai_usar(pasta, (empacotar.ATUALIZACAO,), 0, baixado_para_o_rascunho=0)
+    assert pedidos[0] == sem_o_download + max(pasta, motor), (pedidos, sem_o_download, pasta, motor)
+    assert pub.DestinoPasta(a["servidor"]).soma_pode_baixar is False and destino.soma_pode_baixar is True
+
+
+def test_volta4_achado8_o_gh_roda_pelo_laco_unico_da_peca_e_fecha_o_que_abriu(tmp_path, monkeypatch):
+    """Achado 8 do relatório 3 de quem tentou quebrar (§11.12, ponto 1): o gh do publicar rodava com o subprocess
+    direto, fora da peça do Windows e sem grupo: fechar pela vigia fechava só o gh. Agora o gh e o vpk passam pelo
+    mesmo laço da peça (windows.rodar_em_grupo). De verdade: (1) os dois caminhos chamam o laço único; (2) o gh de prova
+    abre um filho e é fechado pela vigia: o filho também para; (3) o Ctrl+C no meio também fecha os dois."""
+    from core import windows
+
+    chamadas = []
+    verdadeiro = windows.rodar_em_grupo
+    monkeypatch.setattr(windows, "rodar_em_grupo", lambda comando, **k: chamadas.append(Path(comando[0]).name) or
+                        verdadeiro(comando, **k))
+    gh, diario, batida = _gh_de_prova(tmp_path, monkeypatch)
+    monkeypatch.setattr(empacotar, "INTERVALO_DA_VIGIA_S", 0.2)
+    destino = pub.DestinoGitHub("dono/projeto", gh=str(gh))
+    assert destino.situacao(ETIQUETA) == "liberada"
+    with pytest.raises(pub.Parou, match="abaixo da reserva"):
+        destino.baixar_vigiado(ETIQUETA, "grande.nupkg", tmp_path / "baixado",
+                               lambda: "o disco ficou abaixo da reserva (de mentira)" if batida.exists() else None)
+    assert not _batida_viva(batida), "o filho do gh continuou rodando depois da vigia"
+    batida.unlink()
+
+    def ctrl_c():
+        """O Ctrl+C assim que o filho começou."""
+        if batida.exists():
+            raise KeyboardInterrupt
+        return None
+
+    with pytest.raises(KeyboardInterrupt):
+        destino.baixar_vigiado(ETIQUETA, "grande.nupkg", tmp_path / "baixado", ctrl_c)
+    assert not _batida_viva(batida), "o filho do gh continuou rodando depois do Ctrl+C"
+    vpk = _programa_de_prova(tmp_path / "vpk.exe", "import sys\nsys.exit(0)\n")
+    rascunho = tmp_path / "publicar-laco"
+    rascunho.mkdir()
+    assert empacotar.rodar_vpk([str(vpk)], rascunho, livre=lambda _p: 500 * empacotar.GB) is None
+    assert chamadas.count("gh.exe") == 3 and chamadas[-1] == "vpk.exe", chamadas
+
+
+def test_volta4_achado11_a_copia_e_o_motor_gravam_no_disco_antes_de_conferir_e_trocar(tmp_path, monkeypatch):
+    """Achado 11 do relatório 3 de quem tentou quebrar: a cópia conferida dizia "lida de volta do disco" sem pedir ao
+    Windows para gravar no disco, e trocava o nome; o motor comprimido também. Agora as duas pedem (pela função única
+    da peça, windows.gravar_no_disco: o os.fsync, que no Windows é o _commit, "Flushes a file directly to disk") ANTES
+    de ler de volta e de trocar o nome. Aqui: a ordem do que o Python pede ao sistema (o os.fsync de verdade roda)."""
+    import builtins
+
+    motor = _motor_com_ficha(tmp_path / "motor")          # antes de anotar (a ficha também troca um nome)
+    ordem = []
+    verdadeiro_fsync, verdadeiro_replace, verdadeiro_open = os.fsync, os.replace, builtins.open
+    monkeypatch.setattr(os, "fsync", lambda fd: (ordem.append("gravar no disco"), verdadeiro_fsync(fd))[1])
+    monkeypatch.setattr(os, "replace", lambda a, b: (ordem.append("trocar o nome"), verdadeiro_replace(a, b))[1])
+
+    def aberto(arquivo, modo="r", *x, **k):
+        """Anota a leitura de volta do provisório."""
+        if "r" in modo and "+" not in modo and str(arquivo).endswith(".copiando"):
+            ordem.append("ler de volta")
+        return verdadeiro_open(arquivo, modo, *x, **k)
+
+    monkeypatch.setattr(builtins, "open", aberto)
+    origem = tmp_path / "origem.bin"
+    origem.write_bytes(os.urandom(200_000))
+    empacotar.copiar_inteiro(origem, tmp_path / "copia.bin")
+    assert ordem == ["gravar no disco", "ler de volta", "trocar o nome"], ordem
+    ordem.clear()
+    assert empacotar.zipar_motor(motor, tmp_path / "motor.zip", livre=lambda p: 500 * empacotar.GB) is None
+    assert ordem == ["gravar no disco", "trocar o nome"], ordem

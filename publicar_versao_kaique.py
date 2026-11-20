@@ -27,7 +27,9 @@ O QUE FAZ, PARA UMA VERSAO DO PROGRAMA, em ordem, parando no primeiro problema (
 7. publica num destino (Destino): sobe como RASCUNHO so os arquivos da versao (arquivos_da_versao: o pacote, o indice
    releases.win.json e a assinatura; nunca o Setup.exe), le de volta (a lista do que esta la, a soma de cada
    arquivo, a assinatura lida do destino conferida contra a soma do pacote lida do destino, o indice apontando para
-   essa soma, e o motor de novo) e SO ENTAO libera. Qualquer falha antes de liberar apaga o rascunho do destino;
+   essa soma, e o motor de novo) e SO ENTAO libera. Qualquer falha antes do pedido de liberar apaga o rascunho do
+   destino; depois do pedido de liberar, NADA e apagado, em nenhum destino (D-816): a frase diz o que pode ter ficado
+   e os comandos para conferir e apagar;
 8. no fim, sempre (tambem com erro): apaga o rascunho do C: e confere que sumiu, e lista o que ficou na pasta de
    saida e no destino, dizendo se o Setup.exe esta em algum deles (D-795).
 
@@ -94,6 +96,12 @@ class Parou(Exception):
 
 class PublicacaoLiberada(Parou):
     """O apagar "só o rascunho" achou a publicação LIBERADA e não apagou (apagar_publicacao com so_rascunho)."""
+
+
+class SemResposta(Parou):
+    """O pedido SAIU para o destino e não houve resposta (o gh foi fechado por tempo ou pela vigia): não se sabe se ele
+    foi feito. Quem chama diz isso na frase ("pedi e não deu para conferir"), nunca "não pedi" (achado 3 do relatório 3).
+    """
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -235,9 +243,41 @@ def _conferir_etiqueta(etiqueta: str) -> str:
     return etiqueta
 
 
-class DestinoPasta:
+class _Destino:
+    """O que os dois destinos (DestinoPasta e DestinoGitHub) fazem igual, num lugar so (volta 4 do passo 2):
+    - usar_rascunho: onde a leitura de volta pode baixar um arquivo para somar, e a vigia do espaco (achado 7 do
+      relatorio 3, D-776: antes o GitHub baixava para %TEMP%, fora do rascunho, da vigia e da conta);
+    - soma_pode_baixar: se a soma deste destino pode baixar um arquivo inteiro (a conta do espaco soma o maior);
+    - comando_de_apagar e como_conferir: o que a frase da D-816 e a do apagar dizem para conferir e apagar depois.
+    Seguro mexer: as frases. Arriscado: a soma baixar para outro lugar que nao o rascunho dado (o C: enche sem vigia)."""
+
+    soma_pode_baixar = False
+    _rascunho_da_soma: Path | None = None
+    _vigia_da_soma: Callable[[], str | None] | None = None
+
+    def usar_rascunho(self, pasta: Path | None, vigia: Callable[[], str | None] | None) -> None:
+        """A pasta (dentro do rascunho do publicar, no C:) e a vigia que a leitura de volta usa se precisar baixar um
+        arquivo para somar. None, None: nenhuma (a soma que precisaria baixar para, com a frase)."""
+        self._rascunho_da_soma = Path(pasta) if pasta is not None else None
+        self._vigia_da_soma = vigia
+
+    def _argumentos_do_destino(self) -> str:
+        """O que a linha de comando precisa para apontar para este destino (o GitHub: nada)."""
+        return ""
+
+    def comando_de_apagar(self, etiqueta: str) -> str:
+        """A linha de comando que apaga a publicacao deste destino (o --apagar, que le de volta e confere)."""
+        return f"publicar_versao_kaique.py --apagar {_conferir_etiqueta(etiqueta)}{self._argumentos_do_destino()}"
+
+    def como_conferir(self, etiqueta: str) -> str:
+        """Como ver, sem mudar nada, se a publicacao esta liberada, em rascunho ou nao existe."""
+        raise NotImplementedError
+
+
+class DestinoPasta(_Destino):
     """Uma pasta que faz o papel do GitHub (as provas, D-773). Publicacao liberada: <raiz>\\<etiqueta>\\; rascunho:
-    <raiz>\\.rascunho-<etiqueta>\\ (o servidor_das_versoes.py nao serve). Todas as funcoes levantam Parou."""
+    <raiz>\\.rascunho-<etiqueta>\\ (o servidor_das_versoes.py nao serve). Todas as funcoes levantam Parou. A soma e
+    lida do arquivo na pasta (nunca baixa: soma_pode_baixar = False)."""
 
     def __init__(self, raiz: Path | str):
         """raiz: a pasta (criada quando precisa)."""
@@ -247,6 +287,15 @@ class DestinoPasta:
     def nome(self) -> str:
         """Como o destino aparece nas frases."""
         return f"a pasta {self.raiz}"
+
+    def _argumentos_do_destino(self) -> str:
+        """A pasta, na linha de comando."""
+        return f' --pasta "{self.raiz}"'
+
+    def como_conferir(self, etiqueta: str) -> str:
+        """As duas subpastas: a da versao liberada e a do rascunho."""
+        return (f"olhe a pasta {self.raiz}: a subpasta {self._liberada(etiqueta).name} é a liberada e "
+                f"{self._rascunho(etiqueta).name} é o rascunho")
 
     def _liberada(self, etiqueta: str) -> Path:
         """A subpasta da publicacao liberada (o nome e a etiqueta, conferida)."""
@@ -359,10 +408,13 @@ def _caminho_do_gh() -> str:
     return shutil.which("gh") or str(LUGAR_DO_GH)
 
 
-class DestinoGitHub:
+class DestinoGitHub(_Destino):
     """O GitHub do projeto, pela ferramenta gh (o lugar unico da conversa do publicar com o GitHub: _gh). Lido do gh
     2.99 (cli/cli, pkg/cmd/release/shared/fetch.go): "release view/upload/download/edit/delete <etiqueta>" acham
-    tambem o rascunho pela etiqueta; sem publicacao, "release not found". Todas as funcoes levantam Parou."""
+    tambem o rascunho pela etiqueta; sem publicacao, "release not found". Todas as funcoes levantam Parou. Sem a soma
+    pronta do GitHub, a soma baixa o arquivo (soma_pode_baixar = True), no rascunho dado por usar_rascunho."""
+
+    soma_pode_baixar = True
 
     def __init__(self, repositorio: str | None = None, gh: str | None = None):
         """repositorio: 'dono/nome' (de fabrica, o de atualizacao.REPOSITORIO)."""
@@ -374,42 +426,32 @@ class DestinoGitHub:
         """Como o destino aparece nas frases."""
         return f"o GitHub ({self.repositorio})"
 
+    def como_conferir(self, etiqueta: str) -> str:
+        """O pedido de leitura que o proprio publicar faz (_ver), para rodar a mao."""
+        return (f'gh release view {_conferir_etiqueta(etiqueta)} -R {self.repositorio} --json isDraft ("isDraft": '
+                'true é rascunho; false, liberada; "release not found", não ficou nada)')
+
     def _gh(self, *argumentos: str, limite_s: float = 600, vigia=None) -> subprocess.CompletedProcess:
-        """Roda o gh e devolve o resultado (o que falhar ao abrir vira Parou; o codigo de saida quem decide e quem
-        chama). Com 'vigia' (empacotar.vigia_do_espaco: o download do motor para o rascunho, achado 7 do relatorio 2),
-        olha o espaco a cada INTERVALO_DA_VIGIA_S enquanto o gh roda; se mandar parar, fecha o gh (so ele: o gh baixa
-        sozinho, nao abre outro programa) e Parou. Lido no Python (subprocess, Popen.communicate): "If the process
-        does not terminate after timeout seconds, a TimeoutExpired exception will be raised. Catching this exception
-        and retrying communication will not lose any output." Ctrl+C: fecha o gh e repassa."""
+        """Roda o gh e devolve o resultado (o codigo de saida quem decide e quem chama). Pelo laco unico da peca do
+        Windows (core/windows.rodar_em_grupo, o mesmo do vpk; volta 4, achado 8 do relatorio 3, CLAUDE.md §11.12,
+        ponto 1: antes o gh rodava com o subprocess direto, sem grupo, e fechar fechava so o gh): o gh roda num grupo do
+        Windows, com a saida guardada (UTF-8, como o gh escreve); a cada INTERVALO_DA_VIGIA_S o laco olha a 'vigia'
+        (empacotar.vigia_do_espaco: o download para o rascunho, achado 7 do relatorio 2) e o 'limite_s'; se e para
+        parar, fecha o gh e o que ele abriu (conferido). Ctrl+C: o laco fecha o grupo e repassa.
+        O gh que nao abre (ou que a peca recusa): Parou, e nada foi pedido. O gh fechado por tempo ou pela vigia:
+        SemResposta (o pedido saiu e nao se sabe se foi feito)."""
         import empacotar
+        from core import windows
 
         comando = [self.gh or _caminho_do_gh(), *argumentos, "-R", self.repositorio]
-        try:
-            if vigia is None:
-                return subprocess.run(comando, capture_output=True, text=True, encoding="utf-8", errors="replace",
-                                      timeout=limite_s)
-            processo = subprocess.Popen(comando, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
-                                        encoding="utf-8", errors="replace")
-        except (OSError, subprocess.TimeoutExpired) as erro:
-            raise Parou(f"não consegui falar com o GitHub pelo gh ({erro})") from erro
-        fim = time.monotonic() + limite_s
-        try:
-            while True:
-                try:
-                    saida, erros = processo.communicate(timeout=empacotar.INTERVALO_DA_VIGIA_S)
-                    return subprocess.CompletedProcess(comando, processo.returncode, saida, erros)
-                except subprocess.TimeoutExpired:
-                    motivo = vigia() or (f"o gh não terminou em {int(limite_s)} segundos"
-                                         if time.monotonic() > fim else None)
-                    if motivo:
-                        processo.kill()
-                        processo.communicate()
-                        raise Parou(f"parei de baixar do GitHub: {motivo}")
-        except BaseException:
-            if processo.poll() is None:
-                processo.kill()
-                processo.communicate()
-            raise
+        r = windows.rodar_em_grupo(comando, vigia=vigia, limite_s=limite_s, intervalo_s=empacotar.INTERVALO_DA_VIGIA_S,
+                                   capturar=True, letras="utf-8")
+        if not r.dados.get("abriu"):
+            raise Parou(f"não consegui falar com o GitHub pelo gh ({r.motivo})")
+        if r.dados.get("parou"):
+            ficou = "" if r.dados.get("fechado") else f"; ATENÇÃO: {r.dados.get('fechou')}"
+            raise SemResposta(f"parei o pedido ao GitHub ({' '.join(argumentos[:2])}): {r.dados['parou']}{ficou}")
+        return subprocess.CompletedProcess(comando, r.dados["codigo"], r.dados["saida"], r.dados["erros"])
 
     def _exigir(self, r: subprocess.CompletedProcess, o_que: str) -> subprocess.CompletedProcess:
         """O gh respondeu sem erro? Senao, Parou com o que ele disse."""
@@ -461,15 +503,21 @@ class DestinoGitHub:
 
     def soma(self, etiqueta: str, nome: str) -> str:
         """A soma SHA-256 do arquivo como ele esta no GitHub: a que o GitHub calcula ('digest', "sha256:..."); sem
-        ela, baixa o arquivo e soma (a leitura de volta nunca e dada como feita sem ler)."""
+        ela, baixa o arquivo e soma (a leitura de volta nunca e dada como feita sem ler). O download vai para o
+        rascunho dado por usar_rascunho (no C:, apagado no fim), pela peca que baixa vigiada (baixar_vigiado) com a
+        vigia do espaco (volta 4, achado 7 do relatorio 3, D-776: antes ia para %TEMP%, fora do rascunho, da vigia e da
+        conta); a subpasta e apagada logo depois de somar. Sem rascunho dado: Parou (nunca baixa para outro lugar)."""
         for a in self._assets(etiqueta):
             if a.get("name") == nome:
                 digest = str(a.get("digest") or "")
                 if digest.startswith("sha256:"):
                     return digest.removeprefix("sha256:").lower()
-                pasta = Path(os.environ.get("TEMP", ".")) / f"publicar-soma-{secrets.token_hex(3)}"
+                if self._rascunho_da_soma is None:
+                    raise Parou(f"o GitHub não deu a soma de {nome}, e não há rascunho no disco de dentro para "
+                                "baixá-lo e somar: nada foi baixado")
+                pasta = self._rascunho_da_soma / f"soma-{secrets.token_hex(3)}"
                 try:
-                    return assinatura.soma_sha256(self.baixar(etiqueta, nome, pasta))
+                    return assinatura.soma_sha256(self.baixar_vigiado(etiqueta, nome, pasta, self._vigia_da_soma))
                 finally:
                     shutil.rmtree(pasta, ignore_errors=True)
         raise Parou(f"{nome} não está na publicação {etiqueta} em {self.nome}")
@@ -536,33 +584,72 @@ def destino_de(destino_pasta: Path | None) -> DestinoPasta | DestinoGitHub:
     return DestinoPasta(destino_pasta) if destino_pasta is not None else DestinoGitHub()
 
 
-def apagar_publicacao(destino, etiqueta: str, so_rascunho: bool = False) -> str | None:
-    """Apaga uma publicacao do destino e CONFERE, lendo de volta, que sumiu: sumiu = apagada, venha o pedido com
-    aviso ou nao (devolve o aviso, para a frase); continua la = Parou. (Achado 1 da volta 1: antes, o aviso do gh
-    virava "nao apagou" sem ler.) O LUGAR UNICO de apagar uma publicacao: o --apagar e o caminho de erro do publicar.
+def apagar_publicacao(destino, etiqueta: str, so_rascunho: bool = False, acabou_de_criar: bool = False) -> str | None:
+    """Apaga uma publicacao do destino e CONFERE, lendo de volta, que sumiu. O LUGAR UNICO de apagar uma publicacao (o
+    --apagar e o caminho de erro do publicar de antes do pedido de liberar) e o UNICO que escreve a frase de cada
+    desfecho, porque so ele sabe se o pedido de apagar chegou a sair (volta 4, achado 3 do relatorio 3: a frase dizia
+    "NAO apaguei" tendo pedido e apagado).
 
-    so_rascunho=True (o caminho de erro do publicar_arquivos): "so o rascunho e apagado" vale AQUI DENTRO, lido de
-    novo aqui e no proprio destino logo antes de pedir (destino.apagar_rascunho), nunca por uma leitura de quem chama
-    (achado 1 do relatorio 2: a decisao era tomada numa leitura e o apagar lia de novo por conta propria, e uma leitura
-    atrasada apagava uma versao ja liberada). Achou liberada (antes, ao pedir ou depois de pedir): PublicacaoLiberada,
-    e nada liberado foi apagado. Sem leitura: Parou (quem chama diz "nao apaguei")."""
-    antes = destino.situacao(etiqueta)
+    Devolve (o aviso do destino, ou None) so quando: pediu para apagar e a leitura de depois diz que sumiu; ou ja nao
+    existia (sem acabou_de_criar). Todo o resto levanta, com a frase pronta, o comando para conferir e o de apagar:
+    - a leitura de antes falha: Parou "NAO pedi para apagar nada";
+    - acabou_de_criar e a leitura nao acha (volta 4, achado 4: logo depois de criar, "nao achei" nao e "sumiu"; a frase
+      dizia "foi apagada (conferido)" com o rascunho no GitHub): Parou "nao achei o rascunho para apagar";
+    - so_rascunho e esta liberada (antes, ou na leitura de novo do proprio destino logo antes de pedir):
+      PublicacaoLiberada, nada pedido;
+    - o pedido nao saiu (o gh nao abriu, a leitura de novo falhou, a publicacao e um atalho): Parou "nao apaguei";
+    - o pedido saiu e ficou sem resposta (SemResposta), ou a leitura de depois falha: Parou "pedi para apagar e nao deu
+      para conferir se sumiu";
+    - depois de pedir, continua la: Parou "continua la" (ou PublicacaoLiberada, se a leitura diz liberada).
+    Achado 1 da volta 1: o aviso do gh nao decide; quem decide e a leitura de volta."""
+    conferir = f"confira com: {destino.como_conferir(etiqueta)}; e apague com: {destino.comando_de_apagar(etiqueta)}"
+    try:
+        antes = destino.situacao(etiqueta)
+    except Parou as erro:
+        raise Parou(f"não consegui ler {etiqueta} em {destino.nome} antes de apagar ({erro}): NÃO pedi para apagar "
+                    f"nada; {conferir}") from erro
     if antes is None:
+        if acabou_de_criar:
+            raise Parou(f"não achei o rascunho {etiqueta} em {destino.nome} para apagar (pode não ter chegado a ser "
+                        "criado, ou a leitura logo depois de criar ainda não o mostra): NÃO pedi para apagar nada; "
+                        f"{conferir}")
         return None
-    if so_rascunho:
-        if antes != "rascunho":
-            raise PublicacaoLiberada(f"{etiqueta} está liberada em {destino.nome}: só o rascunho podia ser apagado "
-                                     "aqui, e NÃO apaguei")
-        aviso = destino.apagar_rascunho(etiqueta)
-    else:
-        aviso = destino.apagar(etiqueta)
-    depois = destino.situacao(etiqueta)
+    if so_rascunho and antes != "rascunho":
+        raise PublicacaoLiberada(f"{etiqueta} está liberada em {destino.nome}: só o rascunho podia ser apagado aqui, "
+                                 "e NÃO apaguei")
+    try:
+        aviso = destino.apagar_rascunho(etiqueta) if so_rascunho else destino.apagar(etiqueta)
+    except PublicacaoLiberada:
+        raise
+    except SemResposta as erro:
+        raise Parou(f"pedi para apagar {etiqueta} em {destino.nome} e não deu para conferir se sumiu ({erro}); "
+                    f"{conferir}") from erro
+    except Parou as erro:
+        raise Parou(f"não apaguei {etiqueta} em {destino.nome}: {erro}; {conferir}") from erro
+    try:
+        depois = destino.situacao(etiqueta)
+    except Parou as erro:
+        raise Parou(f"pedi para apagar {etiqueta} em {destino.nome} e não deu para conferir se sumiu ({erro}); "
+                    f"{conferir}") from erro
     if so_rascunho and depois == "liberada":
-        raise PublicacaoLiberada(f"{etiqueta} ficou liberada em {destino.nome} (o rascunho virou versão liberada "
-                                 "antes de eu apagar): só o rascunho podia ser apagado aqui, e NÃO apaguei")
+        raise PublicacaoLiberada(f"pedi para apagar o rascunho {etiqueta} em {destino.nome}, e ele está liberado "
+                                 "agora (foi liberado no meio, antes do pedido de apagar)")
     if depois is not None:
-        raise Parou(f"pedi para apagar {etiqueta} em {destino.nome}, e ela continua lá" + (f" ({aviso})" if aviso else ""))
+        raise Parou(f"pedi para apagar {etiqueta} em {destino.nome}, e ela continua lá" + (f" ({aviso})" if aviso else "")
+                    + f"; {conferir}")
     return aviso
+
+
+def _frase_depois_do_pedido_de_liberar(destino, etiqueta: str) -> str:
+    """A frase do caminho de erro DEPOIS do pedido de liberar (D-816, o lugar unico): nada foi apagado; o que pode ter
+    ficado (liberada, inteira, ou rascunho); como conferir; e o comando para apagar o rascunho depois. Nao le nada do
+    destino (a decisao de nao apagar nao depende de leitura, e uma leitura atrasada nao entra na frase)."""
+    return (f"{etiqueta}: pedi para liberar em {destino.nome} e não deu para reconferir agora se ficou liberada. Depois "
+            "do pedido de liberar, o publicar nunca apaga nada (uma leitura atrasada poderia apagar a versão já "
+            "liberada), e NÃO apaguei. Ela pode ter ficado de dois jeitos: se ficou liberada em "
+            f"{destino.nome}, está inteira (tudo foi lido de volta antes do pedido) e vale: não publique de novo com "
+            f"{etiqueta}; se ficou como rascunho, apague depois com: {destino.comando_de_apagar(etiqueta)}; e publique "
+            f"de novo. Para conferir qual dos dois: {destino.como_conferir(etiqueta)}")
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -579,15 +666,16 @@ def publicar_arquivos(destino, etiqueta: str, titulo: str, notas: str, arquivos:
        soma de cada um, lida do destino, a do arquivo local; depois conferir_lido() (a assinatura e o resto, lidos do
        destino; levanta Parou);
     4. so entao libera, e confere que ficou liberada.
-    Qualquer falha (ou Ctrl+C) apaga SO O RASCUNHO do destino e confere que sumiu (apagar_publicacao com
-    so_rascunho: a regra mora la, lida de novo na hora de apagar); se nao der para apagar, a frase diz o que ficou e
-    como apagar.
-    Uma versao LIBERADA nunca e apagada aqui (decisao tecnica da gerente, 19/11, D-014; achado 4 da volta 1 e achado
-    1 do relatorio 2): se ela ficou liberada (o liberar chegou ao destino e a resposta se perdeu, ou a leitura logo
-    depois veio atrasada), ou se nao da para ler, NAO apaga e para dizendo "nao deu para reconferir agora". Por que:
-    quando o liberar e pedido, tudo ja foi lido de volta e conferido; apagar uma versao liberada deixaria o numero dela
-    livre para outro conteudo, e um programa que a pegou naqueles segundos nunca pegaria a outra (mesmo numero: "um
-    numero de versao so", peca 8)."""
+    Qualquer falha (ou Ctrl+C) ANTES do pedido de liberar (o criar do rascunho incluido: se ele cria e a resposta se
+    perde, o rascunho e procurado e apagado; volta 4, achado 4 do relatorio 3) apaga SO O RASCUNHO do destino e confere
+    que sumiu (apagar_publicacao com so_rascunho e acabou_de_criar: a regra e a frase moram la).
+    DEPOIS do pedido de liberar, NADA e apagado, em nenhum destino, sem ler nada (D-816, Samuel 20/11/2026: "A , mas
+    onde estamos antes de você fazer qualquer processo"; volta 4, achado 1 do relatorio 3: com duas leituras atrasadas
+    do GitHub, o apagar "so o rascunho" apagava a versao liberada). A frase (_frase_depois_do_pedido_de_liberar) diz
+    que pode ter ficado liberada (inteira) ou rascunho, como conferir e o comando para apagar o rascunho depois. Por que
+    nao apagar: quando o liberar e pedido, tudo ja foi lido de volta e conferido; apagar uma versao liberada deixaria o
+    numero dela livre para outro conteudo ("um numero de versao so", peca 8). Isso troca o que a volta 3 fazia quando o
+    liberar falhava e continuava rascunho (apagava o rascunho): agora o rascunho fica, e a frase diz o comando."""
     situacao = destino.situacao(etiqueta)
     if situacao == "liberada":
         raise Parou(f"{etiqueta} já está publicada em {destino.nome}: aumente o número (versao.py ou "
@@ -597,9 +685,9 @@ def publicar_arquivos(destino, etiqueta: str, titulo: str, notas: str, arquivos:
                     f"--apagar {etiqueta} e rode de novo")
     nomes = [Path(a).name for a in arquivos]
     print(f"  {destino.nome}: rascunho {etiqueta} ({', '.join(nomes)})")
-    destino.criar_rascunho(etiqueta, titulo, notas)
     pediu_para_liberar = False
     try:
+        destino.criar_rascunho(etiqueta, titulo, notas)
         for arquivo in arquivos:
             destino.enviar(etiqueta, Path(arquivo))
         lidos = destino.arquivos(etiqueta)
@@ -615,25 +703,19 @@ def publicar_arquivos(destino, etiqueta: str, titulo: str, notas: str, arquivos:
         if destino.situacao(etiqueta) != "liberada":
             raise Parou(f"pedi para liberar {etiqueta} em {destino.nome}, e ela não ficou liberada")
     except BaseException as erro:
-        try:
-            aviso = apagar_publicacao(destino, etiqueta, so_rascunho=True)
-            desfeito = f"a publicação {etiqueta} foi apagada de {destino.nome} (conferido)" + (
-                f"; {aviso}" if aviso else "")
-        except PublicacaoLiberada as liberada:
-            if pediu_para_liberar:
-                desfeito = (f"{liberada}. Pedi para liberar; ela está inteira (tudo foi lido de volta antes de "
-                            "liberar); não deu para reconferir agora (o número não pode ficar livre para outro "
-                            "conteúdo). Confira com calma antes de publicar de novo")
-            else:
+        if pediu_para_liberar:
+            desfeito = _frase_depois_do_pedido_de_liberar(destino, etiqueta)          # D-816: nada se apaga
+        else:
+            try:
+                aviso = apagar_publicacao(destino, etiqueta, so_rascunho=True, acabou_de_criar=True)
+                desfeito = f"a publicação {etiqueta} foi apagada de {destino.nome} (conferido)" + (
+                    f"; {aviso}" if aviso else "")
+            except PublicacaoLiberada as liberada:
                 desfeito = (f"{liberada}. Eu não pedi para liberar: outra pessoa ou outro publicar a liberou no "
-                            f"meio. Confira à mão o que ela tem (--apagar {etiqueta} apaga, se estiver errada)")
-        except Parou as outro:
-            if pediu_para_liberar:
-                desfeito = (f"{etiqueta}: pedi para liberar em {destino.nome}; não deu para ler a situação agora "
-                            f"({outro}). Se ficou liberada, ela está inteira; não deu para reconferir agora e NÃO "
-                            f"apaguei. Confira com calma antes de publicar de novo")
-            else:
-                desfeito = f"ATENÇÃO: {outro}; apague com --apagar {etiqueta}"
+                            f"meio. Confira à mão o que ela tem ({destino.comando_de_apagar(etiqueta)} apaga, se "
+                            "estiver errada)")
+            except Parou as outro:
+                desfeito = f"ATENÇÃO: {outro}"
         if isinstance(erro, Parou):
             raise Parou(f"{erro}. {desfeito}") from erro
         print(f"  {desfeito}")
@@ -820,6 +902,8 @@ def publicar(versao_do_pacote: str, destino_pasta: Path | None = None, pasta_pro
     saida_final = Path(pasta_de_saida or PASTA_DE_SAIDA) / etiqueta
     rascunho = criar_rascunho(rascunho_base)
     print(f"  rascunho: {rascunho}")
+    # o que a leitura de volta baixar para somar fica no rascunho, na vigia (achado 7 do relatorio 3)
+    destino.usar_rascunho(rascunho / "somar", empacotar.vigia_do_espaco(rascunho))
     msi_feito = None
     try:
         motor = obter_motor_publicado(destino, rascunho / "lido", chave_publica)
@@ -839,9 +923,16 @@ def publicar(versao_do_pacote: str, destino_pasta: Path | None = None, pasta_pro
         tamanho_do_motor = 0
         if com_instalador:
             tamanho_do_motor = destino.arquivos(motor.etiqueta).get(motor.arquivo, 0)
-        # o motor baixado para o rascunho (com o instalador) fica la ate o fim: entra na conta (achado 7)
-        precisa = empacotar.espaco_que_vai_usar(empacotar.tamanho_da_pasta(pasta), saidas, tamanho_do_motor,
-                                                baixado_para_o_rascunho=tamanho_do_motor)
+        tamanho_da_pasta = empacotar.tamanho_da_pasta(pasta)
+        para_somar = 0
+        if destino.soma_pode_baixar:
+            # a leitura de volta pode baixar um arquivo de cada vez para somar (achado 7 do relatorio 3): o maior deles
+            # (o pacote, ou o .msi com o motor, contados pela pasta; ou o motor publicado)
+            motor_publicado = tamanho_do_motor or destino.arquivos(motor.etiqueta).get(motor.arquivo, 0)
+            para_somar = max(tamanho_da_pasta + tamanho_do_motor, motor_publicado)
+        # o motor baixado para o rascunho (com o instalador) fica la ate o fim: entra na conta (achado 7 do relatorio 2)
+        precisa = empacotar.espaco_que_vai_usar(tamanho_da_pasta, saidas, tamanho_do_motor,
+                                                baixado_para_o_rascunho=tamanho_do_motor + para_somar)
         motivo = empacotar.conferir_espaco(rascunho, precisa)
         if motivo is not None:
             raise Parou(motivo)
@@ -884,6 +975,7 @@ def publicar(versao_do_pacote: str, destino_pasta: Path | None = None, pasta_pro
         print(f"publicada a versão {versao_do_pacote} ({nupkg.name}, assinada)")
         return nupkg
     finally:
+        destino.usar_rascunho(None, None)
         _fim(destino, etiqueta, saida_final, rascunho, msi_feito)
 
 
@@ -939,8 +1031,11 @@ def publicar_motor(destino_pasta: Path | None = None, motor_escolhido: Path | No
         raise Parou(f"o motor de {pasta} não confere: " + "; ".join(problemas))
     print(f"  motor do Kraken {v}: {pasta} (conferido pela ficha)")
     rascunho = criar_rascunho(rascunho_base)
+    destino.usar_rascunho(rascunho / "somar", empacotar.vigia_do_espaco(rascunho))     # achado 7 do relatorio 3
     try:
-        precisa = empacotar.tamanho_da_pasta(pasta) + empacotar.MARGEM_DA_CONTA
+        # o zip (no maximo do tamanho da pasta) e, se a soma do destino puder baixar, uma copia dele para somar
+        vezes = 2 if destino.soma_pode_baixar else 1
+        precisa = vezes * empacotar.tamanho_da_pasta(pasta) + empacotar.MARGEM_DA_CONTA
         motivo = empacotar.conferir_espaco(rascunho, precisa)
         if motivo is not None:
             raise Parou(motivo)
@@ -959,6 +1054,7 @@ def publicar_motor(destino_pasta: Path | None = None, motor_escolhido: Path | No
         print(f"publicado o motor do Kraken {v} ({nome}, assinado)")
         return etiqueta
     finally:
+        destino.usar_rascunho(None, None)
         ficou = apagar_rascunho(rascunho)
         for frase in ficou:
             print(f"  ATENÇÃO: {frase}")

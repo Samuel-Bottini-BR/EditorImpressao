@@ -1005,10 +1005,31 @@ def apagar_pasta_de_troca(pasta: Path) -> bool:
     return True
 
 
+def gravar_no_disco(arquivo) -> None:
+    """Pede ao Windows que grave no disco, agora, o que ele ainda guarda na memória para este arquivo (aberto para
+    ESCREVER). O LUGAR ÚNICO dessa conversa: todo código que grava num nome provisório e depois troca pelo nome certo
+    chama esta função antes de conferir e de trocar (`_gravar_por_inteiro` aqui; `empacotar.copiar_inteiro` e
+    `empacotar.zipar_motor`). Passo 2, volta 4, achado 11 do relatório 3 de quem tentou quebrar: a cópia dizia "lida
+    de volta do disco" sem pedir isso, e se a luz caísse logo depois da troca do nome, o nome certo podia ficar com o
+    conteúdo pela metade.
+
+    Lido (D-813): Python, `os.fsync` (com um arquivo do Python, primeiro `flush()`, depois `os.fsync(fileno())`; no
+    Windows ele chama o `_commit` da biblioteca C); Microsoft Learn, `_commit`: "Flushes a file directly to disk",
+    devolve -1 no erro (vira OSError); FlushFileBuffers: "The file handle must have the GENERIC_WRITE access right"
+    (por isso o arquivo tem de estar aberto para escrever). O que NÃO faz: a leitura de volta continua vindo do que o
+    Windows guarda na memória; e o nome trocado (a pasta) não é gravado à parte. Levanta OSError (quem chama trata como
+    erro do disco). Arriscado: tirar (a troca do nome volta a poder chegar antes do conteúdo)."""
+    arquivo.flush()
+    os.fsync(arquivo.fileno())
+
+
 def _gravar_por_inteiro(caminho: Path, conteudo: bytes) -> None:
-    """Grava o arquivo inteiro de uma vez (num arquivo ao lado e depois troca o nome): quem lê nunca vê pela metade."""
+    """Grava o arquivo inteiro de uma vez (num arquivo ao lado, gravado no disco, e depois troca o nome): quem lê nunca
+    vê pela metade, e a troca do nome não chega antes do conteúdo (`gravar_no_disco`)."""
     provisorio = caminho.with_name(caminho.name + ".gravando")
-    provisorio.write_bytes(conteudo)
+    with open(provisorio, "wb") as arquivo:
+        arquivo.write(conteudo)
+        gravar_no_disco(arquivo)
     os.replace(provisorio, caminho)
 
 
@@ -1029,14 +1050,34 @@ def aspas_do_powershell(texto: object) -> str:
 # Rodar e esperar
 # ---------------------------------------------------------------------------------------------------------------------
 
+def _como_o_windows_completa(texto: str) -> str:
+    """O nome do programa como o Windows o completa antes de abrir (passo 2, volta 4, achado 2 do relatório 3 de quem
+    tentou quebrar: a lista de nomes com função própria comparava o texto cru, e `pwsh.exe.` passava; o nome sozinho
+    `whoami.exe.` rodava o whoami da pasta do Windows).
+
+    Lido (D-813): Microsoft Learn, "File path formats on Windows systems", "Path normalization": "Almost all paths passed
+    to Windows APIs are normalized" (pelo GetFullPathName); "Trim characters": "If the path doesn't end in a separator,
+    all trailing periods and spaces (U+0020) are removed". O `os.path.abspath` do Python, no Windows, é o
+    GetFullPathNameW. Rodado no PC (20/11): com pasta, `x.exe.` e `x.exe .` rodam o x.exe; o nome sozinho achado pelo
+    PATH também (`x.exe.`, `x.exe..`, `x.exe. ` rodaram; `x.` não), e o `shutil.which` não acha nenhum deles.
+    Com pasta (ou letra de disco): o caminho inteiro pelo GetFullPathNameW. Só o nome: o mesmo corte do fim (pontos e
+    espaços), sem pôr a pasta atual (o Windows procura o nome sozinho em outros lugares). Levanta ValueError/OSError
+    para o que o Windows não entende (quem chama recusa). Arriscado: comparar qualquer coisa pelo texto de antes."""
+    if os.path.dirname(texto) or re.match(r"^[A-Za-z]:", texto):
+        return os.path.abspath(texto)
+    return texto.rstrip(". ")
+
+
 def _caminho_do_programa(programa: str) -> Path | None:
-    """O caminho do programa, normalizado num lugar só para comparar: sem aspas, e o que vem com o prefixo de caminho
+    """O caminho do programa, normalizado num lugar só para comparar, UMA VEZ, e todas as conferências da regra única
+    (`_por_que_recusa`) usam este: sem aspas; o que vem com o prefixo de caminho
     longo ou de dispositivo (duas barras com interrogação ou com ponto, que o Windows aceita para o mesmo arquivo) é
     resolvido inteiro pelo Windows e só então perde o prefixo (assim o "raiz global" e o "volume por número" viram a
-    letra de disco de verdade). None para
+    letra de disco de verdade); e, no fim, como o Windows o completa (`_como_o_windows_completa`: os pontos e espaços do
+    fim saem). None para
     caminho de rede (duas barras e o nome de um computador, inclusive pelo prefixo longo com UNC): ele pode apontar
     para a pasta do Windows deste computador por outro nome (ex.: o "C$" ou o "ADMIN$" do "localhost"), e o rodar
-    genérico não o aceita."""
+    genérico não o aceita; e None para o que o Windows não consegue completar."""
     texto = str(programa).strip().strip('"').replace("/", "\\")
     for prefixo in ("\\\\?\\UNC\\", "\\\\.\\UNC\\"):
         if texto.upper().startswith(prefixo.upper()):
@@ -1058,6 +1099,12 @@ def _caminho_do_programa(programa: str) -> Path | None:
             return None
     if texto.startswith("\\\\"):
         return None
+    try:
+        texto = _como_o_windows_completa(texto)
+    except (OSError, ValueError):
+        return None
+    if texto.startswith("\\\\"):
+        return None
     return Path(texto)
 
 
@@ -1077,7 +1124,7 @@ def _caminho_do_programa(programa: str) -> Path | None:
 #   código 1; "x.bat::$DATA" deu o erro 193 e um lote com nome de .exe, o erro 216 (não rodaram). Um lote que começa
 #   com "MZ" também dá o erro 216: o Windows só entrega ao cmd.exe o que NÃO começa com "MZ". O os.path.abspath (o
 #   GetFullPathNameW do Windows) tira o ponto e o espaço do fim ("x.bat." e "x.bat " viram o x.bat).
-# Por isso a recusa olha a COISA DE VERDADE em dois jeitos (`_nao_e_programa_do_windows`): a extensão do caminho já
+# Por isso a recusa olha a COISA DE VERDADE em dois jeitos (`_por_que_nao_e_programa`): a extensão do caminho já
 # completado pelo Windows, e o começo do arquivo (todo programa do Windows começa com as letras "MZ"; o que não
 # começa ou é lote, que vai ao cmd.exe, ou é de um subsistema que este Windows de 64 bits não tem). Arriscado: tirar
 # uma das duas (a extensão pega o lote que não se acha pelo nome; o começo pega o nome escrito de outro jeito).
@@ -1085,65 +1132,96 @@ _EXTENSOES_DE_LOTE = (".bat", ".cmd")
 _COMECO_DE_PROGRAMA = b"MZ"
 
 
-def _nao_e_programa_do_windows(caminho: Path) -> bool:
-    """O arquivo é algo que o Windows não roda como programa e entregaria a outro (o cmd.exe)? Sim se o nome, depois de
-    o Windows completar o caminho (tira pontos e espaços do fim), acaba em .bat ou .cmd; ou se o arquivo existe e não
-    começa com "MZ"; ou se existe e não deu para ler (na dúvida, sim). Arquivo que não existe: não (o Windows não acha
-    e o rodar devolve "não achei o programa")."""
+# As frases da recusa (passo 2, volta 4, achado 6 do relatório 3: o "não consegui ler" saía com a frase do "tem função
+# própria", que manda usar uma função que não existe). Uma frase para cada motivo; seguro mexer no texto.
+FRASE_TEM_FUNCAO_PROPRIA = "este programa do Windows tem função própria na peça: use a função dela"
+FRASE_NAO_LI_O_PROGRAMA = "não consegui ler o programa para saber se é um programa do Windows"
+FRASE_SEM_A_PASTA_DO_WINDOWS = "não consegui saber onde fica a pasta do Windows para conferir o programa"
+
+
+def _por_que_nao_e_programa(caminho: Path) -> str | None:
+    """O arquivo é algo que o Windows não roda como programa e entregaria a outro (o cmd.exe)? Devolve o motivo da
+    recusa, ou None. Recusa (FRASE_TEM_FUNCAO_PROPRIA) se o nome, depois de o Windows completar o caminho (tira pontos e
+    espaços do fim), acaba em .bat ou .cmd, ou se o arquivo existe e não começa com "MZ". Recusa com
+    FRASE_NAO_LI_O_PROGRAMA se ele existe e não deu para ler o começo (na dúvida, recusa; achado 6 do relatório 3: os
+    atalhos da Loja, em %LOCALAPPDATA%\\Microsoft\\WindowsApps, existem para o `isfile` e dão o erro 22 ao abrir, rodado
+    no PC em 20/11). Arquivo que não existe: None (o Windows não acha e o rodar devolve "não achei o programa")."""
     try:
         completo = os.path.abspath(str(caminho))            # GetFullPathNameW: "x.bat. " vira "x.bat"
     except (OSError, ValueError):
-        return True
+        return FRASE_NAO_LI_O_PROGRAMA
     if completo.rstrip(". ").lower().endswith(_EXTENSOES_DE_LOTE):
-        return True
+        return FRASE_TEM_FUNCAO_PROPRIA
     try:
         if not os.path.isfile(completo):
-            return False
+            return None
         with open(completo, "rb") as arquivo:
-            return arquivo.read(len(_COMECO_DE_PROGRAMA)) != _COMECO_DE_PROGRAMA
+            comeco = arquivo.read(len(_COMECO_DE_PROGRAMA))
     except OSError:
-        return True
+        return FRASE_NAO_LI_O_PROGRAMA
+    return None if comeco == _COMECO_DE_PROGRAMA else FRASE_TEM_FUNCAO_PROPRIA
 
 
-def _programa_com_funcao_propria(programa: str) -> bool:
-    """O programa tem função própria na peça? Sim se está na pasta do Windows (ou, dado só pelo nome, é achado lá: o
-    Windows procura primeiro na pasta do sistema), se o nome é de `PROGRAMAS_COM_FUNCAO_PROPRIA`, se é caminho de
-    rede (`_caminho_do_programa`), ou se não é um programa do Windows de verdade (um .bat ou .cmd, que o Windows roda
-    pelo cmd.exe: `_nao_e_programa_do_windows`). Na dúvida (não deu para saber onde fica a pasta do Windows), sim.
-    É a regra única do rodar genérico, do lançar solto genérico e do grupo (`abrir_em_grupo`)."""
+def _por_que_recusa(programa: str) -> str | None:
+    """A REGRA ÚNICA do rodar genérico, do lançar solto genérico e do grupo (`abrir_em_grupo`, e por ele o
+    `rodar_em_grupo`): o motivo de recusar o programa (a frase para a tela), ou None (pode rodar).
+
+    O nome é lido UMA VEZ, como o Windows o completa (`_caminho_do_programa`; passo 2, volta 4, achado 2 do relatório 3:
+    antes a lista de nomes e o nome sozinho eram comparados pelo texto cru, e `pwsh.exe.` e `whoami.exe.` passavam), e
+    todas as conferências abaixo usam esse mesmo nome. Recusa (com a frase de cada motivo):
+    - caminho de rede, ou que o Windows não completa (`_caminho_do_programa` devolve None);
+    - o nome de `PROGRAMAS_COM_FUNCAO_PROPRIA` (o PowerShell 7, o atualizador do Velopack);
+    - o que não é programa do Windows de verdade (um .bat ou .cmd, que o Windows roda pelo cmd.exe) ou que não deu
+      para ler (`_por_que_nao_e_programa`);
+    - o que está na pasta do Windows (ou, dado só pelo nome, é achado lá: o Windows procura na pasta do sistema antes
+      do PATH); na dúvida (não deu para saber onde fica a pasta do Windows), recusa;
+    - de novo depois de achar o arquivo de verdade (o nome sozinho pode virar um .BAT pelo PATHEXT do `which`, ou o
+      caminho passar por um atalho).
+    Limite conhecido (achado 5 do relatório 3, escolha da gerente no passo 1: "a regra é pela pasta"): uma CÓPIA de um
+    programa do Windows fora da pasta do Windows, com outro nome, passa. Arriscado: comparar pelo texto de antes de
+    completar; tirar uma das conferências (cada uma tem o seu teste em tests/test_windows_peca.py)."""
     caminho = _caminho_do_programa(programa)
     if caminho is None:
-        return True
+        return FRASE_TEM_FUNCAO_PROPRIA
     nome = caminho.name.lower()
     if nome.removesuffix(".exe") in PROGRAMAS_COM_FUNCAO_PROPRIA:
-        return True
-    if _nao_e_programa_do_windows(caminho):
-        return True
+        return FRASE_TEM_FUNCAO_PROPRIA
+    motivo = _por_que_nao_e_programa(caminho)
+    if motivo:
+        return motivo
     try:
         sistema = pasta_do_sistema()
     except OSError:
-        return True
+        return FRASE_SEM_A_PASTA_DO_WINDOWS
     pasta_do_windows = sistema.parent
     if len(caminho.parts) == 1:                                 # só o nome: onde o Windows o acharia
         com_exe = nome if nome.endswith(".exe") else nome + ".exe"
         if any((pasta / com_exe).exists() for pasta in (sistema, pasta_do_windows)):
-            return True
+            return FRASE_TEM_FUNCAO_PROPRIA
         achado = shutil.which(str(caminho))
         if not achado:
-            return False
+            return None
         caminho = Path(achado)
     try:
         caminho = caminho.resolve()
+        pasta_do_windows = pasta_do_windows.resolve()
     except OSError:
-        return True
-    # de novo depois de achar o arquivo de verdade (o nome sozinho pode ter virado um .BAT pelo PATHEXT do which, ou o
-    # caminho ter passado por um atalho)
-    return caminho.is_relative_to(pasta_do_windows.resolve()) or _nao_e_programa_do_windows(caminho)
+        return FRASE_NAO_LI_O_PROGRAMA
+    if caminho.is_relative_to(pasta_do_windows):
+        return FRASE_TEM_FUNCAO_PROPRIA
+    return _por_que_nao_e_programa(caminho)
 
 
-def _recusa_de_programa(programa: str) -> Resposta:
-    """A resposta para quem pede ao rodar ou lançar genérico um programa que tem função própria na peça."""
-    return _falhou("este programa do Windows tem função própria na peça: use a função dela",
+def _programa_com_funcao_propria(programa: str) -> bool:
+    """A regra única (`_por_que_recusa`) em sim ou não: o programa é recusado pelo rodar genérico, pelo lançar solto e
+    pelo grupo? (O nome ficou por causa de quem já o chama: os testes e as conferências de quem tenta quebrar.)"""
+    return _por_que_recusa(programa) is not None
+
+
+def _recusa_de_programa(programa: str, motivo: str | None = None) -> Resposta:
+    """A resposta para quem pede ao rodar, ao lançar ou ao grupo um programa que a regra única recusa, com a frase do
+    motivo (de fábrica, a de "tem função própria", para o pedido vazio)."""
+    return _falhou(motivo or FRASE_TEM_FUNCAO_PROPRIA,
                    f"{programa} recusado pelo rodar genérico (ver \"A PEÇA É FECHADA\" em core/windows.py)")
 
 
@@ -1156,8 +1234,9 @@ def rodar_e_esperar(comando: list, limite_s: float = 120, entrada: bytes | None 
     ("oem"); o Python escreve em UTF-8 ("utf-8"). Deu certo = código de saída 0.
     `dados`: `codigo`, `saida` (o que o programa escreveu como resposta) e `erros` (o que escreveu como erro), separados
     e já com as letras certas."""
-    if not comando or _programa_com_funcao_propria(str(comando[0])):
-        return _recusa_de_programa(str(comando[0]) if comando else "(nada)")
+    motivo = _por_que_recusa(str(comando[0])) if comando else FRASE_TEM_FUNCAO_PROPRIA
+    if motivo:
+        return _recusa_de_programa(str(comando[0]) if comando else "(nada)", motivo)
     return _rodar(comando, limite_s, entrada, letras)
 
 
@@ -1219,9 +1298,12 @@ class ProgramaEmGrupo:
     sem ser parado (o instante volta)."""
 
     def __init__(self, processo: subprocess.Popen, grupo: int):
-        """Guarda o processo e a alça do grupo (quem cria é `abrir_em_grupo`)."""
+        """Guarda o processo e a alça do grupo (quem cria é `abrir_em_grupo`). `saida` e `erros`: o que o programa
+        escreveu, quando aberto com a saída guardada (`capturar`), lido por `esperar` (bytes)."""
         self.processo = processo
         self._grupo = grupo
+        self.saida = b""
+        self.erros = b""
 
     @property
     def pid(self) -> int:
@@ -1229,8 +1311,14 @@ class ProgramaEmGrupo:
         return self.processo.pid
 
     def esperar(self, limite_s: float) -> int | None:
-        """Espera o programa principal terminar, no máximo `limite_s`: o código de saída, ou None se ainda roda."""
+        """Espera o programa principal terminar, no máximo `limite_s`: o código de saída, ou None se ainda roda. Com a
+        saída guardada, espera lendo (o `communicate` do Python: "Catching this exception and retrying communication
+        will not lose any output"; esperar sem ler pode travar quando o programa escreve muito) e guarda o lido."""
         try:
+            if self.processo.stdout is not None:
+                saida, erros = self.processo.communicate(timeout=limite_s)
+                self.saida, self.erros = saida or b"", erros or b""
+                return self.processo.returncode
             return self.processo.wait(timeout=limite_s)
         except subprocess.TimeoutExpired:
             return None
@@ -1331,11 +1419,13 @@ def _soltar_o_programa_parado(pid: int) -> tuple[bool, str]:
 
 
 def abrir_em_grupo(comando: list, pasta: Path | str | None = None,
-                   ambiente: dict[str, str] | None = None) -> tuple[ProgramaEmGrupo | None, Resposta]:
+                   ambiente: dict[str, str] | None = None,
+                   capturar: bool = False) -> tuple[ProgramaEmGrupo | None, Resposta]:
     """Abre um programa (com a janela de console de quem chama, para a saída dele aparecer) num grupo do Windows só
     dele. Devolve (o programa, DEU_CERTO) ou (None, FALHOU com o motivo). RECUSA os programas que têm função própria
-    na peça (como o rodar genérico, pela mesma regra: `_programa_com_funcao_propria`). Quem usa: `empacotar.rodar_vpk`
-    (o vpk e o que ele abre).
+    na peça (como o rodar genérico, pela mesma regra: `_por_que_recusa`). Quem usa: `rodar_em_grupo` (o laço único,
+    que o `empacotar.rodar_vpk` e o gh do publicar usam). `capturar`: a saída e os erros do programa são guardados (lidos
+    por `ProgramaEmGrupo.esperar`) em vez de aparecerem no console.
 
     Em ordem: cria o grupo (fechar-ao-fechar); abre o programa PARADO (CREATE_SUSPENDED); põe no grupo; CONFERE no
     Windows que ele está no grupo (IsProcessInJob); e só então o solta. Qualquer passo que falha fecha o que abriu e
@@ -1344,8 +1434,9 @@ def abrir_em_grupo(comando: list, pasta: Path | str | None = None,
     Observação para o passo 3 (achado 10 do relatório 2): o programa herda o console de quem chama. Chamado do programa
     do Kaique (sem console), o Windows criaria uma janela preta nova para um programa de console. Ver o ONDE-PAREI do
     passo 2."""
-    if not comando or _programa_com_funcao_propria(str(comando[0])):
-        return None, _recusa_de_programa(str(comando[0]) if comando else "(nada)")
+    motivo = _por_que_recusa(str(comando[0])) if comando else FRASE_TEM_FUNCAO_PROPRIA
+    if motivo:
+        return None, _recusa_de_programa(str(comando[0]) if comando else "(nada)", motivo)
     w = _win()
     grupo = w.kernel32.CreateJobObjectW(None, None)
     if not grupo:
@@ -1357,8 +1448,9 @@ def abrir_em_grupo(comando: list, pasta: Path | str | None = None,
         w.kernel32.CloseHandle(grupo)
         return None, _falhou("o Windows não deixou preparar o grupo do programa", f"SetInformationJobObject: {erro}")
     try:
+        guardar = subprocess.PIPE if capturar else None
         processo = subprocess.Popen([str(c) for c in comando], cwd=str(pasta) if pasta else None, env=ambiente,
-                                    creationflags=_ABRIR_PARADO)
+                                    stdout=guardar, stderr=guardar, creationflags=_ABRIR_PARADO)
     except OSError as erro:
         w.kernel32.CloseHandle(grupo)
         return None, _falhou("não consegui abrir o programa", f"{comando[0]}: {erro!r}")
@@ -1392,6 +1484,60 @@ def abrir_em_grupo(comando: list, pasta: Path | str | None = None,
     if not soltou:
         return desistir("não consegui soltar o programa depois de pô-lo no grupo (ele foi fechado)", tecnico)
     return ProgramaEmGrupo(processo, grupo), _certo()
+
+
+def rodar_em_grupo(comando: list, *, pasta: Path | str | None = None, ambiente: dict[str, str] | None = None,
+                   vigia: Callable[[], str | None] | None = None, limite_s: float | None = None,
+                   intervalo_s: float = 2.0, capturar: bool = False, letras: str = "utf-8") -> Resposta:
+    """O LAÇO ÚNICO de "rodar um programa de fora, olhar a vigia e fechar" (passo 2, volta 4, achado 8 do relatório 3 de
+    quem tentou quebrar, §11.12, ponto 1: o vpk rodava por um laço na peça, num grupo, e o gh do publicar por outro, com
+    o subprocess direto, sem grupo, fechando só o gh). Quem usa: `empacotar.rodar_vpk` e
+    `publicar_versao_kaique.DestinoGitHub._gh`.
+
+    Abre pelo `abrir_em_grupo` (a mesma recusa; o programa nasce parado e só roda dentro do grupo); a cada
+    `intervalo_s`, se o programa não terminou, pergunta à `vigia` (None = continue; senão o motivo de parar) e olha o
+    `limite_s`; se é para parar, fecha o grupo inteiro (o programa e tudo o que ele abriu) e CONFERE no Windows que nada
+    ficou vivo (`ProgramaEmGrupo.fechar_tudo`). Ctrl+C (ou qualquer erro) no meio: fecha o grupo inteiro e repassa.
+    Deu certo = o programa terminou sozinho com o código 0. `dados`:
+    - `abriu` (False quando foi recusado ou não abriu: nada rodou);
+    - `codigo` (o código de saída; None quando foi fechado);
+    - `parou` (o motivo de ter fechado: a vigia ou o tempo; None quando terminou sozinho);
+    - `fechado` (só quando fechou: True = conferido que nada ficou vivo) e `fechou` (a frase do fechar);
+    - `saida` e `erros` (com `capturar`, já com as `letras`, sem os espaços das pontas; senão vazios).
+    Arriscado: esperar sem ler com a saída guardada (o programa trava escrevendo); fechar só o programa principal."""
+    programa, aberto = abrir_em_grupo(comando, pasta, ambiente, capturar=capturar)
+    if programa is None:
+        return _falhou(aberto.motivo, aberto.detalhe, abriu=False, codigo=None, parou=None, fechado=None, fechou="",
+                       saida="", erros="")
+    fim = None if limite_s is None else time.monotonic() + limite_s
+
+    def lido() -> dict:
+        """O que o programa escreveu, com as letras."""
+        return {"saida": programa.saida.decode(letras, "replace").strip(),
+                "erros": programa.erros.decode(letras, "replace").strip()}
+
+    with programa:
+        try:
+            while True:
+                codigo = programa.esperar(intervalo_s)
+                if codigo is not None:
+                    break
+                motivo = vigia() if vigia is not None else None
+                if not motivo and fim is not None and time.monotonic() > fim:
+                    motivo = f"o programa não terminou em {int(limite_s)} segundos"
+                if motivo:
+                    fechado = programa.fechar_tudo()
+                    if capturar:
+                        programa.esperar(5)                      # junta o que ele escreveu antes de fechar
+                    return _falhou(motivo, f"{comando[0]}: {fechado.motivo}", abriu=True, codigo=None, parou=motivo,
+                                   fechado=fechado.deu_certo, fechou=fechado.motivo, **lido())
+        except BaseException:
+            programa.fechar_tudo()
+            raise
+    if codigo == 0:
+        return _certo(abriu=True, codigo=0, parou=None, fechado=None, fechou="", **lido())
+    return _falhou(f"o programa saiu com o código {codigo}", f"{comando[0]}: código {codigo}", abriu=True,
+                   codigo=codigo, parou=None, fechado=None, fechou="", **lido())
 
 
 def rodar_powershell(texto: str, limite_s: float = 600, segredo: str | None = None) -> Resposta:
@@ -1457,8 +1603,9 @@ def lancar_solto(comando: list, sinal: Path, espera_s: float = 30) -> Resposta:
     preso a um grupo que mataria o lançado ao fechar, não lança e diz "falhou". RECUSA os programas que têm função
     própria na peça (o PowerShell vai por `lancar_powershell_solto`; ver "A PEÇA É FECHADA" no topo).
     `dados`: `pid` e `grupo` (a situação do grupo)."""
-    if not comando or _programa_com_funcao_propria(str(comando[0])):
-        return _recusa_de_programa(str(comando[0]) if comando else "(nada)")
+    motivo = _por_que_recusa(str(comando[0])) if comando else FRASE_TEM_FUNCAO_PROPRIA
+    if motivo:
+        return _recusa_de_programa(str(comando[0]) if comando else "(nada)", motivo)
     return _lancar_solto(comando, sinal, espera_s)
 
 

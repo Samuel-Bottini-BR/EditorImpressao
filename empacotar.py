@@ -1364,8 +1364,11 @@ def copiar_inteiro(origem: Path, alvo: Path, vigia=None) -> None:
     """Copia um arquivo sem nunca deixar um pedaco com o nome certo (o LUGAR UNICO da copia conferida: o envio e a
     leitura de volta do DestinoPasta, o motor baixado para o rascunho, o .msi para a pasta de saida).
 
-    Copia para <alvo>.copiando; CONFERE a copia lendo-a de volta do disco (o tamanho e a soma SHA-256 iguais aos da
-    origem); so entao da o nome certo, de uma vez (os.replace). 'vigia' (vigia_do_espaco): olhada no comeco e a
+    Copia para <alvo>.copiando; pede ao Windows para gravar a copia no disco (core/windows.gravar_no_disco, o lugar
+    unico; volta 4, achado 11 do relatorio 3: antes, "lida de volta do disco" sem pedir isso); CONFERE a copia lendo-a
+    de volta (o tamanho e a soma SHA-256 iguais aos da origem; a leitura vem do que o Windows guarda na memoria, o que
+    a gravacao garante e que o conteudo ja foi mandado ao disco quando o nome certo aparece); so entao da o nome
+    certo, de uma vez (os.replace). 'vigia' (vigia_do_espaco): olhada no comeco e a
     cada VIGIA_A_CADA bytes; se mandar parar, a copia para. Qualquer falha (disco cheio, a vigia, a copia diferente, Ctrl+C): apaga o
     provisorio e CONFERE que sumiu; levanta OSError com o que houve e o que ficou (ou repassa o Ctrl+C). Volta 3 do
     passo 2, achado 2 do relatorio 2: o shutil.copyfile nao apaga o destino quando falha no meio, e um .msi pela metade
@@ -1373,6 +1376,8 @@ def copiar_inteiro(origem: Path, alvo: Path, vigia=None) -> None:
     Arriscado: copiar direto no nome certo; tirar a conferencia lida de volta."""
     import hashlib
     import os
+
+    from core import windows
 
     origem, alvo = Path(origem), Path(alvo)
     provisorio = alvo.with_name(alvo.name + ".copiando")
@@ -1407,6 +1412,7 @@ def copiar_inteiro(origem: Path, alvo: Path, vigia=None) -> None:
                     motivo = vigia()
                     if motivo:
                         raise OSError(f"parei de copiar {origem.name}: {motivo}")
+            windows.gravar_no_disco(para)
         lido = hashlib.sha256()
         with open(provisorio, "rb") as copia:
             while pedaco := copia.read(PEDACO_DA_COPIA):
@@ -1425,18 +1431,20 @@ def rodar_vpk(comando: list, rascunho: Path, reserva: int | None = None,
               intervalo_s: float = INTERVALO_DA_VIGIA_S, livre=None) -> str | None:
     """A UNICA funcao que roda o vpk (plano-v3, peca 8). None = terminou bem; senao o motivo, em portugues.
 
-    - o vpk roda num grupo do Windows (core/windows.abrir_em_grupo, a peca unica):
-      fechar o vpk fecha tambem o que ele abriu. Lido no vpk 1.2.161: o .msi sai
-      de outro programa, "cmd.exe /S /C wix.exe build ..." (MsiBuilder.cs:216,
+    - o vpk roda pelo laco unico da peca do Windows (core/windows.rodar_em_grupo,
+      o mesmo do gh do publicar; volta 4, achado 8 do relatorio 3), num grupo do
+      Windows: fechar o vpk fecha tambem o que ele abriu. Lido no vpk 1.2.161: o .msi
+      sai de outro programa, "cmd.exe /S /C wix.exe build ..." (MsiBuilder.cs:216,
       Exe.cs:46); antes (achado 2 de quem tentou quebrar), fechar so o vpk deixava
       o WiX gravando no C: abaixo da reserva;
     - a pasta temporaria do vpk (VELOPACK_TEMP, TEMP e TMP: o vpk 1.2.161 le nessa
       ordem, src/lib-csharp/Util/TempUtil.cs) fica em <rascunho>\\temp, no mesmo
       disco do rascunho (o C:, D-776) e e apagada junto com ele;
     - a vigia (D-776): a cada 'intervalo_s', le o espaco livre do disco do
-      rascunho; se cair abaixo da reserva, fecha o grupo inteiro, CONFERE que nada
-      ficou vivo e devolve o motivo (dizendo se algo ficou). Quem chamou apaga o rascunho;
-    - Ctrl+C: fecha o grupo inteiro e repassa a interrupcao.
+      rascunho; se cair abaixo da reserva, o laco fecha o grupo inteiro, CONFERE que
+      nada ficou vivo, e a frase diz o motivo e se algo ficou. Quem chamou apaga o rascunho;
+    - Ctrl+C: o laco fecha o grupo inteiro e repassa a interrupcao.
+    A saida do vpk aparece no terminal de quem publica (nao e guardada).
     'livre' e trocavel so nos testes (para simular o disco enchendo).
     Arriscado: rodar o vpk por outro caminho (era o defeito 56 do plano: dois
     caminhos, a pasta temporaria desviada a mao); fechar so o vpk (o achado 2)."""
@@ -1448,32 +1456,16 @@ def rodar_vpk(comando: list, rascunho: Path, reserva: int | None = None,
     temp = Path(rascunho) / "temp"
     temp.mkdir(parents=True, exist_ok=True)
     ambiente = {**os.environ, "VELOPACK_TEMP": str(temp), "TEMP": str(temp), "TMP": str(temp)}
-    programa, aberto = windows.abrir_em_grupo(comando, rascunho, ambiente)
-    if programa is None:
-        return f"não consegui abrir o vpk ({aberto.motivo})"
-
-    def fechar(motivo: str) -> str:
-        """Fecha o vpk e o que ele abriu; a frase diz se ficou algum rodando (conferido no Windows)."""
-        fechado = programa.fechar_tudo()
-        if fechado.deu_certo:
-            return motivo + "; o vpk e os programas que ele abriu foram fechados (conferido)"
-        return motivo + f"; ATENÇÃO: {fechado.motivo} (veja no Gerenciador de Tarefas)"
-
-    with programa:
-        try:
-            while True:
-                codigo = programa.esperar(intervalo_s)
-                if codigo is not None:
-                    break
-                motivo = vigia()
-                if motivo:
-                    return fechar(f"parei: {motivo}")
-        except BaseException:
-            programa.fechar_tudo()
-            raise
-    if codigo != 0:
-        return f"o vpk parou com erro (código {codigo}); as mensagens dele estão acima"
-    return None
+    r = windows.rodar_em_grupo(comando, pasta=rascunho, ambiente=ambiente, vigia=vigia, intervalo_s=intervalo_s)
+    if r.deu_certo:
+        return None
+    if not r.dados.get("abriu"):
+        return f"não consegui abrir o vpk ({r.motivo})"
+    if r.dados.get("parou"):
+        if r.dados.get("fechado"):
+            return f"parei: {r.dados['parou']}; o vpk e os programas que ele abriu foram fechados (conferido)"
+        return f"parei: {r.dados['parou']}; ATENÇÃO: {r.dados.get('fechou')} (veja no Gerenciador de Tarefas)"
+    return f"o vpk parou com erro (código {r.dados.get('codigo')}); as mensagens dele estão acima"
 
 
 # ---- o que o pacote tem de ter, e o que nao pode ter -----------------------
@@ -1664,11 +1656,14 @@ def zipar_motor(pasta_do_motor: Path, destino: Path, reserva: int | None = None,
     """Comprime a pasta do motor num arquivo so (o que vai a publicacao do motor e,
     no instalador, a instalar\\). None = pronto e conferido; senao o motivo.
 
-    Grava num nome provisorio e so da o nome final depois de conferir que cada
+    Grava num nome provisorio, pede ao Windows para grava-lo no disco (core/windows.gravar_no_disco,
+    o lugar unico; volta 4, achado 11 do relatorio 3) e so da o nome final depois de conferir que cada
     arquivo da ficha do motor esta no zip com o tamanho certo (problemas_do_zip_do_motor).
     Vigia o espaco do disco do destino a cada 500 arquivos (D-776, pela vigia unica,
     vigia_do_espaco); para abaixo da reserva e apaga o provisorio. 'livre' e trocavel so nos testes."""
     import zipfile
+
+    from core import windows
 
     pasta_do_motor, destino = Path(pasta_do_motor), Path(destino)
     vigia = vigia_do_espaco(destino.parent, reserva, livre)
@@ -1676,12 +1671,14 @@ def zipar_motor(pasta_do_motor: Path, destino: Path, reserva: int | None = None,
     provisorio.unlink(missing_ok=True)
     arquivos = sorted(f for f in pasta_do_motor.rglob("*") if f.is_file())
     try:
-        with zipfile.ZipFile(provisorio, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as z:
-            for i, arquivo in enumerate(arquivos):
-                motivo = vigia() if i % 500 == 0 else None
-                if motivo:
-                    raise OSError(motivo)
-                z.write(arquivo, arquivo.relative_to(pasta_do_motor).as_posix())
+        with open(provisorio, "wb") as aberto:
+            with zipfile.ZipFile(aberto, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as z:
+                for i, arquivo in enumerate(arquivos):
+                    motivo = vigia() if i % 500 == 0 else None
+                    if motivo:
+                        raise OSError(motivo)
+                    z.write(arquivo, arquivo.relative_to(pasta_do_motor).as_posix())
+            windows.gravar_no_disco(aberto)
     except (OSError, zipfile.BadZipFile) as erro:
         provisorio.unlink(missing_ok=True)
         return f"parei de comprimir o motor: {erro}"
