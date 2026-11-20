@@ -633,7 +633,7 @@ def apagar_publicacao(destino, etiqueta: str, so_rascunho: bool = False, acabou_
                     f"{conferir}") from erro
     if so_rascunho and depois == "liberada":
         raise PublicacaoLiberada(f"pedi para apagar o rascunho {etiqueta} em {destino.nome}, e ele está liberado "
-                                 "agora (foi liberado no meio, antes do pedido de apagar)")
+                                 "agora (foi liberado no meio)")
     if depois is not None:
         raise Parou(f"pedi para apagar {etiqueta} em {destino.nome}, e ela continua lá" + (f" ({aviso})" if aviso else "")
                     + f"; {conferir}")

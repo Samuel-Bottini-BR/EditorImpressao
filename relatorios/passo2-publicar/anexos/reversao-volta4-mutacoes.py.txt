@@ -1,0 +1,143 @@
+"""Volta 4 do passo 2 (D-811): desliga cada proteção nova ou consertada, uma por vez, numa CÓPIA do código (git archive,
+fora do projeto) e roda o teste que a cobra. Acusada = o teste falhou com a proteção desligada.
+
+Uso: python reversao-volta4-mutacoes.py <pasta da cópia> <arquivo do resultado>
+"""
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+COPIA, SAIDA = Path(sys.argv[1]), Path(sys.argv[2])
+PY = sys.executable
+PV, WP = "tests/test_publicar_versao.py", "tests/test_windows_peca.py"
+
+M = [
+    ("V1 D-816: depois do pedido de liberar, apaga (como antes)", "publicar_versao_kaique.py",
+     "        if pediu_para_liberar:\n            desfeito = _frase_depois_do_pedido_de_liberar",
+     "        if False:\n            desfeito = _frase_depois_do_pedido_de_liberar",
+     [PV + "::test_d816_depois_do_pedido_de_liberar_nada_e_apagado_com_qualquer_atraso[github-2]",
+      PV + "::test_d816_o_liberar_que_falha_e_fica_rascunho_nao_apaga_e_diz_o_comando[pasta]"]),
+    ("V2 achado 4: 'não achei' logo depois de criar vira 'sumiu'", "publicar_versao_kaique.py",
+     "        if acabou_de_criar:\n", "        if False:\n",
+     [PV + "::test_volta4_achado4_nao_achei_logo_depois_de_criar_nao_e_apagado"]),
+    ("V3 achado 4: o criar do rascunho fora do try", "publicar_versao_kaique.py",
+     "    pediu_para_liberar = False\n    try:\n        destino.criar_rascunho(etiqueta, titulo, notas)\n",
+     "    destino.criar_rascunho(etiqueta, titulo, notas)\n    pediu_para_liberar = False\n    try:\n",
+     [PV + "::test_volta4_achado4_nao_achei_logo_depois_de_criar_nao_e_apagado"]),
+    ("V4 achado 3: a leitura de depois de apagar falha e a frase diz 'NÃO apaguei'", "publicar_versao_kaique.py",
+     "        depois = destino.situacao(etiqueta)\n    except Parou as erro:\n        raise Parou(f\"pedi para apagar",
+     "        depois = destino.situacao(etiqueta)\n    except Parou as erro:\n        raise Parou(f\"NÃO apaguei; pedi apagar",
+     [PV + "::test_volta4_achado3_a_frase_diz_se_pediu_para_apagar"]),
+    ("V5 achado 3: a leitura de antes falha e a frase diz que pediu", "publicar_versao_kaique.py",
+     "NÃO pedi para apagar \"\n                    f\"nada; {conferir}\")",
+     "pedi para apagar o rascunho \"\n                    f\"; {conferir}\")",
+     [PV + "::test_volta4_achado3_a_frase_diz_se_pediu_para_apagar"]),
+    ("V6 achado 3: o pedido de apagar sem resposta vira 'não apaguei'", "publicar_versao_kaique.py",
+     "    except SemResposta as erro:\n", "    except ZeroDivisionError as erro:\n",
+     [PV + "::test_volta4_achado3_o_pedido_de_apagar_sem_resposta_diz_que_pediu"]),
+    ("V7 achado 3: liberada no meio do apagar vira 'continua lá'", "publicar_versao_kaique.py",
+     "    if so_rascunho and depois == \"liberada\":\n", "    if False:\n",
+     [PV + "::test_volta4_achado3_liberada_no_meio_do_apagar_nunca_vira_apagada"]),
+    ("V8 achado 2: o nome sem completar como o Windows", "core/windows.py",
+     "        texto = _como_o_windows_completa(texto)\n", "        texto = texto\n",
+     [WP + "::test_volta4_o_nome_com_ponto_no_fim_e_lido_como_o_windows_completa"]),
+    ("V9 achado 6: 'não consegui ler' com a frase de função própria", "core/windows.py",
+     "    except OSError:\n        return FRASE_NAO_LI_O_PROGRAMA\n    return None if comeco",
+     "    except OSError:\n        return FRASE_TEM_FUNCAO_PROPRIA\n    return None if comeco",
+     [WP + "::test_volta4_o_programa_que_nao_deixa_ler_e_recusado_com_frase_propria"]),
+    ("V10 achado 10: sem a segunda olhada depois do PATH", "core/windows.py",
+     "        return FRASE_TEM_FUNCAO_PROPRIA\n    return _por_que_nao_e_programa(caminho)\n",
+     "        return FRASE_TEM_FUNCAO_PROPRIA\n    return None\n",
+     [WP + "::test_volta4_a_segunda_olhada_depois_do_path_recusa_o_lote_achado_pelo_pathext"]),
+    ("V11 achado 7: a soma baixa para %TEMP% (como antes)", "publicar_versao_kaique.py",
+     "                pasta = self._rascunho_da_soma / f\"soma-{secrets.token_hex(3)}\"",
+     "                pasta = Path(os.environ.get(\"TEMP\", \".\")) / f\"publicar-soma-{secrets.token_hex(3)}\"",
+     [PV + "::test_volta4_achado7_sem_a_soma_pronta_o_download_vai_ao_rascunho_pela_vigia",
+      PV + "::test_volta4_achado7_no_publicar_sem_a_soma_pronta_tudo_e_baixado_no_rascunho"]),
+    ("V12 achado 7: a soma baixa sem a vigia", "publicar_versao_kaique.py",
+     "self.baixar_vigiado(etiqueta, nome, pasta, self._vigia_da_soma)", "self.baixar(etiqueta, nome, pasta)",
+     [PV + "::test_volta4_achado7_no_publicar_sem_a_soma_pronta_tudo_e_baixado_no_rascunho"]),
+    ("V13 achado 7: a conta da versão sem o que a soma baixa", "publicar_versao_kaique.py",
+     "            para_somar = max(tamanho_da_pasta + tamanho_do_motor, motor_publicado)",
+     "            para_somar = 0",
+     [PV + "::test_volta4_achado7_a_conta_do_espaco_soma_o_que_a_soma_pode_baixar"]),
+    ("V14 achado 7: a conta do motor sem a cópia que a soma baixa", "publicar_versao_kaique.py",
+     "        vezes = 2 if destino.soma_pode_baixar else 1", "        vezes = 1",
+     [PV + "::test_volta4_achado7_no_publicar_sem_a_soma_pronta_tudo_e_baixado_no_rascunho"]),
+    ("V15 achado 7: o publicar não dá o rascunho à soma", "publicar_versao_kaique.py",
+     "    destino.usar_rascunho(rascunho / \"somar\", empacotar.vigia_do_espaco(rascunho))\n    msi_feito = None",
+     "    msi_feito = None",
+     [PV + "::test_volta4_achado7_no_publicar_sem_a_soma_pronta_tudo_e_baixado_no_rascunho"]),
+    ("V16 achado 8: o gh com o subprocess direto (fora da peça e do grupo)", "publicar_versao_kaique.py",
+     "        r = windows.rodar_em_grupo(comando, vigia=vigia,",
+     "        feito = subprocess.run(comando, capture_output=True, timeout=limite_s)\n"
+     "        return subprocess.CompletedProcess(comando, feito.returncode, feito.stdout.decode('utf-8', 'replace'), "
+     "feito.stderr.decode('utf-8', 'replace'))\n        r = windows.rodar_em_grupo(comando, vigia=vigia,",
+     [PV + "::test_volta4_achado8_o_gh_roda_pelo_laco_unico_da_peca_e_fecha_o_que_abriu"]),
+    ("V17 achado 8: o laço fecha só o programa principal", "core/windows.py",
+     "                    fechado = programa.fechar_tudo()\n                    if capturar:",
+     "                    programa.processo.kill()\n                    fechado = _certo('x')\n                    if capturar:",
+     [WP + "::test_volta4_rodar_em_grupo_e_o_laco_unico_com_a_saida_a_vigia_e_o_tempo"]),
+    ("V18 achado 8: o laço sem o limite de tempo", "core/windows.py",
+     "                if not motivo and fim is not None and time.monotonic() > fim:", "                if False:",
+     [WP + "::test_volta4_rodar_em_grupo_e_o_laco_unico_com_a_saida_a_vigia_e_o_tempo"]),
+    ("V19 achado 8: o laço sem fechar no Ctrl+C (dupla proteção: o fechar-ao-fechar do grupo)", "core/windows.py",
+     "        except BaseException:\n            programa.fechar_tudo()\n            raise\n    if codigo == 0:",
+     "        except ZeroDivisionError:\n            raise\n    if codigo == 0:",
+     [PV + "::test_volta4_achado8_o_gh_roda_pelo_laco_unico_da_peca_e_fecha_o_que_abriu",
+      PV + "::test_n10_ctrl_c_fecha_o_vpk_e_o_que_ele_abriu"]),
+    ("V19b o mesmo, com o fechar-ao-fechar do grupo também desligado", "core/windows.py",
+     "        except BaseException:\n            programa.fechar_tudo()\n            raise\n    if codigo == 0:",
+     "        except ZeroDivisionError:\n            raise\n    if codigo == 0:",
+     [PV + "::test_volta4_achado8_o_gh_roda_pelo_laco_unico_da_peca_e_fecha_o_que_abriu"],
+     ("core/windows.py", "    info.BasicLimitInformation.LimitFlags = _JOB_FECHA_TUDO_AO_FECHAR\n",
+      "    info.BasicLimitInformation.LimitFlags = 0\n")),
+    ("V20 achado 11: a cópia sem gravar no disco", "empacotar.py",
+     "            windows.gravar_no_disco(para)\n", "",
+     [PV + "::test_volta4_achado11_a_copia_e_o_motor_gravam_no_disco_antes_de_conferir_e_trocar"]),
+    ("V21 achado 11: o motor comprimido sem gravar no disco", "empacotar.py",
+     "            windows.gravar_no_disco(aberto)\n", "",
+     [PV + "::test_volta4_achado11_a_copia_e_o_motor_gravam_no_disco_antes_de_conferir_e_trocar"]),
+    ("V22 achado 11: a gravação da peça sem gravar no disco", "core/windows.py",
+     "        gravar_no_disco(arquivo)\n    os.replace(provisorio, caminho)", "    os.replace(provisorio, caminho)",
+     [WP + "::test_volta4_a_peca_manda_gravar_no_disco_antes_de_trocar_o_nome"]),
+    ("V23 achado 11: gravar no disco sem o os.fsync (só o flush do Python)", "core/windows.py",
+     "    arquivo.flush()\n    os.fsync(arquivo.fileno())", "    arquivo.flush()",
+     [WP + "::test_volta4_a_peca_manda_gravar_no_disco_antes_de_trocar_o_nome",
+      PV + "::test_volta4_achado11_a_copia_e_o_motor_gravam_no_disco_antes_de_conferir_e_trocar"]),
+]
+
+
+def rodar(testes: list[str]) -> tuple[bool, str]:
+    """Roda os testes na cópia; (todos passaram?, a última linha)."""
+    ambiente = {**os.environ, "QT_QPA_PLATFORM": "offscreen"}
+    feito = subprocess.run([PY, "-m", "pytest", "-q", "-p", "no:cacheprovider", *testes], cwd=COPIA,
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", env=ambiente)
+    linhas = [l for l in feito.stdout.splitlines() if l.strip()]
+    return feito.returncode == 0, (linhas[-1] if linhas else feito.stderr[-200:])
+
+
+linhas = []
+todos = sorted({t for m in M for t in m[4]})
+ok, fim = rodar(todos)
+linhas.append(f"SEM MUTAÇÃO: {'passaram' if ok else 'FALHARAM'} ({fim})")
+for item in M:
+    nome, arquivo, velho, novo, testes = item[:5]
+    extras = list(item[5:])
+    trocas = [(arquivo, velho, novo)] + extras
+    guardados = {}
+    try:
+        for arq, v, n in trocas:
+            caminho = COPIA / arq
+            texto = guardados.setdefault(arq, caminho.read_text(encoding="utf-8"))
+            atual = caminho.read_text(encoding="utf-8")
+            assert atual.count(v) == 1, f"{nome}: o trecho aparece {atual.count(v)} vezes em {arq}"
+            caminho.write_text(atual.replace(v, n), encoding="utf-8")
+        ok, fim = rodar(testes)
+        linhas.append(f"{nome}: {'NÃO acusada' if ok else 'acusada'} ({fim})")
+    finally:
+        for arq, texto in guardados.items():
+            (COPIA / arq).write_text(texto, encoding="utf-8")
+    print(linhas[-1], flush=True)
+SAIDA.write_text("\n".join(linhas) + "\n", encoding="utf-8")
