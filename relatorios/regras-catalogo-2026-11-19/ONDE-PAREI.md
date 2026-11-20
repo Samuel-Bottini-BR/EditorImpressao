@@ -16,9 +16,12 @@ Implementador. Ramo `regras-catalogo-2026-11-19`, worktree `.claude/worktrees/re
 - `regras_dos_agentes/formulario.py`
 - `regras_dos_agentes/montar_pacote.py`
 - `regras_dos_agentes/leitura_do_codigo.py`
+- `regras_dos_agentes/protecao.py`
+- `relatorios/passo0-2026-11-19/anexos/juiz-no-workflow/porteiro_juiz.sh`
 - `tests/test_conferencias_codigo.py`
 - `tests/test_conferencias_formulario.py`
 - `tests/test_conferencias_pacote.py`
+- `tests/test_conferencias_protecao.py`
 - `relatorios/regras-catalogo-2026-11-19/`
 
 ## Onde parei

@@ -246,7 +246,7 @@ REGRAS = [
          curta="Quando o estado importa, conferir o código e o git log, não o texto de checkpoint.", rep="2 lugares"),
     dict(id="R080", nome="Apagar: fora do projeto nada; dentro só o seu; junções", onde=[f"{A} §10.9", f"{I} 'Apagar'", f"{V} 'Apagar'", f"{P} 'Apagar'", f"{L} 'Apagar'"], tags=["GIT"], papel="todos", maq="sim",
          curta="Fora de D:\\programas\\EditorImpressao nada se apaga (pare e relate). Dentro, só o que você criou nesta tarefa. Junção nunca com rm -rf: (Get-Item x).Delete().",
-         rep="5 lugares; os agentes acrescentam 'conferir o que há dentro' e as junções", contra="X17"),
+         rep="5 lugares; os agentes acrescentam 'conferir o que há dentro' e as junções"),
     # §10.10 Central
     dict(id="R081", nome="Conferências em página do claude.ai com banco", onde=[f"{A} §10.10"], tags=["GER"], papel="gerente", maq="nao",
          curta="Tudo o que o Samuel vê ou responde vai numa página com banco (as quatro páginas e a Central)."),
@@ -425,8 +425,7 @@ REGRAS = [
     # Etiquetas: a R156 tem GIT, que todo trabalho recebe (todo trabalho faz commit); a R157 e a R158 têm TESTE, que vai
     # a todo trabalho com teste (inclusive os do Windows): com WIN junto, o montador só a mandaria a trabalho do Windows.
     dict(id="R156", nome="A cópia divide o .git com o Samuel: nada de comando que muda o .git inteiro", onde=[f"{LIVRO} D-809"], tags=["GIT"], papel="todos", maq="em parte",
-         curta="A sua cópia divide a pasta .git com o repositório do Samuel. Comando que muda o .git inteiro (fetch com --depth, gc, prune, stash, config, mexer em ramo que não é o seu) não roda na sua cópia, nem em script ou teste, a não ser num repositório de prova em pasta temporária (regras_dos_agentes/repositorio_de_prova.py). Atalho de pasta (junção) só sai com cmd /c rmdir, contando os arquivos da pasta de verdade antes e depois. (O repositório do PC ficou raso em 19/11 com um git fetch --depth=1; a pasta modelos/ foi esvaziada em 18/11 ao tirar um atalho. O porteiro acusa, K25.)",
-         contra="X17"),
+         curta="A sua cópia divide a pasta .git com o repositório do Samuel. Comando que muda o .git inteiro (fetch com --depth, gc, prune, stash, config, mexer em ramo que não é o seu) não roda na sua cópia, nem em script ou teste, a não ser num repositório de prova em pasta temporária (regras_dos_agentes/repositorio_de_prova.py). Atalho de pasta (junção) só sai com cmd /c rmdir ou com (Get-Item <atalho>).Delete(), que tiram só o atalho, contando os arquivos da pasta de verdade antes e depois. (O repositório do PC ficou raso em 19/11 com um git fetch --depth=1; a pasta modelos/ foi esvaziada em 18/11 ao tirar um atalho. O porteiro acusa, K25.)"),
     dict(id="R157", nome="O teste do Windows roda em três computadores diferentes", onde=[f"{LIVRO} D-810"], tags=["TESTE"], papel="todos", maq="nao",
          curta="GitHub: Windows em inglês ('Everyone', 'Administrators'), licença de administrador já ligada (o dono do que se cria é o grupo Administradores), pasta temporária no D:. PC do Samuel: português, sem a licença, o D: dá controle total a 'Todos'. Notebook do Kaique: a conferir. O teste compara a conta pelo número dela, nunca pelo nome escrito, e não supõe o estado de hoje da lista ou da versão de teste. (Três rodadas do GitHub perdidas no passo 1.)"),
     dict(id="R158", nome="Toda conferência diz de onde vem cada dado", onde=[f"{LIVRO} D-812"], tags=["TESTE"], papel="todos", maq="em parte",
@@ -472,9 +471,6 @@ CONTRADICOES = {
           "entrega ao Kaique. Os arquivos dos agentes não citam nem a obra nem a D-765.",
     "X10": "Ordem de leitura. O CLAUDE.md põe o Livro de decisões como item 0; os quatro agentes começam por ESTADO-ATUAL → PLANO → "
            "CLAUDE.md e só no bloco de 26/10 dizem 'leia o Livro antes de tudo'; o INDICE da memória põe o Livro no item 5.",
-    "X17": "Tirar atalho de pasta. O CLAUDE.md §10.9 e os quatro agentes ('Apagar') mandam tirar a junção com "
-           "'(Get-Item <junção>).Delete()'; a D-809 (19/11) diz que o atalho 'só sai com cmd /c rmdir', contando os "
-           "arquivos da pasta de verdade antes e depois.",
 }
 DIFERENCAS_PEQUENAS = {
     "X11": "Tabela: o §2 diz 'nada de tabela' (para o Samuel); o pesquisador entrega 'Tabela: o que é · licença...' (para a gerente).",

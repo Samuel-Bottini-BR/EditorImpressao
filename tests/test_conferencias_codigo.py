@@ -846,6 +846,19 @@ def test_k25_nao_acusa_quem_confere_o_atalho_antes_nem_o_que_nao_entra_nele():
     assert codigos(conferir({"relatorios/x/a.ps1": ps1}), "K25") == []
 
 
+def test_k25_os_dois_jeitos_certos_de_tirar_o_atalho_nao_sao_acusados():
+    """D-809 e a gerente (20/11): `cmd /c rmdir <atalho>` e `(Get-Item <atalho>).Delete()` tiram só o atalho; nenhum dos
+    dois é acusado, no Python e nos arquivos de terminal. Apagar com tudo dentro, na mesma linha, continua acusado."""
+    py_certo = ('"""X."""\nimport subprocess\n\n\ndef f(p):\n    """F."""\n'
+                '    subprocess.run(["cmd", "/c", "rmdir", str(p)])\n'
+                '    subprocess.run(["powershell", "-Command", f"(Get-Item -LiteralPath {p}).Delete()"])\n')
+    assert codigos(conferir({"relatorios/x/a.py": py_certo}), "K25") == []
+    ps1 = "$p = 'x'; (Get-Item -LiteralPath $p).Delete()\n$q = 'y'; cmd /c rmdir $q\n"
+    assert codigos(conferir({"relatorios/x/a.ps1": ps1}), "K25") == []
+    errado = "$p = 'x'; (Get-Item $p).Delete(); Remove-Item $p -Recurse\n"
+    assert codigos(conferir({"relatorios/x/a.ps1": errado}), "K25") == [("relatorios/x/a.ps1", 1)]
+
+
 def test_k25_cada_exemplo_da_lista_e_acusado_pela_expressao_e_pelo_porteiro():
     """Como a K01 (achado N3 do passo 0): cada linha das listas da K25 tem um exemplo que a própria expressão acha no
     comando lido e que o porteiro acusa num script; assim afrouxar a busca sem tirar linha também aparece."""

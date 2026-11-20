@@ -382,10 +382,17 @@ PALAVRAS_DO_GIT: list[tuple[str, str, str]] = [
 # (https://learn.microsoft.com/powershell/module/microsoft.powershell.management/remove-item: -Recurse, que o
 # PowerShell aceita abreviado, -r a -Recurse; os apelidos ri, rm, rmdir, rd, del, erase,
 # https://learn.microsoft.com/powershell/module/microsoft.powershell.core/about/about_aliases).
-# O `shutil.rmtree` NÃO entra, de propósito: no Python 3.14 ele mesmo confere se é atalho e não entra nele
-# (Lib/shutil.py, `_rmtree_islink`, linhas 660-663, e "Cannot call rmtree on a symbolic link", linha 680; dentro da
-# pasta, o atalho é tratado como arquivo, Lib/os.py, linha 381, `not entry.is_junction()`). O `cmd /c rmdir` sem /s
-# é o jeito que a D-809 manda: tira só o atalho.
+# O `shutil.rmtree` NÃO entra, de propósito (aceito pela gerente em 20/11, pela leitura abaixo). Lido no Python 3.14.3
+# instalado (C:/Users/fotog/AppData/Local/Python/pythoncore-3.14-64/Lib), em 19/11:
+#   - shutil.py, linhas 660-663: `_rmtree_islink` diz que a junção (IO_REPARSE_TAG_MOUNT_POINT) é um link;
+#   - shutil.py, linhas 679-680: com a pasta pedida sendo link ou junção, ele recusa ("Cannot call rmtree on a symbolic
+#     link") e não apaga nada (com ignore_errors=True, sai calado, também sem apagar);
+#   - shutil.py, linha 688 (`followlinks=os._walk_symlinks_as_files`), e os.py, linha 381: dentro da pasta, a junção
+#     conta como arquivo
+#     (`entry.is_dir(follow_symlinks=False) and not entry.is_junction()`): é tirada sem entrar nela.
+#   (No Windows ele usa `_rmtree_unsafe`, shutil.py linhas 669-707: `_use_fd_functions` é falso, linhas 804-808.)
+# Os dois jeitos certos de tirar um atalho de pasta tiram só o atalho e NÃO são acusados (D-809 e a gerente, 20/11):
+# `cmd /c rmdir <atalho>` (sem /s) e `(Get-Item <atalho>).Delete()` (sem $true).
 PALAVRAS_DE_APAGAR: list[tuple[str, str, str]] = [
     (r"(?<![\w.-])rm(?:\.exe)?(?:\s+-[\w-]+)*?\s+(?:-(?=[A-Za-z]{0,3}[rR])[A-Za-z]{1,4}|--recursive)(?![\w-])",
      "apaga a pasta com tudo dentro (rm -r)", 'subprocess.run(["rm", "-rf", pasta])'),

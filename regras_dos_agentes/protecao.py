@@ -46,6 +46,13 @@ PROTEGIDOS: list[tuple[str, str, str]] = [
     ("regras_dos_agentes/porteiro.py", "NAO_E_PROGRAMA", "igual"),
     ("regras_dos_agentes/porteiro.py", "FONTE_PYTHON", "igual"),
     ("regras_dos_agentes/porteiro.py", "COMPILADO_PYTHON", "igual"),
+    # K25 (D-809, 20/11). As listas do que acusar não perdem item (acrescentar deixa mais rígido); as duas peças do git
+    # (a exceção) e o que conta como "conferiu o atalho" ficam iguais: crescer qualquer um dos dois afrouxa a K25.
+    ("regras_dos_agentes/porteiro.py", "PECAS_DO_GIT", "igual"),
+    ("regras_dos_agentes/porteiro.py", "COMANDOS_DE_TERMINAL", "nao_some"),
+    ("regras_dos_agentes/porteiro.py", "PALAVRAS_DO_GIT", "nao_some"),
+    ("regras_dos_agentes/porteiro.py", "PALAVRAS_DE_APAGAR", "nao_some"),
+    ("regras_dos_agentes/porteiro.py", "CONFERE_SE_E_ATALHO", "igual"),
     ("regras_dos_agentes/porteiro_mudancas.py", "PROTEGIDOS", "nao_some"),
     ("regras_dos_agentes/porteiro_mudancas.py", "QUEM_CONFERE", "igual"),
 ]
@@ -89,7 +96,8 @@ def literais(fonte: str) -> dict[str, object]:
 
 
 # Cada exemplo das listas da versão de teste, com a conferência que tem de achá-lo (achado N3 da segunda volta).
-EXEMPLOS = [("PALAVRAS_DO_WINDOWS", "K01", 2), ("PALAVRAS_DE_DETACHED", "K02", 1), ("PALAVRAS_DE_LICENCA", "K03", 1)]
+EXEMPLOS = [("PALAVRAS_DO_WINDOWS", "K01", 2), ("PALAVRAS_DE_DETACHED", "K02", 1), ("PALAVRAS_DE_LICENCA", "K03", 1),
+            ("PALAVRAS_DO_GIT", "K25", 2), ("PALAVRAS_DE_APAGAR", "K25", 2)]
 
 
 def exemplos_que_o_porteiro_nao_acha(fonte_da_versao_de_teste: str) -> list[str]:

@@ -156,3 +156,45 @@ def test_afrouxar_a_busca_pelo_uso_e_acusado(repo, monkeypatch):
     monkeypatch.setattr(porteiro, "CONVERSA_COM_O_WINDOWS", frouxa)
     frases = protecao.comparar(repo.raiz)
     assert any("msiexec" in f for f in frases), frases
+
+
+# ---------------------------------------------------------------- K25 (D-809; pedido da gerente de 20/11)
+
+def test_k25_tirar_linha_das_listas_e_acusado(repo):
+    """K25: tirar o `gc` da lista do git que muda o .git (ou o `rm -r` da de apagar) é acusado; acrescentar é livre."""
+    caminho = repo.raiz / "regras_dos_agentes" / "porteiro.py"
+    texto = caminho.read_text(encoding="utf-8")
+    linha = next(l for l in texto.split("\n") if l.strip().startswith('(_GIT + r"gc\\b"'))
+    repo.escrever("regras_dos_agentes/porteiro.py", texto.replace(linha + "\n", ""))
+    assert any("PALAVRAS_DO_GIT" in f and "sumiu" in f for f in protecao.comparar(repo.raiz))
+    linha = next(l for l in texto.split("\n") if "apaga a pasta com tudo dentro (rm -r)" in l)
+    repo.escrever("regras_dos_agentes/porteiro.py", texto.replace(linha, linha.replace("(rm -r)", "(rm)")))
+    assert any("PALAVRAS_DE_APAGAR" in f for f in protecao.comparar(repo.raiz))
+    repo.escrever("regras_dos_agentes/porteiro.py", texto.replace(
+        'COMANDOS_DE_TERMINAL = (".sh",', 'COMANDOS_DE_TERMINAL = (".zsh", ".sh",'))
+    assert protecao.comparar(repo.raiz) == []
+
+
+@pytest.mark.parametrize("de, para, nome", [
+    ('PECAS_DO_GIT = ("regras_dos_agentes/conversa_com_o_git.py",',
+     'PECAS_DO_GIT = ("relatorios/meu_script.py", "regras_dos_agentes/conversa_com_o_git.py",', "PECAS_DO_GIT"),
+    ('CONFERE_SE_E_ATALHO = (r"is_junction|', 'CONFERE_SE_E_ATALHO = (r"rm|is_junction|', "CONFERE_SE_E_ATALHO"),
+])
+def test_k25_crescer_a_excecao_ou_o_que_conta_como_conferir_e_acusado(repo, de, para, nome):
+    """K25: pôr mais um arquivo nas peças do git, ou mais um jeito de "conferir o atalho", afrouxa a conferência: os
+    dois ficam iguais aos da versão de teste."""
+    texto = (repo.raiz / "regras_dos_agentes" / "porteiro.py").read_text(encoding="utf-8")
+    assert de in texto
+    repo.escrever("regras_dos_agentes/porteiro.py", texto.replace(de, para))
+    assert any(nome in f and "mudou" in f for f in protecao.comparar(repo.raiz))
+
+
+def test_k25_afrouxar_pelo_uso_e_acusado(repo, monkeypatch):
+    """K25: as listas iguais, mas o porteiro deste ramo deixando de acusar (aqui, trocado por um que nunca acusa): a
+    proteção passa cada exemplo das listas da K25 da versão de teste pelo porteiro de agora e acusa."""
+    from regras_dos_agentes import porteiro
+
+    monkeypatch.setattr(porteiro, "_o_que_o_comando_muda", lambda comando, antes: None)
+    frases = protecao.comparar(repo.raiz)
+    assert any("PALAVRAS_DO_GIT" in f and "K25" in f for f in frases), frases
+    assert any("PALAVRAS_DE_APAGAR" in f and "K25" in f for f in frases), frases
