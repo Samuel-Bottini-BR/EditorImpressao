@@ -34,3 +34,4 @@ M16 a pasta pronta de outra versão passa: ACUSADA (1 failed in 1.14s) [tests/te
 
 cópia limpa: 42 passed in 11.60s
 
+M17 a peça devolve a lista de módulos herdada ao PowerShell: ACUSADA (1 failed in 1.13s) [tests/test_windows_peca.py::test_o_powershell_nao_herda_os_modulos_do_powershell_7] (rodada à parte no commit fa28ab5b)

@@ -28,7 +28,7 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
 - 19/11: leitura feita (pacote, CLAUDE.md, memória e catálogo dos erros F4, F5, F9, plano-v3 passo 2 e peças 8, 9 e
   10b, plano v1 peça 8, estudo do Kraken, estudo de publicar rápido, o código de hoje, o código do vpk 1.2.161, o do
   Velopack do lado do programa, o do `gh`). Seções de antes de escrever preenchidas.
-- 19/11: código e testes feitos, em commits pequenos (lista em "Commit"). Prova de reversão: 16 de 16 proteções
+- 19/11: código e testes feitos, em commits pequenos (lista em "Commit"). Prova de reversão: 17 de 17 proteções
   acusadas pelo seu teste (`anexos/reversao-resultado.txt`); os testes novos falham no código antigo
   (`anexos/reversao-codigo-antigo.txt`). Rodada do GitHub em "Testes".
 - `git -C D:\programas\EditorImpressao rev-parse --is-shallow-repository` = false antes e depois. Nenhum atalho de
@@ -366,7 +366,7 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
   motor não está nesta cópia, o defeito antigo nº 330); `tests/test_ocr_diagnostico.py` 6;
   `tests/test_windows_janela_de_prova.py` 10; `tests/test_conferencias_codigo.py` 77; `tests/test_conferencias_pacote.py`
   20; `tests/test_conferencias_excecoes.py` 14. Porteiro no PC: "nada novo" (175 lugares).
-- **Prova de reversão** numa cópia à parte (git archive no rascunho da sessão, fora do projeto): 16 de 16 proteções
+- **Prova de reversão** numa cópia à parte (git archive no rascunho da sessão, fora do projeto): 17 de 17 proteções
   acusadas pelo seu teste (`anexos/reversao-resultado.txt`, script em `anexos/reversao-mutacoes.py.txt`); os testes
   novos rodados no código antigo falham (`anexos/reversao-codigo-antigo.txt`).
 - **No GitHub, rodada 1:** 44642471223, sobre o commit 2e88d125: **failure**. O porteiro passou (PORTEIRO: success,
