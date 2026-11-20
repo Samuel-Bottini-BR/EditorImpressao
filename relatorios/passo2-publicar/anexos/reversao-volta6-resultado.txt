@@ -1,0 +1,12 @@
+Y1 (a montagem não põe o Visual C++ (o defeito da prova)) -> tests/test_publicar_versao.py -k volta6_a_versao_montada: ACUSADA ['2 failed, 83 deselected in 0.81s']
+Y2 (construir_pacote_do_velopack sem a conferência da pasta antes do vpk) -> tests/test_publicar_versao.py -k volta6_a_mesma_conferencia: ACUSADA ['1 failed, 84 deselected in 0.78s']
+Y3 (a ficha gravada antes do Visual C++ (a pasta pela metade passaria por pronta)) -> tests/test_publicar_versao.py -k volta6_a_copia_do_visual_c: ACUSADA ['1 failed, 84 deselected in 0.50s']
+Y4 (a montagem ignora a cópia do Visual C++ pela metade) -> tests/test_publicar_versao.py -k volta6_a_copia_do_visual_c: ACUSADA ['1 failed, 84 deselected in 0.55s']
+Y5 (a pasta portátil também ganha o Visual C++ em instalar\ (o Inno o levaria para {app})) -> tests/test_publicar_versao.py -k volta6_a_mesma_conferencia: ACUSADA ['1 failed, 84 deselected in 0.96s']
+Y6 (a conferência da pasta deixa de cobrar o Visual C++) -> tests/test_publicar_versao.py -k volta6_a_mesma_conferencia: ACUSADA ['1 failed, 84 deselected in 0.51s']
+Y7 (X3 de quem quebrou: NadaSaiu como um caso de SemResposta) -> tests/test_publicar_versao.py -k volta6_achado1: ACUSADA ['1 failed, 84 deselected in 0.46s']
+Y8 (o comando do motor sem o destino) -> tests/test_publicar_versao.py -k volta6_achado2: ACUSADA ['1 failed, 1 passed, 83 deselected in 0.47s']
+Y9 (a frase do motor que falta escrita à mão de novo) -> tests/test_publicar_versao.py -k volta6_achado2: ACUSADA ['2 failed, 83 deselected in 0.46s']
+Y10 (o caminho de rede de volta à frase do "tem função própria") -> tests/test_windows_peca.py -k volta6_achado3: ACUSADA ['1 failed, 70 deselected in 0.29s']
+
+10 de 10 acusadas; cada arquivo devolvido ao original (conferido byte a byte).

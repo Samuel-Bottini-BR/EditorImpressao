@@ -76,6 +76,11 @@ as da volta 4 (`anexos/pacote-volta4.md`, partida `5f96975b`) e as da primeira e
   D-773, D-776, D-777, D-785, D-788, D-789, D-795, D-815 a D-817; o relatório 5; o registro da prova, só lido). O plano
   (D-709) está em "A causa, a regra e todos os caminhos", "Volta 6", escrito antes de mexer. Andamento em "Volta 6" de
   cada seção.
+- 20/11, volta 6 feita: plano `3abc3953`; testes antes do código `a07f22b8`; código `3abf9acf`. Reversão no código de
+  `b9300da8`: 7 de 8 casos novos falham (o do achado 1 cobra uma proteção que já existia; provado pela mutação Y7);
+  mutações: 10 de 10 acusadas. `--is-shallow-repository` = false antes e depois; nenhuma junção criada; a junção
+  `modelos` da gerente e a pasta `dist\` não foram tocadas (só lidas). **Próximo:** a rodada do GitHub (em "Testes") e
+  a entrega à gerente; depois um agente novo tenta quebrar (D-815) e a prova à vista (itens 13 a 15).
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -846,11 +851,12 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
   "--add-data SOURCE:DEST", "--contents-directory CONTENTS_DIRECTORY": "the directory name where all files are placed
   besides the executable") diz o mesmo; não a reli nesta volta além disso.
 - **O vpk e o instalar\:** nada muda no que o vpk recebe (a pasta com `instalar\vc_redist.x64.exe` e a versão no .txt,
-  como na pasta pronta de hoje); o que o vpk faz com ela foi lido na volta 1 (acima). O programa instalado lê
-  `<programa>\instalar\` por `atualizacao.PASTA_DO_QUE_SE_INSTALA` (código nosso, não muda).
+  como na pasta pronta de hoje); o que o vpk faz com ela foi lido na volta 1 (acima:
+  `src/vpk/Velopack.Packaging/PackageBuilder.cs:60`, no código do Velopack 1.2.161). O programa instalado lê
+  `<programa>\instalar\` por `atualizacao.PASTA_DO_QUE_SE_INSTALA` (`atualizacao.py:196`; código nosso, não muda).
 - **O caminho de rede (achado 3):** o que o Windows faz com ele foi rodado por quem quebrou (relatório 5, E7: "caminho de
-  rede (`\\localhost\C$\...` e `\\?\UNC\...`) | sim [o Windows roda] | recusa | recusa (frase errada)"); a regra não
-  muda, só a frase.
+  rede (`\\localhost\C$\...` e `\\?\UNC\...`) | sim [o Windows roda] | recusa | recusa (frase errada)";
+  `relatorios/passo2-publicar/quem-quebrou/relatorio-5.md:171`); a regra não muda, só a frase.
 
 ## O que foi feito
 
@@ -908,6 +914,15 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
    arquivo, com frase própria; o texto de `windows.gravar_no_disco` diz quem passa por ela; os testes das duas
    proteções que não tinham teste; o tempo do pedido ao gh num lugar só (`DestinoGitHub.LIMITE_DO_PEDIDO_S`).
 
+13. **Volta 6 (o defeito da prova à vista de 20/11 e os 3 baixos do relatório 5):** a pasta montada do zero sai com o
+   Visual C++ em instalar\ (quem o põe é a montagem, `construir_pasta`, pelo campo novo `Saida.vc_em_instalar`, antes da
+   ficha da versão; `preparar_saida` deixou de pô-lo); a mesma conferência (`conferir_pasta_pronta`) vale para a pasta
+   montada e para a pasta pronta, e roda também logo antes do vpk em `construir_pacote_do_velopack` (todo caminho até o
+   vpk passa por ela); a frase do motor que falta dá o comando do destino (`_Destino.comando_de_publicar_o_motor`, com o
+   `--pasta` na pasta das provas); a peça recusa o caminho de rede com frase própria (`windows.FRASE_CAMINHO_DE_REDE`);
+   o apagar em que o gh nem abre ganhou o teste que faltava. Nada mudou no que a pasta pronta precisa trazer, nem na
+   pasta portátil e no Inno.
+
 ## Arquivos criados ou alterados
 
 Desde a partida desta volta (`5f96975b`, o pacote da volta 4); o que as voltas 1 a 3 mexeram está no `git log` deste
@@ -927,6 +942,13 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
   `tests/test_windows_peca.py` (1 teste novo), `tests/test_publicar_versao.py` (7 testes novos, 9 casos; nenhum antigo
   mudou) e, em `relatorios/passo2-publicar/`, este formulário, o pacote de quem tentou quebrar da volta 4 e os anexos
   `reversao-volta5-*`. `empacotar.py` não mudou nesta volta.
+
+- **Volta 6** (desde `b9300da8`, dentro da lista do pacote): `empacotar.py` (o campo `vc_em_instalar`, a montagem, a
+  conferência antes do vpk, os textos), `publicar_versao_kaique.py` (o comando do motor, os textos), `core/windows.py`
+  (a frase do caminho de rede), `tests/test_publicar_versao.py` (6 testes novos, 8 casos; nenhum antigo mudou),
+  `tests/test_windows_peca.py` (1 teste novo; nenhum antigo mudou) e, em `relatorios/passo2-publicar/`, este formulário,
+  o pacote da volta 6 e os anexos `relatorios/passo2-publicar/anexos/volta6-a-pasta-da-prova.txt` e `reversao-volta6-*`. `tests/test_empacotar.py` não
+  mudou.
 
 ## Como cumpri cada uma
 
@@ -1036,6 +1058,27 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
   - D-812: "De onde vem cada dado", "Volta 5".
   - D-775, D-815, D-798: entrego à gerente, sem rótulo; é a minha última volta.
 
+- **Volta 6:**
+  - D-727 "pode, se tiver qualquer coisa que o kaique precise, ele tem que estar no instalador né": o Visual C++ vai
+    dentro do pacote da atualização e do instalador também quando a pasta é montada do zero:
+    `tests/test_publicar_versao.py::test_volta6_a_versao_montada_do_zero_leva_o_visual_c_e_e_publicada` (com e sem o
+    instalador: o arquivo e a versão em instalar\ dentro do pacote publicado). A pasta pronta continua cobrada igual:
+    `tests/test_publicar_versao.py::test_volta6_a_mesma_conferencia_da_pasta_em_todos_os_caminhos` (a pasta de fora
+    sem o Visual C++, a frase de sempre) e o teste antigo `test_a_pasta_pronta_de_outra_versao_e_recusada`, sem mudar.
+  - D-767 "não faça mais nada escodindo ou de mentira": o teste de reversão passa pelo `construir_pasta` de verdade
+    (trocados só o PyInstaller, que escreve o que o de verdade escreve, lido do próprio comando, e as peças de entrada);
+    a pasta que a prova montou de verdade foi lida (`anexos/volta6-a-pasta-da-prova.txt`). O PyInstaller e o vpk de
+    verdade ficam para a prova à vista ("A prova de verdade", Volta 6).
+  - D-773 "A": `tests/test_publicar_versao.py::test_volta6_achado2_a_frase_do_motor_que_falta_da_o_comando_do_destino`
+    (na pasta, a frase tem o `--pasta` e segui-la publica o motor na pasta, sem tocar o GitHub).
+  - D-776, D-777, D-788, D-789, D-795: nada muda; os testes deles passam sem mudar (lista em "Testes").
+  - D-785 (item 8, publicar à vista): não rodei o publicar, o PyInstaller nem o vpk de verdade.
+  - D-815 "ok": escritor novo; comecei por este formulário.
+  - D-816 "A , mas onde estamos antes de você fazer qualquer processo": nada muda no que é apagado; o achado 1 ganhou o
+    teste (`tests/test_publicar_versao.py::test_volta6_achado1_o_apagar_em_que_o_gh_nem_abre_diz_nao_apaguei`).
+  - D-817 "pode": nenhum teste antigo mudou nesta volta.
+  - D-811 (cada proteção com o teste que falha sem ela): 10 de 10 acusadas (`anexos/reversao-volta6-resultado.txt`).
+
 ## Testes
 
 - **No PC, um arquivo por vez** (19/11, com `QT_QPA_PLATFORM=offscreen`):
@@ -1124,6 +1167,25 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
   primeira, falhou só a parte 3, em `tests/test_decisoes_gravura_a_mao.py::test_d659_g_outros_filtros_a_mao_nada_e_procurado_e_sai_igual_ao_de_antes`
   ("procurou: [0]"), o instável já conhecido (catálogo P1-gh-5), que não usa nada deste passo; a parte 3 rodou de novo e passou.
 
+- **Volta 6, no PC, um arquivo por vez** (20/11, `QT_QPA_PLATFORM=offscreen`): `tests/test_publicar_versao.py` 85
+  passaram; `tests/test_windows_peca.py` 69 passaram e 2 pulados; `tests/test_empacotar.py` 41;
+  `tests/test_publicar_motor.py` 12; `tests/test_publicar_servidor.py` 14; `tests/test_decisoes_atualizacao.py` 38;
+  `tests/test_windows_janela_de_prova.py` 10; `tests/test_nome_do_pacote.py` 5; `tests/test_decisoes_brasao.py` 22;
+  `tests/test_decisoes_ajudante_da_atualizacao.py` 37; `tests/test_decisoes_testes_a_distancia.py` 13;
+  `tests/test_conferencias_codigo.py` 77; `tests/test_conferencias_excecoes.py` 14; `tests/test_conferencias_pacote.py`
+  20. Porteiro no PC: "nada novo" (175 lugares). Os do desinstalar não rodei (falham no PC, Lista de bugs de 20/11).
+  Na primeira passada de `tests/test_windows_peca.py` o meu teste novo usava `windows._por_que_recusa` (com "_", de
+  dentro da peça) e o teste antigo `test_a_peca_e_fechada_ninguem_usa_o_que_tem_sublinhado_fora_dela` acusou; o teste
+  novo passou a perguntar pelo `rodar_e_esperar` (sem mudar o antigo).
+- **Volta 6, reversão** (`anexos/reversao-volta6-codigo-antigo.txt`; o código de `b9300da8` numa cópia à parte, com os
+  dois arquivos de teste novos por cima): 7 de 8 casos falham. Os dois do defeito da prova falham com a mesma frase da
+  prova ("a pasta do programa não serve: ... não tem o Visual C++ em instalar\"); o de "todos os caminhos" falha na
+  montagem sem o Visual C++; o da cópia pela metade, na montagem que não parava; o do achado 2 na pasta, na frase sem o
+  `--pasta` (e o do GitHub pela função que não existia); o do achado 3, na frase "use a função dela". O do achado 1
+  passa lá (a proteção existia, sem teste) e é provado pela mutação Y7 (a X3 de quem quebrou).
+- **Volta 6, mutações** (`anexos/reversao-volta6-resultado.txt`, script em `anexos/reversao-volta6-mutacoes.py.txt`):
+  10 de 10 acusadas, numa cópia de `3abf9acf`.
+
 ## Caminho e função
 
 - O publicar da versão, com ou sem pasta pronta, com ou sem instalador → `empacotar.construir_pacote_do_velopack` →
@@ -1209,6 +1271,32 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
     `tests/test_publicar_versao.py::test_volta5_achado4_o_gh_que_nem_abre_no_liberar_nao_conta_como_pedido`);
   - o fluxo escondido, nos três caminhos da peça → `windows._por_que_recusa` → `windows._e_fluxo_escondido` (prova:
     `tests/test_windows_peca.py::test_volta5_o_programa_num_fluxo_escondido_de_outro_arquivo_e_recusado`).
+
+- **Volta 6** ("a pasta está pronta para o vpk" → `empacotar.conferir_pasta_pronta`; "pôr o Visual C++ na pasta" →
+  `empacotar.construir_pasta` → `empacotar.preparar_pasta_para_o_velopack`; "a saída leva o Visual C++?" →
+  `empacotar.Saida.vc_em_instalar`):
+  - o publicar montado do zero → `construir_pasta(ATUALIZACAO)` (põe) → `conferir_pasta_pronta` →
+    `construir_pacote_do_velopack` → `conferir_pasta_pronta` de novo → `rodar_vpk`;
+  - o publicar com `--pasta-pronta` → `conferir_pasta_pronta` → o mesmo `construir_pacote_do_velopack`;
+  - a segunda passada do instalador → `preparar_saida(INSTALADOR)` (só o motor) → `conferir_pasta_pronta(INSTALADOR)`;
+  - a volta da pasta depois do instalador → `preparar_saida(ATUALIZACAO, None, motor)` (não mexe no Visual C++);
+  - o empacotar chamado direto, sem pasta → `construir_pasta(ATUALIZACAO)` → `conferir_pasta_pronta`; com uma pasta de
+    fora → `conferir_pasta_pronta` antes do vpk;
+  - a pasta portátil e o Inno → `construir_pasta(PORTATIL)` (`vc_em_instalar=False`: sem instalar\; o Inno pega de
+    `build\`);
+  - a conferência do pacote depois do vpk → `esperados_no_pacote_do_velopack` (pelo mesmo campo).
+  Prova, o mesmo resultado em todos: `tests/test_publicar_versao.py::test_volta6_a_mesma_conferencia_da_pasta_em_todos_os_caminhos`
+  (a montada passa; a montada sem o Visual C++ e a de fora sem o Visual C++ recebem a mesma frase; o empacotar direto
+  com a de fora para antes do vpk; o empacotar direto sem pasta empacota com o Visual C++; a portátil sem instalar\) e
+  `tests/test_publicar_versao.py::test_volta6_a_versao_montada_do_zero_leva_o_visual_c_e_e_publicada` (o publicar
+  montado do zero, com e sem o instalador, até a publicação na pasta das provas).
+  - toda frase que manda rodar um comando do publicar (o `--apagar` e agora o `--motor`) → `_Destino.comando_de_apagar`
+    e `_Destino.comando_de_publicar_o_motor`, pelos mesmos `_argumentos_do_destino` (prova:
+    `tests/test_publicar_versao.py::test_volta6_achado2_a_frase_do_motor_que_falta_da_o_comando_do_destino`, pasta e
+    GitHub);
+  - o caminho de rede pelo rodar, pelo lançar solto e pelo grupo → `windows._por_que_recusa` → `FRASE_CAMINHO_DE_REDE`
+    (prova: `tests/test_windows_peca.py::test_volta6_achado3_o_caminho_de_rede_e_recusado_com_a_frase_propria`, os
+    três caminhos).
 
 ## Cada proteção e o teste que falha sem ela
 
@@ -1356,6 +1444,21 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
     destino não volta ao estado de antes no fim do publicar) são arrumação: hoje ninguém usa essa saída nem reaproveita
     o destino (observação 8).
 
+- **Volta 6** (`anexos/reversao-volta6-resultado.txt`; script em `anexos/reversao-volta6-mutacoes.py.txt`), 10 de 10
+  acusadas:
+  - a montagem não põe o Visual C++ (Y1, o defeito da prova) →
+    `tests/test_publicar_versao.py::test_volta6_a_versao_montada_do_zero_leva_o_visual_c_e_e_publicada`;
+  - sem a conferência antes do vpk em `construir_pacote_do_velopack` (Y2), a pasta portátil com o Visual C++ (Y5), a
+    conferência sem cobrar o Visual C++ (Y6) → `tests/test_publicar_versao.py::test_volta6_a_mesma_conferencia_da_pasta_em_todos_os_caminhos`;
+  - a ficha gravada antes do Visual C++ (Y3) e a cópia pela metade ignorada (Y4) →
+    `tests/test_publicar_versao.py::test_volta6_a_copia_do_visual_c_pela_metade_nao_deixa_a_ficha`;
+  - `NadaSaiu` como caso de `SemResposta` (Y7, a X3 de quem quebrou) →
+    `tests/test_publicar_versao.py::test_volta6_achado1_o_apagar_em_que_o_gh_nem_abre_diz_nao_apaguei`;
+  - o comando do motor sem o destino (Y8) e a frase escrita à mão de novo (Y9) →
+    `tests/test_publicar_versao.py::test_volta6_achado2_a_frase_do_motor_que_falta_da_o_comando_do_destino`;
+  - o caminho de rede com a frase antiga (Y10) →
+    `tests/test_windows_peca.py::test_volta6_achado3_o_caminho_de_rede_e_recusado_com_a_frase_propria`.
+
 ## De onde vem cada dado da conferência
 
 - **Se a versão ou o motor já existem no destino:** lido do destino (a pasta; ou o GitHub pelo gh), nunca de uma
@@ -1408,6 +1511,13 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   programa nem começou, lido do que a peça fez); "fluxo escondido" vem do caminho completado pelo Windows (o
   GetFullPathNameW). Os comandos das frases vêm do destino que o publicar recebeu.
 
+- **Volta 6:** "a pasta tem o Visual C++" vem do disco (o arquivo em instalar\ existe); "chegou inteiro" vem do tamanho
+  lido do disco, comparado com o do original conferido pela assinatura da Microsoft (`preparar_vc_redist`, que não
+  mudou). "Montada inteira" é a ficha da versão, que o próprio empacotar escreve por último: ela pega a pasta que parou
+  no meio, mas é um dado que quem monta escreve (não serve de prova; a prova é a conferência do pacote depois do vpk,
+  que abre o pacote e procura o Visual C++, e a prova à vista). O comando da frase do motor vem do destino que o
+  publicar recebeu.
+
 ## Máquina ou olho
 
 - Máquina: tudo o que está em "Testes" (a lógica, a pasta de verdade como destino, o servidor de verdade, a vigia com
@@ -1418,6 +1528,9 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
 - **Volta 4:** máquina, tudo (os testes; a peça do Windows de verdade: o nome com ponto no fim, o programa trancado, o
   lote pelo PATH, o grupo com o gh de prova, a gravação no disco). Olho: nada. A prova à vista continua com a gerente e o
   Samuel (itens 10 a 12 acrescentados em "A prova de verdade").
+
+- **Volta 6:** máquina, tudo (os testes, a reversão no código antigo, as mutações; a pasta que a prova montou de verdade,
+  só lida). Olho: nada. O PyInstaller e o vpk de verdade por este caminho são da prova à vista (itens 13 a 15).
 
 ## Ressalvas
 
@@ -1547,6 +1660,31 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   certo); (8) as mutações A6 e A10 são arrumação, sem efeito hoje ("Cada proteção"); (9) os testes do desinstalar que
   falham no PC (já em "Ideias e bugs").
 
+- **Volta 6, o PyInstaller e o vpk de verdade nunca rodaram por este caminho.** O teste de reversão troca só o
+  PyInstaller (escreve o que o de verdade escreve, lido do próprio comando e conferido contra a pasta que a prova montou)
+  e as peças de entrada (o Tesseract e o Visual C++ de prova; o de verdade é conferido pela assinatura da Microsoft em
+  outros testes). Depois deste conserto, a primeira vez que o vpk de verdade recebe uma pasta montada do zero é na prova
+  à vista: pode aparecer o próximo defeito dali para a frente (o vpk de verdade nunca rodou pelo publicar; ver as
+  Ressalvas da volta 1). **A única prova honesta do caminho inteiro é a publicação de verdade, na tela do Samuel.**
+- **Volta 6, a pasta que a prova de 20/11 montou (797 MB, `dist\EditorImpressao`) não serve com `--pasta-pronta`:** foi
+  montada pelo código antigo, sem o Visual C++, e a conferência da pasta de fora continua cobrando (D-727). A próxima
+  prova precisa montar de novo (sem `--pasta-pronta`; uns 4 minutos de PyInstaller). Não mexi nela.
+- **Volta 6, `preparar_saida` ficou com um argumento que não usa (`pecas`):** o Visual C++ saiu de lá, e o argumento
+  ficou porque quem chama o passa pela posição (o publicar, e `tests/test_publicar_motor.py` nas linhas 142 e 147, que
+  não posso mudar). Está escrito no texto da função. Tirá-lo pede mudar esse teste antigo.
+- **Volta 6, a frase nova do caminho de rede tem as palavras "função própria"** porque é o motivo de verdade (por esse
+  caminho, a peça não sabe se é um programa do Windows, e esses têm função própria), e os testes antigos N2 e o do "raiz
+  global" (`tests/test_windows_peca.py`, perto das linhas 814 e 930) procuram essas palavras na recusa. Ela não manda
+  mais "use a função dela". Nenhum teste antigo mudou; se a gerente achar que a frase devia ser outra, os dois testes
+  antigos teriam de mudar junto (pede o "pode" do Samuel, como na D-817).
+- **Volta 6, no teste, o Tesseract de prova é "rodado" uma vez** (a montagem pergunta a versão dele): o arquivo não é
+  programa, e o Windows recusa na hora (erro 216, sem janela); a montagem segue com a versão "?", como já fazia.
+- **Volta 6, a ficha da versão é o sinal de "montada inteira"**, mas é escrita pelo próprio empacotar (não prova nada
+  sozinha; "De onde vem cada dado", Volta 6). A prova forte continua sendo a conferência do pacote depois do vpk.
+- **Volta 6, as observações 4 a 6 do relatório 5 (não pedidas; não mexi):** (4) o "nada saiu" supõe que o programa
+  aberto parado tem uma linha só; medido por quem quebrou (gh e Python, 30 vezes cada, sempre uma linha); só um outro
+  programa que ponha uma linha dentro do gh parado criaria o caso; fica escrito aqui. (5) e (6) vão para "Ideias e bugs".
+
 ## Velocidade
 
 Não se aplica: nenhum arquivo do processamento das páginas do livro mudou; em `core/ocr_kraken.py` só
@@ -1557,6 +1695,10 @@ passos"). O tempo de publicar é medido na prova à vista.
 - Volta 4: não se aplica, pelo mesmo motivo: nenhum arquivo do processamento das páginas mudou (só o publicar, o
   empacotar e a peça do Windows, que o caminho do livro não usa). A gravação no disco pede alguns segundos a mais por
   arquivo grande ao publicar; o tempo de publicar é medido na prova à vista.
+
+- Volta 6: não se aplica, pelo mesmo motivo (só o empacotar, o publicar e uma frase da peça do Windows; o caminho do
+  livro não usa nenhum deles). O publicar montado do zero copia o Visual C++ (uns 25 MB) uma vez, onde antes copiava
+  dentro do `preparar_saida`.
 
 ## Ideias e bugs
 
@@ -1593,6 +1735,43 @@ passos"). O tempo de publicar é medido na prova à vista.
   saída (`core/pipeline.py`) e os projetos (`projetos.py`) também gravam num nome provisório e trocam, sem pedir ao
   Windows para gravar no disco; passarem a usar `windows.gravar_no_disco` (não mexi: fora deste passo e do pedido).
 
+- **Volta 6, o mesmo cuidado em volta (item 3 do pedido): onde a conferência só passava porque o teste usa algo mais
+  pronto que o de verdade.**
+  - *O Visual C++ em instalar\* (o defeito da prova): consertado.
+  - *O Tesseract dentro do pacote:* todos os testes do publicar usavam a pasta pronta, sem as peças (`pecas=None`), e a
+    conferência do pacote então nem procurava o Tesseract. O caminho com as peças (o de verdade, montado do zero) nunca
+    tinha sido percorrido. Não era defeito (passa); agora o teste novo o percorre.
+  - *O vpk de mentira aceita qualquer argumento* e nunca recusa o que o de verdade pode recusar (o `--icon`, o
+    `--mainExe`, a pasta). Só a prova à vista mostra. Não é o mesmo defeito; fica como está.
+  - *O motor de mentira já vem com a ficha;* o de verdade precisa do `montar_motor_kraken.py --so-ficha` (a gerente já
+    rodou antes da prova: o motor 1 foi publicado e conferido no registro de 20/11). Não é o mesmo defeito.
+  - *O espaço livre é trocado por 500 GB nos testes;* a conta de verdade só na prova (já nas Ressalvas da volta 1).
+- **Bug (Lista de bugs, 20/11/2026, não impede; achado lateral da prova à vista):** a procura das peças, rodando numa
+  cópia (`.claude\worktrees\<cópia>`), olha um lugar errado. `empacotar.DOWNLOADS` é
+  `RAIZ.parent / "EditorImpressao-arquivos" / "ferramentas" / "downloads"`: no projeto, `RAIZ.parent` é `D:\programas`
+  (o lugar certo, `D:\programas\EditorImpressao-arquivos\ferramentas\downloads`); numa cópia, é
+  `D:\programas\EditorImpressao\.claude\worktrees`, e o programa procura em
+  `D:\programas\EditorImpressao\.claude\worktrees\EditorImpressao-arquivos\ferramentas\downloads`. Na prova, achou lá um
+  `vc_redist.x64.exe` (pasta com data de 19/11, 15:44; o arquivo é igual byte a byte ao do lugar certo: a mesma soma
+  SHA-256 `cc0ff0eb...b713b`, conferida só lendo). **Se essa pasta não existisse:** `preparar_vc_redist` (com
+  `baixar=True`, o de fábrica) criaria a pasta e baixaria o Visual C++ da internet (aka.ms) para ela, conferindo a
+  assinatura; sem internet, a montagem pararia antes do PyInstaller ("não consegui baixar o Visual C++"). Ou seja: numa
+  cópia, cada montagem pode baixar de novo e deixar pastas soltas dentro de `.claude\worktrees` (provável origem desta,
+  deduzido, não conferido), e o Visual C++ baixado pode ser de outra versão que o do lugar certo (o link da Microsoft
+  aponta sempre para o mais novo). O mesmo jeito (`RAIZ.parent`) está em `empacotar.LUGARES_DO_MOTOR`,
+  `core/ocr_kraken.lugares_do_motor` (o defeito antigo nº 330), `montar_motor_kraken.PASTA_FERRAMENTAS` e
+  `compilar_detector_gravura.PASTA_FERRAMENTAS_PADRAO`. Pede um lugar só para "onde fica a pasta de ferramentas", que
+  saiba subir de uma cópia até o projeto. Não consertei nem apaguei nada (o pedido).
+- **Bug (Lista de bugs, 20/11/2026, não impede):** o `construir_pasta` escreve na pasta o "COMO USAR.txt" da versão
+  portátil ("Não precisa instalar nada. De dois cliques em EditorImpressao.exe...") também na atualização e no
+  instalador do Velopack; o arquivo vai para dentro do programa instalado do Kaique, com um texto que não vale para ele.
+  Visto na pasta que a prova montou. Não mexi.
+- Ideia (Lista de espera, observação 5 do relatório 5): uma linha no texto de `DestinoGitHub.liberar` dizendo que ele
+  faz um pedido só ao gh (a regra do "o gh nem abriu não é pedido" depende disso), e, se a gerente quiser, um teste que
+  confira isso.
+- Ideia (Lista de espera, observação 6 do relatório 5): o teste do fluxo escondido ganhar também o fluxo de uma pasta
+  (`pastinha:programa.exe`, que o Windows roda e a regra já recusa).
+
 ## Perguntas para o Samuel
 
 Nenhuma nesta entrega. Procurei no Livro antes: a D-773, a D-776, a D-777, a D-788, a D-789, a D-790 e a D-795 respondem
@@ -1604,6 +1783,10 @@ do liberar que falha e fica rascunho, que a volta 3 apagava: "Na pasta das prova
 e a gerente decidiu os outros (os achados 5 e 12 ficam escritos). O que fica para a gerente olhar está em "Ressalvas":
 o teste antigo do achado 5 da volta 3, que saiu porque cobrava o que a D-816 tirou.
 
+**Volta 6:** nenhuma pergunta. O Samuel autorizou o conserto do defeito da prova e dos três baixos ("pode concertar");
+a D-727 diz onde o Visual C++ fica. O que fica para a gerente olhar está em "Ressalvas", Volta 6 (a frase do caminho de
+rede com as palavras que os testes antigos procuram; o argumento que `preparar_saida` não usa mais).
+
 ## Commit
 
 2e906e94 (o último commit de código e testes da volta 3, com três docstrings de um teste; depois dele só este formulário muda).
@@ -1611,6 +1794,8 @@ o teste antigo do achado 5 da volta 3, que saiu porque cobrava o que a D-816 tir
 Volta 4: 595cc293 (o último commit de código e testes da volta 4: os textos da peça e da vigia; depois dele só este formulário muda).
 
 Volta 5: 35ec0c27 (o último commit de código e testes da volta 5; depois dele só a pasta deste relatório muda).
+
+Volta 6: 3abf9acf (o último commit de código e testes da volta 6; depois dele só a pasta deste relatório muda).
 
 ## O que o agente que tentou quebrar achou
 
@@ -1753,6 +1938,23 @@ D-815). Destino de cada achado (código em `35ec0c27`; reversão em `anexos/reve
 6. **O texto de `gravar_no_disco` prometia demais:** consertado (nomeia quem passa e quem não passa).
 7. a 9. **Observações:** anotadas em "Ressalvas".
 
+**Volta 6** (`quem-quebrou/relatorio-5.md`, commit `b9300da8`; escritor novo, D-815; e o defeito da prova à vista de
+20/11). Destino de cada achado (código em `3abf9acf`; reversão em `anexos/reversao-volta6-codigo-antigo.txt` e
+`anexos/reversao-volta6-resultado.txt`):
+- **O defeito da prova à vista (o publicar montado do zero parava em "não tem o Visual C++ em instalar\"):** consertado
+  pela causa (a montagem põe o Visual C++, a mesma conferência para todos os caminhos, também antes do vpk). Testes:
+  `tests/test_publicar_versao.py::test_volta6_a_versao_montada_do_zero_leva_o_visual_c_e_e_publicada`,
+  `tests/test_publicar_versao.py::test_volta6_a_mesma_conferencia_da_pasta_em_todos_os_caminhos` e
+  `tests/test_publicar_versao.py::test_volta6_a_copia_do_visual_c_pela_metade_nao_deixa_a_ficha`.
+1. **O apagar em que o gh nem abre, sem teste:** teste novo,
+   `tests/test_publicar_versao.py::test_volta6_achado1_o_apagar_em_que_o_gh_nem_abre_diz_nao_apaguei` (o pedido de
+   apagar passa pelo `_gh` de verdade; a X3 de quem quebrou é acusada, mutação Y7).
+2. **A frase do motor que falta sem o `--pasta`:** consertado (`_Destino.comando_de_publicar_o_motor`). Teste:
+   `tests/test_publicar_versao.py::test_volta6_achado2_a_frase_do_motor_que_falta_da_o_comando_do_destino`.
+3. **O caminho de rede com a frase errada:** consertado (`windows.FRASE_CAMINHO_DE_REDE`). Teste:
+   `tests/test_windows_peca.py::test_volta6_achado3_o_caminho_de_rede_e_recusado_com_a_frase_propria`.
+4. **Observação 4:** em "Ressalvas", Volta 6. **Observações 5 e 6:** em "Ideias e bugs", Volta 6.
+
 ## A prova de verdade
 
 Roteiro para a gerente (não rodado; D-785, item 8; o plano: "0 perguntas do Windows"; o Samuel olha a janela, não
@@ -1786,12 +1988,23 @@ clica nada):
 12. O gh roda agora num grupo do Windows, como o vpk: olhar, no Gerenciador de Tarefas, que não sobra gh.exe depois de
     publicar.
 
+**Volta 6, o que a prova à vista acrescenta (o defeito de 20/11):**
+13. Repetir o publicar da prova SEM `--pasta-pronta` (`publicar_versao_kaique.py --pasta C:\EditorImpressaoProva\versoes`):
+    a montagem tem de dizer "Visual C++ em instalar\, conferido" antes de "pronto: ...\dist\EditorImpressao", passar da
+    conferência da pasta e chegar ao vpk de verdade. Depois, abrir o pacote publicado (é um zip) e ver
+    `lib/app/instalar/vc_redist.x64.exe` lá dentro.
+14. A pasta que a prova de 20/11 montou (código antigo) com `--pasta-pronta`: tem de ser recusada com "não tem o Visual
+    C++ em instalar\" (a pasta de fora continua cobrada).
+15. Na pasta das provas, sem o motor publicado: a frase tem de dizer `publicar_versao_kaique.py --motor --pasta "..."`.
+
 ## Perguntas do Windows que o Samuel vê
 
 - Nesta entrega: 0 (nada pede licença; o publicar não pede).
 - Na prova à vista: 0 (o plano: "0 perguntas do Windows"). O servidor escuta só em 127.0.0.1: o firewall não pergunta.
 
 - Volta 4: 0 (nada desta volta pede licença; o gh e o vpk no grupo não pedem).
+
+- Volta 6: 0 (nada desta volta pede licença; pôr o Visual C++ na pasta é uma cópia de arquivo no D:, sem instalar nada).
 
 ## Páginas em que foi conferido
 
