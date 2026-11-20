@@ -1,0 +1,47 @@
+"""Volta 2: tenta enganar o SO_NO_GITHUB (o comando do git liberado quando a mesma linha só roda no GitHub) e confere
+o conserto do `git rm`. Só lê: nenhum comando é rodado; o porteiro só lê o texto."""
+import sys
+
+sys.path.insert(0, r"D:\programas\EditorImpressao\.claude\worktrees\regras-catalogo")
+from regras_dos_agentes import porteiro  # noqa: E402
+
+CAB = '"""x."""\nimport os\nimport subprocess\n\n\ndef f(pasta):\n    """y."""\n'
+
+# (rótulo, devia acusar?, texto)
+TERM = [
+    ("o jeito certo (só no GitHub)", False, '[ "${GITHUB_ACTIONS:-}" = "true" ] && git clean -fdq -- .'),
+    ("o jeito certo com fetch --depth", False, '[ "${GITHUB_ACTIONS:-}" = "true" ] && git fetch --depth=1 origin x'),
+    ("ao contrário: || (roda FORA do GitHub)", True, '[ "${GITHUB_ACTIONS:-}" = "true" ] || git fetch --depth=1 origin x'),
+    ("&& true || git (roda fora do GitHub)", True, '[ "${GITHUB_ACTIONS:-}" = "true" ] && true || git gc'),
+    ("depois de ; (roda sempre)", True, '[ "${GITHUB_ACTIONS:-}" = "true" ] && echo oi; git fetch --depth=1 origin x'),
+    ("o próprio script liga a variável", True, 'GITHUB_ACTIONS=true; [ "$GITHUB_ACTIONS" = "true" ] && git gc'),
+    ("export na linha de cima", True, 'export GITHUB_ACTIONS=true\n[ "$GITHUB_ACTIONS" = "true" ] && git gc'),
+    ("negado com !", True, '! [ "${GITHUB_ACTIONS:-}" = "true" ] && git gc'),
+    ("a guarda dentro de um echo", True, 'echo \'[ "$GITHUB_ACTIONS" = "true" ] &&\'; git gc'),
+    ("git rm e depois rm -rf na mesma linha", True, 'git rm -rq --cached x && rm -rf "$PASTA"'),
+    ("git -C x rm -r --cached", False, 'git -C "$D" rm -r --cached x'),
+    ("git clean -n (só lista)", False, 'git clean -n -fdx'),
+    ("git clean --dry-run", False, 'git clean --dry-run -d'),
+]
+PY = [
+    ("o jeito certo", False, 'if os.environ.get("GITHUB_ACTIONS") == "true": subprocess.run(["git", "clean", "-fdq"])'),
+    ("if not (roda FORA do GitHub)", True, 'if not os.environ.get("GITHUB_ACTIONS") == "true": subprocess.run(["git", "gc"])'),
+    ("depois de ; (roda sempre)", True, 'x = os.environ.get("GITHUB_ACTIONS") == "true"; subprocess.run(["git", "gc"])'),
+    ("o próprio código liga a variável", True,
+     'os.environ["GITHUB_ACTIONS"] = "true"\n    if os.environ.get("GITHUB_ACTIONS") == "true": subprocess.run(["git", "gc"])'),
+    ("a guarda num texto na mesma linha", True,
+     'subprocess.run(["git", "gc"]); print(\'os.environ.get("GITHUB_ACTIONS") == "true"\')'),
+    ("or True", True, 'if os.environ.get("GITHUB_ACTIONS") == "true" or True: subprocess.run(["git", "gc"])'),
+]
+
+
+def acusa(nome, fonte):
+    return any(a.conferencia == "K25" for a in porteiro.conferir_codigo([nome], lambda _c: fonte))
+
+
+for rotulo, esperado, linha in TERM:
+    a = acusa("scripts/x.sh", "#!/bin/bash\n" + linha + "\n")
+    print(f"{'ok   ' if a == esperado else ('PASSA' if esperado else 'FALSO')} acusou={a!s:5} .sh {rotulo}")
+for rotulo, esperado, linha in PY:
+    a = acusa("scripts/x.py", CAB + "    " + linha + "\n")
+    print(f"{'ok   ' if a == esperado else ('PASSA' if esperado else 'FALSO')} acusou={a!s:5} .py {rotulo}")

@@ -1,0 +1,9 @@
+F21 continuação sem '-': PASSA (enganou)
+F21 'não se aplica' num trabalho do Windows: PASSA
+teste_existe('tests/test_conferencias_codigo.py::_conferir') = False
+teste_existe('tests/test_conferencias_formulario.py::repo') = False
+teste_existe('tests/test_conferencias_codigo.py::test_que_nao_existe') = False
+F21 o mesmo teste para 5 proteções: PASSA
+F22 'xxxxxxxxxx' é vazio? False
+F17 começando com 'Nenhuma' e uma pergunta embaixo: ['há pergunta para o Samuel e falta a seção "Decisões procuradas antes de cada pergunta", com as decisões do Livro procuradas antes de cada uma e por que ela ainda não está respondida (F23)', 'pergunta "Posso mudar a regra?": tem palavra de dentro (D-809) (F17)', 'pergunta "Posso mudar a regra?": sem print (F17)']
+F23 com D-001 e 'Por que: aaaaaaaaaa': PASSA (só quem quebra vê)

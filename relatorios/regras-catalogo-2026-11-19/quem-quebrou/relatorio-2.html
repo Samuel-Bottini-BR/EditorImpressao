@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Regras novas do catálogo dos erros: quem tentou quebrar, volta 2</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Regras novas do catálogo dos erros: segunda conferência de quem tentou quebrar (20/11/2026)</h1>
+<p>Esta é a segunda volta do mesmo verificador, que não escreveu este código. Conferi:
+- o código dos consertos (<code>c51285c4</code> e <code>32ff536a</code>);
+- o ONDE-PAREI até <code>18f5c797</code>;
+- os scripts da rodada no ramo dos testes (<code>411e8476</code>).</p>
+<p>Não mexi no código, não pedi licença ao Windows e não abri janela na tela do Samuel. O repositório do PC continuou
+inteiro: <code>--is-shallow-repository</code> deu false antes e depois. Consultei o GitHub duas vezes.</p>
+<h2>Pedido</h2>
+<ul>
+<li>Papel: verificador</li>
+<li>Commit de partida: 047fd330</li>
+<li>Ramo: regras-catalogo-2026-11-19</li>
+</ul>
+<h2>Arquivos que vou mexer</h2>
+<ul>
+<li><code>regras_dos_agentes/catalogo.py</code></li>
+<li><code>regras_dos_agentes/porteiro.py</code></li>
+<li><code>regras_dos_agentes/formulario.py</code></li>
+<li><code>regras_dos_agentes/montar_pacote.py</code></li>
+<li><code>regras_dos_agentes/leitura_do_codigo.py</code></li>
+<li><code>regras_dos_agentes/protecao.py</code></li>
+<li><code>relatorios/passo0-2026-11-19/anexos/juiz-no-workflow/porteiro_juiz.sh</code></li>
+<li><code>tests/test_conferencias_codigo.py</code></li>
+<li><code>tests/test_conferencias_formulario.py</code></li>
+<li><code>tests/test_conferencias_pacote.py</code></li>
+<li><code>tests/test_conferencias_protecao.py</code></li>
+<li><code>relatorios/regras-catalogo-2026-11-19/</code></li>
+</ul>
+<p>(Copiado do pacote, sem mudar nada. Só escrevi em <code>relatorios/regras-catalogo-2026-11-19/quem-quebrou/</code>.)</p>
+<h2>Veredito</h2>
+<p><strong>Pode juntar depois do passo 2, com uma condição: a primeira rodada do GitHub depois do passo 2 tem de passar.</strong></p>
+<ul>
+<li><strong>O grave da primeira volta está consertado pela causa.</strong></li>
+<li>Os scripts da rodada buscam raso só quando a cópia já é rasa.</li>
+<li>O <code>git clean</code> dos scripts só roda no GitHub.</li>
+<li>O <code>git rm</code> não é mais lido como o <code>rm</code> do terminal.</li>
+<li><strong>Simulei a rodada no PC:</strong> o ramo inteiro mais a <code>.github/</code> do commit <code>411e8476</code>. Sobra um lugar só, o
+  <code>core/windows.py:1211</code>, que o passo 2 conserta.</li>
+<li><strong>A rodada 44657609512 ainda não prova isso.</strong> Ela rodou com os scripts antigos (<code>781d64e6</code>; foi criada às 01h59 UTC
+  e os scripts novos entraram às 02h03 UTC). Por isso a prova de verdade é a rodada depois do passo 2.</li>
+<li><strong>Não há achado grave novo.</strong></li>
+<li><strong>Há um achado médio novo: a liberação "só no GitHub" se engana fácil</strong> (achado 1). Não impede juntar, mas precisa de
+  destino.</li>
+<li><strong>O rótulo de pronto, ainda não.</strong> A D-798 deixa que eu o escreva neste trabalho. Mas falta a rodada verde: o próprio
+  formulário fica "não conferido" sem ela. Quando a rodada depois do passo 2 passar e os achados 2 e 5 abaixo forem
+  acertados, as condições ficam cumpridas.</li>
+</ul>
+<h2>O que li</h2>
+<ul>
+<li>O que a gerente pediu nesta volta e o <code>relatorio-1.md</code>.</li>
+<li>O código mudado: <code>git diff 6ac413d8..18f5c797</code> de <code>porteiro.py</code>, <code>leitura_do_codigo.py</code>, <code>protecao.py</code>,
+  <code>formulario.py</code>, <code>montar_pacote.py</code> e <code>catalogo.py</code>, e as provas novas e mudadas em <code>tests/</code>.</li>
+<li>O ONDE-PAREI, na seção "O que o agente que tentou quebrar achou" (o destino de cada achado), mais "Testes" e "Como
+  cumpri cada uma".</li>
+<li>Os scripts consertados nos anexos (<code>anexos/workflow/</code>) e os do ramo dos testes (<code>411e8476</code>, comparando com
+  <code>781d64e6</code>).</li>
+<li>O registro da rodada 44657609512 (as partes que falharam) e o resumo dela: o commit de lá e o horário.</li>
+<li>A peça de fora: o comportamento do <code>git clean -n</code> e do <code>--dry-run</code> (https://git-scm.com/docs/git-clean), que a
+  expressão nova usa. E o <code>set -e</code> do Git Bash diante de <code>[ ... ] &amp;&amp; comando</code>: o <code>[</code> que falha numa lista com <code>&amp;&amp;</code> não
+  encerra o script. Isso é do manual do bash, conhecimento meu, não relido.</li>
+</ul>
+<h2>O que conferi nas falhas, nas peças de fora e nos caminhos</h2>
+<p>Tudo por máquina, no PC.</p>
+<ul>
+<li><strong>Testes no PC, um arquivo por vez, no commit <code>18f5c797</code></strong> (o código é o de <code>32ff536a</code>):</li>
+<li>codigo: 107 passaram;</li>
+<li>pacote: 26;</li>
+<li>protecao: 19;</li>
+<li>formulario: 41;</li>
+<li>juiz: 9;</li>
+<li>copia_inteira: 2.</li>
+<li><strong>Prova de reversão:</strong> as provas novas rodaram numa cópia à parte, feita com <code>git archive</code>, com o código da primeira
+  volta (<code>ce3fa9c4</code>).</li>
+<li>Falham lá, e passam no novo:<ul>
+<li>"o <code>rm</code> do git não é o <code>rm</code>";</li>
+<li>"acusa o <code>git clean</code>";</li>
+<li>"só no GitHub, na mesma linha";</li>
+<li>"o <code>trocar_codigo.sh</code> consertado passa";</li>
+<li>os achados 6 e 7 do formulário;</li>
+<li>"a R157 vai ao Windows sem teste";</li>
+<li>os três "desligar um jeito";</li>
+<li>"tirar exemplo de um jeito".</li>
+</ul>
+</li>
+<li>O caso do <code>preparar_versao.sh</code> passa nos dois. É o esperado: o porteiro antigo já não acusava o script consertado,
+    e já acusava as linhas antigas.</li>
+<li>O teste mudado (achado 2) também passa nos dois. Ele não é prova de reversão.</li>
+<li><strong>As 108 variações da primeira volta, de novo</strong> (<code>anexos/volta2-sondar_k25-resultado.txt</code>).</li>
+<li>Agora são acusados: <code>git clean -fdx</code>, no Python e no <code>.sh</code>.</li>
+<li>Não é mais acusado: <code>git rm -r --cached</code>, no Python e no <code>.sh</code>.</li>
+<li>Nada mais mudou: o que passava continua passando. Esses casos são os achados que foram para a Lista de espera.</li>
+<li><strong>O conserto do <code>git rm</code>:</strong> <code>git rm x &amp;&amp; rm -rf "$PASTA"</code> na mesma linha continua acusado pelo segundo <code>rm</code>. Só o
+  <code>rm</code> que vem logo depois do <code>git</code> é trocado.</li>
+<li><strong>A liberação "só no GitHub" (<code>SO_NO_GITHUB</code>), 19 casos</strong> (<code>anexos/volta2-sondar_so_no_github.py.txt</code> e o
+  resultado):</li>
+<li>o jeito certo passa, no <code>.sh</code> e no Python;</li>
+<li><code>[ ... ] || git ...</code> (que roda fora do GitHub) é acusado;</li>
+<li><code>git clean -n</code> e <code>--dry-run</code> passam;</li>
+<li><strong>onze casos enganam a conferência</strong>, seis no <code>.sh</code> e cinco no Python (achado 1).</li>
+<li><strong>A proteção do GitHub contra afrouxar a K25</strong> (<code>anexos/volta2-afrouxar_k25-resultado.txt</code>). Desliguei na memória
+  cada jeito de ler o comando, e cada um é acusado agora:</li>
+<li>o terminal: 3 exemplos;</li>
+<li>a lista guardada: 1;</li>
+<li>o texto guardado: 2;</li>
+<li>tirar a K25: 12.</li>
+</ul>
+<p><strong>O achado 4 da primeira volta está consertado.</strong> <code>SO_NO_GITHUB</code> e <code>EXEMPLOS_DA_K25</code> estão nas duas listas de
+  protegidos.
+- <strong>Os scripts no ramo dos testes:</strong>
+  - o <code>trocar_codigo.sh</code> e o <code>preparar_versao.sh</code> do <code>411e8476</code> são iguais, byte por byte, aos de
+    <code>anexos/workflow/</code>;
+  - o <code>porteiro_juiz.sh</code> de lá não recebeu o comentário novo do achado 11 (achado 4). O comportamento é o mesmo; só o
+    comentário difere.
+- <strong>O destino de cada achado</strong> está escrito no ONDE-PAREI, um por um. Os achados 2, 3, 5, 8, 9 e 15 dizem "Lista de
+  espera (gerente, 20/11)". O 12 diz outra coisa (achado 5).
+- <strong>O formulário do trabalho</strong>, conferido pelo programa na etapa "prova", sem o GitHub:
+  - a estrutura passa: o F19 cita o relatório 1 e cada achado tem destino;
+  - fica "não conferido" só pela rodada. Com o GitHub, a rodada 44657609512 falhou (o esperado), então só uma rodada
+    verde depois do passo 2 libera.</p>
+<h2>Caminhos que o outro não listou</h2>
+<ul>
+<li><strong>O texto de liberação na linha, sem olhar o que a linha faz.</strong> A conferência procura o texto da guarda em qualquer
+  lugar da linha. Não vê se o comando vem depois de um <code>;</code>, de um <code>||</code>, de um <code>not</code>, nem se a guarda está dentro de
+  um texto (achado 1).</li>
+<li><strong>A variável <code>GITHUB_ACTIONS</code> é escrita por quem roda.</strong> O próprio script, ou quem o chama, pode ligá-la. Pela D-812,
+  é dado que o conferido pode trocar. Ela serve para o caso honesto, não como prova.</li>
+<li><strong>A profundidade numa variável:</strong> <code>git fetch $PROFUNDIDADE</code> não é lido. É o mesmo caso "comando montado numa
+  variável" da primeira volta, que foi para a Lista de espera.</li>
+<li><strong>O que o <code>trocar_codigo.sh</code> ainda faz se rodado à mão no PC:</strong> <code>git checkout FETCH_HEAD -- .</code> (linha 47) escreve
+  por cima dos arquivos que o agente mudou e não fez commit. Não é ".git inteiro", então fica fora da K25. É o mesmo
+  tipo de risco do <code>git clean</code> (achado 15 da primeira volta, Lista de espera).</li>
+<li><strong>A R157 no pacote da pesquisa.</strong> O pacote de um trabalho sobre a pasta <code>docs/pesquisa/</code> inteira tem a etiqueta do
+  Windows, porque há pesquisa do Windows lá dentro. Com <code>basta_uma</code>, a R157 vai para ele. Uma pesquisa de um arquivo
+  só (<code>docs/pesquisa/x.md</code>) não recebe a regra (achado 2).</li>
+</ul>
+<h2>Falhas não pensadas e resultado não conferido</h2>
+<ul>
+<li><strong>"Rodadas novas já usam os scripts consertados":</strong> é verdade para as próximas rodadas, mas nenhuma rodada provou
+  isso ainda. A 44657609512 é de antes. A minha simulação no PC diz que vai dar certo, mas simulação não é a rodada.</li>
+<li><strong>O ONDE-PAREI diz o que o teste já não cobra:</strong> a linha 242 diz "não no de pesquisa", e hoje a regra vai à pesquisa
+  (achado 2).</li>
+</ul>
+<h2>As regras que conferi</h2>
+<ul>
+<li><strong>D-809</strong> ("ok, mas essas coisas foram recuperadas? e porque ele fez essa confusão se era regra ele não mexer? e tinha
+  o porteiro para ele não fazer isso" · "ok"): <strong>cumprida.</strong></li>
+<li>Os scripts da rodada não cortam mais a história de uma cópia inteira.</li>
+<li>O <code>git clean</code> é acusado; o falso alarme saiu.</li>
+<li>Na simulação, só sobra o lugar do passo 2.</li>
+<li>O furo da liberação "só no GitHub" (achado 1) é um jeito novo de passar pela conferência, não uma falha da regra.
+    Os furos da primeira volta estão na Lista de espera.</li>
+<li><strong>D-810</strong> ("ok"): <strong>cumprida.</strong> A prova do Livro diz "O pacote dos agentes de Windows e de testes traz a lista": o
+  trabalho do Windows sem teste agora recebe a regra (teste novo, que falha no código antigo).</li>
+<li><strong>D-811</strong> ("ok"): <strong>cumprida, com um resto pequeno.</strong> Contar como teste só uma função <code>test_...</code> de verdade está
+  consertado. Continuam passando a mesma prova citada para várias proteções e as proteções em linhas sem "-" embaixo do
+  primeiro item (achado 3).</li>
+<li><strong>D-812</strong> ("ok"): <strong>pela metade, como na primeira volta</strong> (o trabalho só de testes). Pela gerente, foi para a Lista de
+  espera.</li>
+<li><strong>D-813</strong> ("ok"): <strong>cumprida.</strong></li>
+<li>O comentário do juiz agora diz o que foi provado.</li>
+<li>A K25 nova (o <code>git clean</code>) cita a documentação do <code>-n</code> e do <code>--dry-run</code>.</li>
+<li><strong>D-814</strong> ("ok"): <strong>cumprida.</strong> "Nenhuma" com pergunta embaixo não desliga mais a conferência; provei com o meu caso
+  da primeira volta.</li>
+<li><strong>D-791, D-792, D-798, D-803, D-804, D-808:</strong> <strong>cumpridas</strong>, como na primeira volta.</li>
+<li><strong>Regra 8 do §11 (o novo não estraga o que já funciona):</strong> as provas antigas dos arquivos tocados passam.</li>
+<li>Uma prova deste mesmo trabalho foi mudada sem aviso (achado 2). Não é prova antiga, já aceita em outro trabalho.</li>
+<li>Mesmo assim, a mudança precisa estar escrita.</li>
+<li><strong>Regra 12 do §11 (sem gambiarra):</strong></li>
+<li>o <code>basta_uma</code> é um campo geral do catálogo, escrito na lista de campos, e lido num lugar só (<code>escolher_regras</code>).
+    A busca no código não acha outra conta das etiquetas das regras. Não é desvio para um caso;</li>
+<li>a liberação "só no GitHub" é uma exceção escrita como texto, com o mesmo desenho do "conferiu o atalho"
+    (achado 9 da primeira volta).</li>
+</ul>
+<h2>Achados</h2>
+<ol>
+<li><strong>(médio, novo) A liberação "só no GitHub" se engana com a guarda em qualquer lugar da linha.</strong>
+   <code>regras_dos_agentes/porteiro.py:416</code> (<code>SO_NO_GITHUB</code>) e <code>regras_dos_agentes/porteiro.py:819</code>.</li>
+</ol>
+<p>Passam sem acusação, e todos rodam o comando no PC:
+   - <code>[ "$GITHUB_ACTIONS" = "true" ] &amp;&amp; true || git gc</code>;
+   - <code>[ ... ] &amp;&amp; echo oi; git fetch --depth=1 ...</code>;
+   - <code>GITHUB_ACTIONS=true; [ "$GITHUB_ACTIONS" = "true" ] &amp;&amp; git gc</code>, ou o <code>export</code> na linha de cima;
+   - <code>! [ ... ] &amp;&amp; git gc</code>;
+   - no Python, <code>if not os.environ.get("GITHUB_ACTIONS") == "true": subprocess.run(["git", "gc"])</code>;
+   - a guarda dentro de um texto na mesma linha, e o <code>or True</code>.</p>
+<p>Escrever sem querer seria difícil, a não ser o <code>if not</code>. Além disso, a variável é um dado que quem roda pode trocar
+   (D-812). Sugestão de destino: a Lista de espera, junto com o achado 9 da primeira volta (as duas exceções escritas
+   como texto). Aceitar a guarda só no começo da linha e só com <code>&amp;&amp;</code> direto fecha a maior parte.
+2. <strong>(pequeno) O teste deste trabalho foi mudado sem aviso, e o ONDE-PAREI ficou dizendo o contrário.</strong>
+   <code>tests/test_conferencias_pacote.py:209</code> e <code>:211</code>. A conferência "a R157 não vai à pesquisa" virou "não vai ao
+   trabalho de imagem".
+   - O motivo existe e é bom: o pacote da pasta <code>docs/pesquisa/</code> tem a etiqueta do Windows, e a D-810 manda a regra ao
+     trabalho do Windows.
+   - Mas ele não está no commit <code>32ff536a</code> nem no ONDE-PAREI.
+   - E <code>relatorios/regras-catalogo-2026-11-19/ONDE-PAREI.md:242</code> ainda diz "não no de pesquisa".
+   - Destino sugerido: escrever o motivo e corrigir a linha 242. Não precisa mexer no código.
+3. <strong>(pequeno) Do achado 6 da primeira volta, falta a parte da lista.</strong> <code>regras_dos_agentes/formulario.py:189</code>
+   (<code>_itens</code>) e <code>regras_dos_agentes/formulario.py:331</code> (<code>_conferir_protecoes</code>).
+   - Proteções escritas em linhas sem "-" embaixo do primeiro item viram continuação dele, e passam sem teste.
+   - A mesma prova citada para cinco proteções também passa.
+   - Pode ir para a Lista de espera com os outros. A parte principal (o que conta como teste) está consertada.
+4. <strong>(pequeno) O comentário novo do juiz não foi para o ramo dos testes.</strong> É o comentário de
+   <code>relatorios/passo0-2026-11-19/anexos/juiz-no-workflow/porteiro_juiz.sh:52</code>.
+   - O <code>.github/scripts/porteiro_juiz.sh</code> do <code>411e8476</code> ainda tem a frase antiga ("senão o <code>rm -rf</code> apagaria o
+     conteúdo da pasta de verdade").
+   - O comportamento é igual; só o comentário difere. A gerente copia quando puder.
+5. <strong>(pequeno) O destino do achado 12 da primeira volta difere do que a gerente disse.</strong>
+   <code>relatorios/regras-catalogo-2026-11-19/ONDE-PAREI.md:391</code> diz "vira pergunta ao Samuel se a gerente achar preciso".
+   A gerente disse "Lista de espera". Basta uma das duas, escrita igual nos dois lugares.</p>
+<h2>Para a gerente</h2>
+<ul>
+<li><strong>Pode juntar depois do passo 2, se a primeira rodada do GitHub depois do passo 2 passar.</strong></li>
+<li>A simulação no PC deixa só o <code>core/windows.py:1211</code>, que o passo 2 conserta.</li>
+<li>A rodada 44657609512 ainda rodou com os scripts antigos.</li>
+<li><strong>Nada grave.</strong></li>
+<li>Um médio novo: a liberação "só no GitHub" se engana com a guarda em qualquer lugar da linha. Sugiro a Lista de
+    espera.</li>
+<li>Quatro pequenos. Os dois de texto (achados 2 e 5) são rápidos.</li>
+<li><strong>O rótulo de pronto vem quando houver a rodada verde e os achados 2 e 5 estiverem acertados.</strong></li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 19/11/2026 às 22:41</p>
+</body>
+</html>
