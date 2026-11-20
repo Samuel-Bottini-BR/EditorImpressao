@@ -33,6 +33,10 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
   (`anexos/reversao-codigo-antigo.txt`). Rodada do GitHub em "Testes".
 - `git -C D:\programas\EditorImpressao rev-parse --is-shallow-repository` = false antes e depois. Nenhum atalho de
   pasta (junção) foi criado: nada foi montado de verdade (o vpk e o PyInstaller ficam para a prova à vista).
+- 19/11: a rodada 1 do GitHub (44642471223) achou um defeito de verdade: no Windows do GitHub o PowerShell aberto pela
+  peça herdava os módulos do PowerShell 7 e não lia a assinatura digital. Consertado na peça (`fa28ab5b`), com teste de
+  reversão que refaz o caso no PC (falhou antes do conserto, passa depois). Achado junto, sem consertar (não é deste
+  passo): o lançar solto dá "saiu sem começar" para um script rápido (Lista de bugs, em "Ideias e bugs").
 - **Próximo:** a gerente manda a quem tenta quebrar; depois a prova à vista (o roteiro está em "A prova de verdade").
 
 ## Decisões que esta tarefa precisa cumprir
@@ -195,6 +199,7 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
 | Arquivo preso (o antivírus lendo) ao apagar o rascunho | tenta de novo por alguns segundos; se ficar, diz o caminho e o tamanho do que ficou (nunca "apagado" sem conferir) |
 | Arquivo preso por outro programa ao enviar | o envio falha → mesmo caminho da falha de internet |
 | Desligar no meio (o PC ou a energia) | o rascunho fica no C: e o rascunho do destino fica sem liberar (nunca liberado pela metade); na próxima vez o comando acha o rascunho velho do destino e para dizendo como apagar; o rascunho velho do C: é apagado no começo da próxima vez (só as pastas com o nome do publicar) |
+| O publicar roda dentro de um PowerShell 7 (terminal pwsh) | a peça abre o PowerShell do Windows sem a lista de módulos herdada: a assinatura do Visual C++ é lida igual (antes falhava com CouldNotAutoloadMatchingModule) |
 | Ctrl+C no meio | o mesmo caminho do erro: o vpk é fechado, o rascunho é apagado e o do destino também; a frase diz "interrompido" (sem a tela de erro do Python) |
 | Dois publicar ao mesmo tempo | cada um tem o seu rascunho; o rascunho de outra vez só é apagado se tiver mais de 12 horas (antes, pode ser do outro rodando); a mesma versão no mesmo destino é recusada pelo segundo (já existe um rascunho) |
 | O instalador pedido e a publicação falha depois | o .msi só vai para a pasta de saída depois de a versão estar publicada: um .msi de versão que não saiu nunca fica lá |
@@ -253,6 +258,12 @@ o "reusar o endereço" (`Lib/http/server.py:135`, `allow_reuse_address = True`),
 servidor abrir a mesma porta sem erro; o servidor das versões desliga isso e pede a porta exclusiva (SO_EXCLUSIVEADDRUSE,
 https://learn.microsoft.com/windows/win32/winsock/using-so-reuseaddr-and-so-exclusiveaddruse).
 
+Microsoft Learn, https://learn.microsoft.com/powershell/module/microsoft.powershell.core/about/about_psmodulepath?view=powershell-5.1
+(lido em 19/11, depois da rodada 1 do GitHub): o PowerShell do Windows monta a lista de módulos ao abrir; sem a
+variável PSModulePath, usa a de fábrica; e a nota "Inherited PowerShell 7 module paths precede the Windows PowerShell
+system module path [...] This breaks module autoloading". Refeito no PC com um módulo que não carrega na frente da
+lista: o mesmo CouldNotAutoloadMatchingModule do GitHub.
+
 **Deduzido, não lido:** que o vpk não deixa programa rodando depois de ser fechado à força pela vigia (o .msi roda o
 WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
 
@@ -279,7 +290,11 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
    o .msi vai à publicação e à pasta de saída; `--apagar` apaga uma publicação e confere; no fim, sempre, a conferência
    do rascunho, da pasta de saída, do destino e do Setup.exe. A ficha da versão na pasta montada recusa a pasta pronta
    de outra versão.
-7. **O servidor das versões de prova** (`servidor_das_versoes.py`, novo): a janela, o índice de todas as versões
+7. **Conserto na peça do Windows (bug que impedia a tarefa):** o PowerShell aberto pela peça herdava a lista de
+   módulos do PowerShell 7 (no Windows do GitHub, ou num terminal pwsh) e não carregava os dele; a assinatura digital
+   nunca era lida lá. Agora a peça o abre sem essa lista (`_ambiente_do_powershell`, lugar único, ao lado do comando
+   do PowerShell), no rodar e esperar e no lançar solto.
+8. **O servidor das versões de prova** (`servidor_das_versoes.py`, novo): a janela, o índice de todas as versões
    liberadas, os arquivos pelo nome, o rascunho escondido, fechar corta o envio, `--limite` deixa lento, a porta
    exclusiva.
 
@@ -292,7 +307,7 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
 - `core/ocr_kraken.py`
 - `versao.py`
 - `servidor_das_versoes.py` (novo)
-- `tests/test_windows_peca.py` (2 testes novos; nenhum antigo mudou)
+- `tests/test_windows_peca.py` (3 testes novos; nenhum antigo mudou)
 - `tests/test_publicar_versao.py` (novo)
 - `tests/test_publicar_motor.py` (novo)
 - `tests/test_publicar_servidor.py` (novo)
@@ -302,7 +317,9 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
 
 ## Como cumpri cada uma
 
-- D-767: nada rodou de verdade no Windows além de ler (a assinatura digital, o espaço do disco); o vpk e o GitHub dos
+- D-767: o defeito da lista de módulos só apareceu rodando de verdade (no GitHub) e foi refeito de verdade no PC antes
+  de consertar (`tests/test_windows_peca.py::test_o_powershell_nao_herda_os_modulos_do_powershell_7`).
+  Nada rodou de verdade no Windows além de ler (a assinatura digital, o espaço do disco); o vpk e o GitHub dos
   testes são de mentira e os testes dizem isso no cabeçalho; o de verdade fica para a prova à vista ("A prova de
   verdade").
 - D-768: o pacote da atualização sai sem o motor e é conferido sem ele
@@ -352,7 +369,13 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
 - **Prova de reversão** numa cópia à parte (git archive no rascunho da sessão, fora do projeto): 16 de 16 proteções
   acusadas pelo seu teste (`anexos/reversao-resultado.txt`, script em `anexos/reversao-mutacoes.py.txt`); os testes
   novos rodados no código antigo falham (`anexos/reversao-codigo-antigo.txt`).
-- **No GitHub, rodada 1:** 44642471223, sobre o commit 2e88d125 (antes dos últimos ajustes). Resultado: ver abaixo.
+- **No GitHub, rodada 1:** 44642471223, sobre o commit 2e88d125: **failure**. O porteiro passou (PORTEIRO: success,
+  o trabalho "Porteiro (juiz da versao de teste)"); as partes 1 a 4 e os botões passaram; na parte 5 falhou
+  `tests/test_windows_peca.py::test_a_assinatura_digital_e_lida_pela_peca_de_verdade` (CouldNotAutoloadMatchingModule:
+  o defeito da lista de módulos herdada do PowerShell 7, consertado em `fa28ab5b`). As rodadas 44644159110 e
+  44644488805 foram canceladas por mim (testavam commits já passados).
+- **No PC, depois do conserto:** `tests/test_windows_peca.py` 54 passaram e 2 pulados; o teste novo da lista de
+  módulos falhou antes do conserto (CouldNotAutoloadMatchingModule) e passa depois.
 - **No GitHub, rodada final:** (preenchida no fim).
 
 ## Caminho e função
@@ -371,6 +394,9 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
 - A forma do motor no empacotador e no programa → `ocr_kraken.problemas_da_forma` (prova:
   `tests/test_publicar_motor.py::test_o_empacotador_usa_a_forma_do_motor_do_lugar_unico`).
 - O que o vpk escreve e o que vai ao destino → `publicar_versao_kaique.arquivos_da_versao` (prova: o teste da D-768).
+- Todo PowerShell que a peça abre (o rodar e esperar, o lançar solto, os scripts do trabalho com licença) → o mesmo
+  comando e o mesmo ambiente (`_comando_do_powershell`, `_ambiente_do_powershell`; prova:
+  `tests/test_windows_peca.py::test_o_powershell_nao_herda_os_modulos_do_powershell_7`, pelo rodar e pelo lançar solto).
 - A assinatura digital do Visual C++ → `windows.ler_assinatura_digital` (prova:
   `tests/test_windows_peca.py::test_o_empacotar_le_a_assinatura_pela_peca_e_nao_abre_o_powershell`).
 - O servidor e o publicar na pasta → o mesmo desenho (`DestinoPasta` grava; o servidor lê pelas mesmas regras; prova:
@@ -422,6 +448,10 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
 - **Se a leitura depois de liberar falhar** (a internet cai no segundo seguinte ao "liberar"), o publicar apaga a
   versão que acabou de liberar (nunca fica pela metade). Uma versão liberada por segundos e apagada pode, em tese, ter
   sido vista por um programa que procurou naquele instante; ele não instala sem a assinatura, que também some.
+- **O conserto da lista de módulos mexe na peça do passo 1** (todo PowerShell que ela abre passa a nascer sem a lista
+  herdada). Os testes do passo 1 continuam passando (`tests/test_windows_peca.py`, `tests/test_windows_janela_de_prova.py`).
+  O que a peça faz com licença de administrador (a pergunta do Windows, as tarefas) não foi rodado de novo: a próxima
+  prova à vista que usar a peça confere.
 - O aviso K14 do formulário ("mexeu em arquivo fora da lista": a lista de exceções) é o item tirado da lista, que o
   pedido mandou.
 
@@ -439,6 +469,10 @@ passos"). O tempo de publicar é medido na prova à vista.
   (hoje o .msi sai junto com uma versão nova).
 - Ideia (Lista de espera): a versão do protocolo do motor num lugar só (hoje está em `core/ocr_kraken.py`, em
   `montar_motor_kraken.py` e no servidor do motor).
+- Bug (Lista de bugs, 19/11/2026, não impede este passo): `windows.lancar_powershell_solto` dá "o processo lançado saiu
+  sem começar" para um script que termina rápido: o fim do script apaga a pasta de troca com o sinal de vida antes de a
+  peça olhar (ela olha a cada 0,1 s). Visto ao escrever o teste da lista de módulos (com uma espera de 2 s no script o
+  sinal é visto). Pode afetar o passo 3 se ele lançar solto algo curto.
 - Bug (Lista de bugs, 19/11/2026, não impede): o http.server do Python, de fábrica, deixa dois servidores abrirem a mesma
   porta no Windows; outros lugares do projeto que usem o http.server podem ter o mesmo defeito (não procurei fora deste
   passo).
@@ -451,7 +485,7 @@ de ferramentas dele, em "Ressalvas"): a gerente pergunta, se achar preciso.
 
 ## Commit
 
-ed04a79f (o último commit de código; depois dele só este formulário muda).
+fa28ab5b (o último commit de código; depois dele só este formulário muda).
 
 ## O que o agente que tentou quebrar achou
 

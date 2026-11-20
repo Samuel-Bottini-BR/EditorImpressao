@@ -13,3 +13,10 @@ Observação: nos do publicar, a falha no antigo vem de o desenho novo não exis
 caminho que acusa o defeito antigo. O comportamento antigo que eles cobram (o Setup.exe subindo, a liberação antes da
 assinatura) foi lido no código do vpk (`_GitRelease.cs`: o upload sobe todos os arquivos de assets.win.json e, com
 --publish, libera logo depois). A prova de cada proteção nova está em reversao-resultado.txt (16 de 16 acusadas).
+
+O teste da lista de módulos do PowerShell 7 (tests/test_windows_peca.py::test_o_powershell_nao_herda_os_modulos_do_powershell_7),
+no código de antes do conserto (6c9807cf), no PC, 19/11/2026:
+  FAILED: Resposta(desfecho='falhou', motivo='o Windows não conseguiu ler a assinatura digital do arquivo', ...
+          FullyQualifiedErrorId : CouldNotAutoloadMatchingModule)
+  1 failed
+Depois do conserto (fa28ab5b): passa. No GitHub, o mesmo defeito na rodada 44642471223 (test_a_assinatura_digital_e_lida_pela_peca_de_verdade).
