@@ -1015,7 +1015,8 @@ def test_a_assinatura_digital_e_lida_pela_peca_de_verdade(tmp_path):
     que roda de verdade, sem pergunta do Windows: um programa assinado pela Microsoft (o próprio PowerShell do Windows)
     dá "Valid" com o assinante da Microsoft; um script sem assinatura dá "NotSigned"; um arquivo que não existe dá
     FALHOU (nunca um "não assinado" inventado), com a frase em português."""
-    assinado = windows.ler_assinatura_digital(windows._caminho_do_powershell())
+    powershell_do_windows = windows.pasta_do_sistema() / "WindowsPowerShell" / "v1.0" / "powershell.exe"
+    assinado = windows.ler_assinatura_digital(powershell_do_windows)
     assert assinado.deu_certo, assinado
     assert assinado.dados["status"] in ("Valid", "NotTrusted", "UnknownError"), assinado.dados
     assert "Microsoft" in assinado.dados["assinante"] or assinado.dados["status"] != "Valid", assinado.dados
