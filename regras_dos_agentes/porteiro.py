@@ -343,6 +343,17 @@ COMANDOS_DE_TERMINAL = (".sh", ".bash", ".ps1", ".psm1", ".bat", ".cmd")
 # texto escrito (um nome do código), lido por `leitura_do_codigo.comandos`.
 _GIT = (r"(?i:(?<![\w.-])git(?:\.exe)?)(?:\s+(?:-C|-c|--git-dir|--work-tree|--namespace|--exec-path|--config-env)"
         r"(?:=|\s+)\S+|\s+--?[A-Za-z][\w-]*)*\s+")
+# O `git config` que grava (https://git-scm.com/docs/git-config, lido em 19/11): os subcomandos set, unset,
+# rename-section, remove-section e edit; as opções antigas --add, --unset, --unset-all, --rename-section,
+# --remove-section, -e e --edit; e o jeito antigo "git config <nome> <valor>" (nome e valor). Só lê, e não conta: get,
+# list, --get, --get-all, --get-regexp, --get-urlmatch, --get-color, --get-colorbool, -l, --list, e "git config <nome>"
+# sem valor. Sem --worktree, o que se grava vai para o .git/config que todas as cópias dividem.
+_GIT_CONFIG_QUE_GRAVA = (
+    r"(?![^;&|\n]*\s(?:--get(?:-all|-regexp|-urlmatch|-color|-colorbool)?|-l|--list)(?:[\s=]|$))"
+    r"(?:\s+(?:set|unset|rename-section|remove-section|edit)\b"
+    r"|[^;&|\n]*\s(?:--add|--unset(?:-all)?|--rename-section|--remove-section|-e|--edit)(?:\s|$)"
+    r"|(?:\s+(?:--file|-f|--blob|--type|--default|--comment)(?:=|\s+)\S+|\s+--?[A-Za-z][\w-]*(?:=\S+)?)*"
+    r"\s+(?!(?:get|list)\b)[^\s;&|-]\S*\s+[^\s;&|])")
 # Os subcomandos que mudam a pasta .git inteira (D-809: "fetch --depth, gc, prune, stash, config"). Cada linha é
 # (expressão, o que é, uma linha de código que a K25 tem de acusar): um teste cobra que cada exemplo é acusado.
 # Fontes: https://git-scm.com/docs/git-fetch (--depth, --deepen, --shallow-since, --shallow-exclude, --prune),
@@ -361,7 +372,7 @@ PALAVRAS_DO_GIT: list[tuple[str, str, str]] = [
      'subprocess.run(["git", "worktree", "prune"])'),
     (_GIT + r"stash\b(?!\s+(?:list|show)\b)", "guarda e tira mudanças de todas as cópias (git stash)",
      'os.system("git stash")'),
-    (_GIT + r"config\b(?![^;&|\n]*\s(?:--get(?:-all|-regexp|-urlmatch)?|-l|--list|get|list)(?:\s|$))",
+    (_GIT + r"config\b" + _GIT_CONFIG_QUE_GRAVA,
      "muda a configuração do git do repositório ou do computador (git config)",
      'subprocess.run(["git", "config", "core.hooksPath", "ganchos"])'),
 ]

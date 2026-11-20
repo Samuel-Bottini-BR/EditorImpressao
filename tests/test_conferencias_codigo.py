@@ -744,6 +744,21 @@ def test_k25_nao_acusa_o_git_que_so_le_nem_o_texto_solto():
     assert codigos(conferir({"relatorios/x/script.py": CERTO_K25_GIT}), "K25") == []
 
 
+@pytest.mark.parametrize("argumentos, grava", [
+    ('"config", "core.hooksPath", "ganchos"', True), ('"config", "--global", "user.name", "x"', True),
+    ('"config", "set", "core.x", "y"', True), ('"config", "--global", "--unset", "x"', True),
+    ('"config", "--add", "x", "y"', True), ('"config", "-e"', True), ('"config", chave, valor', True),
+    ('"config", "user.name"', False), ('"config", "get", "user.name"', False), ('"config", "--get", "x"', False),
+    ('"config", "--get-regexp", "a", "b"', False), ('"config", "--list"', False), ('"config", "-l"', False),
+    ('"config", "list", "--show-origin"', False), ('"config", chave', False), ('"-c", "core.x=y", "status"', False),
+])
+def test_k25_git_config_so_acusa_o_que_grava(argumentos, grava):
+    """D-813 na K25 (todos os jeitos que a peça de fora aceita, https://git-scm.com/docs/git-config): o `git config`
+    que grava é acusado (set, unset, --add, -e, nome e valor); o que só lê não é (get, list, --get, nome sem valor)."""
+    texto = f'"""X."""\nimport subprocess\n\n\ndef f(chave, valor):\n    """F."""\n    subprocess.run(["git", {argumentos}])\n'
+    assert bool(codigos(conferir({"relatorios/x/a.py": texto}), "K25")) is grava
+
+
 def test_k25_vale_nos_testes_e_nao_vale_nas_duas_pecas_do_git():
     """K25 (D-809): "não roda na cópia, nem em script ou teste", "fora das peças de git que já existem
     (`conversa_com_o_git.py`, `repositorio_de_prova.py`)". As duas peças vêm escritas aqui, como na decisão (não lidas
