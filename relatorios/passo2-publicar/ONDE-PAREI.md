@@ -6,7 +6,7 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
 ## Pedido
 
 - Papel: implementador
-- Commit de partida: 5f96975b
+- Commit de partida: b9300da8
 - Ramo: passo2-publicar-2026-11-19
 
 ## Arquivos que vou mexer
@@ -19,8 +19,9 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
 - `tests/test_publicar_*.py`
 - `relatorios/passo2-publicar/`
 
-(Volta 4, 20/11/2026: as duas seções acima são as do pacote da volta 4, `anexos/pacote-volta4.md`, copiadas sem mudar.
-As da primeira entrega, de `03c91599`, estão no `git log` deste arquivo.)
+(Volta 6, 20/11/2026: as duas seções acima são as do pacote da volta 6, `anexos/pacote-volta6.md`, copiadas sem mudar;
+as da volta 4 (`anexos/pacote-volta4.md`, partida `5f96975b`) e as da primeira entrega, de `03c91599`, estão no
+`git log` deste arquivo.)
 
 ## Onde parei
 
@@ -67,6 +68,14 @@ As da primeira entrega, de `03c91599`, estão no `git log` deste arquivo.)
   `quem-quebrou/anexos-4/` (Q1 a Q4, E5). Pedido da gerente: consertar 1 a 6 (o 4 e o 5 pelas escolhas técnicas dela),
   e só anotar as observações 7 a 9. Partida do código: `595cc293` (a ponta do ramo é `277fe8fd`; depois de `595cc293`
   só mudaram documentos). Andamento em "Volta 5" de cada seção.
+
+- 20/11, **volta 6 (escritor novo, D-815)**: o defeito achado na prova à vista de 20/11 (14h33 a 14h39 no relógio do
+  Samuel): o publicar montado do zero para em "a pasta do programa não serve: ... não tem o Visual C++ em instalar\",
+  e os 3 achados baixos do relatório 5 de quem tentou quebrar (o Samuel: "pode concertar"). Partida `b9300da8`. Leitura
+  feita (implementador, CLAUDE.md, memória: índice, atualizador, catálogo; o pacote da volta 6; o Livro D-727, D-767,
+  D-773, D-776, D-777, D-785, D-788, D-789, D-795, D-815 a D-817; o relatório 5; o registro da prova, só lido). O plano
+  (D-709) está em "A causa, a regra e todos os caminhos", "Volta 6", escrito antes de mexer. Andamento em "Volta 6" de
+  cada seção.
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -156,6 +165,32 @@ As da primeira entrega, de `03c91599`, estão no `git log` deste arquivo.)
 - D-813 "ok". Aqui: o que o Windows faz com o ":" de um fluxo, lido na Microsoft e rodado de verdade.
 - D-798 "fechou". Aqui: sem rótulo de pronto.
 
+**Volta 6 (20/11/2026), as decisões do pacote da volta 6 (palavras copiadas do Livro, `obra-juncao`):**
+- D-727 "pode, se tiver qualquer coisa que o kaique precise, ele tem que estar no instalador né". Aqui: o Visual C++
+  continua dentro (em instalar\ da pasta, na atualização e no instalador); a conferência da pasta pronta continua
+  cobrando o Visual C++ de uma pasta que vem de fora. O conserto só faz a pasta montada do zero chegar a essa
+  conferência com o Visual C++ já posto.
+- D-767 "não faça mais nada escodindo ou de mentira" · "não quero fazer consertos quero que funcione" · "quero que faça
+  as coisas certas e sem bugs ou erros, deveria ter pensado nesses erros na hora de montar a estrutura do atualizador e
+  testes a distancias". Aqui: o teste de reversão passa a pasta pelo `construir_pasta` de verdade (só o PyInstaller é
+  trocado por quem escreve o que ele escreve, lido do próprio comando), e não por uma pasta de mentira já pronta. O
+  PyInstaller e o vpk de verdade só na prova à vista da gerente.
+- D-773 "A". Aqui: na pasta das provas, a frase do motor que falta dá o comando com o `--pasta` (achado 2).
+- D-776 "Sim, no C só tem que cuidar para não encher o disco C inteiro". Aqui: nada muda na conta do espaço; o Visual C++
+  (uns 25 MB) entra na pasta antes da conta, como já entrava na pasta pronta.
+- D-777 "mas dai vai fazer quais versões?" · "ok, fica assim". Aqui: nada muda (a atualização sem .msi; o .msi só com
+  `--com-instalador`).
+- D-785 "ok, mais ainda existem mais casos na opção A" · "ok". Aqui: publicar é "sempre à vista" (item 8): não rodei o
+  publicar de verdade, nem o PyInstaller, nem o vpk; só li a pasta que a gerente montou na prova.
+- D-788 "1" (a primeira opção). Aqui: nada muda no motor (o arquivo do motor em instalar\ só no instalador).
+- D-789 "mas iria demorar mais toda vez que eu fosse fazer a compilação né?" · "A". Aqui: nada muda (sem diferença).
+- D-795 "porque fazer isso?" · "porque ter um instalador pequeno então?" · "não tem nenhuma documentação dizendo para o
+  que isso serve?" · "ok". Aqui: nada muda no Setup.exe.
+- D-815 "ok". Aqui: sou um escritor novo; comecei por este formulário.
+- D-816 "A , mas onde estamos antes de você fazer qualquer processo". Aqui: o achado 1 (o apagar em que o gh nem abre)
+  só ganha teste; nada muda no que é apagado.
+- D-817 "pode". Aqui: nenhum teste antigo muda nesta volta.
+
 ## O que já está escolhido e testado aqui
 
 - `tests/test_empacotar.py`: o motor do jeito novo passa e o velho, com atalhos ou de outro protocolo, é recusado
@@ -226,6 +261,35 @@ pediu), `test_volta4_achado4_*`, `test_volta4_o_nome_com_ponto_no_fim_e_lido_com
 `x.bat::$DATA` continuar com a frase do lote; e o "não abriu" do achado 4 só vale para o gh que nem começou, para os
 testes da D-816 (o liberar que responde erro, o Ctrl+C) continuarem como estão.
 
+**Volta 6 (antes de mexer).** O que esta volta toca e já está escolhido e testado:
+- O Visual C++ em instalar\ (D-727): `tests/test_decisoes_atualizacao.py` (perto da linha 540) chama
+  `empacotar.preparar_pasta_para_o_velopack(pasta, pecas)` e cobra o arquivo e a versão em instalar\;
+  `empacotar.esperados_no_pacote_do_velopack(pecas)` tem o Visual C++; `empacotar.conferir_pacote_do_velopack` acusa
+  `instalar/vc_redist.x64.exe` quando falta. O nome `preparar_pasta_para_o_velopack` não pode mudar (o teste o chama).
+- A conferência da pasta pronta (`empacotar.conferir_pasta_pronta`): `tests/test_publicar_versao.py::test_a_pasta_pronta_de_outra_versao_e_recusada`
+  ("é da versão 1.0.0", antes do vpk). Continua cobrando o .exe, a ficha da mesma versão e não portátil, o Visual C++
+  em instalar\ e nada de motor solto.
+- `empacotar.preparar_saida`: `tests/test_publicar_motor.py` (linhas 142 e 147) a chama com quatro argumentos
+  posicionais (`pasta, ATUALIZACAO, None, motor`): a ordem e o terceiro argumento (`pecas`) não podem mudar.
+- A pasta portátil e o Inno (`empacotar.construir_pasta()` de fábrica, `construir_instalador`): o Visual C++ vai para
+  `build\` e o Inno o pega de lá (`tests/test_empacotar.py::test_registro_do_inno_tem_de_listar_cada_peca`,
+  `test_o_script_do_inno_recusa_pasta_sem_as_pecas`); `construir_pasta()` para antes do PyInstaller sem modelo, DLL
+  ou peça (`test_modelo_faltando_para_antes_do_pyinstaller`, `test_pecas_faltando_param_antes_do_pyinstaller`,
+  `test_dll_da_gravura_faltando_para_antes_do_pyinstaller`). Nada disso muda: a pasta portátil continua sem instalar\.
+- As três saídas (`empacotar.SAIDAS`, "o lugar único do que muda entre o que este script monta"): os testes da D-768 e
+  da D-777 em `tests/test_publicar_versao.py` (a atualização sem o motor; o instalador com o arquivo do motor em
+  instalar\ e o .msi; a pasta volta sem o arquivo do motor).
+- A frase do motor que falta: `tests/test_publicar_versao.py::test_d790_sem_o_motor_publicado_nada_e_montado` cobra
+  "publique o motor antes" (o começo da frase continua).
+- A recusa do caminho de rede e do que não vira letra de disco: `tests/test_windows_peca.py::test_a_recusa_vale_para_o_caminho_escrito_de_outro_jeito`
+  (N2) e o teste do "raiz global" (perto da linha 930) cobram que a recusa tem as palavras "função própria". A frase
+  nova do achado 3 diz o motivo de verdade, que inclui essas palavras (ver "Ressalvas", Volta 6): nenhum desses testes
+  muda.
+- O apagar de antes do pedido de liberar (`apagar_publicacao`, `_pedir_para_apagar`, `NadaSaiu`, `ApagarSemResposta`):
+  os testes `test_volta5_achado2_*`, `test_volta5_achado3a_*` e `test_volta5_achado4_*`. Nada muda no código; só um teste
+  novo.
+- Livro: D-727, D-767, D-773, D-776, D-777, D-785, D-788, D-789, D-795, D-816, D-817.
+
 ## Como fica para quem usa e no livro
 
 - **O Kaique: nada muda** na tela nem no livro (nenhum arquivo de `ui/` nem do processamento das páginas). O PDF que
@@ -279,6 +343,21 @@ quando dá errado: (1) na pasta das provas, a frase de "já existe" ou "sobrou u
 na hora, e a frase diz que foi apagado (antes ficava, com a frase "pedi para liberar"); (3) a frase do apagar não diz
 "pedi" quando só uma leitura ficou sem resposta. A peça do Windows recusa o programa escrito como fluxo escondido
 (ninguém usa isso). Problema novo: nenhum que eu saiba.
+
+**Volta 6:** o Kaique: nada muda (nem a tela, nem o PDF, nem o que ele baixa: a atualização e o instalador continuam
+levando o Visual C++ em instalar\, D-727). O Samuel, publicando:
+- **Antes:** `publicar_versao_kaique.py --pasta <pasta>` (sem `--pasta-pronta`) montava a pasta (uns 4 minutos de
+  PyInstaller) e parava sempre em "a pasta do programa não serve: ... não tem o Visual C++ em instalar\". Nenhuma
+  versão montada do zero saía.
+- **Depois:** a mesma linha monta a pasta, põe o Visual C++ conferido em instalar\ na própria montagem, passa pela mesma
+  conferência e segue para o vpk. Com `--pasta-pronta`, nada muda: a pasta que vem de fora sem o Visual C++ continua
+  recusada (a pasta que a prova montou hoje, com o código antigo, é recusada assim; é preciso montar de novo).
+- Na pasta das provas, se o motor não estiver publicado, a frase manda rodar o `--motor` com o `--pasta` (antes, sem o
+  `--pasta`: seguida ao pé da letra, publicava o motor no GitHub).
+- O caminho de rede pedido à peça do Windows tem frase própria (só o texto muda; ninguém usa caminho de rede).
+- A pasta portátil (`empacotar.py --modo pasta`) e o instalador do Inno: nada muda (continuam sem instalar\).
+Problema novo: nenhum que eu saiba. O que só a prova à vista mostra: o PyInstaller e o vpk de verdade depois deste
+ponto (nunca rodaram por este caminho; ver "Ressalvas").
 
 ## A causa, a regra e todos os caminhos
 
@@ -448,6 +527,84 @@ com `grep` por `apagar_publicacao`, `pediu_para_liberar`, `_programa_com_funcao_
   passam. Regra: o texto nomeia quem passa (`_gravar_por_inteiro`, `empacotar.copiar_inteiro`,
   `empacotar.zipar_motor`) e diz quem não passa (a ficha do motor, o PDF de saída, os projetos), sem mexer neles.
 
+**Volta 6 (o defeito da prova à vista e os 3 baixos do relatório 5). O plano, escrito antes de mexer (D-709):**
+
+*O defeito da prova.* Conferido no código de `b9300da8` e no registro da prova (`C:\EditorImpressaoProva\publicar-versao.log`,
+só lido) e na pasta que a prova deixou (`dist\EditorImpressao`, só lida: tem o .exe, `_internal`, `tesseract`, a ficha
+"versao 1.1.0, saida atualização", e **não tem** `instalar\`; `empacotar.conferir_pasta_pronta` sobre ela devolve só
+"não tem o Visual C++ em instalar\"; `anexos/volta6-a-pasta-da-prova.txt`). A leitura da gerente está certa:
+- **Onde aparece:** `publicar_versao_kaique.publicar` chama `empacotar.conferir_pasta_pronta(pasta, versao)` logo
+  depois de `empacotar.construir_pasta(ATUALIZACAO)`, e a conferência cobra `instalar\vc_redist.x64.exe`.
+- **A causa (não só onde aparece):** a regra "a pasta pronta para o vpk tem o Visual C++ em instalar\" (D-727) era
+  cumprida em dois momentos diferentes conforme o caminho. A pasta que vem de fora (`--pasta-pronta`) tinha de chegar
+  com ele; a pasta montada do zero só o recebia depois, em `empacotar.preparar_saida` (quando há `pecas`), dentro de
+  `construir_pacote_do_velopack`, que roda DEPOIS da conferência. Ou seja: a montagem (`construir_pasta`) não deixava a
+  pasta no estado que a própria conferência do empacotar cobra, e o "pôr o Visual C++" morava na preparação de cada
+  saída, embora seja igual nas duas saídas do Velopack. Os testes não pegaram porque todos passam pela pasta de mentira
+  `_pasta_pronta` (já com o Visual C++); nenhum teste do publicar passava pelo `construir_pasta` (família F3 e F1 do
+  catálogo: a conferência acreditou num estado que o teste preparou).
+- **A regra, num lugar só:** (1) o QUE cada saída leva continua em `empacotar.SAIDAS`; ganha o campo `vc_em_instalar`
+  (a atualização e o instalador: sim; a pasta portátil: não, porque o Inno pega o Visual C++ de `build\`), como manda o
+  comentário de `SAIDAS` ("Não escreva 'se for o instalador...' em outro lugar: acrescente um campo aqui"); (2) QUEM
+  põe o Visual C++ é a montagem, `construir_pasta(saida)`, pela função de sempre (`preparar_pasta_para_o_velopack`),
+  antes de gravar a ficha da versão (a ficha é o sinal de "montada inteira": se a cópia falhar, a pasta fica sem ficha
+  e o `--pasta-pronta` a recusa); `preparar_saida` deixa de pô-lo (só faz o que muda entre as saídas: o
+  motor-exigido.json e o arquivo do motor em instalar\); (3) QUEM DECIDE "a pasta está pronta para o vpk" é uma função
+  só, `conferir_pasta_pronta`, sem mudar o que ela cobra; ela passa a ler o campo `vc_em_instalar` (para as duas saídas
+  do Velopack, o mesmo de hoje) e é chamada também por `construir_pacote_do_velopack` logo antes de rodar o vpk, para
+  todo caminho que chega ao vpk passar pela mesma conferência (hoje só o publicar a chamava; quem chamasse o empacotar
+  direto chegava ao vpk sem ela). O publicar continua chamando-a cedo (antes da conta do espaço), com a frase de hoje.
+  `esperados_no_pacote_do_velopack` também lê o campo (para as duas saídas, o mesmo de hoje).
+- **Todos os caminhos que chegam na decisão** (grep `conferir_pasta_pronta`, `preparar_saida`,
+  `preparar_pasta_para_o_velopack`, `construir_pasta`, `construir_pacote_do_velopack`, `VC_REDIST_NOME`,
+  `PASTA_DO_QUE_SE_INSTALA`, `_PECAS`, em todo o projeto fora de `.venv`, `build` e `dist`):
+  | Caminho | Hoje (`b9300da8`) | Depois |
+  |---|---|---|
+  | `publicar` montado do zero (sem `--pasta-pronta`) | `construir_pasta(ATUALIZACAO)` sem o Visual C++ → `conferir_pasta_pronta` recusa sempre | `construir_pasta(ATUALIZACAO)` põe o Visual C++ → a mesma `conferir_pasta_pronta` → `construir_pacote_do_velopack` (a mesma conferência de novo, antes do vpk) |
+  | `publicar --pasta-pronta` | `conferir_pasta_pronta` (a pasta tem de trazer) | igual |
+  | `publicar --com-instalador`, a segunda passada (o motor em instalar\) | `construir_pacote_do_velopack(INSTALADOR)` → `preparar_saida` (com `pecas` montado do zero: copia o Visual C++ de novo) → vpk, sem conferência | `preparar_saida` (só o motor) → `conferir_pasta_pronta(INSTALADOR)` → vpk |
+  | a volta da pasta para a atualização depois do instalador (o `finally`) | `preparar_saida(pasta, ATUALIZACAO, None, motor)` (tira o arquivo do motor; não mexe no Visual C++) | igual |
+  | `construir_pacote_do_velopack` chamado sozinho, sem pasta | `construir_pasta(ATUALIZACAO)` → `preparar_saida` com `_PECAS` põe o Visual C++ → vpk, sem conferência | `construir_pasta(ATUALIZACAO)` já põe → `conferir_pasta_pronta` → vpk (nenhum código chama assim hoje; grep) |
+  | `construir_pacote_do_velopack` sozinho, com uma pasta de fora | `preparar_saida` sem `pecas` → vpk, sem conferência (o pacote sem o Visual C++ só era recusado DEPOIS do vpk) | `conferir_pasta_pronta` antes do vpk (nenhum código chama assim hoje) |
+  | a pasta portátil (`empacotar.py --modo pasta`, `tudo`) e o Inno (`--modo instalador`, `entrega`) | `construir_pasta()` (PORTATIL), sem instalar\; o Inno pega o Visual C++ de `build\` | igual (`vc_em_instalar=False`) |
+  | `empacotar.main` | só os modos do Inno e da pasta portátil; não chega ao vpk | igual |
+  | a conferência do pacote depois do vpk (`conferir_pacote_do_velopack` → `esperados_no_pacote_do_velopack`) | cobra o Visual C++ sempre | cobra pelo campo (o mesmo para as duas saídas do Velopack) |
+  | o programa instalado (`atualizacao.py`, que lê `instalar\`) | lê `<programa>\instalar\vc_redist.x64.exe` | não muda (o nome e o lugar são os mesmos) |
+  Conta própria achada: só uma, a do `preparar_saida` (pôr o Visual C++ quando há `pecas`); ela sai. Nenhum outro lugar
+  põe ou confere o Visual C++ do Velopack.
+- **O que não muda (D-605):** o que `conferir_pasta_pronta` cobra de uma pasta que vem de fora; o nome e o lugar do
+  arquivo (`atualizacao.PASTA_DO_QUE_SE_INSTALA`, `atualizacao.VC_REDIST_NOME`); a assinatura de `preparar_saida` e de
+  `preparar_pasta_para_o_velopack` (testes antigos as chamam); a pasta portátil e o Inno.
+- **A prova:** um teste em `tests/test_publicar_versao.py` que passa a pasta pelo `construir_pasta` de verdade (com
+  `empacotar.RAIZ` numa pasta do teste; só o PyInstaller é trocado por quem escreve o que ele escreveria, lido do
+  próprio `comando_do_pyinstaller`: o .exe e cada `--add-data` em `_internal\`; e as peças apontando para arquivos do
+  teste, porque no Windows do GitHub não há Tesseract nem o Visual C++ baixado) e publica de verdade na pasta das
+  provas, com e sem o instalador; e um teste que cobra o mesmo resultado da conferência em todos os caminhos da tabela.
+  Rodado no código de `b9300da8`, o primeiro tem de falhar com "não tem o Visual C++ em instalar\".
+
+*Os 3 baixos do relatório 5 (o Samuel: "pode concertar"):*
+- **Achado 1 (o apagar em que o gh nem abre, sem teste).** Causa: a proteção (`NadaSaiu` não é um caso de
+  `SemResposta`, então `_pedir_para_apagar` não o troca por "pedi") nunca foi percorrida por teste. Regra: não muda.
+  Prova: um teste em que o pedido de apagar passa pelo `_gh` de verdade com um gh que não existe (o programa nem
+  começa) e a frase diz "não apaguei", nunca "pedi para apagar"; desligada a proteção numa cópia (a mutação X3 de quem
+  quebrou), o teste tem de falhar.
+- **Achado 2 (na pasta das provas, a frase do motor que falta manda `--motor` sem o `--pasta`).** Causa: a frase de
+  `obter_motor_publicado` escreve o comando à mão, fora do lugar único dos comandos do destino (o vizinho do achado 1 do
+  relatório 4, família F2). Regra: o destino escreve também este comando (`_Destino.comando_de_publicar_o_motor`, ao
+  lado de `comando_de_apagar`, pelos mesmos `_argumentos_do_destino`). Caminhos (grep `--motor` em
+  `publicar_versao_kaique.py`, `empacotar.py`, `servidor_das_versoes.py`): só esta frase manda rodar o `--motor`; o
+  resto é o cabeçalho e o `main`. Prova: a frase na pasta tem `--motor --pasta "<pasta>"`; no GitHub, `--motor` sem
+  `--pasta`; e seguir a frase da pasta publica o motor na pasta.
+- **Achado 3 (o caminho de rede recusado com a frase "tem função própria ... use a função dela").** Causa: quando
+  `_caminho_do_programa` devolve "nada" (caminho de rede, ou caminho que o Windows não completa com uma letra de disco),
+  `_por_que_recusa` usava a frase de outro motivo (o mesmo tipo do achado 6 do relatório 3, F7). Regra: uma frase
+  própria, ao lado das outras frases da recusa (`FRASE_CAMINHO_DE_REDE`), dizendo o motivo de verdade: por esse
+  caminho a peça não consegue saber se é um programa do Windows (que tem função própria na peça), e só roda programa
+  deste computador pelo caminho com a letra do disco. Os testes antigos N2 e o do "raiz global" procuram "função
+  própria" na recusa: a frase nova tem essas palavras porque é o motivo de verdade (Ressalvas). Caminhos: o rodar
+  genérico, o lançar solto e o grupo, todos pela regra única `_por_que_recusa`. Prova: um teste pelos três caminhos com
+  `\\localhost\C$\...` e `\\?\UNC\...`, que cobra a frase nova e que ela não manda "use a função dela".
+
 ## O que pode falhar e o que o programa faz
 
 | O que pode dar errado | O que o publicar faz |
@@ -512,6 +669,14 @@ com `grep` por `apagar_publicacao`, `pediu_para_liberar`, `_programa_com_funcao_
 | (volta 5) O gh nem abre no pedido de liberar (não achado, recusado, fechado antes de rodar) | conta como "não pedi para liberar": o rascunho é apagado e conferido, como antes do pedido (D-816) |
 | (volta 5) O gh abre no pedido de liberar e qualquer coisa dá errado depois (erro, tempo, vigia, Ctrl+C) | continua contando como pedido: nada é apagado (D-816) |
 | (volta 5) O programa pedido à peça é um fluxo escondido de outro arquivo (`arquivo:nome.exe`) | recusado pelo rodar, pelo lançar solto e pelo grupo, com a frase própria do fluxo |
+
+| (volta 6) Falta o Visual C++ no PC e não há internet para baixá-lo | como hoje: a montagem para antes do PyInstaller ("Visual C++: não consegui baixar..."); nada é apagado nem montado |
+| (volta 6) A cópia do Visual C++ para instalar\ falha no meio (o D: cheio, o antivírus segurando) | o erro do disco sobe como hoje ("PAREI: o disco não deixou terminar"); se a cópia termina menor, a montagem para com "chegou pela metade" e devolve "nada". Nos dois casos a ficha da versão NÃO é gravada (ela vem depois): a pasta pela metade fica em `dist\` (como qualquer montagem que para) e um `--pasta-pronta` nela é recusado ("não tem a ficha da versão: monte de novo"); a próxima montagem apaga a pasta e começa do zero |
+| (volta 6) Uma pasta de fora sem o Visual C++ (`--pasta-pronta`), como a que a prova de 20/11 montou com o código antigo | recusada antes da conta do espaço, com a frase de hoje ("não tem o Visual C++ em instalar\") |
+| (volta 6) Quem chamar o empacotar direto com uma pasta sem o Visual C++, sem a ficha ou de outra versão | recusado antes de rodar o vpk (antes, o vpk rodava e só a conferência do pacote pegava) |
+| (volta 6) Na pasta das provas, o motor que a versão pede não está publicado | a frase dá o comando com o `--pasta` (`publicar_versao_kaique.py --motor --pasta "<pasta>"`); seguida, publica o motor na pasta, nunca no GitHub |
+| (volta 6) O gh nem abre no pedido de apagar (não achado, recusado pela peça) | "não apaguei" e o comando para conferir e apagar; nunca "pedi para apagar" (como hoje; agora com teste) |
+| (volta 6) Um caminho de rede (`\\computador\...`, `\\?\UNC\...`) ou um caminho que o Windows não completa com letra de disco pedido à peça | recusado como hoje, pelos três caminhos, com a frase própria (o motivo e o que fazer), sem mandar usar uma função que não existe |
 
 ## O que li da peça de fora e onde
 
@@ -669,6 +834,23 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
   CREATE_SUSPENDED: "does not run until the ResumeThread function is called",
   https://learn.microsoft.com/windows/win32/procthread/process-creation-flags). Em todos, o gh não executou nada: o
   pedido não saiu do PC.
+
+**Lido na volta 6 (20/11/2026):** nenhuma peça de fora nova. O que o conserto usa e de onde vem:
+- **O que o PyInstaller deixa na pasta** (o teste de reversão escreve o mesmo): o .exe em `--distpath\--name\`, e cada
+  `--add-data origem;destino` em `<pasta>\_internal\<destino>\` (o `--contents-directory _internal`). **Rodado, não
+  deduzido:** a pasta que o PyInstaller 6 de verdade montou na prova de 20/11 (`dist\EditorImpressao`, só lida) tem
+  exatamente isso (`_internal\modelos\doclayout.onnx`, `_internal\modelos\doctr`, `_internal\modelos\mobile_sam`,
+  `_internal\core\nativo\st_gravura.dll` e o `.txt`, `st_ferramentas.dll` e o `.txt`), mais o que o `construir_pasta`
+  põe depois (`tesseract\`, a ficha, o "COMO USAR.txt"), e **nenhum** `instalar\`
+  (`anexos/volta6-a-pasta-da-prova.txt`). A documentação do PyInstaller (https://pyinstaller.org/en/stable/usage.html,
+  "--add-data SOURCE:DEST", "--contents-directory CONTENTS_DIRECTORY": "the directory name where all files are placed
+  besides the executable") diz o mesmo; não a reli nesta volta além disso.
+- **O vpk e o instalar\:** nada muda no que o vpk recebe (a pasta com `instalar\vc_redist.x64.exe` e a versão no .txt,
+  como na pasta pronta de hoje); o que o vpk faz com ela foi lido na volta 1 (acima). O programa instalado lê
+  `<programa>\instalar\` por `atualizacao.PASTA_DO_QUE_SE_INSTALA` (código nosso, não muda).
+- **O caminho de rede (achado 3):** o que o Windows faz com ele foi rodado por quem quebrou (relatório 5, E7: "caminho de
+  rede (`\\localhost\C$\...` e `\\?\UNC\...`) | sim [o Windows roda] | recusa | recusa (frase errada)"); a regra não
+  muda, só a frase.
 
 ## O que foi feito
 
