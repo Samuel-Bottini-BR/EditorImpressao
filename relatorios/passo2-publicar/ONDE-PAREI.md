@@ -938,7 +938,9 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
   (`anexos/reversao-volta5-codigo-antigo.txt`, com a leitura no fim); o do achado 3 (b) passa lá (a proteção existia
   sem teste) e é provado pela mutação W3b. Mutações: 10 de 10 acusadas (`anexos/reversao-volta5-resultado.txt`).
 - **No GitHub, volta 5:** rodada 44766224353, sobre o ramo depois de `35ec0c27` (depois, só a pasta deste relatório).
-  Resultado: a preencher.
+  Resultado: **success** na segunda tentativa. PORTEIRO: success (o trabalho "Porteiro (juiz da versao de teste)"). Na
+  primeira, falhou só a parte 3, em `tests/test_decisoes_gravura_a_mao.py::test_d659_g_outros_filtros_a_mao_nada_e_procurado_e_sai_igual_ao_de_antes`
+  ("procurou: [0]"), o instável já conhecido (catálogo P1-gh-5), que não usa nada deste passo; a parte 3 rodou de novo e passou.
 
 ## Caminho e função
 
