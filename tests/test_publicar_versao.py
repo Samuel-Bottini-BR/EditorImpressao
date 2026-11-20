@@ -554,3 +554,28 @@ def test_d776_a_reserva_so_aumenta_na_linha_de_comando(tmp_path, monkeypatch):
     assert empacotar.RESERVA_DO_DISCO == 500 * empacotar.GB
     monkeypatch.setattr(empacotar, "espaco_livre", lambda pasta: 100 * empacotar.GB)
     assert "500 GB" in empacotar.conferir_espaco(tmp_path, 0)
+
+
+def test_d809_apagar_uma_publicacao_que_e_atalho_nao_apaga_o_outro_lado(tmp_path):
+    """D-809: se a subpasta de uma publicação no destino for um atalho (junção) para outra pasta, o apagar para e não
+    apaga nada do outro lado; e, dentro de uma publicação de verdade, uma junção sai sem levar o que está do outro lado
+    (o rmtree do Python não entra em junção)."""
+    alvo = tmp_path / "pasta de verdade"
+    alvo.mkdir()
+    (alvo / "importante.txt").write_text("fica", encoding="utf-8")
+    servidor = tmp_path / "servidor"
+    servidor.mkdir()
+    feito = subprocess.run(["cmd", "/c", "mklink", "/J", str(servidor / ETIQUETA), str(alvo)],
+                           capture_output=True, text=True)
+    assert feito.returncode == 0, feito.stderr
+    destino = pub.DestinoPasta(servidor)
+    with pytest.raises(pub.Parou, match="atalho"):
+        pub.apagar_publicacao(destino, ETIQUETA)
+    assert (alvo / "importante.txt").is_file()
+    subprocess.run(["cmd", "/c", "rmdir", str(servidor / ETIQUETA)], check=True)   # só o atalho
+    assert (alvo / "importante.txt").is_file()
+    (servidor / ETIQUETA).mkdir()
+    subprocess.run(["cmd", "/c", "mklink", "/J", str(servidor / ETIQUETA / "dentro"), str(alvo)], check=True,
+                   capture_output=True)
+    pub.apagar_publicacao(destino, ETIQUETA)
+    assert not (servidor / ETIQUETA).exists() and (alvo / "importante.txt").is_file()

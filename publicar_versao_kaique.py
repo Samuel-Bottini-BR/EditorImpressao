@@ -305,9 +305,14 @@ class DestinoPasta:
             raise Parou(f"não consegui liberar {etiqueta} em {self.nome} ({erro})") from erro
 
     def apagar(self, etiqueta: str) -> None:
-        """Apaga a publicacao (rascunho ou liberada), so a subpasta dela."""
+        """Apaga a publicacao (rascunho ou liberada), so a subpasta dela. Se a subpasta for um atalho (junção ou link,
+        D-809), NAO apaga nada (nem o atalho, nem o outro lado) e para: quem chama confere e diz o que ficou. Dentro
+        dela, o shutil.rmtree do Python nao entra em junção (documentação do shutil: "On Windows, will no longer delete
+        the contents of a directory junction before removing the junction", desde o 3.8)."""
         for pasta in (self._rascunho(etiqueta), self._liberada(etiqueta)):
-            if pasta.is_dir() and not pasta.is_symlink():
+            if pasta.is_symlink() or pasta.is_junction():
+                raise Parou(f"{pasta} é um atalho para outro lugar: não apaguei (confira à mão)")
+            if pasta.is_dir():
                 shutil.rmtree(pasta, ignore_errors=True)
 
 
