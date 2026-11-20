@@ -1,0 +1,4 @@
+Rodada 44800950547 (consultada em 20/11/2026 por quem tenta quebrar, volta 6):
+attempt 1, conclusion success; todas as partes 1 a 5, os botoes, o porteiro e o resumo: success.
+O registro diz: codigo trocado pelo de passo2-publicar-2026-11-19 (d73e7fc80a13ecd1072f1e67b61c62db79a66ba1)
+e TESTADO_SHA: d73e7fc8...; de 3abf9acf a d73e7fc8 so mudaram arquivos de relatorios/ (git diff --stat 3abf9acf d73e7fc8 -- '*.py': vazio).

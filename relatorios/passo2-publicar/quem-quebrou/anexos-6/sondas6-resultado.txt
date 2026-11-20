@@ -1,0 +1,17 @@
+SONDA1 publicada; tesseract no pacote? False ; versao do VC no pacote? False ; VC no pacote: b'MZ visual c'
+  PAREI: a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4393\test_sonda3_o_empacotar_direto0\de-fora\EditorImpressao não tem o Visual C++ em instalar\
+SONDA3 antes: ['EditorImpressao.exe', '_internal', '_internal/core', '_internal/core/nativo', '_internal/core/nativo/st_ferramentas.dll', '_internal/core/nativo/st_ferramentas.txt', '_internal/core/nativo/st_gravura.dll', '_internal/core/nativo/st_gravura.txt', '_internal/modelos', '_internal/modelos/doclayout.onnx', '_internal/modelos/doctr', '_internal/modelos/doctr/rep_fast_base-1b89ebf9.onnx', '_internal/modelos/mobile_sam', '_internal/modelos/mobile_sam/mobile_sam.encoder.onnx', '_internal/modelos/mobile_sam/sam_vit_h_4b8939.decoder.onnx', 'instalar', 'instalar/motor-kraken-1.zip', 'versao-do-pacote.json']
+SONDA3 depois: ['EditorImpressao.exe', '_internal', '_internal/core', '_internal/core/nativo', '_internal/core/nativo/st_ferramentas.dll', '_internal/core/nativo/st_ferramentas.txt', '_internal/core/nativo/st_gravura.dll', '_internal/core/nativo/st_gravura.txt', '_internal/modelos', '_internal/modelos/doclayout.onnx', '_internal/modelos/doctr', '_internal/modelos/doctr/rep_fast_base-1b89ebf9.onnx', '_internal/modelos/mobile_sam', '_internal/modelos/mobile_sam/mobile_sam.encoder.onnx', '_internal/modelos/mobile_sam/sam_vit_h_4b8939.decoder.onnx', 'instalar', 'motor-exigido.json', 'versao-do-pacote.json']
+SONDA4 SAIDA INTEIRA >>>   rascunho: C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4393\test_sonda4_disco_cheio_na_cop0\disco-de-dentro\publicar-20261120-161109-d983bb
+PAREI: o disco não deixou terminar (C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4393\test_sonda4_disco_cheio_na_cop0\repositorio-do-empacotar\dist\EditorImpressao\instalar\vc_redist.x64.exe): Não há espaço suficiente no disco. O que ficou está nas linhas acima: a conferência do fim, lida do disco e do destino (se ela não aparece, o erro veio antes de o rascunho ser criado).
+SONDA4 ficha existe? False ; conferir: ['a pasta C:\\Users\\fotog\\AppData\\Local\\Temp\\pytest-of-fotog\\pytest-4393\\test_sonda4_disco_cheio_na_cop0\\repositorio-do-empacotar\\dist\\EditorImpressao não tem a ficha da versão (versao-do-pacote.json): monte de novo']
+SONDA4 rascunhos: [] ; vpk rodou: []
+SONDA5 conferir_pasta_pronta da pasta 'de 20/11' depois do item 13: []
+SONDA5 item 14 depois do 13 diz: a versão 1.1.0 já existe em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4393\test_sonda5_roteiro_item14_dep0\servidor (publicada ou rascunho que sobrou): aumente o número em versao.py, ou apague o rascunho com publicar_versao_kaique.py --apagar v1.1.0 --pasta "C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4393\test_sonda5_roteiro_item14_dep0\servidor"
+PASSED tests/test_publicar_versao.py::test_sonda1_pasta_pronta_sem_tesseract_e_com_visual_c_falso_e_publicada
+PASSED tests/test_publicar_versao.py::test_sonda1b_o_programa_instalado_com_essa_pasta_nao_atualiza_o_visual_c_velho
+PASSED tests/test_publicar_versao.py::test_sonda2_pasta_pronta_de_outro_commit_e_aceita
+PASSED tests/test_publicar_versao.py::test_sonda3_o_empacotar_direto_mexe_na_pasta_antes_de_recusar
+PASSED tests/test_publicar_versao.py::test_sonda4_disco_cheio_na_copia_do_visual_c
+PASSED tests/test_publicar_versao.py::test_sonda5_roteiro_item14_depois_do_item13
+6 passed, 85 deselected in 1.67s

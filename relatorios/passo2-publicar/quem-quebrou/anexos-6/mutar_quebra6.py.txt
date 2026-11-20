@@ -1,0 +1,93 @@
+"""Quem tenta quebrar, volta 6 do passo 2 (20/11/2026): mutacoes PROPRIAS (Z1 a Z11, diferentes das Y1 a Y10 do
+escritor), numa copia (git archive de 3abf9acf) na pasta de rascunho. Uma por vez; o arquivo volta ao original depois
+de cada uma (conferido byte a byte). Para cada mutacao roda os arquivos de teste indicados, um de cada vez.
+Uso: python mutar_quebra6.py <pasta da copia>"""
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+COPIA = Path(sys.argv[1])
+PY = r"D:\programas\EditorImpressao\.venv\Scripts\python.exe"
+PUB = "tests/test_publicar_versao.py"
+EMP = "tests/test_empacotar.py"
+MOT = "tests/test_publicar_motor.py"
+WIN = "tests/test_windows_peca.py"
+
+MUTACOES = [
+    ("Z1", "a montagem nao grava a versao do Visual C++ (vc_redist.versao.txt) ao lado dele", "empacotar.py",
+     "    (destino / atualizacao.VC_REDIST_VERSAO).write_text(pecas.vc_versao, encoding=\"utf-8\")\r\n",
+     "", [PUB]),
+    ("Z2", "a conferencia do pacote depois do vpk deixa de procurar o Visual C++", "empacotar.py",
+     "    if saida.vc_em_instalar:\r\n        saida_ += [f\"{atualizacao.PASTA_DO_QUE_SE_INSTALA}/{atualizacao.VC_REDIST_NOME}\"]",
+     "    if False:\r\n        saida_ += [f\"{atualizacao.PASTA_DO_QUE_SE_INSTALA}/{atualizacao.VC_REDIST_NOME}\"]",
+     [PUB, EMP]),
+    ("Z3", "o publicar deixa de conferir a pasta cedo (fica so a conferencia de antes do vpk)",
+     "publicar_versao_kaique.py",
+     "        problemas = empacotar.conferir_pasta_pronta(pasta, versao_do_pacote)\r\n",
+     "        problemas = []\r\n", [PUB]),
+    ("Z4", "o publicar montado do zero esquece as pecas (a conferencia do pacote nao procura o Tesseract)",
+     "publicar_versao_kaique.py",
+     "            pecas = empacotar._PECAS\r\n", "            pecas = None\r\n", [PUB]),
+    ("Z5", "o pedido de apagar trata qualquer erro do gh como 'pedi' (outra rota do achado 1, nao a Y7)",
+     "publicar_versao_kaique.py",
+     "        except SemResposta as erro:\r\n            # o pedido de apagar SAIU",
+     "        except Parou as erro:\r\n            # o pedido de apagar SAIU", [PUB]),
+    ("Z6", "o comando do destino pasta sem aspas no caminho (quebra com espaco no caminho)",
+     "publicar_versao_kaique.py",
+     "        return f' --pasta \"{self.raiz}\"'", "        return f' --pasta {self.raiz}'", [PUB]),
+    ("Z7", "a conferencia da pasta so olha se a pasta instalar\\ existe, nao o arquivo", "empacotar.py",
+     "    if saida.vc_em_instalar and not visual_c.is_file():",
+     "    if saida.vc_em_instalar and not visual_c.parent.is_dir():", [PUB]),
+    ("Z8", "preparar_saida volta a por o Visual C++ (dois lugares poem o mesmo arquivo)", "empacotar.py",
+     "    pasta = Path(pasta)\r\n    problemas: list[str] = []\r\n    if saida.motor_exigido:",
+     "    pasta = Path(pasta)\r\n    problemas: list[str] = preparar_pasta_para_o_velopack(pasta, pecas) if pecas is not None "
+     "else []\r\n    if saida.motor_exigido:", [PUB, MOT, EMP]),
+    ("Z9", "a montagem poe o Visual C++ so na saida com .msi (confunde os campos)", "empacotar.py",
+     "    if saida.vc_em_instalar:\r\n        problemas = preparar_pasta_para_o_velopack(destino, pecas)",
+     "    if saida.com_msi:\r\n        problemas = preparar_pasta_para_o_velopack(destino, pecas)", [PUB]),
+    ("Z10", "a conferencia de antes do vpk confere como pasta portatil (a saida errada)", "empacotar.py",
+     "    problemas = problemas or conferir_pasta_pronta(pasta, versao_do_pacote, saida)\r\n",
+     "    problemas = problemas or conferir_pasta_pronta(pasta, versao_do_pacote, PORTATIL)\r\n", [PUB]),
+    ("Z11", "o caminho de rede com a frase de outro motivo (a do 'nao consegui ler o programa')", "core/windows.py",
+     "    if caminho is None:\r\n        return FRASE_CAMINHO_DE_REDE",
+     "    if caminho is None:\r\n        return FRASE_NAO_LI_O_PROGRAMA", [WIN]),
+]
+
+
+def main() -> int:
+    ambiente = dict(os.environ, QT_QPA_PLATFORM="offscreen", PYTHONIOENCODING="utf-8")
+    acusadas = 0
+    for codigo, o_que, arquivo, velho, novo, testes in MUTACOES:
+        alvo = COPIA / arquivo
+        original = alvo.read_bytes()
+        texto = original.decode("utf-8")
+        if texto.count(velho) != 1:
+            print(f"{codigo}: o trecho nao foi achado uma vez so ({texto.count(velho)}): NAO RODADA", flush=True)
+            continue
+        alvo.write_bytes(texto.replace(velho, novo).encode("utf-8"))
+        resultados = []
+        try:
+            for teste in testes:
+                r = subprocess.run([PY, "-m", "pytest", teste, "-q", "-p", "no:cacheprovider", "--tb=no", "-rf"],
+                                   cwd=COPIA, env=ambiente, capture_output=True, text=True, encoding="utf-8",
+                                   errors="replace", timeout=1800)
+                fim = [l for l in r.stdout.splitlines() if " passed" in l or " failed" in l or "error" in l][-1:]
+                falhos = [l.split(" - ")[0] for l in r.stdout.splitlines() if l.startswith("FAILED")]
+                resultados.append((teste, r.returncode, fim, falhos))
+        finally:
+            alvo.write_bytes(original)
+        assert alvo.read_bytes() == original
+        acusou = any(rc != 0 for _, rc, _, _ in resultados)
+        acusadas += acusou
+        print(f"{codigo} ({o_que}): {'ACUSADA' if acusou else 'NAO ACUSADA'}", flush=True)
+        for teste, rc, fim, falhos in resultados:
+            print(f"    {teste}: {fim}", flush=True)
+            for f in falhos[:6]:
+                print(f"        {f}", flush=True)
+    print(f"\n{acusadas} de {len(MUTACOES)} acusadas; cada arquivo devolvido ao original (conferido byte a byte).")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
