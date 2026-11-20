@@ -436,6 +436,20 @@ def _comando_do_powershell(script: Path) -> list[str]:
             str(script)]
 
 
+def _ambiente_do_powershell() -> dict[str, str]:
+    """O ambiente com que a peça abre o PowerShell do Windows (lugar único, ao lado de `_comando_do_powershell`; o
+    rodar e esperar e o lançar solto usam este): o deste processo SEM a lista de pastas de módulos (PSModulePath).
+
+    Por quê (bug de 19/11/2026, achado no GitHub no passo 2): quando o programa roda dentro de um PowerShell 7 (o
+    Windows do GitHub; um terminal do pwsh), a lista herdada tem os módulos do PowerShell 7 na frente, e o PowerShell
+    do Windows tenta carregá-los e falha ("CouldNotAutoloadMatchingModule": o Get-AuthenticodeSignature, o
+    Remove-Item...). Lido na Microsoft (about_PSModulePath, Windows PowerShell 5.1): "If PSModulePath doesn't exist,
+    combine CurrentUser, AllUsers, and the $PSHOME modules paths", e a nota "Inherited PowerShell 7 module paths
+    precede the Windows PowerShell system module path [...] This breaks module autoloading". Sem a variável, ele
+    monta a lista de fábrica. Arriscado: devolver a lista herdada (o defeito volta); tirar outras variáveis."""
+    return {nome: valor for nome, valor in os.environ.items() if nome.upper() != "PSMODULEPATH"}
+
+
 def _argumentos_do_powershell(script: Path) -> str:
     """Os argumentos de `_comando_do_powershell` numa linha só (para o campo de argumentos de uma tarefa)."""
     return subprocess.list2cmdline(_comando_do_powershell(script)[1:])
@@ -1067,13 +1081,15 @@ def rodar_e_esperar(comando: list, limite_s: float = 120, entrada: bytes | None 
     return _rodar(comando, limite_s, entrada, letras)
 
 
-def _rodar(comando: list, limite_s: float = 120, entrada: bytes | None = None, letras: str = "oem") -> Resposta:
-    """O rodar sem filtro, só de dentro da peça (as funções próprias de cada ferramenta usam este)."""
+def _rodar(comando: list, limite_s: float = 120, entrada: bytes | None = None, letras: str = "oem",
+           ambiente: dict[str, str] | None = None) -> Resposta:
+    """O rodar sem filtro, só de dentro da peça (as funções próprias de cada ferramenta usam este). `ambiente`: o do
+    PowerShell (`_ambiente_do_powershell`) quando o programa é ele; None = o deste processo."""
     comando = [str(c) for c in comando]
     extra = {"input": entrada} if entrada is not None else {"stdin": subprocess.DEVNULL}
     try:
         feito = subprocess.run(comando, capture_output=True, timeout=limite_s, creationflags=CREATE_NO_WINDOW,
-                               **extra)
+                               env=ambiente, **extra)
     except subprocess.TimeoutExpired:
         return _falhou(f"o Windows não terminou em {int(limite_s)} segundos", f"tempo esgotado: {comando[0]}")
     except FileNotFoundError as erro:
@@ -1106,7 +1122,7 @@ def rodar_powershell(texto: str, limite_s: float = 600, segredo: str | None = No
         script = pasta / "script.ps1"
         _gravar_script(script, _CABECA_DO_SCRIPT + texto + _PE_DO_SCRIPT)
         entrada = (segredo + "\n").encode("utf-8") if segredo is not None else None
-        return _rodar(_comando_do_powershell(script), limite_s, entrada, "utf-8-sig")
+        return _rodar(_comando_do_powershell(script), limite_s, entrada, "utf-8-sig", _ambiente_do_powershell())
     except (OSError, ValueError) as erro:
         return _falhou("não consegui rodar o script", repr(erro))
     finally:
@@ -1156,8 +1172,9 @@ def lancar_solto(comando: list, sinal: Path, espera_s: float = 30) -> Resposta:
     return _lancar_solto(comando, sinal, espera_s)
 
 
-def _lancar_solto(comando: list, sinal: Path, espera_s: float) -> Resposta:
-    """O lançar solto sem filtro, só de dentro da peça (`lancar_powershell_solto` usa este)."""
+def _lancar_solto(comando: list, sinal: Path, espera_s: float, ambiente: dict[str, str] | None = None) -> Resposta:
+    """O lançar solto sem filtro, só de dentro da peça (`lancar_powershell_solto` usa este). `ambiente`: como em
+    `_rodar`."""
     comando = [str(c) for c in comando]
     try:
         grupo = _situacao_do_grupo()
@@ -1171,7 +1188,7 @@ def _lancar_solto(comando: list, sinal: Path, espera_s: float) -> Resposta:
         bandeiras |= CREATE_BREAKAWAY_FROM_JOB
     try:
         processo = subprocess.Popen(comando, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                                    stderr=subprocess.DEVNULL, close_fds=True, creationflags=bandeiras)
+                                    stderr=subprocess.DEVNULL, close_fds=True, creationflags=bandeiras, env=ambiente)
     except OSError as erro:
         return _falhou("o Windows não deixou lançar o processo", f"{comando[0]}: {erro!r} (grupo: {grupo})",
                        grupo=grupo)
@@ -1214,7 +1231,7 @@ def lancar_powershell_solto(texto: str, espera_s: float = 30) -> Resposta:
     except (OSError, ValueError) as erro:
         apagar_pasta_de_troca(pasta)
         return _falhou("não consegui preparar o script", repr(erro))
-    resposta = _lancar_solto(_comando_do_powershell(script), sinal, espera_s)
+    resposta = _lancar_solto(_comando_do_powershell(script), sinal, espera_s, _ambiente_do_powershell())
     if not resposta.deu_certo:
         apagar_pasta_de_troca(pasta)
     return resposta

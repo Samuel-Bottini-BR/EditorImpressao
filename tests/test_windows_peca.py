@@ -1047,3 +1047,37 @@ def test_o_empacotar_le_a_assinatura_pela_peca_e_nao_abre_o_powershell(tmp_path,
     lido = empacotar.assinatura_do_arquivo(tmp_path / "x.exe")
     assert pedidos == [tmp_path / "x.exe"] and rodou == []
     assert lido["status"].startswith("erro: ") and empacotar.vc_redist_confere(lido)
+
+
+def test_o_powershell_nao_herda_os_modulos_do_powershell_7(tmp_path, monkeypatch):
+    """Bug de 19/11/2026 (achado na rodada 44642471223 do GitHub, passo 2): no Windows do GitHub o Python roda dentro do
+    PowerShell 7, e o PowerShell do Windows aberto pela peça herdava a lista de pastas de módulos dele (PSModulePath);
+    o "Get-AuthenticodeSignature" falhava ("CouldNotAutoloadMatchingModule") e a assinatura do Visual C++ nunca era
+    lida (o teste antigo do empacotar não via: erro também "não confere"). A Microsoft documenta o caso
+    (about_PSModulePath, 5.1: "Inherited PowerShell 7 module paths precede the Windows PowerShell system module path
+    [...] This breaks module autoloading"). Agora a peça abre o PowerShell sem a lista herdada (ele monta a de fábrica).
+    Aqui o caso é refeito no PC: uma pasta de módulos na frente da lista, com um módulo de segurança que o PowerShell
+    do Windows não consegue carregar; o rodar e o lançar solto da peça continuam funcionando."""
+    falso = tmp_path / "Modulos7" / "Microsoft.PowerShell.Security"
+    falso.mkdir(parents=True)
+    (falso / "Microsoft.PowerShell.Security.psd1").write_text(
+        "@{ ModuleVersion = '7.0.0.0'; RootModule = 'quebrado.psm1'; "
+        "FunctionsToExport = @('Get-AuthenticodeSignature'); CmdletsToExport = @() }", encoding="utf-8")
+    (falso / "quebrado.psm1").write_text("throw 'este modulo nao carrega no Windows PowerShell'", encoding="utf-8")
+    monkeypatch.setenv("PSModulePath", f"{tmp_path / 'Modulos7'};{os.environ.get('PSModulePath', '')}")
+    powershell_do_windows = windows.pasta_do_sistema() / "WindowsPowerShell" / "v1.0" / "powershell.exe"
+    lido = windows.ler_assinatura_digital(powershell_do_windows)
+    assert lido.deu_certo and lido.dados["status"], lido
+    saida = tmp_path / "solto.txt"
+    r = windows.lancar_powershell_solto(
+        f"$s = Get-AuthenticodeSignature -LiteralPath {windows.aspas_do_powershell(powershell_do_windows)}\n"
+        f"[System.IO.File]::WriteAllText({windows.aspas_do_powershell(saida)}, [string]$s.Status)\n"
+        # espera um pouco antes de sair: um script que termina antes de a peça ver o sinal é dado como "saiu sem
+        # começar" (o fim do script apaga a pasta com o sinal); defeito do lançar solto anotado para a Lista de bugs
+        "[System.Threading.Thread]::Sleep(2000)")
+    assert r.deu_certo, r
+    for _ in range(100):
+        if saida.exists():
+            break
+        time.sleep(0.1)
+    assert saida.exists() and saida.read_text(encoding="utf-8-sig").strip(), "o lançado solto não leu a assinatura"
