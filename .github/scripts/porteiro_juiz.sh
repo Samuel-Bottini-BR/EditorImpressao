@@ -49,6 +49,13 @@ if ! git cat-file -e "$BASE:regras_dos_agentes/__main__.py" 2>/dev/null; then
   exit 0
 fi
 
+# A pasta do juiz é apagada com tudo dentro: antes, confere que ela não é atalho de pasta (junção ou link), senão o
+# `rm -rf` apagaria o conteúdo da pasta de verdade (D-809; a pasta modelos/ esvaziada em 18/11). No Git Bash, `[ -L ]`
+# e `[ -h ]` dão sim para a junção do Windows (provado em 20/11, bash 5.2.37 msys). Arriscado: tirar esta conferência.
+if [ -L "$JUIZ" ] || [ -h "$JUIZ" ]; then
+  avisar error "PORTEIRO: NAO CONFERIDO (a pasta do juiz $JUIZ é um atalho de pasta: não apago o que está nela)"
+  exit 1
+fi
 rm -rf "$JUIZ" && mkdir -p "$JUIZ"
 # O tar recebe o arquivo pela entrada e escreve na pasta atual: um caminho com "C:" no tar seria lido como outra
 # máquina (o RUNNER_TEMP do GitHub é "D:\a\_temp").
