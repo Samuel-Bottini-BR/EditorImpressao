@@ -29,7 +29,7 @@ As da primeira entrega, de `03c91599`, estão no `git log` deste arquivo.)
   Velopack do lado do programa, o do `gh`). Seções de antes de escrever preenchidas.
 - 19/11: código e testes feitos, em commits pequenos (lista em "Commit"). Prova de reversão: 19 de 19 proteções
   acusadas pelo seu teste (`anexos/reversao-resultado.txt`); os testes novos falham no código antigo
-  (`anexos/reversao-codigo-antigo.txt`). Rodada do GitHub em "Testes".
+  (`anexos/reversao-codigo-antigo.txt`). Rodada do GitHub 44748591841: success (terceira tentativa; em "Testes").
 - `git -C D:\programas\EditorImpressao rev-parse --is-shallow-repository` = false antes e depois. Nenhum atalho de
   pasta (junção) foi criado: nada foi montado de verdade (o vpk e o PyInstaller ficam para a prova à vista).
 - 19/11: a rodada 1 do GitHub (44642471223) achou um defeito de verdade: no Windows do GitHub o PowerShell aberto pela
@@ -59,7 +59,7 @@ As da primeira entrega, de `03c91599`, estão no `git log` deste arquivo.)
   relatório 3 e os anexos Q1 a Q3 e E2). Andamento em "Volta 4" de cada seção.
 - 20/11, volta 4 feita: os 12 achados com destino em "O que o agente que tentou quebrar achou" (código em `783b6814`,
   `dfe5f70d`, `e0921ed8`, `9384f1a3`, `595cc293`); reversão no código de `5f96975b` (26 de 27 casos novos falham) e 24 de 24
-  mutações acusadas. Rodada do GitHub em "Testes". `--is-shallow-repository` = false antes e depois;
+  mutações acusadas. Rodada do GitHub 44748591841: success (terceira tentativa; em "Testes"). `--is-shallow-repository` = false antes e depois;
   nenhuma junção criada. **Próximo:** a gerente manda a um agente novo que tenta quebrar (D-815); depois a prova à vista.
 
 ## Decisões que esta tarefa precisa cumprir
@@ -803,7 +803,12 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
   já existia) e é provado pela mutação V10. Mutações: 24 de 24 acusadas (`anexos/reversao-volta4-resultado.txt`).
 - **No GitHub, volta 4:** a rodada 44748279819 (sobre `2d866750`) foi cancelada por mim aos 6 minutos: depois dela
   corrigi dois textos (docstrings) da peça e da vigia. Rodada que vale: 44748591841, sobre o ramo depois de `595cc293`
-  (depois dele, só este formulário). Resultado: (a preencher quando terminar).
+  (depois dele, só este formulário). Resultado: **success** na terceira tentativa. PORTEIRO: success (o trabalho
+  "Porteiro (juiz da versao de teste)"). As partes 1, 3, 4 e 5 e os botões passaram na primeira tentativa. A parte 2
+  falhou duas vezes num teste que não usa nada deste passo, `tests/test_decisoes_so_as_letras.py`: na primeira, o
+  arquivo inteiro caiu com o código 0xC0000005 (um travamento do Qt, "cannot get C stack"); na segunda, o
+  `test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro` falhou por tempo ("não aconteceu a tempo: o
+  projeto.json com o 'Só as letras' desfeito"), o instável já conhecido (catálogo P1-gh-4). Na terceira, passou.
 
 ## Caminho e função
 
