@@ -1072,9 +1072,11 @@ def _caminho_do_programa(programa: str) -> Path | None:
 # - Python 3.14, subprocess, "Security Considerations": "On Windows, batch files (*.bat or *.cmd) may be launched by the
 #   operating system in a system shell regardless of the arguments passed to this library". Ou seja: o próprio
 #   CreateProcess, chamado pelo subprocess sem shell, abre o cmd.exe para um .bat ou .cmd.
-# - Rust std (correção do CVE-2024-24576, "BatBadBut", abril de 2024): decide se é lote pela extensão .bat/.cmd DEPOIS de
-#   o Windows completar o caminho (GetFullPathNameW), porque o Windows tira os pontos e espaços do fim do nome ("x.bat."
-#   e "x.bat " são o x.bat).
+# - Rodado no PC (Windows 11, 20/11/2026, subprocess sem shell, um lote que escreve a variável COMSPEC): "x.bat", "X.BAT"
+#   e "x.bat " (com espaço no fim) rodaram pelo cmd.exe; "x.bat." e o prefixo de caminho longo abriram algo que saiu com
+#   código 1; "x.bat::$DATA" deu o erro 193 e um lote com nome de .exe, o erro 216 (não rodaram). Um lote que começa
+#   com "MZ" também dá o erro 216: o Windows só entrega ao cmd.exe o que NÃO começa com "MZ". O os.path.abspath (o
+#   GetFullPathNameW do Windows) tira o ponto e o espaço do fim ("x.bat." e "x.bat " viram o x.bat).
 # Por isso a recusa olha a COISA DE VERDADE em dois jeitos (`_nao_e_programa_do_windows`): a extensão do caminho já
 # completado pelo Windows, e o começo do arquivo (todo programa do Windows começa com as letras "MZ"; o que não
 # começa ou é lote, que vai ao cmd.exe, ou é de um subsistema que este Windows de 64 bits não tem). Arriscado: tirar
