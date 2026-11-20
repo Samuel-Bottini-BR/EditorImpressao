@@ -171,3 +171,69 @@ def test_q3_o_pacote_do_passo_diz_as_funcoes_de_outros_passos_que_nao_se_mexem()
     assert "`criar_as_tarefas` (lugares do passo 5)" in bloco and "passo 3)" not in bloco
     assert "Não renomeie nem mova" not in montar_pacote.montar("implementador", "x", [], ["atualizacao.py"], RAIZ,
                                                                "746dbda6", "x")
+
+
+# ---------------------------------------------------------------- as regras e perguntas do catálogo dos erros (19/11)
+
+def test_as_regras_que_citam_o_livro_citam_decisoes_que_existem():
+    """As regras novas do catálogo dos erros têm a fonte no Livro ("DECISOES.md D-809", até a gerente escrever no
+    CLAUDE.md): cada decisão citada existe no Livro (a regra não fica órfã)."""
+    livro = Livro.do_repositorio(RAIZ)
+    citadas = [(r["id"], m.group(1)) for r in catalogo.REGRAS for onde in r["onde"]
+               if (m := re.match(rf"{catalogo.LIVRO} (D-\d{{3,}})$", onde))]
+    assert {d for _, d in citadas} >= {"D-809", "D-810", "D-812", "D-813"}
+    for regra, decisao in citadas:
+        assert livro.existe(decisao), f"{regra}: {decisao}"
+
+
+def test_d813_o_acrescimo_a_regra_6_e_o_texto_do_livro_e_vai_em_todo_pacote():
+    """D-813 (19/11): o acréscimo à regra 6 do §11.12, com o texto do Livro, letra por letra; vai na regra R118 e no
+    "sempre" que a cobre, que todo pacote traz (inclusive o de quem tenta quebrar, que tem nele o seu foco)."""
+    assert Livro.do_repositorio(RAIZ).tem_as_palavras("D-813", catalogo.ACRESCIMO_D813)
+    r118 = next(r for r in catalogo.REGRAS if r["id"] == "R118")
+    sempre = next(s for s in catalogo.SEMPRE if "R118" in s["cobre"])
+    assert catalogo.ACRESCIMO_D813 in r118["curta"] and catalogo.ACRESCIMO_D813 in sempre["texto"]
+    for papel in ("implementador", "layout", "verificador", "pesquisador", "quebrador"):
+        assert catalogo.ACRESCIMO_D813 in montar_pacote.montar(papel, "x", [], ["core/filtros.py"], RAIZ, "746dbda6",
+                                                               "x"), papel
+
+
+def test_d809_d810_d812_as_regras_novas_vao_aos_trabalhos_certos():
+    """D-809: a regra do .git vai a todo trabalho (todo trabalho faz commit). D-810 e D-812: vão a todo trabalho com
+    teste, do Windows ou não; não vão ao trabalho sem teste."""
+    nomes = {i: next(r["nome"] for r in catalogo.REGRAS if r["id"] == i) for i in ("R156", "R157", "R158")}
+    windows = montar_pacote.montar("implementador", "x", [], ARQUIVOS_DO_PASSO_1, RAIZ, "746dbda6", "x")
+    testes = montar_pacote.montar("implementador", "x", [], ["core/filtros.py", "tests/test_filtros.py"], RAIZ,
+                                  "746dbda6", "x")
+    pesquisa = montar_pacote.montar("pesquisador", "x", [], ["docs/pesquisa/"], RAIZ, "746dbda6", "x")
+    assert all(n in windows and n in testes for n in nomes.values())
+    assert nomes["R156"] in pesquisa and nomes["R157"] not in pesquisa
+    assert "Everyone" in windows and "(DECISOES.md D-810)" in windows
+
+
+def test_os_campos_em_branco_do_pacote_sao_os_que_o_formulario_cobra():
+    """Sem gambiarra (§11.12): o pacote e o formulário escolhem os campos pela mesma função (`vale_para`). Para cada
+    jeito de trabalho, os títulos em branco do pacote são os que o formulário cobra (os de "só com pergunta", à parte)."""
+    from regras_dos_agentes.formulario import CAMPOS, Resultado, SO_COM_PERGUNTAS, _conferir_campos
+
+    for tags in ({"TESTE", "GIT"}, {"WIN", "TESTE", "GIT"}, {"TESTE", "GER", "GIT"}, {"IMG", "TELA", "GIT"}):
+        em_branco = {t.split("\n")[0].removeprefix("## ") for t in montar_pacote.formulario_em_branco(tags,
+                                                                                                    "implementador")}
+        r = Resultado("pronto")
+        _conferir_campos({}, "pronto", tags, r)
+        cobrados = {t for c, t, _, _ in CAMPOS if any(f"\"{t}\"" in p for p in r.problemas)}
+        so_com_pergunta = {t for c, t, _, _ in CAMPOS if c in SO_COM_PERGUNTAS}
+        ja_no_pedido = {t for c, t, _, _ in CAMPOS if c == "F1"}      # vem preenchido no pedido, não em branco
+        assert em_branco | ja_no_pedido == cobrados | so_com_pergunta, tags
+
+
+def test_d811_d812_d814_o_pacote_do_windows_traz_as_perguntas_novas_e_o_so_de_testes_nao():
+    """As perguntas novas (D-811, D-812) vão no pacote do Windows; no pacote de um trabalho só de testes, não. A do
+    D-814 vai em todos, dizendo que só vale quando há pergunta para o Samuel."""
+    windows = montar_pacote.montar("implementador", "x", [], ARQUIVOS_DO_PASSO_1, RAIZ, "746dbda6", "x")
+    testes = montar_pacote.montar("implementador", "x", [], ["tests/test_filtros.py"], RAIZ, "746dbda6", "x")
+    for titulo in ("Cada proteção e o teste que falha sem ela", "De onde vem cada dado que a conferência usa"):
+        assert f"## {titulo}" in windows and f"## {titulo}" not in testes, titulo
+    for texto in (windows, testes):
+        assert "## Decisões procuradas antes de cada pergunta\n\n(a preencher; obrigatório antes de ir ao agente que " \
+               "tenta quebrar, se houver pergunta para o Samuel" in texto

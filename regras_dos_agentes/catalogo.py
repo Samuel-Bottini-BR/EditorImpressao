@@ -19,6 +19,10 @@ Contradições já resolvidas pelo Samuel (`RESOLVIDAS`, 18 e 19/11/2026): o pac
 decisão, em vez de "pergunte à gerente". O texto do CLAUDE.md e dos agentes ainda não foi corrigido (é da gerente, com
 o "sim" dele); até lá, o aviso do pacote é o que mostra qual vale.
 
+Regras do catálogo dos erros (R156 a R158 e o acréscimo da D-813 na R118; D-809 a D-813, 19/11/2026): a fonte é a
+linha da decisão no Livro (`LIVRO`), até a gerente escrever o texto no CLAUDE.md e nos agentes; um teste confere que
+cada decisão citada existe no Livro.
+
 Seguro mexer: acrescentar regra, corrigir etiqueta, acrescentar contradição resolvida (com a decisão que existe no
 Livro: um teste confere). Arriscado: mudar `curta` sem conferir o texto que vale; tirar uma regra (o agente deixa de
 recebê-la).
@@ -38,6 +42,16 @@ ETIQUETAS = {
 
 A, I, V, P, L = "CLAUDE.md", "implementador.md", "verificador.md", "pesquisador.md", "layout.md"
 TODOS4 = [I, V, P, L]
+# As regras que nasceram do catálogo dos erros (D-803, D-808: o "sim" do Samuel em 19/11) ainda não estão escritas no
+# CLAUDE.md nem nos agentes (é da gerente). Até lá, a fonte delas é a linha da decisão no Livro: "DECISOES.md D-809".
+LIVRO = "DECISOES.md"
+
+# O acréscimo da D-813 à regra 6 do CLAUDE.md §11.12 (ler antes de usar peça de fora), com o texto do Livro, letra por
+# letra (um teste confere). Vai na regra R118 e no "sempre" n.º 5, que a cobre (é o que o agente lê no pacote).
+ACRESCIMO_D813 = ("Quando o nosso código recusa, filtra ou procura algo, a leitura da peça de fora lista também tudo o "
+                  "que ela aceita como entrada, com a fonte (ex.: o Python importa `.py`, `.pyw`, `.pyd`, `.pyc`, pasta "
+                  "com e sem `__init__`, `.zip` no caminho; o Windows aceita `\\\\?\\`, `\\\\localhost\\C$`, nome "
+                  "curto), e a recusa compara a coisa de verdade, não o texto.")
 
 REGRAS = [
     # ---------------- topo e §1 ----------------
@@ -232,7 +246,7 @@ REGRAS = [
          curta="Quando o estado importa, conferir o código e o git log, não o texto de checkpoint.", rep="2 lugares"),
     dict(id="R080", nome="Apagar: fora do projeto nada; dentro só o seu; junções", onde=[f"{A} §10.9", f"{I} 'Apagar'", f"{V} 'Apagar'", f"{P} 'Apagar'", f"{L} 'Apagar'"], tags=["GIT"], papel="todos", maq="sim",
          curta="Fora de D:\\programas\\EditorImpressao nada se apaga (pare e relate). Dentro, só o que você criou nesta tarefa. Junção nunca com rm -rf: (Get-Item x).Delete().",
-         rep="5 lugares; os agentes acrescentam 'conferir o que há dentro' e as junções"),
+         rep="5 lugares; os agentes acrescentam 'conferir o que há dentro' e as junções", contra="X17"),
     # §10.10 Central
     dict(id="R081", nome="Conferências em página do claude.ai com banco", onde=[f"{A} §10.10"], tags=["GER"], papel="gerente", maq="nao",
          curta="Tudo o que o Samuel vê ou responde vai numa página com banco (as quatro páginas e a Central)."),
@@ -324,9 +338,9 @@ REGRAS = [
          rep="5 lugares, iguais", contra="X8"),
     dict(id="R117", nome="Gerente não aceita 'pronto' sem prova", onde=[f"{A} §11.12.5", f"{I} 18/11", f"{V} 18/11", f"{P} 18/11", f"{L} 18/11"], tags=["GER", "TESTE"], papel="verif", maq="em parte",
          curta="O verificador procura de propósito: peça duplicada, resultado não conferido, falha não pensada.", rep="5 lugares, iguais"),
-    dict(id="R118", nome="Ler a peça de fora antes de usar", onde=[f"{A} §11.12.6", f"{I} 18/11", f"{V} 18/11", f"{P} 18/11", f"{L} 18/11"], tags=["WIN", "PESQ", "TODO"], papel="todos", maq="em parte",
-         curta="Antes de usar Velopack, função do Windows, PowerShell ou biblioteca: ler a documentação (e o código, se preciso) e anotar o que ela faz em cada caso que usamos, com a fonte.",
-         rep="5 lugares, iguais"),
+    dict(id="R118", nome="Ler a peça de fora antes de usar", onde=[f"{A} §11.12.6", f"{I} 18/11", f"{V} 18/11", f"{P} 18/11", f"{L} 18/11", f"{LIVRO} D-813"], tags=["WIN", "PESQ", "TODO"], papel="todos", maq="em parte",
+         curta="Antes de usar Velopack, função do Windows, PowerShell ou biblioteca: ler a documentação (e o código, se preciso) e anotar o que ela faz em cada caso que usamos, com a fonte. " + ACRESCIMO_D813,
+         rep="5 lugares, iguais; o acréscimo da D-813 (19/11) ainda não está no CLAUDE.md nem nos agentes"),
     dict(id="R119", nome="Perguntar: comece pelo que é e onde fica", onde=[f"{A} §11.13.1", f"{I} 13/11", f"{V} 13/11", f"{P} 13/11", f"{L} 13/11"], tags=["PERG"], papel="todos", maq="em parte",
          curta="A primeira frase diz a tela, o botão e o caminho de clique, e para que serve.", rep="5 lugares, iguais"),
     dict(id="R120", nome="Perguntar: nenhuma palavra de dentro", onde=[f"{A} §11.13.2", f"{I} 13/11", f"{V} 13/11", f"{P} 13/11", f"{L} 13/11"], tags=["PERG"], papel="todos", maq="sim",
@@ -406,6 +420,17 @@ REGRAS = [
          curta="Toda função automática tem botão de ligar e desligar (regra 8 do plano).", rep="2 lugares"),
     dict(id="R155", nome="Layout: ler a Lista de espera e as referências", onde=[f"{L} 'Leia antes'"], tags=["TELA"], papel="layout", maq="nao",
          curta="Há ideias de layout do Samuel na Lista de espera, com imagens em docs/plano/referencias-layout/."),
+    # ---------------- do catálogo dos erros (D-803, D-808; o "sim" do Samuel em 19/11) ----------------
+    # O texto é o "na prática" da decisão no Livro; a fonte é a linha dela (`LIVRO`), até a gerente escrever no CLAUDE.md.
+    # Etiquetas: a R156 tem GIT, que todo trabalho recebe (todo trabalho faz commit); a R157 e a R158 têm TESTE, que vai
+    # a todo trabalho com teste (inclusive os do Windows): com WIN junto, o montador só a mandaria a trabalho do Windows.
+    dict(id="R156", nome="A cópia divide o .git com o Samuel: nada de comando que muda o .git inteiro", onde=[f"{LIVRO} D-809"], tags=["GIT"], papel="todos", maq="em parte",
+         curta="A sua cópia divide a pasta .git com o repositório do Samuel. Comando que muda o .git inteiro (fetch com --depth, gc, prune, stash, config, mexer em ramo que não é o seu) não roda na sua cópia, nem em script ou teste, a não ser num repositório de prova em pasta temporária (regras_dos_agentes/repositorio_de_prova.py). Atalho de pasta (junção) só sai com cmd /c rmdir, contando os arquivos da pasta de verdade antes e depois. (O repositório do PC ficou raso em 19/11 com um git fetch --depth=1; a pasta modelos/ foi esvaziada em 18/11 ao tirar um atalho. O porteiro acusa, K25.)",
+         contra="X17"),
+    dict(id="R157", nome="O teste do Windows roda em três computadores diferentes", onde=[f"{LIVRO} D-810"], tags=["TESTE"], papel="todos", maq="nao",
+         curta="GitHub: Windows em inglês ('Everyone', 'Administrators'), licença de administrador já ligada (o dono do que se cria é o grupo Administradores), pasta temporária no D:. PC do Samuel: português, sem a licença, o D: dá controle total a 'Todos'. Notebook do Kaique: a conferir. O teste compara a conta pelo número dela, nunca pelo nome escrito, e não supõe o estado de hoje da lista ou da versão de teste. (Três rodadas do GitHub perdidas no passo 1.)"),
+    dict(id="R158", nome="Toda conferência diz de onde vem cada dado", onde=[f"{LIVRO} D-812"], tags=["TESTE"], papel="todos", maq="em parte",
+         curta="Toda conferência (do porteiro, de um teste ou do programa) diz de onde vem cada dado que usa; dado que o próprio conferido escreve ou pode trocar (o ramo do agente, o ONDE-PAREI, a anotação do programa, a pasta de troca, o arquivo da vez anterior) não serve de prova. (O 'sim' forjável e o juiz escolhido pelo ramo, no passo 0; o arquivo da vez anterior, no passo 1.)"),
 ]
 
 # Itens que estão no meio das regras mas são informação (não se cumprem, se consultam).
@@ -447,6 +472,9 @@ CONTRADICOES = {
           "entrega ao Kaique. Os arquivos dos agentes não citam nem a obra nem a D-765.",
     "X10": "Ordem de leitura. O CLAUDE.md põe o Livro de decisões como item 0; os quatro agentes começam por ESTADO-ATUAL → PLANO → "
            "CLAUDE.md e só no bloco de 26/10 dizem 'leia o Livro antes de tudo'; o INDICE da memória põe o Livro no item 5.",
+    "X17": "Tirar atalho de pasta. O CLAUDE.md §10.9 e os quatro agentes ('Apagar') mandam tirar a junção com "
+           "'(Get-Item <junção>).Delete()'; a D-809 (19/11) diz que o atalho 'só sai com cmd /c rmdir', contando os "
+           "arquivos da pasta de verdade antes e depois.",
 }
 DIFERENCAS_PEQUENAS = {
     "X11": "Tabela: o §2 diz 'nada de tabela' (para o Samuel); o pesquisador entrega 'Tabela: o que é · licença...' (para a gerente).",
@@ -508,8 +536,10 @@ SEMPRE = [
          porque="57 commits 'feito' e zero aprovados; '10 de 10 corretas' com seis erradas; 'Desligado' gravado sem desligar."),
     dict(n=5, titulo="Leia a peça de fora antes de usar", cobre=["R118", "R150"],
          texto="Antes de usar uma peça que não é nossa (biblioteca, função do Windows, PowerShell, Velopack, Qt), leia a documentação "
-               "e, se não bastar, o código. Anote o que ela faz em cada caso que usamos, com a fonte. Separe o lido do deduzido.",
-         porque="Na etapa 5 o atualizador foi escrito sem ler o Velopack nem o Windows (§11.12.6)."),
+               "e, se não bastar, o código. Anote o que ela faz em cada caso que usamos, com a fonte. Separe o lido do deduzido. "
+               + ACRESCIMO_D813,
+         porque="Na etapa 5 o atualizador foi escrito sem ler o Velopack nem o Windows (§11.12.6); no passo 1, a peça recusava "
+                "C:\\Windows e aceitava o mesmo lugar escrito de outros jeitos (D-813)."),
     dict(n=6, titulo="Decisões do Livro: cumprir e provar cada uma", cobre=["R096", "R097", "R013"],
          texto="As decisões que o pedido traz (número e palavras dele) vão no começo do ONDE-PAREI; na entrega, como cumpriu cada uma, "
                "com teste ou print. Aparência não é prova. Palavras dele sempre copiadas do Livro, nunca de memória.",

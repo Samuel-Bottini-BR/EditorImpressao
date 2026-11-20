@@ -84,7 +84,8 @@ CONFERENCIAS: list[Conferencia] = [
     Conferencia("K17", "R056, R094", "agente mexeu no CLAUDE.md, nos agentes, no Livro, no plano, no handoff ou "
                 "acrescentou item na lista de exceções", "entrega", "—"),
     Conferencia("K18", "R136", "terminar com mudança sem commit ou sem push", "entrega", "—"),
-    Conferencia("K19", "R096, R104, R115, R118", "o formulário da entrega", "entrega", "se a resposta é verdadeira"),
+    Conferencia("K19", "R096, R104, R115, R118, D-811, D-812, D-814", "o formulário da entrega", "entrega",
+                "se a resposta é verdadeira"),
     Conferencia("K20", "R013, R096", "as palavras do Samuel citadas batem com o Livro, letra por letra", "entrega",
                 "palavras certas na decisão errada"),
     Conferencia("K21", "R034", "a rodada do GitHub existe, é do último commit do ramo e passou", "entrega", "—"),
