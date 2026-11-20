@@ -461,3 +461,15 @@ def test_achado_7_nenhuma_com_pergunta_embaixo_nao_desliga_a_conferencia(entrega
     assert any("Decisões procuradas antes de cada pergunta" in p for p in problemas)
     s["Perguntas para o Samuel"] = "Nenhuma."
     assert not any("F17" in p or "F23" in p for p in conferir(r, s).problemas)
+
+
+def test_volta2_achado_3_protecao_escrita_sem_traco_tambem_e_cobrada(entrega):
+    """Volta 2 de quem quebrou, achado 3 (20/11): uma proteção escrita numa linha sem "-", embaixo do primeiro item,
+    virava continuação dele e passava sem teste. Agora é cobrada; a linha com espaço no começo continua o item."""
+    r, base, commit = entrega
+    s = secoes_certas(base, commit, arquivos=ARQUIVOS_DO_WINDOWS)
+    s["De onde vem cada dado que a conferência usa"] = DE_ONDE
+    s["Cada proteção e o teste que falha sem ela"] = PROTECOES + "\nA conferência da licença, sem teste nenhum."
+    assert any("proteção sem o teste" in p and "licença" in p for p in conferir(r, s).problemas)
+    s["Cada proteção e o teste que falha sem ela"] = PROTECOES + "\n  (continuação do item de cima, com espaço.)"
+    assert not any("F21" in p for p in conferir(r, s).problemas)

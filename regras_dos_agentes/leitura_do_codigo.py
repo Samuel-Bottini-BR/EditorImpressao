@@ -318,3 +318,27 @@ def comandos(raiz: ast.Module) -> list[tuple[int, str]]:
             elif isinstance(no, ast.JoinedStr):
                 lidos.update(id(n) for n in ast.walk(no))   # os pedaços de um f-string não são textos soltos
     return sorted(saida)
+
+
+def _e_a_guarda_so_no_github(teste: ast.AST) -> bool:
+    """O teste do `if` é exatamente `os.environ.get("GITHUB_ACTIONS") == "true"` (nada de `not`, `or`, outra conta)."""
+    if not (isinstance(teste, ast.Compare) and len(teste.ops) == 1 and isinstance(teste.ops[0], ast.Eq)):
+        return False
+    chamada, valor = teste.left, teste.comparators[0]
+    return (isinstance(valor, ast.Constant) and valor.value == "true" and isinstance(chamada, ast.Call)
+            and isinstance(chamada.func, ast.Attribute) and chamada.func.attr == "get"
+            and isinstance(chamada.func.value, ast.Attribute) and chamada.func.value.attr == "environ"
+            and isinstance(chamada.func.value.value, ast.Name) and chamada.func.value.value.id == "os"
+            and len(chamada.args) == 1 and not chamada.keywords and isinstance(chamada.args[0], ast.Constant)
+            and chamada.args[0].value == "GITHUB_ACTIONS")
+
+
+def linhas_so_no_github(raiz: ast.Module) -> set[int]:
+    """As linhas de dentro do bloco de um `if os.environ.get("GITHUB_ACTIONS") == "true":` (K25: o comando do git ali
+    só roda no GitHub). Só o bloco do `if`, nunca o do `else`/`elif`; o teste tem de ser escrito exatamente assim."""
+    linhas: set[int] = set()
+    for no in ast.walk(raiz):
+        if isinstance(no, ast.If) and _e_a_guarda_so_no_github(no.test) and no.body:
+            for filho in no.body:
+                linhas.update(range(filho.lineno, (filho.end_lineno or filho.lineno) + 1))
+    return linhas

@@ -409,12 +409,18 @@ PALAVRAS_DE_APAGAR: list[tuple[str, str, str]] = [
 # PowerShell (`LinkType`, `ReparsePoint`), o cmd (`fsutil reparsepoint`) e o Git Bash (`[ -L`, `[ -h`, `test -L`).
 CONFERE_SE_E_ATALHO = (r"is_junction|isjunction|islink|is_symlink|st_reparse_tag|REPARSE_POINT|ReparsePoint|LinkType|"
                        r"fsutil\s+reparsepoint|\[\[?\s+-[Lh]\s|\btest\s+-[Lh]\s")
-# O comando do git que muda o .git pode rodar quando a MESMA linha só deixa rodar no GitHub (onde a cópia é jogada fora
-# no fim da rodada): `[ "${GITHUB_ACTIONS:-}" = "true" ] && git clean ...` no terminal, ou
-# `if os.environ.get("GITHUB_ACTIONS") == "true": ...` no Python (pedido da gerente, 20/11, para o `git clean` do
-# `trocar_codigo.sh`). Só na mesma linha, de propósito: uma conferência no começo do arquivo não libera o resto.
-SO_NO_GITHUB = (r"\[\[?\s*\"?\$\{?GITHUB_ACTIONS(?::-)?\}?\"?\s*==?\s*\"?true\"?\s*\]\]?\s*&&"
-                r"|os\.environ(?:\.get\(\s*|\[\s*)[\"']GITHUB_ACTIONS[\"']\s*[)\]]\s*==\s*[\"']true[\"']")
+# O comando do git que muda o .git pode rodar quando só roda no GitHub (onde a cópia é jogada fora no fim da rodada;
+# pedido da gerente, 20/11, para o `git clean` do `trocar_codigo.sh`). Só dois jeitos valem (volta 2 de quem quebrou,
+# achado 1: a guarda em qualquer lugar da linha, `&& true || git gc`, `; git ...`, `! [ ... ]`, `if not` e `or True`
+# passavam):
+# - no terminal, a linha COMEÇA com a guarda, seguida direto de `&&` e do comando do git, sem mais nada encadeado depois
+#   (`;`, `&&`, `||`, `|`, `&`): `[ "${GITHUB_ACTIONS:-}" = "true" ] && git clean -fdq -- .` (`SO_NO_GITHUB`, o grupo
+#   1 é o que vem depois do `&&`);
+# - no Python, o comando dentro do bloco de um `if os.environ.get("GITHUB_ACTIONS") == "true":`, com o teste escrito
+#   exatamente assim (`leitura_do_codigo.linhas_so_no_github`).
+# Continua sem pegar (Lista de espera): o script ou o código que liga a própria variável antes (`export
+# GITHUB_ACTIONS=true` na linha de cima); a variável é um dado que quem roda pode trocar (D-812).
+SO_NO_GITHUB = r"^\s*\[\[?\s*\"?\$\{?GITHUB_ACTIONS(?::-)?\}?\"?\s*==?\s*\"?true\"?\s*\]\]?\s*&&\s*(.*)$"
 # O `git rm` tira arquivos do índice do git (`--cached`) ou da pasta, mas é o `rm` do git, não o do terminal: não é
 # "apagar pasta com tudo dentro" (falso alarme do achado 1 de quem quebrou, 20/11: `git rm -rq --cached` do
 # `trocar_codigo.sh`). Antes de procurar o `rm`, o `rm` que vem logo depois do `git` (e das opções dele) é trocado.
@@ -423,6 +429,14 @@ _GIT_QUE_MUDA = [(re.compile(p), o_que) for p, o_que, _ in PALAVRAS_DO_GIT]
 _APAGAR_TUDO = [(re.compile(p), o_que) for p, o_que, _ in PALAVRAS_DE_APAGAR]
 _CONFERE_SE_E_ATALHO = re.compile(CONFERE_SE_E_ATALHO, re.I)
 _SO_NO_GITHUB = re.compile(SO_NO_GITHUB)
+_COMECA_COM_GIT = re.compile(r"(?i:git(?:\.exe)?)\s")
+_ENCADEADO = re.compile(r";|&&|\|\||\||&")
+
+
+def _so_no_github_no_terminal(linha: str) -> bool:
+    """A linha do terminal começa com a guarda "só no GitHub", seguida direto de `&&` e de um comando do git só."""
+    m = _SO_NO_GITHUB.match(linha)
+    return bool(m) and bool(_COMECA_COM_GIT.match(m.group(1))) and not _ENCADEADO.search(m.group(1))
 
 # Um exemplo de cada jeito que a K25 lê um comando (achado 4 de quem quebrou, 20/11): a proteção do GitHub
 # (`protecao.exemplos_que_o_porteiro_nao_acha`) passa cada exemplo da versão de teste pelo porteiro do ramo e cobra o
@@ -805,18 +819,18 @@ def k24(arq: _Arquivo) -> list[Achado]:
     return saida
 
 
-def _o_que_o_comando_muda(comando: str, antes: str, linha: str = "") -> str | None:
+def _o_que_o_comando_muda(comando: str, antes: str, so_no_github: bool = False) -> str | None:
     """K25: o que este comando de terminal faz de perigoso (None = nada).
 
     `antes` é o código que vem antes dele (na mesma função do Python, ou no arquivo de terminal até a linha): o apagar
     com tudo dentro só é acusado se ali não houver conferência de atalho (`CONFERE_SE_E_ATALHO`). `linha` é a linha de
-    código onde o comando está: o comando do git que muda a pasta .git só passa se ESSA linha deixa rodar só no
-    GitHub (`SO_NO_GITHUB`); conferir antes, noutra linha, não o torna seguro. O `rm` do git (`git rm`) não é o `rm`
+    código onde o comando está: o comando do git que muda a pasta .git só passa com `so_no_github` (o comando só roda no
+    GitHub, ver `SO_NO_GITHUB`); conferir antes, de outro jeito, não o torna seguro. O `rm` do git (`git rm`) não é o `rm`
     do terminal (`_O_RM_DO_GIT`).
     """
     for padrao, o_que in _GIT_QUE_MUDA:
         m = padrao.search(comando)
-        if m and not _SO_NO_GITHUB.search(linha):
+        if m and not so_no_github:
             return f"{o_que}, fora das peças do git: {m.group(0).strip()}"
     comando = _O_RM_DO_GIT.sub(lambda m: m.group(0)[:-2] + "git_rm", comando)
     for padrao, o_que in _APAGAR_TUDO:
@@ -832,9 +846,10 @@ def k25(arq: _Arquivo) -> list[Achado]:
     if not e_script_python(arq.caminho) or arq.caminho in PECAS_DO_GIT:
         return []
     saida, ja = [], set()
+    so_no_github = leitura.linhas_so_no_github(arq.raiz)
     for linha, comando in leitura.comandos(arq.raiz):
         antes = "\n".join(arq.codigo[arq.inicio_da_funcao(linha) - 1:linha])
-        porque = _o_que_o_comando_muda(comando, antes, arq.codigo[linha - 1])
+        porque = _o_que_o_comando_muda(comando, antes, linha in so_no_github)
         if porque and linha not in ja:
             ja.add(linha)
             saida.append(Achado("K25", arq.caminho, linha, _texto_do_lugar(arq.codigo[linha - 1]), porque,
@@ -865,7 +880,8 @@ def k25_terminal(caminho: str, fonte: str) -> list[Achado]:
     codigo = [_sem_comentario_do_terminal(caminho, l) for l in leitura.linhas(fonte)]
     saida = []
     for n, linha in enumerate(codigo, 1):
-        porque = _o_que_o_comando_muda(linha, "\n".join(codigo[:n]), linha) if linha.strip() else None
+        porque = (_o_que_o_comando_muda(linha, "\n".join(codigo[:n]), _so_no_github_no_terminal(linha))
+                  if linha.strip() else None)
         if porque:
             saida.append(Achado("K25", caminho, n, _texto_do_lugar(linha), porque))
     return saida

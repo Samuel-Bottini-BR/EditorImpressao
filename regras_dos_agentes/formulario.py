@@ -328,6 +328,22 @@ def _conferir_citacoes(campos: dict[str, str], repo: _Repositorio, pasta: Path, 
                 r.problemas.append(f"o arquivo citado {p} não existe ({codigo})")
 
 
+def _itens_das_protecoes(corpo: str) -> list[str]:
+    """As proteções do F21: cada item da lista e, depois do primeiro item, cada linha que não começa com espaço (volta 2
+    de quem quebrou, achado 3, 20/11: proteções escritas sem "-" embaixo do primeiro item viravam continuação dele e
+    passavam sem teste). Só a linha com espaço no começo continua o item de cima; o texto antes da lista é abertura."""
+    itens: list[str] = []
+    for l in corpo.splitlines():
+        if re.match(r"^[-*]\s+|^\d+[.)]\s+", l):
+            itens.append(l)
+        elif itens and l.strip():
+            if l[:1].isspace():
+                itens[-1] += " " + l.strip()
+            else:
+                itens.append(l)
+    return itens
+
+
 def _conferir_protecoes(campos: dict[str, str], r: Resultado) -> None:
     """F21 (D-811): uma lista, uma proteção (ou conferência do resultado) por item, cada uma com o teste
     (`tests/x.py::test_y`) que falha quando ela é desligada. Que o teste existe, `_conferir_citacoes` confere; se a
@@ -335,7 +351,7 @@ def _conferir_protecoes(campos: dict[str, str], r: Resultado) -> None:
     f21 = campos.get("F21")
     if f21 is None or nao_se_aplica(f21):
         return
-    itens = _itens(f21)
+    itens = _itens_das_protecoes(f21)
     if not itens:
         r.problemas.append("\"Cada proteção e o teste que falha sem ela\" tem de ser uma lista: uma proteção por item, "
                            "com o teste (F21)")

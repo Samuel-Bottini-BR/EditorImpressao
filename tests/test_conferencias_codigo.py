@@ -922,3 +922,45 @@ def test_k25_os_scripts_do_workflow_consertados_passam_e_os_de_antes_nao(nome, l
     assert codigos(conferir({f".github/scripts/{nome}": consertado}), "K25") == []
     for linha in linhas_de_antes:
         assert codigos(conferir({f".github/scripts/{nome}": linha}), "K25") == [(f".github/scripts/{nome}", 2)], linha
+
+
+# Os casos da volta 2 de quem quebrou (anexos/volta2-sondar_so_no_github, 20/11): (o caso, acusa?, a linha). Cada texto
+# vai dentro de um script (começa com "#!") ou de um arquivo Python, nunca como texto que começa com o comando.
+SO_NO_GITHUB_TERMINAL = [
+    ("o jeito certo", False, '[ "${GITHUB_ACTIONS:-}" = "true" ] && git clean -fdq -- .'),
+    ("o jeito certo com fetch --depth", False, '[ "${GITHUB_ACTIONS:-}" = "true" ] && git fetch --depth=1 origin x'),
+    ("ao contrário, ||", True, '[ "${GITHUB_ACTIONS:-}" = "true" ] || git fetch --depth=1 origin x'),
+    ("&& true || git", True, '[ "${GITHUB_ACTIONS:-}" = "true" ] && true || git gc'),
+    ("depois de ;", True, '[ "${GITHUB_ACTIONS:-}" = "true" ] && echo oi; git fetch --depth=1 origin x'),
+    ("o script liga a variável na mesma linha", True, 'GITHUB_ACTIONS=true; [ "$GITHUB_ACTIONS" = "true" ] && git gc'),
+    ("negado com !", True, '! [ "${GITHUB_ACTIONS:-}" = "true" ] && git gc'),
+    ("a guarda dentro de um echo", True, 'echo \'[ "$GITHUB_ACTIONS" = "true" ] &&\'; git gc'),
+]
+SO_NO_GITHUB_PYTHON = [
+    ("o jeito certo", False, 'if os.environ.get("GITHUB_ACTIONS") == "true": subprocess.run(["git", "clean", "-fdq"])'),
+    ("o jeito certo, no bloco", False,
+     'if os.environ.get("GITHUB_ACTIONS") == "true":\n        subprocess.run(["git", "clean", "-fdq"])'),
+    ("no else", True,
+     'if os.environ.get("GITHUB_ACTIONS") == "true":\n        pass\n    else:\n        subprocess.run(["git", "gc"])'),
+    ("if not", True, 'if not os.environ.get("GITHUB_ACTIONS") == "true": subprocess.run(["git", "gc"])'),
+    ("depois de ;", True, 'x = os.environ.get("GITHUB_ACTIONS") == "true"; subprocess.run(["git", "gc"])'),
+    ("a guarda num texto", True,
+     'subprocess.run(["git", "gc"]); print(\'os.environ.get("GITHUB_ACTIONS") == "true"\')'),
+    ("or True", True, 'if os.environ.get("GITHUB_ACTIONS") == "true" or True: subprocess.run(["git", "gc"])'),
+]
+
+
+@pytest.mark.parametrize("caso, acusa, linha", SO_NO_GITHUB_TERMINAL)
+def test_k25_volta2_so_no_github_no_terminal_so_no_comeco_da_linha_e_direto_no_git(caso, acusa, linha):
+    """Volta 2 de quem quebrou, achado 1 (20/11): a guarda "só no GitHub" valia em qualquer lugar da linha. Agora só no
+    começo da linha, seguida direto de `&&` e de um comando do git sozinho."""
+    achados = codigos(conferir({"relatorios/x/a.sh": f"#!/bin/bash\n{linha}\n"}), "K25")
+    assert bool(achados) is acusa, caso
+
+
+@pytest.mark.parametrize("caso, acusa, linha", SO_NO_GITHUB_PYTHON)
+def test_k25_volta2_so_no_github_no_python_so_dentro_do_if_escrito_assim(caso, acusa, linha):
+    """Volta 2, achado 1: no Python, só o comando dentro do bloco de `if os.environ.get("GITHUB_ACTIONS") == "true":`,
+    com o teste escrito exatamente assim (o `if not`, o `or True` e a guarda num texto não liberam)."""
+    texto = f'"""x."""\nimport os\nimport subprocess\n\n\ndef f(pasta):\n    """y."""\n    {linha}\n'
+    assert bool(codigos(conferir({"relatorios/x/a.py": texto}), "K25")) is acusa, caso
