@@ -78,6 +78,8 @@ RAIZ = Path(__file__).resolve().parent
 # do codigo (dist\ e rascunho do empacotar, mas esta subpasta nao e apagada por ele: empacotar.gerados_em_dist).
 PASTA_DE_SAIDA = RAIZ / "dist" / "publicado"
 PREFIXO_DO_RASCUNHO = "publicar-"
+# Um rascunho que sobrou de outra vez so e apagado depois disto (antes, pode ser de outro publicar rodando agora).
+HORAS_ATE_O_RASCUNHO_SER_VELHO = 12
 # A subpasta de rascunho no DestinoPasta (o servidor_das_versoes.py nao serve o que comeca com isto).
 NOME_DO_RASCUNHO_NO_DESTINO = ".rascunho-"
 # As etiquetas aceitas (a de uma versao do programa e a do motor): nada de barra, ponto-ponto ou espaco.
@@ -198,9 +200,13 @@ def criar_rascunho(base: Path | None = None) -> Path:
     base = Path(base or pasta_do_rascunho())
     base.mkdir(parents=True, exist_ok=True)
     for velho in base.iterdir():
-        if _e_rascunho_nosso(velho):
-            for frase in apagar_rascunho(velho):
-                print(f"  ATENÇÃO: {frase}")
+        if not _e_rascunho_nosso(velho):
+            continue
+        if time.time() - velho.stat().st_mtime < HORAS_ATE_O_RASCUNHO_SER_VELHO * 3600:
+            print(f"  ATENÇÃO: há um rascunho recente de outra vez ({velho.name}): outro publicar rodando? Não apaguei.")
+            continue
+        for frase in apagar_rascunho(velho):
+            print(f"  ATENÇÃO: {frase}")
     pasta = base / f"{PREFIXO_DO_RASCUNHO}{datetime.now():%Y%m%d-%H%M%S}-{secrets.token_hex(3)}"
     pasta.mkdir()
     return pasta
@@ -567,7 +573,8 @@ def conferencia_do_fim(destino, etiqueta: str, pasta_de_saida: Path, rascunho: P
     setup = empacotar.nome_do_setup()
     linhas = []
     if rascunho is not None:
-        linhas.append(f"rascunho do disco de dentro: {'ainda existe: ' + str(rascunho) if rascunho.exists() else 'apagado (conferido)'}")
+        situacao = f"ainda existe: {rascunho}" if rascunho.exists() else "apagado (conferido)"
+        linhas.append(f"rascunho do disco de dentro: {situacao}")
     saida = Path(pasta_de_saida)
     no_saida = sorted(f.name for f in saida.iterdir()) if saida.is_dir() else []
     linhas.append(f"pasta de saída ({saida}): {', '.join(no_saida) or 'vazia'}")
@@ -672,9 +679,6 @@ def publicar(versao_do_pacote: str, destino_pasta: Path | None = None, pasta_pro
             if outro is None or problemas:
                 raise Parou("o empacotamento do instalador parou (o motivo está acima) " + "; ".join(problemas))
             msi = rascunho / "instalador" / empacotar.nome_do_msi()
-            saida_final.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(msi, saida_final / msi.name)
-            print(f"  instalador: {saida_final / msi.name}")
         else:
             msi = None
         arquivo_assinado = assinar_pacote(chave, nupkg, versao_do_pacote, chave_publica)
@@ -684,6 +688,11 @@ def publicar(versao_do_pacote: str, destino_pasta: Path | None = None, pasta_pro
                                  f"{motor.versao})"), arquivos,
                           _conferir_versao_lida(destino, etiqueta, versao_do_pacote, nupkg, motor,
                                                 rascunho / "lido-de-volta", chave_publica))
+        if msi is not None:
+            # só depois de publicada: um .msi de versão que não saiu nunca fica na pasta de saída
+            saida_final.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(msi, saida_final / msi.name)
+            print(f"  instalador: {saida_final / msi.name}")
         print(f"publicada a versão {versao_do_pacote} ({nupkg.name}, assinada)")
         return nupkg
     finally:
@@ -785,6 +794,9 @@ def main(argumentos: list[str] | None = None) -> int:
         return 0
     except Parou as erro:
         print(f"\nPAREI: {erro}")
+        return 1
+    except KeyboardInterrupt:
+        print("\nPAREI: interrompido (Ctrl+C). O que esta vez fez pela metade foi apagado (ver as linhas acima).")
         return 1
 
 

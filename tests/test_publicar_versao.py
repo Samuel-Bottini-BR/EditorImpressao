@@ -18,6 +18,7 @@ Seguro mexer: acrescentar casos. Arriscado: trocar a pasta de destino de verdade
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import time
@@ -517,8 +518,13 @@ def test_o_rascunho_so_apaga_o_que_e_dele(tmp_path):
     velho = base / f"{pub.PREFIXO_DO_RASCUNHO}velho"
     velho.mkdir()
     (velho / "sobra.bin").write_bytes(b"x")
+    um_dia = time.time() - 24 * 3600
+    os.utime(velho, (um_dia, um_dia))
+    recente = base / f"{pub.PREFIXO_DO_RASCUNHO}de-outro-publicar-rodando"
+    recente.mkdir()
     novo = pub.criar_rascunho(base)
     assert novo.parent == base and not velho.exists() and (alheia / "importante.txt").is_file()
+    assert recente.is_dir(), "o rascunho recente pode ser de outro publicar rodando agora: não se apaga"
     assert pub.apagar_rascunho(alheia) and (alheia / "importante.txt").is_file()
     assert pub.apagar_rascunho(novo) == [] and not novo.exists()
 

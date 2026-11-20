@@ -195,7 +195,9 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
 | Arquivo preso (o antivírus lendo) ao apagar o rascunho | tenta de novo por alguns segundos; se ficar, diz o caminho e o tamanho do que ficou (nunca "apagado" sem conferir) |
 | Arquivo preso por outro programa ao enviar | o envio falha → mesmo caminho da falha de internet |
 | Desligar no meio (o PC ou a energia) | o rascunho fica no C: e o rascunho do destino fica sem liberar (nunca liberado pela metade); na próxima vez o comando acha o rascunho velho do destino e para dizendo como apagar; o rascunho velho do C: é apagado no começo da próxima vez (só as pastas com o nome do publicar) |
-| Ctrl+C no meio | o mesmo caminho do erro: o vpk é fechado, o rascunho é apagado e o do destino também |
+| Ctrl+C no meio | o mesmo caminho do erro: o vpk é fechado, o rascunho é apagado e o do destino também; a frase diz "interrompido" (sem a tela de erro do Python) |
+| Dois publicar ao mesmo tempo | cada um tem o seu rascunho; o rascunho de outra vez só é apagado se tiver mais de 12 horas (antes, pode ser do outro rodando); a mesma versão no mesmo destino é recusada pelo segundo (já existe um rascunho) |
+| O instalador pedido e a publicação falha depois | o .msi só vai para a pasta de saída depois de a versão estar publicada: um .msi de versão que não saiu nunca fica lá |
 | O servidor: porta ocupada | a janela diz "NÃO ESTÁ SERVINDO" e o motivo, e não serve nada (a porta é exclusiva: outro servidor não abre a mesma) |
 | O servidor: fechar no meio de um envio | corta a conexão de quem está baixando; quem baixa recebe menos do que o tamanho anunciado (o Velopack confere a soma e recusa) |
 | O servidor: pedido de arquivo fora da pasta ("..", caminho com barra, o rascunho) | recusado (404), com a linha na janela |
@@ -417,6 +419,9 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
   "servia" sem erro). Consertado com a porta exclusiva; o teste falha no jeito de fábrica (mutação M11).
 - **A conversa com o GitHub não foi rodada contra o GitHub de verdade, nem como rascunho** (o pedido proíbe sem a
   gerente).
+- **Se a leitura depois de liberar falhar** (a internet cai no segundo seguinte ao "liberar"), o publicar apaga a
+  versão que acabou de liberar (nunca fica pela metade). Uma versão liberada por segundos e apagada pode, em tese, ter
+  sido vista por um programa que procurou naquele instante; ele não instala sem a assinatura, que também some.
 - O aviso K14 do formulário ("mexeu em arquivo fora da lista": a lista de exceções) é o item tirado da lista, que o
   pedido mandou.
 
