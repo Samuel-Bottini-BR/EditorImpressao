@@ -1852,3 +1852,207 @@ def test_volta4_achado7_no_publicar_sem_a_soma_pronta_tudo_e_baixado_no_rascunho
     nupkg = empacotar.nupkg_inteiro(Path("."), VERSAO).name
     assert nupkg in gh.vigiados and versao.arquivo_do_motor(ocr_kraken.VERSAO_DO_MOTOR) in gh.vigiados, gh.vigiados
     assert gh.publicacoes[ETIQUETA]["rascunho"] is False and _rascunhos_que_sobraram(a) == []
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Passo 2, volta 5 (relatório 4 de quem tentou quebrar, 20/11/2026)
+# ---------------------------------------------------------------------------------------------------------------------
+
+def _seguir_a_frase_sem_tocar_o_github(frase: str, destino, etiqueta: str, monkeypatch) -> None:
+    """A frase tem o comando de apagar do lugar único (com o --pasta da pasta das provas); rodar EXATAMENTE esse
+    comando apaga na pasta e nunca fala com o GitHub (o gh de qualquer DestinoGitHub falha o teste se for chamado)."""
+    import shlex
+
+    comando = destino.comando_de_apagar(etiqueta)
+    assert comando in frase and "--pasta" in comando, frase
+    argumentos = [a.strip('"') for a in shlex.split(comando, posix=False)][1:]
+
+    def nao_pode(self, *argumentos, **k):
+        """Seguir a frase da pasta não pode chegar ao GitHub."""
+        raise AssertionError(f"a frase da pasta foi ao GitHub: {argumentos}")
+
+    monkeypatch.setattr(pub.DestinoGitHub, "_gh", nao_pode)
+    assert pub.main(argumentos) == 0
+    assert destino.situacao(etiqueta) is None
+
+
+@pytest.mark.parametrize("onde", ["publicar_arquivos", "versao", "motor"])
+def test_volta5_achado1_as_frases_de_ja_existe_dao_o_comando_do_destino(ambiente, monkeypatch, onde):
+    """Achado 1 do relatório 4 de quem tentou quebrar (20/11/2026, §11.12: conta duplicada): três frases do publicar
+    ("sobrou um rascunho" em publicar_arquivos, e os dois "já existe", da versão e do motor) escreviam `--apagar
+    <etiqueta>` à mão, sem o destino; na pasta das provas, quem seguia a frase apagava no GitHub (lá, a versão do Kaique
+    LIBERADA, com a etiqueta). Agora as três usam o lugar único (`comando_de_apagar`, com o `--pasta`). Aqui, na pasta
+    das provas, com um rascunho que sobrou: a frase de cada uma tem o comando do destino, e seguir a frase apaga o
+    rascunho da pasta sem nunca falar com o GitHub."""
+    a = ambiente
+    destino = pub.DestinoPasta(a["servidor"])
+    if onde == "motor":
+        etiqueta = ETIQUETA_DO_MOTOR
+        destino.criar_rascunho(etiqueta, "t", "n")
+        with pytest.raises(pub.Parou) as erro:
+            _publicar_o_motor(a)
+    else:
+        etiqueta = ETIQUETA
+        _publicar_o_motor(a)
+        destino.criar_rascunho(etiqueta, "t", "n")
+        with pytest.raises(pub.Parou) as erro:
+            if onde == "versao":
+                _publicar(a)
+            else:
+                pub.publicar_arquivos(destino, etiqueta, "t", "n", [], lambda: None)
+    _seguir_a_frase_sem_tocar_o_github(str(erro.value), destino, etiqueta, monkeypatch)
+
+
+class _GhQueTravaNaLeituraDeDentroDoApagar(_GitHubDeMentira):
+    """O envio do .nupkg falha (antes de liberar). Depois disso, a SEGUNDA leitura da etiqueta (a de dentro do
+    DestinoGitHub.apagar_rascunho, logo antes de pedir) fica sem resposta. É o Q1 de quem tentou quebrar (volta 4)."""
+
+    def __init__(self, tmp):
+        """Conta as leituras depois do envio que falhou."""
+        super().__init__(tmp)
+        self.falhou_o_envio = False
+        self.leituras_depois = 0
+
+    def __call__(self, *argumentos, limite_s=600):
+        """O envio falha; a 2ª leitura de depois fica sem resposta (o _gh de verdade levanta SemResposta)."""
+        a = list(argumentos)
+        if a[1] == "upload" and a[2] == ETIQUETA and a[3].endswith(".nupkg"):
+            self.pedidos.append(a)
+            self.falhou_o_envio = True
+            return subprocess.CompletedProcess(a, 1, "", "HTTP 502 ao enviar (de mentira)")
+        if a[1] == "view" and a[2] == ETIQUETA and self.falhou_o_envio:
+            self.leituras_depois += 1
+            if self.leituras_depois == 2:
+                self.pedidos.append(a)
+                raise pub.SemResposta("parei o pedido ao GitHub (release view): o programa não terminou em 600 "
+                                      "segundos")
+        return super().__call__(*argumentos, limite_s=limite_s)
+
+
+def test_volta5_achado2_a_leitura_sem_resposta_antes_do_pedido_nao_vira_pedi_para_apagar(ambiente, monkeypatch):
+    """Achado 2 do relatório 4 (família F5, o vizinho ao contrário do achado 3 do relatório 3): a leitura que o apagar
+    do rascunho faz logo antes de pedir ficou sem resposta, e a frase dizia "pedi para apagar ... não deu para conferir
+    se sumiu", sem nenhum pedido de apagar ter saído. Agora só o pedido de apagar em si diz "pedi"; a leitura sem
+    resposta é "não apaguei". O rascunho continua no GitHub e a frase dá o comando."""
+    a = ambiente
+    gh = _GhQueTravaNaLeituraDeDentroDoApagar(a["tmp"])
+    destino = pub.DestinoGitHub("dono/projeto")
+    monkeypatch.setattr(destino, "_gh", gh)
+    _publicar_o_motor(a, destino=destino)
+    frase = str(_publicar_um(a, "versao", destino))
+    assert not any(p[1] == "delete" and p[2] == ETIQUETA for p in gh.pedidos), "um pedido de apagar saiu"
+    assert "pedi para apagar" not in frase and "não apaguei" in frase, frase
+    assert destino.comando_de_apagar(ETIQUETA) in frase and ETIQUETA in gh.publicacoes, frase
+
+
+# Um "gh" de prova DE VERDADE (um programa) para o pedido de apagar que fica sem resposta: "view" diz rascunho;
+# "delete" anota e espera 60 s (o _gh o fecha pelo tempo).
+_GH_QUE_DEMORA_A_APAGAR = r'''
+import json, os, sys, time
+from pathlib import Path
+a = sys.argv[1:]
+Path(os.environ["GH_DE_PROVA_DIARIO"]).open("a", encoding="utf-8").write(json.dumps(a) + "\n")
+if a[1] == "view":
+    print(json.dumps({"isDraft": True, "tagName": a[2], "assets": []}))
+    sys.exit(0)
+if a[1] == "delete":
+    time.sleep(60)
+sys.exit(1)
+'''
+
+
+def test_volta5_achado3a_o_gh_de_verdade_fechado_por_tempo_no_apagar_diz_que_pediu(tmp_path, monkeypatch):
+    """Achado 3 do relatório 4, (a) (família F3, proteção sem teste): no _gh de verdade, o gh fechado por tempo vira
+    "sem resposta" (o pedido saiu e não se sabe se foi feito). Os testes do achado 3 do relatório 3 levantavam isso
+    direto do gh de mentira, sem passar por essa linha. De verdade: um gh de prova que demora a apagar, com o tempo do
+    pedido curto; o apagar diz "pedi para apagar ... não deu para conferir se sumiu", nunca "não apaguei"."""
+    diario = tmp_path / "gh-rodou.txt"
+    monkeypatch.setenv("GH_DE_PROVA_DIARIO", str(diario))
+    monkeypatch.setattr(empacotar, "INTERVALO_DA_VIGIA_S", 0.2)
+    gh = _programa_de_prova(tmp_path / "gh.exe", _GH_QUE_DEMORA_A_APAGAR)
+    destino = pub.DestinoGitHub("dono/projeto", gh=str(gh))
+    destino.LIMITE_DO_PEDIDO_S = 3
+    inicio = time.perf_counter()
+    with pytest.raises(pub.Parou) as erro:
+        pub.apagar_publicacao(destino, ETIQUETA, so_rascunho=True, acabou_de_criar=True)
+    assert time.perf_counter() - inicio < 30, "o tempo do pedido não fechou o gh"
+    frase = str(erro.value)
+    assert "pedi para apagar" in frase and "não deu para conferir se sumiu" in frase, frase
+    assert "não apaguei" not in frase.lower(), frase
+    pedidos = [json.loads(linha)[1] for linha in diario.read_text(encoding="utf-8").splitlines()]
+    assert "delete" in pedidos, pedidos
+
+
+class _GitHubQueLiberaAntesDoPedido(_GitHubDeMentira):
+    """O rascunho é liberado por outra pessoa entre a leitura de apagar_publicacao e a de dentro do
+    DestinoGitHub.apagar_rascunho (logo antes do pedido)."""
+
+    def __init__(self, tmp):
+        """Conta as leituras."""
+        super().__init__(tmp)
+        self.leituras = 0
+
+    def __call__(self, *argumentos, limite_s=600):
+        """Depois da primeira leitura, a publicação está liberada."""
+        a = list(argumentos)
+        r = super().__call__(*argumentos, limite_s=limite_s)
+        if a[1] == "view" and a[2] == ETIQUETA:
+            self.leituras += 1
+            if self.leituras == 1:
+                self.publicacoes[ETIQUETA]["rascunho"] = False
+        return r
+
+
+def test_volta5_achado3b_liberada_antes_do_pedido_no_github_continua_publicacao_liberada(ambiente, monkeypatch):
+    """Achado 3 do relatório 4, (b) (família F3): o `except PublicacaoLiberada: raise` de apagar_publicacao não tinha
+    teste. No GitHub, a leitura de dentro do apagar do rascunho (logo antes do pedido) vê a publicação liberada por
+    outra pessoa: nada é pedido, e a resposta continua sendo "PublicacaoLiberada" (o caminho de erro diz "outra pessoa
+    ou outro publicar a liberou no meio"), e não um "não apaguei" comum."""
+    gh = _GitHubQueLiberaAntesDoPedido(ambiente["tmp"])
+    destino = pub.DestinoGitHub("dono/projeto")
+    monkeypatch.setattr(destino, "_gh", gh)
+    destino.criar_rascunho(ETIQUETA, "t", "n")
+    with pytest.raises(pub.PublicacaoLiberada, match="NÃO apaguei"):
+        pub.apagar_publicacao(destino, ETIQUETA, so_rascunho=True, acabou_de_criar=True)
+    assert not any(p[1] == "delete" for p in gh.pedidos) and gh.publicacoes[ETIQUETA]["rascunho"] is False
+
+
+class _GhQueNaoAbreNoLiberar(_GitHubDeMentira):
+    """O gh não abre no pedido de liberar (o _gh de verdade levanta NadaSaiu: o programa nem começou). É o Q2 de quem
+    tentou quebrar (volta 4)."""
+
+    def __call__(self, *argumentos, limite_s=600):
+        """O "edit" nem sai do PC."""
+        a = list(argumentos)
+        if a[1] == "edit" and a[2] == ETIQUETA:
+            raise pub.NadaSaiu("não consegui falar com o GitHub pelo gh (não consegui abrir o programa)")
+        return super().__call__(*argumentos, limite_s=limite_s)
+
+
+def test_volta5_achado4_o_gh_que_nem_abre_no_liberar_nao_conta_como_pedido(ambiente, monkeypatch):
+    """Achado 4 do relatório 4 (escolha técnica da gerente, pela D-816): o gh que nem abre no pedido de liberar (nada
+    saiu do PC) contava como "pedi para liberar", e o rascunho ficava no GitHub com a frase "pedi para liberar". Agora o
+    "não abriu" comprovado não conta como pedido: pela D-816 ("Antes do pedido de liberar, erro no meio continua apagando
+    o rascunho na hora"), o rascunho é apagado e conferido. Qualquer outro erro depois de o gh abrir continua contando
+    como pedido (os testes da D-816 cobram)."""
+    a = ambiente
+    gh = _GhQueNaoAbreNoLiberar(a["tmp"])
+    destino = pub.DestinoGitHub("dono/projeto")
+    monkeypatch.setattr(destino, "_gh", gh)
+    _publicar_o_motor(a, destino=destino)
+    frase = str(_publicar_um(a, "versao", destino))
+    assert ETIQUETA not in gh.publicacoes, "o rascunho ficou no GitHub"
+    assert "pedi para liberar" not in frase and "foi apagada" in frase and "(conferido)" in frase, frase
+
+
+def test_volta5_achado4_so_o_gh_que_nao_abriu_de_verdade_e_nada_saiu(tmp_path, monkeypatch):
+    """Achado 4 do relatório 4, o _gh de verdade: o gh que não existe (o programa nem começa) é NadaSaiu; o gh que abre
+    e responde erro é um Parou comum (o pedido saiu), nunca NadaSaiu."""
+    destino = pub.DestinoGitHub("dono/projeto", gh=str(tmp_path / "nao-existe" / "gh.exe"))
+    with pytest.raises(pub.NadaSaiu):
+        destino.liberar(ETIQUETA)
+    monkeypatch.setenv("GH_DE_PROVA_DIARIO", str(tmp_path / "gh-rodou.txt"))
+    gh = _programa_de_prova(tmp_path / "gh.exe", _GH_QUE_DEMORA_A_APAGAR)       # "edit" sai com o código 1
+    with pytest.raises(pub.Parou) as erro:
+        pub.DestinoGitHub("dono/projeto", gh=str(gh)).liberar(ETIQUETA)
+    assert not isinstance(erro.value, pub.NadaSaiu), erro.value

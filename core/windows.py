@@ -1012,9 +1012,11 @@ def apagar_pasta_de_troca(pasta: Path) -> bool:
 
 def gravar_no_disco(arquivo) -> None:
     """Pede ao Windows que grave no disco, agora, o que ele ainda guarda na memória para este arquivo (aberto para
-    ESCREVER). O LUGAR ÚNICO dessa conversa: todo código que grava num nome provisório e depois troca pelo nome certo
-    chama esta função antes de conferir e de trocar (`_gravar_por_inteiro` aqui; `empacotar.copiar_inteiro` e
-    `empacotar.zipar_motor`). Passo 2, volta 4, achado 11 do relatório 3 de quem tentou quebrar: a cópia dizia "lida
+    ESCREVER). O LUGAR ÚNICO dessa conversa. Quem passa por ela hoje, antes de conferir e de trocar o nome provisório
+    pelo nome certo: `_gravar_por_inteiro` (aqui: o aviso, os scripts, a tarefa, o segredo, a pasta segura, o
+    relatório), `empacotar.copiar_inteiro` e `empacotar.zipar_motor`. Quem grava num nome provisório e NÃO passa por ela
+    (passo 2, volta 5, achado 6 do relatório 4; fora deste passo, a ideia de estender está na Lista de espera): a ficha
+    do motor (`montar_motor_kraken.py`), o PDF de saída (`core/pipeline.py`) e os projetos (`projetos.py`). Passo 2, volta 4, achado 11 do relatório 3 de quem tentou quebrar: a cópia dizia "lida
     de volta do disco" sem pedir isso, e se a luz caísse logo depois da troca do nome, o nome certo podia ficar com o
     conteúdo pela metade.
 
@@ -1142,6 +1144,8 @@ _COMECO_DE_PROGRAMA = b"MZ"
 FRASE_TEM_FUNCAO_PROPRIA = "este programa do Windows tem função própria na peça: use a função dela"
 FRASE_NAO_LI_O_PROGRAMA = "não consegui ler o programa para saber se é um programa do Windows"
 FRASE_SEM_A_PASTA_DO_WINDOWS = "não consegui saber onde fica a pasta do Windows para conferir o programa"
+FRASE_FLUXO_ESCONDIDO = ("o programa pedido é um fluxo escondido dentro de outro arquivo (o caminho tem \":\" depois "
+                         "da letra do disco): a peça não roda")
 
 
 def _por_que_nao_e_programa(caminho: Path) -> str | None:
@@ -1167,6 +1171,19 @@ def _por_que_nao_e_programa(caminho: Path) -> str | None:
     return None if comeco == _COMECO_DE_PROGRAMA else FRASE_TEM_FUNCAO_PROPRIA
 
 
+def _e_fluxo_escondido(caminho: Path) -> bool:
+    """O caminho (já completado como o Windows o completa) aponta para um FLUXO de um arquivo, e não para o arquivo?
+    Sim se tem ":" depois da letra do disco. Lido (D-813): Microsoft Learn, "File Streams (Local File Systems)": o nome
+    completo de um fluxo é "filename:stream name:stream type" ("myfile.dat:stream1:$DATA"), e "filename::$DATA" é o
+    próprio arquivo; "Naming Files, Paths, and Namespaces": o ":" está entre os caracteres reservados de um nome, e
+    "C:tmp.txt" é relativo à pasta atual do disco C (o ":" da letra do disco). Então, fora do "C:" do começo, um ":"
+    só pode ser de fluxo. Rodado (quem tentou quebrar, volta 4, e o teste da volta 5): o Windows roda
+    "nada.txt:pwsh.exe". Na dúvida, recusa (o "::$DATA" do próprio arquivo também, que o Windows nem roda)."""
+    texto = str(caminho)
+    resto = texto[2:] if re.match(r"^[A-Za-z]:", texto) else texto
+    return ":" in resto
+
+
 def _por_que_recusa(programa: str) -> str | None:
     """A REGRA ÚNICA do rodar genérico, do lançar solto genérico e do grupo (`abrir_em_grupo`, e por ele o
     `rodar_em_grupo`): o motivo de recusar o programa (a frase para a tela), ou None (pode rodar).
@@ -1178,6 +1195,8 @@ def _por_que_recusa(programa: str) -> str | None:
     - o nome de `PROGRAMAS_COM_FUNCAO_PROPRIA` (o PowerShell 7, o atualizador do Velopack);
     - o que não é programa do Windows de verdade (um .bat ou .cmd, que o Windows roda pelo cmd.exe) ou que não deu
       para ler (`_por_que_nao_e_programa`);
+    - um fluxo escondido de outro arquivo (`_e_fluxo_escondido`: "nada.txt:pwsh.exe"; passo 2, volta 5, achado 5 do
+      relatório 4); vem depois do lote para o "x.bat::$DATA" continuar com a frase do lote;
     - o que está na pasta do Windows (ou, dado só pelo nome, é achado lá: o Windows procura na pasta do sistema antes
       do PATH); na dúvida (não deu para saber onde fica a pasta do Windows), recusa;
     - de novo depois de achar o arquivo de verdade (o nome sozinho pode virar um .BAT pelo PATHEXT do `which`, ou o
@@ -1194,6 +1213,8 @@ def _por_que_recusa(programa: str) -> str | None:
     motivo = _por_que_nao_e_programa(caminho)
     if motivo:
         return motivo
+    if _e_fluxo_escondido(caminho):
+        return FRASE_FLUXO_ESCONDIDO
     try:
         sistema = pasta_do_sistema()
     except OSError:

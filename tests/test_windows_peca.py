@@ -1525,3 +1525,33 @@ def test_volta4_a_peca_manda_gravar_no_disco_antes_de_trocar_o_nome(tmp_path, mo
         arquivo.write(b"x")
         windows.gravar_no_disco(arquivo)
     assert ordem[-1] == "gravar no disco"
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Passo 2, volta 5 (relatório 4 de quem tentou quebrar, 20/11/2026)
+# ---------------------------------------------------------------------------------------------------------------------
+
+def test_volta5_o_programa_num_fluxo_escondido_de_outro_arquivo_e_recusado(tmp_path, monkeypatch):
+    """Achado 5 do relatório 4 de quem tentou quebrar (família F2, D-813): o programa gravado como FLUXO escondido de
+    outro arquivo (`nada.txt:pwsh.exe`) passava pela peça, que lia o nome como "nada.txt:pwsh.exe" e não achava "pwsh"
+    na lista; o Windows roda esse caminho. Lido (Microsoft Learn, "File Streams"): o nome completo de um fluxo é
+    "filename:stream name:stream type"; o ":" é reservado num nome ("Naming Files, Paths, and Namespaces") e, depois da
+    letra do disco, só aparece para dizer um fluxo. Agora qualquer ":" depois da letra do disco é recusado, com frase
+    própria, pelos três caminhos. De verdade: uma cópia do hostname.exe gravada como fluxo (com o nome da lista e com
+    outro nome); sem a peça, o Windows a roda; pela peça, não. O "::$DATA" de um lote continua com a frase do lote."""
+    sistema = windows.pasta_do_sistema()
+    nada = tmp_path / "nada.txt"
+    nada.write_text("nada", encoding="utf-8")
+    programa = (sistema / "hostname.exe").read_bytes()
+    for fluxo in ("pwsh.exe", "outro.exe"):
+        with open(str(nada) + ":" + fluxo, "wb") as arquivo:
+            arquivo.write(programa)
+    sem_a_peca = subprocess.run([str(nada) + ":pwsh.exe"], capture_output=True, timeout=20)
+    assert sem_a_peca.returncode == 0 and sem_a_peca.stdout.strip(), "o Windows não rodou o fluxo (o caso não vale)"
+    monkeypatch.chdir(tmp_path)
+    for jeito in (str(nada) + ":pwsh.exe", str(nada) + ":outro.exe", str(nada) + ":pwsh.exe:$DATA",
+                  "nada.txt:pwsh.exe", str(nada) + ":pwsh.exe."):
+        assert _tres_caminhos_recusam(jeito, tmp_path, "fluxo escondido") == [], jeito
+    (tmp_path / "x.bat").write_text("@echo x\r\n", encoding="ascii")
+    r = windows.rodar_e_esperar([str(tmp_path / "x.bat") + "::$DATA"])
+    assert r.desfecho == windows.FALHOU and "função própria" in r.motivo, r
