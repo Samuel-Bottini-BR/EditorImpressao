@@ -44,6 +44,10 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
   `85781a08`): os 11 achados com destino em "O que o agente que tentou quebrar achou", cada conserto com o teste que
   falha sem ele (`anexos/reversao-volta2-resultado.txt`). **Próximo:** a gerente manda a quem tenta quebrar de novo.
 - **Próximo (antes):** a gerente manda a quem tenta quebrar; depois a prova à vista (o roteiro está em "A prova de verdade").
+- 20/11, **volta 3 (agente novo, D-815)**: começo pelo relatório 2 de quem tentou quebrar (`quem-quebrou/relatorio-2.md`,
+  10 achados). Pedido da gerente: consertar 1 a 9 pela causa, com teste que falha sem o conserto (D-811), e anotar o 10
+  para o passo 3. Leitura feita (implementador, CLAUDE.md, memória, catálogo, pacote, este formulário, os dois
+  relatórios, o Livro D-809 a D-815). Andamento em "Volta 3" abaixo de "O que o agente que tentou quebrar achou".
 
 ## Decisões que esta tarefa precisa cumprir
 
