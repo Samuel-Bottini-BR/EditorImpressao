@@ -1,0 +1,31 @@
+"""Casos de quem tenta quebrar (volta 2 do passo 2), na cópia do código, com as peças de teste do próprio projeto."""
+import errno
+import shutil
+
+import pytest
+
+import publicar_versao_kaique as pub
+from tests.test_publicar_versao import (ETIQUETA, _publicar, _publicar_o_motor, _tudo_em,  # noqa: F401
+                                        ambiente)
+
+
+def test_msi_pela_metade_fica_e_a_frase_diz_que_foi_apagado(ambiente, monkeypatch, capsys):
+    """Depois de a versão ser liberada, a cópia do .msi para a pasta de saída falha no meio (disco cheio). O que fica?"""
+    a = ambiente
+    _publicar_o_motor(a)
+    real = shutil.copyfile
+
+    def copia_que_enche(origem, alvo, *x, **k):
+        if str(alvo).endswith(".msi") and "publicado" not in str(origem) and str(a["saida"]) in str(alvo):
+            with open(origem, "rb") as o, open(alvo, "wb") as d:
+                d.write(o.read()[: 10])
+            raise OSError(errno.ENOSPC, "Não há espaço suficiente no disco", str(alvo))
+        return real(origem, alvo, *x, **k)
+
+    monkeypatch.setattr(pub.shutil, "copyfile", copia_que_enche)
+    with pytest.raises(OSError):
+        _publicar(a, com_instalador=True)
+    saida = capsys.readouterr().out
+    print(saida)
+    print("NA PASTA DE SAIDA:", _tudo_em(a["saida"]))
+    print("NO DESTINO:", pub.DestinoPasta(a["servidor"]).situacao(ETIQUETA))

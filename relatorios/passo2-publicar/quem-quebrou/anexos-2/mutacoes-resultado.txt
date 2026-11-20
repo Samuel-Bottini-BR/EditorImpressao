@@ -1,0 +1,29 @@
+A1_cleanup_sempre: TRECHO ACHADO 0 VEZES (mutação não aplicada)
+A1b_aviso_vira_erro: TRECHO ACHADO 0 VEZES (mutação não aplicada)
+A2_mata_so_o_principal_e_diz_conferido: PASSOU (não acusada) | 2 passed, 34 deselected in 4.70s | 
+A4_apaga_depois_de_liberar: ACUSADA | 1 failed, 35 deselected in 1.36s | FAILED tests/test_publicar_versao.py::test_achado4_depois_de_liberar_a_leitura_que_falha_nao_apaga_a_versao
+A4b_nunca_apaga_o_rascunho_depois_de_pedir: PASSOU (não acusada) | 36 passed in 14.62s | 
+A5_erro_do_disco_cru: TRECHO ACHADO 0 VEZES (mutação não aplicada)
+A7_nome_repetido_entregue: ACUSADA | 1 failed, 12 passed in 7.47s | FAILED tests/test_publicar_servidor.py::test_achado7_nome_repetido_em_duas_versoes_nao_e_entregue
+A7b_msi_sem_numero: ACUSADA | 1 failed, 6 passed in 4.15s | FAILED tests/test_publicar_versao.py::test_d777_o_instalador_so_quando_pedido_e_o_publicado_e_o_da_atualizacao
+A8_motor_em_instalar_aceito: ACUSADA | 1 failed, 35 deselected in 1.15s | FAILED tests/test_publicar_versao.py::test_achado8_o_arquivo_do_motor_em_instalar_e_recusado_na_atualizacao
+A9_conta_volta_a_5: ACUSADA | 1 failed, 2 passed, 32 deselected in 2.19s | FAILED tests/test_publicar_versao.py::test_d776_a_conta_do_espaco_e_a_reserva_de_20_gb
+A11_match: ACUSADA | 1 failed, 35 deselected in 0.79s | FAILED tests/test_publicar_versao.py::test_achado11_etiqueta_com_quebra_de_linha_e_recusada
+N13_juncao_servida: ACUSADA | 1 failed, 12 deselected in 0.90s | FAILED tests/test_publicar_servidor.py::test_n13_o_servidor_nao_serve_por_uma_juncao
+N5_apagar_sem_conferir: TRECHO ACHADO 0 VEZES (mutação não aplicada)
+N14_assinatura_nao_conferida: TRECHO ACHADO 0 VEZES (mutação não aplicada)
+N4_motor_nao_relido: PASSOU (não acusada) | 4 passed, 32 deselected in 2.83s | 
+A6_sinal_na_pasta_apagada: ACUSADA | 1 failed, 58 deselected in 11.52s | FAILED tests/test_windows_peca.py::test_o_lancado_solto_curto_nunca_vira_saiu_sem_comecar
+  File "C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\848d7b72-406b-4bfe-aabf-f5b3005d7b22\scratchpad\q3\mutar.py", line 75
+    if "
+       ^
+SyntaxError: unterminated string literal (detected at line 75)
+  File "C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\848d7b72-406b-4bfe-aabf-f5b3005d7b22\scratchpad\q3\mutar.py", line 75
+    if "
+       ^
+SyntaxError: unterminated string literal (detected at line 75)
+A1_cleanup_sempre: ACUSADA | 1 failed, 32 deselected in 0.84s | FAILED tests/test_publicar_versao.py::test_achado1_apagar_um_rascunho_no_github_le_de_volta_e_nao_acusa_erro_falso
+A1b_aviso_vira_erro: ACUSADA | 1 failed, 3 passed, 32 deselected in 1.93s | FAILED tests/test_publicar_versao.py::test_achado1_quem_decide_se_apagou_e_a_leitura_de_volta
+A5_erro_do_disco_cru: ACUSADA | 1 failed, 35 deselected in 1.43s | FAILED tests/test_publicar_versao.py::test_achado5_erro_do_disco_vira_frase
+N5_apagar_sem_conferir: ACUSADA | 1 failed, 35 deselected in 1.10s | FAILED tests/test_publicar_versao.py::test_n5_o_apagar_que_nao_apaga_e_acusado
+N14_assinatura_nao_conferida: ACUSADA | 1 failed, 2 passed, 32 deselected in 2.37s | FAILED tests/test_publicar_versao.py::test_n1_n3_n4_n14_cada_leitura_de_volta_errada_impede_liberar[assinatura-assinatura lida]

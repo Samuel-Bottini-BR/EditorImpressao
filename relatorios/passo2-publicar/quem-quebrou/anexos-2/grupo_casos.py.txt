@@ -1,0 +1,59 @@
+"""Casos de quem tenta quebrar para windows.abrir_em_grupo (volta 2 do passo 2). Roda na cópia do código (argv[1])."""
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+copia = Path(sys.argv[1])
+pasta = Path(sys.argv[2])
+pasta.mkdir(parents=True, exist_ok=True)
+sys.path.insert(0, str(copia))
+from core import windows  # noqa: E402
+
+PY = sys.executable
+
+# E1: programa que sai na hora (o "true.exe" do Git, que não é da pasta do Windows): o grupo recusa por ele já ter saído?
+true = Path(r"C:\Program Files\Git\usr\bin\true.exe")
+falhas = 0
+motivos = set()
+for _ in range(40):
+    programa, r = windows.abrir_em_grupo([str(true)])
+    if programa is None:
+        falhas += 1
+        motivos.add(r.motivo + " | " + r.detalhe)
+    else:
+        programa.esperar(5)
+        programa.soltar()
+print(f"E1 true.exe 40 vezes: {falhas} vezes 'não deixou pôr no grupo'; {motivos}")
+
+# E2: a conferência "nada ficou vivo" só vê quem está no grupo. Um processo fora do grupo (como um filho que nasceu no
+# instante antes de o pai entrar no grupo) não é visto: a frase diz "conferido" com ele vivo.
+batida = pasta / "fora.txt"
+codigo = ("import sys,time,os\nn=0\nwhile True:\n n+=1\n open(sys.argv[1],'w').write(str(n))\n time.sleep(0.1)\n")
+fora = subprocess.Popen([PY, "-c", codigo, str(batida)])
+grupo = windows._win().kernel32.CreateJobObjectW(None, None)
+programa = windows.ProgramaEmGrupo(fora, grupo)   # o principal NÃO está no grupo (simula o que escapou)
+time.sleep(1)
+r = programa.fechar_tudo(espera_s=2)
+antes = batida.read_text()
+time.sleep(1)
+vivo = batida.read_text() != antes
+print(f"E2 fechar_tudo com o processo fora do grupo: desfecho={r.desfecho!r} motivo={r.motivo!r}; continua vivo={vivo}")
+fora.kill()
+fora.wait()
+programa.soltar()
+
+# E3: arquivo .bat (fora da pasta do Windows): o grupo e o rodar genérico recusam? Quem roda o .bat é o cmd.exe.
+bat = pasta / "x.bat"
+marca = pasta / "cmd-rodou.txt"
+bat.write_text(f'@echo %COMSPEC% > "{marca}"\r\n', encoding="ascii")
+print("E3 _programa_com_funcao_propria(x.bat) =", windows._programa_com_funcao_propria(str(bat)))
+programa, r = windows.abrir_em_grupo([str(bat)])
+if programa is not None:
+    programa.esperar(10)
+    programa.soltar()
+print(f"E3 abrir_em_grupo(x.bat): {r.desfecho}; o cmd.exe rodou e escreveu: "
+      f"{marca.read_text().strip() if marca.exists() else '(nada)'}")
+marca.unlink(missing_ok=True)
+r = windows.rodar_e_esperar([str(bat)])
+print(f"E3 rodar_e_esperar(x.bat): {r.desfecho}; escreveu: {marca.read_text().strip() if marca.exists() else '(nada)'}")

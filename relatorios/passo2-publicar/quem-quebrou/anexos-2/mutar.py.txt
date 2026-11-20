@@ -1,0 +1,98 @@
+"""Mutações de quem tenta quebrar (volta 2 do passo 2): desliga cada conserto numa cópia e roda o teste citado.
+
+Uso: python mutar.py <pasta da cópia> [nome ...]. Cada mutação troca um trecho (que tem de existir UMA vez), roda o
+pytest de um arquivo só, com -k, e devolve o arquivo ao original.
+"""
+import subprocess
+import sys
+from pathlib import Path
+
+PY = r"D:\programas\EditorImpressao\.venv\Scripts\python.exe"
+
+M = {
+    "A1_cleanup_sempre": ("publicar_versao_kaique.py",
+                          'if situacao == "liberada":\n            pedido.append("--cleanup-tag")',
+                          'pedido.append("--cleanup-tag")',
+                          "tests/test_publicar_versao.py", "achado1"),
+    "A1b_aviso_vira_erro": ("publicar_versao_kaique.py",
+                            "    aviso = destino.apagar(etiqueta)\n",
+                            "    aviso = destino.apagar(etiqueta)\n    if aviso:\n        raise Parou('nao apagou')\n",
+                            "tests/test_publicar_versao.py", "achado1"),
+    "A2_mata_so_o_principal_e_diz_conferido": ("core/windows.py",
+                            "        if self._grupo and not w.kernel32.TerminateJobObject(self._grupo, 1):",
+                            "        self.processo.kill(); self.processo.wait()\n        return _certo('fechados o programa e tudo o que ele abriu (conferido)')\n        if self._grupo and not w.kernel32.TerminateJobObject(self._grupo, 1):",
+                            "tests/test_publicar_versao.py", "achado2 or n10"),
+    "A4_apaga_depois_de_liberar": ("publicar_versao_kaique.py",
+                            '            if agora != "rascunho":', '            if False:',
+                            "tests/test_publicar_versao.py", "achado4"),
+    "A4b_nunca_apaga_o_rascunho_depois_de_pedir": ("publicar_versao_kaique.py",
+                            '            if agora != "rascunho":', '            if True:',
+                            "tests/test_publicar_versao.py", ""),
+    "A5_erro_do_disco_cru": ("publicar_versao_kaique.py",
+                            "    except OSError as erro:\n        # achado 5",
+                            "    except ZeroDivisionError as erro:\n        # achado 5",
+                            "tests/test_publicar_versao.py", "achado5"),
+    "A7_nome_repetido_entregue": ("servidor_das_versoes.py",
+                            "return achados[0] if len(achados) == 1 else None",
+                            "return achados[0] if achados else None",
+                            "tests/test_publicar_servidor.py", ""),
+    "A7b_msi_sem_numero": ("publicar_versao_kaique.py",
+                            "msi = rascunho / \"instalador\" / empacotar.nome_do_msi_publicado(versao_do_pacote)",
+                            "msi = rascunho / \"instalador\" / empacotar.nome_do_msi()",
+                            "tests/test_publicar_versao.py", ""),
+    "A8_motor_em_instalar_aceito": ("empacotar.py",
+                            "        proibidos.append(f\"{atualizacao.PASTA_DO_QUE_SE_INSTALA}/motor-kraken-\")",
+                            "        pass",
+                            "tests/test_publicar_versao.py", "achado8"),
+    "A9_conta_volta_a_5": ("empacotar.py", "(7 if saida.com_msi else 4)", "(5 if saida.com_msi else 3)",
+                           "tests/test_publicar_versao.py", "d776"),
+    "A11_match": ("publicar_versao_kaique.py", "ETIQUETA_ACEITA.fullmatch(", "ETIQUETA_ACEITA.match(",
+                  "tests/test_publicar_versao.py", "achado11"),
+    "N13_juncao_servida": ("publicar_versao_kaique.py",
+                           " and not p.is_symlink() and not p.is_junction())", ")",
+                           "tests/test_publicar_servidor.py", "n13"),
+    "N5_apagar_sem_conferir": ("publicar_versao_kaique.py",
+                           "    if destino.situacao(etiqueta) is not None:\n        raise Parou(f\"pedi para apagar",
+                           "    if False:\n        raise Parou(f\"pedi para apagar",
+                           "tests/test_publicar_versao.py", "n5"),
+    "N14_assinatura_nao_conferida": ("publicar_versao_kaique.py",
+                           "        if motivo is not None:\n            raise Parou(f\"a assinatura lida de",
+                           "        if False:\n            raise Parou(f\"a assinatura lida de",
+                           "tests/test_publicar_versao.py", "n1_n3"),
+    "N4_motor_nao_relido": ("publicar_versao_kaique.py",
+                           "        if de_novo != motor:", "        if False:",
+                           "tests/test_publicar_versao.py", "n1_n3"),
+    "A6_sinal_na_pasta_apagada": ("core/windows.py", 'sinal = pasta_do_sinal / "comecei.txt"',
+                                  'sinal = pasta / "comecei.txt"', "tests/test_windows_peca.py", "curto"),
+}
+
+
+def rodar(copia: Path, nome: str) -> str:
+    arquivo, velho, novo, teste, filtro = M[nome]
+    caminho = copia / arquivo
+    original = caminho.read_bytes()
+    texto = original.decode("utf-8")
+    if '\r\n' in texto:
+        velho, novo = velho.replace('\n', '\r\n'), novo.replace('\n', '\r\n')
+    n = texto.count(velho)
+    if n != 1:
+        return f"{nome}: TRECHO ACHADO {n} VEZES (mutacao nao aplicada)"
+    caminho.write_bytes(texto.replace(velho, novo).encode("utf-8"))
+    try:
+        cmd = [PY, "-m", "pytest", teste, "-q", "-p", "no:cacheprovider", "-x"]
+        if filtro:
+            cmd += ["-k", filtro]
+        r = subprocess.run(cmd, cwd=copia, capture_output=True, text=True, encoding="utf-8", errors="replace",
+                           env={**__import__("os").environ, "QT_QPA_PLATFORM": "offscreen"}, timeout=900)
+        fim = [l for l in r.stdout.splitlines() if l.strip()][-1:]
+        falhou = [l for l in r.stdout.splitlines() if l.startswith("FAILED")]
+        veredito = "ACUSADA" if r.returncode != 0 else "PASSOU (não acusada)"
+        return f"{nome}: {veredito} | {fim[0] if fim else ''} | {'; '.join(falhou)[:300]}"
+    finally:
+        caminho.write_bytes(original)
+
+
+if __name__ == "__main__":
+    copia = Path(sys.argv[1])
+    for nome in (sys.argv[2:] or list(M)):
+        print(rodar(copia, nome), flush=True)

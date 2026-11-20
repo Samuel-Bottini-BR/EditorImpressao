@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo 2: segunda conferência de quem tentou quebrar</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Passo 2 do plano da parte do Windows: segunda conferência de quem tentou quebrar (19/11/2026)</h1>
+<p>Sou um agente novo nesta volta (D-815): não escrevi este código, não fiz a volta 1 e não mexi no código. Não rodei o
+vpk, o PyInstaller nem o <code>gh release</code>, não publiquei nada, não pedi licença de administrador e não abri janela na tela
+do Samuel. Tudo o que rodei foi numa cópia do código (<code>git archive</code>) na pasta de rascunho desta conversa.</p>
+<h2>Pedido</h2>
+<ul>
+<li>Papel: quebrador</li>
+<li>Commit de partida: 403afc07</li>
+<li>Ramo: passo2-publicar-2026-11-19</li>
+</ul>
+<h2>Arquivos que vou mexer</h2>
+<ul>
+<li><code>publicar_versao_kaique.py</code></li>
+<li><code>empacotar.py</code></li>
+<li><code>montar_motor_kraken.py</code></li>
+<li><code>core/ocr_kraken.py</code></li>
+<li><code>versao.py</code></li>
+<li><code>core/windows.py</code></li>
+<li><code>tests/test_windows_peca.py</code></li>
+<li><code>servidor_das_versoes.py</code></li>
+<li><code>tests/test_empacotar.py</code></li>
+<li><code>tests/test_publicar_*.py</code></li>
+<li><code>relatorios/passo2-publicar/</code></li>
+</ul>
+<p>(A lista é a do pacote, copiada sem mudar. Na prática só escrevi em <code>relatorios/passo2-publicar/quem-quebrou/</code>.)</p>
+<h2>Veredito</h2>
+<p><strong>NÃO ESTÁ PRONTO para a prova à vista.</strong> Os 11 achados da volta 1 foram consertados pela causa, e conferi isso eu
+mesmo: desliguei cada conserto numa cópia e o teste dele falhou. Mas achei <strong>três problemas médios novos</strong>:</p>
+<ol>
+<li>depois de pedir para liberar, uma leitura atrasada do destino faz o publicar <strong>apagar uma versão que já estava
+   liberada</strong>: a regra "só o rascunho é apagado" é decidida numa leitura, e o apagar lê de novo por conta própria;</li>
+<li>se a cópia do .msi para a pasta de saída falha no meio (disco cheio), <strong>um .msi pela metade fica lá com o nome
+   certo</strong>, e a frase diz "o que esta vez fez pela metade foi apagado";</li>
+<li>a peça fechada do Windows <strong>deixa rodar o cmd.exe por um arquivo .bat ou .cmd</strong>, e a peça nova <code>abrir_em_grupo</code>
+   herda essa porta (os próprios testes usam um <code>vpk.cmd</code>).</li>
+</ol>
+<p>Nenhum é grave e nenhum aparece no roteiro da prova à vista como ele está. Pela D-775, achado volta para quem
+escreveu; a gerente decide se manda consertar antes ou se leva à prova com eles escritos. Não escrevo "PRONTO PARA
+CONFERIR" (D-798): ainda falta a prova à vista. Nunca "aprovado": só o Samuel aprova.</p>
+<h2>Decisões que esta tarefa precisa cumprir</h2>
+<ul>
+<li>D-775 "o agente vai tentar quebrar antes de fazer o teste real na tela né?" · "ok". Aqui: tentei quebrar sem
+  pergunta do Windows; o resultado vai à gerente.</li>
+<li>D-815 "esses agentes que você criou, sempre que vai fazer uma tarefa nova, chama outro com a mesmas instruções ou
+  ifac rodando sempre o mesmo com memorias compactadas?" · "ok". Aqui: agente novo nesta volta.</li>
+<li>D-798 "fechou". Aqui: sem o rótulo de pronto.</li>
+<li>D-776 "Sim, no C só tem que cuidar para não encher o disco C inteiro". Aqui: conferi a conta (4 e 7 vezes) no código
+  do vpk.</li>
+<li>D-767 "não faça mais nada escodindo ou de mentira". Aqui: o grupo do Windows rodou de verdade; o vpk e o GitHub, não
+  (proibidos neste pedido).</li>
+<li>D-809, D-811, D-812, D-813 (as regras da peça fechada e das proteções). Aqui: achados 3, 4 e 5.</li>
+</ul>
+<h2>O que li</h2>
+<ul>
+<li><code>.claude/agents/verificador.md</code>, o <code>CLAUDE.md</code> inteiro, <code>memoria/INDICE.md</code> e <code>memoria/catalogo-de-erros.md</code>
+  (famílias F1 a F10).</li>
+<li>O meu pacote (<code>anexos/pacote-quem-quebra-volta2.md</code>), o relatório da volta 1 (<code>quem-quebrou/relatorio-1.md</code>), o
+  formulário do outro (<code>ONDE-PAREI.md</code>) e os anexos <code>reversao-volta2-resultado.txt</code> e <code>d809-jeito-antigo.txt</code>.</li>
+<li>O plano v3 (worktree <code>plano-windows</code>): o passo 2 e as peças 8, 9 e 10.</li>
+<li>O Livro de decisões no ramo <code>obra-2026-10-26</code> (D-809 a D-815; no ramo deste passo elas ainda não estão).</li>
+<li>O código da volta 2 inteiro (<code>git diff a58f181b 0d51ad5e</code>): <code>core/windows.py</code> (<code>ProgramaEmGrupo</code>, <code>abrir_em_grupo</code>,
+  <code>lancar_powershell_solto</code>), <code>empacotar.py</code> (<code>rodar_vpk</code>, <code>espaco_que_vai_usar</code>, <code>proibidos_no_pacote_do_velopack</code>,
+  <code>nome_do_msi_publicado</code>), <code>publicar_versao_kaique.py</code> inteiro, <code>servidor_das_versoes.py</code> e os testes novos.</li>
+<li><strong>O código do vpk 1.2.161</strong> (a cópia em <code>saida_teste\publicar-rapido\fonte-velopack\repo</code>, etiqueta 1.2.161,
+  commit 92d6a1c9), para a conta do espaço: <code>PackageBuilder.cs</code> 55-192 e 286-305, <code>WindowsPackCommandRunner.cs</code> 35-60
+  e 200-252, <code>MsiBuilder.cs</code> 180-225, <code>BuildAssets.cs</code> 37-42.</li>
+<li><strong>O código do gh</strong> (<code>cli/cli</code>, <code>pkg/cmd/release/delete/delete.go</code>, ramo trunk, lido de novo em 19/11): com
+  <code>--cleanup-tag</code>, o <code>deleteRun</code> apaga a etiqueta depois da publicação, sem olhar se é rascunho; o <code>IsDraft</code> só aparece
+  no aviso de "a etiqueta ficou". Bate com o conserto do achado 1.</li>
+</ul>
+<h2>O que conferi nas falhas, nas peças de fora e nos caminhos</h2>
+<p><strong>Os 11 achados da volta 1, refeitos por mim numa cópia</strong> (o resultado está em <code>anexos-2/mutacoes-resultado.txt</code>; as
+primeiras linhas com "0 vezes" são da minha primeira tentativa, antes de eu ajustar o script às quebras de linha do
+Windows, e foram refeitas logo abaixo):</p>
+<table>
+<thead>
+<tr>
+<th>Achado</th>
+<th>O que eu desliguei</th>
+<th>O teste falhou?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>o apagar do rascunho no GitHub volta a pedir a etiqueta</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>1</td>
+<td>o aviso do gh volta a virar "não apagou" sem ler</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>2</td>
+<td>fechar só o vpk e dizer "fechados (conferido)"</td>
+<td><strong>não</strong> (achado 4 abaixo)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>N5, N14, N13, e os do formulário</td>
+<td>sim; <strong>N4: não</strong> na comparação (achado 6)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>apagar a versão depois de pedir para liberar</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>4</td>
+<td>nunca apagar o rascunho depois de pedir para liberar</td>
+<td><strong>não</strong> (achado 5)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>o erro do disco volta a sair cru</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>6</td>
+<td>o sinal de vida volta para a pasta que o script apaga</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>7</td>
+<td>o servidor volta a entregar nome repetido</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>7</td>
+<td>o .msi volta ao nome sem o número</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>8</td>
+<td>a atualização volta a aceitar o motor em instalar\</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>9</td>
+<td>a conta volta a 3 e 5 vezes</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>11</td>
+<td>a etiqueta volta ao <code>match</code></td>
+<td>sim</td>
+</tr>
+</tbody>
+</table>
+<p>E rodei os testes novos <strong>no código da volta 1</strong> (os três arquivos novos copiados sobre <code>a58f181b</code>): 11 falharam em
+<code>test_publicar_versao.py</code>, 2 em <code>test_publicar_servidor.py</code> e 2 em <code>test_windows_peca.py</code>. Os de N1, N3, N4, N5, N6,
+N8 e N14 passam lá, e está certo: essas proteções já existiam, só não tinham teste.</p>
+<p>Dois testes falham no código antigo pela frase ou por falta da função, não pelo comportamento: o do achado 2 (falha
+em "fechados (conferido)") e o do achado 11 (falta <code>e_etiqueta</code>). O comportamento dos dois está provado pelas
+mutações acima (o do 2, só em parte: achado 4).</p>
+<p><strong>A peça nova <code>abrir_em_grupo</code>, rodada de verdade</strong> (<code>anexos-2/grupo_casos.py.txt</code>, resultado em
+<code>anexos-2/experiencias-resultado.txt</code>):</p>
+<ul>
+<li>Fecha os filhos: sim. O teste da peça abre um processo que abre outro, e os dois param. Os netos (o wix.exe dentro do
+  cmd.exe) entram no mesmo grupo, pela documentação da Microsoft ("Job Objects").</li>
+<li>Programa que sai na hora (o <code>true.exe</code> do Git, 40 vezes): nenhuma vez deu "não deixou pôr no grupo".</li>
+<li><strong>O instante entre abrir e pôr no grupo:</strong> existe (o <code>Popen</code> abre e só depois o programa entra no grupo). Com o vpk
+  o risco é pequeno, porque ele só abre o cmd.exe minutos depois. Mas a conferência "nada ficou vivo" <strong>não vê</strong> quem
+  escapou: provei com um processo fora do grupo, e <code>fechar_tudo</code> disse "fechados (conferido)" com ele vivo (achado 4).</li>
+<li><strong>Se o grupo não puder ser criado:</strong> <code>abrir_em_grupo</code> devolve "falhou" e fecha o que abriu; o <code>rodar_vpk</code> devolve
+  "não consegui abrir o vpk (...)", o publicar para e o rascunho é apagado. Não há desvio para rodar sem o grupo. Lido,
+  não provocado (não dá para fazer o Windows recusar sem mexer nele).</li>
+<li><strong>As regras da peça fechada:</strong> <code>abrir_em_grupo</code> usa a mesma recusa do rodar genérico (<code>_programa_com_funcao_propria</code>),
+  sem conta própria. Mas a recusa deixa passar o .bat e o .cmd, que o Windows roda pelo cmd.exe (achado 3).</li>
+</ul>
+<p><strong>A decisão da gerente (depois de pedir para liberar, não apagar):</strong></p>
+<ul>
+<li>Se a leitura falha: não apaga, diz "NÃO apaguei" e para. Conferido no teste e na mutação.</li>
+<li>Se a leitura diz "rascunho": apaga. Funciona (meu caso 2 em <code>anexos-2/liberada_apagada.py.txt</code>), mas nenhum teste
+  cobra isso (achado 5).</li>
+<li><strong>Só o rascunho é apagado? Não garantido</strong> (achado 1).</li>
+</ul>
+<p><strong>O .msi com o número da versão:</strong> o publicar dá o nome num lugar só (<code>empacotar.nome_do_msi_publicado</code>). O servidor
+não tem regra de nome: ele recusa qualquer nome que esteja em duas publicações. Não há duas regras, e os dois batem.
+O índice (<code>releases.win.json</code>), que se repete em toda publicação, é tratado à parte, como antes.</p>
+<p><strong>A conta do espaço refeita (4 e 7 vezes), conferida linha por linha no vpk 1.2.161:</strong></p>
+<ul>
+<li><code>PackageBuilder.cs:76</code>: a pasta temporária vive até o fim do pack. Confere.</li>
+<li><code>WindowsPackCommandRunner.cs:55-56</code>: a cópia do pré-processo. É uma cópia inteira da pasta. Confere.</li>
+<li><code>PackageBuilder.cs:288-294</code>: a cópia para o pacote. Outra cópia inteira. Confere.</li>
+<li><code>PackageBuilder.cs:303</code> e <code>WindowsPackCommandRunner.cs:211-226</code>: o pacote, e o Setup.exe com o pacote dentro. Os
+  dois ficam na temporária, porque <code>BuildAssets(pkgTempDir)</code> grava lá até o <code>MoveBagTo</code> do fim. Confere: 2 cópias e
+  2 comprimidos.</li>
+<li><code>WindowsPackCommandRunner.cs:231-235</code>: o .msi copia a pasta mais uma vez. Confere.</li>
+<li><code>MsiBuilder.cs:186-221</code>: o WiX usa uma temporária que sai do mesmo <code>TempUtil</code>, dentro do rascunho. Confere. Que os
+  pedaços do WiX somam mais um comprimido não está no código do vpk (é do WiX): o outro escreveu "deduzido, não lido",
+  e está certo.</li>
+<li>Contando o comprimido igual à pasta: 4 vezes sem o .msi e 7 com ele. A conta está certa.</li>
+<li>Medi a pasta montada de hoje no D: (<code>dist\EditorImpressao</code>): 1,84 GB, dos quais 1,06 GB são o motor. Sem o motor,
+  uns 0,78 GB. A conta com o .msi dá uns 12,8 GB. O C: tem hoje 48,9 GB livres: a prova com o .msi passa da reserva.</li>
+<li>Fica de fora da conta o arquivo do motor baixado para o rascunho, uns 0,8 GB (achado 7). A margem de 1 GB cobre.</li>
+</ul>
+<p><strong>O que os consertos podem ter quebrado.</strong> Rodei na cópia, um arquivo por vez:</p>
+<table>
+<thead>
+<tr>
+<th>Arquivo de teste</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_publicar_versao.py</code></td>
+<td>36 passaram</td>
+</tr>
+<tr>
+<td><code>test_publicar_servidor.py</code></td>
+<td>13 passaram</td>
+</tr>
+<tr>
+<td><code>test_publicar_motor.py</code></td>
+<td>12 passaram</td>
+</tr>
+<tr>
+<td><code>test_windows_peca.py</code></td>
+<td>57 passaram, 2 pulados</td>
+</tr>
+<tr>
+<td><code>test_empacotar.py</code></td>
+<td>41 passaram</td>
+</tr>
+<tr>
+<td><code>test_decisoes_atualizacao.py</code></td>
+<td>38 passaram</td>
+</tr>
+<tr>
+<td><code>test_windows_janela_de_prova.py</code></td>
+<td>10 passaram</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>A rodada do GitHub 44663876080 testou o commit 0d51ad5e (está no registro da rodada: "codigo trocado pelo de
+  passo2-publicar-2026-11-19 (0d51ad5e...)"). Deu success, com o porteiro em success.</li>
+<li>Na peça do passo 1, o lançar solto ganhou uma segunda pasta de troca. Ela é apagada no fim e, se sobrar, pela limpeza
+  das trocas velhas. A janela de prova (<code>prova_lancar_solto</code>) continua passando.</li>
+</ul>
+<h2>Caminhos que o outro não listou</h2>
+<ol>
+<li><strong>Liberar que deu certo no destino, com a resposta perdida ou a leitura atrasada.</strong> O pedido falha, mas a versão
+   já está liberada lá (achado 1).</li>
+<li><strong>A cópia do .msi para a pasta de saída depois de a versão estar liberada.</strong> Pode falhar no meio, por disco cheio ou
+   Ctrl+C (achado 2).</li>
+<li><strong>Um programa que é um arquivo .bat ou .cmd</strong>, pelo rodar genérico e pelo grupo. Quem roda é o cmd.exe (achado 3).</li>
+<li><strong>Um processo que escapou do grupo</strong> no instante antes de o programa entrar nele (achado 4).</li>
+<li><strong>O arquivo do motor baixado para o rascunho</strong> antes da segunda passada do vpk (achado 7).</li>
+<li><strong>A peça chamada por um programa sem console</strong> (pythonw, ou o próprio programa no passo 3). <code>abrir_em_grupo</code> abre o
+   programa "com a janela de console de quem chama": sem console, o Windows cria uma janela de console nova na tela
+   (achado 10, observação para o passo 3).</li>
+</ol>
+<h2>Falhas não pensadas e resultado não conferido</h2>
+<ul>
+<li><strong>Resultado não conferido (F5):</strong></li>
+<li>o apagar decide de novo, numa leitura própria, o que apagar (achado 1);</li>
+<li>"o que esta vez fez pela metade foi apagado" é dito sem conferir (achado 2);</li>
+<li><code>fechar_tudo</code> diz "conferido" contando só quem está no grupo (achado 4);</li>
+<li><code>vivos()</code> sem leitura vira "algum continua rodando" (achado 9).</li>
+<li><strong>O vizinho passa (F2):</strong> o .bat e o .cmd passam pela recusa da peça (achado 3).</li>
+<li><strong>Proteção sem teste que a acuse (F3):</strong></li>
+<li>o apagar do rascunho depois de pedir para liberar (achado 5);</li>
+<li>a comparação "o motor mudou durante a publicação" (achado 6);</li>
+<li>a frase "conferido" da vigia (achado 4).</li>
+<li><strong>O escrito não bate com o código (F7):</strong> achado 8 (o cabeçalho da peça, a nota do rascunho na pasta, a frase do
+  servidor, as contas da seção "Ressalvas").</li>
+<li><strong>Regra copiada (§11.12):</strong> o nome "motor-kraken-" está escrito à mão em mais um lugar novo (achado 7).</li>
+<li><strong>F1 (dado que o conferido pode trocar), F9 (mexer no que é do Samuel), F4 (o teste supõe o computador):</strong> não achei
+  caso novo. O conserto do teste do achado 5 (o vpk de mentira na linha de comando) resolve a F4 que o GitHub pegou.</li>
+</ul>
+<h2>As regras que conferi</h2>
+<ul>
+<li><strong>§11.12.1 (uma peça por conversa):</strong> o grupo do Windows está na peça, com a mesma recusa do rodar genérico.
+  Cumprida. As constantes do grupo foram escritas de novo como números soltos em <code>_situacao_do_grupo</code>
+  (<code>core/windows.py:1281-1291</code>). É pouco, mas é a mesma conta em dois jeitos.</li>
+<li><strong>§11.12.2 (nada dado como feito sem conferir):</strong> falha nos achados 2 e 4.</li>
+<li><strong>§11.12.3 (a lista das falhas):</strong> faltam os caminhos 1 a 5 acima.</li>
+<li><strong>§11.12.6 e D-813 (ler a peça de fora e tudo o que ela aceita):</strong> o vpk e o gh foram bem lidos. O Windows aceita
+  rodar .bat e .cmd pelo CreateProcess, que abre o cmd.exe, e isso não foi listado (achado 3).</li>
+<li><strong>D-811 (cada proteção com o teste que falha sem ela):</strong> três lacunas (achados 4, 5 e 6).</li>
+<li><strong>D-776:</strong> a conta está certa. A vigia roda durante o vpk e durante a compressão do motor, mas não durante o
+  download do motor (achado 7).</li>
+<li><strong>D-795:</strong> o Setup.exe é apagado logo depois de cada vpk e nunca está na lista do destino. Conferido no código e no
+  teste N6.</li>
+<li><strong>Decisão da gerente do achado 4 (D-014):</strong> cumprida pela metade (achados 1 e 5).</li>
+<li><strong>D-798:</strong> o ramo não tem rótulo de pronto.</li>
+<li><strong>D-809:</strong> não criei junção nesta volta. O repositório continua com <code>--is-shallow-repository</code> = false, antes e
+  depois.</li>
+</ul>
+<h2>Achados</h2>
+<ol>
+<li>
+<p><strong>MÉDIO: uma leitura atrasada depois de liberar faz o publicar apagar uma versão que já estava liberada.</strong>
+   - Onde: <code>publicar_versao_kaique.py:533</code> (<code>publicar_arquivos</code>, o <code>if agora != "rascunho"</code>),
+     <code>publicar_versao_kaique.py:468</code> (<code>apagar_publicacao</code>) e <code>publicar_versao_kaique.py:451-456</code>
+     (<code>DestinoGitHub.apagar</code>).
+   - O que acontece: a decisão "ainda é rascunho, pode apagar" é tomada numa leitura. Depois, <code>apagar_publicacao</code> lê de
+     novo, e <code>DestinoGitHub.apagar</code> lê uma terceira vez. Se essa leitura disser "liberada", ele apaga a versão
+     liberada, e com a etiqueta.
+   - Quando acontece: o liberar chega ao GitHub, mas a resposta se perde (a internet cai na volta). Ou o liberar dá
+     certo e a leitura logo depois ainda mostra o estado antigo. É o mesmo caso que a decisão da gerente quer evitar:
+     o número da versão fica livre para outro conteúdo.
+   - Provado com uma pasta de verdade: o liberar troca o nome da pasta e depois dá erro, e a primeira leitura ainda
+     diz "rascunho". Resultado: "a publicação v9.9.9 foi apagada (conferido)", e a versão liberada sumiu
+     (<code>anexos-2/liberada_apagada.py.txt</code>, caso 1).
+   - Não sei se o GitHub responde mesmo com atraso depois de liberar: não achei isso na documentação. A falha de
+     desenho existe nos dois destinos.
+   - O que pedir: o apagar do caminho de erro recebe "só se for rascunho" e confere isso na hora de apagar. Se ler
+     "liberada", não apaga e diz "liberada; não apaguei". Com um teste.</p>
+</li>
+<li>
+<p><strong>MÉDIO: um .msi pela metade fica na pasta de saída com o nome certo, e a frase diz que o que ficou pela metade foi
+   apagado.</strong>
+   - Onde: <code>publicar_versao_kaique.py:756</code> (<code>shutil.copyfile(msi, ...)</code>, depois de a versão estar liberada) e
+     <code>publicar_versao_kaique.py:864</code> e <code>:868</code> (as frases do <code>main</code>).
+   - O que acontece: o <code>copyfile</code> do Python não apaga o arquivo de destino quando falha no meio (disco D: cheio, ou
+     Ctrl+C). O publicar para. A conferência do fim lista o .msi como se fosse normal. A linha de comando diz "O que
+     esta vez fez pela metade foi apagado". A versão foi publicada, e a frase não diz isso.
+   - Provado: com a cópia falhando depois de 10 bytes, ficou <code>v9.9.9/EditorImpressaoPrograma-9.9.9-win.msi</code> (10 bytes)
+     na pasta de saída, e o destino continuou com a versão liberada (<code>anexos-2/test_quebra_msi.py.txt</code> e
+     <code>experiencias-resultado.txt</code>).
+   - Risco: o Samuel entregar ao Kaique um instalador estragado.
+   - O que pedir: copiar num nome provisório e trocar de uma vez, como o <code>DestinoPasta.enviar</code> já faz. Na falha, apagar
+     o provisório. A frase do <code>OSError</code> e do Ctrl+C dizer o que de fato ficou: a versão publicada, o .msi que não
+     saiu. Com um teste.</p>
+</li>
+<li>
+<p><strong>MÉDIO: a peça fechada do Windows deixa rodar o cmd.exe por um arquivo .bat ou .cmd, e a peça nova herda isso.</strong>
+   - Onde: <code>core/windows.py:1050</code> (<code>_programa_com_funcao_propria</code>), usada por <code>rodar_e_esperar</code>, <code>lancar_solto</code> e
+     <code>abrir_em_grupo</code> (<code>core/windows.py:1204</code>).
+   - O que acontece: a recusa olha onde está o arquivo pedido. Um <code>x.bat</code> fora da pasta do Windows passa, e o Windows
+     o roda pelo <code>C:\WINDOWS\system32\cmd.exe</code>, que é programa da pasta do Windows, com função própria na peça.
+   - Provado: <code>abrir_em_grupo(["x.bat"])</code> e <code>rodar_e_esperar(["x.bat"])</code> deram certo, e o .bat escreveu
+     <code>C:\WINDOWS\system32\cmd.exe</code> (<code>anexos-2/experiencias-resultado.txt</code>, E3).
+   - Os testes do passo dependem dessa porta: o vpk de mentira é um <code>vpk.cmd</code>
+     (<code>tests/test_publicar_versao.py:103-104</code>).
+   - É a família F2 de novo (o vizinho passa), na peça do passo 1. Por um .bat, um chamador dos passos 3 a 5 pode
+     rodar ferramentas de tarefa e de licença sem o porteiro ver.
+   - O que pedir: a recusa olha também o tipo do arquivo. Extensão de lote (.bat, .cmd), e o que mais o Windows abre
+     por outro programa, é recusada. A lista vem da documentação do CreateProcess, como a D-813 manda. O vpk de
+     mentira dos testes passa a ser um programa de verdade. Com um teste.</p>
+</li>
+<li>
+<p><strong>BAIXO-MÉDIO: <code>fechar_tudo</code> diz "fechados (conferido)" contando só quem está no grupo, e o teste do achado 2 não
+   prova a frase.</strong>
+   - Onde: <code>core/windows.py:1170-1187</code> (<code>fechar_tudo</code>) e o texto do cabeçalho em <code>core/windows.py:1141</code> ("o
+     <code>fechar_tudo</code> confere o que ficou").
+   - O que acontece: um processo que escapou do grupo no instante antes de o vpk entrar nele não é visto. Provado com
+     um processo fora do grupo: "deu certo, fechados (conferido)", e ele continuou vivo (E2).
+   - E mais: desliguei o fechamento do grupo e pus a frase "conferido" direto. Os testes do achado 2 e do N10
+     passaram. O que fecha o filho nos testes é o fechar-ao-fechar do grupo, no fim do <code>with</code>, que vem depois da
+     frase. A frase "conferido" não tem teste que a acuse.
+   - O que pedir: abrir o programa já parado, pô-lo no grupo e só então soltá-lo. O Windows documenta isso:
+     <code>CREATE_SUSPENDED</code>, <code>AssignProcessToJobObject</code> e <code>ResumeThread</code>, ou a lista de grupos do <code>CreateProcess</code>. Assim o
+     instante some, e o texto do cabeçalho passa a ser verdade. Com um teste que acuse a frase sem a conferência.</p>
+</li>
+<li>
+<p><strong>BAIXO-MÉDIO: nenhum teste cobra que o rascunho é apagado quando o liberar falha e ele continua rascunho.</strong>
+   - Onde: <code>publicar_versao_kaique.py:533-543</code>.
+   - Desliguei esse apagar (<code>if True:</code>) e os 36 testes de <code>test_publicar_versao.py</code> passaram. É a outra metade da
+     decisão da gerente: sem ela, o rascunho fica no destino.
+   - Rodando, o caminho funciona (<code>liberada_apagada.py.txt</code>, caso 2), mas falta o teste (D-811).</p>
+</li>
+<li>
+<p><strong>BAIXO: a comparação "o motor publicado mudou durante a publicação" não tem teste.</strong>
+   - Onde: <code>publicar_versao_kaique.py:622</code>.
+   - O teste do N4 apaga o motor, e a leitura para antes, com "não está publicado". Desligando só a comparação
+     (<code>if False:</code>), os quatro testes passam. O caso que fica sem prova: o motor trocado por outro com a mesma etiqueta.</p>
+</li>
+<li>
+<p><strong>BAIXO: o arquivo do motor baixado para o rascunho fica fora da conta e da vigia; e o nome "motor-kraken-" está
+   escrito à mão em mais um lugar.</strong>
+   - Onde: <code>publicar_versao_kaique.py:731</code> (o download, uns 0,8 GB no C:) e <code>empacotar.py:1288</code>
+     (<code>espaco_que_vai_usar</code>, que não o conta). A margem de 1 GB cobre hoje.
+   - A vigia do espaço só roda durante o vpk e a compressão do motor; durante esse download, não (D-776: "ele vigia o
+     espaço durante o trabalho").
+   - O nome: <code>empacotar.py:1435</code> (novo, achado 8), mais <code>empacotar.py:1210</code> e <code>publicar_versao_kaique.py:86</code>, escrevem
+     "motor-kraken-" à mão. O lugar único é <code>versao.arquivo_do_motor</code> e <code>versao.etiqueta_do_motor</code> (§11.12: "uma lista
+     é escrita uma vez").</p>
+</li>
+<li>
+<p><strong>BAIXO: textos que não batem com o código (F7).</strong>
+   - <code>core/windows.py:9-11</code>: "Nenhum chamador do programa usa esta peça ainda". Agora o <code>empacotar</code> a usa, para o
+     grupo e para a assinatura.
+   - <code>publicar_versao_kaique.py:276</code>: "Cria o rascunho vazio (com as notas num arquivo de texto ...)". Nenhuma nota é
+     gravada.
+   - <code>servidor_das_versoes.py:195</code>: um nome que está em duas publicações aparece na janela como "não existe aqui
+     (404)". Ele existe, duas vezes.
+   - Na seção "Ressalvas" do ONDE-PAREI, as contas do espaço com o .msi se contradizem: "26 GB livres ... recusa (pede
+     uns 10 GB)" e, na mesma linha, "com 26 GB livres e o .msi pedido, a conta dá uns 8 GB e passa". Pela pasta de
+     hoje, a conta com o .msi dá uns 12,8 GB.</p>
+</li>
+<li>
+<p><strong>BAIXO: sem leitura do grupo, a frase diz "algum continua rodando".</strong>
+   - Onde: <code>core/windows.py:1186-1187</code>.
+   - Quando <code>vivos()</code> não consegue ler o grupo (devolve None), a frase é "algum continua rodando". O certo é "não deu
+     para conferir".
+   - Na mesma linha de cuidado: em <code>core/windows.py:1381-1382</code>, se a segunda pasta de troca não puder ser criada, a
+     primeira fica para a limpeza do dia seguinte.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO para o passo 3 (não é defeito hoje): <code>abrir_em_grupo</code> abre o programa com o console de quem chama.</strong></p>
+<ul>
+<li>Onde: <code>core/windows.py:1206</code>.</li>
+<li>Do publicar, isso está certo. Do programa do Kaique, que não tem console, abriria uma janela preta na tela dele.</li>
+<li>Se o passo 3 usar o grupo, isso precisa de uma escolha.</li>
+</ul>
+</li>
+</ol>
+<h2>O que falta para a prova à vista</h2>
+<ol>
+<li>Quem escreveu consertar os achados 1, 2 e 3, cada um com o teste que falha sem o conserto. De preferência também
+   os testes dos achados 4, 5 e 6.</li>
+<li>Ou a gerente decidir levar à prova com eles escritos. Nenhum deles aparece no roteiro como ele está.</li>
+<li>Uma rodada do GitHub sobre o conserto, e outro agente novo para conferir (D-815).</li>
+<li>Na prova à vista, item 5 do roteiro: além do Gerenciador de Tarefas, olhar que o .msi da pasta de saída tem o
+   tamanho do .msi do rascunho.</li>
+</ol>
+<h2>Para a gerente: o que ficou fora do projeto</h2>
+<ul>
+<li>Na pasta de rascunho desta conversa
+  (<code>C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\848d7b72-406b-4bfe-aabf-f5b3005d7b22\scratchpad\q3\</code>)
+  deixei:</li>
+<li>as cópias do código: <code>0d51ad5e\</code> (com um arquivo de teste meu, <code>tests\test_quebra_msi.py</code>), <code>a58f181b\</code> e
+    <code>velho\</code>;</li>
+<li>as pastas das experiências: <code>casos\</code>, <code>casos2\</code>, <code>casos-lib\</code> e <code>casos-lib2\</code>;</li>
+<li>os scripts.</li>
+<li>Não apaguei nada.</li>
+<li>Nenhuma junção foi criada. Nada mudou no Windows: nenhuma tarefa, licença, pergunta de administrador ou janela. Os
+  grupos do Windows que abri foram fechados no fim de cada caso.</li>
+<li>Consultei o GitHub duas vezes (a rodada 44663876080 e o registro dela). O repositório não ficou raso.</li>
+<li>No projeto, só escrevi este relatório (três formatos) e a pasta <code>quem-quebrou/anexos-2/</code>.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 19/11/2026 às 23:43</p>
+</body>
+</html>
