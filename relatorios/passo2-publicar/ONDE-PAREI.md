@@ -62,6 +62,12 @@ As da primeira entrega, de `03c91599`, estão no `git log` deste arquivo.)
   mutações acusadas. Rodada do GitHub 44748591841: success (terceira tentativa; em "Testes"). `--is-shallow-repository` = false antes e depois;
   nenhuma junção criada. **Próximo:** a gerente manda a um agente novo que tenta quebrar (D-815); depois a prova à vista.
 
+- 20/11, **volta 5 (o mesmo escritor da volta 4; a segunda e última volta dele, D-815)**: começo pelo relatório 4 de
+  quem tentou quebrar (`quem-quebrou/relatorio-4.md`, 9 achados: 1 médio, 5 baixos, 3 observações) e pelos anexos
+  `quem-quebrou/anexos-4/` (Q1 a Q4, E5). Pedido da gerente: consertar 1 a 6 (o 4 e o 5 pelas escolhas técnicas dela),
+  e só anotar as observações 7 a 9. Partida do código: `595cc293` (a ponta do ramo é `277fe8fd`; depois de `595cc293`
+  só mudaram documentos). Andamento em "Volta 5" de cada seção.
+
 ## Decisões que esta tarefa precisa cumprir
 
 - D-767 "não faça mais nada escodindo ou de mentira" · "não quero fazer consertos quero que funcione". Aqui: o publicar
@@ -380,6 +386,39 @@ com `grep` por `apagar_publicacao`, `pediu_para_liberar`, `_programa_com_funcao_
 - *Achado 9:* o caminho do teste em texto cru. *Achado 5:* limite da peça (Ressalvas e "Cada proteção"). *Achado 12:*
   Lista de bugs ("Ideias e bugs").
 
+**Volta 5 (relatório 4 de quem tentou quebrar). Antes de mexer: a causa, a regra num lugar só e os caminhos (grep por
+`--apagar`, `comando_de_apagar`, `SemResposta`, `PublicacaoLiberada`, `pediu_para_liberar`, `abriu`, `_por_que_recusa`,
+`gravar_no_disco`):**
+- *Achado 1.* Causa: a volta 4 criou o lugar único do comando de apagar (`_Destino.comando_de_apagar`, com o `--pasta`
+  da pasta das provas) e deixou três frases antigas escrevendo `--apagar <etiqueta>` à mão, sem o destino; na pasta das
+  provas, quem segue a frase apaga no GitHub. Os caminhos (grep `--apagar` em `publicar_versao_kaique.py`): o "sobrou um
+  rascunho" de `publicar_arquivos`, o "já existe" de `publicar` e o de `publicar_motor`; o resto já usa
+  `comando_de_apagar` (a frase da D-816, as do `apagar_publicacao`, a da liberada no meio). Regra: toda frase que manda
+  apagar chama `destino.comando_de_apagar(etiqueta)`.
+- *Achado 2.* Causa: `apagar_publicacao` tratava qualquer `SemResposta` que saísse do apagar do destino como "o pedido
+  de apagar saiu", e o `DestinoGitHub.apagar_rascunho` lê a situação ANTES de pedir: uma leitura sem resposta virava
+  "pedi para apagar". Regra: só o pedido de apagar em si (`DestinoGitHub._pedir_para_apagar`) pode dizer "saiu e ficou
+  sem resposta" (`ApagarSemResposta`, um caso de `SemResposta`); a leitura sem resposta é "não pedi".
+- *Achado 3.* Duas proteções sem teste: (a) o `_gh` de verdade que fecha o gh por tempo levanta `SemResposta`; (b) o
+  `except PublicacaoLiberada: raise` de `apagar_publicacao` (sem ele, a liberada no meio vira "não apaguei" comum e a
+  frase "outra pessoa ... a liberou no meio" some). Um teste para cada, provado desligando numa cópia.
+- *Achado 4 (escolha da gerente).* Causa: `pediu_para_liberar` era marcado antes de saber se o gh chegou a abrir; se o
+  gh nem começa (o `rodar_em_grupo` devolve `abriu: False`: recusado pela peça, não achado, ou fechado ainda parado,
+  antes de rodar), nada saiu do PC. Regra: o `_gh` diz isso com `NadaSaiu` (um caso de `Parou`), e o caminho de erro
+  conta como "não pedi para liberar" só nesse caso, comprovado; e então, pela D-816, apaga o rascunho como antes do
+  pedido. Qualquer outro erro depois de o gh abrir continua sendo pedido. A pasta das provas não muda (o liberar dela
+  é a troca do nome da subpasta; não tem "não abriu").
+- *Achado 5 (escolha da gerente, D-813).* Causa: a regra única olhava o nome do arquivo e o começo dele, mas não o
+  jeito de escrever um FLUXO escondido de outro arquivo (`nada.txt:pwsh.exe`), que o Windows roda. Lido: Microsoft
+  Learn, "File Streams" (o nome completo de um fluxo é "filename:stream name:stream type"; "filename::$DATA" é o
+  próprio arquivo) e "Naming Files, Paths, and Namespaces" (o ":" é reservado no nome; depois da letra do disco, só
+  aparece para fluxo). Regra: em `windows._por_que_recusa`, qualquer ":" depois da letra do disco (no caminho já
+  completado) é recusado, com frase própria. Caminhos: `rodar_e_esperar`, `lancar_solto`, `abrir_em_grupo` (e por ele o
+  vpk e o gh).
+- *Achado 6.* Causa: o texto de `windows.gravar_no_disco` dizia "todo código que grava num nome provisório"; só três
+  passam. Regra: o texto nomeia quem passa (`_gravar_por_inteiro`, `empacotar.copiar_inteiro`,
+  `empacotar.zipar_motor`) e diz quem não passa (a ficha do motor, o PDF de saída, os projetos), sem mexer neles.
+
 ## O que pode falhar e o que o programa faz
 
 | O que pode dar errado | O que o publicar faz |
@@ -438,6 +477,12 @@ com `grep` por `apagar_publicacao`, `pediu_para_liberar`, `_programa_com_funcao_
 | (volta 4) O gh passa do tempo ou a vigia manda parar | o grupo inteiro é fechado e conferido; a frase diz o motivo; o pedido conta como "sem resposta" |
 | (volta 4) Ctrl+C com o gh rodando | o grupo é fechado e a interrupção segue (o mesmo jeito do vpk) |
 | (volta 4) O Windows não grava no disco (o pedido de gravar falha) | a cópia falha como erro do disco: o pedaço é apagado e conferido; o nome certo nunca aparece |
+
+| (volta 5) Na pasta das provas sobrou um rascunho, ou a versão ou o motor já existem | a frase dá o comando de apagar COM o `--pasta` (o lugar único `comando_de_apagar`); seguir a frase nunca toca o GitHub |
+| (volta 5) Antes do pedido de liberar, a leitura de dentro do apagar do rascunho fica sem resposta | a frase diz "não apaguei" e não "pedi para apagar"; só o pedido de apagar que saiu e ficou sem resposta diz "pedi" |
+| (volta 5) O gh nem abre no pedido de liberar (não achado, recusado, fechado antes de rodar) | conta como "não pedi para liberar": o rascunho é apagado e conferido, como antes do pedido (D-816) |
+| (volta 5) O gh abre no pedido de liberar e qualquer coisa dá errado depois (erro, tempo, vigia, Ctrl+C) | continua contando como pedido: nada é apagado (D-816) |
+| (volta 5) O programa pedido à peça é um fluxo escondido de outro arquivo (`arquivo:nome.exe`) | recusado pelo rodar, pelo lançar solto e pelo grupo, com a frase própria do fluxo |
 
 ## O que li da peça de fora e onde
 
@@ -577,6 +622,24 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
 - **Conferir uma publicação no GitHub sem mudar nada (achado 1, a frase):** `gh release view <etiqueta> --json isDraft`,
   o mesmo pedido que o publicar já faz para ler a situação (cli/cli,
   https://github.com/cli/cli/blob/trunk/pkg/cmd/release/shared/fetch.go, lido na volta 1): `"isDraft": true` é rascunho; "release not found", não existe.
+
+**Lido na volta 5 (20/11/2026):**
+- **Os fluxos no nome do programa (achado 5, D-813).** Microsoft Learn, "File Streams (Local File Systems)"
+  (https://learn.microsoft.com/windows/win32/fileio/file-streams): "the full name of a stream is "filename:stream
+  name:stream type", as in the following example: "myfile.dat:stream1:$DATA""; "To fully specify the default data
+  stream, use "filename::$DATA" [...] This is the equivalent of "filename""; "When a drive letter is specified with a
+  relative path, a colon separates the drive letter from the path". "Naming Files, Paths, and Namespaces"
+  (https://learn.microsoft.com/windows/win32/fileio/naming-a-file): o ":" está entre os "reserved characters" de um
+  nome; "C:tmp.txt" é relativo à pasta atual do disco C. Então, num caminho, o ":" só aparece depois da letra do disco
+  (o "C:") ou para dizer um fluxo. **Rodado por quem tentou quebrar** (`relatorios/passo2-publicar/quem-quebrou/anexos-4/e5-nomes-resultado.txt:16`):
+  o Windows roda `nada.txt:pwsh.exe` (uma cópia do hostname.exe gravada como fluxo); o `::$DATA` ele não roda. E rodado
+  de novo por mim no teste novo (os três caminhos), sem a peça e pela peça.
+- **O gh que não abre (achado 4).** `core/windows.py`, `rodar_em_grupo` (o `abriu: False`) e `abrir_em_grupo`: só sai
+  sem programa quando a peça recusa, o Windows não deixa criar o grupo, o `subprocess.Popen` falha (programa não
+  achado), ou o programa, aberto PARADO, é fechado antes de ser solto (Microsoft Learn, Process Creation Flags,
+  CREATE_SUSPENDED: "does not run until the ResumeThread function is called",
+  https://learn.microsoft.com/windows/win32/procthread/process-creation-flags). Em todos, o gh não executou nada: o
+  pedido não saiu do PC.
 
 ## O que foi feito
 
