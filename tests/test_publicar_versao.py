@@ -1738,3 +1738,104 @@ def test_volta4_achado11_a_copia_e_o_motor_gravam_no_disco_antes_de_conferir_e_t
     ordem.clear()
     assert empacotar.zipar_motor(motor, tmp_path / "motor.zip", livre=lambda p: 500 * empacotar.GB) is None
     assert ordem == ["gravar no disco", "trocar o nome"], ordem
+
+
+class _GitHubQueNaoRespondeAoApagar(_GitHubDeMentira):
+    """O envio do pacote falha (antes do pedido de liberar), e o pedido de apagar sai e fica sem resposta (o gh é fechado
+    por tempo: o _gh de verdade levanta SemResposta, como aqui)."""
+
+    def __call__(self, *argumentos, limite_s=600):
+        """O envio do .nupkg falha; o "delete" fica sem resposta."""
+        a = list(argumentos)
+        if a[1] == "upload" and a[2] == ETIQUETA and a[3].endswith(".nupkg"):
+            self.pedidos.append(a)
+            return subprocess.CompletedProcess(a, 1, "", "HTTP 502 ao enviar (de mentira)")
+        if a[1] == "delete" and a[2] == ETIQUETA:
+            self.pedidos.append(a)
+            raise pub.SemResposta("parei o pedido ao GitHub (release delete): o programa não terminou em 600 segundos")
+        return super().__call__(*argumentos, limite_s=limite_s)
+
+
+def test_volta4_achado3_o_pedido_de_apagar_sem_resposta_diz_que_pediu(ambiente, monkeypatch):
+    """Achado 3 do relatório 3, o terceiro desfecho: o pedido de apagar SAIU e ficou sem resposta (o gh fechado por
+    tempo). A frase diz "pedi para apagar ... não deu para conferir se sumiu", nunca "não apaguei"."""
+    a = ambiente
+    gh = _GitHubQueNaoRespondeAoApagar(a["tmp"])
+    destino = pub.DestinoGitHub("dono/projeto")
+    monkeypatch.setattr(destino, "_gh", gh)
+    _publicar_o_motor(a, destino=destino)
+    frase = str(_publicar_um(a, "versao", destino))
+    assert "pedi para apagar" in frase and "não deu para conferir se sumiu" in frase, frase
+    assert "não apaguei" not in frase.lower() and "foi apagada" not in frase, frase
+
+
+class _PastaQueLiberaNaHoraDeApagar(pub.DestinoPasta):
+    """Uma pasta de verdade em que, no instante do pedido de apagar o rascunho, outro publicar o libera (troca o nome
+    da subpasta), e o pedido de apagar não acha mais o rascunho."""
+
+    def apagar_rascunho(self, etiqueta):
+        """Outro libera bem agora; depois, o apagar de sempre (que só toca no rascunho)."""
+        os.rename(self._rascunho(etiqueta), self._liberada(etiqueta))
+        return super().apagar_rascunho(etiqueta)
+
+
+def test_volta4_achado3_liberada_no_meio_do_apagar_nunca_vira_apagada(tmp_path):
+    """Achado 3 do relatório 3 (a frase diz o que aconteceu): antes do pedido de liberar, o caminho de erro pede para
+    apagar o rascunho e, no meio, outro publicar o libera. A leitura de depois diz liberada: a resposta é
+    "PublicacaoLiberada" ("pedi para apagar o rascunho ... e ele está liberado agora"), nunca "apagada" nem "continua
+    lá", e a versão liberada continua."""
+    destino = _PastaQueLiberaNaHoraDeApagar(tmp_path / "servidor")
+    destino.criar_rascunho(ETIQUETA, "t", "n")
+    with pytest.raises(pub.PublicacaoLiberada, match="pedi para apagar o rascunho") as erro:
+        pub.apagar_publicacao(destino, ETIQUETA, so_rascunho=True, acabou_de_criar=True)
+    assert "liberado agora" in str(erro.value)
+    assert destino.situacao(ETIQUETA) == "liberada"
+
+
+class _GitHubSemASomaPronta(_GitHubDeMentira):
+    """O gh de mentira em que o GitHub NÃO dá a soma pronta ("digest") de nenhum arquivo, e que aceita a vigia do
+    download como o _gh de verdade (anota quem a passou)."""
+
+    def __init__(self, tmp):
+        """vigiados: os downloads que vieram com a vigia."""
+        super().__init__(tmp)
+        self.vigiados: list[str] = []
+
+    def __call__(self, *argumentos, limite_s=600, vigia=None):
+        """Como o gh de mentira, sem o digest, anotando a vigia."""
+        a = list(argumentos)
+        if vigia is not None:
+            self.vigiados.append(a[a.index("--pattern") + 1])
+            assert vigia() is None
+        r = super().__call__(*argumentos, limite_s=limite_s)
+        if a[1] == "view" and r.returncode == 0:
+            lido = json.loads(r.stdout)
+            for asset in lido.get("assets", []):
+                asset.pop("digest", None)
+            r = subprocess.CompletedProcess(r.args, 0, json.dumps(lido), "")
+        return r
+
+
+def test_volta4_achado7_no_publicar_sem_a_soma_pronta_tudo_e_baixado_no_rascunho(ambiente, monkeypatch):
+    """Achado 7 do relatório 3, o caminho inteiro: com o GitHub sem a soma pronta, o motor e a versão são publicados
+    (a leitura de volta baixa cada arquivo para somar) e TODO download vai para dentro do rascunho do publicar (no C:,
+    apagado no fim), os da soma com a vigia; nada vai para a pasta temporária da conta. A conta do motor (--motor)
+    também soma a cópia que a leitura de volta baixa."""
+    a = ambiente
+    gh = _GitHubSemASomaPronta(a["tmp"])
+    destino = pub.DestinoGitHub("dono/projeto")
+    monkeypatch.setattr(destino, "_gh", gh)
+    pedidos = []
+    verdadeira = empacotar.conferir_espaco
+    monkeypatch.setattr(empacotar, "conferir_espaco", lambda pasta, precisa, *x: pedidos.append(precisa) or
+                        verdadeira(pasta, precisa, *x))
+    _publicar_o_motor(a, destino=destino)
+    assert pedidos[0] == 2 * empacotar.tamanho_da_pasta(a["motor"]) + empacotar.MARGEM_DA_CONTA, pedidos
+    _publicar(a, destino=destino)
+    baixados = [p for p in gh.pedidos if p[1] == "download"]
+    assert baixados, "a leitura de volta tinha de baixar"
+    for p in baixados:
+        assert a["rascunho"] in Path(p[p.index("--dir") + 1]).parents, p
+    nupkg = empacotar.nupkg_inteiro(Path("."), VERSAO).name
+    assert nupkg in gh.vigiados and versao.arquivo_do_motor(ocr_kraken.VERSAO_DO_MOTOR) in gh.vigiados, gh.vigiados
+    assert gh.publicacoes[ETIQUETA]["rascunho"] is False and _rascunhos_que_sobraram(a) == []
