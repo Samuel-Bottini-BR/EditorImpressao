@@ -57,6 +57,7 @@ As da primeira entrega, de `03c91599`, estão no `git log` deste arquivo.)
   12 achados). Pedido da gerente: consertar 1 a 4, 6 a 11 (o 1 pela D-816), anotar o 5 como limite da peça e o 12 para a
   Lista de bugs. Leitura feita (implementador, CLAUDE.md, memória, catálogo, pacote da volta 4, este formulário, o
   relatório 3 e os anexos Q1 a Q3 e E2). Andamento em "Volta 4" de cada seção.
+
 ## Decisões que esta tarefa precisa cumprir
 
 - D-767 "não faça mais nada escodindo ou de mentira" · "não quero fazer consertos quero que funcione". Aqui: o publicar
@@ -109,6 +110,28 @@ As da primeira entrega, de `03c91599`, estão no `git log` deste arquivo.)
   Windows e o começo dele), não o texto.
 - D-815 "ok". Aqui: a volta 3 é de um agente novo, que começou por este formulário.
 
+**Volta 4 (20/11/2026), as decisões do pedido da gerente:**
+- D-816 "A , mas onde estamos antes de você fazer qualquer processo". Aqui: depois do pedido de liberar, o publicar
+  nunca apaga nada, em nenhum destino (o GitHub e a pasta das provas), sem depender de leitura; a frase diz o que pode
+  ter ficado (liberada ou rascunho), como conferir e o comando de apagar. Antes do pedido de liberar, o erro continua
+  apagando o rascunho na hora, como hoje.
+- D-815 "ok". Aqui: sou o escritor novo da volta 4 (pode ser também o da volta 5).
+- D-767 "não faça mais nada escodindo ou de mentira" · "não quero fazer consertos quero que funcione". Aqui: a peça
+  do Windows (o nome com ponto no fim, o grupo com o gh, a gravação no disco) roda de verdade nos testes; o GitHub
+  continua de mentira (só a lógica), e o de verdade fica para a prova à vista.
+- D-773 "A". Aqui: o rascunho de prova no GitHub, liberado só na prova; a frase nova da D-816 diz como conferir e
+  apagar.
+- D-775 "ok". Aqui: entrego à gerente; depois um agente novo tenta quebrar, e só então a prova à vista.
+- D-776 "Sim, no C só tem que cuidar para não encher o disco C inteiro". Aqui: o download para somar (quando o GitHub
+  não dá a soma pronta) vai para o rascunho do C:, pela vigia e na conta do espaço.
+- D-795 "ok". Aqui: nada muda no Setup.exe (continua fora do que vai ao destino e apagado no fim).
+- D-811 "ok". Aqui: cada proteção nova ou consertada tem o teste que falha quando ela é desligada, provado numa cópia
+  (seção "Cada proteção", "Volta 4").
+- D-812 "ok". Aqui: a seção "De onde vem cada dado", "Volta 4" (a frase da D-816 não usa leitura nenhuma).
+- D-813 "ok". Aqui: o nome do programa como o Windows o completa (lido na Microsoft e rodado no PC: o nome sozinho com
+  ponto no fim também roda pelo PATH), uma vez só, e todas as conferências usam esse nome.
+- D-798 "fechou". Aqui: nenhum rótulo de pronto.
+
 ## O que já está escolhido e testado aqui
 
 - `tests/test_empacotar.py`: o motor do jeito novo passa e o velho, com atalhos ou de outro protocolo, é recusado
@@ -140,6 +163,37 @@ As da primeira entrega, de `03c91599`, estão no `git log` deste arquivo.)
   da janela do servidor (`test_o_que_nao_esta_numa_versao_liberada_e_recusado`, que cobra "não existe aqui (404)") foi
   respeitado: a frase nova só vale para o nome repetido.
 
+**Volta 4 (antes de mexer).** O que esta volta toca e já está escolhido e testado:
+- O caminho de erro do publicar (`publicar_versao_kaique.publicar_arquivos` e `apagar_publicacao`): D-776 e D-795 (o
+  rascunho do C: e o Setup.exe somem também com erro), a escolha técnica da gerente de 19/11 (D-014: nada liberado é
+  apagado) e os testes `test_achado4_depois_de_liberar_a_leitura_que_falha_nao_apaga_a_versao` ("não deu para reconferir
+  agora", "NÃO apaguei"), `test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada`
+  ("NÃO apaguei", "ficou liberada em", nunca "foi apagada"), `test_volta3_achado1_no_github_a_leitura_atrasada_tambem_nunca_apaga_a_liberada`,
+  `test_achado1_erro_antes_de_liberar_no_github_apaga_e_diz_que_apagou` ("foi apagada", sem "ATENÇÃO"),
+  `test_a_leitura_de_volta_que_nao_bate_nao_libera_e_apaga_o_rascunho_do_destino` ("chegou diferente ... apagada"),
+  `test_n1_n3_n4_n14_cada_leitura_de_volta_errada_impede_liberar`, `test_n5_o_apagar_que_nao_apaga_e_acusado`
+  ("continua lá"), `test_achado1_apagar_um_rascunho_no_github_le_de_volta_e_nao_acusa_erro_falso` e
+  `test_achado1_quem_decide_se_apagou_e_a_leitura_de_volta` (o `--apagar`), todos em `tests/test_publicar_versao.py`.
+- **Um teste antigo cobra o que a D-816 tirou:** `tests/test_publicar_versao.py::test_volta3_achado5_o_liberar_que_falha_e_continua_rascunho_apaga_o_rascunho`
+  cobra que, quando o PEDIDO de liberar falha e a publicação continua rascunho (na pasta), o rascunho é apagado. A D-816
+  diz o contrário ("depois de pedir ao GitHub para liberar a versão, o programa nunca apaga nada"; "Na pasta das provas
+  (não no GitHub) vale a mesma regra"), e o pedido da gerente repete ("em nenhum destino"). Pela regra das decisões
+  (CLAUDE.md §11, ponto 4: quando a decisão substitui um comportamento antigo, a prova confere que o antigo saiu), este
+  teste passa a cobrar o jeito novo nesse mesmo caso. É a única mudança num teste antigo nesta volta, e está nas
+  Ressalvas para a gerente conferir.
+- A peça do Windows (`core/windows.py`, a recusa `_programa_com_funcao_propria`, o grupo `abrir_em_grupo`,
+  `_gravar_por_inteiro`): os testes de `tests/test_windows_peca.py` (o lote recusado pelos três caminhos, com a frase
+  "função própria"; o programa de verdade passando; "não achei" para o que não existe; o grupo que nasce parado e fecha
+  tudo; as pastas de troca; a pasta segura e as tarefas) e `tests/test_windows_janela_de_prova.py`.
+- O vpk pela função única (`empacotar.rodar_vpk`): os testes da vigia (D-776, "19.0 GB", "reserva"), do grupo
+  ("fechados (conferido)"), do Ctrl+C e do soltar segurado, em `tests/test_publicar_versao.py`.
+- O gh (`DestinoGitHub._gh`): `test_volta3_achado7_o_gh_que_baixa_e_fechado_pela_vigia` (um gh de prova de verdade,
+  fechado pela vigia em menos de 20 s, "abaixo da reserva").
+- A cópia conferida e o motor comprimido (`empacotar.copiar_inteiro`, `empacotar.zipar_motor`):
+  `test_volta3_a_copia_conferida_le_de_volta_e_obedece_a_vigia`, `test_volta3_a_copia_cortada_no_meio_nunca_deixa_o_nome_certo`,
+  os do .msi, e os de `tests/test_publicar_motor.py` (o zip conferido pela ficha, a vigia na compressão).
+- Livro: D-767, D-773, D-775, D-776, D-795, D-811 a D-813, D-815, D-816.
+
 ## Como fica para quem usa e no livro
 
 - **O Kaique: nada muda** na tela nem no livro (nenhum arquivo de `ui/` nem do processamento das páginas). O PDF que
@@ -167,6 +221,25 @@ As da primeira entrega, de `03c91599`, estão no `git log` deste arquivo.)
   lá e a frase diz que a versão FOI publicada e que o instalador está inteiro na publicação; (3) o "PAREI" do fim
   aponta para a conferência do fim, em vez de dizer "foi apagado" sem conferir. Nenhum problema novo para o Kaique
   (nenhum arquivo do programa dele mudou de comportamento: a peça ainda não é usada por ele).
+
+**Volta 4 (antes de mexer):**
+- **O Kaique: nada muda** (nenhum arquivo de `ui/` nem do processamento das páginas; o PDF que sai é o mesmo; a peça do
+  Windows ainda não é usada pelo programa dele).
+- **O Samuel, publicando (na prova à vista).** No caminho que dá certo, nada muda na tela. Muda quando dá errado
+  depois do pedido de liberar (a resposta do GitHub se perde, a internet cai, Ctrl+C): antes, o publicar lia o GitHub e
+  podia apagar o que achasse que era rascunho; agora não apaga nada e diz, numa frase só, que a versão pode ter ficado
+  liberada (inteira) ou como rascunho, como conferir e o comando para apagar o rascunho depois. Antes do pedido de
+  liberar, continua como hoje: o rascunho do destino é apagado na hora e a frase diz "foi apagada (conferido)" só quando
+  pediu e conferiu; quando não deu para conferir, a frase diz se chegou a pedir.
+- **Com o GitHub sem a soma pronta** (o "digest"), o arquivo baixado para somar fica no rascunho do C: (apagado no fim)
+  em vez de na pasta temporária da conta, e a vigia do espaço olha o download. A conta do espaço soma esse arquivo: em
+  teoria o publicar pode recusar um pouco mais cedo (uns 0,8 GB a mais na conta), de propósito.
+- **O gh passa a rodar pelo grupo do Windows**, como o vpk: nada aparece de diferente (a saída dele já era guardada,
+  não mostrada); fechar por tempo, pela vigia ou pelo Ctrl+C fecha o gh e o que ele abrir.
+- **As cópias e o motor comprimido** pedem ao Windows para gravar no disco antes de conferir: alguns segundos a mais
+  num arquivo grande no HD externo (o dado tinha de ser gravado de qualquer jeito).
+- **Problema novo criado:** nenhum que eu saiba. O que fica para conferir está em "Ressalvas" (o teste antigo da D-816,
+  a gravação no disco na peça do passo 1).
 
 ## A causa, a regra e todos os caminhos
 
@@ -252,6 +325,57 @@ As da primeira entrega, de `03c91599`, estão no `git log` deste arquivo.)
 - *Textos (achado 8):* o cabeçalho da peça (quem a usa), o docstring do rascunho da pasta (as notas não são gravadas),
   a janela do servidor (`Versoes.procurar` diz por que não entrega) e a conta das "Ressalvas".
 
+**Volta 4 (relatório 3 de quem tentou quebrar). Cada conserto: a causa, a regra num lugar só e os caminhos (achados
+com `grep` por `apagar_publicacao`, `pediu_para_liberar`, `_programa_com_funcao_propria`, `.soma(`, `baixar_vigiado`,
+`_gh(`, `abrir_em_grupo`, `copiar_inteiro`, `zipar_motor`, `os.replace`, `_gravar_por_inteiro`):**
+- *Achado 1 (D-816).* Causa: depois do pedido de liberar, a decisão "só o rascunho é apagado" ainda dependia de
+  leituras do GitHub, e duas leituras atrasadas bastavam para apagar a versão liberada. Regra: em
+  `publicar_versao_kaique.publicar_arquivos`, o caminho de erro olha UMA coisa, que o próprio publicar sabe sem ler:
+  se já pediu para liberar. Pediu: não chama apagar nenhum, em nenhum destino, e a frase (uma função só,
+  `_frase_depois_do_pedido_de_liberar`) diz o que pode ter ficado e os comandos (`como_conferir` e `comando_de_apagar`,
+  um por destino). Não pediu: `apagar_publicacao(so_rascunho=True)`, como hoje. Caminhos: a versão do programa
+  (`publicar`) e o motor (`publicar_motor`), os dois por `publicar_arquivos`; os dois destinos. O `--apagar` não muda
+  (é o fim da prova, de propósito).
+- *Achados 3 e 4.* Causa: a frase do apagar era escrita por quem chamava, sem saber se o pedido de apagar tinha saído;
+  e "não achei" logo depois de criar o rascunho virava "já sumiu". Regra: `apagar_publicacao` é o único que escreve a
+  frase de cada desfecho, porque é ele que sabe se pediu (antes de pedir, ao pedir, depois de pedir); com
+  `acabou_de_criar=True`, "não achei" é "não achei o rascunho para apagar; confira com --apagar", nunca "apagada". O
+  `criar_rascunho` entra no `try` (se ele cria e a resposta se perde, o caminho de erro procura e apaga, ou diz que não
+  achou). O pedido de apagar ao gh que sai e fica sem resposta (por tempo) é `SemResposta`: "pedi e não deu para
+  conferir". Caminhos: o caminho de erro de `publicar_arquivos` (versão e motor) e o `--apagar`.
+- *Achado 2 (D-813).* Causa: a regra única lia o nome do programa de dois jeitos (o lote pelo nome completado pelo
+  Windows; a lista de nomes e o nome sozinho pelo texto cru). Regra: `windows._caminho_do_programa` devolve o nome
+  como o Windows o completa (GetFullPathNameW para caminho com pasta; para o nome sozinho, o mesmo corte de pontos e
+  espaços do fim), uma vez só, e `_programa_com_funcao_propria` usa só esse nome na lista, na pasta do Windows e no
+  lote. Caminhos: `rodar_e_esperar`, `lancar_solto`, `abrir_em_grupo` (e por ele o vpk e o gh).
+  **Achado junto, rodando:** o nome sozinho com ponto no fim também passava para programa DA PASTA DO WINDOWS:
+  `rodar_e_esperar(["whoami.exe."])` rodou o whoami (o Windows corta o ponto e acha pelo PATH; `shutil.which` não
+  acha). A mesma causa e o mesmo conserto.
+- *Achado 6.* Causa: `_nao_e_programa_do_windows` respondia só sim ou não, e o "não consegui ler" virava a frase do
+  "tem função própria". Regra: a recusa devolve o motivo (`_por_que_recusa`, um lugar só), com uma frase para cada um:
+  tem função própria; não consegui ler o programa para saber se é um programa do Windows. Recusar na dúvida continua.
+  Caminhos: os mesmos três.
+- *Achado 10.* A segunda olhada depois do PATH: o `shutil.which` acha o nome sozinho com as extensões do PATHEXT (um
+  `.BAT`), e só ela recusa. Teste com um lote achado pelo PATH.
+- *Achado 7 (D-776).* Causa: `DestinoGitHub.soma` baixava para `%TEMP%` com a pasta e o jeito dele, fora da vigia e da
+  conta. Regra: o download para somar usa a peça que já baixa vigiada (`baixar_vigiado`), dentro do rascunho do C:
+  (`usar_rascunho`, dado pelo publicar logo que o rascunho nasce, com a vigia única), e a conta do espaço soma o maior
+  arquivo que a leitura de volta pode baixar (`soma_pode_baixar`, de cada destino). Caminhos que chegam na soma:
+  `publicar_arquivos` (cada arquivo), `obter_motor_publicado` (no começo e na conferência) e `_conferir_versao_lida`.
+- *Achado 8 (§11.12, ponto 1).* Causa: o laço "rodar, olhar a vigia e fechar" estava escrito duas vezes (o vpk pela
+  peça, num grupo; o gh com `subprocess` direto, sem grupo). Regra: `windows.rodar_em_grupo` (novo, na peça) é o único
+  laço: abre pelo `abrir_em_grupo`, espera, olha a vigia e o tempo, fecha o grupo inteiro (conferido) e trata o
+  Ctrl+C; com `capturar=True` guarda a saída. Caminhos: `empacotar.rodar_vpk` e `DestinoGitHub._gh` (todos os pedidos
+  ao gh: view, create, upload, download, edit, delete).
+- *Achado 11.* Causa: "lida de volta do disco" sem pedir ao Windows para gravar no disco. Regra: `windows.gravar_no_disco`
+  (novo: o `flush` do Python e o `os.fsync`, que no Windows é o `_commit`), usada antes de conferir e de trocar o nome
+  em todos os lugares dos meus arquivos que gravam num nome provisório e trocam: `empacotar.copiar_inteiro` (o envio e
+  a leitura de volta da pasta, o motor baixado, o .msi), `empacotar.zipar_motor` e `windows._gravar_por_inteiro` (o
+  aviso, os scripts, a tarefa, a pasta segura, o relatório). Fora da lista do pacote, não mexi: `montar_motor_kraken.py`
+  também grava e troca (Ideias).
+- *Achado 9:* o caminho do teste em texto cru. *Achado 5:* limite da peça (Ressalvas e "Cada proteção"). *Achado 12:*
+  Lista de bugs ("Ideias e bugs").
+
 ## O que pode falhar e o que o programa faz
 
 | O que pode dar errado | O que o publicar faz |
@@ -294,6 +418,22 @@ As da primeira entrega, de `03c91599`, estão no `git log` deste arquivo.)
 | (volta 3) O Windows não responde à leitura do grupo depois de fechar | "não deu para conferir (o Windows não respondeu à leitura do grupo)", nunca "conferido" nem "continua rodando" |
 | (volta 3) O C: cai abaixo da reserva enquanto o motor é baixado para o instalador | a vigia para o download (a cópia da pasta ou o gh), o segundo vpk não roda, o rascunho é apagado |
 | (volta 3) A segunda pasta de troca do lançar solto não nasce | a primeira é apagada na hora |
+
+| (volta 4) O pedido de liberar sai e a resposta se perde, a leitura vem atrasada (1, 2 ou mais vezes), a internet cai ou Ctrl+C depois do pedido | nada é apagado em nenhum destino, sem ler; a frase diz que pode ter ficado liberada (inteira) ou rascunho, como conferir e o comando de apagar o rascunho |
+| (volta 4) O pedido de liberar falha com resposta (o destino diz que não liberou) | o mesmo: depois do pedido, nunca apaga (D-816); a frase diz que pode ter ficado rascunho e o comando de apagar |
+| (volta 4) Antes do pedido de liberar: o erro, e a leitura de antes de apagar falha | não pede para apagar; a frase diz "não pedi para apagar" e o comando para conferir e apagar |
+| (volta 4) Antes do pedido de liberar: pede para apagar e a leitura de depois falha | a frase diz "pedi para apagar e não deu para conferir se sumiu" (nunca "NÃO apaguei") |
+| (volta 4) O rascunho acabou de ser criado e a leitura ainda não o acha | não pede nada; a frase diz "não achei o rascunho para apagar; confira com --apagar" (nunca "foi apagada") |
+| (volta 4) A criação do rascunho chega ao destino e a resposta se perde | o caminho de erro procura o rascunho: achou, apaga e confere; não achou, diz que não achou e o comando |
+| (volta 4) O gh do apagar sai sem resposta (fechado por tempo) | "pedi para apagar e não deu para conferir" |
+| (volta 4) O programa pedido à peça com ponto ou espaço no fim (`pwsh.exe.`, `Update.exe.`, `whoami.exe.`) | recusado como o nome sem o ponto (o nome é lido como o Windows o completa) |
+| (volta 4) O programa não deixa ler o começo (os atalhos da Loja, WindowsApps) | recusado, com a frase "não consegui ler o programa para saber se é um programa do Windows" |
+| (volta 4) O GitHub não dá a soma pronta de um arquivo | baixa para o rascunho do C: pela vigia, soma e apaga; na conta do espaço entra o maior arquivo que pode ser baixado; abaixo da reserva, para e o rascunho é apagado |
+| (volta 4) A leitura de volta precisa baixar para somar e não há rascunho (quem chama não deu) | para com a frase (nunca baixa para outro lugar) |
+| (volta 4) O gh não abre (não instalado) | "não consegui falar com o GitHub pelo gh" (como hoje); nada foi pedido |
+| (volta 4) O gh passa do tempo ou a vigia manda parar | o grupo inteiro é fechado e conferido; a frase diz o motivo; o pedido conta como "sem resposta" |
+| (volta 4) Ctrl+C com o gh rodando | o grupo é fechado e a interrupção segue (o mesmo jeito do vpk) |
+| (volta 4) O Windows não grava no disco (o pedido de gravar falha) | a cópia falha como erro do disco: o pedaço é apagado e conferido; o nome certo nunca aparece |
 
 ## O que li da peça de fora e onde
 
@@ -396,6 +536,43 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
   "launcher + shebang + zip_data", com o `__main__.py` no zip. É o vpk de mentira dos testes.
 - GitHub, a API de apagar uma publicação (https://docs.github.com/rest/releases/releases#delete-a-release): recebe só o número da publicação, sem condição (lembrado; não relido nesta
   volta): por isso fica o instante da Ressalva.
+
+**Lido e rodado na volta 4 (20/11/2026; separado o lido do deduzido):**
+- **O nome que o Windows completa (achado 2).** Microsoft Learn, "File path formats on Windows systems"
+  (https://learn.microsoft.com/dotnet/standard/io/file-path-formats), "Path normalization": "Almost all paths passed to
+  Windows APIs are normalized"; "you can do it explicitly by calling [...] the GetFullPathName() function"; "Trim
+  characters": "If the path doesn't end in a separator, all trailing periods and spaces (U+0020) are removed"; "Skip
+  normalization": só o que começa exatamente com `\\?\` não é normalizado ("A file or directory called `hidden.`, for
+  example, is impossible to access in any other way"). O Python: `os.path.abspath` no Windows chama o
+  `_getfullpathname` (o GetFullPathNameW). **Rodado no PC** (cópias do `hostname.exe` numa pasta do rascunho desta
+  conversa): com caminho, `provaeco.exe.` e `provaeco.exe .` rodaram; pelo PATH do próprio processo, o nome sozinho
+  `provaeco.exe.`, `provaeco.exe..` e `provaeco.exe. ` rodaram, `provaeco.` não (erro 2), e o `shutil.which` não acha
+  nenhum com ponto no fim. E na peça de hoje: `rodar_e_esperar(["whoami.exe."])` rodou o whoami da pasta do Windows.
+  **Rodado também:** o CreateProcess procura o nome sozinho no PATH de QUEM CHAMA, não no `env` passado ao subprocess
+  (com o PATH só no `env`, o nome sozinho deu erro 2). Por isso o teste muda o PATH do próprio processo.
+- **Os atalhos da Loja (achado 6).** Rodado no PC: os `.exe` de `%LOCALAPPDATA%\Microsoft\WindowsApps` (ex.:
+  `bash.exe`, `claude-desktop.exe`) existem para o `os.path.isfile`, mas abrir para ler dá `OSError` 22 ("Invalid
+  argument"). **Deduzido, não lido:** que é assim em todo Windows (são "atalhos de execução de aplicativo"; não li a
+  documentação deles).
+- **Gravar no disco (achado 11).** Python 3.14, `os.fsync`: força a gravação no disco do arquivo; no Windows chama o
+  `_commit` da biblioteca C; com um arquivo do Python, primeiro `f.flush()`, depois `os.fsync(f.fileno())` (lembrado
+  da documentação do `os`, não relido). Microsoft Learn, `_commit`
+  (https://learn.microsoft.com/cpp/c-runtime-library/reference/commit): "Flushes a file directly to disk"; "forces the
+  operating system to write the file associated with fd to disk"; devolve -1 se deu erro. FlushFileBuffers
+  (https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-flushfilebuffers): "Flushes the buffers of a
+  specified file and causes all buffered data to be written to a file"; "The file handle must have the GENERIC_WRITE
+  access right" (por isso a gravação é pedida no arquivo aberto para escrever). **Deduzido, não lido:** que o `_commit`
+  chama o FlushFileBuffers (a página do `_commit` não diz). **O que a gravação NÃO faz:** a leitura de volta continua
+  vindo do que o Windows guarda na memória; o que muda é que, quando o nome certo aparece, o conteúdo já foi mandado ao
+  disco (a falta de luz logo depois não deixa um arquivo pela metade com o nome certo). A pasta (o nome trocado) não é
+  gravada à parte: o Windows não abre pasta para isso pelo Python (Ressalvas).
+- **O laço com a saída guardada (achado 8).** Python 3.14, `subprocess.Popen.communicate`: "If the process does not
+  terminate after timeout seconds, a TimeoutExpired exception will be raised. Catching this exception and retrying
+  communication will not lose any output" (já citado na volta 3; é o jeito do laço com `capturar=True`). O gh: a saída
+  em UTF-8, como hoje.
+- **Conferir uma publicação no GitHub sem mudar nada (achado 1, a frase):** `gh release view <etiqueta> --json isDraft`,
+  o mesmo pedido que o publicar já faz para ler a situação (cli/cli, `pkg/cmd/release/shared/fetch.go`, lido na volta
+  1): `"isDraft": true` é rascunho; "release not found", não existe.
 
 ## O que foi feito
 
