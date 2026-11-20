@@ -71,9 +71,11 @@ em pasta (e, por ela, no instalador):
   para a pasta de downloads das ferramentas (fora do git) e conferido pela
   ASSINATURA DIGITAL (a Microsoft nao publica uma soma fixa para ele): o
   Windows tem de dizer "assinatura valida" e o assinante tem de ser a
-  Microsoft Corporation (preparar_vc_redist). Vai so dentro do instalador
-  (build\\vc_redist.x64.exe), que o roda em silencio quando o Visual C++
-  2015-2022 x64 falta ou e mais velho (instalador.iss, secao [Code]).
+  Microsoft Corporation (preparar_vc_redist). No Inno, vai so dentro do
+  instalador (build\\vc_redist.x64.exe), que o roda em silencio quando o Visual
+  C++ 2015-2022 x64 falta ou e mais velho (instalador.iss, secao [Code]). Nas
+  saidas do Velopack, vai em <pasta>\\instalar\\, posto pela montagem
+  (Saida.vc_em_instalar; ver "o pacote do Velopack" abaixo).
 
 A TRAVA vale para tudo isso, como para os modelos: faltando qualquer peca
 (motor, Tesseract, idioma, licenca, vc_redist, modelo), ou o motor sendo do
@@ -226,6 +228,13 @@ REGISTRO_DO_INNO = RAIZ / "build" / "instalador-registro.txt"
 #   NAO e o publicado: o publicado e sempre o da atualizacao (senao todo mundo
 #   baixaria o motor na proxima atualizacao, contra a D-768). Por isso o mesmo
 #   numero de versao tem dois conteudos: e de proposito (estudo do Kraken, risco 5).
+# - o Visual C++ em instalar\ (D-727) vai nas duas saidas do Velopack (a
+#   atualizacao e o instalador) e NAO na pasta portatil (o Inno o pega de build\,
+#   construir_instalador). Passo 2, volta 6 (a prova a vista de 20/11/2026): ele
+#   era posto so em preparar_saida, depois da conferencia da pasta, e toda
+#   publicacao montada do zero parava em "nao tem o Visual C++ em instalar\".
+#   Agora quem o poe e a MONTAGEM (construir_pasta), quem confere e
+#   conferir_pasta_pronta, e as duas leem vc_em_instalar daqui.
 
 @dataclass(frozen=True)
 class Saida:
@@ -236,11 +245,15 @@ class Saida:
     motor_exigido: bool        # o motor-exigido.json dentro do pacote
     motor_em_instalar: bool    # o arquivo do motor (um zip so) em instalar\
     com_msi: bool              # o vpk faz o .msi (instalar em Arquivos de Programas)
+    vc_em_instalar: bool       # o Visual C++ oficial em instalar\ (posto na montagem, D-727)
 
 
-PORTATIL = Saida("pasta portátil", motor_solto=True, motor_exigido=False, motor_em_instalar=False, com_msi=False)
-ATUALIZACAO = Saida("atualização", motor_solto=False, motor_exigido=True, motor_em_instalar=False, com_msi=False)
-INSTALADOR = Saida("instalador", motor_solto=False, motor_exigido=True, motor_em_instalar=True, com_msi=True)
+PORTATIL = Saida("pasta portátil", motor_solto=True, motor_exigido=False, motor_em_instalar=False, com_msi=False,
+                 vc_em_instalar=False)
+ATUALIZACAO = Saida("atualização", motor_solto=False, motor_exigido=True, motor_em_instalar=False, com_msi=False,
+                    vc_em_instalar=True)
+INSTALADOR = Saida("instalador", motor_solto=False, motor_exigido=True, motor_em_instalar=True, com_msi=True,
+                   vc_em_instalar=True)
 SAIDAS = (PORTATIL, ATUALIZACAO, INSTALADOR)
 
 # O arquivo que diz que motor a versao pede (dentro do pacote, na raiz da pasta do
@@ -883,7 +896,17 @@ def construir_pasta(saida: Saida = PORTATIL) -> Path | None:
     Para (devolve None) se faltar modelo ou peca dos detectores de texto
     ANTES de apagar a pasta anterior, e de novo se algum modelo ou peca nao
     chegar inteiro (ver conferir_modelos_no_pacote e conferir_pecas_no_pacote).
-    No fim grava a ficha da versao (gravar_ficha_da_versao).
+    Nas saidas do Velopack (Saida.vc_em_instalar: a atualizacao e o instalador)
+    poe o Visual C++ conferido em instalar\\ (preparar_pasta_para_o_velopack; o
+    LUGAR UNICO que o poe; passo 2, volta 6: antes ele so era posto depois da
+    conferencia da pasta, em preparar_saida, e o publicar montado do zero parava
+    sempre). Assim a pasta montada aqui sai no mesmo estado que
+    conferir_pasta_pronta cobra de uma pasta que vem de fora.
+    No fim grava a ficha da versao (gravar_ficha_da_versao). A ficha vem DEPOIS
+    de tudo de proposito: e o sinal de "montada inteira" (uma montagem que para
+    no meio fica sem ficha, e conferir_pasta_pronta a recusa). Arriscado: gravar
+    a ficha antes de alguma peca, ou por o Visual C++ na pasta portatil (o Inno
+    o instalaria tambem em {app}).
     """
     global _PECAS
     print(f"\n=== Versao em pasta ({saida.nome}) ===")
@@ -924,6 +947,16 @@ def construir_pasta(saida: Saida = PORTATIL) -> Path | None:
         return None
     print("  motor do Kraken e Tesseract dentro da pasta, conferidos" if pecas.motor is not None
           else "  Tesseract dentro da pasta, conferido; o motor do Kraken não vai solto nesta saída (conferido)")
+    if saida.vc_em_instalar:
+        problemas = preparar_pasta_para_o_velopack(destino, pecas)
+        if problemas:
+            print("  PAREI: o Visual C++ não chegou inteiro na pasta:")
+            for problema in problemas:
+                print(f"    {problema}")
+            return None
+        import atualizacao
+
+        print(f"  Visual C++ em {atualizacao.PASTA_DO_QUE_SE_INSTALA}\\, conferido (o tamanho do original)")
     _PECAS = pecas
     gravar_ficha_da_versao(destino, saida)
 
@@ -1077,7 +1110,9 @@ def construir_instalador() -> Path | None:
 #   qualquer coisa que o kaique precise, ele tem que estar no instalador"); o
 #   "--framework vcredist143-x64" do Velopack baixaria da internet, e por isso
 #   NAO e usado. Quem o roda (so se faltar) e a tarefa do Windows, como SYSTEM
-#   (atualizacao.instalar_visual_c_se_faltar);
+#   (atualizacao.instalar_visual_c_se_faltar). Quem o poe na pasta e a montagem
+#   (construir_pasta, Saida.vc_em_instalar), antes da ficha; quem confere a pasta
+#   antes do vpk e conferir_pasta_pronta (volta 6 do passo 2);
 # - o motor-exigido.json (que motor esta versao pede, lido do motor PUBLICADO) e,
 #   so no instalador, o arquivo do motor em instalar\ (preparar_saida);
 # - sem o pacote de diferenca (--delta None, D-789) e sem o zip portatil
@@ -1148,8 +1183,12 @@ def achar_vpk() -> Path | None:
 
 def preparar_pasta_para_o_velopack(pasta: Path, pecas: PecasDosDetectores) -> list[str]:
     """Poe o Visual C++ oficial (ja conferido pela assinatura da Microsoft) em
-    <pasta>\\instalar\\, com a versao dele num .txt ao lado. Devolve os problemas.
-    (Chamada por preparar_saida; o nome e o de antes, os testes antigos o usam.)"""
+    <pasta>\\instalar\\, com a versao dele num .txt ao lado. Devolve os problemas
+    (o arquivo que chegou menor que o original). O LUGAR UNICO que poe o Visual
+    C++ na pasta do Velopack. Chamada so pela montagem (construir_pasta, nas
+    saidas com Saida.vc_em_instalar); ate a volta 6 do passo 2 era chamada por
+    preparar_saida, depois da conferencia da pasta (o defeito da prova a vista
+    de 20/11/2026). O nome e o de antes: os testes antigos o usam."""
     import atualizacao
 
     destino = Path(pasta) / atualizacao.PASTA_DO_QUE_SE_INSTALA
@@ -1188,21 +1227,29 @@ def texto_do_motor_exigido(motor: MotorPublicado) -> str:
 
 def preparar_saida(pasta: Path, saida: Saida, pecas: PecasDosDetectores | None,
                    motor: MotorPublicado | None, arquivo_do_motor: Path | None = None) -> list[str]:
-    """Deixa a pasta pronta para o vpk, para a saida pedida (SAIDAS; o lugar unico).
+    """Faz na pasta o que MUDA entre as saidas do Velopack (SAIDAS; o lugar unico):
 
-    - Visual C++ em instalar\\ (preparar_pasta_para_o_velopack), quando ha pecas
-      (com uma pasta pronta, ela ja tem de trazer: conferir_pasta_pronta);
     - motor-exigido.json, se a saida pede (motor e o publicado, lido de volta);
     - o arquivo do motor em instalar\\, se a saida pede (arquivo_do_motor: o zip
       ja conferido pela soma assinada; e copiado, nunca movido);
     - e tira de instalar\\ um arquivo de motor que nao deve ir (a mesma pasta
       serve as duas saidas, em sequencia: atualizacao e depois instalador).
-    Devolve os problemas (vazio = pronta)."""
+    Devolve os problemas (vazio = feito). Quem diz se a pasta esta pronta para o
+    vpk e conferir_pasta_pronta (construir_pacote_do_velopack a chama depois).
+
+    O Visual C++ NAO e posto aqui (passo 2, volta 6): ele e igual nas duas saidas
+    e vem da montagem (construir_pasta) ou da pasta pronta. Antes era posto aqui,
+    quando havia pecas, DEPOIS da conferencia da pasta: o publicar montado do
+    zero parava sempre (a prova a vista de 20/11/2026). 'pecas' nao e mais usado;
+    fica na assinatura porque quem chama o passa pela posicao (o publicar e
+    tests/test_publicar_motor.py). Arriscado: voltar a por o Visual C++ aqui
+    (duas pecas poriam o mesmo arquivo, e a conferencia voltaria a ver a pasta
+    antes dele)."""
     import atualizacao
     import versao
 
     pasta = Path(pasta)
-    problemas = preparar_pasta_para_o_velopack(pasta, pecas) if pecas is not None else []
+    problemas: list[str] = []
     if saida.motor_exigido:
         if motor is None:
             return problemas + ["falta saber qual motor publicado esta versão pede"]
@@ -1494,8 +1541,10 @@ def esperados_no_pacote_do_velopack(pecas: PecasDosDetectores | None, saida: Sai
     saida_ += [f"{INTERNO}/{destino}/{origem.name}" for origem, destino in nativos_do_programa()]
     if pecas is not None:
         saida_ += [relativo for _, relativo in _destinos_das_pecas(pecas)]
-    # o Visual C++ sempre (D-727), com ou sem as pecas (a pasta pronta tambem tem de trazer)
-    saida_ += [f"{atualizacao.PASTA_DO_QUE_SE_INSTALA}/{atualizacao.VC_REDIST_NOME}"]
+    # o Visual C++ (D-727) nas saidas que o levam (Saida.vc_em_instalar: as duas do Velopack), com ou sem as pecas
+    # (a pasta pronta tambem tem de trazer)
+    if saida.vc_em_instalar:
+        saida_ += [f"{atualizacao.PASTA_DO_QUE_SE_INSTALA}/{atualizacao.VC_REDIST_NOME}"]
     if saida.motor_solto:
         saida_ += [f"{PASTA_DO_MOTOR}/{a.replace(chr(92), '/')}" for a in AMOSTRA_DO_MOTOR]
     if saida.motor_exigido:
@@ -1544,6 +1593,8 @@ def construir_pacote_do_velopack(saida_do_vpk: Path, versao_do_pacote: str, said
                                  vpk: Path | None = None, pecas: PecasDosDetectores | None = None) -> Path | None:
     """Monta o pacote do Velopack de uma saida (ATUALIZACAO ou INSTALADOR): a pasta
     (construir_pasta, com todas as travas; ou a 'pasta' ja pronta), preparar_saida,
+    a conferencia da pasta (conferir_pasta_pronta, a mesma de todo caminho: o
+    Visual C++, a ficha desta versao, nada de motor solto; volta 6 do passo 2),
     rodar_vpk (a funcao unica), apaga o Setup.exe na hora (D-795) e confere o
     pacote. Devolve o .nupkg inteiro, ou None (o motivo foi impresso).
 
@@ -1563,6 +1614,9 @@ def construir_pacote_do_velopack(saida_do_vpk: Path, versao_do_pacote: str, said
             return None
         pecas = _PECAS
     problemas = preparar_saida(pasta, saida, pecas, motor, arquivo_do_motor)
+    # a mesma conferencia de toda pasta, antes do vpk, em todo caminho que chega aqui (passo 2, volta 6: o publicar a
+    # chamava, mas quem chamasse esta funcao direto, com uma pasta de fora, chegava ao vpk sem ela)
+    problemas = problemas or conferir_pasta_pronta(pasta, versao_do_pacote, saida)
     if problemas:
         print("  PAREI: " + "; ".join(problemas))
         return None
@@ -1620,9 +1674,18 @@ def gravar_ficha_da_versao(pasta: Path, saida: Saida) -> Path:
 def conferir_pasta_pronta(pasta: Path, versao_do_pacote: str, saida: Saida = ATUALIZACAO) -> list[str]:
     """O que impede uma pasta ja montada de ir para o vpk nesta saida (vazio = pode).
 
+    A FUNCAO UNICA de "a pasta esta pronta para o vpk" (passo 2, volta 6): o
+    publicar a chama cedo (antes da conta do espaco), para a pasta montada do zero
+    e para a pasta pronta, e construir_pacote_do_velopack a chama de novo logo
+    antes de rodar o vpk (todo caminho ate o vpk passa por ela). A pasta montada
+    por construir_pasta(ATUALIZACAO) sai no estado que ela cobra.
+
     Cobra: o .exe; a ficha da versao, da MESMA versao e montada para uma saida
     sem o motor solto (o motor nao pode ir na atualizacao); o Visual C++ em
-    instalar\\ (D-727); e que a pasta motor-kraken\\ nao esteja la (D-768)."""
+    instalar\\ (D-727), nas saidas que o levam (Saida.vc_em_instalar: as duas do
+    Velopack); e que a pasta motor-kraken\\ nao esteja la (D-768). Arriscado:
+    afrouxar qualquer uma (a pasta pronta vem de fora: so isto a confere antes
+    do vpk)."""
     import json
 
     import atualizacao
@@ -1643,7 +1706,8 @@ def conferir_pasta_pronta(pasta: Path, versao_do_pacote: str, saida: Saida = ATU
                              f"{versao_do_pacote}")
         if ficha.get("saida") == PORTATIL.nome:
             problemas.append(f"a pasta {pasta} foi montada como {PORTATIL.nome} (com o motor solto)")
-    if not (pasta / atualizacao.PASTA_DO_QUE_SE_INSTALA / atualizacao.VC_REDIST_NOME).is_file():
+    visual_c = pasta / atualizacao.PASTA_DO_QUE_SE_INSTALA / atualizacao.VC_REDIST_NOME
+    if saida.vc_em_instalar and not visual_c.is_file():
         problemas.append(f"a pasta {pasta} não tem o Visual C++ em {atualizacao.PASTA_DO_QUE_SE_INSTALA}\\")
     if not saida.motor_solto and (pasta / PASTA_DO_MOTOR).exists():
         problemas.append(f"a pasta {pasta} tem o motor do Kraken solto ({PASTA_DO_MOTOR}\\), e a {saida.nome} "

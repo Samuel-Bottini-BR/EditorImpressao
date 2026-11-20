@@ -1146,6 +1146,14 @@ FRASE_NAO_LI_O_PROGRAMA = "não consegui ler o programa para saber se é um prog
 FRASE_SEM_A_PASTA_DO_WINDOWS = "não consegui saber onde fica a pasta do Windows para conferir o programa"
 FRASE_FLUXO_ESCONDIDO = ("o programa pedido é um fluxo escondido dentro de outro arquivo (o caminho tem \":\" depois "
                          "da letra do disco): a peça não roda")
+# Passo 2, volta 6, achado 3 do relatório 5 (F7): o caminho de rede, e o que o Windows não completa com uma letra de
+# disco, saíam com a frase do "tem função própria ... use a função dela" (uma função que não existe). O motivo de
+# verdade: por esse caminho a peça não consegue saber se o programa é um do Windows (que tem função própria na peça:
+# o "C$" do "localhost" é a pasta do Windows deste computador por outro nome), e por isso não roda.
+FRASE_CAMINHO_DE_REDE = ("o programa pedido está num caminho de rede, ou num caminho que o Windows não completa com a "
+                         "letra de um disco: por ele, a peça não consegue saber se é um programa do Windows (que tem "
+                         "função própria na peça) e não roda; peça o programa pelo caminho com a letra do disco deste "
+                         "computador")
 
 
 def _por_que_nao_e_programa(caminho: Path) -> str | None:
@@ -1191,7 +1199,8 @@ def _por_que_recusa(programa: str) -> str | None:
     O nome é lido UMA VEZ, como o Windows o completa (`_caminho_do_programa`; passo 2, volta 4, achado 2 do relatório 3:
     antes a lista de nomes e o nome sozinho eram comparados pelo texto cru, e `pwsh.exe.` e `whoami.exe.` passavam), e
     todas as conferências abaixo usam esse mesmo nome. Recusa (com a frase de cada motivo):
-    - caminho de rede, ou que o Windows não completa (`_caminho_do_programa` devolve None);
+    - caminho de rede, ou que o Windows não completa (`_caminho_do_programa` devolve None), com a frase própria
+      (`FRASE_CAMINHO_DE_REDE`; passo 2, volta 6, achado 3 do relatório 5: antes, a do "tem função própria");
     - o nome de `PROGRAMAS_COM_FUNCAO_PROPRIA` (o PowerShell 7, o atualizador do Velopack);
     - o que não é programa do Windows de verdade (um .bat ou .cmd, que o Windows roda pelo cmd.exe) ou que não deu
       para ler (`_por_que_nao_e_programa`);
@@ -1206,7 +1215,7 @@ def _por_que_recusa(programa: str) -> str | None:
     completar; tirar uma das conferências (cada uma tem o seu teste em tests/test_windows_peca.py)."""
     caminho = _caminho_do_programa(programa)
     if caminho is None:
-        return FRASE_TEM_FUNCAO_PROPRIA
+        return FRASE_CAMINHO_DE_REDE
     nome = caminho.name.lower()
     if nome.removesuffix(".exe") in PROGRAMAS_COM_FUNCAO_PROPRIA:
         return FRASE_TEM_FUNCAO_PROPRIA

@@ -1577,9 +1577,9 @@ def test_volta6_achado3_o_caminho_de_rede_e_recusado_com_a_frase_propria(tmp_pat
                     barra * 2 + "outro-computador" + barra + "pasta" + barra + "programa.exe",
                     barra * 2 + "?" + barra + "GLOBALROOT" + barra + "Device" + barra + "Coisa" + barra + "x.exe",
                     barra * 2 + "." + barra + "pipe" + barra + "programa.exe"):
-        motivo = windows._por_que_recusa(caminho)
+        motivo = windows.rodar_e_esperar([caminho]).motivo
         assert motivo and "use a função dela" not in motivo and "rede" in motivo, (caminho, motivo)
         assert _tres_caminhos_recusam(caminho, tmp_path, windows.FRASE_CAMINHO_DE_REDE) == [], caminho
     # o programa de fora pela letra do disco continua passando, e o da pasta do Windows continua com a frase de sempre
     assert windows.rodar_e_esperar([PY, "-c", "print(1)"], letras="utf-8").deu_certo
-    assert windows._por_que_recusa(hostname) == windows.FRASE_TEM_FUNCAO_PROPRIA
+    assert windows.rodar_e_esperar([hostname]).motivo == windows.FRASE_TEM_FUNCAO_PROPRIA

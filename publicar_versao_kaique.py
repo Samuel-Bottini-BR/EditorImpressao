@@ -15,8 +15,10 @@ O QUE FAZ, PARA UMA VERSAO DO PROGRAMA, em ordem, parando no primeiro problema (
 2. recusa se a versao do versao.py ja existe no destino (publicada, ou um rascunho que sobrou);
 3. le de volta o motor do Kraken que esta versao pede (core/ocr_kraken.VERSAO_DO_MOTOR): ele tem de estar publicado
    e liberado no destino, com a assinatura do Samuel conferindo (D-790: nenhuma versao sem o motor que ela pede);
-4. monta a pasta do programa SEM o motor solto (empacotar.construir_pasta(ATUALIZACAO); ou --pasta-pronta, que tem
-   de ser desta versao, empacotar.conferir_pasta_pronta), e so entao faz a conta do espaco: o rascunho fica no
+4. monta a pasta do programa SEM o motor solto e COM o Visual C++ em instalar\\ (empacotar.construir_pasta(ATUALIZACAO);
+   ou --pasta-pronta, que tem de trazer o mesmo), confere as duas pela mesma funcao (empacotar.conferir_pasta_pronta:
+   desta versao, com o Visual C++, sem o motor solto; volta 6: a pasta montada do zero era conferida antes de o
+   Visual C++ ser posto, e parava sempre), e so entao faz a conta do espaco: o rascunho fica no
    disco de dentro (o C:, D-776) e o comando nao comeca se o disco ficaria com menos de 20 GB livres;
 5. empacota pela funcao unica do vpk (empacotar.construir_pacote_do_velopack -> rodar_vpk, com a vigia do espaco),
    sem o pacote de diferenca (D-789), sem .msi e sem zip portatil (D-777); o Setup.exe e apagado na hora (D-795).
@@ -260,7 +262,8 @@ class _Destino:
     - usar_rascunho: onde a leitura de volta pode baixar um arquivo para somar, e a vigia do espaco (achado 7 do
       relatorio 3, D-776: antes o GitHub baixava para %TEMP%, fora do rascunho, da vigia e da conta);
     - soma_pode_baixar: se a soma deste destino pode baixar um arquivo inteiro (a conta do espaco soma o maior);
-    - comando_de_apagar e como_conferir: o que a frase da D-816 e a do apagar dizem para conferir e apagar depois.
+    - comando_de_apagar e como_conferir: o que a frase da D-816 e a do apagar dizem para conferir e apagar depois;
+    - comando_de_publicar_o_motor: o que a frase do motor que falta manda rodar (volta 6, achado 2 do relatorio 5).
     Seguro mexer: as frases. Arriscado: a soma baixar para outro lugar que nao o rascunho dado (o C: enche sem vigia)."""
 
     soma_pode_baixar = False
@@ -280,6 +283,13 @@ class _Destino:
     def comando_de_apagar(self, etiqueta: str) -> str:
         """A linha de comando que apaga a publicacao deste destino (o --apagar, que le de volta e confere)."""
         return f"publicar_versao_kaique.py --apagar {_conferir_etiqueta(etiqueta)}{self._argumentos_do_destino()}"
+
+    def comando_de_publicar_o_motor(self) -> str:
+        """A linha de comando que publica o motor do Kraken NESTE destino (o --motor). Volta 6, achado 2 do relatorio
+        5: a frase do motor que falta escrevia "--motor" a mao, sem o destino; na pasta das provas, quem a seguia
+        publicava (e liberava) o motor no GitHub. Toda frase que manda rodar um comando usa este lugar (e o
+        comando_de_apagar), pelos mesmos _argumentos_do_destino."""
+        return f"publicar_versao_kaique.py --motor{self._argumentos_do_destino()}"
 
     def como_conferir(self, etiqueta: str) -> str:
         """Como ver, sem mudar nada, se a publicacao esta liberada, em rascunho ou nao existe."""
@@ -764,7 +774,7 @@ def obter_motor_publicado(destino, pasta_local: Path, chave_publica: str | None 
     nome_da_assinatura = assinatura.nome_do_arquivo_da_assinatura(versao.ID_DO_PACOTE_DO_MOTOR, str(v))
     if destino.situacao(etiqueta) != "liberada" and exigir_liberado:
         raise Parou(f"o motor do Kraken {v}, que esta versão pede, não está publicado em {destino.nome}: publique o "
-                    "motor antes (--motor)")
+                    f"motor antes, com: {destino.comando_de_publicar_o_motor()}")
     presentes = destino.arquivos(etiqueta)
     if arquivo not in presentes or nome_da_assinatura not in presentes:
         raise Parou(f"a publicação {etiqueta} em {destino.nome} não tem {arquivo} e {nome_da_assinatura}")
@@ -943,6 +953,8 @@ def publicar(versao_do_pacote: str, destino_pasta: Path | None = None, pasta_pro
             if pasta is None:
                 raise Parou("a montagem da pasta do programa parou (o motivo está acima)")
             pecas = empacotar._PECAS
+        # a mesma conferência para as duas: a montagem já deixa o Visual C++ em instalar\ (volta 6, o defeito da prova
+        # à vista de 20/11/2026); construir_pacote_do_velopack a repete antes do vpk
         problemas = empacotar.conferir_pasta_pronta(pasta, versao_do_pacote)
         if problemas:
             raise Parou("a pasta do programa não serve: " + "; ".join(problemas))
