@@ -572,8 +572,7 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
   (`anexos/reversao-volta3-codigo-antigo.txt`); passam lá os dos achados 5 e 6 e o do soltar do grupo, que cobram
   proteções que já existiam e são provados pela mutação (B5, B6, B4b).
 - **No GitHub, volta 3:** rodada 44675872042, sobre o ramo em 2e906e94 (o código de e4263c0a e três docstrings de um
-  teste). Resultado: ainda rodando na entrega (o porteiro e as partes ver abaixo, na entrega à gerente); a gerente confere o fim. A rodada 44675045916, sobre 05f743ca, foi cancelada por mim aos 7 minutos (o
-  porteiro já tinha dado success), porque depois dela mudaram um comentário da peça e as docstrings.
+  teste). Resultado: **success** na segunda tentativa. PORTEIRO: success (o trabalho "Porteiro (juiz da versao de teste)", nas duas tentativas). Na primeira tentativa falhou só a parte 2: `tests/test_caixinha_do_dividir_nao_volta.py` saiu com o código 3221226505 (0xC0000409) e "sem saída", um travamento do Qt que não usa nada deste passo (instável novo, em "Ideias e bugs"); a parte 2 rodou de novo e passou. A rodada 44675045916, sobre 05f743ca, foi cancelada por mim aos 7 minutos (o porteiro já tinha dado success), porque depois dela mudaram um comentário da peça e as docstrings.
 
 ## Caminho e função
 
@@ -842,6 +841,7 @@ passos"). O tempo de publicar é medido na prova à vista.
   baixa o arquivo inteiro para a pasta temporária da conta (`%TEMP%`, no C:), fora do rascunho: fora da conta do espaço
   e da vigia (o pacote tem uns 460 MB). Achado lendo o código na volta 3; não é dos achados do relatório 2.
 - Ideia (Lista de espera): a cópia do motor para instalar\ (`empacotar.preparar_saida`) pela cópia conferida também.
+- Bug (Lista de bugs, 20/11/2026, não impede; instável novo): na rodada 44675872042 do GitHub, primeira tentativa, `tests/test_caixinha_do_dividir_nao_volta.py` saiu com o código 3221226505 (0xC0000409) e "sem saída" (um travamento do Qt); na repetição passou. Não usa nada deste passo.
 
 ## Perguntas para o Samuel
 
@@ -851,7 +851,7 @@ de ferramentas dele, em "Ressalvas"): a gerente pergunta, se achar preciso.
 
 ## Commit
 
-e4263c0a (o último commit de código, volta 3; depois dele só este formulário e os anexos mudam).
+2e906e94 (o último commit de código e testes, volta 3: o código de e4263c0a e três docstrings de um teste; depois dele só este formulário muda).
 
 ## O que o agente que tentou quebrar achou
 
