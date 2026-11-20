@@ -28,7 +28,7 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
 - 19/11: leitura feita (pacote, CLAUDE.md, memória e catálogo dos erros F4, F5, F9, plano-v3 passo 2 e peças 8, 9 e
   10b, plano v1 peça 8, estudo do Kraken, estudo de publicar rápido, o código de hoje, o código do vpk 1.2.161, o do
   Velopack do lado do programa, o do `gh`). Seções de antes de escrever preenchidas.
-- 19/11: código e testes feitos, em commits pequenos (lista em "Commit"). Prova de reversão: 17 de 17 proteções
+- 19/11: código e testes feitos, em commits pequenos (lista em "Commit"). Prova de reversão: 19 de 19 proteções
   acusadas pelo seu teste (`anexos/reversao-resultado.txt`); os testes novos falham no código antigo
   (`anexos/reversao-codigo-antigo.txt`). Rodada do GitHub em "Testes".
 - `git -C D:\programas\EditorImpressao rev-parse --is-shallow-repository` = false antes e depois. Nenhum atalho de
@@ -37,6 +37,8 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
   peça herdava os módulos do PowerShell 7 e não lia a assinatura digital. Consertado na peça (`fa28ab5b`), com teste de
   reversão que refaz o caso no PC (falhou antes do conserto, passa depois). Achado junto, sem consertar (não é deste
   passo): o lançar solto dá "saiu sem começar" para um script rápido (Lista de bugs, em "Ideias e bugs").
+- 19/11: pedido da gerente (D-809, D-811, D-812, D-814): consertado o apagar do lançar solto (`64ed0c01`) e o
+  apagar do destino com atalho (`0ef0da17`), com testes que falham sem o conserto; as três seções novas do formulário.
 - **Próximo:** a gerente manda a quem tenta quebrar; depois a prova à vista (o roteiro está em "A prova de verdade").
 
 ## Decisões que esta tarefa precisa cumprir
@@ -77,6 +79,11 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
   mesma peça (`assinatura.py` não muda), com outro nome de pacote.
 - D-727 "pode, se tiver qualquer coisa que o kaique precise, ele tem que estar no instalador né". Aqui: o motor vai
   dentro do instalador, como um arquivo só.
+- D-809 "ok". Aqui: o script lançado solto da peça apaga a pasta de troca sem seguir atalho, e o destino do
+  publicar não apaga uma publicação que é atalho (pedido da gerente de 19/11, depois das regras novas).
+- D-811 "ok". Aqui: a seção "Cada proteção e o teste que falha sem ela", provada numa cópia.
+- D-812 "ok". Aqui: a seção "De onde vem cada dado da conferência".
+- D-814 "ok". Aqui: não há pergunta ao Samuel nesta entrega (ver "Perguntas para o Samuel").
 - D-807 "ok". Aqui: no PC, só os arquivos de teste que mexi, um por vez; o conjunto inteiro no GitHub.
 - D-714 "1 - vamos seguir sua sugestão" · "2- ok". Aqui: publicar continua só quando alguém roda o comando.
 - D-763 "ok, pode fazer". Aqui: o nome do pacote do motor é outro (EditorImpressaoMotorKraken) e não é o nome da pasta
@@ -200,6 +207,7 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
 | Arquivo preso por outro programa ao enviar | o envio falha → mesmo caminho da falha de internet |
 | Desligar no meio (o PC ou a energia) | o rascunho fica no C: e o rascunho do destino fica sem liberar (nunca liberado pela metade); na próxima vez o comando acha o rascunho velho do destino e para dizendo como apagar; o rascunho velho do C: é apagado no começo da próxima vez (só as pastas com o nome do publicar) |
 | O publicar roda dentro de um PowerShell 7 (terminal pwsh) | a peça abre o PowerShell do Windows sem a lista de módulos herdada: a assinatura do Visual C++ é lida igual (antes falhava com CouldNotAutoloadMatchingModule) |
+| Um atalho (junção) dentro da pasta de troca do lançar solto, ou uma publicação do destino que é atalho | o lançar solto tira só o atalho e apaga o resto; o destino para sem apagar nada e diz que é atalho |
 | Ctrl+C no meio | o mesmo caminho do erro: o vpk é fechado, o rascunho é apagado e o do destino também; a frase diz "interrompido" (sem a tela de erro do Python) |
 | Dois publicar ao mesmo tempo | cada um tem o seu rascunho; o rascunho de outra vez só é apagado se tiver mais de 12 horas (antes, pode ser do outro rodando); a mesma versão no mesmo destino é recusada pelo segundo (já existe um rascunho) |
 | O instalador pedido e a publicação falha depois | o .msi só vai para a pasta de saída depois de a versão estar publicada: um .msi de versão que não saiu nunca fica lá |
@@ -352,6 +360,13 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
 - D-724: `tests/test_publicar_versao.py::test_d724_o_motor_com_a_assinatura_de_outra_chave_e_recusado`; `assinatura.py`
   não mudou.
 - D-727: o motor dentro do instalador (o teste da D-777 confere a segunda passada com o arquivo do motor).
+- D-809: `tests/test_windows_peca.py::test_o_lancado_solto_apaga_a_pasta_de_troca_sem_seguir_atalho` e
+  `tests/test_publicar_versao.py::test_d809_apagar_uma_publicacao_que_e_atalho_nao_apaga_o_outro_lado`; as junções
+  dos testes nascem e saem em pastas temporárias do próprio teste, com o outro lado conferido inteiro depois.
+- D-811: a seção "Cada proteção e o teste que falha sem ela" (19 de 19 acusadas numa cópia).
+- D-812: a seção "De onde vem cada dado da conferência" (os dois dados que o conferido escreve estão marcados como
+  não-prova).
+- D-814: nenhuma pergunta ao Samuel; procurei antes no Livro (ver "Perguntas para o Samuel").
 - D-807: no PC, um arquivo de teste por vez (lista em "Testes"); o conjunto inteiro no GitHub.
 - D-714: o publicar só roda pelo comando; nada liga sozinho.
 - D-763: `tests/test_publicar_motor.py::test_d763_o_nome_do_pacote_do_motor_e_outro_e_nao_e_pasta_de_dados`.
@@ -366,7 +381,7 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
   motor não está nesta cópia, o defeito antigo nº 330); `tests/test_ocr_diagnostico.py` 6;
   `tests/test_windows_janela_de_prova.py` 10; `tests/test_conferencias_codigo.py` 77; `tests/test_conferencias_pacote.py`
   20; `tests/test_conferencias_excecoes.py` 14. Porteiro no PC: "nada novo" (175 lugares).
-- **Prova de reversão** numa cópia à parte (git archive no rascunho da sessão, fora do projeto): 17 de 17 proteções
+- **Prova de reversão** numa cópia à parte (git archive no rascunho da sessão, fora do projeto): 19 de 19 proteções
   acusadas pelo seu teste (`anexos/reversao-resultado.txt`, script em `anexos/reversao-mutacoes.py.txt`); os testes
   novos rodados no código antigo falham (`anexos/reversao-codigo-antigo.txt`).
 - **No GitHub, rodada 1:** 44642471223, sobre o commit 2e88d125: **failure**. O porteiro passou (PORTEIRO: success,
@@ -402,6 +417,73 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
 - O servidor e o publicar na pasta → o mesmo desenho (`DestinoPasta` grava; o servidor lê pelas mesmas regras; prova:
   `tests/test_publicar_servidor.py::test_d773_o_indice_junta_as_versoes_liberadas_e_nao_mostra_o_rascunho`, que monta a
   pasta pelo próprio `DestinoPasta`).
+
+## Cada proteção e o teste que falha sem ela
+
+Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão, fora do projeto) e o teste dela falhou
+(`anexos/reversao-resultado.txt`; o script em `anexos/reversao-mutacoes.py.txt`):
+- Nada liberado antes da leitura de volta (recusa da ordem errada) →
+  `tests/test_publicar_versao.py::test_d53_nada_e_liberado_antes_da_assinatura_lida_de_volta` (M1).
+- Só os arquivos da versão vão ao destino, nunca o Setup.exe →
+  `tests/test_publicar_versao.py::test_d768_o_motor_e_a_versao_publicados_numa_pasta_sem_o_motor_no_pacote` (M2).
+- O rascunho do C: apagado e conferido também com erro (desfazer) →
+  `tests/test_publicar_versao.py::test_d795_o_setup_exe_e_o_rascunho_somem_tambem_quando_da_erro` (M3).
+- A conta do espaço recusa antes do vpk →
+  `tests/test_publicar_versao.py::test_d776_sem_espaco_para_antes_do_vpk_e_nada_fica` (M4).
+- A vigia fecha o vpk abaixo da reserva →
+  `tests/test_publicar_versao.py::test_d776_a_vigia_fecha_o_vpk_quando_o_disco_cai_abaixo_da_reserva` (M5).
+- A assinatura do motor publicado é conferida (leitura de volta) →
+  `tests/test_publicar_versao.py::test_d724_o_motor_com_a_assinatura_de_outra_chave_e_recusado` (M6).
+- O motor solto recusado no pacote da atualização →
+  `tests/test_publicar_versao.py::test_d768_o_pacote_da_atualizacao_com_o_motor_solto_e_recusado` (M7).
+- A falha antes de liberar apaga o rascunho do destino (desfazer) →
+  `tests/test_publicar_versao.py::test_a_leitura_de_volta_que_nao_bate_nao_libera_e_apaga_o_rascunho_do_destino` (M8).
+- Erro do GitHub nunca vira "não existe" →
+  `tests/test_publicar_versao.py::test_o_github_sem_resposta_nunca_vira_nao_publicada` (M9).
+- O servidor não serve o rascunho →
+  `tests/test_publicar_servidor.py::test_d773_o_indice_junta_as_versoes_liberadas_e_nao_mostra_o_rascunho` (M10).
+- A porta do servidor é exclusiva →
+  `tests/test_publicar_servidor.py::test_a_porta_ocupada_vira_frase_e_a_janela_diz_que_nao_serve` (M11).
+- A ficha confere o tamanho de cada arquivo →
+  `tests/test_publicar_motor.py::test_o_motor_estragado_ou_de_outra_versao_nao_confere` (M12).
+- O vpk sem a diferença →
+  `tests/test_publicar_versao.py::test_d789_d777_o_comando_do_vpk_sem_diferenca_sem_portatil_e_o_msi_so_quando_pedido` (M13).
+- O empacotar não abre o PowerShell por conta própria →
+  `tests/test_windows_peca.py::test_o_empacotar_le_a_assinatura_pela_peca_e_nao_abre_o_powershell` (M14).
+- A versão sem o motor publicado não é montada →
+  `tests/test_publicar_versao.py::test_d790_sem_o_motor_publicado_nada_e_montado` (M15).
+- A pasta pronta de outra versão é recusada →
+  `tests/test_publicar_versao.py::test_a_pasta_pronta_de_outra_versao_e_recusada` (M16).
+- O PowerShell sem a lista de módulos herdada →
+  `tests/test_windows_peca.py::test_o_powershell_nao_herda_os_modulos_do_powershell_7` (M17).
+- O script lançado solto apaga sem seguir atalho (D-809) →
+  `tests/test_windows_peca.py::test_o_lancado_solto_apaga_a_pasta_de_troca_sem_seguir_atalho` (M18, no código anterior).
+- O destino não apaga uma publicação que é atalho (D-809) →
+  `tests/test_publicar_versao.py::test_d809_apagar_uma_publicacao_que_e_atalho_nao_apaga_o_outro_lado` (M19).
+- Sem teste que acuse sozinho (dupla proteção; escrito para quem tenta quebrar): o Setup.exe apagado logo depois do vpk
+  (o rascunho inteiro some no fim de qualquer jeito); o corte das conexões no fechar do servidor (o envio também para
+  pela marca de fechado).
+
+## De onde vem cada dado da conferência
+
+- **Se a versão ou o motor já existem no destino:** lido do destino (a pasta; ou o GitHub pelo gh), nunca de uma
+  anotação do publicar.
+- **A soma de cada arquivo publicado:** lida do destino (a pasta: somada do arquivo lá; o GitHub: a soma que o próprio
+  GitHub calcula, ou o arquivo baixado e somado), comparada com a soma do arquivo do rascunho.
+- **A assinatura:** o texto baixado do destino, conferido com a chave pública que vai dentro do programa (nos testes, a
+  chave de teste) e com a soma lida do destino. A chave privada não confere nada (ela assina).
+- **O motor que a versão pede:** a assinatura do motor baixada do destino e a soma do arquivo do motor lida do destino;
+  o motor-exigido.json é escrito a partir disso, nunca de um arquivo local.
+- **O índice das versões:** baixado do destino, conferido contra a soma do pacote lida do destino.
+- **O espaço livre:** lido do Windows na hora (`shutil.disk_usage`), a cada 2 s durante o vpk.
+- **A versão da pasta pronta:** a ficha da versão dentro da pasta. **Este dado o conferido pode trocar** (quem monta a
+  pasta escreve a ficha): ela pega o engano (a pasta de outra versão), não serve de prova; a prova é a leitura de volta
+  do que foi publicado e a prova à vista.
+- **O motor inteiro:** a ficha motor.json dentro do motor. **Também escrita por quem monta**: a conferência forte é a
+  soma assinada do arquivo do motor, lida do destino.
+- **O resultado do vpk:** os arquivos que ele deixa na pasta de saída, abertos e conferidos (o pacote aberto como zip),
+  não só o código de saída dele.
+- **O servidor:** as subpastas liberadas da pasta, lidas a cada pedido.
 
 ## Máquina ou olho
 
@@ -485,7 +567,7 @@ de ferramentas dele, em "Ressalvas"): a gerente pergunta, se achar preciso.
 
 ## Commit
 
-fa28ab5b (o último commit de código; depois dele só este formulário muda).
+0ef0da17 (o último commit de código; depois dele só este formulário muda).
 
 ## O que o agente que tentou quebrar achou
 

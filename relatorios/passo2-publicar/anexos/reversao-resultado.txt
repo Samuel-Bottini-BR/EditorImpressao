@@ -35,3 +35,5 @@ M16 a pasta pronta de outra versão passa: ACUSADA (1 failed in 1.14s) [tests/te
 cópia limpa: 42 passed in 11.60s
 
 M17 a peça devolve a lista de módulos herdada ao PowerShell: ACUSADA (1 failed in 1.13s) [tests/test_windows_peca.py::test_o_powershell_nao_herda_os_modulos_do_powershell_7] (rodada à parte no commit fa28ab5b)
+M18 o script lançado solto volta ao apagar recursivo do PowerShell: ACUSADA (o código anterior, 0ef0da17^^: 1 failed) [tests/test_windows_peca.py::test_o_lancado_solto_apaga_a_pasta_de_troca_sem_seguir_atalho]
+M19 o destino apaga uma publicação que é atalho: ACUSADA (1 failed in 0.65s) [tests/test_publicar_versao.py::test_d809_apagar_uma_publicacao_que_e_atalho_nao_apaga_o_outro_lado] (rodada à parte no commit 0ef0da17)
