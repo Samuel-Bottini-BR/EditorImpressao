@@ -1,11 +1,12 @@
-"""O porteiro (D-791): as 24 conferências automáticas e as que leem o código parado.
+"""O porteiro (D-791): as 25 conferências automáticas e as que leem o código parado.
 
-As 24 conferências são as da proposta das regras dos agentes (ramo `regras-agentes-2026-11-18`, `proposta.md` §5.1),
-**com a numeração da tabela de lá** (o esboço `conferir_codigo.py` numerava diferente; vale a tabela, plano-v3 passo 0).
+As 24 primeiras conferências são as da proposta das regras dos agentes (ramo `regras-agentes-2026-11-18`, `proposta.md`
+§5.1), **com a numeração da tabela de lá** (o esboço `conferir_codigo.py` numerava diferente; vale a tabela, plano-v3
+passo 0). As novas continuam a numeração: a K25 (D-809, 19/11/2026) veio do catálogo dos erros (família F9).
 A lista `CONFERENCIAS` abaixo é o lugar único dessa numeração: os testes, a lista de exceções e o formulário leem daqui.
 
 Dois tipos:
-- **as que leem o código parado** (este arquivo): K01 a K08, K16, K22, K23, K24. Rodam no GitHub em toda entrega
+- **as que leem o código parado** (este arquivo): K01 a K08, K16, K22, K23, K24, K25. Rodam no GitHub em toda entrega
   (`tests/test_conferencias_codigo.py`) e antes do commit, só nos arquivos mudados
   (`python -m regras_dos_agentes antes-do-commit`, chamado por `ganchos/pre-commit`).
 - **as que olham o que a entrega mudou** (`porteiro_mudancas.py` e `formulario.py`): K09 a K15, K17 a K21. Precisam do
@@ -15,8 +16,9 @@ O que já está errado hoje no código fica na lista de exceções (`excecoes.py
 Nenhuma conferência tem exceção própria escrita no código: nem por arquivo, nem por caso.
 
 Onde cada busca olha (o "programa"): todo `.py` e `.pyw` do repositório, menos as pastas de `NAO_E_PROGRAMA` (os testes, os
-relatórios, a documentação, o próprio porteiro, que tem as palavras que procura escritas como dado, e o código de fora). A K16 e a K24 olham também os scripts de teste e de apoio, e leem a estrutura do código (a importação e a
-chamada de verdade), não o texto.
+relatórios, a documentação, o próprio porteiro, que tem as palavras que procura escritas como dado, e o código de fora). A K16, a K24 e a K25 olham também os scripts de teste e de apoio, e leem a estrutura do código (a importação, a
+chamada de verdade e o comando que o código roda), não o texto; a K25 lê também os arquivos de comandos do terminal
+(`.sh`, `.ps1`, `.bat`...).
 
 Seguro mexer: o texto de `porque`; acrescentar uma palavra a uma busca **com** o exemplo errado e o certo no teste.
 Arriscado: tirar palavra de uma busca, mudar o que conta como "programa" (`e_programa`), ou mudar o que conta como
@@ -91,6 +93,14 @@ CONFERENCIAS: list[Conferencia] = [
                 "cada arquivo em .claude/agents/)", "codigo", "—"),
     Conferencia("K24", "R142", "pywinauto com click_input ou send_keys (tomam o mouse e o teclado do Samuel)",
                 "codigo", "—"),
+    # Conferência nova do catálogo dos erros (D-809, 19/11/2026; família F9). Não é da tabela da proposta: continua a
+    # numeração dela.
+    Conferencia("K25", "R156, D-809", "comando que muda a pasta .git inteira (fetch com --depth, gc, prune, stash, "
+                "config) ou que apaga pasta com tudo dentro (rm -r, Remove-Item -Recurse) sem conferir antes se ela é "
+                "atalho, em scripts e testes, fora das duas peças do git", "codigo",
+                "comando montado em outra função ou guardado num texto que não começa com ele; os.exec e os.spawn; "
+                "rd /s do cmd e robocopy; apagar DENTRO de um atalho (modelos/x); mexer em ramo que não é o seu; "
+                "shutil.rmtree (o do Python 3.14 não entra no atalho, ver PALAVRAS_DE_APAGAR)"),
 ]
 POR_CODIGO = {c.codigo: c for c in CONFERENCIAS}
 
@@ -318,13 +328,77 @@ FERRAMENTAS_PROIBIDAS_AOS_AGENTES = re.compile(PADRAO_DAS_FERRAMENTAS_PROIBIDAS,
 # CLAUDE.md §9 é de antes dos temas. Mudar exige decisão do Samuel (CLAUDE.md §9): então muda aqui junto.
 BARRA_DE_ROLAGEM = {"escuro": "#4A4D54", "cinza": "#6A6A6A", "claro": "#B5B3AC"}
 
+# K25 (D-809, 19/11/2026, família F9 do catálogo dos erros): a cópia do agente (worktree) divide a pasta .git com o
+# repositório do Samuel; o `git fetch --depth=1` do juiz rodado na cópia deixou o repositório do PC raso (19/11), e um
+# atalho de pasta (junção) tirado com um comando que entra nele esvaziou a pasta modelos/ (18/11).
+# As duas peças do git (D-809): só elas falam com o git; o repositório de prova cria o seu .git numa pasta temporária.
+PECAS_DO_GIT = ("regras_dos_agentes/conversa_com_o_git.py", "regras_dos_agentes/repositorio_de_prova.py")
+# Os arquivos de comandos do terminal que a K25 lê, além do Python: o Git Bash (.sh, .bash), o PowerShell (.ps1,
+# .psm1) e o cmd (.bat, .cmd). Arquivo sem extensão que começa com "#!" (o gancho `ganchos/pre-commit`) também.
+COMANDOS_DE_TERMINAL = (".sh", ".bash", ".ps1", ".psm1", ".bat", ".cmd")
+# O começo de um comando do git: o programa (com ou sem `.exe`, com o caminho na frente) e as opções gerais que vêm
+# antes do subcomando (https://git-scm.com/docs/git#_options: -C, -c, --git-dir, --work-tree, --namespace,
+# --exec-path, --config-env, que levam um valor, e as que não levam, como --no-pager e -P). `<?>` é o pedaço que não é
+# texto escrito (um nome do código), lido por `leitura_do_codigo.comandos`.
+_GIT = (r"(?i:(?<![\w.-])git(?:\.exe)?)(?:\s+(?:-C|-c|--git-dir|--work-tree|--namespace|--exec-path|--config-env)"
+        r"(?:=|\s+)\S+|\s+--?[A-Za-z][\w-]*)*\s+")
+# Os subcomandos que mudam a pasta .git inteira (D-809: "fetch --depth, gc, prune, stash, config"). Cada linha é
+# (expressão, o que é, uma linha de código que a K25 tem de acusar): um teste cobra que cada exemplo é acusado.
+# Fontes: https://git-scm.com/docs/git-fetch (--depth, --deepen, --shallow-since, --shallow-exclude, --prune),
+# https://git-scm.com/docs/git-gc, https://git-scm.com/docs/git-prune, https://git-scm.com/docs/git-worktree (prune),
+# https://git-scm.com/docs/git-remote (prune), https://git-scm.com/docs/git-stash (list e show só leem),
+# https://git-scm.com/docs/git-config (--get, --get-all, --get-regexp, --get-urlmatch, -l, --list, "get" e "list"
+# só leem; `git -c chave=valor` vale só para aquele comando e não grava nada).
+PALAVRAS_DO_GIT: list[tuple[str, str, str]] = [
+    (_GIT + r"(?:fetch|pull)\b[^;&|\n]*\s--(?:depth|deepen|shallow-since|shallow-exclude)\b",
+     "busca cortando a história (deixa o repositório inteiro raso)",
+     'subprocess.run(["git", "fetch", "--depth=1", "origin", "obra-2026-10-26"])'),
+    (_GIT + r"(?:fetch|pull|remote\s+update)\b[^;&|\n]*\s(?:--prune(?:-tags)?|-p)\b",
+     "busca apagando os ramos que sumiram no GitHub", 'subprocess.run(["git", "fetch", "--prune", "origin"])'),
+    (_GIT + r"gc\b", "reorganiza a pasta .git inteira (git gc)", 'subprocess.run(["git", "-C", str(raiz), "gc"])'),
+    (_GIT + r"(?:(?:worktree|remote)\s+)?prune\b", "apaga coisas da pasta .git (prune)",
+     'subprocess.run(["git", "worktree", "prune"])'),
+    (_GIT + r"stash\b(?!\s+(?:list|show)\b)", "guarda e tira mudanças de todas as cópias (git stash)",
+     'os.system("git stash")'),
+    (_GIT + r"config\b(?![^;&|\n]*\s(?:--get(?:-all|-regexp|-urlmatch)?|-l|--list|get|list)(?:\s|$))",
+     "muda a configuração do git do repositório ou do computador (git config)",
+     'subprocess.run(["git", "config", "core.hooksPath", "ganchos"])'),
+]
+# Apagar uma pasta com tudo dentro. Num atalho de pasta (junção), o comando que entra no atalho apaga o conteúdo da
+# pasta de verdade. Fontes: o `rm` do Git Bash (coreutils, https://www.gnu.org/software/coreutils/manual/html_node/rm-invocation.html:
+# -r, -R, --recursive, juntas com outras letras: -rf, -fr); o Remove-Item do PowerShell
+# (https://learn.microsoft.com/powershell/module/microsoft.powershell.management/remove-item: -Recurse, que o
+# PowerShell aceita abreviado, -r a -Recurse; os apelidos ri, rm, rmdir, rd, del, erase,
+# https://learn.microsoft.com/powershell/module/microsoft.powershell.core/about/about_aliases).
+# O `shutil.rmtree` NÃO entra, de propósito: no Python 3.14 ele mesmo confere se é atalho e não entra nele
+# (Lib/shutil.py, `_rmtree_islink`, linhas 660-663, e "Cannot call rmtree on a symbolic link", linha 680; dentro da
+# pasta, o atalho é tratado como arquivo, Lib/os.py, linha 381, `not entry.is_junction()`). O `cmd /c rmdir` sem /s
+# é o jeito que a D-809 manda: tira só o atalho.
+PALAVRAS_DE_APAGAR: list[tuple[str, str, str]] = [
+    (r"(?<![\w.-])rm(?:\.exe)?(?:\s+-[\w-]+)*?\s+(?:-(?=[A-Za-z]{0,3}[rR])[A-Za-z]{1,4}|--recursive)(?![\w-])",
+     "apaga a pasta com tudo dentro (rm -r)", 'subprocess.run(["rm", "-rf", pasta])'),
+    (r"(?i:(?<![\w.-])(?:Remove-Item|ri|rm|rmdir|rd|del|erase)\b[^;|\n]*?\s-r(?:e(?:c(?:u(?:r(?:se?)?)?)?)?)?(?![\w-]))",
+     "apaga a pasta com tudo dentro (Remove-Item -Recurse)",
+     'subprocess.run(["powershell", "-Command", "Remove-Item -LiteralPath x -Recurse -Force"])'),
+]
+# O que conta como "conferir antes se é atalho" (no mesmo arquivo de terminal antes da linha, ou na mesma função do
+# Python antes da linha): o Python (`is_junction`, `isjunction`, `islink`, `is_symlink`, `st_reparse_tag`), o
+# PowerShell (`LinkType`, `ReparsePoint`), o cmd (`fsutil reparsepoint`) e o Git Bash (`[ -L`, `[ -h`, `test -L`).
+CONFERE_SE_E_ATALHO = (r"is_junction|isjunction|islink|is_symlink|st_reparse_tag|REPARSE_POINT|ReparsePoint|LinkType|"
+                       r"fsutil\s+reparsepoint|\[\[?\s+-[Lh]\s|\btest\s+-[Lh]\s")
+_GIT_QUE_MUDA = [(re.compile(p), o_que) for p, o_que, _ in PALAVRAS_DO_GIT]
+_APAGAR_TUDO = [(re.compile(p), o_que) for p, o_que, _ in PALAVRAS_DE_APAGAR]
+_CONFERE_SE_E_ATALHO = re.compile(CONFERE_SE_E_ATALHO, re.I)
+
 # Os dados das buscas que agente nenhum afrouxa: o teste do GitHub (`tests/test_conferencias_protecao.py`, pela
 # `protecao.py`) compara cada um com o da versão de teste; nenhum item pode sumir nem mudar (achado 6 de quem tentou
 # quebrar, 19/11). Só acrescentar é livre. Cada nome aqui é uma atribuição de valor literal neste arquivo.
 PROTEGIDAS = ("PALAVRAS_DO_WINDOWS", "PALAVRAS_DE_DETACHED", "PALAVRAS_DE_LICENCA", "PADRAO_DO_NUMERO_DE_DECISAO",
               "PADRAO_DO_EMOJI", "GERADORES", "PADRAO_DAS_FERRAMENTAS_PROIBIDAS", "BARRA_DE_ROLAGEM",
               "PECA_UNICA_DO_WINDOWS", "FORA_DO_PROJETO", "NAO_E_PROGRAMA",
-              "FONTE_PYTHON", "COMPILADO_PYTHON")
+              "FONTE_PYTHON", "COMPILADO_PYTHON",
+              # K25 (D-809). Ainda falta a linha de cada um em `protecao.PROTEGIDOS` (arquivo da gerente).
+              "PECAS_DO_GIT", "COMANDOS_DE_TERMINAL", "PALAVRAS_DO_GIT", "PALAVRAS_DE_APAGAR", "CONFERE_SE_E_ATALHO")
 
 
 def _texto_do_lugar(linha_de_codigo: str) -> str:
@@ -367,9 +441,17 @@ class _Arquivo:
 
     def funcao(self, linha: int) -> str:
         """O nome da função mais de dentro que contém a linha ("" fora de função), calculado uma vez por arquivo."""
+        return self._funcao_em_volta(linha)[0]
+
+    def inicio_da_funcao(self, linha: int) -> int:
+        """A primeira linha da função mais de dentro que contém a linha (1 fora de função): o "antes" da K25."""
+        return self._funcao_em_volta(linha)[1]
+
+    def _funcao_em_volta(self, linha: int) -> tuple[str, int]:
+        """(nome, primeira linha) da função mais de dentro que contém a linha; ("", 1) fora de função."""
         if self._funcoes is None:
             self._funcoes = sorted(leitura.funcoes(self.raiz), key=lambda f: f.fim - f.inicio)
-        return next((f.nome for f in self._funcoes if f.inicio <= linha <= f.fim), "")
+        return next(((f.nome, f.inicio) for f in self._funcoes if f.inicio <= linha <= f.fim), ("", 1))
 
 
 def _por_linha(arq: _Arquivo, k: str, padrao: re.Pattern, porque: str, linhas: list[str] | None = None) -> list[Achado]:
@@ -673,6 +755,69 @@ def k24(arq: _Arquivo) -> list[Achado]:
     return saida
 
 
+def _o_que_o_comando_muda(comando: str, antes: str) -> str | None:
+    """K25: o que este comando de terminal faz de perigoso (None = nada).
+
+    `antes` é o código que vem antes dele (na mesma função do Python, ou no arquivo de terminal até a linha): o apagar
+    com tudo dentro só é acusado se ali não houver conferência de atalho (`CONFERE_SE_E_ATALHO`). O comando do git
+    que muda a pasta .git é acusado sempre: conferir antes não o torna seguro.
+    """
+    for padrao, o_que in _GIT_QUE_MUDA:
+        m = padrao.search(comando)
+        if m:
+            return f"{o_que}, fora das peças do git: {m.group(0).strip()}"
+    for padrao, o_que in _APAGAR_TUDO:
+        m = padrao.search(comando)
+        if m and not _CONFERE_SE_E_ATALHO.search(antes):
+            return f"{o_que} sem conferir antes se é atalho de pasta: {m.group(0).strip()}"
+    return None
+
+
+def k25(arq: _Arquivo) -> list[Achado]:
+    """K25 (D-809): no Python, o comando de terminal que muda a pasta .git inteira ou apaga pasta com tudo dentro sem
+    conferir se é atalho. Lê os comandos pela estrutura (`leitura_do_codigo.comandos`), nunca o texto solto."""
+    if not e_script_python(arq.caminho) or arq.caminho in PECAS_DO_GIT:
+        return []
+    saida, ja = [], set()
+    for linha, comando in leitura.comandos(arq.raiz):
+        antes = "\n".join(arq.codigo[arq.inicio_da_funcao(linha) - 1:linha])
+        porque = _o_que_o_comando_muda(comando, antes)
+        if porque and linha not in ja:
+            ja.add(linha)
+            saida.append(Achado("K25", arq.caminho, linha, _texto_do_lugar(arq.codigo[linha - 1]), porque,
+                                arq.funcao(linha)))
+    return saida
+
+
+def e_comandos_de_terminal(caminho: str, fonte: str | None = None) -> bool:
+    """Arquivo de comandos do terminal do projeto (`COMANDOS_DE_TERMINAL`), ou sem extensão começando com "#!"."""
+    if caminho.split("/")[0] in FORA_DO_PROJETO:
+        return False
+    if caminho.lower().endswith(COMANDOS_DE_TERMINAL):
+        return True
+    return "." not in caminho.rsplit("/", 1)[-1] and fonte is not None and fonte.lstrip("﻿").startswith("#!")
+
+
+def _sem_comentario_do_terminal(caminho: str, linha: str) -> str:
+    """A linha sem o comentário: `#` no Git Bash e no PowerShell; `rem` e `::` no cmd."""
+    if caminho.lower().endswith((".bat", ".cmd")):
+        return "" if re.match(r"^\s*@?(?:rem\b|::)", linha, re.I) else linha
+    return re.sub(r"(?:^|\s)#.*$", "", linha)
+
+
+def k25_terminal(caminho: str, fonte: str) -> list[Achado]:
+    """K25 (D-809) nos arquivos de comandos do terminal: cada linha (sem comentário) é um comando."""
+    if not e_comandos_de_terminal(caminho, fonte):
+        return []
+    codigo = [_sem_comentario_do_terminal(caminho, l) for l in leitura.linhas(fonte)]
+    saida = []
+    for n, linha in enumerate(codigo, 1):
+        porque = _o_que_o_comando_muda(linha, "\n".join(codigo[:n])) if linha.strip() else None
+        if porque:
+            saida.append(Achado("K25", caminho, n, _texto_do_lugar(linha), porque))
+    return saida
+
+
 def k22(arq: _Arquivo) -> list[Achado]:
     """K22: a barra de rolagem de cada tema continua com o cinza de hoje e a folha de estilo usa essa cor."""
     if arq.caminho != "ui/estilo.py":
@@ -740,7 +885,13 @@ def k00_compilado_sem_fonte(caminhos: Iterable[str]) -> list[Achado]:
                    "importa") for c in caminhos if c.endswith(COMPILADO_PYTHON)]
 
 
-_DO_CODIGO_PYTHON: list[Callable[[_Arquivo], list[Achado]]] = [k01, k02, k03, k04, k05, k06, k07, k16_codigo, k22, k24]
+_DO_CODIGO_PYTHON: list[Callable[[_Arquivo], list[Achado]]] = [k01, k02, k03, k04, k05, k06, k07, k16_codigo, k22, k24,
+                                                                k25]
+
+
+def _talvez_sem_extensao(caminho: str) -> bool:
+    """Arquivo do projeto sem extensão: pode ser um script com "#!" (só se sabe lendo)."""
+    return "." not in caminho.rsplit("/", 1)[-1] and caminho.split("/")[0] not in FORA_DO_PROJETO
 
 
 def conferir_codigo(caminhos: Iterable[str], ler: Callable[[str], str | None]) -> list[Achado]:
@@ -753,10 +904,15 @@ def conferir_codigo(caminhos: Iterable[str], ler: Callable[[str], str | None]) -
     achados: list[Achado] = (k08(caminhos) + k00_compilado_sem_fonte(caminhos)
                              + pastas_de_fora_com_nome_de_modulo(caminhos))
     for c in caminhos:
-        precisa = e_script_python(c) or c == "requirements.txt" or fnmatch(c, ".claude/agents/*.md")
+        terminal = e_comandos_de_terminal(c)
+        sem_extensao = _talvez_sem_extensao(c)
+        precisa = (e_script_python(c) or c == "requirements.txt" or fnmatch(c, ".claude/agents/*.md") or terminal
+                   or sem_extensao)
         if not precisa:
             continue
         fonte = ler(c)
+        if fonte is None and sem_extensao:
+            continue          # sem extensão e sem texto legível: não é script (só o "#!" diria que é)
         if fonte is None:
             achados.append(Achado("K00", c, 0, c, "não deu para ler o arquivo"))
             continue
@@ -768,7 +924,7 @@ def conferir_codigo(caminhos: Iterable[str], ler: Callable[[str], str | None]) -
             for conferencia in _DO_CODIGO_PYTHON:
                 achados += conferencia(arq)
         else:
-            achados += k16_requisitos(c, fonte) + k23(c, fonte)
+            achados += k16_requisitos(c, fonte) + k23(c, fonte) + k25_terminal(c, fonte)
     return achados
 
 

@@ -10,8 +10,13 @@ Como funciona: o `tokenize` do Python acha os comentários (sabe que um `#` dent
 linha por linha, é o "código" que o porteiro lê. As linhas são as do Python (`\\n`, `\\r\\n` ou `\\r`), as mesmas que o
 `ast` numera.
 
+A K25 (D-809) lê outra coisa: os comandos de terminal que o arquivo manda rodar (`comandos`), pela estrutura do
+código (a chamada do `subprocess`, a lista que começa com `git`, o texto que começa com o comando), nunca o texto
+solto: assim o exemplo errado escrito dentro de um teste não conta como comando do teste.
+
 Seguro mexer: acrescentar uma leitura nova (ex.: as funções de um arquivo). Arriscado: deixar passar comentário ou
-docstring para a busca (vira alarme falso) ou apagar código de verdade (o porteiro fica cego àquele trecho).
+docstring para a busca (vira alarme falso) ou apagar código de verdade (o porteiro fica cego àquele trecho); em
+`comandos`, ler texto solto como comando (o exemplo de cada teste vira alarme falso).
 """
 
 from __future__ import annotations
@@ -207,3 +212,104 @@ def importacoes(raiz: ast.Module, pacote_do_arquivo: str = "") -> list[tuple[int
                 nome = no.module or ""
             saida.append((no.lineno, nome))
     return saida
+
+
+# ----------------------------------------------------------------------------------------------------------------
+# Os comandos que o código roda (K25, D-809): o texto de cada comando de terminal que um arquivo Python manda rodar.
+# ----------------------------------------------------------------------------------------------------------------
+
+# As funções da biblioteca do Python que rodam um programa ou um comando do terminal (fontes:
+# https://docs.python.org/3/library/subprocess.html, https://docs.python.org/3/library/os.html#os.system,
+# https://docs.python.org/3/library/asyncio-subprocess.html). `os.exec*` e `os.spawn*` não entram: ninguém no projeto os
+# usa, e o nome do programa vem num argumento separado (ficam no "não pega" da K25).
+RODAM_COMANDO = {"subprocess": {"run", "Popen", "call", "check_call", "check_output", "getoutput", "getstatusoutput"},
+                 "os": {"system", "popen"},
+                 "asyncio": {"create_subprocess_exec", "create_subprocess_shell"}}
+# Os programas cujo comando guardado numa lista (`["git", "gc"]`) já conta como comando, mesmo antes de ir para uma
+# daquelas funções (o comando costuma ser montado numa variável e rodado depois).
+PROGRAMAS_DA_LISTA = {"git", "git.exe", "rm", "rm.exe"}
+# O texto que fica no lugar do que não é texto escrito no código (um nome, uma conta): um "pedaço que não dá para ler".
+NAO_DA_PARA_LER = "<?>"
+
+
+def _como_texto(no: ast.AST) -> str:
+    """O texto de um pedaço do comando: o texto escrito, o f-string com `<?>` no lugar das contas, a lista juntada com
+    espaços e a soma de textos; o resto vira `<?>`."""
+    if isinstance(no, ast.Constant) and isinstance(no.value, str):
+        return no.value
+    if isinstance(no, ast.JoinedStr):
+        return "".join(v.value if isinstance(v, ast.Constant) else NAO_DA_PARA_LER for v in no.values)
+    if isinstance(no, (ast.List, ast.Tuple)):
+        return " ".join(_como_texto(e) for e in no.elts)
+    if isinstance(no, ast.BinOp) and isinstance(no.op, ast.Add):
+        return _como_texto(no.left) + _como_texto(no.right)
+    return NAO_DA_PARA_LER
+
+
+def _quem_roda(raiz: ast.Module) -> tuple[dict[str, str], dict[str, str]]:
+    """(apelido do módulo → módulo, nome importado → módulo) para `subprocess`, `os` e `asyncio` neste arquivo."""
+    modulos = {m: m for m in RODAM_COMANDO}
+    nomes: dict[str, str] = {}
+    for no in ast.walk(raiz):
+        if isinstance(no, ast.Import):
+            for a in no.names:
+                if a.name in RODAM_COMANDO:
+                    modulos[a.asname or a.name] = a.name
+        elif isinstance(no, ast.ImportFrom) and no.module in RODAM_COMANDO and not no.level:
+            for a in no.names:
+                if a.name in RODAM_COMANDO[no.module]:
+                    nomes[a.asname or a.name] = no.module
+    return modulos, nomes
+
+
+def comandos(raiz: ast.Module) -> list[tuple[int, str]]:
+    """(linha, o comando como texto) de cada comando de terminal que o arquivo manda rodar (K25, D-809).
+
+    Três jeitos, lidos pela estrutura do código (nunca dentro de um texto qualquer, como o exemplo de um teste):
+    1. a chamada de uma função que roda comando (`RODAM_COMANDO`, também pelo apelido do módulo ou importada pelo nome):
+       o primeiro argumento (ou `args=`), e no `create_subprocess_exec` todos os argumentos;
+    2. a lista ou tupla de textos que começa com um programa de `PROGRAMAS_DA_LISTA` (o comando guardado);
+    3. o texto (ou f-string) que começa com o nome de um comando (`git `, `rm `, `Remove-Item `): a linha de comando
+       guardada num texto. As docstrings não contam.
+    O que não é texto escrito vira `<?>`. Não segue o comando que vai para outra função ou outro arquivo.
+    """
+    modulos, nomes = _quem_roda(raiz)
+    lidos = {id(d) for d in _docstrings(raiz)}     # o que já foi lido (ou não conta): não se lê duas vezes
+    saida: list[tuple[int, str]] = []
+
+    def guardar(linha: int, pedacos: list[ast.AST]) -> None:
+        """Guarda o comando feito destes pedaços e marca tudo o que está dentro deles como já lido."""
+        saida.append((linha, " ".join(_como_texto(p) for p in pedacos)))
+        lidos.update(id(n) for p in pedacos for n in ast.walk(p))
+
+    # 1. As chamadas que rodam comando (primeiro, para o texto delas não ser lido de novo pelos jeitos 2 e 3).
+    for no in ast.walk(raiz):
+        if not isinstance(no, ast.Call):
+            continue
+        f = no.func
+        if isinstance(f, ast.Attribute) and isinstance(f.value, ast.Name) and f.value.id in modulos:
+            nome = f.attr if f.attr in RODAM_COMANDO[modulos[f.value.id]] else None
+        else:
+            nome = f.id if isinstance(f, ast.Name) and f.id in nomes else None
+        if nome is None:
+            continue
+        partes = list(no.args) if nome == "create_subprocess_exec" else (
+            no.args[:1] or [k.value for k in no.keywords if k.arg == "args"])
+        if partes:
+            guardar(no.lineno, partes)
+    # 2 e 3. A lista que começa com o programa e o texto que começa com o comando.
+    comeca_com_comando = re.compile(r"^\s*(?:git(?:\.exe)?|rm(?:\.exe)?|Remove-Item)\s", re.I)
+    for no in ast.walk(raiz):
+        if id(no) in lidos:
+            continue
+        if isinstance(no, (ast.List, ast.Tuple)) and no.elts:
+            primeiro = no.elts[0]
+            if (isinstance(primeiro, ast.Constant) and isinstance(primeiro.value, str)
+                    and primeiro.value.replace("\\", "/").rsplit("/", 1)[-1].lower() in PROGRAMAS_DA_LISTA):
+                guardar(no.lineno, [no])
+        elif isinstance(no, ast.JoinedStr) or (isinstance(no, ast.Constant) and isinstance(no.value, str)):
+            if comeca_com_comando.match(_como_texto(no)):
+                guardar(no.lineno, [no])
+            elif isinstance(no, ast.JoinedStr):
+                lidos.update(id(n) for n in ast.walk(no))   # os pedaços de um f-string não são textos soltos
+    return sorted(saida)
