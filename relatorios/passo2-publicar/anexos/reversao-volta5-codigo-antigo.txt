@@ -1,0 +1,36 @@
+Volta 5 do passo 2: os testes novos (os de tests/ de 35ec0c27 com 'volta5' no nome) rodados no código de 595cc293
+(o código da volta 4, antes dos consertos), numa cópia (git archive) fora do projeto. 20/11/2026.
+Comando: python -m pytest tests/<arquivo> -q -rf --tb=line -k volta5 (QT_QPA_PLATFORM=offscreen)
+
+== tests/test_windows_peca.py ==
+E   AssertionError: C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4296\test_volta5_o_programa_num_flu0\nada.txt:pwsh.exe
+FAILED tests/test_windows_peca.py::test_volta5_o_programa_num_fluxo_escondido_de_outro_arquivo_e_recusado
+1 failed, 69 deselected in 0.84s
+
+== tests/test_publicar_versao.py ==
+E   AssertionError: sobrou um rascunho de v9.9.9 em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4297\test_volta5_achado1_as_frases_0\servidor (de uma vez interrompida): apague com --apagar v9.9.9 e rode de novo
+E   AssertionError: a versão 9.9.9 já existe em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4297\test_volta5_achado1_as_frases_1\servidor (publicada ou rascunho que sobrou): aumente o número em versao.py, ou apague o rascunho com --apag
+E   AssertionError: o motor 1 já existe em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4297\test_volta5_achado1_as_frases_2\servidor (publicado ou rascunho que sobrou): se o motor mudou, aumente core/ocr_kraken.VERSAO_DO_MOTOR; rascunho v
+E   AssertionError: o GitHub não deixou enviar EditorImpressaoPrograma-9.9.9-full.nupkg: HTTP 502 ao enviar (de mentira). ATENÇÃO: pedi para apagar v9.9.9 em o GitHub (dono/projeto) e não deu para conferir se sumiu (parei o pedido ao GitHub (release view):
+E   AssertionError: o tempo do pedido não fechou o gh
+E   AttributeError: module 'publicar_versao_kaique' has no attribute 'NadaSaiu'
+E   AttributeError: module 'publicar_versao_kaique' has no attribute 'NadaSaiu'
+FAILED tests/test_publicar_versao.py::test_volta5_achado1_as_frases_de_ja_existe_dao_o_comando_do_destino[publicar_arquivos]
+FAILED tests/test_publicar_versao.py::test_volta5_achado1_as_frases_de_ja_existe_dao_o_comando_do_destino[versao]
+FAILED tests/test_publicar_versao.py::test_volta5_achado1_as_frases_de_ja_existe_dao_o_comando_do_destino[motor]
+FAILED tests/test_publicar_versao.py::test_volta5_achado2_a_leitura_sem_resposta_antes_do_pedido_nao_vira_pedi_para_apagar
+FAILED tests/test_publicar_versao.py::test_volta5_achado3a_o_gh_de_verdade_fechado_por_tempo_no_apagar_diz_que_pediu
+FAILED tests/test_publicar_versao.py::test_volta5_achado4_o_gh_que_nem_abre_no_liberar_nao_conta_como_pedido
+FAILED tests/test_publicar_versao.py::test_volta5_achado4_so_o_gh_que_nao_abriu_de_verdade_e_nada_saiu
+7 failed, 1 passed, 70 deselected in 63.09s (0:01:03)
+
+== Leitura (o escritor da volta 5) ==
+- 8 de 9 casos novos falham no código antigo; o que passa é o do achado 3 (b) (a liberada antes do pedido de apagar
+  no GitHub): a proteção (`except PublicacaoLiberada: raise`) já existia e não tinha teste; a prova de que ele a
+  cobra é a mutação W3b (reversao-volta5-resultado.txt).
+- Falham pelo defeito: os do achado 1 (a frase sem o --pasta), o do achado 2 ("pedi para apagar" sem pedido), o do
+  achado 4 (o rascunho fica e a frase diz "pedi para liberar"; e o _gh antigo levanta Parou comum, não NadaSaiu) e o
+  do achado 5 (o fluxo escondido passa).
+- O do achado 3 (a) falha no antigo por outra razão: o tempo do pedido ao gh não era trocável (o gh de prova espera
+  60 s e sai com erro; a frase diz "continua lá"). A proteção (o gh fechado por tempo vira SemResposta) já existia;
+  a prova de que o teste a cobra é a mutação W3a.

@@ -142,6 +142,20 @@ As da primeira entrega, de `03c91599`, estão no `git log` deste arquivo.)
   ponto no fim também roda pelo PATH), uma vez só, e todas as conferências usam esse nome.
 - D-798 "fechou". Aqui: nenhum rótulo de pronto.
 
+**Volta 5 (20/11/2026), as mesmas decisões da volta 4, com o que cada conserto toca:**
+- D-816 "A , mas onde estamos antes de você fazer qualquer processo". Aqui: o gh que nem abriu no pedido de liberar
+  não é pedido (achado 4); então, pela D-816 ("Antes do pedido de liberar, erro no meio continua apagando o rascunho na
+  hora"), o rascunho é apagado. Qualquer erro depois de o gh abrir continua sem apagar nada.
+- D-773 "A". Aqui: as frases de "já existe" e "sobrou um rascunho" dão o comando de apagar do destino certo (achado 1).
+- D-767 "não faça mais nada escodindo ou de mentira". Aqui: o fluxo escondido e o gh fechado por tempo rodam de verdade
+  nos testes (um programa de prova); o GitHub continua de mentira só para a lógica.
+- D-775 "ok". Aqui: os achados do relatório 4 voltaram a quem escreveu; depois, um agente novo tenta quebrar.
+- D-815 "ok". Aqui: é a minha segunda volta, a última permitida.
+- D-811 "ok". Aqui: as 10 proteções desta volta desligadas numa cópia, todas acusadas.
+- D-812 "ok". Aqui: "pedi" ou "não pedi" vem de qual pedido saiu (o de apagar em si, ou o gh que nem abriu).
+- D-813 "ok". Aqui: o que o Windows faz com o ":" de um fluxo, lido na Microsoft e rodado de verdade.
+- D-798 "fechou". Aqui: sem rótulo de pronto.
+
 ## O que já está escolhido e testado aqui
 
 - `tests/test_empacotar.py`: o motor do jeito novo passa e o velho, com atalhos ou de outro protocolo, é recusado
@@ -204,6 +218,14 @@ As da primeira entrega, de `03c91599`, estão no `git log` deste arquivo.)
   os do .msi, e os de `tests/test_publicar_motor.py` (o zip conferido pela ficha, a vigia na compressão).
 - Livro: D-767, D-773, D-775, D-776, D-795, D-811 a D-813, D-815, D-816.
 
+**Volta 5 (antes de mexer):** as escolhas e os testes que esta volta toca são os mesmos da volta 4 (acima), mais os da
+volta 4 em si: `test_d816_*` (nada é apagado depois do pedido de liberar), `test_volta4_achado3_*` (a frase diz se
+pediu), `test_volta4_achado4_*`, `test_volta4_o_nome_com_ponto_no_fim_e_lido_como_o_windows_completa` e os do lote
+(`test_bat_e_cmd_sao_recusados_pelo_rodar_pelo_lancar_e_pelo_grupo`, que cobra a frase "função própria" para o
+`x.bat::$DATA`). Nenhum teste antigo mudou nesta volta: o fluxo escondido é conferido depois do lote, para o
+`x.bat::$DATA` continuar com a frase do lote; e o "não abriu" do achado 4 só vale para o gh que nem começou, para os
+testes da D-816 (o liberar que responde erro, o Ctrl+C) continuarem como estão.
+
 ## Como fica para quem usa e no livro
 
 - **O Kaique: nada muda** na tela nem no livro (nenhum arquivo de `ui/` nem do processamento das páginas). O PDF que
@@ -250,6 +272,13 @@ As da primeira entrega, de `03c91599`, estão no `git log` deste arquivo.)
   num arquivo grande no HD externo (o dado tinha de ser gravado de qualquer jeito).
 - **Problema novo criado:** nenhum que eu saiba. O que fica para conferir está em "Ressalvas" (o teste antigo da D-816,
   a gravação no disco na peça do passo 1).
+
+**Volta 5:** o Kaique: nada muda (nem a tela, nem o PDF). O Samuel, publicando: nada muda no caminho que dá certo. Muda
+quando dá errado: (1) na pasta das provas, a frase de "já existe" ou "sobrou um rascunho" dá o comando com o `--pasta`
+(antes, seguir a frase apagava no GitHub); (2) se o gh nem abrir no pedido de liberar, o rascunho do GitHub é apagado
+na hora, e a frase diz que foi apagado (antes ficava, com a frase "pedi para liberar"); (3) a frase do apagar não diz
+"pedi" quando só uma leitura ficou sem resposta. A peça do Windows recusa o programa escrito como fluxo escondido
+(ninguém usa isso). Problema novo: nenhum que eu saiba.
 
 ## A causa, a regra e todos os caminhos
 
@@ -691,6 +720,12 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
    gravação da peça pedem ao Windows para gravar no disco antes de conferir e trocar o nome (`windows.gravar_no_disco`);
    o caminho do teste do lote em texto cru; o teste da segunda olhada depois do PATH.
 
+12. **Volta 5 (os achados do relatório 4):** as três frases de "já existe" e "sobrou um rascunho" pelo lugar único
+   do comando de apagar; só o pedido de apagar que saiu diz "pedi" (`ApagarSemResposta`); o gh que nem abriu não é
+   pedido de liberar (`NadaSaiu`), e então o rascunho é apagado (D-816); a peça recusa o fluxo escondido de outro
+   arquivo, com frase própria; o texto de `windows.gravar_no_disco` diz quem passa por ela; os testes das duas
+   proteções que não tinham teste; o tempo do pedido ao gh num lugar só (`DestinoGitHub.LIMITE_DO_PEDIDO_S`).
+
 ## Arquivos criados ou alterados
 
 Desde a partida desta volta (`5f96975b`, o pacote da volta 4); o que as voltas 1 a 3 mexeram está no `git log` deste
@@ -705,6 +740,11 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
 - `relatorios/passo2-publicar/` (este formulário, o pacote da volta 4 e os anexos `reversao-volta4-*` e `volta4-*`)
 
 `tests/test_empacotar.py` não mudou.
+
+- **Volta 5** (desde `595cc293`, dentro da lista acima): `core/windows.py`, `publicar_versao_kaique.py`,
+  `tests/test_windows_peca.py` (1 teste novo), `tests/test_publicar_versao.py` (7 testes novos, 9 casos; nenhum antigo
+  mudou) e, em `relatorios/passo2-publicar/`, este formulário, o pacote de quem tentou quebrar da volta 4 e os anexos
+  `reversao-volta5-*`. `empacotar.py` não mudou nesta volta.
 
 ## Como cumpri cada uma
 
@@ -799,6 +839,20 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
   - D-813 "ok": o que o Windows faz com o nome (lido na Microsoft e rodado no PC, em "O que li") e a recusa pelo nome
     completado, não pelo texto.
   - D-798 "fechou": nenhum rótulo de pronto neste ramo.
+
+- **Volta 5:**
+  - D-816: o gh que nem abriu não é pedido, e o rascunho é apagado:
+    `tests/test_publicar_versao.py::test_volta5_achado4_o_gh_que_nem_abre_no_liberar_nao_conta_como_pedido` e
+    `tests/test_publicar_versao.py::test_volta5_achado4_so_o_gh_que_nao_abriu_de_verdade_e_nada_saiu`; os testes
+    `test_d816_*` da volta 4 (o resto continua sem apagar nada) passam sem mudar.
+  - D-773: `tests/test_publicar_versao.py::test_volta5_achado1_as_frases_de_ja_existe_dao_o_comando_do_destino` (as
+    três frases; seguir a frase apaga na pasta e não toca o GitHub).
+  - D-767 e D-813: `tests/test_windows_peca.py::test_volta5_o_programa_num_fluxo_escondido_de_outro_arquivo_e_recusado`
+    (o Windows roda o fluxo sem a peça; a peça o recusa nos três caminhos) e
+    `tests/test_publicar_versao.py::test_volta5_achado3a_o_gh_de_verdade_fechado_por_tempo_no_apagar_diz_que_pediu`.
+  - D-811: `anexos/reversao-volta5-resultado.txt` (10 de 10 acusadas).
+  - D-812: "De onde vem cada dado", "Volta 5".
+  - D-775, D-815, D-798: entrego à gerente, sem rótulo; é a minha última volta.
 
 ## Testes
 
@@ -946,6 +1000,19 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
     `tests/test_publicar_versao.py::test_volta4_achado11_a_copia_e_o_motor_gravam_no_disco_antes_de_conferir_e_trocar` e
     `tests/test_windows_peca.py::test_volta4_a_peca_manda_gravar_no_disco_antes_de_trocar_o_nome`).
 
+- **Volta 5:**
+  - toda frase que manda apagar (a D-816, as do apagar, a da liberada no meio, o "sobrou um rascunho", os dois "já
+    existe") → `_Destino.comando_de_apagar` (prova, as três que eram à mão:
+    `tests/test_publicar_versao.py::test_volta5_achado1_as_frases_de_ja_existe_dao_o_comando_do_destino`);
+  - "pedi para apagar" → só o `DestinoGitHub._pedir_para_apagar` (`ApagarSemResposta`; prova:
+    `tests/test_publicar_versao.py::test_volta5_achado2_a_leitura_sem_resposta_antes_do_pedido_nao_vira_pedi_para_apagar`
+    e `tests/test_publicar_versao.py::test_volta5_achado3a_o_gh_de_verdade_fechado_por_tempo_no_apagar_diz_que_pediu`);
+  - "não saiu nada" → `DestinoGitHub._gh` (`NadaSaiu`, do `abriu: False` do laço único), usado pelo caminho de erro
+    de `publicar_arquivos` (a versão e o motor; prova:
+    `tests/test_publicar_versao.py::test_volta5_achado4_o_gh_que_nem_abre_no_liberar_nao_conta_como_pedido`);
+  - o fluxo escondido, nos três caminhos da peça → `windows._por_que_recusa` → `windows._e_fluxo_escondido` (prova:
+    `tests/test_windows_peca.py::test_volta5_o_programa_num_fluxo_escondido_de_outro_arquivo_e_recusado`).
+
 ## Cada proteção e o teste que falha sem ela
 
 Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão, fora do projeto) e o teste dela falhou
@@ -1072,6 +1139,26 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
 - **Volta 4, limite conhecido (achado 5, não é proteção):** a recusa da peça é pela pasta do Windows e pela lista de
   nomes; uma cópia de um programa do Windows fora da pasta, com outro nome, passa (Ressalvas).
 
+- **Volta 5** (`anexos/reversao-volta5-resultado.txt`; script em `anexos/reversao-volta5-mutacoes.py.txt`), 10 de
+  10 acusadas:
+  - cada uma das três frases com o comando à mão (W1a, W1b, W1c) →
+    `tests/test_publicar_versao.py::test_volta5_achado1_as_frases_de_ja_existe_dao_o_comando_do_destino`;
+  - qualquer "sem resposta" do apagar vira "pedi" (W2) →
+    `tests/test_publicar_versao.py::test_volta5_achado2_a_leitura_sem_resposta_antes_do_pedido_nao_vira_pedi_para_apagar`;
+  - o pedido de apagar sem resposta não marcado (W2b) e o gh fechado por tempo virando Parou comum (W3a, achado 3 a) →
+    `tests/test_publicar_versao.py::test_volta5_achado3a_o_gh_de_verdade_fechado_por_tempo_no_apagar_diz_que_pediu`;
+  - sem o `except PublicacaoLiberada: raise` (W3b, achado 3 b) →
+    `tests/test_publicar_versao.py::test_volta5_achado3b_liberada_antes_do_pedido_no_github_continua_publicacao_liberada`;
+  - o gh que nem abriu contando como pedido (W4) →
+    `tests/test_publicar_versao.py::test_volta5_achado4_o_gh_que_nem_abre_no_liberar_nao_conta_como_pedido`; o _gh
+    que não abriu levantando Parou comum (W4b) →
+    `tests/test_publicar_versao.py::test_volta5_achado4_so_o_gh_que_nao_abriu_de_verdade_e_nada_saiu`;
+  - sem a recusa do fluxo escondido (W5) →
+    `tests/test_windows_peca.py::test_volta5_o_programa_num_fluxo_escondido_de_outro_arquivo_e_recusado`.
+  - As duas mutações do relatório 4 que não pedem conserto (A6: o laço não junta a saída depois de fechar; A10: o
+    destino não volta ao estado de antes no fim do publicar) são arrumação: hoje ninguém usa essa saída nem reaproveita
+    o destino (observação 8).
+
 ## De onde vem cada dado da conferência
 
 - **Se a versão ou o motor já existem no destino:** lido do destino (a pasta; ou o GitHub pelo gh), nunca de uma
@@ -1118,6 +1205,11 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   Windows (a leitura do grupo).
 - **Volta 4, gravar no disco:** o que o Windows responde ao pedido de gravar (erro vira erro do disco). Não há leitura que
   prove que chegou ao disco (a leitura de volta vem da memória do Windows): isso está escrito em "Ressalvas".
+
+- **Volta 5:** "pedi para apagar" vem de qual pedido saiu e ficou sem resposta: só o pedido de apagar em si
+  (`ApagarSemResposta`, levantado pelo destino no pedido); "nada saiu" vem do laço único da peça (`abriu: False`: o
+  programa nem começou, lido do que a peça fez); "fluxo escondido" vem do caminho completado pelo Windows (o
+  GetFullPathNameW). Os comandos das frases vêm do destino que o publicar recebeu.
 
 ## Máquina ou olho
 
@@ -1244,6 +1336,20 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
 - **Volta 4, o nome sozinho com ponto no fim, pelo PATH:** rodado no PC com uma cópia do hostname.exe; o nome sozinho
   que o Windows procura na pasta do programa que chama (a do Python) não foi rodado (o `which` não olha lá, como antes).
 
+- **Volta 5, o achado 4 muda um pouco o que a D-816 faz na prática:** se o gh nem abrir no pedido de liberar, o
+  rascunho é apagado na hora (antes ficava). É a escolha técnica da gerente, pela própria D-816 ("Antes do pedido de
+  liberar, erro no meio continua apagando o rascunho"): nada saiu do PC, então não houve pedido. Só vale para o gh
+  que nem começou (não achado, recusado pela peça, fechado ainda parado); qualquer erro depois de o gh abrir continua
+  sem apagar nada.
+- **Volta 5, o fluxo escondido:** a peça recusa qualquer ":" depois da letra do disco, também o "::$DATA" do próprio
+  arquivo (o Windows nem roda esse; recusar na dúvida). O "x.bat::$DATA" continua com a frase do lote (conferido
+  antes). Rodado de verdade só no NTFS do PC; outro sistema de arquivos sem fluxos daria "não achei o programa", o que
+  também não roda.
+- **Volta 5, as observações do relatório 4 (só anotadas, como pedido):** (7) o `--apagar` apaga também uma versão
+  liberada (já nas Ressalvas e na Lista de espera; com o achado 1 consertado, o comando da frase vai sempre ao destino
+  certo); (8) as mutações A6 e A10 são arrumação, sem efeito hoje ("Cada proteção"); (9) os testes do desinstalar que
+  falham no PC (já em "Ideias e bugs").
+
 ## Velocidade
 
 Não se aplica: nenhum arquivo do processamento das páginas do livro mudou; em `core/ocr_kraken.py` só
@@ -1285,6 +1391,10 @@ passos"). O tempo de publicar é medido na prova à vista.
   de propósito, para o fim da prova).
 - Ideia (Lista de espera, volta 4): pegar a cópia de um programa do Windows fora da pasta do Windows (achado 5) pelo nome
   original gravado dentro do programa ou por quem o assinou.
+
+- Ideia (Lista de espera, volta 5, achado 6 do relatório 4): a ficha do motor (`montar_motor_kraken.py`), o PDF de
+  saída (`core/pipeline.py`) e os projetos (`projetos.py`) também gravam num nome provisório e trocam, sem pedir ao
+  Windows para gravar no disco; passarem a usar `windows.gravar_no_disco` (não mexi: fora deste passo e do pedido).
 
 ## Perguntas para o Samuel
 
@@ -1425,6 +1535,24 @@ Volta 4: 595cc293 (o último commit de código e testes da volta 4: os textos da
     `tests/test_publicar_versao.py::test_volta4_achado11_a_copia_e_o_motor_gravam_no_disco_antes_de_conferir_e_trocar` e
     `tests/test_windows_peca.py::test_volta4_a_peca_manda_gravar_no_disco_antes_de_trocar_o_nome`.
 12. **Os testes do desinstalar falham no PC:** não é deste passo; em "Ideias e bugs" para a Lista de bugs.
+
+**Volta 5** (`quem-quebrou/relatorio-4.md`, commit `277fe8fd`; o mesmo escritor da volta 4, segunda e última volta,
+D-815). Destino de cada achado (código em `35ec0c27`; reversão em `anexos/reversao-volta5-codigo-antigo.txt` e
+`anexos/reversao-volta5-resultado.txt`):
+1. **Três frases mandavam apagar no GitHub estando na pasta:** consertado (o lugar único `comando_de_apagar`). Teste:
+   `tests/test_publicar_versao.py::test_volta5_achado1_as_frases_de_ja_existe_dao_o_comando_do_destino` (as três).
+2. **"Pedi para apagar" sem ter pedido:** consertado (`ApagarSemResposta`). Teste:
+   `tests/test_publicar_versao.py::test_volta5_achado2_a_leitura_sem_resposta_antes_do_pedido_nao_vira_pedi_para_apagar`.
+3. **Duas proteções sem teste:** testes novos,
+   `tests/test_publicar_versao.py::test_volta5_achado3a_o_gh_de_verdade_fechado_por_tempo_no_apagar_diz_que_pediu` e
+   `tests/test_publicar_versao.py::test_volta5_achado3b_liberada_antes_do_pedido_no_github_continua_publicacao_liberada`.
+4. **"Pedi para liberar" com o gh sem abrir:** consertado pela escolha da gerente (`NadaSaiu`; o rascunho é apagado,
+   D-816). Testes: `tests/test_publicar_versao.py::test_volta5_achado4_o_gh_que_nem_abre_no_liberar_nao_conta_como_pedido`
+   e `tests/test_publicar_versao.py::test_volta5_achado4_so_o_gh_que_nao_abriu_de_verdade_e_nada_saiu`.
+5. **O fluxo escondido passava:** consertado (recusa com frase própria). Teste:
+   `tests/test_windows_peca.py::test_volta5_o_programa_num_fluxo_escondido_de_outro_arquivo_e_recusado`.
+6. **O texto de `gravar_no_disco` prometia demais:** consertado (nomeia quem passa e quem não passa).
+7. a 9. **Observações:** anotadas em "Ressalvas".
 
 ## A prova de verdade
 
