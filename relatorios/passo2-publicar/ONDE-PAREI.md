@@ -48,6 +48,11 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
   10 achados). Pedido da gerente: consertar 1 a 9 pela causa, com teste que falha sem o conserto (D-811), e anotar o 10
   para o passo 3. Leitura feita (implementador, CLAUDE.md, memória, catálogo, pacote, este formulário, os dois
   relatórios, o Livro D-809 a D-815). Andamento em "Volta 3" abaixo de "O que o agente que tentou quebrar achou".
+- 20/11, volta 3 feita: os 10 achados do relatório 2 com destino em "O que o agente que tentou quebrar achou"
+  (código em `411b46c7`, `d628be0e`, `1b430752`, `4817c2f4`, `05f743ca`, `e4263c0a`); cada conserto com o teste que falha sem ele
+  (`anexos/reversao-volta3-codigo-antigo.txt`: os testes novos falham no código da volta 2; `anexos/reversao-volta3-resultado.txt`:
+  24 de 24 proteções desligadas numa cópia, todas acusadas). `--is-shallow-repository` = false antes e depois; nenhuma
+  junção criada. **Próximo:** a gerente manda a um agente novo que tenta quebrar (D-815); depois a prova à vista.
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -96,6 +101,10 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
 - D-714 "1 - vamos seguir sua sugestão" · "2- ok". Aqui: publicar continua só quando alguém roda o comando.
 - D-763 "ok, pode fazer". Aqui: o nome do pacote do motor é outro (EditorImpressaoMotorKraken) e não é o nome da pasta
   dos projetos.
+- D-813 "ok". Aqui (volta 3): a recusa da peça lista o que o Windows aceita como programa (a documentação do
+  CreateProcess e do subprocess, e o que foi rodado no PC) e compara a coisa de verdade (o arquivo completado pelo
+  Windows e o começo dele), não o texto.
+- D-815 "ok". Aqui: a volta 3 é de um agente novo, que começou por este formulário.
 
 ## O que já está escolhido e testado aqui
 
@@ -122,6 +131,12 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
 - Livro: D-714, D-723, D-724, D-727, D-746, D-763, D-768, D-773, D-776, D-777, D-788 a D-790, D-795.
 - **Nenhum desses testes mudou.** Todos passam (ver "Testes").
 
+- **Volta 3:** nenhum teste antigo mudou no que ele cobra. A única mudança num teste antigo é a pedida pela gerente: o
+  vpk de mentira deixou de ser um `vpk.cmd` (a peça passou a recusar o .bat e o .cmd) e virou um programa de prova de
+  verdade (`tests/test_publicar_versao.py::_programa_de_prova`, o lançador do pip com o mesmo script). O teste antigo
+  da janela do servidor (`test_o_que_nao_esta_numa_versao_liberada_e_recusado`, que cobra "não existe aqui (404)") foi
+  respeitado: a frase nova só vale para o nome repetido.
+
 ## Como fica para quem usa e no livro
 
 - **O Kaique: nada muda** na tela nem no livro (nenhum arquivo de `ui/` nem do processamento das páginas). O PDF que
@@ -141,6 +156,14 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
   GitHub). O jeito da etapa 5 de servir as versões direto de uma pasta (a fonte de teste do programa de hoje, que lê a
   pasta plana) não lê esse desenho: nas provas, as versões vêm pelo servidor (D-773), e o programa passa a falar com
   ele no passo 3. Escrito também em "Ressalvas".
+
+- **Volta 3, para quem publica (o Samuel na prova):** nada muda no caminho que dá certo, fora duas linhas a mais na
+  conferência do fim (o instalador "igual ao feito agora (tamanho e soma conferidos)", e no `--motor` a linha do
+  rascunho). Muda o que se lê quando dá errado: (1) se a resposta do liberar se perder, a versão liberada fica e a
+  frase diz "ficou liberada ... NÃO apaguei"; (2) se o .msi não couber na pasta de saída, nenhum .msi pela metade fica
+  lá e a frase diz que a versão FOI publicada e que o instalador está inteiro na publicação; (3) o "PAREI" do fim
+  aponta para a conferência do fim, em vez de dizer "foi apagado" sem conferir. Nenhum problema novo para o Kaique
+  (nenhum arquivo do programa dele mudou de comportamento: a peça ainda não é usada por ele).
 
 ## A causa, a regra e todos os caminhos
 
@@ -193,6 +216,39 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
 - O servidor das versões lê a mesma pasta que `DestinoPasta` grava, pelas mesmas regras (`ETIQUETA_ACEITA` do publicar,
   `NOME_DO_INDICE` do empacotar), sem copiar.
 
+**Volta 3 (relatório 2 de quem tentou quebrar). As causas e as regras, cada uma num lugar só:**
+- *Versão liberada apagada (achado 1).* Causa: "só o rascunho é apagado" era decidido por uma leitura no
+  `publicar_arquivos`, e o apagar lia de novo por conta própria e apagava o que achasse. Regra:
+  `publicar_versao_kaique.apagar_publicacao(destino, etiqueta, so_rascunho=True)` lê ali dentro antes e depois, e
+  chama `destino.apagar_rascunho`, que na pasta só toca na subpasta do rascunho (pela construção) e no GitHub lê de
+  novo logo antes de pedir. Caminhos: o erro antes de liberar e o erro depois de pedir para liberar, na versão e no
+  motor (os dois passam por `publicar_arquivos`) → `apagar_publicacao(so_rascunho=True)`; o `--apagar` →
+  `apagar_publicacao` (apaga liberada, de propósito: o fim da prova).
+- *O .msi pela metade (achado 2).* Causa: cópia direta no nome certo (`shutil.copyfile`, que não apaga o destino quando
+  falha). Regra: a cópia conferida `empacotar.copiar_inteiro` (nome provisório, lida de volta: tamanho e soma, só então
+  o nome certo; na falha apaga o pedaço e confere). Caminhos: o .msi para a pasta de saída
+  (`publicar_versao_kaique.guardar_o_instalador`), o envio à pasta de destino (`DestinoPasta.enviar`) e a leitura de
+  volta da pasta de destino (`DestinoPasta.baixar` → `baixar_vigiado`). (A cópia do motor para instalar\ do
+  `empacotar.preparar_saida` não mudou: ela já confere a soma assinada e apaga o que não bate, e o `finally` do
+  publicar tira o arquivo do motor de instalar\.)
+- *O .bat e o .cmd pela peça (achado 3).* Causa: a recusa olhava onde o arquivo pedido mora, e não o que o Windows roda
+  de verdade (um lote vai ao cmd.exe). Regra: `windows._programa_com_funcao_propria` → `windows._nao_e_programa_do_windows`
+  (a extensão depois de o Windows completar o caminho, e o começo do arquivo, "MZ"). Caminhos: `windows.rodar_e_esperar`,
+  `windows.lancar_solto`, `windows.abrir_em_grupo` (todos chamam a mesma regra).
+- *O instante do grupo e a frase "conferido" (achados 4 e 9).* Causa: o programa nascia rodando e era posto no grupo
+  depois; e a frase do fechar dependia de uma leitura que, sem resposta, virava "continua rodando". Regra:
+  `windows.abrir_em_grupo` abre parado, põe no grupo, confere (IsProcessInJob) e só então solta
+  (`windows._soltar_o_programa_parado`); `windows.ProgramaEmGrupo.fechar_tudo` só diz "conferido" com 0 vivos lidos.
+  Caminho: `empacotar.rodar_vpk` (a vigia, o fim normal e o Ctrl+C) → `fechar_tudo`.
+- *O motor baixado fora da conta e da vigia (achado 7).* Causa: a conta e a vigia só olhavam o vpk e a compressão; a
+  vigia estava escrita duas vezes (no `rodar_vpk` e no `zipar_motor`). Regra: a vigia única `empacotar.vigia_do_espaco`
+  (usada pelo `rodar_vpk`, pelo `zipar_motor`, pelo `copiar_inteiro` e pelo `DestinoGitHub._gh`); a conta
+  `empacotar.espaco_que_vai_usar(..., baixado_para_o_rascunho=...)`. O nome "motor-kraken-": `versao.PREFIXO_DO_MOTOR`
+  (a etiqueta aceita do publicar, o molde dos arquivos de motor em instalar\ e a lista do que não pode ir na
+  atualização leem dali).
+- *Textos (achado 8):* o cabeçalho da peça (quem a usa), o docstring do rascunho da pasta (as notas não são gravadas),
+  a janela do servidor (`Versoes.procurar` diz por que não entrega) e a conta das "Ressalvas".
+
 ## O que pode falhar e o que o programa faz
 
 | O que pode dar errado | O que o publicar faz |
@@ -226,6 +282,15 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
 | O servidor: porta ocupada | a janela diz "NÃO ESTÁ SERVINDO" e o motivo, e não serve nada (a porta é exclusiva: outro servidor não abre a mesma) |
 | O servidor: fechar no meio de um envio | corta a conexão de quem está baixando; quem baixa recebe menos do que o tamanho anunciado (o Velopack confere a soma e recusa) |
 | O servidor: pedido de arquivo fora da pasta ("..", caminho com barra, o rascunho) | recusado (404), com a linha na janela |
+
+| (volta 3) A resposta do liberar se perde e a leitura logo depois vem atrasada | a versão liberada nunca é apagada: o apagar só toca no rascunho, lido de novo na hora (na pasta, pela construção); a frase diz "ficou liberada ... NÃO apaguei" |
+| (volta 3) O GitHub libera entre a leitura e o pedido de apagar (um instante) | fica o risco: o GitHub não tem "apague só se for rascunho" (Ressalvas) |
+| (volta 3) A cópia do .msi para a pasta de saída falha (D: cheio, Ctrl+C) ou o publicar é fechado no meio | nenhum .msi com o nome certo fica pela metade (nome provisório); na falha o pedaço é apagado e conferido; a frase diz que a versão foi publicada e o instalador está na publicação; a conferência do fim compara o .msi da saída com o do rascunho |
+| (volta 3) Um .bat ou .cmd (ou um lote com outro nome) pedido à peça | recusado antes de rodar ("este programa do Windows tem função própria na peça") |
+| (volta 3) Um filho aberto no primeiro instante do vpk | não escapa: o vpk nasce parado e só é solto dentro do grupo |
+| (volta 3) O Windows não responde à leitura do grupo depois de fechar | "não deu para conferir (o Windows não respondeu à leitura do grupo)", nunca "conferido" nem "continua rodando" |
+| (volta 3) O C: cai abaixo da reserva enquanto o motor é baixado para o instalador | a vigia para o download (a cópia da pasta ou o gh), o segundo vpk não roda, o rascunho é apagado |
+| (volta 3) A segunda pasta de troca do lançar solto não nasce | a primeira é apagada na hora |
 
 ## O que li da peça de fora e onde
 
@@ -296,6 +361,39 @@ lista: o mesmo CouldNotAutoloadMatchingModule do GitHub.
 **Deduzido, não lido:** que o vpk não deixa programa rodando depois de ser fechado à força pela vigia (o .msi roda o
 WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
 
+**Lido e rodado na volta 3 (20/11/2026):**
+- Microsoft Learn, CreateProcessW (https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessw):
+  o módulo é "a Windows-based application" ou "some other type of module (for example, MS-DOS or OS/2) if the
+  appropriate subsystem is available"; "To run a batch file, you must start the command interpreter"; sem extensão,
+  ".exe is appended"; a busca do nome sozinho: a pasta do programa que chama, a pasta atual, System32, System, Windows,
+  o PATH. Python 3.14, subprocess, "Security Considerations": "On Windows, batch files (*.bat or *.cmd) may be launched
+  by the operating system in a system shell regardless of the arguments passed to this library"; e "when resolving or
+  searching for the executable path with shell=False, cwd does not override the current working directory".
+- **Rodado no PC** (`relatorios/passo2-publicar/anexos/variantes-do-lote-resultado.txt:1`; subprocess sem shell, um lote que escreve a COMSPEC): "x.bat", "X.BAT" e "x.bat " rodaram pelo
+  cmd.exe; "x.bat." e o prefixo de caminho longo abriram algo que saiu com código 1; "x.bat::$DATA" deu o erro 193; um
+  lote com nome de .exe e um .bat que começa com "MZ" deram o erro 216 (não rodaram). Conclusão: o Windows só entrega
+  ao cmd.exe o que não começa com "MZ" e tem extensão de lote. **Deduzido, não lido:** que o mesmo vale para o
+  `CreateProcess` chamado de outro jeito (só o do subprocess foi rodado).
+- Microsoft Learn, Process Creation Flags (https://learn.microsoft.com/windows/win32/procthread/process-creation-flags): CREATE_SUSPENDED: "The primary thread of the new process is created in a
+  suspended state, and does not run until the ResumeThread function is called". CREATE_NO_WINDOW: "The process is a
+  console application that is being run without a console window" (achado 10).
+- Microsoft Learn, AssignProcessToJobObject (https://learn.microsoft.com/windows/win32/api/jobapi2/nf-jobapi2-assignprocesstojobobject): "By default, all child processes are associated with the immediate job
+  and every job in the parent job chain"; "The child process breaks away from every job in the job chain unless a job
+  in the chain does not allow breakaway". "Job Objects" (https://learn.microsoft.com/windows/win32/procthread/job-objects): "Child processes created using Win32_Process.Create are not
+  associated with the job" (o vpk não usa o WMI); "closing the last job object handle terminates all associated
+  processes" (com KILL_ON_JOB_CLOSE).
+- O `IsProcessInJob` (https://learn.microsoft.com/windows/win32/api/jobapi/nf-jobapi-isprocessinjob) pede uma alça com licença de leitura do processo: sem ela, o Windows respondeu "acesso negado"
+  (erro 5), achado rodando; a alça passou a pedir PROCESS_QUERY_LIMITED_INFORMATION.
+- Python 3.14, `Lib/subprocess.py:1575` (`_execute_child`, na cópia do PC): o subprocess fecha a alça da linha
+  principal (`_winapi.CloseHandle(ht)`) e não guarda o número dela; por isso a peça a acha pela foto das linhas do
+  Windows (CreateToolhelp32Snapshot, TH32CS_SNAPTHREAD, Thread32First/Next) e a solta com ResumeThread.
+  `Popen.communicate` com tempo: "Catching this exception and retrying communication will not lose any output" (a vigia
+  do gh).
+- O lançador do pip (`.venv/Lib/site-packages/pip/_vendor/distlib/scripts.py:259`, `_write_script`, até a linha 278): o .exe é
+  "launcher + shebang + zip_data", com o `__main__.py` no zip. É o vpk de mentira dos testes.
+- GitHub, a API de apagar uma publicação (https://docs.github.com/rest/releases/releases#delete-a-release): recebe só o número da publicação, sem condição (lembrado; não relido nesta
+  volta): por isso fica o instante da Ressalva.
+
 ## O que foi feito
 
 1. **A assinatura digital pela peça única** (`windows.ler_assinatura_digital`, nova): o empacotar deixou de abrir o
@@ -332,6 +430,11 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
    liberadas, os arquivos pelo nome, o rascunho escondido, fechar corta o envio, `--limite` deixa lento, a porta
    exclusiva.
 
+10. **Volta 3 (os achados do relatório 2):** só o rascunho apagado no caminho de erro; a cópia conferida para o .msi e
+   para a pasta de destino; a conferência do fim compara o .msi; a peça recusa o lote; o programa do grupo nasce parado;
+   a frase do fechar só com o grupo lido; o motor baixado na conta e na vigia; a vigia num lugar só; o nome do motor
+   num lugar só; os textos que não batiam; o vpk de mentira como programa de verdade.
+
 ## Arquivos criados ou alterados
 
 - `core/windows.py`
@@ -348,6 +451,11 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
 - `tests/conferencias_excecoes.json` (o item consertado saiu, pelo `python -m regras_dos_agentes excecoes --diminuir`;
   fora da lista do pedido: o porteiro avisa, K14; é o "tire esse item da lista no mesmo commit" do pedido)
 - `relatorios/passo2-publicar/` (este formulário e os anexos)
+
+- `relatorios/passo2-publicar/anexos/reversao-volta3-codigo-antigo.txt`, `relatorios/passo2-publicar/anexos/reversao-volta3-resultado.txt`,
+  `relatorios/passo2-publicar/anexos/reversao-volta3-mutacoes.py.txt`, `relatorios/passo2-publicar/anexos/variantes-do-lote.py.txt`,
+  `relatorios/passo2-publicar/anexos/variantes-do-lote-resultado.txt` e `relatorios/passo2-publicar/anexos/lote-que-comeca-com-mz.py.txt`
+  (volta 3: o resultado no código antigo, as mutações, o script e o ensaio dos jeitos de escrever um lote)
 
 ## Como cumpri cada uma
 
@@ -400,6 +508,19 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
 - D-714: o publicar só roda pelo comando; nada liga sozinho.
 - D-763: `tests/test_publicar_motor.py::test_d763_o_nome_do_pacote_do_motor_e_outro_e_nao_e_pasta_de_dados`.
 
+- **Volta 3:** D-776 (a conta soma o motor baixado e a vigia vigia o download:
+  `tests/test_publicar_versao.py::test_volta3_achado7_o_motor_baixado_entra_na_conta_e_na_vigia`,
+  `tests/test_publicar_versao.py::test_volta3_achado7_o_gh_que_baixa_e_fechado_pela_vigia`); D-795 (a conferência do fim
+  continua dizendo do Setup.exe; o .msi ganha a sua linha:
+  `tests/test_publicar_versao.py::test_volta3_achado2_o_msi_da_pasta_de_saida_e_comparado_com_o_do_rascunho`); D-767 (o
+  grupo, o lote e a cópia cortada rodam de verdade:
+  `tests/test_windows_peca.py::test_o_programa_nasce_parado_e_so_roda_dentro_do_grupo`,
+  `tests/test_windows_peca.py::test_bat_e_cmd_sao_recusados_pelo_rodar_pelo_lancar_e_pelo_grupo`,
+  `tests/test_publicar_versao.py::test_volta3_a_copia_cortada_no_meio_nunca_deixa_o_nome_certo`); D-811 (24 de 24
+  proteções acusadas, `anexos/reversao-volta3-resultado.txt`); D-812 (a seção "De onde vem cada dado", acrescentada);
+  D-813 (o que o Windows aceita como programa, em "O que li", e a recusa pelo arquivo de verdade); D-815 (agente novo,
+  começou por este formulário); D-798 (nenhum rótulo de pronto); D-809 (nenhuma junção nesta volta).
+
 ## Testes
 
 - **No PC, um arquivo por vez** (19/11, com `QT_QPA_PLATFORM=offscreen`):
@@ -440,6 +561,19 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
   `tests/test_decisoes_gravura_a_mao.py::test_d659_g_outros_filtros_a_mao_nada_e_procurado_e_sai_igual_ao_de_antes`
   ("procurou: [0]"), o teste instável já conhecido (catálogo P1-gh-5), que não usa nada deste passo.
 
+- **Volta 3, no PC, um arquivo por vez** (20/11, `QT_QPA_PLATFORM=offscreen`): `tests/test_publicar_versao.py` 49
+  passaram; `tests/test_windows_peca.py` 62 passaram e 2 pulados; `tests/test_publicar_servidor.py` 14;
+  `tests/test_publicar_motor.py` 12; `tests/test_empacotar.py` 41; `tests/test_decisoes_atualizacao.py` 38;
+  `tests/test_nome_do_pacote.py` 5; `tests/test_decisoes_brasao.py` 22; `tests/test_windows_janela_de_prova.py` 10;
+  `tests/test_ocr_kraken.py` 27 e 6 pulados; `tests/test_conferencias_codigo.py` 77; `tests/test_conferencias_excecoes.py`
+  14; `tests/test_conferencias_pacote.py` 20. Porteiro no PC: "nada novo" (175 lugares). (Uma vez rodei dois arquivos
+  juntos, por engano: `test_publicar_versao.py` e `test_publicar_motor.py`; depois, só um por vez.)
+- **Volta 3, reversão:** os testes novos no código da volta 2 (9cd555a5): falham os 15 do defeito consertado
+  (`anexos/reversao-volta3-codigo-antigo.txt`); passam lá os dos achados 5 e 6 e o do soltar do grupo, que cobram
+  proteções que já existiam e são provados pela mutação (B5, B6, B4b).
+- **No GitHub, volta 3:** rodada 44675045916, sobre o ramo em 05f743ca (depois dele só mudou um comentário da peça e
+  este formulário). Resultado e PORTEIRO: ver a linha abaixo.
+
 ## Caminho e função
 
 - O publicar da versão, com ou sem pasta pronta, com ou sem instalador → `empacotar.construir_pacote_do_velopack` →
@@ -464,6 +598,19 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
 - O servidor e o publicar na pasta → o mesmo desenho (`DestinoPasta` grava; o servidor lê pelas mesmas regras; prova:
   `tests/test_publicar_servidor.py::test_d773_o_indice_junta_as_versoes_liberadas_e_nao_mostra_o_rascunho`, que monta a
   pasta pelo próprio `DestinoPasta`).
+
+- **Volta 3:** só o rascunho apagado → `apagar_publicacao(so_rascunho=True)` (prova, os dois destinos pelo mesmo caminho:
+  `tests/test_publicar_versao.py::test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada`
+  e `tests/test_publicar_versao.py::test_volta3_achado1_no_github_a_leitura_atrasada_tambem_nunca_apaga_a_liberada`); as
+  três cópias do publicar → `empacotar.copiar_inteiro` (prova:
+  `tests/test_publicar_versao.py::test_volta3_achado2_o_msi_que_nao_termina_de_copiar_nao_fica_com_o_nome_certo` e os
+  testes antigos do envio à pasta); o rodar, o lançar e o grupo → `windows._programa_com_funcao_propria` (prova: o mesmo
+  lote recusado pelos três, `tests/test_windows_peca.py::test_bat_e_cmd_sao_recusados_pelo_rodar_pelo_lancar_e_pelo_grupo`);
+  a vigia do vpk, da compressão, da cópia e do gh → `empacotar.vigia_do_espaco` (prova: os testes antigos da vigia do vpk
+  e da compressão continuam, e
+  `tests/test_publicar_versao.py::test_volta3_achado7_o_motor_baixado_entra_na_conta_e_na_vigia` e
+  `tests/test_publicar_versao.py::test_volta3_achado7_o_gh_que_baixa_e_fechado_pela_vigia`); o nome do motor →
+  `versao.PREFIXO_DO_MOTOR` (prova: `tests/test_publicar_versao.py::test_volta3_achado7_o_nome_do_motor_so_em_versao_py`).
 
 ## Cada proteção e o teste que falha sem ela
 
@@ -519,6 +666,41 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   (o rascunho inteiro some no fim de qualquer jeito); o corte das conexões no fechar do servidor (o envio também para
   pela marca de fechado).
 
+- **Volta 3** (`anexos/reversao-volta3-resultado.txt`; script em `anexos/reversao-volta3-mutacoes.py.txt`), cada uma
+  desligada numa cópia e acusada:
+  - só o rascunho apagado (B1, B1b, B1c, B1d) →
+    `tests/test_publicar_versao.py::test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada`
+    e `tests/test_publicar_versao.py::test_volta3_achado1_no_github_a_leitura_atrasada_tambem_nunca_apaga_a_liberada`;
+  - a cópia pelo nome provisório (B2) → `tests/test_publicar_versao.py::test_volta3_a_copia_cortada_no_meio_nunca_deixa_o_nome_certo`;
+  - a cópia lida de volta (B2b) e a vigia no meio da cópia (B2e) →
+    `tests/test_publicar_versao.py::test_volta3_a_copia_conferida_le_de_volta_e_obedece_a_vigia`;
+  - a conferência do fim compara o .msi (B2c) →
+    `tests/test_publicar_versao.py::test_volta3_achado2_o_msi_da_pasta_de_saida_e_comparado_com_o_do_rascunho`;
+  - o .msi pela cópia conferida (B2d) →
+    `tests/test_publicar_versao.py::test_volta3_achado2_o_msi_que_nao_termina_de_copiar_nao_fica_com_o_nome_certo`;
+  - a peça recusa o que não é programa (B3), pelo começo do arquivo (B3b) →
+    `tests/test_windows_peca.py::test_bat_e_cmd_sao_recusados_pelo_rodar_pelo_lancar_e_pelo_grupo`; pela extensão (B3c) →
+    `tests/test_windows_peca.py::test_um_lote_que_a_peca_nao_acha_tambem_e_recusado_pela_extensao`;
+  - o programa nasce parado (B4) → `tests/test_windows_peca.py::test_o_programa_nasce_parado_e_so_roda_dentro_do_grupo`;
+  - "conferido" só fechando o grupo (B4b) e só com 0 vivos lidos (B4c), "não deu para conferir" sem leitura (B9) →
+    `tests/test_windows_peca.py::test_fechar_tudo_so_diz_conferido_quando_o_windows_diz_que_nenhum_ficou` (B4b também por
+    `tests/test_publicar_versao.py::test_volta3_achado4_a_vigia_fecha_o_filho_do_vpk_antes_de_soltar_o_grupo`);
+  - a primeira pasta de troca apagada (B9b) →
+    `tests/test_windows_peca.py::test_o_lancado_solto_apaga_a_primeira_pasta_se_a_segunda_nao_nasce`;
+  - o rascunho apagado quando o liberar falha (B5) →
+    `tests/test_publicar_versao.py::test_volta3_achado5_o_liberar_que_falha_e_continua_rascunho_apaga_o_rascunho`;
+  - o motor que mudou (B6) → `tests/test_publicar_versao.py::test_volta3_achado6_o_motor_trocado_durante_a_publicacao_impede_liberar`;
+  - o motor baixado na conta (B7) e na vigia (B7b) →
+    `tests/test_publicar_versao.py::test_volta3_achado7_o_motor_baixado_entra_na_conta_e_na_vigia`; o gh na vigia (B7c) →
+    `tests/test_publicar_versao.py::test_volta3_achado7_o_gh_que_baixa_e_fechado_pela_vigia`; o nome do motor num lugar
+    só (B7d) → `tests/test_publicar_versao.py::test_volta3_achado7_o_nome_do_motor_so_em_versao_py`;
+  - a janela diz do nome repetido (B8) →
+    `tests/test_publicar_servidor.py::test_achado8_o_nome_repetido_aparece_na_janela_como_repetido_e_nao_como_inexistente`.
+  - Sem teste que acuse sozinho (dupla proteção): a conferência IsProcessInJob depois de pôr no grupo (o
+    AssignProcessToJobObject que deu certo já põe; sem ele, o B4 acusa). Na primeira passada, a B1d e a B2 não foram
+    acusadas: a B1d porque o teste só cobrava "NÃO apaguei" (passou a cobrar "ficou liberada em"); a B2 porque o apagar
+    do pedaço também a cobre na falha comum (ganhou o teste da cópia cortada no meio, sem nada rodando depois).
+
 ## De onde vem cada dado da conferência
 
 - **Se a versão ou o motor já existem no destino:** lido do destino (a pasta; ou o GitHub pelo gh), nunca de uma
@@ -540,6 +722,16 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   não só o código de saída dele.
 - **O servidor:** as subpastas liberadas da pasta, lidas a cada pedido.
 
+- **Volta 3:** o .msi feito agora: o nome, o tamanho e a soma lidos do arquivo no rascunho, logo depois de o vpk
+  gravá-lo e antes de o rascunho ser apagado; o .msi da pasta de saída: lido do arquivo de lá (tamanho e soma). Quem
+  escreve os dois é o próprio publicar; a prova de que o instalador está certo continua sendo a leitura de volta da
+  publicação (a soma lida do destino) e a prova à vista.
+- **Volta 3:** se o programa entrou no grupo: perguntado ao Windows (IsProcessInJob); quantos estão vivos no grupo:
+  perguntado ao Windows (QueryInformationJobObject); se o arquivo é programa: o começo do arquivo lido do disco e o
+  caminho completado pelo Windows (GetFullPathNameW, pelo os.path.abspath).
+- **Volta 3:** só o rascunho apagado: a situação lida do destino dentro do apagar, antes e depois de pedir (na pasta,
+  a subpasta do rascunho é a única tocada).
+
 ## Máquina ou olho
 
 - Máquina: tudo o que está em "Testes" (a lógica, a pasta de verdade como destino, o servidor de verdade, a vigia com
@@ -555,10 +747,12 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   GitHub (se faltar, o publicar baixa o arquivo para somar: mais lento, ainda certo), e o gh achar o rascunho pela
   etiqueta.
 - **A conta do espaço é conta, não medida** (volta 2, achado 9, refeita pela leitura do vpk: 4 vezes a pasta na
-  atualização, 7 com o .msi, mais 1 GB; fontes no docstring de `empacotar.espaco_que_vai_usar`). Com o .msi pedido e uns
-  26 GB livres no C:, a conta recusa (pede uns 10 GB): é de propósito, contada pelo pior caso. O .msi com o
-  motor nunca foi medido. Se a conta for alta demais, o publicar pode recusar com espaço que bastaria (com 26 GB livres
-  e o .msi pedido, a conta dá uns 8 GB e passa; com 25 GB, recusa).
+  atualização, 7 com o .msi, mais 1 GB; na volta 3, mais o motor baixado para o rascunho; fontes no docstring de
+  `empacotar.espaco_que_vai_usar`). Corrigido na volta 3 (achado 8: as duas contas daqui se contradiziam). Pela pasta
+  de hoje sem o motor (0,78 GB, medida por quem tentou quebrar) e o motor comprimido (uns 0,8 GB, conta, não medido):
+  sem o .msi a conta dá uns 4,1 GB (o C: precisa de uns 24 GB livres); com o .msi, uns 13,7 GB (precisa de uns 34 GB
+  livres). Hoje o C: tem 48,9 GB livres (medido por quem tentou quebrar). O .msi com o motor nunca foi medido; se a
+  conta for alta demais, o publicar recusa com espaço que bastaria (é de propósito, pelo pior caso).
 - **A pasta do programa ainda é montada no D:** (o PyInstaller, em dist\EditorImpressao\); no C: ficam o trabalho do
   vpk e o rascunho. Sem o motor, a pasta tem uns 582 arquivos e o vpk lê rápido do D: (estudo). Mudar também a pasta
   para o C: mexeria no Inno; não fiz.
@@ -597,6 +791,32 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
 - O aviso K14 do formulário ("mexeu em arquivo fora da lista": a lista de exceções) é o item tirado da lista, que o
   pedido mandou.
 
+- **Volta 3, o instante do GitHub:** no GitHub, o apagar do caminho de erro lê a situação logo antes de pedir; se o
+  GitHub liberar entre essa leitura e o pedido (o liberar que se perdeu e chega atrasado), a versão liberada seria
+  apagada, sem a etiqueta (o pedido de rascunho não leva `--cleanup-tag`). A API do GitHub não tem "apague só se for
+  rascunho" (lembrado, não relido nesta volta). Na pasta das provas isso não acontece (só a subpasta do rascunho é
+  tocada). O teste cobra a leitura atrasada, não esse instante.
+- **Volta 3, a vigia no download do GitHub** olha a cada 2 s e fecha o gh; não foi rodada contra o gh de verdade (o
+  teste usa um programa de prova que demoraria 60 s). Na pasta das provas, a vigia olha no começo e a cada 64 MB.
+- **Volta 3, a peça abre o programa do grupo parado**, e quem o solta é a foto das linhas do Windows. Rodado no PC
+  com o Python; o vpk de verdade não foi aberto assim (é da prova à vista). Se o Windows não deixar soltar, o programa
+  é fechado e o publicar para com "não consegui soltar o programa depois de pô-lo no grupo".
+- **Volta 3, a cópia conferida lê o arquivo duas vezes** (copia e lê de volta). No envio à pasta das provas (D:) e no
+  .msi para a pasta de saída, isso soma alguns segundos por arquivo grande; não medi.
+- **Volta 3, o achado 10 (para o passo 3; não é defeito hoje):** `windows.abrir_em_grupo` abre o programa com o console
+  de quem chama. Do publicar (um terminal), está certo: a saída do vpk aparece ali. Se o programa do Kaique (que não
+  tem console) chamasse o grupo para um programa de console, o Windows abriria uma janela preta nova na tela dele.
+  Como evitar sem mexer em mais nada: quando quem chama não tem console, abrir com a bandeira CREATE_NO_WINDOW
+  (Microsoft Learn: "The process is a console application that is being run without a console window"; o porteiro só
+  barra a bandeira de processo sem console, DETACHED_PROCESS, não esta) e mandar a saída para um arquivo; a decisão de
+  quando (um parâmetro de quem chama, ou perguntar ao Windows se há console) fica para o pedido do passo 3. Não mudei.
+- **Volta 3, o comentário da peça:** a primeira versão do comentário da recusa do lote citava de memória a correção do
+  Rust (BatBadBut); relida a página do Rust, ela não diz isso, e o comentário passou a dizer o que foi rodado no PC
+  (`e4263c0a`).
+- **Volta 3, uma pasta fora do projeto:** num ensaio rápido criei `C:\Users\fotog\AppData\Local\Temp\tmpqhb16hsh`
+  (três .bat e um .exe de lote, de poucos bytes) fora da pasta de rascunho desta conversa. Não apaguei (regra de
+  29/09): a gerente decide.
+
 ## Velocidade
 
 Não se aplica: nenhum arquivo do processamento das páginas do livro mudou; em `core/ocr_kraken.py` só
@@ -617,6 +837,11 @@ passos"). O tempo de publicar é medido na prova à vista.
   porta no Windows; outros lugares do projeto que usem o http.server podem ter o mesmo defeito (não procurei fora deste
   passo).
 
+- Bug (Lista de bugs, 20/11/2026, não impede): `DestinoGitHub.soma`, quando o GitHub não dá a soma de um arquivo,
+  baixa o arquivo inteiro para a pasta temporária da conta (`%TEMP%`, no C:), fora do rascunho: fora da conta do espaço
+  e da vigia (o pacote tem uns 460 MB). Achado lendo o código na volta 3; não é dos achados do relatório 2.
+- Ideia (Lista de espera): a cópia do motor para instalar\ (`empacotar.preparar_saida`) pela cópia conferida também.
+
 ## Perguntas para o Samuel
 
 Nenhuma nesta entrega. Procurei no Livro antes: a D-773, a D-776, a D-777, a D-788, a D-789, a D-790 e a D-795 respondem
@@ -625,7 +850,7 @@ de ferramentas dele, em "Ressalvas"): a gerente pergunta, se achar preciso.
 
 ## Commit
 
-0d51ad5e (o último commit de código, volta 2; depois dele só este formulário muda).
+e4263c0a (o último commit de código, volta 3; depois dele só este formulário e os anexos mudam).
 
 ## O que o agente que tentou quebrar achou
 
@@ -669,6 +894,44 @@ de ferramentas dele, em "Ressalvas"): a gerente pergunta, se achar preciso.
 11. **A etiqueta com quebra de linha:** consertado (conferida inteira). Teste:
     `tests/test_publicar_versao.py::test_achado11_etiqueta_com_quebra_de_linha_e_recusada`.
 
+**Volta 3** (`quem-quebrou/relatorio-2.md`, commit `9cd555a5`; agente novo, D-815). Destino de cada achado:
+1. **Versão liberada apagada por uma leitura atrasada:** consertado pela causa (só o rascunho é apagado, lido de novo
+   dentro do apagar). Testes: `tests/test_publicar_versao.py::test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada`
+   (o caso do relatório: o liberar muda a pasta e devolve erro) e
+   `tests/test_publicar_versao.py::test_volta3_achado1_no_github_a_leitura_atrasada_tambem_nunca_apaga_a_liberada`.
+   Fica o instante do GitHub (Ressalvas).
+2. **O .msi pela metade com o nome certo:** consertado (a cópia conferida; a frase diz que a versão foi publicada; a
+   conferência do fim compara o .msi). Testes: `tests/test_publicar_versao.py::test_volta3_achado2_o_msi_que_nao_termina_de_copiar_nao_fica_com_o_nome_certo`,
+   `tests/test_publicar_versao.py::test_volta3_achado2_o_msi_da_pasta_de_saida_e_comparado_com_o_do_rascunho`,
+   `tests/test_publicar_versao.py::test_volta3_achado2_a_frase_do_fim_nao_diz_apagado_sem_conferir`,
+   `tests/test_publicar_versao.py::test_volta3_a_copia_conferida_le_de_volta_e_obedece_a_vigia` e
+   `tests/test_publicar_versao.py::test_volta3_a_copia_cortada_no_meio_nunca_deixa_o_nome_certo`.
+3. **O .bat e o .cmd pela peça:** consertado na peça do passo 1 (regra única do rodar, do lançar e do grupo). Testes:
+   `tests/test_windows_peca.py::test_bat_e_cmd_sao_recusados_pelo_rodar_pelo_lancar_e_pelo_grupo` e
+   `tests/test_windows_peca.py::test_um_lote_que_a_peca_nao_acha_tambem_e_recusado_pela_extensao`. O vpk de mentira
+   virou um programa de prova de verdade.
+4. **O "conferido" do `fechar_tudo` e o instante do grupo:** consertado (nasce parado, entra no grupo, conferido, solto).
+   Testes: `tests/test_windows_peca.py::test_o_programa_nasce_parado_e_so_roda_dentro_do_grupo`,
+   `tests/test_windows_peca.py::test_fechar_tudo_so_diz_conferido_quando_o_windows_diz_que_nenhum_ficou` e
+   `tests/test_publicar_versao.py::test_volta3_achado4_a_vigia_fecha_o_filho_do_vpk_antes_de_soltar_o_grupo` (fechar só
+   o vpk não passa).
+5. **O rascunho apagado quando o liberar falha:** teste novo,
+   `tests/test_publicar_versao.py::test_volta3_achado5_o_liberar_que_falha_e_continua_rascunho_apaga_o_rascunho`.
+6. **O motor que muda durante a publicação:** teste novo,
+   `tests/test_publicar_versao.py::test_volta3_achado6_o_motor_trocado_durante_a_publicacao_impede_liberar`.
+7. **O motor baixado fora da conta e da vigia; o nome escrito à mão:** consertado (a conta, a vigia única, o nome em
+   `versao.py`). Testes: `tests/test_publicar_versao.py::test_volta3_achado7_o_motor_baixado_entra_na_conta_e_na_vigia`,
+   `tests/test_publicar_versao.py::test_volta3_achado7_o_gh_que_baixa_e_fechado_pela_vigia` e
+   `tests/test_publicar_versao.py::test_volta3_achado7_o_nome_do_motor_so_em_versao_py`.
+8. **Textos que não batiam:** consertados (o cabeçalho da peça, o rascunho da pasta, a janela do servidor, a conta das
+   Ressalvas). Teste da janela:
+   `tests/test_publicar_servidor.py::test_achado8_o_nome_repetido_aparece_na_janela_como_repetido_e_nao_como_inexistente`.
+9. **Sem a leitura do grupo, "continua rodando":** consertado ("não deu para conferir"); e a primeira pasta de troca
+   apagada quando a segunda não nasce. Testes: `tests/test_windows_peca.py::test_fechar_tudo_so_diz_conferido_quando_o_windows_diz_que_nenhum_ficou`
+   e `tests/test_windows_peca.py::test_o_lancado_solto_apaga_a_primeira_pasta_se_a_segunda_nao_nasce`.
+10. **O console do grupo chamado pelo programa do Kaique:** anotado para o passo 3 (Ressalvas), com o jeito de evitar
+    (CREATE_NO_WINDOW quando quem chama não tem console). Não mudei.
+
 ## A prova de verdade
 
 Roteiro para a gerente (não rodado; D-785, item 8; o plano: "0 perguntas do Windows"; o Samuel olha a janela, não
@@ -681,7 +944,9 @@ clica nada):
    antes e depois (volta ao que era), o tempo, e no fim a conferência mostra que o Setup.exe não está em lugar nenhum.
 5. Um erro de propósito no meio (fechar o vpk pelo Gerenciador de Tarefas, ou desligar a internet antes do envio ao
    GitHub; olhar no Gerenciador de Tarefas que não sobrou cmd.exe nem wix.exe depois, achado 2; e que a frase do
-   apagar no GitHub diz "foi apagada (conferido)", achado 1): o rascunho e o Setup.exe também somem.
+   apagar no GitHub diz "foi apagada (conferido)", achado 1): o rascunho e o Setup.exe também somem. Na passada com o
+   .msi, olhar também que o .msi da pasta de saída tem o tamanho do feito no rascunho (a linha "igual ao feito agora"
+   da conferência do fim; relatório 2, "O que falta", item 4).
 6. Outra versão com `--com-instalador`: medir o .msi com o motor num arquivo só.
 7. O aviso de pouco espaço: com a reserva aumentada só nesta prova (`--reserva-gb` com um número maior que o espaço
    livre do C:; a opção só aumenta, nunca abaixo de 20 GB), o publicar recusa antes do vpk; o C: nunca é enchido.

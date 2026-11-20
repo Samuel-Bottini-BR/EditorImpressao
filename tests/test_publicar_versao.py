@@ -1060,12 +1060,15 @@ class _EscritaQueEnche:
         return self.real.write(dados)
 
     def __enter__(self):
+        """Para o `with` de quem abriu."""
         return self
 
     def __exit__(self, *erro):
+        """Fecha o arquivo de verdade."""
         self.real.close()
 
     def __getattr__(self, nome):
+        """O resto, do arquivo de verdade."""
         return getattr(self.real, nome)
 
 

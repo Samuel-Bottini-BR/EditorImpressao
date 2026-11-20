@@ -1,0 +1,17 @@
+import ntpath, os, subprocess, sys
+from pathlib import Path
+pasta = Path(sys.argv[1])
+pasta.mkdir(parents=True, exist_ok=True)
+marca = pasta / "rodou.txt"
+(pasta / "x.bat").write_bytes(b'@echo %COMSPEC%> "' + str(marca).encode() + b'"\r\n')
+(pasta / "disfarcado.exe").write_bytes((pasta / "x.bat").read_bytes())
+for jeito in [str(pasta / "x.bat"), str(pasta / "x.bat") + ".", str(pasta / "x.bat") + " ", str(pasta / "X.BAT"),
+              "\\\\?\\" + str(pasta / "x.bat"), str(pasta / "x.bat") + "::$DATA", str(pasta / "disfarcado.exe")]:
+    marca.unlink(missing_ok=True)
+    try:
+        r = subprocess.run([jeito], capture_output=True, timeout=20)
+        res = f"codigo {r.returncode}"
+    except OSError as erro:
+        res = f"erro {erro.winerror}"
+    print(repr(jeito[-18:]), res, "RODOU PELO CMD" if marca.exists() else "não rodou",
+          "| abspath:", ntpath.abspath(jeito)[-14:])
