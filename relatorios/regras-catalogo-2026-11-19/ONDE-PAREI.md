@@ -28,10 +28,9 @@ Implementador. Ramo `regras-catalogo-2026-11-19`, worktree `.claude/worktrees/re
 
 - 19/11: li o pedido, o CLAUDE.md, a memória, o catálogo dos erros, o Livro (D-791 a D-814) e o código do pacote.
 - 19/11 (noite): as seis decisões feitas, com teste; os testes do porteiro rodados no PC, um arquivo por vez; duas
-  rodadas do GitHub disparadas. **A K25 achou dois lugares no código de hoje (seção "Para a gerente"): não entraram
-  na lista de exceções; a gerente leva ao Samuel.** Por causa deles, o teste do repositório inteiro
-  (`tests/test_conferencias_excecoes.py::test_o_repositorio_so_tem_os_erros_que_a_lista_deixa`) falha, no PC e no
-  GitHub, até o Samuel decidir.
+  rodadas do GitHub disparadas. A K25 achou dois lugares no código de hoje; não entraram na lista de exceções.
+- 20/11 (gerente): os dois vão ser consertados. O do juiz, consertado aqui; o do `core/windows.py`, pelo passo 2. As
+  listas da K25 protegidas; os dois jeitos de tirar atalho aceitos; pacote novo copiado (commit `e075c467`).
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -126,6 +125,9 @@ Cada uma foi desligada na memória e o arquivo de teste rodou de novo (script e 
 - M11, o pacote e o formulário escolhem os campos pela mesma função → `tests/test_conferencias_pacote.py::test_os_campos_em_branco_do_pacote_sao_os_que_o_formulario_cobra`.
 - M12, o acréscimo da D-813 no "sempre" → `tests/test_conferencias_pacote.py::test_d813_o_acrescimo_a_regra_6_e_o_texto_do_livro_e_vai_em_todo_pacote`.
 - O `git config` que só lê não é acusado (feito depois das mutações) → `tests/test_conferencias_codigo.py::test_k25_git_config_so_acusa_o_que_grava`.
+- As listas da K25 na proteção do GitHub (20/11): tirar linha → `tests/test_conferencias_protecao.py::test_k25_tirar_linha_das_listas_e_acusado`; crescer a exceção ou o "conferiu o atalho" → `tests/test_conferencias_protecao.py::test_k25_crescer_a_excecao_ou_o_que_conta_como_conferir_e_acusado`; afrouxar pelo uso → `tests/test_conferencias_protecao.py::test_k25_afrouxar_pelo_uso_e_acusado`.
+- Os dois jeitos certos de tirar atalho não são acusados → `tests/test_conferencias_codigo.py::test_k25_os_dois_jeitos_certos_de_tirar_o_atalho_nao_sao_acusados`.
+- A conferência do atalho no script do juiz: sem teste com atalho de verdade (ressalva 2).
 
 ## De onde vem cada dado que a conferência usa
 
@@ -167,7 +169,11 @@ Cada uma foi desligada na memória e o arquivo de teste rodou de novo (script e 
   muda a pasta `.git` inteira (fetch/pull com `--depth` e parentes, `--prune`, gc, prune, stash, config que grava) ou
   `rm -r`/`Remove-Item -Recurse` sem conferir antes se é atalho, nos arquivos Python e nos de terminal (`.sh`, `.ps1`,
   `.bat`, o gancho com "#!"), fora das duas peças do git. Lê o comando pela estrutura do código, nunca o texto solto.
-  **Achou 2 lugares no código de hoje (seção "Para a gerente"); não entraram na lista.**
+  Os dois jeitos certos de tirar atalho, `cmd /c rmdir <atalho>` e `(Get-Item <atalho>).Delete()`, não são acusados
+  (a R156 diz os dois). As listas da K25 estão em `protecao.PROTEGIDOS`.
+  A K25 achou 2 lugares no código de hoje. Pela decisão da gerente (20/11), os dois vão ser consertados, nenhum vai
+  para a lista: o do juiz, consertado aqui (seção "O script do juiz consertado"); o do `core/windows.py`, pelo agente
+  do passo 2.
 - **D-810:** regra nova R157 (os três computadores), etiqueta testes.
 - **D-811:** pergunta nova F21 no formulário (trabalho do Windows): a lista das proteções, cada uma com o teste
   (`arquivo::função`) que existe.
@@ -176,9 +182,10 @@ Cada uma foi desligada na memória e o arquivo de teste rodou de novo (script e 
 - **D-814:** pergunta nova F23, só quando há pergunta para o Samuel: um "###" por pergunta, com as decisões procuradas
   (que existem no Livro da versão de teste) e "Por que ainda não está respondida".
 - Uma função só (`vale_para()`) escolhe os campos para o formulário e para o pacote.
-- Contradição nova anotada no catálogo (X17): o CLAUDE.md manda tirar a junção com `(Get-Item).Delete()`; a D-809 diz
-  "só com `cmd /c rmdir`".
-- Um teste antigo mudado, com a D-809 citada no commit: o que cobrava exatamente 24 conferências (ressalva 1).
+- Um teste antigo mudado, com a D-809 citada no commit: o que cobrava exatamente 24 conferências (aceito pela gerente
+  em 20/11: continua cobrando as 24 iguais; as novas seguem a numeração).
+- Tirar atalho de pasta: `(Get-Item x).Delete()` (do CLAUDE.md §10.9) e `cmd /c rmdir x` (da D-809) não se
+  contradizem: os dois tiram só o atalho (a gerente, 20/11). A contradição X17 que eu tinha anotado saiu do catálogo.
 
 ## Arquivos criados ou alterados
 
@@ -187,9 +194,12 @@ Cada uma foi desligada na memória e o arquivo de teste rodou de novo (script e 
 - `regras_dos_agentes/formulario.py`
 - `regras_dos_agentes/montar_pacote.py`
 - `regras_dos_agentes/leitura_do_codigo.py`
+- `regras_dos_agentes/protecao.py`
+- `relatorios/passo0-2026-11-19/anexos/juiz-no-workflow/porteiro_juiz.sh`
 - `tests/test_conferencias_codigo.py`
 - `tests/test_conferencias_formulario.py`
 - `tests/test_conferencias_pacote.py`
+- `tests/test_conferencias_protecao.py`
 - `relatorios/regras-catalogo-2026-11-19/` (este ONDE-PAREI e os anexos)
 
 ## Como cumpri cada uma
@@ -204,8 +214,13 @@ Cada uma foi desligada na memória e o arquivo de teste rodou de novo (script e 
 - D-803 e D-804: as seis propostas do catálogo, cada uma com o "ok" no Livro, viraram regra, conferência ou pergunta.
 - D-808: feitas juntas, por este agente, depois das seis perguntas.
 - D-809: `tests/test_conferencias_codigo.py::test_k25_acusa_o_script_do_juiz_de_19_11_e_nao_o_consertado` (o caso que
-  originou) e `tests/test_conferencias_codigo.py::test_k25_acusa_apagar_com_tudo_dentro_sem_conferir_o_atalho`; a regra
-  no pacote: `tests/test_conferencias_pacote.py::test_d809_d810_d812_as_regras_novas_vao_aos_trabalhos_certos`.
+  originou), `tests/test_conferencias_codigo.py::test_k25_acusa_apagar_com_tudo_dentro_sem_conferir_o_atalho` e
+  `tests/test_conferencias_codigo.py::test_k25_os_dois_jeitos_certos_de_tirar_o_atalho_nao_sao_acusados`; a regra no
+  pacote: `tests/test_conferencias_pacote.py::test_d809_d810_d812_as_regras_novas_vao_aos_trabalhos_certos`; as listas
+  protegidas: `tests/test_conferencias_protecao.py::test_k25_tirar_linha_das_listas_e_acusado`,
+  `tests/test_conferencias_protecao.py::test_k25_crescer_a_excecao_ou_o_que_conta_como_conferir_e_acusado` e
+  `tests/test_conferencias_protecao.py::test_k25_afrouxar_pelo_uso_e_acusado`. O script do juiz consertado: a K25 não o
+  acusa mais, e `tests/test_conferencias_copia_inteira.py` (que roda o script de verdade) passa.
 - D-810: `tests/test_conferencias_pacote.py::test_d809_d810_d812_as_regras_novas_vao_aos_trabalhos_certos` (a lista com
   "Everyone" vai no pacote do Windows e no de testes; não no de pesquisa). Sem conferência do porteiro, como a decisão.
 - D-811: `tests/test_conferencias_formulario.py::test_d811_trabalho_do_windows_sem_as_protecoes_e_os_testes_volta`.
@@ -216,16 +231,19 @@ Cada uma foi desligada na memória e o arquivo de teste rodou de novo (script e 
 
 ## Testes
 
-- No PC, um arquivo por vez (`.venv` do repositório, `QT_QPA_PLATFORM=offscreen`):
-  `tests/test_conferencias_codigo.py` 101 passaram; `tests/test_conferencias_formulario.py` 39; `tests/test_conferencias_pacote.py`
-  25; `tests/test_conferencias_mudancas.py` 21; `tests/test_conferencias_antes_do_commit.py` 12;
-  `tests/test_conferencias_juiz.py` 9; `tests/test_conferencias_copia_inteira.py` 2; `tests/test_conferencias_protecao.py` 11;
-  `tests/test_conferencias_excecoes.py` 13 passaram e **1 falhou, de propósito da decisão**:
-  `tests/test_conferencias_excecoes.py::test_o_repositorio_so_tem_os_erros_que_a_lista_deixa` acusa os 2 lugares da
-  K25 (seção "Para a gerente").
+- No PC, um arquivo por vez (`.venv` do repositório, `QT_QPA_PLATFORM=offscreen`), no commit `ce3fa9c4`:
+  `tests/test_conferencias_codigo.py` 102 passaram; `tests/test_conferencias_pacote.py` 25;
+  `tests/test_conferencias_protecao.py` 15; `tests/test_conferencias_juiz.py` 9; `tests/test_conferencias_copia_inteira.py` 2;
+  `tests/test_conferencias_excecoes.py` 13 passaram e **1 falhou, o esperado**:
+  `tests/test_conferencias_excecoes.py::test_o_repositorio_so_tem_os_erros_que_a_lista_deixa` acusa só o lugar do
+  `core/windows.py:1211`, que é do passo 2. Continua falhando até o passo 2 entrar.
+  Antes (commit `88d834c7`, sem mudança nestes desde então): `tests/test_conferencias_formulario.py` 39,
+  `tests/test_conferencias_mudancas.py` 21, `tests/test_conferencias_antes_do_commit.py` 12.
 - As provas das decisões (`tests/test_decisoes*.py`) e o resto: só no GitHub (não mexi em nada que elas usam).
-- GitHub: rodada 44645835672 (último commit do código, `88d834c7`): RESULTADO A PREENCHER. Antes, a rodada
-  44644866610 (commit `f4a9ee9c`) e a 44645456574 (cancelada, ficou velha).
+- GitHub: RODADA A PREENCHER (do commit `ce3fa9c4`). O esperado: falha só em
+  `test_o_repositorio_so_tem_os_erros_que_a_lista_deixa`, pelo lugar do `core/windows.py`, até o passo 2 entrar.
+  Rodadas antigas: 44645835672 (commit `88d834c7`; não li o resultado, a cota acabou), 44644866610 (commit `f4a9ee9c`)
+  e 44645456574 (cancelada).
 - PORTEIRO: A PREENCHER.
 
 ## Caminho e função
@@ -235,6 +253,8 @@ Cada uma foi desligada na memória e o arquivo de teste rodou de novo (script e 
   `tests/test_conferencias_codigo.py`, que chamam o `conferir_codigo()` (o que os dois caminhos usam).
 - O formulário e o pacote → `vale_para()`: o mesmo resultado nos dois, provado por
   `tests/test_conferencias_pacote.py::test_os_campos_em_branco_do_pacote_sao_os_que_o_formulario_cobra`.
+- A proteção do GitHub → `protecao.comparar()` → `o_que_afrouxou()` e `exemplos_que_o_porteiro_nao_acha()`, agora com as
+  listas da K25: `tests/test_conferencias_protecao.py::test_k25_afrouxar_pelo_uso_e_acusado`.
 
 ## Máquina ou olho
 
@@ -242,64 +262,61 @@ Máquina: tudo (testes em `tests/` e o exercício de desligar cada proteção). 
 
 ## Ressalvas
 
-1. **Mudei um teste antigo**, com a D-809 citada no commit `282c4684`:
-   `tests/test_conferencias_codigo.py::test_as_24_conferencias_tem_a_numeracao_da_tabela_da_proposta` cobrava exatamente
-   24 conferências, e a D-809 manda uma a mais. Continua cobrando as 24, iguais e na mesma ordem; passou a cobrar que
-   as novas continuam a numeração e citam a decisão. A gerente confirma se aceita.
-2. **O GitHub vai acusar** o teste do repositório inteiro por causa dos 2 lugares da K25, até o Samuel decidir.
-3. **As listas novas da K25 ainda não estão protegidas** contra um ramo que as afrouxe: falta pôr `PECAS_DO_GIT`,
-   `COMANDOS_DE_TERMINAL`, `PALAVRAS_DO_GIT`, `PALAVRAS_DE_APAGAR` e `CONFERE_SE_E_ATALHO` em `protecao.PROTEGIDOS`
-   (`regras_dos_agentes/protecao.py`, fora da minha lista; a gerente).
-4. **"Trabalho que confere algo" (D-812) não tem etiqueta própria.** Usei Windows ou da gerente (o porteiro e as provas
-   dele), `TRABALHO_QUE_CONFERE`. Um trabalho só de testes não recebe a pergunta: se recebesse, o teste antigo do
-   formulário certo de um trabalho só de testes quebraria. Mais justo seria uma etiqueta "conferência" na tabela
-   (`tabela_arquivos.py`, fora da minha lista).
-5. **As regras R157 e R158 têm só a etiqueta de testes** (a D-810 diz "Windows e testes"): o montador só manda uma regra
-   com WIN junto a trabalho do Windows; só com TESTE, ela vai a todo trabalho com teste, inclusive os do Windows. Um
-   trabalho do Windows sem nenhum arquivo de teste não a recebe.
-6. **O que a K25 não pega** (está no "não pega" dela): comando montado em outra função ou guardado num texto que não
-   começa com ele (ex.: `core/testes_a_distancia.py:601`, um `Remove-Item -Recurse` dentro de um `if` do PowerShell,
-   não é acusado, e o vizinho dele em `core/windows.py:1211` é); `os.exec`/`os.spawn`; `rd /s` e `robocopy`; apagar
-   DENTRO de um atalho; mexer em ramo que não é o seu (fica só na regra). As opções do `git fetch` e do `rm` são do
-   meu conhecimento, não relidas.
-7. **Falso alarme possível nos testes:** um texto de exemplo que começa com o comando (`"git gc"`) conta como comando;
+1. **O GitHub vai acusar** o teste do repositório inteiro por causa do lugar do `core/windows.py:1211`, até o passo 2
+   entrar (decisão da gerente, 20/11).
+2. **O conserto do script do juiz não tem teste que use um atalho de verdade:** `tests/test_conferencias_juiz.py` não está
+   na minha lista. A prova é a de 20/11 no PC: no Git Bash 5.2.37 (msys), `[ -L ]` e `[ -h ]` deram sim para uma junção
+   feita com `mklink /J` na minha pasta de rascunho e não para a pasta de verdade (a junção foi tirada depois com
+   `cmd /c rmdir` e o conteúdo conferido). O GitHub roda o mesmo Git Bash, mas não provei lá.
+3. **Falso alarme possível nos testes:** um texto de exemplo que começa com o comando (`"git gc"`) conta como comando;
    aconteceu com o meu próprio teste e foi consertado (commit `f4a9ee9c`). A docstring de `comandos()` avisa.
-8. **`shutil.rmtree` não é acusado**, de propósito (o do Python 3.14 já confere o atalho, ver "O que li"). O pedido
-   listava ele; se a gerente quiser que acuse mesmo assim, são cerca de 80 lugares no código de hoje.
-9. **O ONDE-PAREI do passo 2** (`relatorios/passo2-publicar/ONDE-PAREI.md`, ramo `passo2-publicar-2026-11-19`) é de
+4. **`shutil.rmtree` não é acusado** (aceito pela gerente, 20/11); as linhas lidas do Python 3.14 estão no comentário da
+   K25 (`regras_dos_agentes/porteiro.py`, acima de `PALAVRAS_DE_APAGAR`).
+5. **O ONDE-PAREI do passo 2** (`relatorios/passo2-publicar/ONDE-PAREI.md`, ramo `passo2-publicar-2026-11-19`) é de
    trabalho do Windows: passa a ser devolvido por faltar as duas seções novas "Cada proteção e o teste que falha sem
-   ela" e "De onde vem cada dado que a conferência usa"; e, se ele tiver pergunta para o Samuel, a terceira. O código
-   dele tem o mesmo lugar do `core/windows.py` (linha 1212 lá).
+   ela" e "De onde vem cada dado que a conferência usa"; e, se ele tiver pergunta para o Samuel, a terceira.
 
 ## Ideias e bugs
 
-- Ideia: uma etiqueta "conferência" na tabela (para a D-812 valer também para o teste comum que confere algo).
-- Ideia: a K25 seguir o comando guardado num texto que não começa com ele (o caso do `core/testes_a_distancia.py:601`).
+- Ideia (ficou para depois, gerente 20/11): uma etiqueta "conferência" na tabela, para a D-812 valer também para o
+  teste comum que confere algo. Hoje "trabalho que confere algo" é Windows ou da gerente (`TRABALHO_QUE_CONFERE`);
+  um trabalho só de testes não recebe a pergunta (senão o teste antigo do formulário certo quebraria).
+- Ideia (ficou para depois): as regras R157 e R158 têm só a etiqueta de testes (a D-810 diz "Windows e testes"): o
+  montador só manda uma regra com WIN junto a trabalho do Windows. Um trabalho do Windows sem arquivo de teste não a
+  recebe.
+- Ideia (ficou para depois): o que a K25 não pega: comando guardado num texto que não começa com ele (ex.:
+  `core/testes_a_distancia.py:601`, um `Remove-Item -Recurse` dentro de um `if` do PowerShell); `os.exec`/`os.spawn`;
+  `rd /s` e `robocopy`; `.Delete($true)`; apagar DENTRO de um atalho; mexer em ramo que não é o seu (fica só na regra).
+  As opções do `git fetch` e do `rm` são do meu conhecimento, não relidas.
 - Incidente meu (20/11, 00:33 UTC): a cota da conta no GitHub (5000 pedidos por hora) acabou; parte foi dos meus
-  vigias da rodada (consultavam a cada 30 a 60 segundos). A cota é a mesma do agente do passo 2. Parei os vigias e
-  esperei a cota voltar (01:00 UTC) sem consultar. Ideia: a regra dos testes no GitHub dizer "uma consulta à rodada a
-  cada 5 minutos, no máximo".
-- Bug que não impede (19/11): a conferência do F6 diz "ou escreva não se aplica: motivo", mas não aceita "não se aplica"
-  (`regras_dos_agentes/formulario.py`, `_conferir_conteudo`, o laço de `CASOS_DE_FALHA`).
+  vigias da rodada (consultavam a cada 30 a 60 segundos). A cota é a mesma do agente do passo 2. Parei os vigias;
+  daqui em diante, no máximo uma consulta a cada 5 minutos.
+- Bug que não impede (19/11; ficou para depois): a conferência do F6 diz "ou escreva não se aplica: motivo", mas não
+  aceita "não se aplica" (`regras_dos_agentes/formulario.py`, `_conferir_conteudo`, o laço de `CASOS_DE_FALHA`).
 
 ## Perguntas para o Samuel
 
-Nenhuma minha. Os 2 lugares que a K25 achou vão à gerente (seção abaixo), que decide como levar ao Samuel.
+Nenhuma minha.
 
-## Para a gerente: os lugares que a K25 achou no código de hoje
+## O script do juiz consertado (para a gerente copiar para `.github/scripts/porteiro_juiz.sh`)
 
-Não entraram na lista de exceções (o ramo de agente nunca acrescenta item). Os dois apagam uma pasta com tudo dentro
-sem conferir antes se ela é atalho:
-1. `core/windows.py:1211`, função `lancar_powershell_solto` (a peça única do Windows, programa, não script): o script do
-   PowerShell que o programa lança apaga a própria pasta de troca no fim com
-   `Remove-Item -LiteralPath <pasta> -Recurse -Force -ErrorAction SilentlyContinue`. A pasta é criada pela peça
-   (`criar_pasta_de_troca`), então hoje ela não é atalho; mas nada confere.
-2. `relatorios/passo0-2026-11-19/anexos/juiz-no-workflow/porteiro_juiz.sh:52` (o script do juiz, que roda no GitHub):
-   `rm -rf "$JUIZ" && mkdir -p "$JUIZ"`, a pasta de trabalho do juiz.
+O arquivo inteiro está em `relatorios/passo0-2026-11-19/anexos/juiz-no-workflow/porteiro_juiz.sh` (commit `ce3fa9c4`).
+A única mudança é antes do `rm -rf`, no lugar da linha `rm -rf "$JUIZ" && mkdir -p "$JUIZ"`:
+
+```bash
+# A pasta do juiz é apagada com tudo dentro: antes, confere que ela não é atalho de pasta (junção ou link), senão o
+# `rm -rf` apagaria o conteúdo da pasta de verdade (D-809; a pasta modelos/ esvaziada em 18/11). No Git Bash, `[ -L ]`
+# e `[ -h ]` dão sim para a junção do Windows (provado em 20/11, bash 5.2.37 msys). Arriscado: tirar esta conferência.
+if [ -L "$JUIZ" ] || [ -h "$JUIZ" ]; then
+  avisar error "PORTEIRO: NAO CONFERIDO (a pasta do juiz $JUIZ é um atalho de pasta: não apago o que está nela)"
+  exit 1
+fi
+rm -rf "$JUIZ" && mkdir -p "$JUIZ"
+```
 
 ## Commit
 
-Último commit do trabalho: 88d834c7.
+Último commit do trabalho: ce3fa9c4.
 
 ## O que o agente que tentou quebrar achou
 
