@@ -651,10 +651,13 @@ def publicar(versao_do_pacote: str, destino_pasta: Path | None = None, pasta_pro
             raise Parou("o empacotamento da atualização parou (o motivo está acima)")
         if com_instalador:
             arquivo_do_motor = destino.baixar(motor.etiqueta, motor.arquivo, rascunho / "motor")
-            outro = empacotar.construir_pacote_do_velopack(rascunho / "instalador", versao_do_pacote,
-                                                           empacotar.INSTALADOR, pasta, motor, arquivo_do_motor,
-                                                           rascunho=rascunho, vpk=vpk, pecas=pecas)
-            problemas = empacotar.preparar_saida(pasta, empacotar.ATUALIZACAO, None, motor)  # tira o motor da pasta
+            try:
+                outro = empacotar.construir_pacote_do_velopack(rascunho / "instalador", versao_do_pacote,
+                                                               empacotar.INSTALADOR, pasta, motor, arquivo_do_motor,
+                                                               rascunho=rascunho, vpk=vpk, pecas=pecas)
+            finally:
+                # a pasta volta a ser a da atualização (tira o arquivo do motor de instalar\), também com erro
+                problemas = empacotar.preparar_saida(pasta, empacotar.ATUALIZACAO, None, motor)
             if outro is None or problemas:
                 raise Parou("o empacotamento do instalador parou (o motivo está acima) " + "; ".join(problemas))
             saida_final.mkdir(parents=True, exist_ok=True)

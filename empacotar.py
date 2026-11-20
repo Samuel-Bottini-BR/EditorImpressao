@@ -6,6 +6,13 @@
     python empacotar.py --modo instalador   # pasta + EditorImpressao-Setup.exe
     python empacotar.py --modo entrega      # só o instalador, na Área de Trabalho
 
+AS TRES SAIDAS (passo 2 do plano da parte do Windows, 19/11/2026): a pasta
+portatil (com o motor do Kraken solto, como sempre), a atualizacao do Velopack
+(sem o motor, com o motor-exigido.json) e o instalador .msi (com o motor
+publicado num arquivo so em instalar\\). O que muda entre elas mora num lugar
+so: SAIDAS. O vpk roda so por rodar_vpk. Quem publica e o
+publicar_versao_kaique.py.
+
 O QUE ESTE SCRIPT APAGA (conserto de 28/09/2026): so o que ele mesmo gera -
 build\\ e, de dist\\, a pasta, o arquivo único e o instalador (ver
 gerados_em_dist e apagar_o_que_gerou). Antes, o modo entrega apagava dist\\
