@@ -1,0 +1,113 @@
+"""Quem tenta quebrar, volta 4: experiências com o gh de mentira dos próprios testes (só a lógica em volta; D-767).
+Cada teste PASSA quando o defeito que eu procuro EXISTE (é a prova do achado), e imprime o que aconteceu."""
+import subprocess
+
+import pytest
+
+import publicar_versao_kaique as pub
+from tests.test_publicar_versao import (ETIQUETA, _GitHubDeMentira, _publicar, _publicar_o_motor,  # noqa: F401
+                                        ambiente)
+
+
+class _GhQueTravaNaSegundaLeitura(_GitHubDeMentira):
+    """O envio do .nupkg falha (antes de liberar). Depois disso, a 2a leitura ("view") da etiqueta fica sem resposta
+    (o gh fechado pelo tempo: o _gh de verdade levanta SemResposta)."""
+
+    def __init__(self, tmp):
+        super().__init__(tmp)
+        self.falhou_o_envio = False
+        self.leituras_depois = 0
+
+    def __call__(self, *argumentos, limite_s=600):
+        a = list(argumentos)
+        if a[1] == "upload" and a[2] == ETIQUETA and a[3].endswith(".nupkg"):
+            self.pedidos.append(a)
+            self.falhou_o_envio = True
+            return subprocess.CompletedProcess(a, 1, "", "HTTP 502 ao enviar (de mentira)")
+        if a[1] == "view" and a[2] == ETIQUETA and self.falhou_o_envio:
+            self.leituras_depois += 1
+            if self.leituras_depois == 2:
+                self.pedidos.append(a)
+                raise pub.SemResposta("parei o pedido ao GitHub (release view): o programa não terminou em 600 "
+                                      "segundos")
+        return super().__call__(*argumentos, limite_s=limite_s)
+
+
+def test_q1_leitura_sem_resposta_dentro_do_apagar_vira_pedi_para_apagar(ambiente, monkeypatch, capsys):
+    a = ambiente
+    gh = _GhQueTravaNaSegundaLeitura(a["tmp"])
+    destino = pub.DestinoGitHub("dono/projeto")
+    monkeypatch.setattr(destino, "_gh", gh)
+    _publicar_o_motor(a, destino=destino)
+    with pytest.raises(pub.Parou) as erro:
+        _publicar(a, destino=destino)
+    frase = str(erro.value)
+    pediu_apagar = any(p[1] == "delete" and p[2] == ETIQUETA for p in gh.pedidos)
+    print("\nFRASE:", frase)
+    print("PEDIDO DE APAGAR SAIU?", pediu_apagar)
+    print("O RASCUNHO CONTINUA NO GITHUB?", ETIQUETA in gh.publicacoes)
+    assert "pedi para apagar" in frase and not pediu_apagar and ETIQUETA in gh.publicacoes
+
+
+class _GhQueNaoAbreNoLiberar(_GitHubDeMentira):
+    """O gh não abre no pedido de liberar (o _gh de verdade levanta Parou "não consegui falar com o GitHub"): o pedido
+    NUNCA saiu."""
+
+    def __call__(self, *argumentos, limite_s=600):
+        a = list(argumentos)
+        if a[1] == "edit" and a[2] == ETIQUETA:
+            raise pub.Parou("não consegui falar com o GitHub pelo gh (não consegui abrir o programa)")
+        return super().__call__(*argumentos, limite_s=limite_s)
+
+
+def test_q2_o_gh_que_nem_abre_no_liberar_conta_como_pedido(ambiente, monkeypatch):
+    a = ambiente
+    gh = _GhQueNaoAbreNoLiberar(a["tmp"])
+    destino = pub.DestinoGitHub("dono/projeto")
+    monkeypatch.setattr(destino, "_gh", gh)
+    _publicar_o_motor(a, destino=destino)
+    with pytest.raises(pub.Parou) as erro:
+        _publicar(a, destino=destino)
+    frase = str(erro.value)
+    print("\nFRASE:", frase)
+    print("O EDIT SAIU?", any(p[1] == "edit" and p[2] == ETIQUETA for p in gh.pedidos))
+    print("SITUACAO:", gh.publicacoes.get(ETIQUETA, {}).get("rascunho"))
+    assert "pedi para liberar" in frase and gh.publicacoes[ETIQUETA]["rascunho"] is True
+
+
+def test_q3_o_comando_da_frase_apaga_tambem_a_liberada(ambiente, capsys):
+    """A frase da D-816 diz: 'se ficou como rascunho, apague depois com: <comando>'. O comando é o --apagar comum,
+    que apaga a publicação em qualquer situação (liberada também)."""
+    a = ambiente
+    _publicar_o_motor(a)
+    _publicar(a)                                            # liberada de verdade, na pasta
+    destino = pub.DestinoPasta(a["servidor"])
+    assert destino.situacao(ETIQUETA) == "liberada"
+    comando = destino.comando_de_apagar(ETIQUETA)
+    print("\nCOMANDO DA FRASE:", comando)
+    codigo = pub.main(["--apagar", ETIQUETA, "--pasta", str(a["servidor"])])
+    print("SAIDA:", capsys.readouterr().out.strip())
+    print("SITUACAO DEPOIS:", destino.situacao(ETIQUETA))
+    assert codigo == 0 and destino.situacao(ETIQUETA) is None
+
+
+def test_q4_a_frase_da_pasta_manda_apagar_no_github(ambiente, monkeypatch, capsys):
+    """Na pasta das provas sobrou um rascunho. A frase do publicar manda rodar '--apagar <etiqueta>' SEM '--pasta'.
+    Quem segue a frase apaga no GitHub (aqui o gh de mentira, com a mesma etiqueta LIBERADA lá)."""
+    a = ambiente
+    _publicar_o_motor(a)
+    destino = pub.DestinoPasta(a["servidor"])
+    destino.criar_rascunho(ETIQUETA, "t", "n")                 # o rascunho que sobrou de uma vez interrompida
+    with pytest.raises(pub.Parou) as erro:
+        _publicar(a)
+    frase = str(erro.value)
+    print("\nFRASE DA PASTA:", frase)
+    assert "--pasta" not in frase and f"--apagar {ETIQUETA}" in frase
+    gh = _GitHubDeMentira(a["tmp"])
+    gh.publicacoes[ETIQUETA] = {"rascunho": False, "arquivos": {"x.nupkg": b"x"}}   # a versao do Kaique, liberada
+    monkeypatch.setattr(pub.DestinoGitHub, "_gh", lambda self, *arg, **k: gh(*arg))
+    codigo = pub.main(["--apagar", ETIQUETA])                   # exatamente o que a frase manda
+    print("SAIDA:", capsys.readouterr().out.strip()[-300:])
+    print("NO GITHUB DEPOIS:", gh.publicacoes.get(ETIQUETA), "etiquetas apagadas:", gh.etiquetas_apagadas)
+    print("NA PASTA DEPOIS:", destino.situacao(ETIQUETA))
+    assert codigo == 0 and ETIQUETA not in gh.publicacoes and destino.situacao(ETIQUETA) == "rascunho"

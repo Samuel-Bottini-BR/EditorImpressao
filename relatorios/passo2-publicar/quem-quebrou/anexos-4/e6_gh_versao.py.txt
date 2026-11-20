@@ -1,0 +1,11 @@
+"""E6: o gh de verdade (so 'gh --version', que nao fala com o GitHub) pelo laco unico da peca, com a saida guardada."""
+import sys
+from pathlib import Path
+sys.path.insert(0, sys.argv[1])
+from core import windows  # noqa: E402
+import publicar_versao_kaique as pub  # noqa: E402
+gh = pub._caminho_do_gh()
+print("gh achado:", gh, "| a peca recusa?", windows._por_que_recusa(gh))
+r = windows.rodar_em_grupo([gh, "--version"], capturar=True, limite_s=30, intervalo_s=0.5)
+print("desfecho:", r.desfecho, "| codigo:", r.dados.get("codigo"), "| abriu:", r.dados.get("abriu"))
+print("saida:", r.dados.get("saida", "").splitlines()[:1])

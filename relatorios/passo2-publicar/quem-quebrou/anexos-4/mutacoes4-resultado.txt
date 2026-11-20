@@ -1,0 +1,12 @@
+A1 D-816 (antes do pedido): o erro antes de liberar nunca apaga o rascunho: ACUSADA (1 failed, 10 passed in 5.54s) ['FAILED tests/test_publicar_versao.py::test_a_leitura_de_volta_que_nao_bate_nao_libera_e_apaga_o_rascunho_do_destino']
+A2 D-816: a marca 'pedi para liberar' so depois de o liberar responder: ACUSADA (1 failed, 36 passed in 14.38s) ['FAILED tests/test_publicar_versao.py::test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada']
+A3 achado 2: so o nome sozinho sem o corte do fim: ACUSADA (1 failed, 62 passed, 2 skipped in 49.35s) ['FAILED tests/test_windows_peca.py::test_volta4_o_nome_com_ponto_no_fim_e_lido_como_o_windows_completa']
+A4 achado 2: o caminho com pasta sem o GetFullPathNameW: ACUSADA (1 failed, 62 passed, 2 skipped in 42.59s) ['FAILED tests/test_windows_peca.py::test_volta4_o_nome_com_ponto_no_fim_e_lido_como_o_windows_completa']
+A5 achado 3: o gh fechado por tempo vira Parou comum (nao SemResposta): NAO ACUSADA (70 passed in 33.26s) []
+A6 achado 8: o laco nao junta a saida depois de fechar: NAO ACUSADA (137 passed, 2 skipped in 86.69s (0:01:26)) []
+A7 achado 7: a subpasta baixada para somar nao e apagada depois: ACUSADA (1 failed, 63 passed in 30.53s) ['FAILED tests/test_publicar_versao.py::test_volta4_achado7_sem_a_soma_pronta_o_download_vai_ao_rascunho_pela_vigia']
+A8 achado 3: PublicacaoLiberada do proprio apagar vira 'nao apaguei' comum: NAO ACUSADA (70 passed in 34.61s) []
+A9 achado 8: o grupo ignora 'capturar' (a saida do gh nao e guardada): ACUSADA (1 failed, 65 passed, 2 skipped in 44.07s) ['FAILED tests/test_windows_peca.py::test_volta4_rodar_em_grupo_e_o_laco_unico_com_a_saida_a_vigia_e_o_tempo']
+A10 achado 7: o publicar nao devolve a soma ao estado de antes no fim: NAO ACUSADA (70 passed in 35.36s) []
+
+[exited with code 0]

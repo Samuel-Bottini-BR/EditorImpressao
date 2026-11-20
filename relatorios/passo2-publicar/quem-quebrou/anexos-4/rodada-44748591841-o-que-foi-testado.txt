@@ -1,0 +1,69 @@
+{"attempt":3,"conclusion":"success","displayTitle":"Testes no Windows (passo2-publicar-2026-11-19)","headBranch":"claude/list-server-files-gkos8v","jobs":[{"conclusion":"success","name":"Suite (parte 2 de 5)"},{"conclusion":"skipped","name":"Antes/depois ${{ matrix.ramo }}"},{"conclusion":"success","name":"Botoes e prints da janela real"},{"conclusion":"skipped","name":"Velocidade - comparar"},{"conclusion":"success","name":"Suite (parte 4 de 5)"},{"conclusion":"success","name":"Suite (parte 1 de 5)"},{"conclusion":"success","name":"Suite (parte 3 de 5)"},{"conclusion":"skipped","name":"Velocidade ${{ matrix.ramo }} (repeticao ${{ matrix.rep }})"},{"conclusion":"success","name":"Suite (parte 5 de 5)"},{"conclusion":"skipped","name":"Filtro de velocidade (antes x depois, mesma maquina)"},{"conclusion":"success","name":"Porteiro (juiz da versao de teste)"},{"conclusion":"success","name":"Resumo"}],"status":"completed"}
+
+Botoes e prints da janela real	2026-11-20T13:55:59.8659561Z codigo trocado pelo de passo2-publicar-2026-11-19 (324cebb34fb887b78357e7ce76dd168e8aa4c446); .github/ continua a deste ramo
+Botoes e prints da janela real	2026-11-20T13:56:00.4037913Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Botoes e prints da janela real	2026-11-20T13:56:14.1780896Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Botoes e prints da janela real	2026-11-20T13:56:15.6486713Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Botoes e prints da janela real	2026-11-20T13:57:25.9488413Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Botoes e prints da janela real	2026-11-20T13:58:14.5354951Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Botoes e prints da janela real	2026-11-20T13:58:14.9203353Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Botoes e prints da janela real	2026-11-20T13:58:18.8355637Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Botoes e prints da janela real	2026-11-20T14:00:50.5841404Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Botoes e prints da janela real	2026-11-20T14:00:51.5594407Z programa testado: passo2-publicar-2026-11-19 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Botoes e prints da janela real	2026-11-20T14:01:36.2161325Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Botoes e prints da janela real	2026-11-20T14:01:37.3473852Z ^[[36;1mPASTA="$(date -u +%Y-%m-%d_%H%M)_${TESTADO_SHA::7}"^[[0m
+Botoes e prints da janela real	2026-11-20T14:01:37.3496602Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Porteiro (juiz da versao de teste)	2026-11-20T13:56:01.4400551Z codigo trocado pelo de passo2-publicar-2026-11-19 (324cebb34fb887b78357e7ce76dd168e8aa4c446); .github/ continua a deste ramo
+Porteiro (juiz da versao de teste)	2026-11-20T13:56:01.8092852Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Porteiro (juiz da versao de teste)	2026-11-20T13:57:08.6293900Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Resumo	2026-11-20T15:01:12.8985441Z programa testado: passo2-publicar-2026-11-19 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 1 de 5)	2026-11-20T13:56:08.5464772Z codigo trocado pelo de passo2-publicar-2026-11-19 (324cebb34fb887b78357e7ce76dd168e8aa4c446); .github/ continua a deste ramo
+Suite (parte 1 de 5)	2026-11-20T13:56:08.9666433Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 1 de 5)	2026-11-20T13:56:43.2830877Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 1 de 5)	2026-11-20T13:56:44.2700664Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 1 de 5)	2026-11-20T13:57:47.6463572Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 1 de 5)	2026-11-20T13:58:42.7738688Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 1 de 5)	2026-11-20T13:58:43.2251756Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 1 de 5)	2026-11-20T14:21:46.3210495Z ^[[36;1m"testado: $env:TESTADO_RAMO $env:TESTADO_SHA" | Out-File -Encoding utf8 $f^[[0m
+Suite (parte 1 de 5)	2026-11-20T14:21:46.3324635Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 1 de 5)	2026-11-20T14:21:46.8465519Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 2 de 5)	2026-11-20T14:48:22.4022871Z codigo trocado pelo de passo2-publicar-2026-11-19 (324cebb34fb887b78357e7ce76dd168e8aa4c446); .github/ continua a deste ramo
+Suite (parte 2 de 5)	2026-11-20T14:48:22.8841836Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 2 de 5)	2026-11-20T14:48:38.1536635Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 2 de 5)	2026-11-20T14:48:39.1523559Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 2 de 5)	2026-11-20T14:50:10.2243004Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 2 de 5)	2026-11-20T14:51:03.1082021Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 2 de 5)	2026-11-20T14:51:03.5282512Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 2 de 5)	2026-11-20T15:00:51.2676613Z ^[[36;1m"testado: $env:TESTADO_RAMO $env:TESTADO_SHA" | Out-File -Encoding utf8 $f^[[0m
+Suite (parte 2 de 5)	2026-11-20T15:00:51.2748882Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 2 de 5)	2026-11-20T15:00:51.7227726Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 3 de 5)	2026-11-20T13:56:07.4401689Z codigo trocado pelo de passo2-publicar-2026-11-19 (324cebb34fb887b78357e7ce76dd168e8aa4c446); .github/ continua a deste ramo
+Suite (parte 3 de 5)	2026-11-20T13:56:07.8168792Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 3 de 5)	2026-11-20T13:56:24.8020040Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 3 de 5)	2026-11-20T13:56:25.9446118Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 3 de 5)	2026-11-20T13:57:37.3764593Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 3 de 5)	2026-11-20T13:58:38.8466840Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 3 de 5)	2026-11-20T13:58:39.3228909Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 3 de 5)	2026-11-20T14:09:22.7449586Z ^[[36;1m"testado: $env:TESTADO_RAMO $env:TESTADO_SHA" | Out-File -Encoding utf8 $f^[[0m
+Suite (parte 3 de 5)	2026-11-20T14:09:22.7541808Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 3 de 5)	2026-11-20T14:09:23.2584789Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 4 de 5)	2026-11-20T13:55:55.2347811Z codigo trocado pelo de passo2-publicar-2026-11-19 (324cebb34fb887b78357e7ce76dd168e8aa4c446); .github/ continua a deste ramo
+Suite (parte 4 de 5)	2026-11-20T13:55:55.4320132Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 4 de 5)	2026-11-20T13:56:08.8042978Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 4 de 5)	2026-11-20T13:56:09.7122494Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 4 de 5)	2026-11-20T13:56:50.8381477Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 4 de 5)	2026-11-20T13:57:29.5483151Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 4 de 5)	2026-11-20T13:57:29.9936999Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 4 de 5)	2026-11-20T14:04:52.5494012Z ^[[36;1m"testado: $env:TESTADO_RAMO $env:TESTADO_SHA" | Out-File -Encoding utf8 $f^[[0m
+Suite (parte 4 de 5)	2026-11-20T14:04:52.5548838Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 4 de 5)	2026-11-20T14:04:52.8387452Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 5 de 5)	2026-11-20T13:56:00.2622674Z codigo trocado pelo de passo2-publicar-2026-11-19 (324cebb34fb887b78357e7ce76dd168e8aa4c446); .github/ continua a deste ramo
+Suite (parte 5 de 5)	2026-11-20T13:56:00.5056786Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 5 de 5)	2026-11-20T13:56:15.1119567Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 5 de 5)	2026-11-20T13:56:16.1257021Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 5 de 5)	2026-11-20T13:57:10.5457016Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 5 de 5)	2026-11-20T13:58:02.2600947Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 5 de 5)	2026-11-20T13:58:02.7125859Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 5 de 5)	2026-11-20T14:08:30.3821206Z ^[[36;1m"testado: $env:TESTADO_RAMO $env:TESTADO_SHA" | Out-File -Encoding utf8 $f^[[0m
+Suite (parte 5 de 5)	2026-11-20T14:08:30.3910357Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
+Suite (parte 5 de 5)	2026-11-20T14:08:30.8819809Z   TESTADO_SHA: 324cebb34fb887b78357e7ce76dd168e8aa4c446
