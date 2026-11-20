@@ -58,8 +58,8 @@ As da primeira entrega, de `03c91599`, estão no `git log` deste arquivo.)
   Lista de bugs. Leitura feita (implementador, CLAUDE.md, memória, catálogo, pacote da volta 4, este formulário, o
   relatório 3 e os anexos Q1 a Q3 e E2). Andamento em "Volta 4" de cada seção.
 - 20/11, volta 4 feita: os 12 achados com destino em "O que o agente que tentou quebrar achou" (código em `783b6814`,
-  `dfe5f70d`, `e0921ed8`, `9384f1a3`); reversão no código de `5f96975b` (26 de 27 casos novos falham) e 24 de 24
-  mutações acusadas. Rodada do GitHub 44748279819 (em "Testes"). `--is-shallow-repository` = false antes e depois;
+  `dfe5f70d`, `e0921ed8`, `9384f1a3`, `595cc293`); reversão no código de `5f96975b` (26 de 27 casos novos falham) e 24 de 24
+  mutações acusadas. Rodada do GitHub em "Testes". `--is-shallow-repository` = false antes e depois;
   nenhuma junção criada. **Próximo:** a gerente manda a um agente novo que tenta quebrar (D-815); depois a prova à vista.
 
 ## Decisões que esta tarefa precisa cumprir
@@ -801,8 +801,8 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
 - **Volta 4, reversão:** os testes novos no código de `5f96975b`: 26 de 27 casos falham
   (`anexos/reversao-volta4-codigo-antigo.txt`, com a leitura de cada falha no fim); o do achado 10 passa lá (a proteção
   já existia) e é provado pela mutação V10. Mutações: 24 de 24 acusadas (`anexos/reversao-volta4-resultado.txt`).
-- **No GitHub, volta 4:** rodada 44748279819, sobre o ramo em `2d866750` (o código de `9384f1a3`; depois, só este
-  formulário). Resultado: (a preencher quando terminar).
+- **No GitHub, volta 4:** a rodada 44748279819 (sobre `2d866750`) foi cancelada por mim aos 6 minutos: depois dela
+  corrigi dois textos (docstrings) da peça e da vigia. Rodada que vale: NOVA (a preencher).
 
 ## Caminho e função
 
@@ -1232,7 +1232,7 @@ o teste antigo do achado 5 da volta 3, que saiu porque cobrava o que a D-816 tir
 
 2e906e94 (o último commit de código e testes da volta 3, com três docstrings de um teste; depois dele só este formulário muda).
 
-Volta 4: 9384f1a3 (o último commit de código e testes da volta 4; depois dele só este formulário muda).
+Volta 4: 595cc293 (o último commit de código e testes da volta 4: os textos da peça e da vigia; depois dele só este formulário muda).
 
 ## O que o agente que tentou quebrar achou
 
