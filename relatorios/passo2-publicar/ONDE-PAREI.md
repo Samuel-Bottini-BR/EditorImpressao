@@ -49,7 +49,7 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
   para o passo 3. Leitura feita (implementador, CLAUDE.md, memória, catálogo, pacote, este formulário, os dois
   relatórios, o Livro D-809 a D-815). Andamento em "Volta 3" abaixo de "O que o agente que tentou quebrar achou".
 - 20/11, volta 3 feita: os 10 achados do relatório 2 com destino em "O que o agente que tentou quebrar achou"
-  (código em `411b46c7`, `d628be0e`, `1b430752`, `4817c2f4`, `05f743ca`, `e4263c0a`); cada conserto com o teste que falha sem ele
+  (código em `411b46c7`, `d628be0e`, `1b430752`, `4817c2f4`, `05f743ca`, `e4263c0a`, `2e906e94`); cada conserto com o teste que falha sem ele
   (`anexos/reversao-volta3-codigo-antigo.txt`: os testes novos falham no código da volta 2; `anexos/reversao-volta3-resultado.txt`:
   24 de 24 proteções desligadas numa cópia, todas acusadas). `--is-shallow-repository` = false antes e depois; nenhuma
   junção criada. **Próximo:** a gerente manda a um agente novo que tenta quebrar (D-815); depois a prova à vista.
@@ -851,7 +851,7 @@ de ferramentas dele, em "Ressalvas"): a gerente pergunta, se achar preciso.
 
 ## Commit
 
-2e906e94 (o último commit de código e testes, volta 3: o código de e4263c0a e três docstrings de um teste; depois dele só este formulário muda).
+2e906e94 (o último commit de código e testes da volta 3, com três docstrings de um teste; depois dele só este formulário muda).
 
 ## O que o agente que tentou quebrar achou
 
