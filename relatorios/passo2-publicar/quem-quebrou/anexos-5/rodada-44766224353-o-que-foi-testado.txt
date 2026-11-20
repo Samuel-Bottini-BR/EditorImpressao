@@ -1,0 +1,6 @@
+Rodada do GitHub 44766224353 ("Testes no Windows (passo2-publicar-2026-11-19)"), consultada uma vez em 20/11/2026.
+gh run view: attempt 2, status completed, conclusion success (criada 15:44 UTC, terminada 16:28 UTC).
+No registro (gh run view --log, a tentativa 2): "TESTADO_SHA: 2bb04bf2408007a16387fe99a1cbc59d8199f4b5" em 52 linhas, nenhum outro.
+git diff --stat 35ec0c27 2bb04bf2: só relatorios/passo2-publicar/ONDE-PAREI.md e os três anexos reversao-volta5-* (269 linhas a mais).
+Então o código testado é o de 35ec0c27.
+A tentativa 1 (falha na parte 3, tests/test_decisoes_gravura_a_mao.py) não foi relida por mim: a gerente rodou esse arquivo no PC (15 passaram); eu não o rodei de novo.

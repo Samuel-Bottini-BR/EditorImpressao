@@ -1,0 +1,24 @@
+X1 o 'nem abriu' vira qualquer erro do liberar (D-816: depois do pedido, apagaria): acusada (13 failed, 65 passed in 39.63s)
+    FAILED tests/test_publicar_versao.py::test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada
+    FAILED tests/test_publicar_versao.py::test_d816_depois_do_pedido_de_liberar_nada_e_apagado_com_qualquer_atraso[pasta-1]
+    FAILED tests/test_publicar_versao.py::test_d816_depois_do_pedido_de_liberar_nada_e_apagado_com_qualquer_atraso[pasta-2]
+    FAILED tests/test_publicar_versao.py::test_d816_depois_do_pedido_de_liberar_nada_e_apagado_com_qualquer_atraso[pasta-3]
+    FAILED tests/test_publicar_versao.py::test_d816_depois_do_pedido_de_liberar_nada_e_apagado_com_qualquer_atraso[pasta-10]
+    FAILED tests/test_publicar_versao.py::test_d816_depois_do_pedido_de_liberar_nada_e_apagado_com_qualquer_atraso[github-1]
+X2 o gh fechado por tempo no laço sai como 'não abriu' (NadaSaiu no lugar de SemResposta): acusada (3 failed, 143 passed, 2 skipped in 91.38s (0:01:31))
+    FAILED tests/test_publicar_versao.py::test_achado2_a_vigia_fecha_o_vpk_e_o_que_ele_abriu
+    FAILED tests/test_publicar_versao.py::test_volta3_achado4_a_vigia_fecha_o_filho_do_vpk_antes_de_soltar_o_grupo
+    FAILED tests/test_publicar_versao.py::test_volta5_achado3a_o_gh_de_verdade_fechado_por_tempo_no_apagar_diz_que_pediu
+X3 NadaSaiu vira um caso de SemResposta (o delete que nem abriu diria 'pedi para apagar'): NÃO acusada (78 passed in 39.20s)
+X4 o fluxo só quando há dois ':' (o relativo sem letra passa): acusada (1 failed, 67 passed, 2 skipped in 51.14s)
+    FAILED tests/test_windows_peca.py::test_volta5_o_programa_num_fluxo_escondido_de_outro_arquivo_e_recusado
+X5 o fluxo olhado só no fim (depois do nome sozinho): acusada (1 failed, 67 passed, 2 skipped in 50.48s)
+    FAILED tests/test_windows_peca.py::test_volta5_o_programa_num_fluxo_escondido_de_outro_arquivo_e_recusado
+X6 a pasta das provas sem o --pasta no comando de apagar: acusada (3 failed, 75 passed in 39.75s)
+    FAILED tests/test_publicar_versao.py::test_volta5_achado1_as_frases_de_ja_existe_dao_o_comando_do_destino[publicar_arquivos]
+    FAILED tests/test_publicar_versao.py::test_volta5_achado1_as_frases_de_ja_existe_dao_o_comando_do_destino[versao]
+    FAILED tests/test_publicar_versao.py::test_volta5_achado1_as_frases_de_ja_existe_dao_o_comando_do_destino[motor]
+X7 o tempo de fábrica do gh ignora LIMITE_DO_PEDIDO_S: acusada (1 failed, 77 passed in 96.25s (0:01:36))
+    FAILED tests/test_publicar_versao.py::test_volta5_achado3a_o_gh_de_verdade_fechado_por_tempo_no_apagar_diz_que_pediu
+X8 o fluxo escondido aceito se o nome do fluxo não é da lista: acusada (1 failed, 67 passed, 2 skipped in 49.79s)
+    FAILED tests/test_windows_peca.py::test_volta5_o_programa_num_fluxo_escondido_de_outro_arquivo_e_recusado

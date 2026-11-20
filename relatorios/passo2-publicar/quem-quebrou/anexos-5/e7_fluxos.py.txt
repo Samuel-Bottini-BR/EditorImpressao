@@ -1,0 +1,96 @@
+"""E7 (quem tenta quebrar, volta 5): os vizinhos do fluxo escondido, rodados de verdade no Windows.
+
+Para cada jeito de escrever: (1) o Windows roda? (subprocess.run sem a peça); (2) a peça recusa? (_por_que_recusa);
+(3) o que o _caminho_do_programa leu (a coisa que a peça compara). Nada pede licença; tudo numa pasta de rascunho.
+Uso: python e7_fluxos.py <pasta do código> <pasta dos casos>
+"""
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+codigo, casos = Path(sys.argv[1]), Path(sys.argv[2])
+sys.path.insert(0, str(codigo))
+from core import windows  # noqa: E402
+
+casos.mkdir(parents=True, exist_ok=True)
+sistema = windows.pasta_do_sistema()
+programa = (sistema / "hostname.exe").read_bytes()
+nada = casos / "nada.txt"
+nada.write_text("nada", encoding="utf-8")
+inocente = casos / "inocente.exe"          # um arquivo que É programa (começa com MZ) e tem um fluxo escondido
+inocente.write_bytes(programa)
+pasta = casos / "pastinha"
+pasta.mkdir(exist_ok=True)
+for base in (nada, inocente):
+    for fluxo in ("pwsh.exe", "outro.exe"):
+        with open(str(base) + ":" + fluxo, "wb") as f:
+            f.write(programa)
+try:
+    with open(str(pasta) + ":pwsh.exe", "wb") as f:
+        f.write(programa)
+    pasta_ok = True
+except OSError as e:
+    pasta_ok = f"não deu para gravar fluxo numa pasta: {e!r}"
+
+curto = None
+try:
+    import ctypes
+    buf = ctypes.create_unicode_buffer(600)
+    ctypes.windll.kernel32.GetShortPathNameW(str(inocente), buf, 600)
+    curto = buf.value if buf.value and buf.value != str(inocente) else None
+except Exception as e:
+    curto = None
+
+os.chdir(casos)
+I = str(inocente)
+N = str(nada)
+jeitos = [
+    ("base: nada.txt:pwsh.exe", N + ":pwsh.exe"),
+    ("host MZ: inocente.exe:pwsh.exe", I + ":pwsh.exe"),
+    ("host MZ: inocente.exe:outro.exe", I + ":outro.exe"),
+    ("\\\\?\\ + nada.txt:pwsh.exe", "\\\\?\\" + N + ":pwsh.exe"),
+    ("\\\\?\\ + inocente.exe:pwsh.exe", "\\\\?\\" + I + ":pwsh.exe"),
+    ("\\\\?\\ + inocente.exe:outro.exe", "\\\\?\\" + I + ":outro.exe"),
+    ("\\\\.\\ + inocente.exe:pwsh.exe", "\\\\.\\" + I + ":pwsh.exe"),
+    ("\\??\\ + inocente.exe:pwsh.exe", "\\??\\" + I + ":pwsh.exe"),
+    ("relativo inocente.exe:pwsh.exe", "inocente.exe:pwsh.exe"),
+    ("relativo .\\inocente.exe:pwsh.exe", ".\\inocente.exe:pwsh.exe"),
+    ("relativo nada.txt:outro.exe", "nada.txt:outro.exe"),
+    ("letra sem barra C:inocente.exe:pwsh.exe", I[:2] + "inocente.exe:pwsh.exe"),
+    ("maiúsculas", I.upper() + ":PWSH.EXE"),
+    ("barras /", I.replace("\\", "/") + ":pwsh.exe"),
+    ("com :$DATA", I + ":pwsh.exe:$DATA"),
+    ("com ponto no fim", I + ":pwsh.exe."),
+    ("fluxo numa pasta", str(pasta) + ":pwsh.exe"),
+    ("UNC localhost C$", "\\\\localhost\\" + I[0] + "$" + I[2:] + ":pwsh.exe"),
+    ("\\\\?\\UNC\\localhost", "\\\\?\\UNC\\localhost\\" + I[0] + "$" + I[2:] + ":pwsh.exe"),
+]
+if curto:
+    jeitos.append(("nome curto 8.3 + :pwsh.exe", curto + ":pwsh.exe"))
+    jeitos.append(("\\\\?\\ + nome curto + :pwsh.exe", "\\\\?\\" + curto + ":pwsh.exe"))
+
+print(f"pasta dos casos: {casos}")
+print(f"fluxo numa pasta: {pasta_ok}; nome curto: {curto}")
+print(f"{'jeito':45} | Windows roda? | peça recusa? (frase) | o que a peça leu")
+furos = 0
+for nome, jeito in jeitos:
+    try:
+        r = subprocess.run([jeito], capture_output=True, timeout=20)
+        roda = f"sim ({'rodou'})" if r.returncode == 0 else f"não (código {r.returncode})"
+    except OSError as e:
+        roda = f"não ({getattr(e, 'winerror', None)})"
+    motivo = windows._por_que_recusa(jeito)
+    try:
+        leu = windows._caminho_do_programa(jeito)
+    except Exception as e:
+        leu = repr(e)
+    recusa = "SIM" if motivo else "NÃO"
+    frase = ""
+    if motivo:
+        frase = "fluxo" if "fluxo" in motivo else ("função própria" if "função própria" in motivo else motivo[:30])
+    if roda.startswith("sim") and not motivo:
+        furos += 1
+        recusa += "  <== FURO"
+    print(f"{nome:45} | {roda:13} | {recusa} ({frase}) | {leu}")
+print(f"furos (o Windows roda e a peça deixa): {furos}")

@@ -1,0 +1,42 @@
+"""Quem tenta quebrar, volta 5 do passo 2 (20/11/2026). Casos que eu rodo numa cópia (git archive de 35ec0c27); não
+entram no projeto. Usam o ambiente e o gh de mentira de tests/test_publicar_versao.py (a lógica em volta, D-767).
+
+Q5a: o pedido de APAGAR em que o gh nem abre (NadaSaiu) tem de dizer "não apaguei", nunca "pedi para apagar".
+     Nenhum teste do projeto cobra isso (a minha mutação X3, NadaSaiu como um caso de SemResposta, passa nos 78).
+Q5b: na pasta das provas, a frase "o motor ... não está publicado ...: publique o motor antes (--motor)" manda rodar o
+     --motor SEM o --pasta (o vizinho do achado 1 do relatório 4): seguida ao pé da letra, publica no GitHub.
+"""
+import pytest
+
+import publicar_versao_kaique as pub
+from tests.test_publicar_versao import (ETIQUETA, _GitHubDeMentira, _publicar, ambiente)  # noqa: F401
+
+
+class _GhQueNaoAbreNoApagar(_GitHubDeMentira):
+    """Lê normalmente; o pedido de apagar nem sai do PC (o _gh de verdade levanta NadaSaiu quando o gh não abre)."""
+
+    def __call__(self, *argumentos, limite_s=600):
+        a = list(argumentos)
+        if a[1] == "delete":
+            raise pub.NadaSaiu("não consegui falar com o GitHub pelo gh (não consegui abrir o programa)")
+        return super().__call__(*argumentos, limite_s=limite_s)
+
+
+def test_q5a_o_apagar_que_nem_abre_diz_nao_apaguei(ambiente, monkeypatch):
+    gh = _GhQueNaoAbreNoApagar(ambiente["tmp"])
+    destino = pub.DestinoGitHub("dono/projeto")
+    monkeypatch.setattr(destino, "_gh", gh)
+    destino.criar_rascunho(ETIQUETA, "t", "n")
+    with pytest.raises(pub.Parou) as erro:
+        pub.apagar_publicacao(destino, ETIQUETA, so_rascunho=True, acabou_de_criar=True)
+    frase = str(erro.value)
+    assert "não apaguei" in frase and "pedi para apagar" not in frase, frase
+
+
+def test_q5b_na_pasta_a_frase_do_motor_que_falta_da_o_comando_sem_o_destino(ambiente):
+    destino = pub.DestinoPasta(ambiente["servidor"])
+    with pytest.raises(pub.Parou) as erro:
+        _publicar(ambiente, destino=destino)        # a versão, sem o motor publicado antes na pasta
+    frase = str(erro.value)
+    print("\nA FRASE:", frase)
+    assert "(--motor)" in frase and "--pasta" not in frase, frase

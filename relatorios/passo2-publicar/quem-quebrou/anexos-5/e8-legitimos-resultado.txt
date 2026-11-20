@@ -1,0 +1,36 @@
+== código velho
+gh (which)                                       | C:\Program Files\GitHub CLI\gh.EXE | Windows: roda (código 0) | peça: passa
+gh (LUGAR_DO_GH)                                 | C:\Program Files\GitHub CLI\gh.exe | Windows: roda (código 0) | peça: passa
+gh com prefixo longo                             | \\?\C:\Program Files\GitHub CLI\gh.exe | Windows: roda (código 0) | peça: passa
+gh com prefixo de dispositivo                    | \\.\C:\Program Files\GitHub CLI\gh.exe | Windows: roda (código 0) | peça: passa
+gh curto 8.3                                     | C:\PROGRA~1\GITHUB~1\gh.exe | Windows: roda (código 0) | peça: passa
+gh com barras /                                  | C:/Program Files/GitHub CLI/gh.exe | Windows: roda (código 0) | peça: passa
+vpk (achar_vpk)                                  | C:\Users\fotog\.dotnet\tools\vpk.exe | Windows: roda (código 1) | peça: passa
+vpk com prefixo longo                            | \\?\C:\Users\fotog\.dotnet\tools\vpk.exe | Windows: roda (código 1) | peça: passa
+python (sys.executable)                          | D:\programas\EditorImpressao\.venv\Scripts\python.exe | Windows: roda (código 0) | peça: passa
+python com prefixo longo                         | \\?\D:\programas\EditorImpressao\.venv\Scripts\python.exe | Windows: roda (código 0) | peça: passa
+python com prefixo de dispositivo                | \\.\D:\programas\EditorImpressao\.venv\Scripts\python.exe | Windows: roda (código 106) | peça: passa
+D: sem barra (D:python.exe, pasta atual do D:)   | D:python.exe | Windows: não roda (erro 2) | peça: passa
+nome sozinho python                              | python | Windows: roda (código 0) | peça: passa
+nome sozinho gh                                  | gh | Windows: roda (código 0) | peça: passa
+nome sozinho vpk                                 | vpk | Windows: não roda (erro 2) | peça: passa
+Update.exe (da lista: recusa de propósito)       | C:\Program Files\EditorImpressao\Update.exe | Windows: (não rodado de propósito) | peça: RECUSA: este programa do Windows tem função própria na peça: use a função dela
+pwsh (da lista: recusa de propósito)             | C:\Program Files\PowerShell\7\pwsh.exe | Windows: (não rodado de propósito) | peça: RECUSA: este programa do Windows tem função própria na peça: use a função dela
+== código novo
+gh (which)                                       | C:\Program Files\GitHub CLI\gh.EXE | Windows: roda (código 0) | peça: passa
+gh (LUGAR_DO_GH)                                 | C:\Program Files\GitHub CLI\gh.exe | Windows: roda (código 0) | peça: passa
+gh com prefixo longo                             | \\?\C:\Program Files\GitHub CLI\gh.exe | Windows: roda (código 0) | peça: passa
+gh com prefixo de dispositivo                    | \\.\C:\Program Files\GitHub CLI\gh.exe | Windows: roda (código 0) | peça: passa
+gh curto 8.3                                     | C:\PROGRA~1\GITHUB~1\gh.exe | Windows: roda (código 0) | peça: passa
+gh com barras /                                  | C:/Program Files/GitHub CLI/gh.exe | Windows: roda (código 0) | peça: passa
+vpk (achar_vpk)                                  | C:\Users\fotog\.dotnet\tools\vpk.exe | Windows: roda (código 1) | peça: passa
+vpk com prefixo longo                            | \\?\C:\Users\fotog\.dotnet\tools\vpk.exe | Windows: roda (código 1) | peça: passa
+python (sys.executable)                          | D:\programas\EditorImpressao\.venv\Scripts\python.exe | Windows: roda (código 0) | peça: passa
+python com prefixo longo                         | \\?\D:\programas\EditorImpressao\.venv\Scripts\python.exe | Windows: roda (código 0) | peça: passa
+python com prefixo de dispositivo                | \\.\D:\programas\EditorImpressao\.venv\Scripts\python.exe | Windows: roda (código 106) | peça: passa
+D: sem barra (D:python.exe, pasta atual do D:)   | D:python.exe | Windows: não roda (erro 2) | peça: passa
+nome sozinho python                              | python | Windows: roda (código 0) | peça: passa
+nome sozinho gh                                  | gh | Windows: roda (código 0) | peça: passa
+nome sozinho vpk                                 | vpk | Windows: não roda (erro 2) | peça: passa
+Update.exe (da lista: recusa de propósito)       | C:\Program Files\EditorImpressao\Update.exe | Windows: (não rodado de propósito) | peça: RECUSA: este programa do Windows tem função própria na peça: use a função dela
+pwsh (da lista: recusa de propósito)             | C:\Program Files\PowerShell\7\pwsh.exe | Windows: (não rodado de propósito) | peça: RECUSA: este programa do Windows tem função própria na peça: use a função dela
