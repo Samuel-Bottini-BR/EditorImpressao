@@ -578,3 +578,26 @@ def test_regressao_o_pacote_leva_as_duas_dlls_do_scantailor():
     for nome in ("st_ferramentas.dll", "st_ferramentas.txt", "st_gravura.dll", "st_gravura.txt"):
         assert f'FileExists(PastaDoPrograma + "_internal{BARRA}core{BARRA}nativo{BARRA}{nome}")' in script, nome
     assert "core.st_ferramentas" in _valor_de(empacotar.comando_do_pyinstaller(False), "--hidden-import")
+
+
+
+# ---------------------------------------------------------------------------
+# Passo 2, volta 7 (D-818, 20/11/2026): uma regua so para o Visual C++
+# ---------------------------------------------------------------------------
+
+def test_d818_a_montagem_e_a_pasta_usam_a_mesma_regua_do_visual_c(tmp_path, monkeypatch):
+    """D-818 (Samuel: "vai ter que reprogramar?" · "A"): "este arquivo e o Visual C++ oficial?" e decidido por uma
+    funcao so (`conferir_o_visual_c`: a assinatura lida pela peca DE VERDADE do Windows e conferida por
+    `vc_redist_confere`), usada pela montagem (`preparar_vc_redist`) e pela conferencia da pasta
+    (`conferir_pasta_pronta`). Um arquivo sem assinatura e recusado pelos dois, com o mesmo motivo; nada e baixado
+    (baixar=False) e nada e apagado."""
+    falso = tmp_path / "downloads" / empacotar.VC_REDIST_NOME
+    falso.parent.mkdir()
+    falso.write_bytes(b"MZ nao sou o Visual C++ da Microsoft")
+    versao_lida, problemas = empacotar.conferir_o_visual_c(falso)
+    assert problemas and any("não foi assinado pela Microsoft" in p for p in problemas), problemas
+    monkeypatch.setattr(empacotar, "DOWNLOADS", falso.parent)
+    arquivo, versao_da_montagem, da_montagem = empacotar.preparar_vc_redist(baixar=False)
+    assert arquivo is None and versao_da_montagem == ""
+    assert all(p in da_montagem[0] for p in problemas), (da_montagem, problemas)
+    assert falso.is_file(), "a montagem nunca apaga o arquivo que nao confere"

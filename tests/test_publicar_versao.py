@@ -2376,6 +2376,8 @@ def _estragar(pasta: Path, defeito: str) -> None:
         shutil.rmtree(pasta / empacotar.PASTA_DO_TESSERACT)
     elif defeito == "sem um idioma do Tesseract":
         (pasta / empacotar.PASTA_DO_TESSERACT / "tessdata" / "lat.traineddata").unlink()
+    elif defeito == "um arquivo do Tesseract vazio":
+        (pasta / empacotar.PASTA_DO_TESSERACT / "libtesseract-5.dll").write_bytes(b"")
     elif defeito == "um Visual C++ falso":
         (instalar / atualizacao.VC_REDIST_NOME).write_bytes(b"MZ nao sou o Visual C++ da Microsoft")
     elif defeito == "sem a versao do Visual C++":
@@ -2388,6 +2390,7 @@ def _estragar(pasta: Path, defeito: str) -> None:
 
 _DEFEITOS = {"sem o Tesseract": "não tem o Tesseract",
              "sem um idioma do Tesseract": "tessdata/lat.traineddata",
+             "um arquivo do Tesseract vazio": "tesseract/libtesseract-5.dll",
              "um Visual C++ falso": "não é o oficial da Microsoft",
              "sem a versao do Visual C++": atualizacao.VC_REDIST_VERSAO,
              "a versao do Visual C++ errada": "14.29.30133.0"}
