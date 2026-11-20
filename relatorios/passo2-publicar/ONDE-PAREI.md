@@ -1392,6 +1392,9 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
   R9 e R10.
 - **Volta 7, mutações** (`anexos/reversao-volta7-resultado.txt`; script `anexos/reversao-volta7-mutacoes.py.txt`), numa
   cópia de `25c514ad`: ver "Cada proteção", Volta 7.
+- **No GitHub, volta 7:** rodada 44816609032, sobre o ramo em `eda1dc6b` (o código de `25c514ad`; depois dele só a pasta
+  deste relatório): **success** na primeira tentativa, todas as partes (1 a 5), os botões e o resumo. PORTEIRO: success
+  (o trabalho "Porteiro (juiz da versao de teste)"). O registro diz "TESTADO_SHA: eda1dc6b..." nas 52 linhas.
 
 ## Caminho e função
 
