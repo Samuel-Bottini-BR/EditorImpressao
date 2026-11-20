@@ -50,6 +50,12 @@ def escolher_regras(tags: set, papel: str) -> list[dict]:
         assunto = set(r["tags"]) - {"TODO", "TESTE", "GER"}
         if "GER" in r["tags"] and not assunto and "TODO" not in r["tags"]:
             continue
+        # Regra marcada `basta_uma`: vai a todo trabalho que tem QUALQUER uma das etiquetas dela (ex.: a R157, para o
+        # trabalho do Windows e para o de testes, como a D-810 pede).
+        if r.get("basta_uma"):
+            if set(r["tags"]) & tags:
+                saida.append(r)
+            continue
         if assunto:
             if assunto & tags:
                 saida.append(r)

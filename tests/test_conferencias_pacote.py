@@ -200,14 +200,15 @@ def test_d813_o_acrescimo_a_regra_6_e_o_texto_do_livro_e_vai_em_todo_pacote():
 
 def test_d809_d810_d812_as_regras_novas_vao_aos_trabalhos_certos():
     """D-809: a regra do .git vai a todo trabalho (todo trabalho faz commit). D-810 e D-812: vão a todo trabalho com
-    teste, do Windows ou não; não vão ao trabalho sem teste."""
+    teste, do Windows ou não; não vão ao trabalho de imagem sem teste (a D-810 vai também ao do Windows sem teste: ver o
+    teste seguinte)."""
     nomes = {i: next(r["nome"] for r in catalogo.REGRAS if r["id"] == i) for i in ("R156", "R157", "R158")}
     windows = montar_pacote.montar("implementador", "x", [], ARQUIVOS_DO_PASSO_1, RAIZ, "746dbda6", "x")
     testes = montar_pacote.montar("implementador", "x", [], ["core/filtros.py", "tests/test_filtros.py"], RAIZ,
                                   "746dbda6", "x")
-    pesquisa = montar_pacote.montar("pesquisador", "x", [], ["docs/pesquisa/"], RAIZ, "746dbda6", "x")
+    imagem = montar_pacote.montar("implementador", "x", [], ["core/filtros.py"], RAIZ, "746dbda6", "x")  # sem teste nem WIN
     assert all(n in windows and n in testes for n in nomes.values())
-    assert nomes["R156"] in pesquisa and nomes["R157"] not in pesquisa
+    assert nomes["R156"] in imagem and nomes["R157"] not in imagem
     assert "Everyone" in windows and "(DECISOES.md D-810)" in windows
 
 
@@ -237,3 +238,15 @@ def test_d811_d812_d814_o_pacote_do_windows_traz_as_perguntas_novas_e_o_so_de_te
     for texto in (windows, testes):
         assert "## Decisões procuradas antes de cada pergunta\n\n(a preencher; obrigatório antes de ir ao agente que " \
                "tenta quebrar, se houver pergunta para o Samuel" in texto
+
+
+def test_d810_a_regra_dos_tres_computadores_vai_tambem_ao_trabalho_do_windows_sem_teste():
+    """Achado 10 de quem quebrou (20/11): a prova da D-810 diz "O pacote dos agentes de Windows e de testes traz a
+    lista", e o trabalho do Windows sem arquivo de teste não a recebia. Agora recebe; o de imagem, sem teste e sem Windows,
+    continua sem."""
+    nome = next(r["nome"] for r in catalogo.REGRAS if r["id"] == "R157")
+    so_windows = montar_pacote.montar("implementador", "x", [], ["core/windows.py"], RAIZ, "746dbda6", "x")
+    assert tabela_arquivos.etiquetas_do_trabalho(["core/windows.py"], RAIZ)[0] == {"WIN", "GIT"}
+    assert nome in so_windows
+    assert nome in montar_pacote.montar("implementador", "x", [], ["tests/test_filtros.py"], RAIZ, "746dbda6", "x")
+    assert nome not in montar_pacote.montar("implementador", "x", [], ["core/filtros.py"], RAIZ, "746dbda6", "x")

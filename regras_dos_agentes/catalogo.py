@@ -14,6 +14,8 @@ Campos de cada regra:
   curta   o texto curto que vai no pacote, com o porquê
   rep     se repete: em que lugares e se dizem coisas um pouco diferentes
   contra  código da contradição (ver CONTRADICOES), se houver
+  basta_uma  (opcional) True = a regra vai a todo trabalho que tem qualquer uma das etiquetas dela (sem isso, a regra
+          com assunto só vai ao trabalho daquele assunto; ver `montar_pacote.escolher_regras`)
 
 Contradições já resolvidas pelo Samuel (`RESOLVIDAS`, 18 e 19/11/2026): o pacote passa a dizer qual texto vale, com a
 decisão, em vez de "pergunte à gerente". O texto do CLAUDE.md e dos agentes ainda não foi corrigido (é da gerente, com
@@ -422,11 +424,12 @@ REGRAS = [
          curta="Há ideias de layout do Samuel na Lista de espera, com imagens em docs/plano/referencias-layout/."),
     # ---------------- do catálogo dos erros (D-803, D-808; o "sim" do Samuel em 19/11) ----------------
     # O texto é o "na prática" da decisão no Livro; a fonte é a linha dela (`LIVRO`), até a gerente escrever no CLAUDE.md.
-    # Etiquetas: a R156 tem GIT, que todo trabalho recebe (todo trabalho faz commit); a R157 e a R158 têm TESTE, que vai
-    # a todo trabalho com teste (inclusive os do Windows): com WIN junto, o montador só a mandaria a trabalho do Windows.
+    # Etiquetas: a R156 tem GIT, que todo trabalho recebe (todo trabalho faz commit); a R157 vai ao trabalho do Windows
+    # E ao de testes (D-810: "O pacote dos agentes de Windows e de testes traz a lista"; `basta_uma`: qualquer uma das
+    # duas basta); a R158 tem TESTE, que vai a todo trabalho com teste (inclusive os do Windows).
     dict(id="R156", nome="A cópia divide o .git com o Samuel: nada de comando que muda o .git inteiro", onde=[f"{LIVRO} D-809"], tags=["GIT"], papel="todos", maq="em parte",
          curta="A sua cópia divide a pasta .git com o repositório do Samuel. Comando que muda o .git inteiro (fetch com --depth, gc, prune, stash, config, mexer em ramo que não é o seu) não roda na sua cópia, nem em script ou teste, a não ser num repositório de prova em pasta temporária (regras_dos_agentes/repositorio_de_prova.py). Atalho de pasta (junção) só sai com cmd /c rmdir ou com (Get-Item <atalho>).Delete(), que tiram só o atalho, contando os arquivos da pasta de verdade antes e depois. (O repositório do PC ficou raso em 19/11 com um git fetch --depth=1; a pasta modelos/ foi esvaziada em 18/11 ao tirar um atalho. O porteiro acusa, K25.)"),
-    dict(id="R157", nome="O teste do Windows roda em três computadores diferentes", onde=[f"{LIVRO} D-810"], tags=["TESTE"], papel="todos", maq="nao",
+    dict(id="R157", nome="O teste do Windows roda em três computadores diferentes", onde=[f"{LIVRO} D-810"], tags=["WIN", "TESTE"], basta_uma=True, papel="todos", maq="nao",
          curta="GitHub: Windows em inglês ('Everyone', 'Administrators'), licença de administrador já ligada (o dono do que se cria é o grupo Administradores), pasta temporária no D:. PC do Samuel: português, sem a licença, o D: dá controle total a 'Todos'. Notebook do Kaique: a conferir. O teste compara a conta pelo número dela, nunca pelo nome escrito, e não supõe o estado de hoje da lista ou da versão de teste. (Três rodadas do GitHub perdidas no passo 1.)"),
     dict(id="R158", nome="Toda conferência diz de onde vem cada dado", onde=[f"{LIVRO} D-812"], tags=["TESTE"], papel="todos", maq="em parte",
          curta="Toda conferência (do porteiro, de um teste ou do programa) diz de onde vem cada dado que usa; dado que o próprio conferido escreve ou pode trocar (o ramo do agente, o ONDE-PAREI, a anotação do programa, a pasta de troca, o arquivo da vez anterior) não serve de prova. (O 'sim' forjável e o juiz escolhido pelo ramo, no passo 0; o arquivo da vez anterior, no passo 1.)"),

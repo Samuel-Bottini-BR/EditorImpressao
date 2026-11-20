@@ -49,9 +49,11 @@ if ! git cat-file -e "$BASE:regras_dos_agentes/__main__.py" 2>/dev/null; then
   exit 0
 fi
 
-# A pasta do juiz é apagada com tudo dentro: antes, confere que ela não é atalho de pasta (junção ou link), senão o
-# `rm -rf` apagaria o conteúdo da pasta de verdade (D-809; a pasta modelos/ esvaziada em 18/11). No Git Bash, `[ -L ]`
-# e `[ -h ]` dão sim para a junção do Windows (provado em 20/11, bash 5.2.37 msys). Arriscado: tirar esta conferência.
+# A pasta do juiz é apagada com tudo dentro: antes, confere que ela não é atalho de pasta (junção ou link) (D-809; a
+# pasta modelos/ esvaziada em 18/11). O que foi provado no Git Bash 5.2.37 (msys), em 20/11, numa junção de prova:
+# `rm -rf "$JUIZ"` SEM barra no fim tira só o atalho; `rm -rf "$JUIZ/"` COM barra no fim apaga o conteúdo da pasta de
+# verdade; `[ -L ]` e `[ -h ]` dão sim para a junção (sem barra no fim). A conferência fica porque nada garante que
+# ninguém vai acrescentar a barra. Arriscado: tirar esta conferência, ou escrever `$JUIZ/` nela ou no `rm`.
 if [ -L "$JUIZ" ] || [ -h "$JUIZ" ]; then
   avisar error "PORTEIRO: NAO CONFERIDO (a pasta do juiz $JUIZ é um atalho de pasta: não apago o que está nela)"
   exit 1

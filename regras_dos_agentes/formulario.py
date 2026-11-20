@@ -39,6 +39,7 @@ conferências de cada campo.
 
 from __future__ import annotations
 
+import ast
 import re
 from dataclasses import dataclass, field
 from fnmatch import fnmatch
@@ -229,17 +230,29 @@ class _Repositorio:
         return self._definidos
 
     def teste_existe(self, citado: str) -> bool:
-        """`tests/x.py` ou `tests/x.py::test_y` existe (o arquivo e, se dito, a função)?"""
+        """`tests/x.py` ou `tests/x.py::test_y` existe (o arquivo e, se dito, o teste)?
+
+        O teste dito tem de ser um teste de verdade, que o pytest roda: uma função `test_...` do código do arquivo, lida
+        pela árvore do Python (achado 6 de quem quebrou, 20/11: o `def` escrito dentro de um texto de exemplo e a
+        função de ajuda, que não é teste, contavam). Arquivo que não é Python válido não tem teste nenhum.
+        """
         arquivo, _, funcao = citado.partition("::")
         if not self.existe(arquivo):
             return False
         if not funcao:
             return True
         nome = funcao.split("::")[-1].split("[")[0]
+        if not nome.startswith("test"):
+            return False
         for c in self.arquivos:
             if c == arquivo or fnmatch(c, arquivo):
                 texto = (self.raiz / c).read_text(encoding="utf-8", errors="replace")
-                if re.search(rf"^\s*def\s+{re.escape(nome)}\b", texto, re.M):
+                try:
+                    arvore = ast.parse(texto.removeprefix("﻿"))
+                except (SyntaxError, ValueError):
+                    continue
+                if any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name == nome
+                       for n in ast.walk(arvore)):
                     return True
         return False
 
@@ -569,9 +582,13 @@ def _conferir_perguntas(campos: dict[str, str], s: dict[str, str], livro: Livro,
     """F17: cada pergunta (um "###") sem palavra de dentro, com "O que você escolhe", print e a sugestão (§11.13);
     F23 (D-814): as decisões procuradas antes de cada uma."""
     f17 = campos.get("F17")
-    if f17 is None or re.match(r"^\s*-?\s*nenhuma\b", f17, re.I):
+    if f17 is None:
         return
     blocos = _blocos(f17)
+    # "Nenhuma" só vale se não há pergunta escrita embaixo (achado 7 de quem quebrou, 20/11: "Nenhuma por enquanto,
+    # mas:" seguido de um "###" desligava a conferência das perguntas e a das decisões procuradas).
+    if not blocos and re.match(r"^\s*-?\s*nenhuma\b", f17, re.I):
+        return
     if not blocos:
         r.problemas.append("cada pergunta para o Samuel vai num \"###\" próprio (F17)")
     else:

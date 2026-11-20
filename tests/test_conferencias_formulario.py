@@ -426,3 +426,38 @@ def test_d814_pergunta_ao_samuel_sem_as_decisoes_procuradas_volta(entrega):
         assert any(falta in p and "F23" in p for p in conferir(r, s).problemas), falta
     s[titulo] = "### Onde fica o aviso\n\n- Procurei: D-605.\n- Por que ainda não está respondida: a D-605 é sobre testes."
     assert not any("F23" in p for p in conferir(r, s).problemas), conferir(r, s).explicar()
+
+
+# ---------------------------------------------------------------- achados 6 e 7 de quem quebrou (20/11/2026)
+
+ARQUIVO_COM_AJUDA = ('"""Y."""\n\n\ndef ajuda():\n    """Ajuda, não é teste."""\n\n\n'
+                     'EXEMPLO = """\ndef test_escrito_num_texto():\n    pass\n"""\n\n\n'
+                     'def test_de_verdade():\n    """Teste."""\n')
+
+
+def test_achado_6_so_conta_como_teste_um_def_test_do_codigo(entrega):
+    """Achado 6 (20/11): "o teste existe" aceitava a função de ajuda e o `def` escrito dentro de um texto de exemplo.
+    Agora só vale a função `test_...` do código do arquivo."""
+    r, base, commit = entrega
+    r.escrever("tests/test_y.py", ARQUIVO_COM_AJUDA)
+    r.adicionar("tests/test_y.py")
+    s = secoes_certas(base, commit)
+    s["O que já está escolhido e testado aqui"] = ("- `tests/test_y.py::ajuda`\n- `tests/test_y.py::test_escrito_num_texto`"
+                                                   "\n- `tests/test_y.py::test_de_verdade`")
+    problemas = conferir(r, s).problemas
+    assert any("tests/test_y.py::ajuda" in p and "não existe" in p for p in problemas)
+    assert any("tests/test_y.py::test_escrito_num_texto" in p and "não existe" in p for p in problemas)
+    assert not any("test_de_verdade" in p for p in problemas), problemas
+
+
+def test_achado_7_nenhuma_com_pergunta_embaixo_nao_desliga_a_conferencia(entrega):
+    """Achado 7 (20/11): começar "Perguntas para o Samuel" com "Nenhuma" desligava a conferência das perguntas escritas
+    embaixo (e a das decisões procuradas, D-814). Agora "Nenhuma" só vale sem pergunta embaixo."""
+    r, base, commit = entrega
+    s = secoes_certas(base, commit)
+    s["Perguntas para o Samuel"] = "Nenhuma por enquanto, mas:\n\n### Uma pergunta\n\nPosso fazer assim?"
+    problemas = conferir(r, s).problemas
+    assert any("O que você escolhe" in p for p in problemas)
+    assert any("Decisões procuradas antes de cada pergunta" in p for p in problemas)
+    s["Perguntas para o Samuel"] = "Nenhuma."
+    assert not any("F17" in p or "F23" in p for p in conferir(r, s).problemas)
