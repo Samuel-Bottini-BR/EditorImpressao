@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import re
 import textwrap
+from pathlib import Path
 
 import pytest
 
@@ -867,3 +868,57 @@ def test_k25_cada_exemplo_da_lista_e_acusado_pela_expressao_e_pelo_porteiro():
         comandos = porteiro.leitura.comandos(porteiro.leitura.arvore(texto))
         assert any(re.search(padrao, c) for _, c in comandos), o_que
         assert codigos(conferir({"relatorios/x/a.py": texto}), "K25") == [("relatorios/x/a.py", 8)], o_que
+
+
+# ---------------------------------------------------------------- K25: o achado 1 de quem quebrou (20/11/2026)
+
+def test_k25_o_rm_do_git_nao_e_o_rm_do_terminal():
+    """Falso alarme do achado 1 (20/11): `git rm -rq --cached` (o `trocar_codigo.sh` da rodada) tira só do índice do
+    git e era lido como `rm -r`. Agora não é acusado; o `rm -rf` do terminal na mesma linha continua acusado."""
+    assert codigos(conferir({"relatorios/x/a.sh": "#!/bin/sh\ngit rm -rq --cached --ignore-unmatch -- .\n"}),
+                   "K25") == []
+    assert codigos(conferir({"relatorios/x/a.sh": "#!/bin/sh\ngit -C x rm -r pasta\n"}), "K25") == []
+    assert codigos(conferir({"relatorios/x/a.sh": '#!/bin/sh\ngit rm -q x && rm -rf "$P"\n'}), "K25") == [
+        ("relatorios/x/a.sh", 2)]
+
+
+def test_k25_acusa_o_git_clean_e_nao_o_que_so_lista():
+    """Pedido da gerente (20/11): o `git clean` apaga o que o git não conhece (o trabalho sem commit de quem rodou).
+    Acusado; `git clean -n` e `--dry-run` só listam e não são."""
+    assert codigos(conferir({"relatorios/x/a.sh": "#!/bin/sh\ngit clean -fdq -- .\n"}), "K25") == [
+        ("relatorios/x/a.sh", 2)]
+    for so_lista in ("git clean -n", "git clean -nd", "git clean --dry-run -d"):
+        assert codigos(conferir({"relatorios/x/a.sh": f"#!/bin/sh\n{so_lista}\n"}), "K25") == [], so_lista
+
+
+def test_k25_o_comando_do_git_so_no_github_na_mesma_linha_passa():
+    """Pedido da gerente (20/11): o comando do git que muda o .git pode rodar se a MESMA linha só deixa rodar no GitHub
+    (`GITHUB_ACTIONS=true`). A conferência numa linha de antes não libera (senão uma no começo liberaria tudo)."""
+    certo = '#!/bin/sh\n[ "${GITHUB_ACTIONS:-}" = "true" ] && git clean -fdq -- .\n'
+    assert codigos(conferir({"relatorios/x/a.sh": certo}), "K25") == []
+    antes = '#!/bin/sh\n[ "${GITHUB_ACTIONS:-}" = "true" ] || exit 0\ngit clean -fdq -- .\n'
+    assert codigos(conferir({"relatorios/x/a.sh": antes}), "K25") == [("relatorios/x/a.sh", 3)]
+    py_certo = ('"""X."""\nimport os\nimport subprocess\n\n\ndef f():\n    """F."""\n'
+                '    if os.environ.get("GITHUB_ACTIONS") == "true": subprocess.run(["git", "clean", "-fdq"])\n')
+    assert codigos(conferir({"relatorios/x/a.py": py_certo}), "K25") == []
+
+
+ANEXOS_DO_WORKFLOW = Path(__file__).resolve().parent.parent / "relatorios/regras-catalogo-2026-11-19/anexos/workflow"
+
+
+# As linhas de antes, cada uma como um script de duas linhas (o texto começa com "#!", não com o comando: senão este
+# próprio teste seria acusado, ver `leitura_do_codigo.comandos`, jeito 3).
+@pytest.mark.parametrize("nome, linhas_de_antes", [
+    ("preparar_versao.sh", ['#!/usr/bin/env bash\nif git fetch --depth=1 origin "$REF" 2>/dev/null; then\n',
+                            '#!/usr/bin/env bash\n  git fetch --depth=1 origin "$SHA"\n']),
+    ("trocar_codigo.sh", ['#!/usr/bin/env bash\ngit fetch --depth=1 origin "$RAMO"\n',
+                          "#!/usr/bin/env bash\ngit clean -fdq -- . ':(exclude).github'\n"]),
+])
+def test_k25_os_scripts_do_workflow_consertados_passam_e_os_de_antes_nao(nome, linhas_de_antes):
+    """Achado 1 (grave, 20/11): os scripts da rodada (`.github/scripts/`) tinham o `git fetch --depth=1` fixo e o
+    `git clean` sem condição; rodados à mão numa cópia do PC, fariam o que deixou o repositório raso em 19/11. As linhas
+    de antes são acusadas; os consertados (anexos, para a gerente copiar para a `.github/`) não."""
+    consertado = (ANEXOS_DO_WORKFLOW / nome).read_text(encoding="utf-8")
+    assert codigos(conferir({f".github/scripts/{nome}": consertado}), "K25") == []
+    for linha in linhas_de_antes:
+        assert codigos(conferir({f".github/scripts/{nome}": linha}), "K25") == [(f".github/scripts/{nome}", 2)], linha

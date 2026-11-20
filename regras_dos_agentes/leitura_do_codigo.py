@@ -230,6 +230,8 @@ RODAM_COMANDO = {"subprocess": {"run", "Popen", "call", "check_call", "check_out
 PROGRAMAS_DA_LISTA = {"git", "git.exe", "rm", "rm.exe"}
 # O texto que fica no lugar do que não é texto escrito no código (um nome, uma conta): um "pedaço que não dá para ler".
 NAO_DA_PARA_LER = "<?>"
+# O texto que começa com o nome de um comando (o jeito 3 de `comandos`): uma linha de comando guardada num texto.
+COMECA_COM_COMANDO = re.compile(r"^\s*(?:git(?:\.exe)?|rm(?:\.exe)?|Remove-Item)\s", re.I)
 
 
 def _como_texto(no: ast.AST) -> str:
@@ -302,7 +304,6 @@ def comandos(raiz: ast.Module) -> list[tuple[int, str]]:
         if partes:
             guardar(no.lineno, partes)
     # 2 e 3. A lista que começa com o programa e o texto que começa com o comando.
-    comeca_com_comando = re.compile(r"^\s*(?:git(?:\.exe)?|rm(?:\.exe)?|Remove-Item)\s", re.I)
     for no in ast.walk(raiz):
         if id(no) in lidos:
             continue
@@ -312,7 +313,7 @@ def comandos(raiz: ast.Module) -> list[tuple[int, str]]:
                     and primeiro.value.replace("\\", "/").rsplit("/", 1)[-1].lower() in PROGRAMAS_DA_LISTA):
                 guardar(no.lineno, [no])
         elif isinstance(no, ast.JoinedStr) or (isinstance(no, ast.Constant) and isinstance(no.value, str)):
-            if comeca_com_comando.match(_como_texto(no)):
+            if COMECA_COM_COMANDO.match(_como_texto(no)):
                 guardar(no.lineno, [no])
             elif isinstance(no, ast.JoinedStr):
                 lidos.update(id(n) for n in ast.walk(no))   # os pedaços de um f-string não são textos soltos

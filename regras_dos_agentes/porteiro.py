@@ -375,6 +375,10 @@ PALAVRAS_DO_GIT: list[tuple[str, str, str]] = [
     (_GIT + r"config\b" + _GIT_CONFIG_QUE_GRAVA,
      "muda a configuração do git do repositório ou do computador (git config)",
      'subprocess.run(["git", "config", "core.hooksPath", "ganchos"])'),
+    # git clean (pedido da gerente, 20/11; achado 15 de quem quebrou): apaga os arquivos que o git não conhece, o
+    # trabalho sem commit de quem rodou. Só lista, e não conta: -n e --dry-run (https://git-scm.com/docs/git-clean).
+    (_GIT + r"clean\b(?![^;&|\n]*\s(?:-[a-zA-Z]*n[a-zA-Z]*|--dry-run)(?:\s|$))",
+     "apaga os arquivos que o git não conhece (git clean)", 'subprocess.run(["git", "clean", "-fdq"])'),
 ]
 # Apagar uma pasta com tudo dentro. Num atalho de pasta (junção), o comando que entra no atalho apaga o conteúdo da
 # pasta de verdade. Fontes: o `rm` do Git Bash (coreutils, https://www.gnu.org/software/coreutils/manual/html_node/rm-invocation.html:
@@ -405,9 +409,35 @@ PALAVRAS_DE_APAGAR: list[tuple[str, str, str]] = [
 # PowerShell (`LinkType`, `ReparsePoint`), o cmd (`fsutil reparsepoint`) e o Git Bash (`[ -L`, `[ -h`, `test -L`).
 CONFERE_SE_E_ATALHO = (r"is_junction|isjunction|islink|is_symlink|st_reparse_tag|REPARSE_POINT|ReparsePoint|LinkType|"
                        r"fsutil\s+reparsepoint|\[\[?\s+-[Lh]\s|\btest\s+-[Lh]\s")
+# O comando do git que muda o .git pode rodar quando a MESMA linha só deixa rodar no GitHub (onde a cópia é jogada fora
+# no fim da rodada): `[ "${GITHUB_ACTIONS:-}" = "true" ] && git clean ...` no terminal, ou
+# `if os.environ.get("GITHUB_ACTIONS") == "true": ...` no Python (pedido da gerente, 20/11, para o `git clean` do
+# `trocar_codigo.sh`). Só na mesma linha, de propósito: uma conferência no começo do arquivo não libera o resto.
+SO_NO_GITHUB = (r"\[\[?\s*\"?\$\{?GITHUB_ACTIONS(?::-)?\}?\"?\s*==?\s*\"?true\"?\s*\]\]?\s*&&"
+                r"|os\.environ(?:\.get\(\s*|\[\s*)[\"']GITHUB_ACTIONS[\"']\s*[)\]]\s*==\s*[\"']true[\"']")
+# O `git rm` tira arquivos do índice do git (`--cached`) ou da pasta, mas é o `rm` do git, não o do terminal: não é
+# "apagar pasta com tudo dentro" (falso alarme do achado 1 de quem quebrou, 20/11: `git rm -rq --cached` do
+# `trocar_codigo.sh`). Antes de procurar o `rm`, o `rm` que vem logo depois do `git` (e das opções dele) é trocado.
+_O_RM_DO_GIT = re.compile(_GIT + r"rm\b")
 _GIT_QUE_MUDA = [(re.compile(p), o_que) for p, o_que, _ in PALAVRAS_DO_GIT]
 _APAGAR_TUDO = [(re.compile(p), o_que) for p, o_que, _ in PALAVRAS_DE_APAGAR]
 _CONFERE_SE_E_ATALHO = re.compile(CONFERE_SE_E_ATALHO, re.I)
+_SO_NO_GITHUB = re.compile(SO_NO_GITHUB)
+
+# Um exemplo de cada jeito que a K25 lê um comando (achado 4 de quem quebrou, 20/11): a proteção do GitHub
+# (`protecao.exemplos_que_o_porteiro_nao_acha`) passa cada exemplo da versão de teste pelo porteiro do ramo e cobra o
+# achado na linha dita. Assim, desligar um jeito (o terminal, a lista guardada, o texto guardado) aparece.
+# (arquivo, texto, linha que tem de ser acusada, o jeito). PROTEGIDA: nenhum sai.
+EXEMPLOS_DA_K25: list[tuple[str, str, int, str]] = [
+    ("relatorios/x/chamada.py", '"""Exemplo."""\nimport subprocess\n\n\ndef f():\n    """F."""\n'
+     '    subprocess.run(["git", "gc"])\n', 7, "a chamada do subprocess"),
+    ("relatorios/x/lista.py", '"""Exemplo."""\n\n\ndef f():\n    """F."""\n    return ["git", "stash"]\n', 6,
+     "a lista guardada"),
+    ("relatorios/x/texto.py", '"""Exemplo."""\nCOMANDO = "git fetch --depth=1 origin x"\n', 2, "o texto guardado"),
+    ("relatorios/x/terminal.sh", '#!/bin/sh\nrm -rf "$PASTA"\n', 2, "o Git Bash"),
+    ("relatorios/x/terminal.ps1", "$p = 'x'; Remove-Item $p -Recurse\n", 1, "o PowerShell"),
+    ("relatorios/x/terminal.bat", "@echo off\ngit clean -fdq\n", 2, "o cmd"),
+]
 
 # Os dados das buscas que agente nenhum afrouxa: o teste do GitHub (`tests/test_conferencias_protecao.py`, pela
 # `protecao.py`) compara cada um com o da versão de teste; nenhum item pode sumir nem mudar (achado 6 de quem tentou
@@ -416,8 +446,9 @@ PROTEGIDAS = ("PALAVRAS_DO_WINDOWS", "PALAVRAS_DE_DETACHED", "PALAVRAS_DE_LICENC
               "PADRAO_DO_EMOJI", "GERADORES", "PADRAO_DAS_FERRAMENTAS_PROIBIDAS", "BARRA_DE_ROLAGEM",
               "PECA_UNICA_DO_WINDOWS", "FORA_DO_PROJETO", "NAO_E_PROGRAMA",
               "FONTE_PYTHON", "COMPILADO_PYTHON",
-              # K25 (D-809). Ainda falta a linha de cada um em `protecao.PROTEGIDOS` (arquivo da gerente).
-              "PECAS_DO_GIT", "COMANDOS_DE_TERMINAL", "PALAVRAS_DO_GIT", "PALAVRAS_DE_APAGAR", "CONFERE_SE_E_ATALHO")
+              # K25 (D-809), também em `protecao.PROTEGIDOS`.
+              "PECAS_DO_GIT", "COMANDOS_DE_TERMINAL", "PALAVRAS_DO_GIT", "PALAVRAS_DE_APAGAR", "CONFERE_SE_E_ATALHO",
+              "SO_NO_GITHUB", "EXEMPLOS_DA_K25")
 
 
 def _texto_do_lugar(linha_de_codigo: str) -> str:
@@ -774,17 +805,20 @@ def k24(arq: _Arquivo) -> list[Achado]:
     return saida
 
 
-def _o_que_o_comando_muda(comando: str, antes: str) -> str | None:
+def _o_que_o_comando_muda(comando: str, antes: str, linha: str = "") -> str | None:
     """K25: o que este comando de terminal faz de perigoso (None = nada).
 
     `antes` é o código que vem antes dele (na mesma função do Python, ou no arquivo de terminal até a linha): o apagar
-    com tudo dentro só é acusado se ali não houver conferência de atalho (`CONFERE_SE_E_ATALHO`). O comando do git
-    que muda a pasta .git é acusado sempre: conferir antes não o torna seguro.
+    com tudo dentro só é acusado se ali não houver conferência de atalho (`CONFERE_SE_E_ATALHO`). `linha` é a linha de
+    código onde o comando está: o comando do git que muda a pasta .git só passa se ESSA linha deixa rodar só no
+    GitHub (`SO_NO_GITHUB`); conferir antes, noutra linha, não o torna seguro. O `rm` do git (`git rm`) não é o `rm`
+    do terminal (`_O_RM_DO_GIT`).
     """
     for padrao, o_que in _GIT_QUE_MUDA:
         m = padrao.search(comando)
-        if m:
+        if m and not _SO_NO_GITHUB.search(linha):
             return f"{o_que}, fora das peças do git: {m.group(0).strip()}"
+    comando = _O_RM_DO_GIT.sub(lambda m: m.group(0)[:-2] + "git_rm", comando)
     for padrao, o_que in _APAGAR_TUDO:
         m = padrao.search(comando)
         if m and not _CONFERE_SE_E_ATALHO.search(antes):
@@ -800,7 +834,7 @@ def k25(arq: _Arquivo) -> list[Achado]:
     saida, ja = [], set()
     for linha, comando in leitura.comandos(arq.raiz):
         antes = "\n".join(arq.codigo[arq.inicio_da_funcao(linha) - 1:linha])
-        porque = _o_que_o_comando_muda(comando, antes)
+        porque = _o_que_o_comando_muda(comando, antes, arq.codigo[linha - 1])
         if porque and linha not in ja:
             ja.add(linha)
             saida.append(Achado("K25", arq.caminho, linha, _texto_do_lugar(arq.codigo[linha - 1]), porque,
@@ -831,7 +865,7 @@ def k25_terminal(caminho: str, fonte: str) -> list[Achado]:
     codigo = [_sem_comentario_do_terminal(caminho, l) for l in leitura.linhas(fonte)]
     saida = []
     for n, linha in enumerate(codigo, 1):
-        porque = _o_que_o_comando_muda(linha, "\n".join(codigo[:n])) if linha.strip() else None
+        porque = _o_que_o_comando_muda(linha, "\n".join(codigo[:n]), linha) if linha.strip() else None
         if porque:
             saida.append(Achado("K25", caminho, n, _texto_do_lugar(linha), porque))
     return saida
