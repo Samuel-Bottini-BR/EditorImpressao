@@ -927,6 +927,18 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
   `test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro` falhou por tempo ("não aconteceu a tempo: o
   projeto.json com o 'Só as letras' desfeito"), o instável já conhecido (catálogo P1-gh-4). Na terceira, passou.
 
+- **Volta 5, no PC, um arquivo por vez** (20/11, `QT_QPA_PLATFORM=offscreen`): `tests/test_publicar_versao.py` 78
+  passaram; `tests/test_windows_peca.py` 68 passaram e 2 pulados; `tests/test_publicar_motor.py` 12;
+  `tests/test_publicar_servidor.py` 14; `tests/test_empacotar.py` 41; `tests/test_decisoes_atualizacao.py` 38;
+  `tests/test_windows_janela_de_prova.py` 10; `tests/test_nome_do_pacote.py` 5;
+  `tests/test_decisoes_ajudante_da_atualizacao.py` 37; `tests/test_decisoes_testes_a_distancia.py` 13;
+  `tests/test_conferencias_codigo.py` 77; `tests/test_conferencias_excecoes.py` 14; `tests/test_conferencias_pacote.py`
+  20. Porteiro no PC: "nada novo" (175 lugares).
+- **Volta 5, reversão:** os testes novos no código de `595cc293`: 8 de 9 casos falham
+  (`anexos/reversao-volta5-codigo-antigo.txt`, com a leitura no fim); o do achado 3 (b) passa lá (a proteção existia
+  sem teste) e é provado pela mutação W3b. Mutações: 10 de 10 acusadas (`anexos/reversao-volta5-resultado.txt`).
+- **No GitHub, volta 5:** a preencher.
+
 ## Caminho e função
 
 - O publicar da versão, com ou sem pasta pronta, com ou sem instalador → `empacotar.construir_pacote_do_velopack` →
@@ -1412,6 +1424,8 @@ o teste antigo do achado 5 da volta 3, que saiu porque cobrava o que a D-816 tir
 2e906e94 (o último commit de código e testes da volta 3, com três docstrings de um teste; depois dele só este formulário muda).
 
 Volta 4: 595cc293 (o último commit de código e testes da volta 4: os textos da peça e da vigia; depois dele só este formulário muda).
+
+Volta 5: 35ec0c27 (o último commit de código e testes da volta 5; depois dele só a pasta deste relatório muda).
 
 ## O que o agente que tentou quebrar achou
 
