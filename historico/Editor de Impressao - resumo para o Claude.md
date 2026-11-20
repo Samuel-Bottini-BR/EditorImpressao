@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 19/11/2026, noite (PARTE -39; a anterior, PARTE -38, é de 17-18/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 20/11/2026, manhã (PARTE -40; a anterior, PARTE -39, é de 19/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -11,6 +11,88 @@ Pasta do projeto: `D:\programas\EditorImpressao` (mudou de
 `C:\Users\fotog\Desktop\EditorImpressao` em 07/09/2026; essa pasta antiga virou
 o backup). Repositório git ligado a
 `https://github.com/Samuel-Bottini-BR/EditorImpressao`.
+
+---
+
+# PARTE -40 — Checkpoint de 20/11/2026, manhã: passo 2 na terceira volta de quem tenta quebrar (2 achados médios), as regras do catálogo prontas esperando o passo 2, D-815 e D-816 (leia isto primeiro)
+
+Continuação da mesma conversa da PARTE -39 (`848d7b72`), de 20/11 00h03 a 11h40 UTC (relógio do Samuel, UTC−4: 19/11 20h03 a 20/11 07h40), resumida de novo no meio. Este checkpoint foi escrito das falas salvas (`falas_da_conversa.py --todas --desde 2026-11-20T00:02 --com-respostas`), do git de todos os ramos e da Central, não do resumo. O Samuel pediu: **"Vamos fazer checkpoint e continuar em outra conversa"** (11h36 UTC).
+
+- **Nenhum agente rodando no fechamento.** O último (quem tentou quebrar o passo 2, volta 3) entregou às 06h00 UTC. Nenhuma tarefa em segundo plano.
+- `33f6de88` (outra conversa do projeto) não tem fala dele no período.
+- A senha dos testes à distância dita no chat em 18/11 continua fora de todo arquivo.
+
+## 0. Para recomeçar
+
+1. `git -C D:\programas\EditorImpressao fetch origin`; conferir `git -C D:\programas\EditorImpressao rev-parse --is-shallow-repository` = false. Versão de teste `obra-2026-10-26` (worktree `.claude\worktrees\obra-juncao`), ponta com o Livro até a **D-816**. Versão oficial `fase-1`, ponta "Plano: D-816" (`53969a66`) mais este checkpoint.
+2. **Passo 2, volta 4 de quem escreve.** Às 11h33 a gerente disse a ele: "Mandar o agente que escreveu o passo 2 consertar tudo. É a última volta permitida para ele." Com a conversa fechada, esse agente não existe mais: a volta 4 vai com um agente **novo** (D-815 permite), e **a conversa nova avisa o Samuel dessa mudança quando pedir o "sim"**. Tipo `implementador`, no ramo `passo2-publicar-2026-11-19` (worktree `.claude\worktrees\passo2`, ponta `5f96975b`), começando pelo `relatorios/passo2-publicar/ONDE-PAREI.md` e pelo `relatorios/passo2-publicar/quem-quebrou/relatorio-3.md`. O pedido (montado com `python -m regras_dos_agentes pacote --papel implementador ...`) leva:
+   - **achado 1 pela D-816** ("A"): depois de pedir ao GitHub para liberar, `publicar_versao_kaique.py` nunca apaga nada; a tela diz o que ficou e o comando para apagar depois; antes do pedido de liberar, erro no meio continua apagando o rascunho. Teste: duas (e mais) leituras atrasadas seguidas → nada apagado.
+   - **achado 2** (escolha técnica da gerente, não é pergunta ao Samuel): o nome do programa com ponto ou espaço no fim (`pwsh.exe.`, `Update.exe.`) passa pela recusa de `core/windows.py` (perto das linhas 1040 e 1118). Conserto pela §11.12: o nome é normalizado **uma vez só**, na regra única, e todas as conferências da função usam esse nome (a lista de nomes, a pasta do Windows e o lote .bat/.cmd), com teste de `pwsh.exe.`, `pwsh.exe..` e `Update.exe.` nos três caminhos (rodar, lançar e o grupo).
+   - **os outros achados.** A gerente disse a ele "consertar tudo"; a divisão abaixo é sugestão dela, feita depois, sem decisão dele (a conversa nova mostra a ele se algum não vai ser consertado agora): 3 e 4 (baixo-médios: "NÃO apaguei" depois de pedir para apagar; "foi apagada (conferido)" sem ter pedido), 6 (`winget` e apelidos da Loja recusados com frase falsa), 9 (texto `"C:\nao\existe.bat"` sem `r` num teste) e 11 (sem fsync antes de renomear) → consertar; 5 (uma cópia do `cmd.exe` fora da pasta do Windows passa) → escrever como limite conhecido; 7 (o `soma` baixa para o C: fora da conta do espaço e da vigia) e 12 (os `test_decisoes_desinstalar*` falham no PC por causa do temporário no C:) → Lista de bugs; 10 (uma olhada sem teste) → teste se der para alcançar, senão ressalva; **8** (o laço "rodar, olhar a vigia e fechar" está em dois lugares, `empacotar.py` `rodar_vpk` e `publicar_versao_kaique.py` `DestinoGitHub._gh`, e o gh roda fora da peça do Windows) → **sem destino ainda**: pela §11.12, o caminho é o gh passar pela peça; a gerente decide antes de mandar o pedido. O 12 é observação, não é deste passo.
+   - "não abra outros agentes", "nunca abra janela na tela do Samuel", GitHub no máximo a cada 5 minutos, e as decisões D-767, D-773, D-775, D-776, D-798, D-813, D-815 e D-816 copiadas do Livro.
+3. Depois: rodada do GitHub no ramo do passo 2 → **um agente novo** tenta quebrar, volta 4 (`--papel quebrador`) → se não houver achado médio ou grave, a **prova à vista** (o Samuel só olha; 0 perguntas do Windows; roteiro no ONDE-PAREI, "A prova de verdade"; acrescentar ao item 8 do roteiro, como pede o relatório 3: depois do `--apagar`, conferir também que a etiqueta sumiu do GitHub, não só a publicação). **Antes da prova, pedir o "sim" dele** para `montar_motor_kraken.py --so-ficha --destino D:\programas\EditorImpressao-arquivos\ferramentas\motor-kraken`, que grava o `motor.json` na pasta de ferramentas do PC dele (fora do projeto).
+4. **Ordem de juntar:** passo 2 no obra (com a rodada do GitHub antes, D-807) → depois `regras-catalogo-2026-11-19` → rodada do GitHub no obra → só então quem quebrou as regras pode escrever PRONTO (D-798). No fim do passo 2, a gerente acrescenta os erros dele em `memoria/catalogo-de-erros.md` (D-803).
+
+## 1. Os trabalhos, pelo git (20/11, 11h40 UTC)
+
+| Trabalho | Situação |
+|---|---|
+| Passos 0 e 1 | Juntados no obra (PARTE -39). Sem mudança. |
+| **Passo 2** (publicar, o Kraken à parte, o servidor das versões de prova), ramo `passo2-publicar-2026-11-19` | **Três voltas de quem escreve e três de quem tenta quebrar.** Volta 1: relatório 1 (`a58f181b`, 4 médios; entre eles, apagar o rascunho sempre dizia "não deixou apagar", e 9 proteções sem teste). Volta 2: consertos (`17cd8635`, `85781a08`, `0d51ad5e`), GitHub 44663876080 passou, relatório 2 (`9cd555a5`, 10 achados). Volta 3, com escritor **novo** (D-815, `0a210533`): consertos de `411b46c7` a `e4263c0a` (a peça recusa .bat e .cmd; o vpk de mentira dos testes é um .exe de verdade; só o rascunho é apagado; o .msi nunca fica pela metade; o motor baixado entra na conta e na vigia do espaço), **GitHub 44675872042 passou**, relatório 3 (`5f96975b`, agente novo): **"NÃO ESTÁ PRONTO para a prova à vista"**. 15 dos 18 consertos desligados por ele foram acusados pelos testes, e ficaram **2 achados médios** (§0.2). Escolha técnica da gerente na volta 1 (02h12 UTC, dita no chat): se, depois de liberar, o programa não consegue conferir de novo, ele não apaga e avisa "liberada; não deu para reconferir agora". A D-816 amplia isso. |
+| **Regras do catálogo** (D-809 a D-814: K25 no porteiro, R156 a R158, F21 a F23), ramo `regras-catalogo-2026-11-19` | **Prontas** (código `ea25e6ac`, ONDE-PAREI `3a63a918`). Duas voltas de quem quebrou; a segunda (02h41 UTC) não achou nada grave. No primeiro uso, a K25 achou dois lugares do código de hoje que apagavam pasta sem ver se era atalho. A gerente mandou consertar os dois em vez de pôr na lista de exceções: um pelo agente das regras, outro pelo do passo 2. A última rodada do GitHub delas (44657609512, `32ff536a`) falhou só nos 5 lugares previstos: `core/windows.py:1211` (do passo 2) e quatro nos scripts da rodada, consertados depois (`411e8476`). **O código final (`ea25e6ac`) ainda não foi rodado no GitHub**; espera-se que falhe só no `core/windows.py:1211` até o passo 2 entrar. |
+| Scripts da rodada do GitHub (ramo `claude/list-server-files-gkos8v`) | Consertados e no GitHub. O `porteiro_juiz.sh` só busca raso em cópia já rasa (`6ed84bf2`, de 19/11) e agora confere que a pasta não é atalho antes de apagar (`781d64e6`; o `4008bd31` só muda o comentário). O `preparar_versao.sh` e o `trocar_codigo.sh` seguem a mesma regra e só fazem o `git clean` no GitHub (`411e8476`). Achado de quem quebrou as regras: eram os mesmos comandos que deixaram o repositório raso em 19/11. |
+| Passos 3 a 6 | Não começados (o que já está anotado para o passo 3: PARTE -39 §1). |
+
+Nenhuma linha do processamento das páginas mudou. O programa ainda não está pronto para o Kaique.
+
+## 2. As falas do Samuel e o destino de cada uma
+
+- "a pasta ainda está lá o editor impressçao prova" (00h18) → a gerente explicou como apagar pelo Explorador (a trava do Claude Code não deixa na raiz do C:). "acabei de apagar" (00h20) → **conferido: `C:\EditorImpressaoProva` saiu** (48 GB livres no C:; foi para a Lixeira). Fecha o item 1 do §6 da PARTE -39.
+- "Tem 9 agentes trabalhando?" (00h52) → não: dois de verdade (passo 2 e regras); os outros listados já tinham terminado; uns sete "relógios" de espera da cota do GitHub.
+- "já acabou alguma coisa?" (01h04) e "estamos aonde?" (02h34) → andamento no chat (passo 2, entre um quarto e um terço do plano; nada a fazer por ele).
+- "pode conferir se não está ocorrendo alucinação por estar com contexto cheio" · "estou falando do agente que está trabalhando" · "esses agentes que você criou, sempre que vai fazer uma tarefa nova, chama outro com a mesmas instruções ou ifac rodando sempre o mesmo com memorias compactadas?" · "ok" (03h12 a 03h18) → **D-815**.
+- **"A , mas onde estamos antes de você fazer qualquer processo"** (11h33) → **D-816** (resposta à pergunta do achado 1 do passo 2). A gerente deu o andamento e perguntou "Posso começar?".
+- **"Vamos fazer checkpoint e continuar em outra conversa"** (11h36) → este checkpoint. A pergunta "Posso começar?" ficou sem "sim" explícito: a conversa nova confirma com ele antes de mandar o agente (§0.2).
+
+## 3. Decisões desta parte (Livro no obra e Registro do Plano no fase-1; as duas cópias iguais)
+
+- **D-815** (20/11): quem tenta quebrar (ou confere) é sempre um agente novo em cada volta; quem escreve é o mesmo por até duas voltas da mesma tarefa.
+- **D-816** (20/11): publicar não apaga nada no GitHub depois de pedir para liberar a versão; antes disso, fica como hoje. Situação "decidida, não construída". Na pasta das provas (não no GitHub) continua a escolha técnica da gerente das 02h12, que dá no mesmo.
+- Continua faltando corrigir o texto do CLAUDE.md e dos agentes para D-796, D-797, D-798, D-807 e D-813 (e agora D-815), mostrando o texto ao Samuel antes.
+
+## 4. Descobertas de comportamento real
+
+- **A cota de consultas ao GitHub da conta acaba** quando os agentes perguntam o resultado a cada minuto (00h35 UTC; voltou uns 30 min depois). Regra dada aos agentes: no máximo a cada 5 minutos.
+- **O Windows tira o ponto e o espaço do fim do nome do programa antes de rodar** (CreateProcessW → GetFullPathNameW, pela documentação). Quem quebrou rodou de verdade: o `pwsh.exe.` rodou (`relatorios/passo2-publicar/quem-quebrou/anexos-3/e2-nomes-resultado.txt`); a recusa do .bat e do .cmd segurou os 28 jeitos de chamar do lote (`anexos-3/e1-lote-resultado.txt`). Toda recusa por nome tem que normalizar o nome antes.
+- **A leitura do GitHub logo depois de liberar uma versão pode vir atrasada mais de uma vez seguida.** O código não pode decidir apagar por ela (origem da D-816).
+- Testes instáveis no GitHub, além dos da PARTE -39: `test_caixinha_do_dividir_nao_volta.py` (o Qt cai com 0xC0000409). Para rodar de novo só o que falhou: `gh run rerun <id> --failed`.
+
+## 5. Erros da gerente nesta parte
+
+- Disse ao Samuel "Um deles é técnico e já mandei consertar" (achado 2) **antes** de mandar o pedido ao agente, e o pedido não foi mandado. Dizer "vou mandar", não "mandei".
+- Montou um pacote de quem confere com o papel "verificador" em vez de "quebrador" (corrigido; usar `--papel quebrador`).
+
+## 6. O que espera o Samuel
+
+1. O "sim" para começar a volta 4 do passo 2 (a gerente perguntou "Posso começar?", 11h33).
+2. Antes da prova à vista do passo 2: o "sim" para gravar o `motor.json` na pasta de ferramentas dele.
+3. A prova à vista do passo 2 (ele só olha; 15 a 20 min).
+4. Arquivos fora do projeto deixados por agentes, **não apagados** (perguntar antes): `C:\Users\fotog\AppData\Local\Temp\tmpqhb16hsh`, `C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\markers-unused.txt` e as cópias nas pastas de rascunho da conversa.
+5. O resto do §6 da PARTE -39 (menos o item 1, já feito, e o 4, que deixou de valer porque o passo 1 terminou).
+
+## 7. Central de decisões
+
+Lida no checkpoint: nenhuma ordem pendente; as 15 respostas mais novas (todas de 17/11) têm `lida` e `gerente`. **O quadro não é atualizado desde 18/11**: falta pôr o plano da parte do Windows (passos 0 e 1 juntados, passo 2 na volta 4) e D-791 a D-816 (`fonte.json` → `para_a_central.py` → batch).
+
+## 8. Testes
+
+- Passo 2, volta 3: GitHub **44675872042, success na segunda tentativa** (a parte 2 foi repetida depois do 0xC0000409 do `test_caixinha_do_dividir_nao_volta.py`; `e4263c0a`, porteiro incluído). A 44675045916 foi cancelada pelo escritor. Obra com os passos 0 e 1: 44632638815, success (sem mudança de código no obra depois disso, só o Livro).
+- Nada rodou no PC nesta parte. Comandos: PARTE -39 §8.
+
+## 9. Próximo passo recomendado
+
+Com o "sim" dele, a volta 4 do passo 2 com um agente novo (§0.2), e depois a prova à vista.
+
 
 ---
 

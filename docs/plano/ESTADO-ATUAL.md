@@ -8,7 +8,15 @@ Escrito em 24/09/2026. A ordem de autoridade é:
 
 O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que vale é o Plano Definitivo.
 
-> **Onde o projeto está em 19/11/2026, noite (vale sobre tudo abaixo; detalhe na [PARTE -39](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
+> **Onde o projeto está em 20/11/2026, manhã (vale sobre tudo abaixo; detalhe na [PARTE -40](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
+> - **Passos 0 e 1 do plano da parte do Windows juntados** na versão de teste (sem mudança desde 19/11).
+> - **Passo 2 (publicar, o Kraken à parte, o servidor das versões de prova): três voltas feitas; a terceira conferência achou 2 problemas médios** (a versão já liberada podia ser apagada se o GitHub demorasse duas vezes; um nome de programa com ponto no fim passava pela recusa). O primeiro tem a escolha dele: **D-816 ("A")**, depois de pedir para liberar, nada é apagado. Falta a volta 4 (agente novo), a conferência 4 e a prova à vista.
+> - **As regras novas do catálogo dos erros (D-809 a D-814) estão prontas**, esperando o passo 2 entrar para serem juntadas logo depois.
+> - **D-815:** quem confere é sempre um agente novo em cada volta; quem escreve, o mesmo por até duas voltas.
+> - **Esperando ele:** o "sim" para começar a volta 4; o "sim" para gravar o `motor.json` antes da prova; a prova à vista do passo 2. A pasta `C:\EditorImpressaoProva` ele já apagou (20/11).
+>
+> **Antes (19/11, noite), já superado:**
+> **Onde o projeto estava em 19/11/2026, noite (vale sobre tudo abaixo; detalhe na [PARTE -39](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
 > - **Plano da parte do Windows, versão 3, aprovado (D-799)** e sendo feito um passo por vez. **Passo 0 (o porteiro: 24 conferências automáticas e a lista de exceções de 176 lugares) juntado e ligado** na versão de teste. **Passo 1 (a peça única do Windows) juntado**, com a prova à vista dele (sessão A): o "Não" é lido como "Não"; na pergunta do Windows fica "EditorImpressao.exe" (D-805); a licença é pedida no instante do clique (D-806, passo 3).
 > - **Em andamento no checkpoint:** passo 2 (publicar, o Kraken à parte, o servidor das versões de prova) e as regras novas do catálogo dos erros (D-808 a D-814), cada um com um agente.
 > - **D-807:** antes de juntar cada passo, o conjunto inteiro dos testes roda só no GitHub; no PC, só antes da versão oficial. **D-803/D-804:** catálogo dos erros em `memoria/catalogo-de-erros.md`, atualizado pela gerente no fim de cada passo.
