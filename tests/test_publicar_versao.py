@@ -745,6 +745,9 @@ def test_achado5_erro_do_disco_vira_frase(ambiente, monkeypatch, capsys):
     ocupado.write_text("sou um arquivo", encoding="utf-8")
     monkeypatch.setattr(pub, "pasta_do_rascunho", lambda: ocupado)
     monkeypatch.setattr(pub, "achar_chave", lambda *x, **k: CHAVE)
+    # o vpk de mentira: no Windows do GitHub não há vpk instalado, e a linha de comando o procura antes do rascunho
+    # (achado da rodada 44661337397; o teste supunha o PC do Samuel, família F4 do catálogo)
+    monkeypatch.setattr(empacotar, "achar_vpk", lambda: a["vpk"])
     _publicar_o_motor(a)
     assert pub.main(["--pasta", str(a["servidor"])]) == 1
     saida = capsys.readouterr().out
