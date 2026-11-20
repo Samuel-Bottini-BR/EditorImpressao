@@ -1,0 +1,41 @@
+"""As três que a primeira rodada da volta 2 não acusou, de novo (A1b com o teste novo; N10 e A2b com a outra proteção
+desligada junto). Uso: python mutacoes_volta2b.py <cópia limpa> <python>"""
+import os
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+LIMPA = Path(sys.argv[1])
+PY = sys.argv[2]
+M = [
+    ("A1b o aviso do gh vira 'não apagou' sem ler de volta",
+     [("publicar_versao_kaique.py", '        if r.returncode != 0:\n            return f"o gh avisou ao apagar',
+       '        if r.returncode != 0:\n            raise Parou("o GitHub não deixou apagar")\n            return f"o gh avisou ao apagar')],
+     "tests/test_publicar_versao.py::test_achado1_quem_decide_se_apagou_e_a_leitura_de_volta"),
+    ("N10 o Ctrl+C não fecha o vpk (e o grupo sem o fechar-ao-fechar, que também cobria)",
+     [("empacotar.py", "        except BaseException:\n            programa.fechar_tudo()\n            raise",
+       "        except BaseException:\n            raise"),
+      ("core/windows.py", "    info.BasicLimitInformation.LimitFlags = _JOB_FECHA_TUDO_AO_FECHAR",
+       "    info.BasicLimitInformation.LimitFlags = 0")],
+     "tests/test_publicar_versao.py::test_n10_ctrl_c_fecha_o_vpk_e_o_que_ele_abriu"),
+]
+for nome, trocas, teste in M:
+    copia = LIMPA.parent / "mutv2b"
+    shutil.rmtree(copia, ignore_errors=True)
+    shutil.copytree(LIMPA, copia)
+    ok = True
+    for arquivo, velho, novo in trocas:
+        alvo = copia / arquivo
+        texto = alvo.read_text(encoding="utf-8")
+        if texto.count(velho) != 1:
+            ok = False
+            print(f"{nome}: NÃO APLICADA em {arquivo}", flush=True)
+            break
+        alvo.write_text(texto.replace(velho, novo), encoding="utf-8")
+    if not ok:
+        continue
+    r = subprocess.run([PY, "-m", "pytest", teste, "-q", "-p", "no:cacheprovider"], cwd=copia, capture_output=True,
+                       text=True, encoding="utf-8", errors="replace", env={**os.environ, "QT_QPA_PLATFORM": "offscreen"})
+    print(f"{nome}: {'ACUSADA' if r.returncode != 0 else 'PASSOU (não acusada)'} "
+          f"({(r.stdout.strip().splitlines() or ['?'])[-1]}) [{teste}]", flush=True)

@@ -1,0 +1,16 @@
+Achado 10 de quem tentou quebrar: a reversão da D-809 rodada de verdade numa junção temporária (19/11/2026, PC do
+Samuel, Windows PowerShell 5.1.26100.9818, na pasta de rascunho da sessão, fora do projeto).
+
+O comando ANTIGO do fim do lançar solto, rodado de verdade:
+  Remove-Item -LiteralPath <troca> -Recurse -Force
+com <troca> contendo duas junções (troca\atalho1 -> alvo, e troca\a\b\atalho2 -> alvo\sub), e o alvo com
+importante.txt e sub\subsub\fundo.txt:
+  troca existe depois: False
+  arquivos do alvo depois: importante.txt, sub\subsub\fundo.txt  (os dois continuaram)
+E com a própria <troca> sendo uma junção para o alvo: a junção sumiu, importante.txt continuou.
+
+Conclusão, por honestidade: NESTE Windows o jeito antigo não entrou na junção. O que o teste
+test_o_lancado_solto_apaga_a_pasta_de_troca_sem_seguir_atalho cobra no código antigo é o JEITO de apagar (o script
+lançado sem o apagar recursivo e com a conferência do atalho), não um arquivo perdido; a parte de comportamento do teste
+(a pasta de troca some, o outro lado da junção fica) passa nos dois. A troca vale pela D-809 e pelo aviso da Microsoft
+sobre o "known issue" do -Recurse no Remove-Item (o comportamento muda com a versão do Windows).

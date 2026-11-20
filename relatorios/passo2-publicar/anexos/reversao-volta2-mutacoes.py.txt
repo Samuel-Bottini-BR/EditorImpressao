@@ -1,0 +1,95 @@
+"""Prova de reversão da volta 2 do passo 2: cada proteção nova (e as nove do achado 3) desligada numa cópia à parte
+(git archive), e o teste dela tem de falhar. Uso: python mutacoes_volta2.py <cópia limpa> <python>"""
+import os
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+LIMPA = Path(sys.argv[1])
+PY = sys.argv[2]
+V = "tests/test_publicar_versao.py::"
+S = "tests/test_publicar_servidor.py::"
+W = "tests/test_windows_peca.py::"
+M = [
+    ("A1 o rascunho no GitHub apagado com --cleanup-tag", "publicar_versao_kaique.py",
+     '        if situacao == "liberada":\n            pedido.append("--cleanup-tag")',
+     '        if True:\n            pedido.append("--cleanup-tag")',
+     V + "test_achado1_apagar_um_rascunho_no_github_le_de_volta_e_nao_acusa_erro_falso"),
+    ("A1b o aviso do gh vira 'não apagou' sem ler de volta", "publicar_versao_kaique.py",
+     '        if r.returncode != 0:\n            return f"o gh avisou ao apagar',
+     '        if r.returncode != 0:\n            raise Parou("o GitHub não deixou apagar")\n            return f"o gh avisou ao apagar',
+     V + "test_achado1_erro_antes_de_liberar_no_github_apaga_e_diz_que_apagou"),
+    ("A2 fechar o grupo fecha só o programa principal", "core/windows.py",
+     "        if self._grupo and not w.kernel32.TerminateJobObject(self._grupo, 1):",
+     "        self.processo.kill()\n        if False:",
+     V + "test_achado2_a_vigia_fecha_o_vpk_e_o_que_ele_abriu"),
+    ("A2b o grupo sem fechar-ao-fechar e sem conferir", "core/windows.py",
+     "            if self.vivos() == 0:", "            if True:",
+     W + "test_fechar_o_programa_em_grupo_fecha_tambem_o_que_ele_abriu"),
+    ("A4 depois de liberar, a leitura que falha apaga a versão", "publicar_versao_kaique.py",
+     '            if agora != "rascunho":', "            if False:",
+     V + "test_achado4_depois_de_liberar_a_leitura_que_falha_nao_apaga_a_versao"),
+    ("A5 o erro do disco sai cru", "publicar_versao_kaique.py",
+     "    except OSError as erro:\n        # achado 5", "    except ZeroDivisionError as erro:\n        # achado 5",
+     V + "test_achado5_erro_do_disco_vira_frase"),
+    ("A6 o sinal de vida volta para a pasta que o script apaga", "core/windows.py",
+     '    sinal = pasta_do_sinal / "comecei.txt"', '    sinal = pasta / "comecei.txt"',
+     W + "test_o_lancado_solto_curto_nunca_vira_saiu_sem_comecar"),
+    ("A7 o servidor entrega nome repetido", "servidor_das_versoes.py",
+     "        return achados[0] if len(achados) == 1 else None", "        return achados[0] if achados else None",
+     S + "test_achado7_nome_repetido_em_duas_versoes_nao_e_entregue"),
+    ("A8 a atualização aceita o motor em instalar", "empacotar.py",
+     "    if not saida.motor_em_instalar:\n        proibidos.append", "    if False:\n        proibidos.append",
+     V + "test_achado8_o_arquivo_do_motor_em_instalar_e_recusado_na_atualizacao"),
+    ("A9 a conta do .msi volta a 5 vezes", "empacotar.py", "(7 if saida.com_msi else 4)", "(5 if saida.com_msi else 4)",
+     V + "test_d776_a_conta_do_espaco_e_a_reserva_de_20_gb"),
+    ("A11 a etiqueta com quebra de linha passa", "publicar_versao_kaique.py",
+     'return bool(ETIQUETA_ACEITA.fullmatch(nome or ""))', 'return bool(ETIQUETA_ACEITA.match(nome or ""))',
+     V + "test_achado11_etiqueta_com_quebra_de_linha_e_recusada"),
+    ("N1 a lista lida do destino não é conferida", "publicar_versao_kaique.py",
+     "        if sorted(lidos) != sorted(nomes):", "        if False:",
+     V + "test_n1_n3_n4_n14_cada_leitura_de_volta_errada_impede_liberar"),
+    ("N3 o índice lido do destino não é conferido", "publicar_versao_kaique.py",
+     '        if len(itens) != 1 or str(itens[0].get("SHA256", "")).lower() != soma or \\\n',
+     "        if False and \\\n",
+     V + "test_n1_n3_n4_n14_cada_leitura_de_volta_errada_impede_liberar"),
+    ("N4 o motor não é lido de novo antes de liberar", "publicar_versao_kaique.py",
+     "        de_novo = obter_motor_publicado(destino, pasta_lida, chave_publica, motor.versao)\n        if de_novo != motor:",
+     "        if False:", V + "test_n1_n3_n4_n14_cada_leitura_de_volta_errada_impede_liberar"),
+    ("N5 o apagar não confere que sumiu", "publicar_versao_kaique.py",
+     "    aviso = destino.apagar(etiqueta)\n    if destino.situacao(etiqueta) is not None:",
+     "    aviso = destino.apagar(etiqueta)\n    if False:", V + "test_n5_o_apagar_que_nao_apaga_e_acusado"),
+    ("N6 a conferência do fim nunca acusa o Setup.exe", "publicar_versao_kaique.py",
+     "    if setup in no_saida or (no_destino and setup in no_destino):", "    if False:",
+     V + "test_n6_a_conferencia_do_fim_acusa_o_setup_exe"),
+    ("N8 o .msi vai para a pasta de saída antes de publicar", "publicar_versao_kaique.py",
+     "        arquivo_assinado = assinar_pacote(chave, nupkg, versao_do_pacote, chave_publica)",
+     "        if msi is not None:\n            saida_final.mkdir(parents=True, exist_ok=True); shutil.copyfile(msi, saida_final / msi.name)\n"
+     "        arquivo_assinado = assinar_pacote(chave, nupkg, versao_do_pacote, chave_publica)",
+     V + "test_n8_o_msi_nao_fica_na_pasta_de_saida_se_a_versao_nao_saiu"),
+    ("N10 o Ctrl+C não fecha o vpk", "empacotar.py",
+     "        except BaseException:\n            programa.fechar_tudo()\n            raise",
+     "        except BaseException:\n            raise", V + "test_n10_ctrl_c_fecha_o_vpk_e_o_que_ele_abriu"),
+    ("N13 o servidor serve por junção", "publicar_versao_kaique.py",
+     "if e_etiqueta(p.name) and p.is_dir() and not p.is_symlink() and not p.is_junction())",
+     "if e_etiqueta(p.name) and p.is_dir())", S + "test_n13_o_servidor_nao_serve_por_uma_juncao"),
+    ("N14 a assinatura lida do destino não é conferida", "publicar_versao_kaique.py",
+     '        if motivo is not None:\n            raise Parou(f"a assinatura lida de',
+     '        if False:\n            raise Parou(f"a assinatura lida de',
+     V + "test_n1_n3_n4_n14_cada_leitura_de_volta_errada_impede_liberar"),
+]
+for nome, arquivo, velho, novo, teste in M:
+    copia = LIMPA.parent / "mutv2"
+    shutil.rmtree(copia, ignore_errors=True)
+    shutil.copytree(LIMPA, copia)
+    alvo = copia / arquivo
+    texto = alvo.read_text(encoding="utf-8")
+    if texto.count(velho) != 1:
+        print(f"{nome}: NÃO APLICADA ({texto.count(velho)} vezes)", flush=True)
+        continue
+    alvo.write_text(texto.replace(velho, novo), encoding="utf-8")
+    r = subprocess.run([PY, "-m", "pytest", teste, "-q", "-p", "no:cacheprovider"], cwd=copia, capture_output=True,
+                       text=True, encoding="utf-8", errors="replace", env={**os.environ, "QT_QPA_PLATFORM": "offscreen"})
+    print(f"{nome}: {'ACUSADA' if r.returncode != 0 else 'PASSOU (não acusada)'} "
+          f"({(r.stdout.strip().splitlines() or ['?'])[-1]}) [{teste}]", flush=True)
