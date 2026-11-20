@@ -797,3 +797,4 @@ Feito pelo agente de layout, a partir do plano discutido na conversa separada (v
 | 19/11/2026 | **Pergunta 4 de 6 (D-812): toda conferência diz de onde vem cada informação; a que o conferido pode trocar não vale como prova.** Ele: "ok". | chat | Samuel |
 | 19/11/2026 | **Pergunta 5 de 6 (D-813): quando o programa recusa ou procura algo, o agente lista antes todos os jeitos que a peça de fora aceita, e a proteção compara a coisa de verdade.** Ele: "ok". | chat | Samuel |
 | 19/11/2026 | **Pergunta 6 de 6 (D-814): antes de levar uma pergunta ao Samuel, o agente anota em quais decisões dele procurou e por que ela ainda não está respondida.** Ele: "ok". | chat | Samuel |
+| 20/11/2026 | **Quem confere é sempre um agente novo em cada volta; quem escreve, o mesmo por até duas voltas (D-815).** Ele: "ok". | chat | Samuel |
