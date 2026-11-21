@@ -11,7 +11,13 @@ O DEFEITO (prova 6b; registro em C:\\EditorImpressaoProva\\prova6b.log)
 O CONSERTO QUE VALE (D-820, Samuel, 21/11/2026: "não era melhor só ver se está instaldo no pc?" · "A")
     A pasta das ferramentas é um caminho escrito num lugar só (`core/pasta_das_ferramentas.PASTA_DAS_FERRAMENTAS`),
     sem perguntar ao git e sem depender de onde o código está. Os testes da volta 9 que provavam o jeito do git saíram
-    (eram desta mesma tarefa, ainda não juntada).
+    (eram desta mesma tarefa, ainda não juntada; ordem da gerente, pela D-820): test_defeito1_a_pasta_principal_vem_do_git_de_verdade,
+    test_falha_sem_git_vale_a_conta_de_antes, test_falha_copia_sem_repositorio_git_archive,
+    test_falha_o_git_que_da_erro_e_o_que_demora e test_falha_as_variaveis_do_gancho_do_commit_nao_mudam_a_resposta.
+    Dois mudaram de nome e passaram a cobrar a pasta escrita: test_defeito1_da_pasta_principal_nada_muda (agora
+    test_d820_da_pasta_principal_os_seis_lugares_dao_a_mesma_pasta) e
+    test_falha_a_pasta_principal_sem_a_pasta_do_samuel_ao_lado_nao_cria_nada (agora
+    test_falha_sem_a_pasta_das_ferramentas_a_montagem_para_e_nao_cria_nada).
 
 O QUE ESTES TESTES PROVAM (D-767: com o git de verdade, sem peça de mentira onde importa)
     Um repositório de prova de verdade (`regras_dos_agentes.repositorio_de_prova`), numa pasta com espaço no nome, com o
