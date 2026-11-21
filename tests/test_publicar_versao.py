@@ -2513,3 +2513,262 @@ def test_volta7_achado5_a_pasta_das_provas_com_espaco_no_nome(ambiente, monkeypa
     with pytest.raises(pub.Parou, match="sobrou um rascunho") as erro:
         pub.publicar_arquivos(destino, ETIQUETA, "t", "n", [], lambda: None)
     _seguir_a_frase_sem_tocar_o_github(str(erro.value), destino, ETIQUETA, monkeypatch)
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Passo 2, volta 8 (a prova à vista de 20/11/2026, 18h a 19h30, e o relatório 7 de quem tentou quebrar)
+# ---------------------------------------------------------------------------------------------------------------------
+
+def _gh_de_mentira_na_classe(monkeypatch, tmp: Path) -> "_GitHubDeMentira":
+    """O gh de mentira atrás de todo `DestinoGitHub` (inclusive o que o `main` cria sozinho, sem o teste vê-lo)."""
+    gh = _GitHubDeMentira(tmp)
+    monkeypatch.setattr(pub.DestinoGitHub, "_gh", lambda self, *argumentos, **k: gh(*argumentos))
+    return gh
+
+
+@pytest.mark.parametrize("onde", ["pasta", "github"])
+@pytest.mark.parametrize("etiqueta", [ETIQUETA, versao.etiqueta_do_motor(ocr_kraken.VERSAO_DO_MOTOR)])
+def test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou(ambiente, monkeypatch, capsys, onde, etiqueta):
+    """O defeito 2 da prova à vista de 20/11/2026 (provas 3a, 5 e 7c; registros em C:\\EditorImpressaoProva): o
+    `--apagar` apagou de verdade (na pasta e no GitHub, conferido pela gerente), mas a única frase foi "v1.1.0: não
+    existe em ... (conferido)", a mesma de quando não havia nada para apagar. O `main` escrevia a frase por conta própria,
+    sem saber qual dos dois casos foi (o lugar único do apagar devolvia só o aviso do gh). Agora a frase sai do lugar
+    único (`apagar_e_conferir`, o `Apagado.frase`): "foi apagada (conferido)" quando havia o que apagar, e "não existia
+    ..., e nada foi apagado (conferido)" quando não havia. Na pasta das provas e no GitHub, para a versão e para o motor.
+    Rodado em 21f1fc50: a frase depois de apagar é "não existe em"."""
+    a = ambiente
+    argumentos = ["--apagar", etiqueta]
+    if onde == "pasta":
+        destino = pub.DestinoPasta(a["servidor"])
+        destino.criar_rascunho(etiqueta, "t", "n")
+        destino.liberar(etiqueta)
+        argumentos += ["--pasta", str(a["servidor"])]
+    else:
+        gh = _gh_de_mentira_na_classe(monkeypatch, a["tmp"])
+        gh.publicacoes[etiqueta] = {"rascunho": False, "arquivos": {}}
+        destino = pub.DestinoGitHub()
+    assert destino.situacao(etiqueta) == "liberada"
+    capsys.readouterr()
+    assert pub.main(argumentos) == 0
+    frase = capsys.readouterr().out
+    assert destino.situacao(etiqueta) is None, "o --apagar não apagou"
+    assert "foi apagada" in frase and "(conferido)" in frase, frase
+    assert "não exist" not in frase, frase
+    assert frase.strip() == pub.Apagado(etiqueta, destino.nome, existia=True).frase, frase
+    assert pub.main(argumentos) == 0, "apagar o que já não existe não é erro"
+    frase = capsys.readouterr().out
+    assert "não existia" in frase and "nada foi apagado" in frase and "(conferido)" in frase, frase
+    assert "foi apagada" not in frase, frase
+    assert frase.strip() == pub.Apagado(etiqueta, destino.nome, existia=False).frase, frase
+
+
+def test_volta8_defeito2_o_caminho_de_erro_usa_a_mesma_frase_do_apagar(ambiente):
+    """Defeito 2, o outro caminho que apaga (CLAUDE.md §11.12: a frase de cada desfecho num lugar só): o erro antes do
+    pedido de liberar apaga o rascunho e diz "foi apagada (conferido)" com a MESMA frase do `--apagar`
+    (`Apagado.frase`), e não com uma escrita à parte. O que é apagado não muda (D-816: depois do pedido de liberar, nada
+    se apaga; aqui o erro vem antes). Rodado em 21f1fc50: `pub.Apagado` não existia."""
+    a = ambiente
+    destino = pub.DestinoPasta(a["servidor"])
+
+    def ler_de_volta_errado():
+        """A leitura de volta da assinatura acusa (um erro antes do pedido de liberar)."""
+        raise pub.Parou("a assinatura lida de volta não confere")
+
+    with pytest.raises(pub.Parou, match="não confere") as erro:
+        pub.publicar_arquivos(destino, ETIQUETA, "t", "n", [], ler_de_volta_errado)
+    assert destino.situacao(ETIQUETA) is None
+    assert pub.Apagado(ETIQUETA, destino.nome, existia=True).frase in str(erro.value), str(erro.value)
+
+
+def test_volta8_defeito2_o_que_o_apagar_devolve_nao_mudou(ambiente, monkeypatch):
+    """D-605: `apagar_publicacao` continua devolvendo o que devolvia (o aviso do gh, ou nada) e o `apagar_e_conferir`
+    diz, pela mesma conta, se havia o que apagar. O caso do gh que avisa ao apagar uma liberada (a etiqueta que falha,
+    achado 1 da volta 1) volta como aviso nos dois e entra na frase."""
+    a = ambiente
+    gh = _gh_de_mentira_na_classe(monkeypatch, a["tmp"])
+    destino = pub.DestinoGitHub()
+    gh.publicacoes[ETIQUETA] = {"rascunho": True, "arquivos": {}}
+    assert pub.apagar_publicacao(destino, ETIQUETA) is None
+    assert pub.apagar_publicacao(destino, ETIQUETA) is None
+    gh.publicacoes[ETIQUETA] = {"rascunho": False, "arquivos": {}}
+    gh.falhar_ao_apagar_a_etiqueta = True
+    feito = pub.apagar_e_conferir(destino, ETIQUETA)
+    assert feito.existia and feito.aviso and "o gh avisou" in feito.aviso, feito
+    assert feito.aviso in feito.frase and "foi apagada" in feito.frase, feito.frase
+    nada = pub.apagar_e_conferir(destino, ETIQUETA)
+    assert not nada.existia and nada.aviso is None
+
+
+_VC_OFICIAL = "14.44.35211.0"
+
+
+@pytest.mark.parametrize("conteudo, aceita", [
+    (_VC_OFICIAL.encode("utf-8"), True),
+    ((_VC_OFICIAL + "\r\n").encode("utf-8"), True),
+    (("  " + _VC_OFICIAL + "  ").encode("utf-8"), True),
+    (b"\xef\xbb\xbf" + _VC_OFICIAL.encode("utf-8"), False),          # a marca de UTF-8 no começo
+    (_VC_OFICIAL.encode("utf-16"), False),
+    (b"", False),
+    (b"14.44", False),
+])
+def test_volta8_baixo6_a_versao_do_visual_c_e_lida_por_uma_funcao_so(ambiente, conteudo, aceita):
+    """Achado 6 do relatório 7 de quem tentou quebrar (20/11/2026, CLAUDE.md §11.12: "um dado é lido e gravado por uma
+    função só"): o arquivo da versão do Visual C++ do pacote era lido de dois jeitos, um na conferência do publicar
+    (`empacotar.conferir_pasta_pronta`) e outro no programa instalado (`atualizacao.instalar_visual_c_se_faltar`, que
+    decide se instala o Visual C++ no notebook do Kaique). Agora os dois leem por
+    `atualizacao.versao_do_visual_c_do_pacote` (o jeito do publicar, o que a prova conferiu). Para cada jeito de arquivo
+    que o relatório 7 testou: o que a conferência aceita, o programa instalado lê exatamente como a versão conferida; o
+    resto a conferência recusa. Rodado em 21f1fc50: a função única não existia."""
+    a = ambiente
+    pasta = a["pasta"]
+    (pasta / atualizacao.PASTA_DO_QUE_SE_INSTALA / atualizacao.VC_REDIST_VERSAO).write_bytes(conteudo)
+    problemas = empacotar.conferir_pasta_pronta(pasta, VERSAO)
+    assert (problemas == []) == aceita, problemas
+    if aceita:
+        assert atualizacao.versao_do_visual_c_do_pacote(pasta) == VERSAO_DO_VISUAL_C_DE_PROVA
+    else:
+        assert any("Visual C++" in p for p in problemas), problemas
+
+
+def test_volta8_baixo6_o_publicar_e_o_programa_instalado_usam_a_mesma_leitura(ambiente, monkeypatch):
+    """Achado 6 do relatório 7, a prova do "caminho → função" (§11.12): trocada só a função única da leitura, a
+    conferência do publicar e o programa instalado passam a ver a mesma versão trocada (e, sem o arquivo, cada um faz o
+    que fazia: o publicar recusa; o programa instalado usa "0.0.0", e só instala se não há Visual C++ nenhum).
+    Rodado em 21f1fc50: a troca não muda nada nos dois (cada um lia por conta própria)."""
+    a = ambiente
+    pasta = a["pasta"]
+    monkeypatch.setattr(atualizacao, "versao_do_visual_c_do_pacote", lambda p: "7.7.7", raising=False)
+    problemas = empacotar.conferir_pasta_pronta(pasta, VERSAO)
+    assert any("diz que o Visual C++ é o 7.7.7" in p for p in problemas), problemas
+    registrado = []
+    monkeypatch.setattr(atualizacao, "registrar", registrado.append)
+    atualizacao.instalar_visual_c_se_faltar(pasta, ler=lambda: None, rodar=lambda c, t: (0, ""))
+    assert any("Visual C++ 7.7.7" in r for r in registrado), registrado
+    monkeypatch.setattr(atualizacao, "versao_do_visual_c_do_pacote", lambda p: None)
+    problemas = empacotar.conferir_pasta_pronta(pasta, VERSAO)
+    assert any("não tem a versão do Visual C++" in p for p in problemas), problemas
+    registrado.clear()
+    rodou = []
+    atualizacao.instalar_visual_c_se_faltar(pasta, ler=lambda: (14, 0, 0),
+                                            rodar=lambda c, t: rodou.append(c) or (0, ""))
+    assert rodou == [], "sem o arquivo da versão e com um Visual C++ instalado, não instala (como antes)"
+    atualizacao.instalar_visual_c_se_faltar(pasta, ler=lambda: None, rodar=lambda c, t: rodou.append(c) or (0, ""))
+    assert rodou and any("Visual C++ 0.0.0" in r for r in registrado), registrado
+
+
+def test_volta8_baixo1a_a_leitura_da_assinatura_que_falha_nunca_vira_passou(ambiente, monkeypatch):
+    """Achado 1 do relatório 7 de quem tentou quebrar, (a) (família F3: proteção sem teste; a mutação W5, "a leitura que
+    falha vira passou na régua única", passava em todos os testes): a peça do PowerShell responde "não terminou no
+    tempo" ao ler a assinatura do Visual C++. A pasta já montada é recusada porque o Visual C++ "não é o oficial da
+    Microsoft" (e não só porque a versão ficou diferente), a montagem recusa o arquivo da pasta de downloads, e o
+    publicar para antes do vpk. Com a W5, a montagem aceitaria o arquivo com a versão vazia."""
+    from core import windows
+
+    a = ambiente
+    pasta = a["pasta"]
+    visual_c = pasta / atualizacao.PASTA_DO_QUE_SE_INSTALA / atualizacao.VC_REDIST_NOME
+    visual_c.write_bytes(b"MZ um Visual C++ que o Windows nao chega a ler")
+    baixado = a["tmp"] / "downloads-que-nao-le" / empacotar.VC_REDIST_NOME
+    baixado.parent.mkdir()
+    baixado.write_bytes(b"MZ um Visual C++ que o Windows nao chega a ler")
+    lidos = []
+
+    def powershell_que_nao_termina(texto, limite_s=120, **k):
+        """A conversa com o PowerShell que passa do tempo (como a peça responde quando ele não termina)."""
+        lidos.append(texto)
+        return windows._falhou("o PowerShell não terminou no tempo", "passou de 120 s")
+
+    monkeypatch.setattr(windows, "rodar_powershell", powershell_que_nao_termina)
+    problemas = empacotar.conferir_pasta_pronta(pasta, VERSAO)
+    assert lidos, "a conferência não chegou a pedir a leitura ao Windows"
+    assert any("não é o oficial da Microsoft" in p and "não conseguiu ler" in p for p in problemas), problemas
+    monkeypatch.setattr(empacotar, "DOWNLOADS", baixado.parent)
+    arquivo, versao_lida, da_montagem = empacotar.preparar_vc_redist(baixar=False)
+    assert arquivo is None and versao_lida == "" and da_montagem, (arquivo, versao_lida, da_montagem)
+    assert "não é o oficial da Microsoft" in da_montagem[0], da_montagem
+    _publicar_o_motor(a)
+    with pytest.raises(pub.Parou, match="a pasta do programa não serve"):
+        _publicar(a)
+    assert _vezes_que_o_vpk_rodou(a) == []
+
+
+def _copia_do_powershell_do_windows(destino: Path) -> Path:
+    """Uma cópia do powershell.exe do próprio Windows (existe em todo Windows, também no do GitHub): um arquivo de
+    verdade, com assinatura de verdade da Microsoft, que NÃO é o Visual C++ (assinado por "CN=Microsoft Windows")."""
+    original = Path(os.environ.get("SystemRoot", r"C:\Windows")) / "System32" / "WindowsPowerShell" / "v1.0" / \
+        "powershell.exe"
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(original, destino)
+    return destino
+
+
+def test_volta8_baixo1b_um_programa_da_microsoft_que_nao_e_o_visual_c_e_recusado_pela_mesma_regua(ambiente,
+                                                                                                   monkeypatch):
+    """Achado 1 do relatório 7 de quem tentou quebrar, (b) (família F3; a mutação W1, "a conferência da pasta com régua
+    própria, que aceita qualquer arquivo com assinatura válida", passava): o teste da régua única usava só um arquivo
+    sem assinatura, que qualquer régua recusa. Aqui o "Visual C++" é uma cópia do powershell.exe do Windows: o Windows
+    diz que a assinatura é VÁLIDA (lida pela peça de verdade, sem mentira; D-767), mas quem assinou é "CN=Microsoft
+    Windows" e o produto não é o Visual C++. A pasta já montada (com o arquivo da versão igual à versão que o Windows lê
+    nele, para só a régua decidir) e a montagem recusam, pelo assinante; o publicar para antes do vpk."""
+    a = ambiente
+    pasta = a["pasta"]
+    instalar = pasta / atualizacao.PASTA_DO_QUE_SE_INSTALA
+    copia = _copia_do_powershell_do_windows(instalar / atualizacao.VC_REDIST_NOME)
+    lida = empacotar.assinatura_do_arquivo(copia)
+    assert lida["status"] == "Valid" and "CN=Microsoft Windows" in lida["assinante"], lida
+    (instalar / atualizacao.VC_REDIST_VERSAO).write_text(lida["versao"], encoding="utf-8")
+    problemas = empacotar.conferir_pasta_pronta(pasta, VERSAO)
+    assert any("não é o oficial da Microsoft" in p and "não foi assinado pela Microsoft" in p for p in problemas), \
+        problemas
+    baixado = _copia_do_powershell_do_windows(a["tmp"] / "downloads-powershell" / empacotar.VC_REDIST_NOME)
+    monkeypatch.setattr(empacotar, "DOWNLOADS", baixado.parent)
+    arquivo, _, da_montagem = empacotar.preparar_vc_redist(baixar=False)
+    assert arquivo is None and da_montagem and "não foi assinado pela Microsoft" in da_montagem[0], da_montagem
+    assert baixado.is_file(), "a montagem nunca apaga o arquivo que não confere"
+    _publicar_o_motor(a)
+    with pytest.raises(pub.Parou, match="não foi assinado pela Microsoft"):
+        _publicar(a)
+    assert _vezes_que_o_vpk_rodou(a) == []
+
+
+@pytest.mark.parametrize("conteudo", ["", "14.44", "14.44.35211", "14", " \n"])
+def test_volta8_baixo2_o_arquivo_da_versao_vazio_ou_pela_metade_e_recusado(ambiente, conteudo):
+    """Achado 2 do relatório 7 de quem tentou quebrar (família F3; a mutação W4, a versão comparada por "começa com",
+    passava): o único caso de teste era uma versão inteira e diferente. O arquivo da versão vazio, ou com só um pedaço
+    da versão, é recusado (o programa instalado lê esse arquivo para decidir se instala o Visual C++ no notebook do
+    Kaique: um pedaço faria a conta errada)."""
+    a = ambiente
+    pasta = a["pasta"]
+    (pasta / atualizacao.PASTA_DO_QUE_SE_INSTALA / atualizacao.VC_REDIST_VERSAO).write_text(conteudo, encoding="utf-8")
+    problemas = empacotar.conferir_pasta_pronta(pasta, VERSAO)
+    assert any("diz que o Visual C++ é o" in p for p in problemas), problemas
+    _publicar_o_motor(a)
+    with pytest.raises(pub.Parou, match="diz que o Visual C"):
+        _publicar(a)
+    assert _vezes_que_o_vpk_rodou(a) == []
+
+
+@pytest.mark.parametrize("licenca", empacotar.LICENCAS_DO_TESSERACT)
+def test_volta8_baixo3_sem_a_licenca_do_tesseract_a_pasta_e_o_pacote_sao_recusados(ambiente, monkeypatch, capsys,
+                                                                                   licenca):
+    """Achado 3 do relatório 7 de quem tentou quebrar (família F3; as mutações W2 e W3, tirar as licenças da conferência
+    da pasta e da do pacote, passavam): a licença do Tesseract tem de ir junto com ele. A pasta sem a licença é recusada
+    antes do vpk; e um vpk que deixa a licença de fora do pacote faz o publicar parar ("o pacote do Velopack saiu
+    errado"), sem nada publicado."""
+    a = ambiente
+    relativo = f"{empacotar.PASTA_DO_TESSERACT}/{licenca}"
+    sem_licenca = _pasta_pronta(a["tmp"] / "sem-licenca" / "EditorImpressao", VERSAO)
+    (sem_licenca / relativo).unlink()
+    problemas = empacotar.conferir_pasta_pronta(sem_licenca, VERSAO)
+    assert any("não tem o Tesseract inteiro" in p and relativo in p for p in problemas), problemas
+    _publicar_o_motor(a)
+    with pytest.raises(pub.Parou, match="a pasta do programa não serve"):
+        _publicar(a, pasta_pronta=sem_licenca)
+    assert _vezes_que_o_vpk_rodou(a) == []
+    monkeypatch.setenv("VPK_FALSO_SEM", relativo)
+    capsys.readouterr()
+    with pytest.raises(pub.Parou, match="empacotamento da atualização parou"):
+        _publicar(a)
+    saida = capsys.readouterr().out
+    assert "o pacote do Velopack saiu errado" in saida and relativo in saida, saida
+    assert pub.DestinoPasta(a["servidor"]).situacao(ETIQUETA) is None
