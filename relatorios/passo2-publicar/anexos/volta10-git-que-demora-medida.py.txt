@@ -1,0 +1,30 @@
+# A medida do achado 2 (volta 10, 21/11/2026, no PC, Git for Windows 2.53.0, pelo lancador C:\Program Files\Git\cmd\git.exe).
+# Saida que este script deu:
+#   peca atual: 12.1 o git nao respondeu em 2 segundos a git -c alias.espera=!sleep 12 espera
+#   grupo: 2.1 o programa nao terminou em 2 segundos True fechados o programa e tudo o que ele abriu (conferido no Windows: nenhum vivo no grupo)
+#   ms por git: run 97.6 grupo 119.9
+
+import os, sys, time, subprocess
+sys.path.insert(0, r"D:\programas\EditorImpressao\.claude\worktrees\passo2")
+os.environ["PATH"] = r"C:\Program Files\Git\cmd" + os.pathsep + os.environ["PATH"]
+from regras_dos_agentes import conversa_com_o_git as git
+from core import windows
+pasta = r"D:\programas\EditorImpressao\.claude\worktrees\passo2"
+t = time.perf_counter()
+try:
+    git._rodar(pasta, "-c", "alias.espera=!sleep 12", "espera", limite_s=2)
+    print("respondeu")
+except git.GitFalhou as e:
+    print("peca atual:", round(time.perf_counter()-t,1), e)
+t = time.perf_counter()
+r = windows.rodar_em_grupo(["git", "-c", "alias.espera=!sleep 12", "espera"], cwd=None) if False else windows.rodar_em_grupo(["git", "-c", "alias.espera=!sleep 12", "espera"], pasta=pasta, limite_s=2, intervalo_s=0.2, capturar=True)
+print("grupo:", round(time.perf_counter()-t,1), r.motivo, r.dados.get("fechado"), r.dados.get("fechou"))
+# overhead
+N=20
+t=time.perf_counter()
+for _ in range(N): subprocess.run(["git","rev-parse","--git-common-dir"],cwd=pasta,capture_output=True,creationflags=subprocess.CREATE_NO_WINDOW,stdin=subprocess.DEVNULL)
+a=(time.perf_counter()-t)/N
+t=time.perf_counter()
+for _ in range(N): windows.rodar_em_grupo(["git","rev-parse","--git-common-dir"],pasta=pasta,capturar=True,intervalo_s=0.2)
+b=(time.perf_counter()-t)/N
+print("ms por git: run", round(a*1000,1), "grupo", round(b*1000,1))

@@ -1,0 +1,98 @@
+"""Mutações T1 a T17 da volta 10 (letra nova: T). Uma por vez, numa cópia do código do ramo (git archive), cada uma
+desliga uma proteção desta volta (ou uma das B1 a B5 do relatório 8, refeita por mim); roda só o teste que tem de
+acusá-la; devolve o arquivo ao original, byte a byte, e confere.
+
+Uso: python mutacoes_t.py <pasta da cópia> <arquivo de saída>
+"""
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+COPIA = Path(sys.argv[1])
+SAIDA = Path(sys.argv[2])
+PY = sys.executable
+TPF = "tests/test_pasta_das_ferramentas.py"
+TPV = "tests/test_publicar_versao.py"
+
+MUTACOES = [
+    ("T1", "core/pasta_das_ferramentas.py", "a regra volta à pasta do código também numa cópia de trabalho",
+     "    if git.e_copia_de_trabalho(codigo):\n        raise SemPastaPrincipal(",
+     "    if False:\n        raise SemPastaPrincipal(", TPF, "achado1 or falha_o_git"),
+    ("T2", "regras_dos_agentes/conversa_com_o_git.py", "a peça do git diz que nenhuma pasta é cópia",
+     '    return (Path(pasta) / ".git").is_file()', '    return False', TPF, "achado1 or falha_o_git"),
+    ("T3", "core/pasta_das_ferramentas.py", "o parar dos scripts deixa subir o erro (com o rastro técnico)",
+     '        raise SystemExit(f"Parei: {erro}.") from None', "        raise", TPF, "achado1_sem_git"),
+    ("T4", "core/ocr_kraken.py", "o Kraken deixa de virar indisponível com a frase",
+     "        except pasta_das_ferramentas.SemPastaPrincipal as erro:",
+     "        except ZeroDivisionError as erro:", TPF, "achado1_sem_git"),
+    ("T5", "core/pasta_das_ferramentas.py", "o pode gravar deixa de devolver a frase",
+     "    except SemPastaPrincipal as erro:    # volta 10", "    except ZeroDivisionError as erro:    # volta 10",
+     TPF, "achado1_sem_git"),
+    ("T6", "empacotar.py", "o empacotar volta à regra sem o parar",
+     "FERRAMENTAS = _pasta_das_ferramentas.pasta_das_ferramentas_ou_parar(RAIZ)",
+     "FERRAMENTAS = _pasta_das_ferramentas.pasta_das_ferramentas(RAIZ)", TPF, "achado1_sem_git"),
+    ("T7", "montar_motor_kraken.py", "o montar do motor volta à regra sem o parar",
+     "PASTA_FERRAMENTAS = _pasta_das_ferramentas.pasta_das_ferramentas_ou_parar(RAIZ)",
+     "PASTA_FERRAMENTAS = _pasta_das_ferramentas.pasta_das_ferramentas(RAIZ)", TPF, "achado1_sem_git"),
+    ("T8", "compilar_detector_gravura.py", "o compilador volta à regra sem o parar",
+     "PASTA_FERRAMENTAS_PADRAO = _pasta_das_ferramentas.pasta_das_ferramentas_ou_parar(RAIZ)",
+     "PASTA_FERRAMENTAS_PADRAO = _pasta_das_ferramentas.pasta_das_ferramentas(RAIZ)", TPF, "achado1_sem_git"),
+    ("T9", "publicar_versao_kaique.py", "a frase do apagar volta ao 'de' sem contração",
+     "foi apagada {com_preposicao('de', self.onde)} (conferido)", "foi apagada de {self.onde} (conferido)",
+     TPV, "obs6"),
+    ("T10", "publicar_versao_kaique.py", "a contração do 'em' some",
+     '("em", "a"): "na", ("em", "o"): "no"}', "}", TPV, "obs6"),
+    ("T11", "core/ocr_kraken.py", "o Kraken volta a olhar o sys.frozen por conta própria",
+     "    if pasta_das_ferramentas.empacotado():\n        lugares.append(",
+     '    if getattr(sys, "frozen", False):\n        lugares.append(', TPF, "obs8"),
+    ("T12", "core/pasta_das_ferramentas.py", "a regra volta a passar o próprio limite ao git",
+     "        principal = git.pasta_principal(codigo)          # o limite",
+     "        principal = git.pasta_principal(codigo, limite_s=30)          # o limite", TPF, "obs8"),
+    ("T13", "montar_motor_kraken.py", "o montar do motor deixa de parar sem a pasta das ferramentas (B1)",
+     "        if problema and not opcoes.gerar_travado:", "        if False:", TPF, "b1_b3"),
+    ("T14", "compilar_detector_gravura.py", "o compilar do detector deixa de parar (B2)",
+     '        if problema:\n            raise ErroDeCompilacao(f"{problema} (ou passe --ferramentas)")\n        versao_pyside = versao_do_qt_do_pyside()',
+     '        if False:\n            raise ErroDeCompilacao(f"{problema} (ou passe --ferramentas)")\n        versao_pyside = versao_do_qt_do_pyside()',
+     TPF, "b1_b3"),
+    ("T15", "compilar_st_ferramentas.py", "o compilar do st_ferramentas deixa de parar (B3)",
+     '        if problema:\n            raise ErroDeCompilacao(f"{problema} (ou passe --ferramentas)")',
+     '        if False:\n            raise ErroDeCompilacao(f"{problema} (ou passe --ferramentas)")', TPF, "b1_b3"),
+    ("T16", "montar_motor_kraken.py", "o montar do motor só confere com os dois de fábrica (B4)",
+     "usa_o_padrao = opcoes.destino == DESTINO_PADRAO or opcoes.downloads == DOWNLOADS_PADRAO",
+     "usa_o_padrao = opcoes.destino == DESTINO_PADRAO and opcoes.downloads == DOWNLOADS_PADRAO", TPF, "b4"),
+    ("T17", "core/pasta_das_ferramentas.py", "o pode gravar olha a pasta de cima (B5)",
+     "    if not ferramentas.is_dir():", "    if not ferramentas.parent.is_dir():", TPF, "b5"),
+]
+
+
+def main() -> None:
+    linhas = []
+    for nome, arquivo, o_que, velho, novo, teste, filtro in MUTACOES:
+        caminho = COPIA / arquivo
+        original = caminho.read_bytes()
+        texto = original.decode("utf-8")
+        texto_lf = texto.replace("\r\n", "\n")
+        assert texto_lf.count(velho) == 1, (nome, "o trecho não bate")
+        mudado = texto_lf.replace(velho, novo)
+        if "\r\n" in texto:
+            mudado = mudado.replace("\n", "\r\n")
+        caminho.write_bytes(mudado.encode("utf-8"))
+        inicio = time.perf_counter()
+        try:
+            r = subprocess.run([PY, "-m", "pytest", teste, "-q", "-p", "no:cacheprovider", "-k", filtro], cwd=COPIA,
+                               capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=1200)
+            fim = (r.stdout.strip().splitlines() or ["(sem saída)"])[-1]
+            acusada = r.returncode != 0 and "failed" in fim
+        finally:
+            caminho.write_bytes(original)
+        assert caminho.read_bytes() == original, (nome, "não voltou ao original")
+        linha = (f"{nome} | {arquivo} | {o_que} | {teste} -k \"{filtro}\" | {fim} | "
+                 f"{'ACUSADA' if acusada else 'NAO ACUSADA'} | {time.perf_counter() - inicio:.0f} s | devolvido igual")
+        print(linha, flush=True)
+        linhas.append(linha)
+    SAIDA.write_text("\n".join(linhas) + "\n", encoding="utf-8")
+
+
+if __name__ == "__main__":
+    main()

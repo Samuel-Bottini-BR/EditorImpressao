@@ -148,6 +148,14 @@ mudar. As das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `gi
   pastas não são tocadas). O plano (D-709) está em "A causa, a regra e todos os caminhos", Volta 10, escrito antes de
   mexer.
 
+- 21/11, volta 10 feita **em parte**: plano `070b571c`; testes antes do código `6893b6b9` (rodados em `6fa766c4`: os do
+  defeito falham); código `c1ba406d`. Achado 1, achado 3, observações 6 e 8 e o roteiro: feitos. **Achado 2: parado
+  antes de mexer, com pergunta** (o conserto pedido quebra o juiz da rodada do GitHub; "Perguntas para o Samuel",
+  Volta 10). Duas linhas de um teste da volta 9 mudaram (pergunta 2). Reversão: falham lá os 3 testes novos do achado
+  1, o da volta 9 mudado e os das observações 6 e 8; mutações T1 a T17: 17 de 17 acusadas. `--is-shallow-repository` =
+  false antes e depois; nenhuma junção criada; a pasta errada de 19/11, a junção `modelos` e `C:\EditorImpressaoProva`
+  não foram tocadas. **Próximo:** a rodada do GitHub (em "Testes") e a entrega à gerente.
+
 ## Decisões que esta tarefa precisa cumprir
 
 - D-767 "não faça mais nada escodindo ou de mentira" · "não quero fazer consertos quero que funcione". Aqui: o publicar
@@ -1645,6 +1653,23 @@ programa instalado faz com a versão: `atualizacao.py:1230` (lê o vc_redist.ver
     de tempo e sem as variáveis do gancho) e abre o git sem janela de console; o PyInstaller exclui `regras_dos_agentes`;
     o repositório de prova cria cópias de trabalho de verdade.
 
+17. **Volta 10 (o relatório 8 de quem tentou quebrar):**
+    - **Achado 1:** numa cópia de trabalho com o git sem responder, a regra da pasta das ferramentas não volta mais calada
+      à pasta de cima do código (a pasta errada de 19/11). Ela diz "não sei" (`core/pasta_das_ferramentas.SemPastaPrincipal`)
+      com a frase do porquê (o que o git disse) e do que fazer; "é uma cópia?" é a peça do git que diz
+      (`conversa_com_o_git.e_copia_de_trabalho`: o `.git` é um arquivo). Os scripts que guardam a pasta ao carregar
+      (empacotar, montar do motor, compilador do detector, e por eles o publicar, o servidor das versões e o compilador
+      do st_ferramentas) param com a frase, sem o rastro técnico (`pasta_das_ferramentas_ou_parar`); o Kraken pelas
+      fontes fica "indisponível" com a frase; o "pode gravar?" devolve a frase. Da pasta principal, da cópia sem
+      repositório e empacotado, nada muda.
+    - **Achado 2:** **não feito; parado com pergunta** (o conserto pedido quebra o juiz da rodada do GitHub; ver
+      "Perguntas para o Samuel", Volta 10). Medido que ele funcionaria.
+    - **Achado 3:** os testes das cinco proteções (B1 a B5), sem mudar o código delas.
+    - **Observações:** a frase do apagar com a contração ("foi apagada da pasta", "não existia no GitHub"), pela
+      `publicar_versao_kaique.com_preposicao`, usada pela `Apagado.frase`; "está empacotado?" do Kraken pela regra
+      (`pasta_das_ferramentas.empacotado`); o limite de tempo do git só na peça do git.
+    - **O roteiro:** o item 8 riscado, o item 18 com as frases novas, e os itens 20 a 22 (em "A prova de verdade").
+
 ## Arquivos criados ou alterados
 
 Desde a partida desta volta (`5c22a12d`, o pacote da volta 9); o que as voltas 1 a 8 mexeram está nos itens abaixo
@@ -1697,6 +1722,20 @@ Nesta volta não mudaram: `publicar_versao_kaique.py`, `atualizacao.py`, `core/w
   está escolhido e testado aqui", Volta 7; 5 testes novos, 13 casos), `tests/test_empacotar.py` (1 teste novo; nenhum
   antigo mudou) e, em `relatorios/passo2-publicar/`, este formulário, o pacote da volta 7 e os anexos `reversao-volta7-*`.
   `core/windows.py` e `tests/test_windows_peca.py` não mudaram.
+
+**Volta 10** (desde a partida `6fa766c4`; todos da lista do pacote):
+- `core/pasta_das_ferramentas.py` (`SemPastaPrincipal`, `pasta_das_ferramentas_ou_parar`, a frase; sem o
+  `LIMITE_DO_GIT_S`)
+- `regras_dos_agentes/conversa_com_o_git.py` (`e_copia_de_trabalho`)
+- `core/ocr_kraken.py` (`lugares_do_motor` pergunta à regra se está empacotado; `MotorKraken._comando` recebe o "não sei")
+- `empacotar.py`, `montar_motor_kraken.py`, `compilar_detector_gravura.py` (a linha que guarda a pasta ao carregar)
+- `publicar_versao_kaique.py` (`com_preposicao` e `Apagado.frase`)
+- `tests/test_pasta_das_ferramentas.py` (8 testes novos; duas linhas de um teste da volta 9, ver "Perguntas")
+- `tests/test_publicar_versao.py` (1 teste novo)
+- `relatorios/passo2-publicar/` (este formulário, o pacote da volta 10 e os anexos `anexos/volta10-*`)
+Não mexi em `core/windows.py`, `compilar_st_ferramentas.py`, `regras_dos_agentes/repositorio_de_prova.py`,
+`tests/test_empacotar.py`, `tests/test_windows_peca.py` nem `tests/test_conferencias_*.py` (estão na lista; não foi
+preciso, porque o achado 2 parou).
 
 ## Como cumpri cada uma
 
@@ -1885,6 +1924,34 @@ Nesta volta não mudaram: `publicar_versao_kaique.py`, `atualizacao.py`, `core/w
   - D-815: segunda e última volta deste escritor.
   - D-818: a conferência da pasta já montada não muda (`tests/test_publicar_versao.py` inteiro passa).
 
+- **Volta 10:**
+  - D-605 "A partir de agora, nenhuma função nova, ou nova escolha dentro do programa pode alterar o que já está
+    escolhido e testado, coisas novas não podem criar novos problemas, essa é uma nova regra que todos os agentes
+    precisam ler". Aqui: `test_achado1_da_pasta_principal_sem_git_nada_muda` (da pasta principal, sem git, os seis
+    lugares iguais) e os testes antigos da volta 9 passando (da principal e da cópia com git; cópia sem repositório;
+    empacotado). Teste antigo mudado: duas linhas de `test_falha_o_git_que_da_erro_e_o_que_demora`, que cobravam o
+    próprio defeito (pergunta 2 em "Perguntas para o Samuel", Volta 10; precisa do sim, como na D-818).
+  - D-727 "pode, se tiver qualquer coisa que o kaique precise, ele tem que estar no instalador né". Aqui: nada muda no
+    que vai no pacote; o Visual C++ deixa de ser tirado da pasta errada quando o git não responde (os testes do achado 1
+    conferem que a pasta errada imitada não aparece).
+  - D-767 "não faça mais nada escodindo ou de mentira" · "não quero fazer consertos quero que funcione" · "quero que faça
+    as coisas certas e sem bugs ou erros, deveria ter pensado nesses erros na hora de montar a estrutura do atualizador
+    e testes a distancias". Aqui: os testes do achado 1 rodam o git de verdade, de uma cópia de trabalho de verdade, nos
+    dois jeitos do relatório; o git que demora (achado 2) foi medido com um git de verdade que demora. Peça trocada só no
+    teste da observação 8 (a espia do pedido ao git, que pergunta ao git de verdade, e o "empacotado", só lógica).
+  - D-776 "Sim, no C só tem que cuidar para não encher o disco C inteiro". Aqui: a conta do espaço não foi tocada.
+  - D-785 "ok, mais ainda existem mais casos na opção A" · "ok". Aqui: nada à vista rodado por mim; o roteiro ganhou os
+    itens 20 a 22 para a gerente.
+  - D-788 "1" (a primeira opção). Aqui: `test_d788_o_programa_empacotado_acha_o_motor_ao_lado_dele_e_nunca_pergunta_ao_git`
+    (volta 9) passa; e `test_obs8_...`: com a regra dizendo "empacotado", o primeiro lugar do motor é ao lado do programa.
+  - D-813 "ok". Aqui: o "é cópia?" olha a coisa de verdade (o `.git` é arquivo ou pasta), não o nome da pasta; os jeitos
+    de o git não responder estão listados em "O que pode falhar", Volta 10, e cada um tem a sua saída.
+  - D-815 "pode conferir se não está ocorrendo alucinação por estar com contexto cheio" · "estou falando do agente que
+    está trabalhando" · "esses agentes que você criou, sempre que vai fazer uma tarefa nova, chama outro com a mesmas
+    instruções ou ifac rodando sempre o mesmo com memorias compactadas?" · "ok". Aqui: escritor novo nesta volta.
+  - D-818 "vai ter que reprogramar?" · "A". Aqui: `conferir_pasta_pronta` não foi tocada; os testes dela passam
+    (`tests/test_publicar_versao.py`, 122 passaram no PC).
+
 ## Testes
 
 - **No PC, um arquivo por vez** (19/11, com `QT_QPA_PLATFORM=offscreen`):
@@ -2072,6 +2139,23 @@ Nesta volta não mudaram: `publicar_versao_kaique.py`, `atualizacao.py`, `core/w
   primeira tentativa, todas as partes (1 a 5), os botões e os prints da janela real, e o porteiro (o juiz da versão
   de teste).
 
+- **Volta 10, no PC, um arquivo por vez** (21/11, um Python por vez): `tests/test_pasta_das_ferramentas.py` 18 passaram;
+  `tests/test_publicar_versao.py` 122 passaram; `tests/test_publicar_motor.py` 12; `tests/test_publicar_servidor.py` 14;
+  `tests/test_empacotar.py` 43; `tests/test_ocr_kraken.py` 27 passaram e 6 ficaram de fora de propósito (os casos que abrem
+  o motor de verdade, de 1 GB: `-k "not motor_de_verdade_abre and not mesmas_linhas and not
+  pagina_em_memoria"`); `tests/test_windows_peca.py` 69 passaram e 2 pularam (os que só rodam no Windows do GitHub);
+  as conferências do porteiro, uma por uma: `antes_do_commit` 12, `codigo` 77, `copia_inteira` 2, `excecoes` 14,
+  `formulario` 34, `juiz` 9, `mudancas` 21, `pacote` 20, `protecao` 11 (todas passaram); as provas das decisões que tocam
+  estes arquivos: `tests/test_decisoes.py` 27, `tests/test_decisoes_atualizacao.py` 38, `tests/test_decisoes_brasao.py`
+  22. O porteiro no repositório inteiro: "nada novo (4894 arquivos lidos; a lista deixa 175 lugares)".
+- **Volta 10, reversão** (`anexos/reversao-volta10-codigo-antigo.txt`; o código de `6fa766c4` numa cópia à parte, com os
+  dois arquivos de teste novos por cima): **falham os 3 testes novos do defeito do achado 1, o teste da volta 9 com as duas
+  linhas mudadas, o da observação 8 e o da observação 6**; passam os de B1 a B5 (cobrem proteções que já existiam: quem
+  prova que eles acusam são as mutações T13 a T17) e o "da pasta principal sem git, nada muda" (é de não estragar). O
+  motivo de cada falha lá é o do defeito: os scripts carregam calados (código 0) com a pasta errada; a regra não diz
+  "não sei"; o Kraken olha o `sys.frozen` por conta própria; a frase sai "de a pasta".
+- **Volta 10, mutações:** ver "Cada proteção", Volta 10.
+
 ## Caminho e função
 
 - O publicar da versão, com ou sem pasta pronta, com ou sem instalador → `empacotar.construir_pacote_do_velopack` →
@@ -2235,6 +2319,27 @@ Nesta volta não mudaram: `publicar_versao_kaique.py`, `atualizacao.py`, `core/w
   Prova do mesmo resultado nos seis, de uma cópia de trabalho de verdade e da pasta principal:
   `tests/test_pasta_das_ferramentas.py::test_defeito1_de_uma_copia_de_trabalho_os_seis_lugares_acham_a_pasta_certa` e
   `tests/test_pasta_das_ferramentas.py::test_defeito1_da_pasta_principal_nada_muda`.
+
+- **Volta 10** ("onde fica a pasta das ferramentas, e o que fazer quando não se sabe" → `core/pasta_das_ferramentas.pasta_principal`,
+  por `_pasta_das_ferramentas_de`; "é uma cópia?" → `conversa_com_o_git.e_copia_de_trabalho`):
+  - `empacotar.FERRAMENTAS` (e dela `DOWNLOADS`, `LUGARES_DO_MOTOR`) → `pasta_das_ferramentas_ou_parar` →
+    `pasta_das_ferramentas`;
+  - `publicar_versao_kaique` (o `main`, o `publicar` e o `publicar_motor` importam o empacotar antes de qualquer ação),
+    `servidor_das_versoes`, `empacotar_teste_velocidade` → o mesmo, pelo empacotar;
+  - `montar_motor_kraken.PASTA_FERRAMENTAS` (e `DESTINO_PADRAO`, `DOWNLOADS_PADRAO`) → `pasta_das_ferramentas_ou_parar`;
+  - `compilar_detector_gravura.PASTA_FERRAMENTAS_PADRAO` → `pasta_das_ferramentas_ou_parar`;
+  - `compilar_st_ferramentas.pasta_de_ferramentas_padrao` → a do `compilar_detector_gravura`;
+  - `core/ocr_kraken.lugares_do_motor` → `pasta_das_ferramentas` (e `pasta_das_ferramentas.empacotado`);
+    `MotorKraken._comando` → recebe `SemPastaPrincipal`; `achar_pasta_do_motor` → deixa subir;
+  - "pode gravar?" (`empacotar.preparar_vc_redist`, `montar_motor_kraken.main`, `compilar_detector_gravura.main`,
+    `compilar_st_ferramentas.main`) → `problema_para_gravar` → `pasta_das_ferramentas`.
+  A prova do mesmo resultado em todos: `test_achado1_sem_git_no_caminho_numa_copia_de_trabalho_os_seis_lugares_param` e
+  `test_achado1_o_git_recusando_o_dono_numa_copia_de_trabalho_os_seis_lugares_param` (os seis, cada um num Python à
+  parte, com a mesma frase); `test_achado1_da_pasta_principal_sem_git_nada_muda` (os seis, iguais).
+- **Volta 10, a frase do apagar** → `publicar_versao_kaique.Apagado.frase` → `com_preposicao`: o `--apagar` (o `main`),
+  o caminho de erro do publicar (`publicar_arquivos`) e o `apagar_publicacao` usam o `Apagado` (como na volta 8). Prova:
+  `test_obs6_a_frase_do_apagar_sai_com_a_contracao` (os dois destinos, os dois desfechos) e o teste da volta 8 que confere
+  que a frase do `--apagar` é a do `Apagado`.
 
 ## Cada proteção e o teste que falha sem ela
 
@@ -2456,6 +2561,24 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   - P9 (sem o limite de tempo) → `tests/test_pasta_das_ferramentas.py::test_falha_o_git_que_da_erro_e_o_que_demora`.
   **11 de 11 acusadas.** A cópia sem mutação: os dois arquivos passam inteiros.
 
+- **Volta 10** (`anexos/reversao-volta10-resultado.txt`; script `anexos/reversao-volta10-mutacoes.py.txt`), numa cópia
+  de `c1ba406d` (`git archive`), uma por vez, cada arquivo devolvido ao original byte a byte (conferido pelo script).
+  Letra nova: T. **17 de 17 acusadas:**
+  - T1 a regra volta à pasta do código também numa cópia → os testes do achado 1 (4 falham);
+  - T2 a peça do git diz que nenhuma pasta é cópia → os mesmos (4 falham);
+  - T3 o parar dos scripts deixa subir o erro com o rastro técnico → `test_achado1_sem_git_...`;
+  - T4 o Kraken deixa de virar "indisponível" com a frase → o mesmo;
+  - T5 o "pode gravar?" deixa de devolver a frase → o mesmo;
+  - T6, T7, T8 o empacotar, o montar do motor e o compilador do detector voltam à regra sem o parar → o mesmo;
+  - T9 a frase do apagar volta ao "de" sem contração; T10 a contração do "em" some → `test_obs6_...`;
+  - T11 o Kraken volta a olhar o `sys.frozen` por conta própria; T12 a regra volta a passar o próprio limite ao git →
+    `test_obs8_...`;
+  - T13, T14, T15 os três scripts que gravam deixam de parar sem a pasta das ferramentas (as B1, B2 e B3 do relatório 8,
+    refeitas) → `test_b1_b3_...`;
+  - T16 o montar do motor só confere com os dois lugares de fábrica (a B4) → `test_b4_...`;
+  - T17 o "pode gravar?" olha a pasta de cima (a B5) → `test_b5_...`.
+  Nas mutações T13 a T16 a internet ficou trancada no processo (um proxy que não existe): nada foi baixado.
+
 ## De onde vem cada dado da conferência
 
 - **Se a versão ou o motor já existem no destino:** lido do destino (a pasta; ou o GitHub pelo gh), nunca de uma
@@ -2554,6 +2677,9 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
 
 - **Volta 9:** máquina, tudo (os testes com o git de verdade, a reversão, as mutações). Olho: nada. A prova à vista: o
   item 19 de "A prova de verdade", Volta 8 (seguir a frase do motor, da cópia, numa pasta com espaço no nome).
+
+- **Volta 10:** máquina, tudo (os testes com o git de verdade, a reversão, as mutações T1 a T17, a medida do git que
+  demora). Olho: nada. À vista (a gerente): os itens 20 a 22 do roteiro.
 
 ## Ressalvas
 
@@ -2774,6 +2900,8 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   lá. Da pasta principal já era assim antes.
 - **Volta 9, sem git num computador com uma cópia de trabalho** (não acontece: a cópia é feita pelo git), a regra cai
   na conta de antes e voltaria a procurar em `.claude\worktrees`. Escrito no texto do `core/pasta_das_ferramentas.py`.
+  **(Corrigida na volta 10: acontece, e o relatório 8 provou com o git de verdade: o git fora do caminho, ou recusando a
+  pasta por ser de outro dono. Agora a regra para com a frase; ver "Ressalvas", Volta 10.)**
 - **Volta 9, `montar_motor_kraken.py` e os compiladores** param no padrão quando a pasta das ferramentas não existe
   (antes a criavam onde a conta mandasse). Com um caminho passado na linha de comando, gravam lá, como antes.
 - **Volta 9, a peça do git agora abre todo git sem janela de console** (também os do porteiro). A resposta é a mesma
@@ -2787,6 +2915,24 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
 - **Volta 9, o pacote da volta 9 traz as etiquetas de tela e de imagem** (o `core/pasta_das_ferramentas.py` é novo e cai na
   linha de reserva, como o aviso do pacote diz): por isso o formulário tem "O print que prova", que não se aplica a
   este trabalho (nenhuma tela muda).
+
+- **Volta 10, o achado 2 não foi consertado** (o limite de tempo do git continua sem segurar com o lançador do Git for
+  Windows). Parei porque o conserto pedido quebra o juiz da rodada do GitHub; pergunta 1 em "Perguntas para o Samuel".
+  Enquanto isso, com o achado 1 consertado, um git que trava numa cópia faz o comando esperar (até o git terminar), e não
+  seguir com a pasta errada.
+- **Volta 10, duas linhas de um teste da volta 9 mudaram** (`test_falha_o_git_que_da_erro_e_o_que_demora`): cobravam o
+  defeito do achado 1. Precisa do sim (pergunta 2). Se a resposta for "não", o conserto do achado 1 volta.
+- **Volta 10, o diagnóstico do OCR** (`core/ocr_diagnostico.py`, fora da lista): rodado de uma cópia com o git sem
+  responder, ele chama `achar_pasta_do_motor` depois do Kraken, e para com o rastro técnico, com a frase no fim (o
+  Kraken mesmo já dá "indisponível" com a frase). É ferramenta de quem programa; não mexi.
+- **Volta 10, a pergunta ao git repete quando falha:** o "não sei" não fica guardado; num git que demora, cada lugar que
+  pergunta de novo espera o limite de novo (os scripts param no primeiro, então na prática é uma vez).
+- **Volta 10, o "é uma cópia?" vale também para um submódulo** (o `.git` também é arquivo). Não usamos submódulo; num
+  submódulo com o git sem responder, a regra também para (o certo: a pasta de cima também não é a principal ali).
+- **Volta 10, a frase do apagar:** só a do apagar ganhou a contração; as outras frases do publicar com "em {destino}"
+  continuam "em a pasta ..." (em "Ideias e bugs").
+- **Volta 10, não rodei** o `tests/test_ocr_kraken.py` com o motor de verdade (os 3 testes que abrem o motor de 1 GB;
+  rodei os outros 27), nem o publicar, o PyInstaller, o vpk e o gh de verdade (a gerente roda, à vista).
 
 ## Velocidade
 
@@ -2812,6 +2958,11 @@ passos"). O tempo de publicar é medido na prova à vista.
 
 - Volta 9: não se aplica ao caminho do livro (nenhuma página passa por aqui; só onde se procuram as ferramentas). O
   programa empacotado faz o mesmo de antes. Nenhum filtro de velocidade pedido nesta volta (a gerente decide).
+
+- Volta 10: não se aplica ao caminho do livro (nenhuma página passa por aqui; só onde se procuram as ferramentas e a
+  frase do apagar). A pergunta ao git continua uma por pasta de código e por processo, como na volta 9 (nenhuma pergunta
+  nova; o "é cópia?" só olha se um arquivo existe). O conserto do achado 2, que custaria uns 22 ms por pergunta ao git,
+  não foi feito.
 
 ## Ideias e bugs
 
@@ -2924,6 +3075,18 @@ passos"). O tempo de publicar é medido na prova à vista.
 - **Volta 9, para a Lista de bugs:** o motor do Kraken no HD externo leva perto dos 180 s do teste para abrir, frio
   (falhou uma vez, passou na outra). Ideia (Lista de espera): limite maior no teste de verdade, ou o motor no C:.
 
+- **Volta 10, para a Lista de bugs (21/11/2026, não impede; não mexi):** as frases do publicar com "em {destino.nome}"
+  saem sem a contração: "não há publicação v1.2.0 em a pasta ...", "liberada em o GitHub (...)" (umas 20 frases em
+  `publicar_versao_kaique.py`, nas classes `DestinoPasta` e `DestinoGitHub` e em `publicar_arquivos`). A função
+  `com_preposicao` desta volta já serve para elas; o pedido desta volta era só a do apagar.
+- **Volta 10, para a Lista de espera (ideia):** "está empacotado?" continua escrito à mão em outros lugares do programa
+  (`core/ocr_tesseract.py`, `core/ocr_comum.py`, `core/paginas_em_outro_processo.py`, `core/ocr_diagnostico.py`,
+  `core/windows.py`, `atualizacao.py`, `ui/tela_de_carregamento.py`, `teste_velocidade.py`). Hoje todos dão o mesmo; uma
+  função só para essa pergunta (fora da pasta das ferramentas) seria o lugar único.
+- **Volta 10, observação (a gerente decide):** a frase do pacote das regras "nada de `core/` ... importa daqui, e o pacote
+  não importa nada do programa" (`regras_dos_agentes/__init__.py`) já não é verdade pela metade desde a volta 9: o
+  `core/pasta_das_ferramentas.py` importa a peça do git. Não mexi (fora da lista).
+
 ## Perguntas para o Samuel
 
 Nenhuma nesta entrega. Procurei no Livro antes: a D-773, a D-776, a D-777, a D-788, a D-789, a D-790 e a D-795 respondem
@@ -3018,6 +3181,8 @@ de código e testes da volta 8 é 5462d882 (depois dele só a pasta deste relat�
 
 Volta 9: o código ficou em `cea2b486`; depois vieram duas docstrings e o conserto de um teste pedido pela rodada do
 GitHub; o último commit de código e testes da volta 9 é 011b06d0 (depois dele só a pasta deste relatório muda).
+
+Volta 10: c1ba406d (o último commit de código e testes da volta 10; depois dele só a pasta deste relatório muda).
 
 ## O que o agente que tentou quebrar achou
 
@@ -3227,6 +3392,40 @@ D-815). Destino de cada achado:
   `tests/test_pasta_das_ferramentas.py::test_defeito1_de_uma_copia_de_trabalho_os_seis_lugares_acham_a_pasta_certa`
   (falha em `5c22a12d`).
 
+**Volta 8** (`quem-quebrou/relatorio-8.md`, sobre as voltas 8 e 9; "NÃO ESTÁ PRONTO"). Destino de cada achado (volta 10,
+escritor novo; código em `c1ba406d`; testes antes do código em `6893b6b9`):
+1. **Médio, numa cópia de trabalho sem resposta do git, a pasta errada de 19/11:** consertado pela regra
+   (`core/pasta_das_ferramentas.pasta_principal` diz "não sei" numa cópia; a peça do git diz se é cópia). Testes:
+   `tests/test_pasta_das_ferramentas.py::test_achado1_sem_git_no_caminho_numa_copia_de_trabalho_os_seis_lugares_param`,
+   `::test_achado1_o_git_recusando_o_dono_numa_copia_de_trabalho_os_seis_lugares_param`,
+   `::test_achado1_a_regra_diz_que_nao_sabe_e_a_falha_nao_fica_guardada` e `::test_falha_o_git_que_da_erro_e_o_que_demora`
+   (duas linhas mudadas: pergunta 2). A ressalva "não acontece" da volta 9 foi corrigida em "Ressalvas", Volta 10.
+2. **Baixo, o limite de tempo do git com o lançador:** **parado, com pergunta** (pergunta 1 em "Perguntas para o
+   Samuel", Volta 10). Medido: o conserto pedido funciona (2,1 s em vez de 12,1 s), mas quebra o juiz da rodada do
+   GitHub, que roda só com o pacote das regras.
+3. **Baixo, as cinco proteções sem teste (B1 a B5):** testes novos
+   `::test_b1_b3_os_tres_scripts_que_gravam_param_sem_a_pasta_das_ferramentas`,
+   `::test_b4_o_montar_do_motor_para_se_um_dos_dois_lugares_e_o_de_fabrica` e
+   `::test_b5_pode_gravar_olha_a_pasta_das_ferramentas_e_nao_a_de_cima`; as mutações T13 a T17 (as mesmas proteções,
+   desligadas por mim) são acusadas.
+4. **Observação, o docstring do teste do pacote promete mais do que cobra:** não mexi (o pedido não o inclui); o item 20
+   do roteiro é a prova do pacote de verdade.
+5. **Observação, B6 e B7 da peça do git sem teste:** não mexi (o pedido não as inclui; em "Ideias e bugs" do relatório).
+6. **Observação, "de a pasta" / "de o GitHub":** consertado no lugar único das frases do apagar (`Apagado.frase`, pela
+   `com_preposicao`). Teste: `tests/test_publicar_versao.py::test_obs6_a_frase_do_apagar_sai_com_a_contracao`. As outras
+   frases do publicar com "em {destino}" ficam (em "Ideias e bugs").
+7. **Observação, o programa instalado lê o arquivo da versão que não é UTF-8:** não muda (não chega ao Kaique: o
+   publicar recusa esse arquivo e a assinatura impede trocá-lo); anotado em "Ressalvas" da volta 8.
+8. **Observação, "está empacotado?" e "30 s" em dois lugares:** consertado (o Kraken pergunta à regra; o limite só na
+   peça do git). Teste: `tests/test_pasta_das_ferramentas.py::test_obs8_esta_empacotado_e_o_limite_do_git_moram_num_lugar_so`.
+   Os outros "está empacotado?" do programa: em "Ideias e bugs".
+9. **Observação, a cópia sem repositório dentro de outro repositório:** não muda (fora do pedido); o teste continua
+   impedindo o git de subir além da pasta do teste.
+10. **Observação, a peça do git sem janela vale também para o porteiro:** não muda; os testes do porteiro passaram no PC
+    (um arquivo por vez) e na rodada do GitHub.
+"O que falta para a prova à vista": os três acréscimos estão em "A prova de verdade", Volta 10 (itens 20 e 21, e o item 8
+riscado).
+
 ## A prova de verdade
 
 Roteiro para a gerente (não rodado; D-785, item 8; o plano: "0 perguntas do Windows"; o Samuel olha a janela, não
@@ -3246,7 +3445,8 @@ clica nada):
 7. O aviso de pouco espaço: com a reserva aumentada só nesta prova (`--reserva-gb` com um número maior que o espaço
    livre do C:; a opção só aumenta, nunca abaixo de 20 GB), o publicar recusa antes do vpk; o C: nunca é enchido.
 8. No GitHub, como rascunho: `publicar_versao_kaique.py --motor` e a versão de teste sem `--pasta`; ler de volta,
-   liberar, e no fim `--apagar v<versão>` e `--apagar motor-kraken-1` (conferido: "não existe").
+   liberar, e no fim `--apagar v<versão>` e `--apagar motor-kraken-1` ~~(conferido: "não existe")~~ (riscado na
+   volta 10: vale o item 18).
 9. Depois, as versões de prova do passo 3 (lista do plano): a primeira com o .msi (motor 1); uma boa; uma que nem abre;
    uma com a assinatura de uma chave falsa; uma que pede o motor 2, com o motor 2 verdadeiro e o motor 2 com assinatura
    falsa (o motor 2 pede aumentar `core/ocr_kraken.VERSAO_DO_MOTOR` numa cópia); e uma boa para o atualizar de longe.
@@ -3300,10 +3500,11 @@ prova à vista", item 2). Substituem os itens 13 a 15 da Volta 6:**
     só dá para olhar se o arquivo está na pasta de downloads (está: 25.635.768 bytes, conferido pelo relatório 7).
 18. **O `--apagar` (o defeito 2):** depois de uma publicação de prova na pasta das provas,
     `publicar_versao_kaique.py --apagar v<versão> --pasta <pasta de prova>` tem de dizer "a publicação v<versão> foi
-    apagada de a pasta ... (conferido)", e a janela do servidor não mostra mais a versão. Rodado de novo, o mesmo comando
-    tem de dizer "v<versão>: não existia em a pasta ..., e nada foi apagado (conferido)". No item 8 (o GitHub), o mesmo:
-    "foi apagada de o GitHub (...) (conferido)" para a versão e para o `motor-kraken-1` (antes o roteiro esperava "não
-    existe"; agora essa frase só aparece se não havia nada).
+    apagada da pasta ... (conferido)", e a janela do servidor não mostra mais a versão. Rodado de novo, o mesmo comando
+    tem de dizer "v<versão>: não existia na pasta ..., e nada foi apagado (conferido)". No item 8 (o GitHub), o mesmo:
+    "foi apagada do GitHub (...) (conferido)" para a versão e para o `motor-kraken-1` (antes o roteiro esperava "não
+    existe"; agora essa frase só aparece se não havia nada: "não existia no GitHub (...)"). (Volta 10: as frases com a
+    contração; até a volta 9 saíam "de a pasta", "em a pasta", "de o GitHub".)
 19. **O motor achado no lugar certo, da cópia (o defeito 1; só depois do conserto dele):** da cópia de trabalho (a
     `passo2` ou a da versão de teste), numa pasta de provas nova e vazia com espaço no nome:
     `publicar_versao_kaique.py --pasta "C:\EditorImpressaoProva\versoes 3"` tem de parar com "publique o motor antes,
@@ -3318,6 +3519,29 @@ prova à vista", item 2). Substituem os itens 13 a 15 da Volta 6:**
 **Volta 9:** o item 19 da Volta 8 continua o que a gerente repete com o Samuel (seguir a frase do motor ao pé da letra,
 da cópia, numa pasta com espaço no nome). Mais um olhar: depois dele, a pasta errada de 19/11 continua com a mesma data
 (o programa não a usou).
+
+**Volta 10, o que a prova à vista acrescenta (relatório 8, "O que falta para a prova à vista"; a prova só depois desta
+volta, D-775):**
+- O item 8 está riscado (ainda esperava "não existe" no `--apagar`); vale o item 18, com as frases novas.
+20. **O pacote do Kaique sem a peça do git (D-605, D-788).** Depois da montagem do item 15, listar o que o PyInstaller pôs
+    no programa: `.venv\Scripts\pyi-archive_viewer.exe -r -b dist\EditorImpressao\EditorImpressao.exe` (lido no
+    PyInstaller 6.21, `utils/cliutils/archive_viewer.py`: `-r` lista também o que está dentro dos arquivos de dentro, como
+    o PYZ, e já implica `-l`; `-b` mostra só os nomes). Não pode aparecer nenhum nome começando por
+    `regras_dos_agentes`, e tem de aparecer `core.pasta_das_ferramentas`. Depois, abrir uma vez o programa montado
+    (`dist\EditorImpressao\EditorImpressao.exe`) até a janela aparecer, e fechar: nada importava a peça tirada. (Não
+    rodado por mim.)
+21. **O item 19 também da pasta principal** (`D:\programas\EditorImpressao`): a linha "motor do Kraken 1: ..." e a linha
+    "Visual C++: ..." têm de dizer as mesmas pastas que disseram da cópia
+    (`D:\programas\EditorImpressao-arquivos\ferramentas\motor-kraken` e `...\ferramentas\downloads\vc_redist.x64.exe`).
+    D-605: da pasta principal, nada muda.
+22. **O "não sei" à vista (o achado 1), sem mexer em nada do Windows:** numa janela do PowerShell, na cópia `passo2`,
+    tirar o Git do caminho só nessa janela
+    (`$env:PATH = ($env:PATH -split ';' | Where-Object { -not (Test-Path (Join-Path $_ 'git.exe')) }) -join ';'`) e rodar
+    `.venv\Scripts\python.exe publicar_versao_kaique.py --pasta "C:\EditorImpressaoProva\versoes 4"` (o `.venv` da
+    pasta principal, pelo caminho inteiro). Tem de parar logo, com "Parei: não sei onde fica a pasta das ferramentas
+    ... o git não está instalado ou não está no caminho do Windows ...", sem criar a pasta `versoes 4` e sem nenhuma
+    pasta nova em `D:\programas\EditorImpressao\.claude\worktrees`. Fechar a janela (o caminho volta ao normal).
+E o olhar da volta 9 continua: a pasta errada de 19/11 com a mesma data (hoje 19/11/2026 15:44).
 
 ## Perguntas do Windows que o Samuel vê
 
@@ -3335,12 +3559,21 @@ da cópia, numa pasta com espaço no nome). Mais um olhar: depois dele, a pasta 
 
 - Volta 9: 0 (perguntar ao git não pede licença nem abre janela; ele roda sem janela de console).
 
+- Volta 10: 0 (perguntar ao git e decidir a pasta não pedem licença nem abrem janela; o item 22 do roteiro só muda o
+  caminho dentro de uma janela do PowerShell).
+
 ## O print que prova
 
 Não se aplica: nenhuma tela do programa muda neste passo (volta 9: só onde o código procura a pasta das ferramentas; a etiqueta de tela veio do arquivo novo em core/, que ainda não tem linha na tabela).
+
+Volta 10: não se aplica (nenhuma tela do programa muda; só a frase dos scripts de linha de comando e a do apagar, que
+estão em `anexos/volta10-frases-de-verdade.txt`).
 
 ## Páginas em que foi conferido
 
 Não se aplica: nenhuma página de livro passa por este passo (0 páginas). Os arquivos com a etiqueta de imagem
 (`montar_motor_kraken.py`, `core/ocr_kraken.py`) mudaram só na ficha e na conferência do motor, que não tocam a imagem
 de nenhuma página.
+
+Volta 10: não se aplica, 0 páginas (só onde se procuram as ferramentas e a frase do apagar; `core/ocr_kraken.py` mudou
+só em onde o motor é procurado e no aviso de "indisponível", que não tocam a imagem de nenhuma página).

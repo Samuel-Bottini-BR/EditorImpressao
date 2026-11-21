@@ -1,0 +1,9 @@
+A frase de verdade, da copia passo2 (21/11/2026), com o git recusando o dono (GIT_TEST_ASSUME_DIFFERENT_OWNER=1, sem a configuracao global e a do sistema): python -c "import empacotar"
+Parei: não sei onde fica a pasta das ferramentas (EditorImpressao-arquivos\ferramentas, ao lado da pasta principal do repositório): o código roda de uma cópia de trabalho (D:\programas\EditorImpressao\.claude\worktrees\passo2), e o git não disse de que pasta principal ela saiu (o git recusou `git rev-parse --path-format=absolute --git-common-dir` (código 128): fatal: detected dubious ownership in repository at 'D:/programas/EditorImpressao/.claude/worktrees/passo2'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory D:/programas/EditorImpressao/.claude/worktrees/passo2). Nada foi procurado nem criado. Conserte o git (o comando git -C "D:\programas\EditorImpressao\.claude\worktrees\passo2" rev-parse --git-common-dir tem de responder) ou rode da pasta principal do repositório.
+
+Sem git no caminho (PATH so com C:\Windows\System32): python -c "import empacotar"
+Parei: não sei onde fica a pasta das ferramentas (EditorImpressao-arquivos\ferramentas, ao lado da pasta principal do repositório): o código roda de uma cópia de trabalho (D:\programas\EditorImpressao\.claude\worktrees\passo2), e o git não disse de que pasta principal ela saiu (o git não está instalado ou não está no caminho do Windows). Nada foi procurado nem criado. Conserte o git (o comando git -C "D:\programas\EditorImpressao\.claude\worktrees\passo2" rev-parse --git-common-dir tem de responder) ou rode da pasta principal do repositório.
+(código de saída 1, sem o rastro técnico)

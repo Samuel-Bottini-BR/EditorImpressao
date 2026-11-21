@@ -1,0 +1,17 @@
+T1 | core/pasta_das_ferramentas.py | a regra volta à pasta do código também numa cópia de trabalho | tests/test_pasta_das_ferramentas.py -k "achado1 or falha_o_git" | 4 failed, 1 passed, 13 deselected in 9.28s | ACUSADA | 11 s | devolvido igual
+T2 | regras_dos_agentes/conversa_com_o_git.py | a peça do git diz que nenhuma pasta é cópia | tests/test_pasta_das_ferramentas.py -k "achado1 or falha_o_git" | 4 failed, 1 passed, 13 deselected in 8.30s | ACUSADA | 9 s | devolvido igual
+T3 | core/pasta_das_ferramentas.py | o parar dos scripts deixa subir o erro (com o rastro técnico) | tests/test_pasta_das_ferramentas.py -k "achado1_sem_git" | 1 failed, 17 deselected in 2.16s | ACUSADA | 3 s | devolvido igual
+T4 | core/ocr_kraken.py | o Kraken deixa de virar indisponível com a frase | tests/test_pasta_das_ferramentas.py -k "achado1_sem_git" | 1 failed, 17 deselected in 5.33s | ACUSADA | 6 s | devolvido igual
+T5 | core/pasta_das_ferramentas.py | o pode gravar deixa de devolver a frase | tests/test_pasta_das_ferramentas.py -k "achado1_sem_git" | 1 failed, 17 deselected in 8.18s | ACUSADA | 10 s | devolvido igual
+T6 | empacotar.py | o empacotar volta à regra sem o parar | tests/test_pasta_das_ferramentas.py -k "achado1_sem_git" | 1 failed, 17 deselected in 4.45s | ACUSADA | 6 s | devolvido igual
+T7 | montar_motor_kraken.py | o montar do motor volta à regra sem o parar | tests/test_pasta_das_ferramentas.py -k "achado1_sem_git" | 1 failed, 17 deselected in 4.97s | ACUSADA | 7 s | devolvido igual
+T8 | compilar_detector_gravura.py | o compilador volta à regra sem o parar | tests/test_pasta_das_ferramentas.py -k "achado1_sem_git" | 1 failed, 17 deselected in 5.92s | ACUSADA | 8 s | devolvido igual
+T9 | publicar_versao_kaique.py | a frase do apagar volta ao 'de' sem contração | tests/test_publicar_versao.py -k "obs6" | 1 failed, 121 deselected in 3.28s | ACUSADA | 6 s | devolvido igual
+T10 | publicar_versao_kaique.py | a contração do 'em' some | tests/test_publicar_versao.py -k "obs6" | 1 failed, 121 deselected in 2.32s | ACUSADA | 4 s | devolvido igual
+T11 | core/ocr_kraken.py | o Kraken volta a olhar o sys.frozen por conta própria | tests/test_pasta_das_ferramentas.py -k "obs8" | 1 failed, 17 deselected in 2.28s | ACUSADA | 4 s | devolvido igual
+T12 | core/pasta_das_ferramentas.py | a regra volta a passar o próprio limite ao git | tests/test_pasta_das_ferramentas.py -k "obs8" | 1 failed, 17 deselected in 2.24s | ACUSADA | 3 s | devolvido igual
+T13 | montar_motor_kraken.py | o montar do motor deixa de parar sem a pasta das ferramentas (B1) | tests/test_pasta_das_ferramentas.py -k "b1_b3" | 1 failed, 17 deselected in 4.55s | ACUSADA | 6 s | devolvido igual
+T14 | compilar_detector_gravura.py | o compilar do detector deixa de parar (B2) | tests/test_pasta_das_ferramentas.py -k "b1_b3" | 1 failed, 17 deselected in 3.95s | ACUSADA | 5 s | devolvido igual
+T15 | compilar_st_ferramentas.py | o compilar do st_ferramentas deixa de parar (B3) | tests/test_pasta_das_ferramentas.py -k "b1_b3" | 1 failed, 17 deselected in 4.64s | ACUSADA | 6 s | devolvido igual
+T16 | montar_motor_kraken.py | o montar do motor só confere com os dois de fábrica (B4) | tests/test_pasta_das_ferramentas.py -k "b4" | 1 failed, 17 deselected in 5.62s | ACUSADA | 7 s | devolvido igual
+T17 | core/pasta_das_ferramentas.py | o pode gravar olha a pasta de cima (B5) | tests/test_pasta_das_ferramentas.py -k "b5" | 1 failed, 17 deselected in 2.70s | ACUSADA | 4 s | devolvido igual
