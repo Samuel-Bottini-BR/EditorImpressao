@@ -3468,7 +3468,7 @@ saíram, por ordem da gerente.)
   liberar em a pasta C:\EditorImpressaoProva\versoes 3 e não deu para reconferir agora ... se ficou liberada em a
   pasta C:\EditorImpressaoProva\versoes 3, está inteira ...". Com o conserto, ficaria "pedi para liberar na pasta ...
   se ficou liberada na pasta ..." (no GitHub: "no GitHub"). Só essas duas palavras mudam. A frase inteira, como sai
-  hoje e como sairia, tirada do próprio programa, nos dois lugares: `anexos/volta11-a-frase-da-d816.txt`.
+  hoje e como sairia, tirada do próprio programa, nos dois lugares: `anexos/volta11-a-frase-da-d816.md`.
 - **Por que parei.** Um teste automático feito em 20/11 confere que essa frase tem o pedaço "ficou liberada em". Com o
   conserto, o pedaço vira "ficou liberada na" e o teste falha. A regra é nunca mudar um teste antigo para ele passar sem
   você deixar.
