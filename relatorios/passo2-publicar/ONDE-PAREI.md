@@ -386,7 +386,7 @@ da volta 6 (`test_volta6_*`). Mais:
 **Os testes antigos que mudam, pela D-818 (só a pasta de mentira e o que ela precisa para "ser" a de verdade; nenhum
 muda o que cobra):**
 1. `tests/test_publicar_versao.py::_pasta_pronta` (a pasta de mentira de todos os testes do publicar, 29 chamadas de
-   `_publicar(a` mais as diretas): passa a trazer o arquivo da versão do Visual C++ (`instalar\vc_redist.versao.txt`,
+   `_publicar(a` mais as diretas): passa a trazer o arquivo da versão do Visual C++ (o vc_redist.versao.txt de instalar\,
    "14.44.35211.0") e o Tesseract (os mesmos arquivos que a montagem copia, pela lista única). O "Visual C++" continua o
    mesmo arquivo de poucos bytes.
 2. `tests/test_publicar_versao.py::ambiente` (a preparação de todos os testes do publicar): a leitura da assinatura
@@ -395,7 +395,7 @@ muda o que cobra):**
    arquivo vai à leitura de verdade do Windows. Sem isso, um arquivo de poucos bytes nunca é da Microsoft, e todos os
    testes antigos parariam na conferência nova (não pelo que eles cobram). É o que os testes já fazem com o vpk e o gh
    (peças de mentira só para a lógica em volta, D-767), escrito no texto da preparação.
-3. `tests/test_publicar_versao.py::VPK_FALSO` (o vpk de mentira): ganha uma opção, `VPK_FALSO_SEM` (deixa de fora do
+3. O `VPK_FALSO` de `tests/test_publicar_versao.py` (o vpk de mentira): ganha uma opção, `VPK_FALSO_SEM` (deixa de fora do
    pacote os caminhos que começam com o que ela diz), desligada de fábrica: com ela vazia, ele faz exatamente o que fazia.
 Se algum teste antigo precisar mudar o que cobra, paro e escrevo em "Perguntas para o Samuel".
 
@@ -797,7 +797,7 @@ só lido) e na pasta que a prova deixou (`dist\EditorImpressao`, só lida: tem o
   | `construir_pacote_do_velopack` (as duas passadas e o chamado sozinho) | `preparar_saida` e depois `conferir_pasta_pronta` | `conferir_pasta_pronta` ANTES de `preparar_saida` (achado 4), depois o vpk |
   | o pacote depois do vpk | `conferir_pacote_do_velopack`: o nome do Visual C++; o Tesseract só com peças | o Tesseract sempre e a versão do Visual C++ |
   | a montagem copia o Tesseract / o Inno confere | `_destinos_das_pecas` (a lista escrita ali) | a mesma lista, de `relativos_do_tesseract` |
-  | o programa instalado (`atualizacao.instalar_visual_c_se_faltar`) | lê `instalar\vc_redist.versao.txt` | não muda |
+  | o programa instalado (`atualizacao.instalar_visual_c_se_faltar`) | lê o vc_redist.versao.txt de instalar\ | não muda |
 - **Os testes antigos:** a pasta de mentira ganha as peças (lista em "O que já está escolhido e testado aqui", Volta 7).
 - **A prova:** um teste da D-818 em `tests/test_publicar_versao.py` (o arquivo das decisões não está na lista do
   pacote): a pasta pronta sem o Tesseract, com um Visual C++ falso (lido pela peça de verdade do Windows) e sem o
@@ -1196,7 +1196,7 @@ Corporation, ...", produto "Microsoft Visual C++ 2015-2022 Redistributable (x64)
 "14.44.35211.0": `tests/test_empacotar.py:370`, o `_assinatura` dos testes, e o registro da prova de 20/11, "versão
 14.44.35211.0, assinatura da Microsoft conferida"). Para um arquivo sem assinatura, o Windows responde status
 "NotSigned" e assinante vazio (rodado de novo pelo teste novo da régua única, `tests/test_empacotar.py`, no PC). O que o
-programa instalado faz com a versão: `atualizacao.py:1230` (lê `vc_redist.versao.txt`; sem ele, "0.0.0").
+programa instalado faz com a versão: `atualizacao.py:1230` (lê o vc_redist.versao.txt; sem ele, "0.0.0").
 
 **Volta 8.**
 - O git: `git rev-parse --git-common-dir` mostra a pasta de git comum (com `--path-format=absolute`, o caminho inteiro e
@@ -1291,20 +1291,49 @@ programa instalado faz com a versão: `atualizacao.py:1230` (lê `vc_redist.vers
    na pasta; a pasta de mentira dos testes antigos ganhou as peças (D-818); testes novos para o pacote sem uma peça e
    para a pasta das provas com espaço no nome; o roteiro da prova na ordem certa.
 
+15. **Volta 8 (os 2 defeitos da prova à vista de 20/11 e os 6 baixos do relatório 7):**
+    - *Defeito 2, a frase depois de apagar:* o lugar único do apagar (`apagar_e_conferir`, o antigo corpo de
+      `apagar_publicacao`) passa a devolver o que fez (`Apagado`: havia ou não o que apagar, e o aviso do destino) e a
+      frase de cada desfecho sai dele (`Apagado.frase`): "a publicação X foi apagada de Y (conferido)" e "X: não existia
+      em Y, e nada foi apagado (conferido)". O `--apagar` (pasta e GitHub, versão e motor) e o caminho de erro do
+      publicar (antes do pedido de liberar) imprimem essa frase; `apagar_publicacao` continua devolvendo o aviso, pela
+      mesma conta (os testes antigos cobram isso).
+    - *Baixo 6, a versão do Visual C++ lida de dois jeitos:* uma leitura só, `atualizacao.versao_do_visual_c_do_pacote`
+      (o jeito do publicar: UTF-8 trocando o que não é UTF-8, sem os espaços das pontas; nada se o arquivo não existe),
+      usada pela conferência da pasta (`empacotar.conferir_pasta_pronta`) e pelo programa instalado
+      (`atualizacao.instalar_visual_c_se_faltar`, que continua usando "0.0.0" sem o arquivo).
+    - *Baixos 1 a 3, só testes:* a leitura da assinatura que falha (a peça do PowerShell respondendo "não terminou");
+      uma cópia do powershell.exe do Windows como Visual C++, lida de verdade (assinatura válida, de outro assinante); o
+      arquivo da versão vazio ou pela metade; as licenças do Tesseract na pasta e no pacote. A régua e a lista não mudam.
+    - *Baixo 5, o roteiro:* o item 14 diz onde a linha "Visual C++: ..." aparece ("A prova de verdade", Volta 8).
+    - *O formulário:* a linha da D-818 da Volta 7, as citações do vpk de mentira e do arquivo da versão do Visual C++, e
+      esta lista de arquivos (só o que mudou desde a partida da volta).
+    - *Defeito 1, as peças procuradas no lugar errado numa cópia:* **não feito**. Parei: o conserto pela causa pede
+      arquivos fora da lista do pacote (o plano e o porquê em "A causa, a regra e todos os caminhos", Volta 8, e em
+      "Perguntas para o Samuel", Volta 8).
+
 ## Arquivos criados ou alterados
 
-Desde a partida desta volta (`5f96975b`, o pacote da volta 4); o que as voltas 1 a 3 mexeram está no `git log` deste
-arquivo e nas seções "O que foi feito" e "Caminho e função".
+Desde a partida desta volta (`21f1fc50`, o pacote da volta 8); o que as voltas 1 a 7 mexeram está nos itens abaixo
+desta lista, no `git log` deste arquivo e nas seções "O que foi feito" e "Caminho e função".
 
-- `core/windows.py`
-- `empacotar.py`
-- `publicar_versao_kaique.py`
-- `tests/test_windows_peca.py` (5 testes novos e o caminho do achado 9 em texto cru; nenhum antigo mudou no que cobra)
-- `tests/test_publicar_versao.py` (13 testes novos, 22 casos; o teste antigo do achado 5 da volta 3 saiu, com a nota no
-  lugar dele: ver "O que já está escolhido e testado aqui" e "Ressalvas")
-- `relatorios/passo2-publicar/` (este formulário, o pacote da volta 4 e os anexos `reversao-volta4-*` e `volta4-*`)
+- `publicar_versao_kaique.py` (o `Apagado` e o `apagar_e_conferir`, o lugar único do apagar e das frases dele; o
+  `--apagar` e o caminho de erro passam a usar a frase dele; `apagar_publicacao` só repassa)
+- `atualizacao.py` (a leitura única da versão do Visual C++ do pacote, `versao_do_visual_c_do_pacote`, usada pelo
+  programa instalado)
+- `empacotar.py` (a conferência da pasta lê a versão do Visual C++ pela leitura única; o texto)
+- `tests/test_publicar_versao.py` (9 testes novos, 23 casos, acrescentados no fim; nenhum antigo mudou)
+- `relatorios/passo2-publicar/` (este formulário, o pacote da volta 8 e os anexos `reversao-volta8-*`)
 
-`tests/test_empacotar.py` não mudou.
+Nesta volta não mudaram: `core/windows.py`, `core/ocr_kraken.py`, `montar_motor_kraken.py`,
+`compilar_detector_gravura.py`, `tests/test_empacotar.py`, `tests/test_windows_peca.py` (o defeito 1 parou antes de
+mexer).
+
+- **Volta 4** (desde `5f96975b`, o pacote da volta 4): `core/windows.py`, `empacotar.py`, `publicar_versao_kaique.py`,
+  `tests/test_windows_peca.py` (5 testes novos e o caminho do achado 9 em texto cru; nenhum antigo mudou no que cobra),
+  `tests/test_publicar_versao.py` (13 testes novos, 22 casos; o teste antigo do achado 5 da volta 3 saiu, com a nota no
+  lugar dele: ver "O que já está escolhido e testado aqui" e "Ressalvas") e, em `relatorios/passo2-publicar/`, este
+  formulário, o pacote da volta 4 e os anexos `reversao-volta4-*` e `volta4-*`. `tests/test_empacotar.py` não mudou.
 
 - **Volta 5** (desde `595cc293`, dentro da lista acima): `core/windows.py`, `publicar_versao_kaique.py`,
   `tests/test_windows_peca.py` (1 teste novo), `tests/test_publicar_versao.py` (7 testes novos, 9 casos; nenhum antigo
@@ -1474,6 +1503,29 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
   - D-785 (item 8): nada de verdade rodou; o roteiro da prova está em "A prova de verdade", Volta 7.
   - D-815: segunda e última volta deste escritor.
 
+- **Volta 8:**
+  - D-605: nenhum teste antigo mudou (`git diff 21f1fc50 -- tests/` só acrescenta no fim de `tests/test_publicar_versao.py`);
+    os 98 antigos do publicar passam no código novo e, com o arquivo novo, no código de `21f1fc50` (111 de 121 lá: os 98
+    antigos e 13 novos que cobram proteções que já existiam). O programa instalado: `tests/test_decisoes_atualizacao.py`
+    38 de 38 e o caso do Visual C++ de `tests/test_decisoes_preparo_d749.py` passam; o teste novo do baixo 6 prova que,
+    para todo arquivo que o publicar aceita, o programa instalado lê a mesma versão de hoje.
+  - D-727: o Visual C++ e a versão dele continuam cobrados de toda pasta e todo pacote; a leitura da versão é uma só
+    (`tests/test_publicar_versao.py::test_volta8_baixo6_o_publicar_e_o_programa_instalado_usam_a_mesma_leitura`).
+  - D-767: o Visual C++ de outro assinante é uma cópia do powershell.exe do Windows, lida pela peça de verdade
+    (`tests/test_publicar_versao.py::test_volta8_baixo1b_um_programa_da_microsoft_que_nao_e_o_visual_c_e_recusado_pela_mesma_regua`).
+    O defeito 1 não foi feito (parado).
+  - D-773: o `--apagar` na pasta das provas e no GitHub (`tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou`).
+  - D-776, D-777, D-789, D-795: nada desta volta toca a conta do espaço, as saídas, a diferença nem o Setup.exe
+    (conferido no `git diff 21f1fc50`).
+  - D-785 (item 8): não rodei o publicar de verdade; o roteiro para a gerente está em "A prova de verdade", Volta 8.
+  - D-788: nada mudou em `core/ocr_kraken.py` (o defeito 1 parou antes de mexer); o programa instalado acha o motor
+    como hoje.
+  - D-815: sou o escritor novo desta volta (a primeira das minhas duas).
+  - D-816: o caminho depois do pedido de liberar não passa pelo apagar; os `test_d816_*` passam.
+  - D-817: nenhum teste antigo saiu nem mudou.
+  - D-818: as proteções da pasta já montada ganharam os testes que faltavam (baixos 1 a 3), provados pelas mutações
+    U8 a U12 ("Cada proteção", Volta 8).
+
 ## Testes
 
 - **No PC, um arquivo por vez** (19/11, com `QT_QPA_PLATFORM=offscreen`):
@@ -1610,6 +1662,19 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
   deste relatório): **success** na primeira tentativa, todas as partes (1 a 5), os botões e o resumo. PORTEIRO: success
   (o trabalho "Porteiro (juiz da versao de teste)"). O registro diz "TESTADO_SHA: eda1dc6b..." nas 52 linhas.
 
+- **Volta 8, no PC, um arquivo por vez** (20/11, `QT_QPA_PLATFORM=offscreen`): `tests/test_publicar_versao.py` 121
+  passaram (98 antigos e 23 casos novos); `tests/test_empacotar.py` 42; `tests/test_decisoes_atualizacao.py` 38;
+  `tests/test_publicar_motor.py` 12; `tests/test_publicar_servidor.py` 14; `tests/test_decisoes_ajudante_da_atualizacao.py`
+  37; `tests/test_decisoes_preparo_d749.py` 5 passam e os mesmos 3 da volta 7 falham no PC (o comando com "C:\", a pasta
+  temporária do PC; não é deste trabalho, em "Ideias e bugs", Volta 7). Porteiro no PC: "nada novo" (175 lugares).
+- **Volta 8, reversão** (`anexos/reversao-volta8-codigo-antigo.txt`; o código de `21f1fc50` numa cópia à parte, com o
+  arquivo de testes novo por cima): **10 dos 23 casos novos falham** lá (os 6 do defeito 2: a frase depois de apagar é
+  "não existe em", e `Apagado` não existia; 4 do baixo 6: a leitura única não existia). Passam lá os 13 que cobram
+  proteções que já existiam (os baixos 1 a 3 e os casos do baixo 6 que a conferência já recusava); servem para a
+  proteção não sumir calada e são provados pelas mutações. Os 98 antigos passam lá.
+- **Volta 8, mutações** (`anexos/reversao-volta8-resultado.txt`; script `anexos/reversao-volta8-mutacoes.py.txt`), numa
+  cópia de `b2863630`: ver "Cada proteção", Volta 8.
+
 ## Caminho e função
 
 - O publicar da versão, com ou sem pasta pronta, com ou sem instalador → `empacotar.construir_pacote_do_velopack` →
@@ -1738,6 +1803,25 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
   (a mesma frase para a pasta já montada e a montada do zero, em cada um dos 6 defeitos) e
   `tests/test_empacotar.py::test_d818_a_montagem_e_a_pasta_usam_a_mesma_regua_do_visual_c` (o mesmo motivo na montagem
   e na régua).
+
+- **Volta 8** ("a frase depois de apagar" → `publicar_versao_kaique.Apagado.frase`, devolvida pelo lugar único do apagar,
+  `publicar_versao_kaique.apagar_e_conferir`; "a versão do Visual C++ do pacote" → `atualizacao.versao_do_visual_c_do_pacote`):
+  | Caminho | Função que usa |
+  |---|---|
+  | `--apagar <etiqueta> --pasta <pasta>` (a versão e o motor) | `apagar_e_conferir` → `Apagado.frase` |
+  | `--apagar <etiqueta>` no GitHub (a versão e o motor) | `apagar_e_conferir` → `Apagado.frase` |
+  | o caminho de erro do publicar, antes do pedido de liberar (`publicar_arquivos`) | `apagar_e_conferir` (só o rascunho, logo depois de criar) → `Apagado.frase` |
+  | `apagar_publicacao` (quem chama pelo contrato antigo: os testes antigos) | `apagar_e_conferir(...).aviso` |
+  | depois do pedido de liberar (D-816) | não apaga: a frase da D-816 (`_frase_depois_do_pedido_de_liberar`), sem mudança |
+  | a conferência da pasta (publicar montado do zero, `--pasta-pronta`, a segunda passada, o empacotar sozinho) | `empacotar.conferir_pasta_pronta` → `atualizacao.versao_do_visual_c_do_pacote` |
+  | o programa instalado do Kaique (o preparo do computador) | `atualizacao.instalar_visual_c_se_faltar` → `atualizacao.versao_do_visual_c_do_pacote` |
+  | quem escreve o arquivo da versão | só a montagem, `empacotar.preparar_pasta_para_o_velopack` (grep do nome do arquivo: nenhum outro) |
+  | o pacote depois do vpk | `empacotar.esperados_no_pacote_do_velopack`: cobra que o arquivo está lá (não o lê) |
+  Prova do mesmo resultado em todos: `tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou`
+  (quatro caminhos: pasta e GitHub, versão e motor), `tests/test_publicar_versao.py::test_volta8_defeito2_o_caminho_de_erro_usa_a_mesma_frase_do_apagar`
+  e `tests/test_publicar_versao.py::test_volta8_baixo6_o_publicar_e_o_programa_instalado_usam_a_mesma_leitura`.
+- **Volta 8, o defeito 1 (só o plano):** os seis caminhos da tabela de "A causa", Volta 8, passariam todos pela função
+  única da pasta das ferramentas; não feito (parado).
 
 ## Cada proteção e o teste que falha sem ela
 
@@ -1983,6 +2067,13 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   conteúdo do Tesseract não é comparado com o original na pasta já montada (não há original; a montagem compara na
   hora de copiar): escrito nas Ressalvas.
 
+- **Volta 8:** "foi apagada" vem de duas leituras do destino feitas pelo próprio apagar (havia antes do pedido; não há
+  depois), nunca do código de saída do gh nem de uma anotação; "não existia" vem da leitura de antes (nada foi pedido).
+  A versão do Visual C++ do pacote vem do arquivo que está na pasta (disco), lido pela função única, e é comparada com a
+  versão que o Windows lê na assinatura do arquivo do Visual C++ (o que o conferido não escreve). O "assinado por outra
+  pessoa" dos testes novos vem do Windows de verdade (a cópia do powershell.exe); o "não terminou" vem da peça do
+  PowerShell trocada no teste (só a lógica em volta: o que a régua faz com uma leitura que falhou).
+
 ## Máquina ou olho
 
 - Máquina: tudo o que está em "Testes" (a lógica, a pasta de verdade como destino, o servidor de verdade, a vigia com
@@ -1999,6 +2090,9 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
 
 - **Volta 7:** máquina, tudo (os testes; a leitura de verdade da assinatura de um arquivo sem assinatura). Olho: nada.
   A prova à vista: itens 13 a 17 da Volta 7.
+
+- **Volta 8:** máquina, tudo (os testes, a reversão no código antigo, as mutações; a leitura de verdade da assinatura
+  da cópia do powershell.exe). Olho: nada. A prova à vista: itens 18 e 19 de "A prova de verdade", Volta 8.
 
 ## Ressalvas
 
@@ -2181,6 +2275,32 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   só confere o tamanho (agora a conferência da pasta lê a assinatura da cópia, o que também pega uma cópia corrompida do
   mesmo tamanho). A (9) vai para "Ideias e bugs".
 
+- **Volta 8, o defeito 1 não foi feito.** O conserto pela causa pede arquivos fora da lista do pacote (o plano está em
+  "A causa, a regra e todos os caminhos", Volta 8, e o pedido à gerente em "Perguntas para o Samuel", Volta 8). Até
+  lá, publicar de uma cópia de trabalho continua procurando o motor e o Visual C++ no lugar errado (a prova 6b); da
+  pasta principal funciona.
+- **Volta 8, o programa instalado lê a versão do Visual C++ pelo jeito do publicar.** Para todo arquivo que o publicar
+  aceita, o resultado é o mesmo de hoje (teste do baixo 6). Num arquivo que o publicar recusa, muda um caso: em UTF-16,
+  o programa instalado levantava erro ao ler; agora lê um texto trocado, que não é uma versão, e não instala o Visual
+  C++ (como já fazia com qualquer texto que não é versão). Esse arquivo nunca chega ao Kaique (o publicar o recusa antes
+  do vpk).
+- **Volta 8, a cópia do powershell.exe nos testes:** no PC, o Windows diz que a assinatura dela é válida e de
+  "CN=Microsoft Windows" (rodado). No Windows do GitHub, o mesmo é dedução (o arquivo existe em todo Windows; a rodada
+  do GitHub confere). O teste confere isso antes e para com a leitura na frase se não for assim.
+- **Volta 8, o `apagar_publicacao` ficou como um nome a mais** para o contrato antigo (devolve só o aviso), porque os
+  testes antigos o chamam (D-605). A regra e as frases moram num lugar só (`apagar_e_conferir`); o nome antigo só
+  repassa.
+- **Volta 8, as observações do relatório 7 (não pedidas; não mexi):** (7) a régua do Visual C++ recusa o Visual C++ novo
+  da Microsoft (14.50, "v14 Redistributable") e aceitaria um oficial mais velho (2015-2019), em "Ideias e bugs"; (8) o
+  caminho certo com o Visual C++ oficial lido de verdade não roda em nenhum teste automático, em "Ideias e bugs"; (9) a
+  troca da leitura da assinatura na preparação dos testes do publicar vai um pouco além da letra da D-818: a gerente
+  decide; (10) a prova da D-818 está em `tests/test_publicar_versao.py`, não em `tests/test_decisoes*.py` (o pacote não
+  traz esse arquivo): da gerente; (11) o Tesseract da pasta já montada é conferido pela existência e pelo tamanho, não
+  pelo conteúdo (um arquivo de 1 byte passa), como já estava nas ressalvas da volta 7.
+- **Volta 8, o achado 4 do relatório 7 (a mesma família de erro em duas voltas seguidas):** é da gerente (o catálogo
+  dos erros, F3). Nesta volta, cada mutação minha tira uma condição de dentro de uma proteção (o assinante, o estado
+  "erro", um item da lista, um pedaço da versão), não só a desliga inteira ("Cada proteção", Volta 8).
+
 ## Velocidade
 
 Não se aplica: nenhum arquivo do processamento das páginas do livro mudou; em `core/ocr_kraken.py` só
@@ -2198,6 +2318,10 @@ passos"). O tempo de publicar é medido na prova à vista.
 
 - Volta 7: não se aplica ao caminho do livro (só o empacotar e o publicar). O publicar ganha 2 ou 3 leituras da
   assinatura do Visual C++ pelo PowerShell (uns segundos cada, não medido; medido na prova à vista).
+
+- Volta 8: não se aplica ao caminho do livro (só o publicar, o empacotar e a leitura de um arquivo de poucos bytes no
+  preparo do programa instalado; nenhuma página passa por aqui). Rodada do filtro de velocidade: nenhuma pedida nesta
+  volta (a gerente decide; a última do passo, se houver, fica com ela).
 
 ## Ideias e bugs
 
@@ -2284,6 +2408,21 @@ passos"). O tempo de publicar é medido na prova à vista.
   igual no código de `db4b377a`. Parece o mesmo caso dos testes do desinstalar (a pasta temporária do PC fica no C:; no
   GitHub, no D:), não conferido a fundo. Não é deste trabalho.
 
+- **Volta 8, bug (20/11/2026, não impede esta volta; é parte do defeito 1):** a pasta errada de 19/11
+  (`D:\programas\EditorImpressao\.claude\worktrees\EditorImpressao-arquivos\ferramentas\downloads\vc_redist.x64.exe`,
+  25.635.768 bytes, 15h44) faz hoje o `compilar_st_ferramentas.py`, rodado de uma cópia em `.claude\worktrees`, achar
+  essa pasta (ele sobe as pastas e fica com a primeira `EditorImpressao-arquivos\ferramentas` que existe): sem o Qt e o
+  Boost lá, a compilação pararia ou baixaria tudo para o lugar errado. Lido no código
+  (`compilar_st_ferramentas.py`, função `pasta_de_ferramentas_padrao`), não rodado. A pasta não é minha: só a gerente
+  decide sobre ela, com o Samuel.
+- **Volta 8, bug do mesmo tipo, fora deste passo (não impede):** `rodada_gravura_1_2.py` acha o acervo pela pasta de
+  cima do código (`RAIZ.parent`), e numa cópia de trabalho não o acha. Lido, não rodado. Para a Lista de bugs.
+- **Volta 8, ideia (Lista de espera, observação 7 do relatório 7):** decidir qual Visual C++ o publicar aceita: hoje a
+  régua pede o nome "2015-20xx" (recusa o 14.50 novo, "v14 Redistributable") e qualquer versão que começa com "14."
+  (aceitaria um 14.2x mais velho que o do notebook). O endereço permanente que o programa usa ainda leva ao 14.44.
+- **Volta 8, ideia (Lista de espera, observação 8 do relatório 7):** um teste que lê de verdade o Visual C++ oficial da
+  pasta de downloads do Samuel quando ele existe (o PC) e diz que pulou quando não existe (o GitHub).
+
 ## Perguntas para o Samuel
 
 Nenhuma nesta entrega. Procurei no Livro antes: a D-773, a D-776, a D-777, a D-788, a D-789, a D-790 e a D-795 respondem
@@ -2303,6 +2442,28 @@ rede com as palavras que os testes antigos procuram; o argumento que `preparar_s
 Nenhum teste antigo precisou mudar o que cobra (só a pasta de mentira, a preparação que a faz "assinada" e uma opção
 desligada do vpk de mentira; lista em "O que já está escolhido e testado aqui", Volta 7).
 
+**Volta 8: nenhuma pergunta para o Samuel.** Para a **gerente** (não é pergunta para ele; é o pacote):
+
+*O defeito 1 parou antes de mexer: o conserto pela causa pede arquivos fora da lista.* O que eu peço para a lista:
+1. `regras_dos_agentes/conversa_com_o_git.py`: uma função nova, "a pasta principal desta cópia" (pergunta ao git
+   `rev-parse --path-format=absolute --git-common-dir` e devolve a pasta de cima, quando ela se chama `.git`; nada se o
+   repositório não tem pasta principal). E o git aberto sem janela de console (hoje a peça abre o git sem esse cuidado;
+   rodando dentro da janela do programa pelas fontes, piscaria uma janela preta na tela do Samuel).
+2. Um lugar novo para a regra "onde fica a pasta das ferramentas do Samuel", importável pelo programa e pelos scripts:
+   sugiro um módulo novo em `core/` (ex.: `core/pasta_das_ferramentas.py`); a outra saída é pôr em `core/ocr_kraken.py`
+   (está na lista), mas lá ficaria a regra do Qt e do Boost do ScanTailor, que não é do Kraken.
+3. `compilar_st_ferramentas.py`: a terceira conta (sobe as pastas; hoje acha a pasta errada) passa a usar a regra única.
+4. Um teste novo (sugiro um arquivo novo test_pasta_das_ferramentas.py em tests, ou um nome que caiba no padrão test_publicar_ da lista) e,
+   para montar a cópia de trabalho de prova com o git de verdade, uma ajuda nova em `regras_dos_agentes/repositorio_de_prova.py`
+   (criar uma cópia de trabalho, `git worktree add`).
+O que acontece em cada caso, pelo plano: o programa do Kaique (empacotado) nunca pergunta ao git (acha o motor ao lado
+dele, como hoje; e a peça do git fica fora do pacote dele, com o `--exclude-module` do empacotar); um computador sem git,
+ou uma cópia sem repositório (feita com `git archive`), cai na conta de hoje (a pasta de cima do código), que é a certa
+na pasta principal; a pasta das ferramentas que não existe não é criada (só a `downloads\` dentro de uma que existe).
+Se a gerente preferir só o que está na lista, a saída seria ler o `.git` da cópia à mão (o formato está na
+documentação do git), fora da peça do git: seria uma segunda conversa com o git, e o `compilar_st_ferramentas.py`
+ficaria com a conta dele; não recomendo.
+
 ## Commit
 
 2e906e94 (o último commit de código e testes da volta 3, com três docstrings de um teste; depois dele só este formulário muda).
@@ -2314,6 +2475,8 @@ Volta 5: 35ec0c27 (o último commit de código e testes da volta 5; depois dele 
 Volta 6: 3abf9acf (o último commit de código e testes da volta 6; depois dele só a pasta deste relatório muda).
 
 Volta 7: 25c514ad (o último commit de código e testes da volta 7; depois dele só a pasta deste relatório muda).
+
+Volta 8: b2863630 (o último commit de código e testes da volta 8; depois dele só a pasta deste relatório muda).
 
 ## O que o agente que tentou quebrar achou
 
@@ -2491,6 +2654,31 @@ D-815). Destino de cada achado:
    (a frase do motor e a do apagar, seguidas, numa pasta com espaço).
 6. a 10. **Observações:** em "Ressalvas", Volta 7 (6, 7, 8 e 10) e em "Ideias e bugs", Volta 7 (6 e 9).
 
+**Volta 8** (`quem-quebrou/relatorio-7.md`, commit `21f1fc50`; escritor novo, D-815; e os 2 defeitos da prova à vista de
+20/11, 18h a 19h30). Destino de cada achado:
+1. **Duas proteções do Visual C++ sem teste (W1, W5):** testes novos, a leitura que falha (a peça do PowerShell
+   responde "não terminou") e uma cópia do powershell.exe do Windows como Visual C++, lida de verdade, na pasta e na
+   montagem: `tests/test_publicar_versao.py::test_volta8_baixo1a_a_leitura_da_assinatura_que_falha_nunca_vira_passou` e
+   `tests/test_publicar_versao.py::test_volta8_baixo1b_um_programa_da_microsoft_que_nao_e_o_visual_c_e_recusado_pela_mesma_regua`
+   (mutações U8 e U9).
+2. **A versão comparada inteira sem teste (W4):** `tests/test_publicar_versao.py::test_volta8_baixo2_o_arquivo_da_versao_vazio_ou_pela_metade_e_recusado`
+   (5 casos; mutação U10).
+3. **As licenças do Tesseract sem teste (W2, W3):** `tests/test_publicar_versao.py::test_volta8_baixo3_sem_a_licenca_do_tesseract_a_pasta_e_o_pacote_sao_recusados`
+   (as duas licenças, na pasta e no pacote; mutações U11 e U12).
+4. **A família repetida:** da gerente (catálogo); em "Ressalvas", Volta 8.
+5. **O item 14 do roteiro:** corrigido ("A prova de verdade", Volta 8, item 14).
+6. **O arquivo da versão do Visual C++ lido de dois jeitos:** consertado em `b2863630`, uma leitura só, a do publicar,
+   usada pelo programa instalado: `tests/test_publicar_versao.py::test_volta8_baixo6_a_versao_do_visual_c_e_lida_por_uma_funcao_so`
+   e `tests/test_publicar_versao.py::test_volta8_baixo6_o_publicar_e_o_programa_instalado_usam_a_mesma_leitura`
+   (mutações U5, U6 e U7).
+7. a 11. **Observações:** em "Ressalvas", Volta 8 (9, 10 e 11) e em "Ideias e bugs", Volta 8 (7 e 8).
+- **O defeito 2 da prova à vista (a frase depois de apagar):** consertado em `b2863630`:
+  `tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou`,
+  `tests/test_publicar_versao.py::test_volta8_defeito2_o_caminho_de_erro_usa_a_mesma_frase_do_apagar` e
+  `tests/test_publicar_versao.py::test_volta8_defeito2_o_que_o_apagar_devolve_nao_mudou` (mutações U1 a U4).
+- **O defeito 1 da prova à vista (as peças no lugar errado numa cópia):** não consertado; parado (em "Perguntas para o
+  Samuel", Volta 8, o pedido à gerente).
+
 ## A prova de verdade
 
 Roteiro para a gerente (não rodado; D-785, item 8; o plano: "0 perguntas do Windows"; o Samuel olha a janela, não
@@ -2548,12 +2736,36 @@ prova à vista", item 2). Substituem os itens 13 a 15 da Volta 6:**
     de dizer "Visual C++ em instalar\, conferido" antes de "pronto: ...\dist\EditorImpressao", passar da conferência da
     pasta (agora com a leitura da assinatura) e chegar ao vpk de verdade. Depois, abrir o pacote publicado (um zip) e
     ver dentro: `lib/app/instalar/vc_redist.x64.exe` com o mesmo tamanho do baixado (uns 25 MB, 25.635.768 bytes),
-    `lib/app/instalar/vc_redist.versao.txt` com "14.44.35211.0" e a pasta `lib/app/tesseract/` com os idiomas.
+    o lib/app/instalar/vc_redist.versao.txt com "14.44.35211.0" e a pasta `lib/app/tesseract/` com os idiomas.
 16. O item 6 (`--com-instalador`) **montado do zero**; depois dele, ver que `dist\EditorImpressao\instalar\` ficou só com
     o Visual C++ e a versão dele (o zip do motor tem de sair).
 17. Na pasta das provas, sem o motor publicado (numa pasta de provas nova, vazia): a frase tem de dizer
     `publicar_versao_kaique.py --motor --pasta "..."`; seguir a frase ao pé da letra e ver o motor chegar na janela do
     servidor, e nada no GitHub.
+
+**Volta 8, o que a prova à vista acrescenta (os 2 defeitos de 20/11 e o achado 5 do relatório 7):**
+14. (substitui o item 14 da Volta 7, que não dava para fazer onde estava) No item 15, logo no começo, antes de o
+    PyInstaller começar, ler a linha "Visual C++: ..." que a montagem imprime (vem junto com "motor do Kraken: ..." e
+    "Tesseract: ..."): ela diz de onde o arquivo vem. Rodando da pasta principal, tem de ser
+    `D:\programas\EditorImpressao-arquivos\ferramentas\downloads\vc_redist.x64.exe`. Rodando de uma cópia, enquanto o
+    defeito 1 não for consertado, vem da pasta errada de 19/11 (ou é baixado para lá, se ela sumir). Antes do item 15,
+    só dá para olhar se o arquivo está na pasta de downloads (está: 25.635.768 bytes, conferido pelo relatório 7).
+18. **O `--apagar` (o defeito 2):** depois de uma publicação de prova na pasta das provas,
+    `publicar_versao_kaique.py --apagar v<versão> --pasta <pasta de prova>` tem de dizer "a publicação v<versão> foi
+    apagada de a pasta ... (conferido)", e a janela do servidor não mostra mais a versão. Rodado de novo, o mesmo comando
+    tem de dizer "v<versão>: não existia em a pasta ..., e nada foi apagado (conferido)". No item 8 (o GitHub), o mesmo:
+    "foi apagada de o GitHub (...) (conferido)" para a versão e para o `motor-kraken-1` (antes o roteiro esperava "não
+    existe"; agora essa frase só aparece se não havia nada).
+19. **O motor achado no lugar certo, da cópia (o defeito 1; só depois do conserto dele):** da cópia de trabalho (a
+    `passo2` ou a da versão de teste), numa pasta de provas nova e vazia com espaço no nome:
+    `publicar_versao_kaique.py --pasta "C:\EditorImpressaoProva\versoes 3"` tem de parar com "publique o motor antes,
+    com: publicar_versao_kaique.py --motor --pasta "C:\EditorImpressaoProva\versoes 3"". Seguir essa frase ao pé da letra,
+    da mesma cópia: a linha "motor do Kraken 1: ..." tem de dizer
+    `D:\programas\EditorImpressao-arquivos\ferramentas\motor-kraken (conferido pela ficha)` (na prova 6b dizia "não
+    achei", procurando em `.claude\worktrees\EditorImpressao-arquivos`), e o motor chega na janela do servidor. Depois, um
+    publicar montado do zero da cópia: a linha "Visual C++: ..." tem de dizer a pasta de downloads de
+    `D:\programas\EditorImpressao-arquivos\ferramentas`. E nenhuma pasta nova aparece em `D:\programas\EditorImpressao\.claude\worktrees`
+    (olhar a lista dela antes e depois).
 
 ## Perguntas do Windows que o Samuel vê
 
@@ -2565,6 +2777,9 @@ prova à vista", item 2). Substituem os itens 13 a 15 da Volta 6:**
 - Volta 6: 0 (nada desta volta pede licença; pôr o Visual C++ na pasta é uma cópia de arquivo no D:, sem instalar nada).
 
 - Volta 7: 0 (ler a assinatura de um arquivo não pede licença nem abre janela; a peça abre o PowerShell sem janela).
+
+- Volta 8: 0 (a frase do apagar e a leitura de um arquivo de poucos bytes não pedem licença nem abrem janela; a leitura
+  da assinatura da cópia do powershell.exe pela peça abre o PowerShell sem janela).
 
 ## Páginas em que foi conferido
 
