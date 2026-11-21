@@ -6,22 +6,16 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
 ## Pedido
 
 - Papel: implementador
-- Commit de partida: edd39a9f
+- Commit de partida: 8f89d941
 - Ramo: passo2-publicar-2026-11-19
 
 ## Arquivos que vou mexer
 
-- `tests/test_pasta_das_ferramentas.py`
-- `empacotar.py`
-- `publicar_versao_kaique.py`
 - `tests/test_publicar_versao.py`
 - `relatorios/passo2-publicar/`
 
-(Volta 11, 21/11/2026: as duas seções acima são as de `anexos/pacote-volta11.md`. O pedido da gerente veio em texto,
-sem o arquivo do pacote; montei o pacote com a ferramenta das regras (`python -m regras_dos_agentes pacote`, partida
-`edd39a9f`, os arquivos do pedido) para o conferidor do formulário. O Livro desta cópia é antigo: a ferramenta não
-achou D-816 a D-820 nele; as palavras delas estão copiadas do Livro da `obra-2026-10-26`, em "Decisões", Volta 11. As
-seções das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `git log` deste arquivo.)
+(Volta 12, 21/11/2026: as duas seções acima são as de `anexos/pacote-volta12.md`, montado como o da volta 11 (o pedido
+da gerente veio em texto). As das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `git log` deste arquivo.)
 
 ## Onde parei
 
@@ -181,6 +175,10 @@ seções das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `git
   (21/11, chat: à pergunta "Conserto as 3 agora?", "ok"). Partida `8f89d941`. Lido: o relatório 10 inteiro e o script
   das mutações dele (`quem-quebrou/anexos-10/mutacoes-g-c-b-d.py.txt`). O plano está em "A causa, a regra e todos os
   caminhos", Volta 12, escrito antes de mexer.
+- 21/11, volta 12 feita: plano `055d15fb`; a guarda `866e2114`; o roteiro e o formulário depois. G1 a G5 acusadas numa
+  cópia; `tests/test_publicar_versao.py` 125 no PC. `--is-shallow-repository` = false antes e depois; nenhuma junção
+  criada; `C:\EditorImpressaoProva` só listada. **Próximo:** um agente novo tenta quebrar (D-815); este escritor já usou
+  as duas voltas.
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -782,7 +780,9 @@ Problema novo possível: se um dia a pasta das ferramentas mudar de lugar no PC 
 rodando o publicar, lê as frases em português certo: "não há publicação v1.2.0 na pasta ...", "lido de volta da pasta
 ...", "v1.2.0 liberada na pasta ...", "não está publicado no GitHub (...)" (antes: "em a pasta", "de a pasta", "em o
 GitHub"). O que cada frase diz e o que o publicar faz não mudam. A frase do caminho de erro depois do pedido de liberar
-(a da D-816) fica como está até a resposta da pergunta. Sem a pasta das ferramentas, a montagem do Visual C++ diz a
+(a da D-816) também saiu com a contração depois da resposta do Samuel (D-821: "pedi para liberar na pasta ...", "se
+ficou liberada na pasta ..."); o que ela diz e o que o publicar faz, não mudam (volta 12: este texto dizia "fica como
+está até a resposta da pergunta", escrito antes da D-821). Sem a pasta das ferramentas, a montagem do Visual C++ diz a
 mesma frase de hoje ("não existe a pasta das ferramentas ... nada foi criado"); agora é a regra quem decide. O roteiro
 da prova à vista passa a dar os comandos com o Python da pasta principal e só da cópia `passo2`. Problema novo
 possível: nenhum para quem usa; nos testes, se a linha do caminho mudar, os testes da pasta das ferramentas param todos
@@ -1529,6 +1529,11 @@ mudaram pela D-821; o que o publicar faz, não. Só texto.
   roda contra a pasta de verdade.
 - Esta volta não pede licença ao Windows, não abre janela e não fala com a internet.
 
+**Volta 12.** Não se aplica ao programa: nada do publicar mudou (disco cheio, sem licença, "Não", sem internet,
+desligar no meio: o mesmo de antes). Na guarda: um uso novo e certo do nome do destino fora da lista (ex.: "pela pasta",
+se um dia a `com_preposicao` souber "por") é acusado até alguém acrescentar o lugar à lista curta; é o que se quer (a
+guarda erra pelo lado de acusar).
+
 ## O que li da peça de fora e onde
 
 Código do Velopack na etiqueta 1.2.161 (commit `92d6a1c9`, MIT), cópia só para ler em
@@ -1939,25 +1944,43 @@ programa instalado faz com a versão: `atualizacao.py:1230` (lê o vc_redist.ver
       se contrai), "a pasta …: rascunho v…" e "a pasta …, v…: …" (o nome no começo). Fora do publicar não há frase com
       destino ("e a {saida.nome}" no empacotar é o nome da saída, não de destino).
 
+19. **Volta 12 (os 3 baixos do relatório 10):**
+    - **Baixo 1:** a guarda das frases (`tests/test_publicar_versao.py`, `_preposicao_a_mao`) cobra a coisa de verdade:
+      todo uso de `.nome`/`.onde` no `publicar_versao_kaique.py` tem de estar dentro de `com_preposicao(...)`, passado
+      ao `Apagado(...)`, no começo de uma frase ou logo depois de "para "; o resto é acusado (os lugares aceitos numa
+      lista curta, `_RECEBEM_O_NOME_DO_DESTINO` e `_ANTES_DO_NOME_NA_FRASE`). As mutações G1 a G5 do relatório 10 são
+      acusadas; o código de hoje, não.
+    - **O G5 ("por a pasta"):** a guarda nova **acusa** (o "por " não é lugar aceito). Mas não conserta: a
+      `com_preposicao` só conhece "de" e "em", e quem escrevesse `com_preposicao("por", ...)` teria "por a pasta" sem
+      acusação. Não ampliei a `com_preposicao` (seria coisa nova).
+    - **Baixo 2:** no roteiro, o item 19 numa pasta nova (`versoes 6`; a `versoes 3` já tem o motor da prova 3), e o
+      servidor das versões (item 2 e item 19) com `--registro` num arquivo em `C:\EditorImpressaoProva\` (a opção
+      existe e recebe um arquivo, lido em `servidor_das_versoes.py`, linhas 353 a 357). O registro da prova 3 no git
+      (`0a3b54a9`) ficou.
+    - **Baixo 3:** as duas frases do formulário escritas antes da D-821 ("Como cumpri", D-816; "Como fica", Volta 11)
+      dizem agora que as palavras mudaram pela D-821 e o que o publicar faz, não.
+
 ## Arquivos criados ou alterados
 
-Desde a partida desta volta (`edd39a9f`, o pacote da volta 11); o que as voltas 1 a 10 mexeram está nos itens
-abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" e "Caminho e função".
+Desde a partida desta volta (`8f89d941`, o pacote da volta 12); o que as voltas 1 a 11 mexeram está nos itens abaixo
+desta lista, no `git log` deste arquivo e nas seções "O que foi feito" e "Caminho e função".
 
-- `empacotar.py` (o "pode gravar?" da montagem do Visual C++ pela regra, sem conta própria; o texto)
-- `publicar_versao_kaique.py` (31 frases pela `com_preposicao`, sem mudar o que dizem; os textos da
-  `com_preposicao` e da frase da D-816)
-- `tests/test_pasta_das_ferramentas.py` (a ajuda `_copiar_o_codigo` para quando não acha a linha; 5 testes novos;
-  nenhum antigo mudou)
-- `tests/test_publicar_versao.py` (2 testes novos, 3 casos; um antigo mudou numa linha, pela D-821: o da volta 3,
-  listado em "O que já está escolhido e testado aqui", Volta 11)
-- `relatorios/servidor-das-versoes/registro-2026-11-21-111014.txt` (o registro do servidor das versões da prova 3,
-  escrito pela gerente em 21/11 às 11h10; posto no git sem mudar, num commit só dele, porque o conferidor o
-  acusava fora de commit)
-- `relatorios/passo2-publicar/` (este formulário, o roteiro, o pacote da volta 11 e os anexos `reversao-volta11-*`
-  e `volta11-*`)
+- `tests/test_publicar_versao.py` (a guarda das frases, `_preposicao_a_mao`, cobra todo uso do nome do destino; o texto
+  do teste da guarda; nenhum teste de antes da volta 11 mudou)
+- `relatorios/passo2-publicar/` (este formulário: o roteiro, itens 2 e 19, e as duas frases de antes da D-821; o pacote
+  da volta 12 e os anexos `volta12-*`)
 
-`core/pasta_das_ferramentas.py` não mudou nesta volta.
+O programa não mudou nesta volta (nenhum arquivo fora de `tests/` e do relatório).
+
+- **Volta 11** (desde `edd39a9f`, o pacote da volta 11): `empacotar.py` (o "pode gravar?" da montagem do Visual C++ pela
+  regra, sem conta própria; o texto); `publicar_versao_kaique.py` (31 frases pela `com_preposicao`, sem mudar o que
+  dizem; os textos da `com_preposicao` e da frase da D-816); `tests/test_pasta_das_ferramentas.py` (a ajuda
+  `_copiar_o_codigo` para quando não acha a linha; 5 testes novos; nenhum antigo mudou); `tests/test_publicar_versao.py`
+  (2 testes novos, 3 casos; um antigo mudou numa linha, pela D-821: o da volta 3, listado em "O que já está escolhido e
+  testado aqui", Volta 11); `relatorios/servidor-das-versoes/registro-2026-11-21-111014.txt` (o registro do servidor das
+  versões da prova 3, escrito pela gerente em 21/11 às 11h10; posto no git sem mudar, num commit só dele, porque o
+  conferidor o acusava fora de commit); `relatorios/passo2-publicar/` (este formulário, o roteiro, o pacote da volta 11
+  e os anexos `reversao-volta11-*` e `volta11-*`).
 
 - **Volta 10** (desde `6fa766c4`, o pacote da volta 10): `core/pasta_das_ferramentas.py` (o caminho escrito num lugar
   só; saíram a pergunta ao git e o limite); `regras_dos_agentes/conversa_com_o_git.py` (saíram `pasta_principal`, o
@@ -2234,8 +2257,9 @@ abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" 
   - D-767: os testes novos dos baixos 3 e 4 rodam o código de verdade de uma cópia de trabalho de verdade (o repositório
     de prova com `git worktree add`), com a internet trancada no processo; a única peça trocada é a da lógica de quem
     decide (a regra dizendo "não", no `test_volta11_baixo3_quem_decide_...`), escrita como tal no texto do teste.
-  - D-816: a frase de depois do pedido de liberar não mudou (nem as palavras); o que o publicar faz depois do pedido
-    também não (os `test_d816_*` passam).
+  - D-816: as palavras da frase de depois do pedido de liberar mudaram pela D-821 ("na pasta", "no GitHub"); o que
+    ela diz e o que o publicar faz depois do pedido, não (os `test_d816_*` passam). (Volta 12: este texto dizia "não
+    mudou (nem as palavras)", escrito antes da D-821.)
   - D-817: o teste que saiu na volta 4 continua fora; o `test_d816_o_liberar_que_falha_e_fica_rascunho_nao_apaga_e_diz_o_comando` passa.
   - D-818: a régua do Visual C++ e a conferência da pasta já montada não mudaram (`test_d818_*` passam); a montagem só
     pergunta "pode gravar?" à regra.
@@ -2248,6 +2272,16 @@ abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" 
   - D-815: escritor novo; comecei por este formulário.
   - D-807: no PC, um arquivo por vez; o conjunto inteiro na rodada do GitHub (em "Testes", Volta 11).
   - D-785: nada à vista rodado por mim; o roteiro mudou (itens 1, 2, 19 a 22).
+
+- **Volta 12:**
+  - D-605: nenhum teste de antes da volta 11 mudou; o programa não mudou. Só a guarda (da volta 11) mudou, pelo pedido.
+  - D-767: a guarda lê o código de verdade; as mutações rodam numa cópia de verdade do código.
+  - D-816 e D-821: a frase da D-816 continua pela `com_preposicao` (a guarda nova também a cobra); os `test_d816_*` e o
+    da volta 3 passam.
+  - D-819: o jeito mais simples e o escolhido em "A causa", Volta 12 (a lista curta dos lugares aceitos, no lugar de um
+    caso por jeito de escrever).
+  - D-820: nada muda na pasta das ferramentas.
+  - O "ok" do Samuel (21/11, chat, à pergunta "Conserto as 3 agora?"): só os 3 baixos.
 
 ## Testes
 
@@ -2477,6 +2511,13 @@ abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" 
   mudado e a guarda sem exceção falham no código de `1624a05a` (`anexos/reversao-volta11-d821.md`).
 - **Volta 11, D-821, no GitHub:** rodada 44936850048, sobre `97a5c4b6`: **success** na primeira tentativa: o porteiro (o juiz da versão de teste), os botões e os prints da janela real e as cinco partes do conjunto inteiro.
 - **Volta 11, no GitHub:** rodada 44926684833 do GitHub, sobre `0a3b54a9` (o código de `1624a05a`; depois só a pasta do relatório e o registro do servidor da prova 3): **success** na primeira tentativa: o porteiro (o juiz da versão de teste), os botões e os prints da janela real e as cinco partes do conjunto inteiro.
+- **Volta 12, no PC** (memória livre entre 3,3 e 3,7 GB, o jogo aberto): `tests/test_publicar_versao.py` 125
+  passaram (o único arquivo de teste mexido; o programa não mudou).
+- **Volta 12, a guarda contra as mutações** (`anexos/volta12-mutacoes-g-resultado.txt`, script
+  `anexos/volta12-mutacoes-g.py.txt`; numa cópia de `866e2114`, os mesmos trechos do script do relatório 10): G1, G2,
+  G3, G4 e G5 acusadas (cada uma com a linha e o uso acusado); sem mutação, a guarda passa. No relatório 10, com a guarda
+  da volta 11, as cinco passavam nos 125 testes.
+- **Volta 12, no GitHub:** rodada 44945040959, sobre `866e2114` e o formulário: **success** na segunda tentativa. Na primeira, só a parte 5 falhou: `tests/test_dialogo_impressao.py` disse "5 passed" e o processo saiu com o código 3221226505 (0xC0000409, um travamento do Qt ao fechar; o mesmo tipo do instável de 20/11 em "Ideias e bugs"); esse arquivo não usa nada desta volta (`tests/test_publicar_versao.py` passou lá, 125). Na segunda tentativa, só a parte 5 rodou de novo, e passou. O porteiro, os botões e prints e as partes 1 a 4 passaram na primeira.
 
 ## Caminho e função
 
@@ -2681,6 +2722,11 @@ abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" 
   - "a cópia de prova dos testes troca o caminho" → `tests/test_pasta_das_ferramentas._copiar_o_codigo` (o lugar único
     da troca nos testes; todos os testes do arquivo que usam a cópia passam por ele). Prova:
     `test_volta11_baixo2_a_copia_de_prova_para_se_nao_acha_a_linha_do_caminho`.
+
+- **Volta 12:** "onde o nome do destino pode aparecer numa frase" → a lista curta da guarda
+  (`_RECEBEM_O_NOME_DO_DESTINO`: `com_preposicao`, `Apagado`; `_ANTES_DO_NOME_NA_FRASE`: "para "; e o começo da frase),
+  conferida em `test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao` sobre todos os usos de
+  `.nome`/`.onde` do `publicar_versao_kaique.py` (f-string, soma, variável, `.format`, qualquer chamada).
 
 ## Cada proteção e o teste que falha sem ela
 
@@ -2934,6 +2980,9 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   - M9 (o baixo 2: a cópia de prova volta a seguir calada) → acusada por `test_volta11_baixo2_...`.
   **9 de 9 acusadas**; cada teste do baixo 4 falha só com a frase tirada do lugar dele.
 
+- **Volta 12:** G1 (somar com `+`), G2 (guardar o nome numa variável), G3 (parêntese antes do "em"), G4 (`.format`),
+  G5 ("por a pasta") → todas acusadas pela guarda nova (`anexos/volta12-mutacoes-g-resultado.txt`).
+
 ## De onde vem cada dado da conferência
 
 - **Se a versão ou o motor já existem no destino:** lido do destino (a pasta; ou o GitHub pelo gh), nunca de uma
@@ -3037,6 +3086,7 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   nada. À vista (a gerente): os itens 19 a 22 do roteiro.
 - **Volta 11:** máquina, tudo (os testes novos, a reversão, as mutações M1 a M9, a prova do baixo 2). Olho: nada (as
   frases mudam só a contração; quem lê é o Samuel, na próxima prova à vista).
+- **Volta 12:** máquina, tudo (a guarda e as mutações). Olho: nada.
 
 ## Ressalvas
 
@@ -3304,6 +3354,12 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   do relatório 9): criar a opção seria coisa nova; não fiz.
 - **Volta 11, não rodei** o `tests/test_ocr_kraken.py` (não mexi no Kraken) nem o publicar de verdade (é da prova à
   vista da gerente).
+- **Volta 12, a guarda acusa também um uso certo fora da lista** (ex.: o nome do destino depois de "e " numa frase
+  que não precisa de preposição). Hoje não há nenhum; quem escrever um acrescenta o lugar à lista curta, com o motivo.
+- **Volta 12, o G5:** a guarda acusa "por {destino.nome}", mas não `com_preposicao("por", ...)` ("por a pasta"): a
+  `com_preposicao` não conhece "por" nem "a" ("pela", "à"). Ampliar seria coisa nova; não fiz.
+- **Volta 12, o item 21 do roteiro** continua na `versoes 3` (ali não faz mal: a versão 1.1.0 foi apagada no fim da
+  prova 3, relatório 10).
 
 ## Velocidade
 
@@ -3336,6 +3392,8 @@ passos"). O tempo de publicar é medido na prova à vista.
 - Volta 11: não se aplica ao caminho do livro (nenhum arquivo de `core/` mudou; só frases do publicar, o "pode gravar?"
   da montagem do Visual C++, que agora é uma chamada à regra em vez de uma conta, e testes). Nenhum filtro de
   velocidade pedido nesta volta (a gerente decide).
+
+- Volta 12: não se aplica ao caminho do livro (só um teste e textos; o programa não mudou).
 
 ## Ideias e bugs
 
@@ -3465,6 +3523,11 @@ passos"). O tempo de publicar é medido na prova à vista.
   palavras à mão, como nesta volta).
 - **Volta 11, observação:** o registro do servidor das versões da prova 3 (`relatorios/servidor-das-versoes/registro-2026-11-21-111014.txt`,
   da gerente, 11h10) estava fora do git e o conferidor do formulário o acusava (K18). Pus no git, num commit só dele (`0a3b54a9`), sem mudar o arquivo: é o registro da prova, e o conferidor o pedia. Se a gerente preferir fora do git, é só tirar esse commit.
+- **Volta 12, para a Lista de bugs (21/11/2026, não impede; instável):** na rodada 44945040959 do GitHub, primeira
+  tentativa, `tests/test_dialogo_impressao.py` passou nos 5 casos e o processo saiu com 0xC0000409 (o Qt travando ao
+  fechar), o que derrubou a parte 5; na repetição passou. Não usa nada deste passo.
+- **Volta 12, para a Lista de espera (ideia, não feita):** a `com_preposicao` saber "por" e "a" ("pela pasta", "à
+  pasta"), se um dia uma frase precisar (relatório 10, G5).
 
 ## Perguntas para o Samuel
 
@@ -3560,6 +3623,8 @@ pergunta fica abaixo, como foi.
 - **Onde está agora:** as outras frases já saem certas nesta volta (no ramo do passo 2, esperando quem confere). Esta
   espera a resposta.
 
+**Volta 12:** nenhuma pergunta. O Samuel autorizou os 3 baixos (21/11, chat: "Conserto as 3 agora?" · "ok").
+
 ## Commit
 
 2e906e94 (o último commit de código e testes da volta 3, com três docstrings de um teste; depois dele só este formulário muda).
@@ -3584,6 +3649,8 @@ Volta 10: 09b30933 (o último commit de código e testes da volta 10, no jeito A
 Volta 11: o código e os testes dos baixos e das 31 frases ficaram em `1624a05a`; depois vieram os anexos (`d4cb42df`)
 e o registro do servidor da prova 3, da gerente, posto no git sem mudar (`0a3b54a9`). Depois da resposta do Samuel
 (D-821), o último commit de código e testes da volta 11 é 97a5c4b6 (depois dele só a pasta deste relatório muda).
+
+Volta 12: 866e2114 (o último commit de código e testes da volta 12: a guarda; depois dele só a pasta deste relatório muda).
 
 ## O que o agente que tentou quebrar achou
 
@@ -3841,6 +3908,17 @@ Destino de cada achado (volta 11, escritor novo):
 10. **Observação 6 (o git sem janela para o porteiro):** fica, como na volta 10.
 E, fora do relatório, **as frases sem contração** (Lista de bugs de 21/11): 31 consertadas; a da D-816 parada na pergunta.
 
+**Volta 11** (`quem-quebrou/relatorio-10.md`, commit `8f89d941`; "PRONTO PARA CONFERIR" com 3 baixos e 4 observações).
+Destino de cada achado (volta 12, a segunda volta deste escritor):
+1. **Baixo, a guarda das frases olha um jeito só:** consertado (todo uso do nome do destino fora da lista curta é
+   acusado). Teste: `tests/test_publicar_versao.py::test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao`;
+   G1 a G5 acusadas (`anexos/volta12-mutacoes-g-resultado.txt`).
+2. **Baixo, o item 19 do roteiro usa uma pasta que já tem o motor:** a `versoes 6`, com o `--registro` fora do
+   repositório (itens 2 e 19).
+3. **Baixo, duas frases do formulário de antes da D-821:** acertadas ("Como cumpri", D-816; "Como fica", Volta 11).
+4. a 7. **Observações:** a 2 (o registro do servidor) entrou no roteiro como `--registro`; o arquivo da prova 3 no git
+   ficou. As outras não pedem mudança.
+
 ## A prova de verdade
 
 Roteiro para a gerente (não rodado; D-785, item 8; o plano: "0 perguntas do Windows"; o Samuel olha a janela, não
@@ -3848,7 +3926,10 @@ clica nada):
 1. Gravar a ficha do motor de hoje (com o "sim" dele, ver "Ressalvas"):
    `D:\programas\EditorImpressao\.venv\Scripts\python.exe montar_motor_kraken.py --so-ficha --destino D:\programas\EditorImpressao-arquivos\ferramentas\motor-kraken`
    (volta 11, observação 4 do relatório 9: o Python da pasta principal, com o caminho inteiro; a cópia não tem `.venv`).
-2. Abrir o servidor das versões à vista: `D:\programas\EditorImpressao\.venv\Scripts\python.exe servidor_das_versoes.py --pasta <pasta de prova>`.
+2. Abrir o servidor das versões à vista: `D:\programas\EditorImpressao\.venv\Scripts\python.exe servidor_das_versoes.py --pasta <pasta de prova> --registro "C:\EditorImpressaoProva\servidor-<a prova>.txt"`
+   (volta 12, observação 2 do relatório 10: o `--registro` recebe um arquivo, lido em `servidor_das_versoes.py`,
+   linhas 353 a 357; sem ele, o registro cai em `relatorios\servidor-das-versoes\`, dentro do repositório, e fica fora
+   do git. O da prova 3, que entrou no git em `0a3b54a9`, fica como está.)
 3. Publicar o motor 1 na pasta: `publicar_versao_kaique.py --motor --pasta <pasta de prova>`.
 4. Publicar uma versão de prova no C: sem o .msi, com a janela do servidor mostrando a versão chegar: o espaço do C:
    antes e depois (volta ao que era), o tempo, e no fim a conferência mostra que o Setup.exe não está em lugar nenhum.
@@ -3939,13 +4020,17 @@ da cópia, numa pasta com espaço no nome). Mais um olhar: depois dele, a pasta 
 **Volta 10, o que a prova à vista acrescenta (relatório 8, "O que falta para a prova à vista", e a D-820; a prova só
 depois desta volta, D-775):**
 - O item 8 está riscado (ainda esperava "não existe" no `--apagar`); vale o item 18, com as frases novas.
-19. (substitui o item 19 da Volta 8, no jeito A; **reescrito na volta 11**, baixo 1 do relatório 9) **O motor achado no
+19. (substitui o item 19 da Volta 8, no jeito A; **reescrito na volta 11**, baixo 1 do relatório 9; a pasta trocada
+    na volta 12, baixo 2 do relatório 10) **O motor achado no
     lugar certo, seguindo a frase ao pé da letra, só da cópia `passo2`:** de dentro de
-    `D:\programas\EditorImpressao\.claude\worktrees\passo2`, numa pasta de provas nova e vazia com espaço no nome:
-    `D:\programas\EditorImpressao\.venv\Scripts\python.exe publicar_versao_kaique.py --pasta "C:\EditorImpressaoProva\versoes 3"`
+    `D:\programas\EditorImpressao\.claude\worktrees\passo2`, numa pasta de provas nova e vazia com espaço no nome, a `versoes 6` (a `versoes 3` já tem o motor da
+    prova 3 de 21/11, e com ela o publicar não para em "publique o motor antes"; conferir antes que a `versoes 6`
+    não existe: em 21/11 havia só `versoes`, `versoes 2` e `versoes 3`), com o servidor do item 2 servindo essa
+    pasta (`--registro "C:\EditorImpressaoProva\servidor-prova4.txt"`):
+    `D:\programas\EditorImpressao\.venv\Scripts\python.exe publicar_versao_kaique.py --pasta "C:\EditorImpressaoProva\versoes 6"`
     tem de parar com "publique o motor antes, com: publicar_versao_kaique.py --motor --pasta
-    "C:\EditorImpressaoProva\versoes 3"". Seguir essa frase ao pé da letra, da mesma cópia e com o mesmo Python
-    (`D:\programas\EditorImpressao\.venv\Scripts\python.exe publicar_versao_kaique.py --motor --pasta "C:\EditorImpressaoProva\versoes 3"`):
+    "C:\EditorImpressaoProva\versoes 6"". Seguir essa frase ao pé da letra, da mesma cópia e com o mesmo Python
+    (`D:\programas\EditorImpressao\.venv\Scripts\python.exe publicar_versao_kaique.py --motor --pasta "C:\EditorImpressaoProva\versoes 6"`):
     a linha "motor do Kraken 1: ..." tem de dizer
     `D:\programas\EditorImpressao-arquivos\ferramentas\motor-kraken (conferido pela ficha)`, e o motor chega na janela
     do servidor. E nenhuma pasta nova aparece em `D:\programas\EditorImpressao\.claude\worktrees` (olhar a lista dela
@@ -3998,6 +4083,8 @@ junção na versão de teste (baixo 1 do relatório 9).
 
 - Volta 11: 0 (só frases, uma regra que já existia e testes; nada pede licença nem abre janela).
 
+- Volta 12: 0 (só um teste e textos; nada pede licença nem abre janela).
+
 ## O print que prova
 
 Não se aplica: nenhuma tela do programa muda neste passo (volta 9: só onde o código procura a pasta das ferramentas; a etiqueta de tela veio do arquivo novo em core/, que ainda não tem linha na tabela).
@@ -4006,6 +4093,8 @@ Volta 10: não se aplica (nenhuma tela do programa muda; só onde os scripts pro
 apagar).
 
 Volta 11: não se aplica (nenhuma tela do programa muda; só frases da linha de comando do publicar e testes).
+
+Volta 12: não se aplica (nenhuma tela muda).
 
 ## Páginas em que foi conferido
 
@@ -4017,3 +4106,5 @@ Volta 10: não se aplica, 0 páginas (só onde se procuram as ferramentas e a fr
 só em onde o motor é procurado, que não toca a imagem de nenhuma página).
 
 Volta 11: não se aplica, 0 páginas (nenhum arquivo que toca imagem de página mudou).
+
+Volta 12: não se aplica, 0 páginas (só um teste e textos).
