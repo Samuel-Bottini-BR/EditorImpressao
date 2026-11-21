@@ -2804,31 +2804,62 @@ def test_obs6_a_frase_do_apagar_sai_com_a_contracao(tmp_path):
 # dele, também passa pela com_preposicao.
 
 
+# Os lugares onde o nome de um destino pode aparecer no publicar (volta 12, baixo 1 do relatório 10): as chamadas que
+# recebem o nome (a com_preposicao, que junta a preposição; o Apagado, que guarda o nome e escreve a frase pela
+# com_preposicao) e, dentro de uma frase, o começo (só espaço antes) ou logo depois de "para " ("para a pasta" está
+# certo). Seguro mexer: acrescentar um lugar quando a frase nova estiver certa em português. Arriscado: aceitar um uso
+# solto (variável, soma de textos, .format): é por onde "em a pasta" volta sem ninguém ver.
+_RECEBEM_O_NOME_DO_DESTINO = {"com_preposicao", "Apagado"}
+_ANTES_DO_NOME_NA_FRASE = ("para ",)
+
+
 def _preposicao_a_mao(fonte: str) -> list[tuple[int, str, str]]:
-    """As frases (f-strings, como o Python as junta, também as de duas linhas) que escrevem "em " ou "de " logo antes
-    do nome de um destino (`{... .nome}` ou `{... .onde}`): (linha, função, o pedaço antes). Lido pela árvore do Python
-    (`ast`), não pelo texto da linha."""
+    """Todo uso do nome de um destino (`.nome` ou `.onde`) fora dos lugares aceitos: (linha, função, o trecho). Lido
+    pela árvore do Python (`ast`), não pelo texto da linha.
+
+    Volta 12 (baixo 1 do relatório 10 de quem tentou quebrar, 21/11/2026): a guarda da volta 11 procurava um texto ("em
+    "/"de " logo antes de `{… .nome}` num f-string), e quatro outros jeitos de escrever a mesma junção passavam
+    (mutações G1 a G4: somar com `+`, guardar o nome numa variável, um parêntese antes do "em", o `.format`). Agora ela
+    cobra a coisa de verdade: o nome do destino só aparece dentro de `com_preposicao(...)`, passado ao `Apagado(...)`,
+    no começo de uma frase ou logo depois de "para "; qualquer outro uso é acusado."""
     import ast
 
-    achados = []
+    arvore = ast.parse(fonte)
+    pai, funcao = {}, {}
 
-    def olhar(no, funcao: str) -> None:
-        """Desce na árvore lembrando a função de fora."""
+    def olhar(no, dentro: str) -> None:
+        """Anota o pai de cada nó e a função de fora."""
         for filho in ast.iter_child_nodes(no):
-            dentro = filho.name if isinstance(filho, (ast.FunctionDef, ast.AsyncFunctionDef)) else funcao
-            if isinstance(filho, ast.JoinedStr):
-                partes = filho.values
-                for antes, depois in zip(partes, partes[1:]):
-                    if (isinstance(antes, ast.Constant) and isinstance(antes.value, str)
-                            and isinstance(depois, ast.FormattedValue) and isinstance(depois.value, ast.Attribute)
-                            and depois.value.attr in ("nome", "onde")
-                            and (antes.value.endswith(" em ") or antes.value.endswith(" de ")
-                                 or antes.value in ("em ", "de "))):
-                        achados.append((filho.lineno, dentro, antes.value[-30:]))
-            olhar(filho, dentro)
+            pai[filho] = no
+            nome = filho.name if isinstance(filho, (ast.FunctionDef, ast.AsyncFunctionDef)) else dentro
+            funcao[filho] = nome
+            olhar(filho, nome)
 
-    olhar(ast.parse(fonte), "(fora de função)")
-    return achados
+    olhar(arvore, "(fora de função)")
+
+    def aceito(uso) -> bool:
+        """O uso está num dos lugares aceitos?"""
+        de_cima = pai.get(uso)
+        if isinstance(de_cima, ast.Call) and uso in de_cima.args:
+            chamada = de_cima.func
+            nome = chamada.id if isinstance(chamada, ast.Name) else getattr(chamada, "attr", "")
+            return nome in _RECEBEM_O_NOME_DO_DESTINO
+        if isinstance(de_cima, ast.FormattedValue) and de_cima.format_spec is None:
+            frase = pai.get(de_cima)
+            if not isinstance(frase, ast.JoinedStr):
+                return False
+            i = frase.values.index(de_cima)
+            if i == 0:
+                return True
+            antes = frase.values[i - 1]
+            return (isinstance(antes, ast.Constant) and isinstance(antes.value, str)
+                    and (antes.value.strip() == "" and i == 1 or antes.value.endswith(_ANTES_DO_NOME_NA_FRASE)))
+        return False
+
+    return [(uso.lineno, funcao.get(uso, "?"), ast.unparse(pai.get(uso, uso))[:60])
+            for uso in ast.walk(arvore)
+            if isinstance(uso, ast.Attribute) and uso.attr in ("nome", "onde") and isinstance(uso.ctx, ast.Load)
+            and not aceito(uso)]
 
 
 def test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao():
@@ -2838,7 +2869,9 @@ def test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao():
     o artigo ("a pasta ...", "o GitHub (...)"). A junção tem um lugar só, `com_preposicao` (volta 10, a do apagar). Esta
     guarda lê o código do publicar e acusa toda frase que volte a escrever "em "/"de " antes do nome do destino, sem
     exceção: a frase da D-816, que ficou de fora até a resposta do Samuel, também (D-821, 21/11/2026: "ok"). Rodado em
-    edd39a9f: acusa 33 junções (31 frases e as duas da D-816); em 1624a05a: acusa as duas da D-816."""
+    edd39a9f: acusa 33 junções (31 frases e as duas da D-816); em 1624a05a: acusa as duas da D-816. Volta 12 (baixo 1 do
+    relatório 10): a guarda acusa qualquer uso do nome do destino fora dos lugares aceitos (`_preposicao_a_mao`), não só
+    o texto "em {…}"; as mutações G1 a G4 (e a G5, "por a pasta") do relatório são acusadas."""
     fonte = (RAIZ / "publicar_versao_kaique.py").read_text(encoding="utf-8")
     achados = _preposicao_a_mao(fonte)
     assert achados == [], f"frases com a preposição escrita à mão (use com_preposicao): {achados}"
