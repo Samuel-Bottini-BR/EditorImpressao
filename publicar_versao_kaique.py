@@ -70,6 +70,7 @@ import shutil
 import subprocess
 import sys
 import time
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Callable
@@ -98,7 +99,7 @@ class Parou(Exception):
 
 
 class PublicacaoLiberada(Parou):
-    """O apagar "só o rascunho" achou a publicação LIBERADA e não apagou (apagar_publicacao com so_rascunho)."""
+    """O apagar "só o rascunho" achou a publicação LIBERADA e não apagou (apagar_e_conferir com so_rascunho)."""
 
 
 class SemResposta(Parou):
@@ -572,7 +573,7 @@ class DestinoGitHub(_Destino):
 
     def apagar(self, etiqueta: str) -> str | None:
         """Pede ao GitHub para apagar a publicacao (e, se ja liberada, a etiqueta). Devolve o aviso do gh, se ele
-        reclamou, ou None. QUEM DIZ SE APAGOU E A LEITURA DE VOLTA (apagar_publicacao), nunca o codigo de saida do gh.
+        reclamou, ou None. QUEM DIZ SE APAGOU E A LEITURA DE VOLTA (apagar_e_conferir), nunca o codigo de saida do gh.
 
         Lido no gh (cli/cli, pkg/cmd/release/delete/delete.go, deleteRun e deleteTag, 19/11): ele apaga a publicacao
         e, com --cleanup-tag, apaga DEPOIS a etiqueta refs/tags/<etiqueta>, sem olhar se e rascunho, e sai com o erro
@@ -615,14 +616,49 @@ def destino_de(destino_pasta: Path | None) -> DestinoPasta | DestinoGitHub:
     return DestinoPasta(destino_pasta) if destino_pasta is not None else DestinoGitHub()
 
 
+@dataclass(frozen=True)
+class Apagado:
+    """O que o apagar conferido fez (apagar_e_conferir), e a frase dele: o LUGAR UNICO das duas frases de quando deu
+    certo. Passo 2, volta 8 (o defeito 2 da prova a vista de 20/11/2026, provas 3a, 5 e 7c): o --apagar apagou de
+    verdade e a unica frase foi "nao existe em ... (conferido)", a mesma de quando nao havia nada; o main escrevia a
+    frase por conta propria, sem saber qual dos dois casos foi, e o caminho de erro do publicar escrevia uma terceira.
+    Agora os dois imprimem esta.
+
+    existia: havia o que apagar (lido no destino antes do pedido) e a leitura de depois diz que sumiu; False: nao havia
+    nada, e nada foi pedido. aviso: o que o gh reclamou ao apagar (a leitura de volta e quem decide; volta 1, achado 1).
+    Seguro mexer: as palavras. Arriscado: escrever "apagada" sem a leitura de volta, ou escrever estas frases noutro
+    lugar."""
+
+    etiqueta: str
+    onde: str
+    existia: bool
+    aviso: str | None = None
+
+    @property
+    def frase(self) -> str:
+        """A frase do desfecho, para a tela (o --apagar) e para o fim da frase de erro do publicar."""
+        if not self.existia:
+            return f"{self.etiqueta}: não existia em {self.onde}, e nada foi apagado (conferido)"
+        return f"a publicação {self.etiqueta} foi apagada de {self.onde} (conferido)" + (
+            f"; {self.aviso}" if self.aviso else "")
+
+
 def apagar_publicacao(destino, etiqueta: str, so_rascunho: bool = False, acabou_de_criar: bool = False) -> str | None:
+    """apagar_e_conferir, devolvendo so o aviso do destino (ou None), como antes da volta 8 (D-605: os testes antigos
+    cobram este contrato). A regra e as frases moram em apagar_e_conferir e em Apagado."""
+    return apagar_e_conferir(destino, etiqueta, so_rascunho, acabou_de_criar).aviso
+
+
+def apagar_e_conferir(destino, etiqueta: str, so_rascunho: bool = False, acabou_de_criar: bool = False) -> Apagado:
     """Apaga uma publicacao do destino e CONFERE, lendo de volta, que sumiu. O LUGAR UNICO de apagar uma publicacao (o
     --apagar e o caminho de erro do publicar de antes do pedido de liberar) e o UNICO que escreve a frase de cada
-    desfecho, porque so ele sabe se o pedido de apagar chegou a sair (volta 4, achado 3 do relatorio 3: a frase dizia
-    "NAO apaguei" tendo pedido e apagado).
+    desfecho, porque so ele sabe se havia o que apagar e se o pedido de apagar chegou a sair (volta 4, achado 3 do
+    relatorio 3: a frase dizia "NAO apaguei" tendo pedido e apagado; volta 8, defeito 2: a frase de "apagada" e a de
+    "nao existia" saem do Apagado que ele devolve).
 
-    Devolve (o aviso do destino, ou None) so quando: pediu para apagar e a leitura de depois diz que sumiu; ou ja nao
-    existia (sem acabou_de_criar). Todo o resto levanta, com a frase pronta, o comando para conferir e o de apagar:
+    Devolve um Apagado so quando: pediu para apagar e a leitura de depois diz que sumiu (existia=True, com o aviso do
+    destino); ou ja nao existia (existia=False; sem acabou_de_criar). Todo o resto levanta, com a frase pronta, o
+    comando para conferir e o de apagar:
     - a leitura de antes falha: Parou "NAO pedi para apagar nada";
     - acabou_de_criar e a leitura nao acha (volta 4, achado 4: logo depois de criar, "nao achei" nao e "sumiu"; a frase
       dizia "foi apagada (conferido)" com o rascunho no GitHub): Parou "nao achei o rascunho para apagar";
@@ -645,7 +681,7 @@ def apagar_publicacao(destino, etiqueta: str, so_rascunho: bool = False, acabou_
             raise Parou(f"não achei o rascunho {etiqueta} em {destino.nome} para apagar (pode não ter chegado a ser "
                         "criado, ou a leitura logo depois de criar ainda não o mostra): NÃO pedi para apagar nada; "
                         f"{conferir}")
-        return None
+        return Apagado(etiqueta, destino.nome, existia=False)
     if so_rascunho and antes != "rascunho":
         raise PublicacaoLiberada(f"{etiqueta} está liberada em {destino.nome}: só o rascunho podia ser apagado aqui, "
                                  "e NÃO apaguei")
@@ -669,7 +705,7 @@ def apagar_publicacao(destino, etiqueta: str, so_rascunho: bool = False, acabou_
     if depois is not None:
         raise Parou(f"pedi para apagar {etiqueta} em {destino.nome}, e ela continua lá" + (f" ({aviso})" if aviso else "")
                     + f"; {conferir}")
-    return aviso
+    return Apagado(etiqueta, destino.nome, existia=True, aviso=aviso)
 
 
 def _frase_depois_do_pedido_de_liberar(destino, etiqueta: str) -> str:
@@ -700,7 +736,7 @@ def publicar_arquivos(destino, etiqueta: str, titulo: str, notas: str, arquivos:
     4. so entao libera, e confere que ficou liberada.
     Qualquer falha (ou Ctrl+C) ANTES do pedido de liberar (o criar do rascunho incluido: se ele cria e a resposta se
     perde, o rascunho e procurado e apagado; volta 4, achado 4 do relatorio 3) apaga SO O RASCUNHO do destino e confere
-    que sumiu (apagar_publicacao com so_rascunho e acabou_de_criar: a regra e a frase moram la).
+    que sumiu (apagar_e_conferir com so_rascunho e acabou_de_criar: a regra e a frase moram la, no Apagado).
     DEPOIS do pedido de liberar (o liberar chamado; so nao conta o gh que nem abriu, NadaSaiu, volta 5, achado 4 do
     relatorio 4), NADA e apagado, em nenhum destino, sem ler nada (D-816, Samuel 20/11/2026: "A , mas
     onde estamos antes de você fazer qualquer processo"; volta 4, achado 1 do relatorio 3: com duas leituras atrasadas
@@ -745,9 +781,9 @@ def publicar_arquivos(destino, etiqueta: str, titulo: str, notas: str, arquivos:
             desfeito = _frase_depois_do_pedido_de_liberar(destino, etiqueta)          # D-816: nada se apaga
         else:
             try:
-                aviso = apagar_publicacao(destino, etiqueta, so_rascunho=True, acabou_de_criar=True)
-                desfeito = f"a publicação {etiqueta} foi apagada de {destino.nome} (conferido)" + (
-                    f"; {aviso}" if aviso else "")
+                # a frase sai do lugar unico do apagar (volta 8, defeito 2); com acabou_de_criar, "nao existia" nao
+                # volta daqui: vira o Parou "nao achei o rascunho"
+                desfeito = apagar_e_conferir(destino, etiqueta, so_rascunho=True, acabou_de_criar=True).frase
             except PublicacaoLiberada as liberada:
                 desfeito = (f"{liberada}. Eu não pedi para liberar: outra pessoa ou outro publicar a liberou no "
                             f"meio. Confira à mão o que ela tem ({destino.comando_de_apagar(etiqueta)} apaga, se "
@@ -1140,9 +1176,8 @@ def main(argumentos: list[str] | None = None) -> int:
             criar_chave(lido.chave)
             return 0
         if lido.apagar:
-            destino = destino_de(lido.pasta)
-            apagar_publicacao(destino, _conferir_etiqueta(lido.apagar))
-            print(f"{lido.apagar}: não existe em {destino.nome} (conferido)")
+            # a frase sai do lugar unico do apagar (volta 8, defeito 2: antes, "nao existe" tambem depois de apagar)
+            print(apagar_e_conferir(destino_de(lido.pasta), _conferir_etiqueta(lido.apagar)).frase)
             return 0
         if lido.motor:
             publicar_motor(lido.pasta, lido.motor_kraken, lido.chave)

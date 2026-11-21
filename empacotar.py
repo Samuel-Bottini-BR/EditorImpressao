@@ -1718,7 +1718,8 @@ def conferir_pasta_pronta(pasta: Path, versao_do_pacote: str, saida: Saida = ATU
     instalar\\ (D-727), nas saidas que o levam (Saida.vc_em_instalar: as duas do
     Velopack), conferido pela assinatura da Microsoft (conferir_o_visual_c, a
     mesma regua da montagem), com o arquivo da versao dele igual a versao lida da
-    assinatura; o Tesseract inteiro (relativos_do_tesseract, cada arquivo nao
+    assinatura (o arquivo lido por atualizacao.versao_do_visual_c_do_pacote, a
+    leitura unica, a mesma do programa instalado; volta 8); o Tesseract inteiro (relativos_do_tesseract, cada arquivo nao
     vazio); e que a pasta motor-kraken\\ nao esteja la (D-768).
 
     Passo 2, volta 7 (D-818, Samuel: "vai ter que reprogramar?" · "A"; achado 1
@@ -1756,15 +1757,15 @@ def conferir_pasta_pronta(pasta: Path, versao_do_pacote: str, saida: Saida = ATU
     elif saida.vc_em_instalar:
         # a regua da montagem (D-818): a assinatura da Microsoft e a versao, lida dela, igual ao arquivo da versao
         versao_do_vc, errado = conferir_o_visual_c(visual_c)
-        arquivo_da_versao = instalar / atualizacao.VC_REDIST_VERSAO
+        # o arquivo da versao, pela leitura unica (a mesma do programa instalado; volta 8, achado 6 do relatorio 7)
+        lida = None if errado else atualizacao.versao_do_visual_c_do_pacote(pasta)
         if errado:
             problemas.append(f"o Visual C++ da pasta {pasta} ({atualizacao.PASTA_DO_QUE_SE_INSTALA}\\"
                              f"{atualizacao.VC_REDIST_NOME}) não é o oficial da Microsoft: " + "; ".join(errado))
-        elif not arquivo_da_versao.is_file():
+        elif lida is None:
             problemas.append(f"a pasta {pasta} não tem a versão do Visual C++ ({atualizacao.PASTA_DO_QUE_SE_INSTALA}\\"
                              f"{atualizacao.VC_REDIST_VERSAO})")
         else:
-            lida = arquivo_da_versao.read_text(encoding="utf-8", errors="replace").strip()
             if lida != versao_do_vc:
                 problemas.append(f"a pasta {pasta} diz que o Visual C++ é o {lida} "
                                  f"({atualizacao.VC_REDIST_VERSAO}), e o arquivo dele é o {versao_do_vc} (pela "
