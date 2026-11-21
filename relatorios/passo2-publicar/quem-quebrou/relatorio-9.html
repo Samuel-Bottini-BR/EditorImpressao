@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo 2, volta 10: relatório 9 de quem tentou quebrar</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Passo 2 do plano da parte do Windows: nona conferência de quem tentou quebrar (volta 10, 21/11/2026)</h1>
+<p>Sou um agente novo nesta volta (D-815). Não escrevi este código e não conferi as voltas anteriores. Não mexi no código
+do outro: as minhas mudanças foram em cópias (<code>git archive</code>), na pasta de rascunho <code>quebra10\</code>.</p>
+<p>O que <strong>não</strong> fiz:</p>
+<ul>
+<li>não rodei o publicar, o PyInstaller, o vpk nem o <code>gh release</code> de verdade (D-785, item 8: a gerente roda, à vista);</li>
+<li>não abri janela, console nem pergunta do Windows na tela do Samuel (todo Python e todo git abriram sem janela);</li>
+<li>não disparei rodada do GitHub (só consultei a 44869743074);</li>
+<li>não rodei o motor do Kraken de verdade nem <code>tests/test_ocr_kraken.py</code>; um Python por vez, um arquivo de teste por vez;</li>
+<li>não mexi em <code>C:\EditorImpressaoProva</code> (só listei), na pasta errada de 19/11 (só listei: a data continua
+  19/11/2026 15:44:27) nem na junção <code>modelos</code>.</li>
+</ul>
+<h2>Pedido</h2>
+<ul>
+<li>Papel: quebrador</li>
+<li>Commit de partida: accafb80</li>
+<li>Ramo: passo2-publicar-2026-11-19</li>
+</ul>
+<h2>Arquivos que vou mexer</h2>
+<ul>
+<li><code>core/pasta_das_ferramentas.py</code></li>
+<li><code>tests/test_pasta_das_ferramentas.py</code></li>
+<li><code>regras_dos_agentes/conversa_com_o_git.py</code></li>
+<li><code>regras_dos_agentes/repositorio_de_prova.py</code></li>
+<li><code>core/windows.py</code></li>
+<li><code>compilar_st_ferramentas.py</code></li>
+<li><code>publicar_versao_kaique.py</code></li>
+<li><code>empacotar.py</code></li>
+<li><code>montar_motor_kraken.py</code></li>
+<li><code>compilar_detector_gravura.py</code></li>
+<li><code>core/ocr_kraken.py</code></li>
+<li><code>tests/test_empacotar.py</code></li>
+<li><code>tests/test_publicar_*.py</code></li>
+<li><code>tests/test_windows_peca.py</code></li>
+<li><code>tests/test_conferencias_*.py</code></li>
+<li><code>relatorios/passo2-publicar/</code></li>
+</ul>
+<p>(Só mexi de verdade em <code>relatorios/passo2-publicar/</code>: este relatório, <code>quem-quebrou/anexos-9/</code> e o pacote
+<code>anexos/pacote-quem-quebra-volta10.md</code>, que a gerente deixou fora do git e vai no meu commit. Os outros arquivos da lista
+só foram lidos, ou mudados em cópias à parte.)</p>
+<h2>Veredito</h2>
+<p><strong>PRONTO PARA CONFERIR: a pasta das ferramentas agora é um caminho escrito num lugar só, e eu não consegui fazer
+nenhum dos seis lugares procurar nem criar pasta em outro lugar, com o git funcionando, sem git ou com o git recusando.</strong>
+O defeito do relatório 8 (voltar calado à pasta errada quando o git não responde) deixou de existir: não há mais conta
+nenhuma que possa errar. O programa do Kaique não muda.</p>
+<p>Ficam 4 baixos e 6 observações (abaixo). Nenhum chega ao Kaique nem ao livro. O baixo 1 é do roteiro da prova à vista:
+dois itens pedem para repetir "da pasta principal", e a pasta principal está no <code>fase-1</code>, que ainda não tem o publicar;
+a gerente precisa acertar esses dois itens antes da prova. Nunca "aprovado": só o Samuel aprova.</p>
+<p>O que está certo (provado rodando, não só lido):</p>
+<ul>
+<li><strong>Da cópia de trabalho de verdade (<code>passo2</code>), os seis lugares dão <code>D:\programas\EditorImpressao-arquivos\ferramentas</code></strong>,
+  o motor achado é o de lá, "pode gravar" diz que pode, e o git nem é carregado (sonda S1).</li>
+<li><strong>A reversão confere com a do outro:</strong> os 12 testes novos no código de <code>6fa766c4</code>: 10 falham e 2 passam (os do
+  "empacotado" e do "sem janela", que cobram o que já existia); o da frase do apagar falha lá ("de a pasta").</li>
+<li><strong>As 9 conferências do porteiro passam no PC, um arquivo por vez</strong>, e o repositório continua inteiro (não raso).</li>
+<li><strong>A rodada 44869743074 passou (success) sobre o código certo</strong>: ela tirou <code>3529cf9c</code>, que tem o código de
+  <code>09b30933</code> (de <code>09b30933</code> a <code>accafb80</code> só o formulário mudou); <code>test_pasta_das_ferramentas.py</code> 12, <code>test_publicar_versao.py</code>
+  122, <code>test_empacotar.py</code> 42 e 1 pulado, <code>test_ocr_kraken.py</code> 27 e 6 pulados, as 9 conferências, o juiz do porteiro e os
+  botões da janela real.</li>
+<li><strong>Os testes que saíram eram só desta tarefa:</strong> os cinco que saíram e os dois que mudaram de nome nasceram no commit
+  <code>cea2b486</code> (volta 9); o arquivo de testes nem existia antes do passo 2 (<code>03c91599</code>). Nos arquivos de teste antigos,
+  a volta 10 só acrescentou um teste (<code>test_publicar_versao.py</code>) e mudou o texto de explicação de um teste da volta 9
+  (<code>test_empacotar.py</code>). Nenhum teste que cobrava algo passou a cobrar menos.</li>
+<li><strong>Das minhas 8 mutações, as 4 que tentam trazer de volta o defeito foram acusadas</strong> (o caminho escrito de novo em outro
+  arquivo, em dois arquivos; o Kraken olhando a pasta do Samuel no programa empacotado; a frase que não diz onde
+  procurou). As 4 que passam são dos baixos 3 e 4 e da observação 1.</li>
+</ul>
+<h2>Decisões que esta tarefa precisa cumprir</h2>
+<p>Palavras copiadas do Livro (<code>obra-juncao</code>, <code>docs/plano/DECISOES.md</code>), e como as achei nesta entrega.</p>
+<ul>
+<li><strong>D-605</strong> "A partir de agora, nenhuma função nova, ou nova escolha dentro do programa pode alterar o que já está escolhido e testado, coisas novas não podem criar novos problemas, essa é uma nova regra que todos os agentes precisam ler"
+  Aqui: <strong>cumprida</strong>. O programa do Kaique (empacotado) procura o motor primeiro ao lado dele e não olha a pasta das
+  ferramentas (teste do outro, e a mutação V3 é acusada). Rodando pelas fontes, o programa acha o motor do Samuel (sonda
+  S1: "motor do programa" = <code>D:\programas\EditorImpressao-arquivos\ferramentas\motor-kraken</code>; o defeito antigo nº 330
+  não volta). Nenhum teste antigo mudou o que cobra. As 9 conferências do porteiro passam.</li>
+<li><strong>D-727</strong> "pode, se tiver qualquer coisa que o kaique precise, ele tem que estar no instalador né"
+  Aqui: <strong>cumprida</strong> (não muda): o Visual C++ continua tirado de <code>ferramentas\downloads</code> e conferido pela assinatura.</li>
+<li><strong>D-767</strong> "não faça mais nada escodindo ou de mentira" · "não quero fazer consertos quero que funcione" · "quero que faça as coisas certas e sem bugs ou erros, deveria ter pensado nesses erros na hora de montar a estrutura do atualizador e testes a distancias"
+  Aqui: <strong>cumprida</strong>, com o baixo 2. Os testes rodam os scripts e o git de verdade, num repositório de prova com uma
+  cópia de trabalho de verdade, com a pasta de prova longe do código. Mas a troca do caminho nos testes cai calada no
+  caminho de verdade se a linha mudar de jeito (baixo 2).</li>
+<li><strong>D-775</strong> "o agente vai tentar quebrar antes de fazer o teste real na tela né?" · "ok"
+  Aqui: <strong>cumprida</strong> por este relatório. Nenhum grave nem médio: pode seguir para a prova à vista, depois de a gerente
+  acertar os itens 19 e 21 do roteiro (baixo 1).</li>
+<li><strong>D-776</strong> "Sim, no C só tem que cuidar para não encher o disco C inteiro"
+  Aqui: não muda (a conta do espaço não foi tocada nesta volta).</li>
+<li><strong>D-785</strong> "ok, mais ainda existem mais casos na opção A" · "ok"
+  Aqui: <strong>cumprida</strong> por mim (nada à vista rodei).</li>
+<li><strong>D-788</strong> "1" (a primeira opção)
+  Aqui: <strong>cumprida</strong>. Empacotado, <code>pasta_das_ferramentas()</code> devolve None e a lista do motor fica com "ao lado do
+  programa" primeiro. A peça do git fica fora do pacote pela lista de exclusão (só a linha de comando do PyInstaller é
+  conferida por teste; o pacote montado, só o item 20 do roteiro mostra).</li>
+<li><strong>D-813</strong> "ok" (a recusa e a procura comparam a coisa de verdade, não o texto)
+  Aqui: <strong>cumprida no que importa</strong>: o lugar não depende mais de como a pasta do código é escrita (é uma linha fixa).
+  Sobra uma comparação pelo texto nos três scripts que gravam ("é o caminho de fábrica?"): <code>..</code>, <code>\\?\</code> e
+  <code>\\localhost\D$</code> dizem "não é" (sonda S2). Não faz mal (o caminho passado é o mesmo lugar), mas anoto (observação 2).</li>
+<li><strong>D-815</strong> "pode conferir se não está ocorrendo alucinação por estar com contexto cheio" · "estou falando do agente que está trabalhando" · "esses agentes que você criou, sempre que vai fazer uma tarefa nova, chama outro com a mesmas instruções ou ifac rodando sempre o mesmo com memorias compactadas?" · "ok"
+  Aqui: <strong>cumprida</strong>: sou agente novo nesta volta; o escritor da volta 10 era novo (o jeito A foi a segunda volta dele,
+  então a próxima volta de conserto, se houver, vai para um escritor novo).</li>
+<li><strong>D-816</strong> "A , mas onde estamos antes de você fazer qualquer processo"
+  Aqui: não muda (só a frase do apagar ganhou a contração; as linhas que decidem o que se apaga não mudaram).</li>
+<li><strong>D-818</strong> "vai ter que reprogramar?" · "A"
+  Aqui: não muda (a conferência da pasta já montada não foi tocada).</li>
+<li><strong>D-819</strong> "não era melhor só ver se está instaldo no pc?" · "porque você escolheu o jeito mais dificil e nem perguntou para mim?" · "nova regra, sempre se deve se ver se é a coisa mais simples, ou melhor de se fazer, tem vezes que o mais simples é melhor e tem vezes que o mais complicado é melhor"
+  Aqui: <strong>cumprida</strong>. O jeito A é o mais simples que resolve, e o outro comparou os dois por escrito. Sobrou pouca
+  complicação sem uso (observação 1): um ramo que nunca roda, um nome que só os testes usam, e um "pode gravar" escrito
+  duas vezes (baixo 3).</li>
+<li><strong>D-820</strong> "não era melhor só ver se está instaldo no pc?" · "a versão B é usada por quais app?" · "A" · "mas pera ai , o que os programadores senior recomendam em casos assim?"
+  Aqui: <strong>cumprida</strong>, com uma ressalva. A pasta está escrita num lugar só; nada pergunta ao git; nada calcula pela pasta
+  de cima do código (grep, abaixo); sem a peça, para e diz onde procurou; sem o motor, diz também "aponte-a com
+  --motor-kraken <pasta>". A ressalva: para o Visual C++, sem a pasta das ferramentas, o empacotar e o publicar dizem onde
+  procuraram, mas não há opção para apontar outro lugar (a frase diz "Rode no PC onde ela existe"; observação 3).</li>
+</ul>
+<h2>O que li</h2>
+<ul>
+<li>As regras do verificador (<code>.claude/agents/verificador.md</code>), o <code>CLAUDE.md</code> inteiro da cópia <code>passo2</code>, a memória
+  (<code>memoria/INDICE.md</code>; <code>memoria/geral/atualizador.md</code> só existe na pasta principal, li lá; o catálogo dos erros da
+  <code>obra-juncao</code>, as famílias F1 a F10) e o pacote <code>anexos/pacote-quem-quebra-volta10.md</code>.</li>
+<li>No Livro da <code>obra-juncao</code>, as linhas inteiras de D-605, D-727, D-767, D-775, D-776, D-785, D-788, D-813, D-815,
+  D-816, D-818, D-819 e D-820. (O pacote diz "não achada" para D-813 a D-820: elas existem no Livro da <code>obra-juncao</code>,
+  linhas 1103 a 1110. É o mesmo furo do pacote da volta 9.)</li>
+<li>O ONDE-PAREI do escritor: "Onde parei" e as partes Volta 10 de "Decisões", "O que já está escolhido", "Como fica", "A
+  causa", "O que pode falhar", "O que li", "Testes", "Caminho e função", "Cada proteção", "Máquina ou olho",
+  "Ressalvas", "Ideias e bugs", "Perguntas para o Samuel" e "A prova de verdade" (itens 1 a 22); os anexos
+  <code>reversao-volta10-*</code>.</li>
+<li>O relatório 8 inteiro.</li>
+<li>O código: o diff inteiro de <code>6fa766c4</code> a <code>09b30933</code> (11 arquivos), <code>core/pasta_das_ferramentas.py</code> inteiro, o
+  <code>tests/test_pasta_das_ferramentas.py</code> inteiro, a peça do git comparada com a de antes do passo 2 (<code>03c91599</code>), os
+  <code>main</code> dos três scripts que gravam, <code>empacotar.preparar_vc_redist</code>, <code>achar_motor_kraken</code>, <code>juntar_pecas</code>,
+  <code>publicar_versao_kaique.publicar_motor</code> e <code>Apagado</code>, e o <code>montar_motor_kraken.montar</code> e <code>_baixar_conferido</code>.</li>
+<li><strong>Peças de fora, lidas na fonte:</strong> o <code>pyi-archive_viewer</code> do PyInstaller 6.21.0 (<code>.venv</code>,
+  <code>PyInstaller/utils/cliutils/archive_viewer.py</code>, função <code>run</code>, linhas 221 a 268): <code>-l</code> lista, <code>-r</code> "Implies --list" e
+  entra nos arquivos de dentro, <code>-b</code> só os nomes; o outro leu certo. O <code>pathlib</code> do Python 3.14 no Windows: a igualdade
+  de dois caminhos ignora maiúsculas e o tipo da barra, mas não resolve <code>..</code>, <code>\\?\</code> nem <code>\\localhost\D$</code> (visto
+  rodando, sonda S2). O nome curto de <code>D:\programas\EditorImpressao-arquivos\ferramentas</code>, pedido ao Windows
+  (<code>GetShortPathNameW</code>), volta o nome longo: o D: não tem nomes curtos ligados.</li>
+</ul>
+<h2>O que conferi nas falhas, nas peças de fora e nos caminhos</h2>
+<h3>A rodada do GitHub (consultada, não disparada)</h3>
+<ul>
+<li><strong>44869743074: success</strong>, de 05:12 (hora do GitHub) de 21/11. O registro cita <code>3529cf9c</code> 71 vezes; de <code>09b30933</code> a
+  <code>accafb80</code> só <code>relatorios/passo2-publicar/ONDE-PAREI.md</code> mudou. Todos os trabalhos da rodada: success (os de
+  velocidade, pulados, como sempre sem pedido).</li>
+</ul>
+<h3>Sobrou algum lugar que procura ou cria a pasta por conta própria?</h3>
+<p>Busca (<code>git grep</code> em <code>09b30933</code>, fora de <code>tests/</code> e <code>relatorios/</code>) por <code>RAIZ.parent</code>, <code>parents[</code>, <code>parent.parent</code>,
+<code>EditorImpressao-arquivos</code>, <code>"ferramentas"</code>, <code>pasta_principal</code>, <code>limite_s</code>:</p>
+<ul>
+<li>O caminho das ferramentas aparece em código <strong>só</strong> em <code>core/pasta_das_ferramentas.py:43</code>. Nos outros arquivos aparece
+  em comentário e em texto de ajuda (<code>empacotar.py:1984</code>, <code>montar_motor_kraken.py:618</code>, os cabeçalhos dos scripts).</li>
+<li><code>parent.parent</code> sobra em <code>core/ocr_kraken.py:144</code> (a raiz do código, para o lugar 2 do motor, que é dentro do
+  código) e em lugares que acham <code>modelos\</code> ou o acervo (outra pasta). Nenhum acha as ferramentas.</li>
+<li><code>pasta_principal</code>, <code>e_copia_de_trabalho</code> e <code>SemPastaPrincipal</code> não existem mais em lugar nenhum; ninguém chama
+  <code>pasta_das_ferramentas(...)</code> com argumento (a assinatura mudou e todos os chamadores foram trocados).</li>
+<li>Importar o <code>empacotar</code> não faz mais nada no disco nem no git (antes, na volta 9, perguntava ao git ao carregar).</li>
+</ul>
+<h3>O caminho escrito de outro jeito (D-813, sonda S2, anexo <code>sonda-s2.txt</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Jeito</th>
+<th>Os scripts acham que é o de fábrica?</th>
+<th>O mesmo lugar no disco?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>minúsculas, barras <code>/</code>, barra no fim, <code>\.\</code></td>
+<td>sim</td>
+<td>sim</td>
+</tr>
+<tr>
+<td><code>..</code>, <code>\\?\</code>, <code>\\localhost\D$</code></td>
+<td><strong>não</strong></td>
+<td>sim</td>
+</tr>
+<tr>
+<td>nome curto</td>
+<td>(o D: não tem nome curto: volta o longo)</td>
+<td>sim</td>
+</tr>
+</tbody>
+</table>
+<p>Quando o script acha que não é o de fábrica, ele não pergunta "pode gravar?" e grava no caminho passado. Como é o mesmo
+lugar, nada vai para o lugar errado; e, se a pasta não existe, ele cria a pasta certa (a escolhida à mão). Observação 2.</p>
+<h3>Sem a pasta ou sem a peça</h3>
+<table>
+<thead>
+<tr>
+<th>Caso</th>
+<th>O que acontece</th>
+<th>Certo?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Da cópia <code>passo2</code>, tudo no lugar</td>
+<td>os seis lugares e os dois motores: <code>D:\programas\EditorImpressao-arquivos\ferramentas</code> (sonda S1)</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Da cópia e da principal, sem git, com o git recusando o dono</td>
+<td>o mesmo (teste do outro, que roda o git de verdade; passou no PC e no GitHub)</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Sem a pasta das ferramentas: o <code>montar_motor_kraken</code>, os dois compiladores</td>
+<td>param com "não existe a pasta das ferramentas ... nada foi criado" e a opção de apontar outro lugar (testes do outro)</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Sem a pasta: a montagem do Visual C++ (empacotar e publicar)</td>
+<td>para com a mesma frase, mas sem opção de apontar outro lugar (não existe essa opção)</td>
+<td>observação 3</td>
+</tr>
+<tr>
+<td>Sem o motor: o empacotar e o <code>publicar --motor</code></td>
+<td>"não existe <cada lugar>" e "aponte-a com --motor-kraken <pasta>" (lido: os dois mostram todas as linhas da busca única)</td>
+<td>sim, mas nenhum teste passa pelos dois (baixo 4)</td>
+</tr>
+<tr>
+<td><code>EditorImpressao-arquivos</code> existe, <code>ferramentas</code> não, na montagem do Visual C++</td>
+<td>hoje para; a decisão é uma conta própria do empacotar, e a mutação V8 (olhar a pasta de cima) passa em todos os testes</td>
+<td>baixo 3</td>
+</tr>
+<tr>
+<td>Um <strong>arquivo</strong> chamado <code>ferramentas</code></td>
+<td>"pode gravar" diz que não (é <code>is_dir</code>); a mutação V7 (<code>exists</code>) passa nos testes</td>
+<td>observação 1</td>
+</tr>
+<tr>
+<td>Empacotado</td>
+<td>None; o motor ao lado do programa; nada perguntado ao git</td>
+<td>sim</td>
+</tr>
+</tbody>
+</table>
+<p>Nenhuma frase diz "deu certo" sem ter dado: "pode gravar" só diz que pode quando a pasta existe, e quem grava confere o
+resto do jeito de antes (o download e a assinatura do Visual C++, o "Já existe" do motor).</p>
+<h3>O que saiu da peça do git</h3>
+<p>Comparei a peça do git de agora com a de antes do passo 2 (<code>03c91599</code>): mudaram só duas coisas, o git aberto sem janela
+de console e a função nova <code>criar_copia_de_trabalho</code> (só para os repositórios de prova). O limite de tempo e a lista de
+variáveis, que a volta 9 tinha posto, saíram. <strong>A ressalva do outro está certa:</strong> o defeito do achado 2 do relatório 8
+era um limite de tempo que não segurava; hoje nenhuma pergunta ao git tem limite, como antes do passo 2, então não há
+limite que falhe. O porteiro continua sem limite, como sempre foi (a pergunta B da gerente). O "sem janela" não muda o
+que o porteiro lê: a saída e o código de volta são os mesmos (as 9 conferências passam).</p>
+<h3>A prova de reversão (anexo <code>reversao-no-codigo-antigo.txt</code>)</h3>
+<p>Os testes de <code>09b30933</code> no código de <code>6fa766c4</code>, numa cópia minha: <strong>10 falham, 2 passam</strong> em
+<code>test_pasta_das_ferramentas.py</code>, igual ao anexo do outro. Os 2 que passam (o do programa empacotado e o do git sem
+janela) cobram o que já existia na volta 9. Os de B1 a B4 falham lá por outro motivo (no código de antes a pasta
+caía na que o jeito do git acharia, imitada no teste, e os scripts seguiam): eles não provam a reversão das próprias
+proteções, mas as mutações S14 a S18 do outro provam. O <code>test_obs6</code> (a frase do apagar) falha lá com "foi apagada de a
+pasta".</p>
+<h3>As mutações minhas (anexo <code>mutacoes-v-resultado.txt</code>; script <code>mutacoes_v.py.txt</code>)</h3>
+<p>Diferentes das S1 a S18 e T1 a T17 do outro e das B, P, U, R, Y, Z, W de antes. Uma por vez, numa cópia de
+<code>09b30933</code>, devolvida ao original (conferido pelo git: mesmo conteúdo do commit).</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>O que desliguei</th>
+<th>Acusada?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V1</td>
+<td>o empacotar escreve o caminho de novo, por conta própria (uma cópia da linha, não uma conta)</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>V2</td>
+<td>o compilador do st_ferramentas escreve o caminho de novo</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>V3</td>
+<td>o Kraken lê a linha direto e, empacotado, olha a pasta do Samuel</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>V4</td>
+<td>a busca do motor deixa de dizer onde procurou</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>V5</td>
+<td>o empacotar deixa de mostrar a linha "aponte-a com --motor-kraken"</td>
+<td><strong>não</strong></td>
+</tr>
+<tr>
+<td>V6</td>
+<td>o <code>publicar --motor</code> deixa de mostrar essa linha</td>
+<td><strong>não</strong></td>
+</tr>
+<tr>
+<td>V7</td>
+<td>"pode gravar" aceita um arquivo chamado <code>ferramentas</code> (<code>exists</code> em vez de <code>is_dir</code>)</td>
+<td><strong>não</strong></td>
+</tr>
+<tr>
+<td>V8</td>
+<td>a montagem do Visual C++ olha a pasta de cima e cria a das ferramentas</td>
+<td><strong>não</strong></td>
+</tr>
+</tbody>
+</table>
+<p>V1 e V2 são a gambiarra que a D-820 quer evitar (o mesmo caminho escrito em dois lugares): os testes pegam, porque a
+pasta de prova fica longe do código e a troca é feita só na linha da regra. Bom desenho.</p>
+<h3>O que já funcionava em volta (§11.8)</h3>
+<ul>
+<li>As 9 conferências do porteiro, no PC, um arquivo por vez (anexo <code>conferencias-no-pc.txt</code>).</li>
+<li><code>test_pasta_das_ferramentas.py</code> e <code>test_decisoes_atualizacao.py</code> no PC: passam.</li>
+<li><code>git rev-parse --is-shallow-repository</code> = false, na cópia e na pasta principal, depois de tudo.</li>
+</ul>
+<h2>Caminhos que o outro não listou</h2>
+<ol>
+<li><strong>A pasta principal de verdade não tem este código.</strong> A pasta principal (<code>D:\programas\EditorImpressao</code>) está no ramo
+   <code>fase-1</code>, que não tem <code>publicar_versao_kaique.py</code> nem <code>core/pasta_das_ferramentas.py</code>. O outro escreveu "da pasta
+   principal ... nada muda" e pôs no roteiro dois itens para repetir lá (baixo 1). O teste do outro cobre a pasta
+   principal num repositório de prova; a de verdade só depois de juntar.</li>
+<li><strong>A troca do caminho nos testes quando a linha muda</strong> (o "seguro mexer" do próprio texto da regra): a cópia do
+   teste fica com o caminho de verdade, calada (baixo 2).</li>
+<li><strong>A montagem do Visual C++ decide "pode gravar?" por conta própria</strong> (baixo 3).</li>
+<li><strong>A frase do motor pelos dois que a mostram</strong> (o empacotar e o publicar): só a função de dentro é testada (baixo 4).</li>
+</ol>
+<h2>Falhas não pensadas e resultado não conferido</h2>
+<ul>
+<li><strong>O teste acredita que trocou (F1, F9):</strong> a cópia do código nos testes só troca o caminho se achar a linha escrita
+  exatamente como hoje; se não achar, segue calada com o caminho de verdade, e os testes que rodam os scripts passam a
+  ler a pasta de verdade do Samuel (baixo 2).</li>
+<li><strong>Proteção ou caminho que nenhum teste percorre (F3, de novo neste passo):</strong> V5, V6, V7 e V8.</li>
+<li><strong>Resultado não conferido:</strong> nada achado. A frase "pode gravar" só diz sim com a pasta lá.</li>
+</ul>
+<h2>As regras que conferi</h2>
+<ul>
+<li><strong>§11.12.1, uma peça só:</strong> a pasta das ferramentas tem um lugar só (grep acima). O "pode gravar?" tem dois: a regra e a
+  conta própria da montagem do Visual C++ (baixo 3).</li>
+<li><strong>§11.12.2, nada dá como feito o que não conferiu:</strong> cumprida (tabela acima).</li>
+<li><strong>§11.12.3, a lista das falhas:</strong> feita pelo outro, e certa, menos o caso da linha que muda nos testes (baixo 2).</li>
+<li><strong>§11.12.4 e D-767, peça de mentira:</strong> os testes usam o git e os scripts de verdade; o do "empacotado" troca
+  <code>sys.frozen</code> e diz que é só a lógica (é). O pacote de verdade fica para o item 20.</li>
+<li><strong>§11.12.6 e D-813:</strong> o outro leu o PyInstaller certo. O jeito de escrever o caminho só importa nos três scripts
+  (observação 2).</li>
+<li><strong>§11.8 e D-605:</strong> nenhum teste antigo mudou o que cobra; os que saíram eram da volta 9 desta mesma tarefa, por ordem
+  da gerente e pela D-820.</li>
+<li><strong>§4.7, teste de reversão:</strong> confere (refiz).</li>
+<li><strong>§10.5, docstring:</strong> todo arquivo e função tocados têm. Um comentário diz mais do que é (observação 1).</li>
+<li><strong>D-819, o mais simples:</strong> cumprida (acima).</li>
+<li><strong>§11.13 (perguntas ao Samuel):</strong> a pergunta do limite de tempo é "para a gerente primeiro"; se for ao Samuel, precisa
+  ser reescrita (observação 5).</li>
+</ul>
+<h2>Achados</h2>
+<ol>
+<li>
+<p><strong>BAIXO: dois itens do roteiro da prova à vista não dão para fazer como estão escritos.</strong>
+   - Onde: <code>relatorios/passo2-publicar/ONDE-PAREI.md:3472</code> ("A prova de verdade", Volta 10, item 19, a segunda metade:
+     "Repetir o mesmo da pasta principal (<code>D:\programas\EditorImpressao</code>)") e <code>relatorios/passo2-publicar/ONDE-PAREI.md:3487</code>
+     (item 21, "O item 15 também da pasta principal").
+   - Provado: a pasta principal está no ramo <code>fase-1</code> (<code>git rev-parse --abbrev-ref HEAD</code> = <code>fase-1</code>, em <code>d2146513</code>), e o
+     <code>fase-1</code> não tem <code>publicar_versao_kaique.py</code> nem <code>servidor_das_versoes.py</code> nem <code>core/pasta_das_ferramentas.py</code>
+     (<code>git cat-file -e</code> falha nos três). Seguido ao pé da letra, o comando dá "arquivo não encontrado". Para fazer o
+     item, seria preciso trocar o ramo da pasta principal, que é a cópia de trabalho do Samuel (o atalho de
+     desenvolvimento roda de lá): isso mexe no que é dele (família F9).
+   - O que falta não é grave: o caso "da pasta principal" está provado pelo teste do outro, num repositório de prova
+     com a pasta principal e uma cópia de trabalho de verdade; e, com o caminho escrito, rodar de um lugar ou de outro
+     não muda a conta.
+   - Eu pedi isso no relatório 8 ("O item 19 também da pasta principal") sem ver que a principal está no <code>fase-1</code>. O erro
+     começa aqui.
+   - O que pedir: reescrever os itens 19 e 21: agora, só da cópia <code>passo2</code>; "da pasta principal" fica para depois de o
+     trabalho entrar no <code>fase-1</code> (a gerente repete lá na junção, sem trocar ramo nenhum).</p>
+</li>
+<li>
+<p><strong>BAIXO: a troca do caminho nos testes cai calada no caminho de verdade quando a linha muda.</strong>
+   - Onde: <code>tests/test_pasta_das_ferramentas.py:83-101</code> (<code>_copiar_o_codigo</code>: <code>if texto.count(LINHA_DO_CAMINHO) == 1:</code>
+     troca; senão, segue sem trocar) e <code>:61</code> (<code>LINHA_DO_CAMINHO</code>).
+   - Provado (sonda S3, anexo <code>sonda-s3.txt</code>, só a cópia, nenhum script rodado): com a linha mudada do jeito que o
+     próprio texto da regra chama de "seguro mexer" (a pasta mudou de lugar: <code>E:\programas\...</code>), a cópia de prova do
+     teste fica com <code>PASTA_DAS_FERRAMENTAS = Path(r"E:\programas\EditorImpressao-arquivos\ferramentas")</code>, o caminho de
+     verdade. (Um comentário no fim da linha ainda é trocado certo.)
+   - O que acontece então (lido, não rodado): o teste que confere a linha falha com a frase certa ("troque também
+     LINHA_DO_CAMINHO"), mas os outros testes do mesmo arquivo continuam e rodam os scripts de verdade contra a pasta de
+     verdade do Samuel. Pelo que li, hoje nada seria gravado lá: o <code>montar_motor_kraken</code> para em "Já existe ..." (o
+     motor está lá), os downloads já estão lá, e a internet fica trancada no processo. Mas isso é acaso, não proteção. No
+     Windows do GitHub não acontece (lá a pasta não existe).
+   - O que pedir: quando a regra existe e a linha não é achada, o teste parar na hora (<code>pytest.fail</code>) em vez de seguir;
+     ou trocar pela atribuição (<code>PASTA_DAS_FERRAMENTAS = ...</code>, qualquer que seja o caminho) e conferir, na cópia, que o
+     caminho ficou o de prova antes de rodar qualquer script.</p>
+</li>
+<li>
+<p><strong>BAIXO: a montagem do Visual C++ decide "pode gravar?" por uma conta própria, e nenhum teste a acusa.</strong>
+   - Onde: <code>empacotar.py:666-668</code> (<code>if not DOWNLOADS.parent.is_dir(): return ... [_pasta_das_ferramentas.problema_para_gravar() or f"não existe a pasta ..."]</code>).
+   - Lido: quem decide é o <code>DOWNLOADS.parent.is_dir()</code> do próprio empacotar; a regra (<code>problema_para_gravar</code>) só dá as
+     palavras, e há uma segunda frase para quando as duas discordam. Hoje dão o mesmo (as duas olham a mesma pasta). O
+     "caminho → função" do outro diz que este "pode gravar?" usa <code>problema_para_gravar()</code> (§11.12: "uma regra, um lugar
+     só").
+   - Provado (mutação V8): olhar a pasta de cima e criar a das ferramentas, aqui, passa em <code>test_pasta_das_ferramentas.py</code>
+     e <code>test_empacotar.py</code>. É a B5 do relatório 8, que foi consertada só na regra.
+   - O que pedir: o empacotar perguntar à regra (<code>problema = problema_para_gravar(); if problema: return ...</code>), sem a
+     conta nem a frase próprias; e um teste da montagem do Visual C++ com <code>EditorImpressao-arquivos</code> existindo sem
+     <code>ferramentas</code> dentro.</p>
+</li>
+<li>
+<p><strong>BAIXO: a frase "aponte-a com --motor-kraken" não é testada por quem a mostra.</strong>
+   - Onde: <code>empacotar.py:707</code> (<code>juntar_pecas</code>) e <code>publicar_versao_kaique.py:1120</code> (<code>publicar_motor</code>).
+   - Provado (mutações V5 e V6): tirar essa linha só no empacotar, ou só no publicar, passa em
+     <code>test_pasta_das_ferramentas.py</code>, <code>test_empacotar.py</code> e <code>test_publicar_versao.py</code>. O teste do outro lê a função de
+     dentro (<code>achar_motor_kraken</code>), não o que o Samuel vê.
+   - Lido: hoje os dois mostram todas as linhas da busca, então a frase aparece nos dois. É a família F3 outra vez
+     neste passo (§11.12: "uma prova que passa pelos caminhos principais").
+   - O que pedir: um teste pelo <code>publicar --motor</code> (o <code>Parou</code> que ele levanta) e um pelo empacotar (o que ele imprime),
+     sem motor, cobrando "onde procurou" e "--motor-kraken".</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO 1 (D-819): sobras pequenas.</strong>
+   - <code>core/pasta_das_ferramentas.py:68-69</code>: o ramo "o programa empacotado não tem a pasta das ferramentas" de
+     <code>problema_para_gravar</code> nunca roda (ninguém que grava roda empacotado).
+   - <code>core/pasta_das_ferramentas.py:44</code>: <code>NOME_DA_PASTA_DO_SAMUEL</code> diz "(as frases e os testes o usam)"; só os testes
+     usam.
+   - <code>empacotar.py:667-668</code>: a segunda frase (<code>or f"não existe a pasta ..."</code>) só aparece se as duas contas discordarem
+     (baixo 3).
+   - <code>core/pasta_das_ferramentas.py:70</code> (mutação V7): um arquivo chamado <code>ferramentas</code> no lugar da pasta não tem
+     teste. Hoje está certo (<code>is_dir</code>).
+   - <code>tests/test_pasta_das_ferramentas.py:212-221</code>: a armadilha "a regra não pergunta ao git" já não pode disparar (a
+     regra nem importa a peça do git). Não faz mal; prova pouco.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO 2 (D-813): "é o de fábrica?" nos três scripts compara o texto.</strong>
+   - Onde: <code>montar_motor_kraken.py:637</code>, <code>compilar_detector_gravura.py:284-285</code>, <code>compilar_st_ferramentas.py:212-213</code>.
+   - Sonda S2: <code>..</code>, <code>\\?\</code> e <code>\\localhost\D$</code> dizem "não é o de fábrica"; aí o script grava no caminho passado sem
+     perguntar "pode gravar?". É o mesmo lugar, então não faz mal. Anoto pela D-813.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO 3 (D-820): para o Visual C++ não há "como apontar outro lugar".</strong>
+   - Onde: <code>empacotar.py:666-668</code> e <code>core/pasta_das_ferramentas.py:71-72</code> ("Rode no PC onde ela existe").
+   - Sem a pasta das ferramentas, o empacotar e o publicar dizem onde procuraram, mas não há opção para o Visual C++ (os
+     scripts têm <code>--destino</code>, <code>--downloads</code>, <code>--ferramentas</code>; o empacotar e o publicar não). O "Como fica" do outro diz
+     "e a opção do script para apontar outro lugar"; vale para os três scripts, não para o empacotar. Criar a opção seria
+     coisa nova (§11.7): não peço; anoto para a gerente decidir se a frase basta.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO 4: os comandos do roteiro começam por <code>.venv\Scripts\...</code>.</strong>
+   - Onde: <code>relatorios/passo2-publicar/ONDE-PAREI.md:3379</code> (item 1) e <code>relatorios/passo2-publicar/ONDE-PAREI.md:3481</code>
+     (item 20).
+   - A cópia <code>passo2</code> não tem <code>.venv</code> (ela está na pasta principal: <code>D:\programas\EditorImpressao\.venv\Scripts\</code>; o
+     <code>pyi-archive_viewer.exe</code> existe lá). Escrever o caminho inteiro.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO 5 (§11.13): a pergunta do limite de tempo do porteiro usa palavras de dentro.</strong>
+   - Onde: <code>relatorios/passo2-publicar/ONDE-PAREI.md:3096</code> ("Perguntas para o Samuel", Volta 10).
+   - Usa "porteiro", "juiz", "peça do Windows", "rodada do GitHub". Ela está marcada "para a gerente primeiro"; se for ao
+     Samuel, precisa ser reescrita. A sugestão A ("deixar como está") é a que não muda nada.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO 6: o git sem janela continua valendo para o porteiro</strong> (a observação 10 do relatório 8 continua).</p>
+<ul>
+<li>Onde: <code>regras_dos_agentes/conversa_com_o_git.py:32</code> e <code>regras_dos_agentes/conversa_com_o_git.py:48</code>.</li>
+<li>Um git que precisasse pedir usuário e senha no terminal não pede (falha ou espera sem ninguém ver). Dedução; hoje o
+  porteiro não pede senha, e as 9 conferências passam.</li>
+</ul>
+</li>
+</ol>
+<h2>O que falta para a prova à vista</h2>
+<p>O roteiro do outro (itens 18 a 22) basta para a gerente repetir com o Samuel só o que mudou, em uns 10 minutos, com
+três acertos:</p>
+<ol>
+<li><strong>Itens 19 e 21: só da cópia <code>passo2</code></strong> (baixo 1). "Da pasta principal" fica para a junção.</li>
+<li><strong>Os comandos com o caminho inteiro do <code>.venv</code></strong> (observação 4).</li>
+<li><strong>O olhar da pasta errada de 19/11:</strong> hoje <code>D:\programas\EditorImpressao\.claude\worktrees\EditorImpressao-arquivos\</code>
+   está com 19/11/2026 15:44:27 (a pasta e a <code>ferramentas</code>), a <code>downloads</code> com 15:44:29 e o <code>vc_redist.x64.exe</code> com
+   25.635.768 bytes, de 15:44:28. Depois da prova, tem de estar igual.</li>
+</ol>
+<p>O item 22 dá para fazer como está (lido: com uma pasta que não existe, o <code>publicar --motor</code> para com "não achei um
+motor pronto do jeito novo: não existe <a pasta>"). As pastas <code>versoes 3</code>, <code>versoes 4</code> e <code>versoes 5</code> ainda não existem em
+<code>C:\EditorImpressaoProva</code> (só listei).</p>
+<h2>Para a gerente: o que ficou fora do projeto</h2>
+<p>Na pasta de rascunho desta conversa, em
+<code>C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\14e42ebb-3236-41f4-94f5-20370c33bd91\scratchpad\quebra10\</code>
+(pasta nova, criada nesta tarefa):</p>
+<ul>
+<li><code>antigo\</code> e <code>novo\</code>: o código de <code>6fa766c4</code> e de <code>09b30933</code> (<code>git archive</code>, sem <code>relatorios</code>, <code>docs</code> e <code>historico</code>;
+  uns 21 MB cada). Em <code>antigo\tests\</code> estão por cima os dois arquivos de teste de <code>09b30933</code>
+  (<code>test_pasta_das_ferramentas.py</code> e <code>test_publicar_versao.py</code>). A <code>novo\</code> está como saiu do git (as mutações e a sonda
+  S3 foram desfeitas; conferido pelo git).</li>
+<li><code>s3-comentario-no-fim\</code> e <code>s3-a-pasta-mudou-de-lugar\</code>: as duas cópias que a sonda S3 montou com a função do teste
+  (só arquivos <code>.py</code> e <code>.txt</code>).</li>
+<li>Os scripts e os resultados (os mesmos de <code>anexos-9/</code>) e o registro da rodada 44869743074 (<code>rodada-44869743074.log</code>,
+  ~0,9 MB).</li>
+</ul>
+<p>Fora da pasta de rascunho: o pytest cria as pastas dele em <code>C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\</code> (ele
+guarda só as últimas). Não apaguei nada em lugar nenhum. <code>git rev-parse --is-shallow-repository</code> = false na cópia e na
+pasta principal. Nenhuma junção criada nem tocada; a pasta errada de 19/11, a <code>dist\</code> e <code>C:\EditorImpressaoProva</code> não
+foram tocadas.</p>
+<h2>Fontes de fora</h2>
+<ul>
+<li>PyInstaller 6.21.0, <code>PyInstaller/utils/cliutils/archive_viewer.py</code>, função <code>run</code>, linhas 221 a 268 (lido no <code>.venv</code>).</li>
+<li>Python 3.14, <code>pathlib</code> no Windows: a igualdade de caminhos, vista rodando (sonda S2); <code>os.path.samefile</code> para o "mesmo
+  lugar".</li>
+<li>Windows, <code>GetShortPathNameW</code> (kernel32), chamado só para ler o nome curto.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 21/11/2026 às 02:06</p>
+</body>
+</html>

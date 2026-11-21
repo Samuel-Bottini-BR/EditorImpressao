@@ -1,0 +1,19 @@
+V1 | empacotar.py | o empacotar escreve o caminho de novo por conta propria (copia da constante, nao conta) | tests/test_pasta_das_ferramentas.py -k defeito1_de_uma_copia | 1 failed, 11 deselected in 8.00s | rc=1
+V1 | ACUSADA | 10 s | devolvido igual
+V2 | compilar_st_ferramentas.py | o compilar do st_ferramentas escreve o caminho de novo (copia da constante) | tests/test_pasta_das_ferramentas.py -k defeito1_de_uma_copia | 1 failed, 11 deselected in 5.14s | rc=1
+V2 | ACUSADA | 8 s | devolvido igual
+V3 | core/ocr_kraken.py | o Kraken le a constante direto e, empacotado, olha a pasta do Samuel | tests/test_pasta_das_ferramentas.py -k d788 or obs8 | 2 failed, 10 deselected in 6.89s | rc=1
+V3 | ACUSADA | 9 s | devolvido igual
+V4 | empacotar.py | a busca do motor deixa de dizer onde procurou (mantem o --motor-kraken) | tests/test_pasta_das_ferramentas.py -k sem_o_motor | 1 failed, 11 deselected in 5.54s | rc=1
+V4 | ACUSADA | 8 s | devolvido igual
+V5 | empacotar.py | o empacotar (juntar_pecas) deixa de mostrar a linha de como apontar outro motor | tests/test_pasta_das_ferramentas.py | 12 passed in 28.81s | rc=0
+V5 | empacotar.py | o empacotar (juntar_pecas) deixa de mostrar a linha de como apontar outro motor | tests/test_empacotar.py | 43 passed in 7.05s | rc=0
+V5 | NAO ACUSADA | 41 s | devolvido igual
+V6 | publicar_versao_kaique.py | o publicar --motor deixa de mostrar a linha de como apontar outro motor | tests/test_pasta_das_ferramentas.py | 12 passed in 20.95s | rc=0
+V6 | publicar_versao_kaique.py | o publicar --motor deixa de mostrar a linha de como apontar outro motor | tests/test_publicar_versao.py | 122 passed in 100.23s (0:01:40) | rc=0
+V6 | NAO ACUSADA | 125 s | devolvido igual
+V7 | core/pasta_das_ferramentas.py | pode gravar aceita um ARQUIVO chamado ferramentas (exists em vez de is_dir) | tests/test_pasta_das_ferramentas.py | 12 passed in 21.87s | rc=0
+V7 | NAO ACUSADA | 24 s | devolvido igual
+V8 | empacotar.py | a montagem do Visual C++ olha a pasta de cima e cria a das ferramentas (a B5 dentro do empacotar) | tests/test_pasta_das_ferramentas.py | 12 passed in 27.73s | rc=0
+V8 | empacotar.py | a montagem do Visual C++ olha a pasta de cima e cria a das ferramentas (a B5 dentro do empacotar) | tests/test_empacotar.py | 43 passed in 6.05s | rc=0
+V8 | NAO ACUSADA | 37 s | devolvido igual

@@ -1,0 +1,3 @@
+comentario no fim: a copia do teste ficou com: ["PASTA_DAS_FERRAMENTAS = Path('C:\\\\pasta de prova\\\\ferramentas')  # D-820"]
+a pasta mudou de lugar: a copia do teste ficou com: ['PASTA_DAS_FERRAMENTAS = Path(r"E:\\programas\\EditorImpressao-arquivos\\ferramentas")']
+devolvido igual: True
