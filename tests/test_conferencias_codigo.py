@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import re
 import textwrap
+from pathlib import Path
 
 import pytest
 
@@ -347,8 +348,15 @@ def test_arquivo_com_marca_de_utf8_e_lido():
 
 
 def test_as_24_conferencias_tem_a_numeracao_da_tabela_da_proposta():
-    """As 24 conferências, K01 a K24, cada uma com a regra e o tipo (vale a numeração da tabela, plano-v3)."""
-    assert [c.codigo for c in porteiro.CONFERENCIAS] == [f"K{n:02d}" for n in range(1, 25)]
+    """As 24 conferências, K01 a K24, cada uma com a regra e o tipo (vale a numeração da tabela, plano-v3).
+
+    Mudado com a D-809 (19/11/2026: "Conferência nova do porteiro", com o "ok" do Samuel): as conferências novas do
+    catálogo dos erros continuam a numeração depois da K24, sem buraco, e cada uma cita a decisão que a criou. As 24
+    da tabela continuam as mesmas, na mesma ordem."""
+    numeros = [c.codigo for c in porteiro.CONFERENCIAS]
+    assert numeros[:24] == [f"K{n:02d}" for n in range(1, 25)]
+    assert numeros == [f"K{n:02d}" for n in range(1, len(numeros) + 1)]
+    assert all(re.search(r"\bD-\d{3,}\b", c.regra) for c in porteiro.CONFERENCIAS[24:])
     assert porteiro.POR_CODIGO["K05"].o_que.startswith("emoji")
     assert porteiro.POR_CODIGO["K08"].o_que.startswith("nome de arquivo com acento")
     assert all(c.tipo in ("codigo", "entrega") and c.regra for c in porteiro.CONFERENCIAS)
@@ -684,3 +692,275 @@ def test_s3_a_extensao_compilada_pyd_e_acusada():
     agora vira K00 junto com o `.pyc` e o `.pyo`. A `.dll` do ScanTailor não entra (o Python não a importa)."""
     achados = porteiro.conferir_codigo(["core/x.cp314-win_amd64.pyd", "core/nativo/scantailor.dll"], lambda c: None)
     assert [a for a, _ in codigos(achados, "K00")] == ["core/x.cp314-win_amd64.pyd"]
+
+
+# ---------------------------------------------------------------- K25 (D-809, 19/11/2026)
+#
+# D-809, pergunta 1 de 6 do catálogo dos erros (família F9): "ok, mas essas coisas foram recuperadas? e porque ele fez
+# essa confusão se era regra ele não mexer? e tinha o porteiro para ele não fazer isso" · "ok". A prova pedida no
+# Livro: "O porteiro barra um script com `git fetch --depth` ou `rm -rf` num atalho". E a da D-791: cada conferência
+# acusa o exemplo errado e não acusa o certo.
+
+ERRADO_K25_GIT = py('''
+    """Um script de apoio que mexe na pasta .git inteira (o que a cópia do agente divide com o PC)."""
+    import os
+    import subprocess
+
+    def buscar(raiz):
+        """O juiz rodado à mão na cópia do agente (19/11)."""
+        subprocess.run(["git", "fetch", "--depth=1", "origin", "obra-2026-10-26"], cwd=raiz)
+        subprocess.run(["git", "-C", str(raiz), "gc"])
+        subprocess.run("git stash", shell=True)
+        os.system("git config core.hooksPath ganchos")
+        cmd = ["git", "worktree", "prune"]
+        return cmd
+''')
+
+CERTO_K25_GIT = py('''
+    """Um script de apoio que só lê o git, ou trabalha numa pasta nova (git gc, git stash na docstring não contam)."""
+    import subprocess
+
+    def ler(raiz):
+        """Só lê (git config --get, git stash list) e busca sem cortar a história."""
+        subprocess.run(["git", "fetch", "origin", "obra-2026-10-26"], cwd=raiz)   # git fetch --depth=1 no comentário
+        subprocess.run(["git", "config", "--get", "core.hooksPath"], cwd=raiz)
+        subprocess.run(["git", "-c", "core.quotepath=false", "ls-files"], cwd=raiz)
+        subprocess.run(["git", "stash", "list"], cwd=raiz)
+        subprocess.run(["git", "clone", "--depth=1", "https://x/y.git", "pasta_nova"])
+        exemplo = 'subprocess.run(["git", "gc"])'          # o exemplo errado escrito como dado (um teste) não conta
+        return exemplo
+''')
+
+
+def test_k25_acusa_o_git_que_muda_a_pasta_git_inteira_num_script():
+    """K25 (D-809): fetch com --depth, gc, stash, config e prune num script de apoio, cada linha acusada."""
+    achados = conferir({"relatorios/x/script.py": ERRADO_K25_GIT})
+    assert [n for _, n in codigos(achados, "K25")] == [7, 8, 9, 10, 11]
+    assert all("fora das peças do git" in a.porque for a in achados if a.conferencia == "K25")
+
+
+def test_k25_nao_acusa_o_git_que_so_le_nem_o_texto_solto():
+    """K25 (D-791, o código certo não é acusado): busca sem cortar, config --get, `-c` de uma vez só, stash list, clone
+    numa pasta nova, o comentário, a docstring e o exemplo escrito como dado."""
+    assert codigos(conferir({"relatorios/x/script.py": CERTO_K25_GIT}), "K25") == []
+
+
+@pytest.mark.parametrize("argumentos, grava", [
+    ('"config", "core.hooksPath", "ganchos"', True), ('"config", "--global", "user.name", "x"', True),
+    ('"config", "set", "core.x", "y"', True), ('"config", "--global", "--unset", "x"', True),
+    ('"config", "--add", "x", "y"', True), ('"config", "-e"', True), ('"config", chave, valor', True),
+    ('"config", "user.name"', False), ('"config", "get", "user.name"', False), ('"config", "--get", "x"', False),
+    ('"config", "--get-regexp", "a", "b"', False), ('"config", "--list"', False), ('"config", "-l"', False),
+    ('"config", "list", "--show-origin"', False), ('"config", chave', False), ('"-c", "core.x=y", "status"', False),
+])
+def test_k25_git_config_so_acusa_o_que_grava(argumentos, grava):
+    """D-813 na K25 (todos os jeitos que a peça de fora aceita, https://git-scm.com/docs/git-config): o `git config`
+    que grava é acusado (set, unset, --add, -e, nome e valor); o que só lê não é (get, list, --get, nome sem valor)."""
+    texto = f'"""X."""\nimport subprocess\n\n\ndef f(chave, valor):\n    """F."""\n    subprocess.run(["git", {argumentos}])\n'
+    assert bool(codigos(conferir({"relatorios/x/a.py": texto}), "K25")) is grava
+
+
+def test_k25_vale_nos_testes_e_nao_vale_nas_duas_pecas_do_git():
+    """K25 (D-809): "não roda na cópia, nem em script ou teste", "fora das peças de git que já existem
+    (`conversa_com_o_git.py`, `repositorio_de_prova.py`)". As duas peças vêm escritas aqui, como na decisão (não lidas
+    do porteiro: tirar a exceção de lá tem de fazer este teste falhar)."""
+    assert codigos(conferir({"tests/test_x.py": ERRADO_K25_GIT}), "K25")
+    assert codigos(conferir({"regras_dos_agentes/outro_arquivo.py": ERRADO_K25_GIT}), "K25")
+    for peca in ("regras_dos_agentes/conversa_com_o_git.py", "regras_dos_agentes/repositorio_de_prova.py"):
+        assert codigos(conferir({peca: ERRADO_K25_GIT}), "K25") == [], peca
+
+
+# O script do juiz (passo 0), como foi rodado à mão em 19/11, e como ficou depois do conserto (`--depth=1` só quando a
+# cópia já é rasa).
+JUIZ_DE_ANTES = ('#!/usr/bin/env bash\nset -e\n'
+                 'git fetch -q --depth=1 origin "+refs/heads/$VERSAO:refs/remotes/origin/$VERSAO"\n')
+JUIZ_DE_HOJE = ('#!/usr/bin/env bash\nset -e\n# `--depth=1` só quando a cópia já é rasa\nPROFUNDIDADE=""\n'
+                '[ "$(git rev-parse --is-shallow-repository)" = "true" ] && PROFUNDIDADE="--depth=1"\n'
+                'git fetch -q $PROFUNDIDADE origin "+refs/heads/$VERSAO:refs/remotes/origin/$VERSAO"\n')
+
+
+def test_k25_acusa_o_script_do_juiz_de_19_11_e_nao_o_consertado():
+    """Caso que originou a D-809 (19/11/2026, o repositório do PC raso): o `git fetch --depth=1` fixo do script do
+    juiz é acusado; o script consertado (a profundidade só numa cópia rasa) não é."""
+    assert [n for _, n in codigos(conferir({"relatorios/x/porteiro_juiz.sh": JUIZ_DE_ANTES}), "K25")] == [3]
+    assert codigos(conferir({"relatorios/x/porteiro_juiz.sh": JUIZ_DE_HOJE}), "K25") == []
+
+
+def test_k25_le_o_gancho_sem_extensao_e_pula_o_comentario():
+    """O gancho `ganchos/pre-commit` não tem extensão: é lido porque começa com "#!". O `git config` do comentário
+    (como o de hoje) não conta; o mesmo comando como linha de verdade conta."""
+    comentario = "#!/bin/sh\n#     git config core.hooksPath ganchos\nexec python -m regras_dos_agentes antes-do-commit\n"
+    assert codigos(conferir({"ganchos/pre-commit": comentario}), "K25") == []
+    assert codigos(conferir({"ganchos/pre-commit": comentario.replace("#     git", "git")}), "K25") == [
+        ("ganchos/pre-commit", 2)]
+    assert codigos(conferir({"ganchos/LEIAME": "#\ngit gc\n"}), "K25") == [], "sem extensão e sem #! não é script"
+
+
+ERRADO_K25_APAGAR_PY = py('''
+    """Um script que apaga uma pasta com tudo dentro sem conferir se ela é atalho (a junção de modelos/, 18/11)."""
+    import subprocess
+
+    def limpar(pasta):
+        """Apaga a pasta de trabalho."""
+        subprocess.run(["rm", "-rf", str(pasta)])
+        subprocess.run(["powershell", "-Command", f"Remove-Item -LiteralPath {pasta} -Recurse -Force"])
+''')
+
+CERTO_K25_APAGAR_PY = py('''
+    """O mesmo, conferindo antes se é atalho; e os jeitos que não entram no atalho."""
+    import shutil
+    import subprocess
+
+    def limpar(pasta):
+        """Atalho sai com cmd /c rmdir (só o atalho); pasta de verdade, com tudo dentro."""
+        if pasta.is_junction():
+            subprocess.run(["cmd", "/c", "rmdir", str(pasta)])
+            return
+        subprocess.run(["rm", "-rf", str(pasta)])
+
+    def limpar_temporaria(pasta):
+        """O shutil.rmtree do Python 3.14 não entra em atalho; apagar um arquivo só não é apagar pasta."""
+        shutil.rmtree(pasta, ignore_errors=True)
+        subprocess.run(["rm", "-f", str(pasta / "a.txt")])
+        subprocess.run(["powershell", "-Command", f"Remove-Item -LiteralPath {pasta} -Force"])
+''')
+
+
+def test_k25_acusa_apagar_com_tudo_dentro_sem_conferir_o_atalho():
+    """K25 (D-809): `rm -rf` e `Remove-Item -Recurse` sem conferir antes se é atalho, no Python e no terminal."""
+    assert [n for _, n in codigos(conferir({"relatorios/x/a.py": ERRADO_K25_APAGAR_PY}), "K25")] == [6, 7]
+    assert [n for _, n in codigos(conferir({"relatorios/x/a.sh": '#!/bin/sh\nrm -rf "$PASTA"\n'}), "K25")] == [2]
+    # Cada exemplo vem depois de "$p = 'x'; " (o texto do teste não começa com o comando: senão o próprio teste seria
+    # acusado, ver `leitura_do_codigo.comandos`, jeito 3).
+    for linha in ("$p = 'x'; Remove-Item $p -Recurse -Force", "$p = 'x'; rm $p -r", "$p = 'x'; ri $p -Rec",
+                  "$p = 'x'; Remove-Item -Recurse -LiteralPath $p"):
+        assert codigos(conferir({"relatorios/x/a.ps1": linha + "\n"}), "K25") == [("relatorios/x/a.ps1", 1)], linha
+
+
+def test_k25_nao_acusa_quem_confere_o_atalho_antes_nem_o_que_nao_entra_nele():
+    """K25 (D-791, o certo não é acusado): conferiu antes se é atalho (`is_junction`, `LinkType`, `[ -L`); `cmd /c
+    rmdir`; `shutil.rmtree`; apagar um arquivo; `-Force` sem `-Recurse`; o comentário."""
+    assert codigos(conferir({"relatorios/x/a.py": CERTO_K25_APAGAR_PY}), "K25") == []
+    sh = '#!/bin/sh\n# rm -rf "$PASTA" (comentário)\n[ -L "$PASTA" ] && exit 1\nrm -rf "$PASTA"\nrm -f "$ARQ"\n'
+    assert codigos(conferir({"relatorios/x/a.sh": sh}), "K25") == []
+    ps1 = 'if ((Get-Item $p).LinkType) { cmd /c rmdir $p } else { Remove-Item $p -Recurse -Force }\nrm $p -Force\n'
+    assert codigos(conferir({"relatorios/x/a.ps1": ps1}), "K25") == []
+
+
+def test_k25_os_dois_jeitos_certos_de_tirar_o_atalho_nao_sao_acusados():
+    """D-809 e a gerente (20/11): `cmd /c rmdir <atalho>` e `(Get-Item <atalho>).Delete()` tiram só o atalho; nenhum dos
+    dois é acusado, no Python e nos arquivos de terminal. Apagar com tudo dentro, na mesma linha, continua acusado."""
+    py_certo = ('"""X."""\nimport subprocess\n\n\ndef f(p):\n    """F."""\n'
+                '    subprocess.run(["cmd", "/c", "rmdir", str(p)])\n'
+                '    subprocess.run(["powershell", "-Command", f"(Get-Item -LiteralPath {p}).Delete()"])\n')
+    assert codigos(conferir({"relatorios/x/a.py": py_certo}), "K25") == []
+    ps1 = "$p = 'x'; (Get-Item -LiteralPath $p).Delete()\n$q = 'y'; cmd /c rmdir $q\n"
+    assert codigos(conferir({"relatorios/x/a.ps1": ps1}), "K25") == []
+    errado = "$p = 'x'; (Get-Item $p).Delete(); Remove-Item $p -Recurse\n"
+    assert codigos(conferir({"relatorios/x/a.ps1": errado}), "K25") == [("relatorios/x/a.ps1", 1)]
+
+
+def test_k25_cada_exemplo_da_lista_e_acusado_pela_expressao_e_pelo_porteiro():
+    """Como a K01 (achado N3 do passo 0): cada linha das listas da K25 tem um exemplo que a própria expressão acha no
+    comando lido e que o porteiro acusa num script; assim afrouxar a busca sem tirar linha também aparece."""
+    for padrao, o_que, exemplo in porteiro.PALAVRAS_DO_GIT + porteiro.PALAVRAS_DE_APAGAR:
+        texto = f'"""Exemplo."""\nimport os\nimport subprocess\n\n\ndef f(raiz, pasta):\n    """F."""\n    {exemplo}\n'
+        comandos = porteiro.leitura.comandos(porteiro.leitura.arvore(texto))
+        assert any(re.search(padrao, c) for _, c in comandos), o_que
+        assert codigos(conferir({"relatorios/x/a.py": texto}), "K25") == [("relatorios/x/a.py", 8)], o_que
+
+
+# ---------------------------------------------------------------- K25: o achado 1 de quem quebrou (20/11/2026)
+
+def test_k25_o_rm_do_git_nao_e_o_rm_do_terminal():
+    """Falso alarme do achado 1 (20/11): `git rm -rq --cached` (o `trocar_codigo.sh` da rodada) tira só do índice do
+    git e era lido como `rm -r`. Agora não é acusado; o `rm -rf` do terminal na mesma linha continua acusado."""
+    assert codigos(conferir({"relatorios/x/a.sh": "#!/bin/sh\ngit rm -rq --cached --ignore-unmatch -- .\n"}),
+                   "K25") == []
+    assert codigos(conferir({"relatorios/x/a.sh": "#!/bin/sh\ngit -C x rm -r pasta\n"}), "K25") == []
+    assert codigos(conferir({"relatorios/x/a.sh": '#!/bin/sh\ngit rm -q x && rm -rf "$P"\n'}), "K25") == [
+        ("relatorios/x/a.sh", 2)]
+
+
+def test_k25_acusa_o_git_clean_e_nao_o_que_so_lista():
+    """Pedido da gerente (20/11): o `git clean` apaga o que o git não conhece (o trabalho sem commit de quem rodou).
+    Acusado; `git clean -n` e `--dry-run` só listam e não são."""
+    assert codigos(conferir({"relatorios/x/a.sh": "#!/bin/sh\ngit clean -fdq -- .\n"}), "K25") == [
+        ("relatorios/x/a.sh", 2)]
+    for so_lista in ("git clean -n", "git clean -nd", "git clean --dry-run -d"):
+        assert codigos(conferir({"relatorios/x/a.sh": f"#!/bin/sh\n{so_lista}\n"}), "K25") == [], so_lista
+
+
+def test_k25_o_comando_do_git_so_no_github_na_mesma_linha_passa():
+    """Pedido da gerente (20/11): o comando do git que muda o .git pode rodar se a MESMA linha só deixa rodar no GitHub
+    (`GITHUB_ACTIONS=true`). A conferência numa linha de antes não libera (senão uma no começo liberaria tudo)."""
+    certo = '#!/bin/sh\n[ "${GITHUB_ACTIONS:-}" = "true" ] && git clean -fdq -- .\n'
+    assert codigos(conferir({"relatorios/x/a.sh": certo}), "K25") == []
+    antes = '#!/bin/sh\n[ "${GITHUB_ACTIONS:-}" = "true" ] || exit 0\ngit clean -fdq -- .\n'
+    assert codigos(conferir({"relatorios/x/a.sh": antes}), "K25") == [("relatorios/x/a.sh", 3)]
+    py_certo = ('"""X."""\nimport os\nimport subprocess\n\n\ndef f():\n    """F."""\n'
+                '    if os.environ.get("GITHUB_ACTIONS") == "true": subprocess.run(["git", "clean", "-fdq"])\n')
+    assert codigos(conferir({"relatorios/x/a.py": py_certo}), "K25") == []
+
+
+ANEXOS_DO_WORKFLOW = Path(__file__).resolve().parent.parent / "relatorios/regras-catalogo-2026-11-19/anexos/workflow"
+
+
+# As linhas de antes, cada uma como um script de duas linhas (o texto começa com "#!", não com o comando: senão este
+# próprio teste seria acusado, ver `leitura_do_codigo.comandos`, jeito 3).
+@pytest.mark.parametrize("nome, linhas_de_antes", [
+    ("preparar_versao.sh", ['#!/usr/bin/env bash\nif git fetch --depth=1 origin "$REF" 2>/dev/null; then\n',
+                            '#!/usr/bin/env bash\n  git fetch --depth=1 origin "$SHA"\n']),
+    ("trocar_codigo.sh", ['#!/usr/bin/env bash\ngit fetch --depth=1 origin "$RAMO"\n',
+                          "#!/usr/bin/env bash\ngit clean -fdq -- . ':(exclude).github'\n"]),
+])
+def test_k25_os_scripts_do_workflow_consertados_passam_e_os_de_antes_nao(nome, linhas_de_antes):
+    """Achado 1 (grave, 20/11): os scripts da rodada (`.github/scripts/`) tinham o `git fetch --depth=1` fixo e o
+    `git clean` sem condição; rodados à mão numa cópia do PC, fariam o que deixou o repositório raso em 19/11. As linhas
+    de antes são acusadas; os consertados (anexos, para a gerente copiar para a `.github/`) não."""
+    consertado = (ANEXOS_DO_WORKFLOW / nome).read_text(encoding="utf-8")
+    assert codigos(conferir({f".github/scripts/{nome}": consertado}), "K25") == []
+    for linha in linhas_de_antes:
+        assert codigos(conferir({f".github/scripts/{nome}": linha}), "K25") == [(f".github/scripts/{nome}", 2)], linha
+
+
+# Os casos da volta 2 de quem quebrou (anexos/volta2-sondar_so_no_github, 20/11): (o caso, acusa?, a linha). Cada texto
+# vai dentro de um script (começa com "#!") ou de um arquivo Python, nunca como texto que começa com o comando.
+SO_NO_GITHUB_TERMINAL = [
+    ("o jeito certo", False, '[ "${GITHUB_ACTIONS:-}" = "true" ] && git clean -fdq -- .'),
+    ("o jeito certo com fetch --depth", False, '[ "${GITHUB_ACTIONS:-}" = "true" ] && git fetch --depth=1 origin x'),
+    ("ao contrário, ||", True, '[ "${GITHUB_ACTIONS:-}" = "true" ] || git fetch --depth=1 origin x'),
+    ("&& true || git", True, '[ "${GITHUB_ACTIONS:-}" = "true" ] && true || git gc'),
+    ("depois de ;", True, '[ "${GITHUB_ACTIONS:-}" = "true" ] && echo oi; git fetch --depth=1 origin x'),
+    ("o script liga a variável na mesma linha", True, 'GITHUB_ACTIONS=true; [ "$GITHUB_ACTIONS" = "true" ] && git gc'),
+    ("negado com !", True, '! [ "${GITHUB_ACTIONS:-}" = "true" ] && git gc'),
+    ("a guarda dentro de um echo", True, 'echo \'[ "$GITHUB_ACTIONS" = "true" ] &&\'; git gc'),
+]
+SO_NO_GITHUB_PYTHON = [
+    ("o jeito certo", False, 'if os.environ.get("GITHUB_ACTIONS") == "true": subprocess.run(["git", "clean", "-fdq"])'),
+    ("o jeito certo, no bloco", False,
+     'if os.environ.get("GITHUB_ACTIONS") == "true":\n        subprocess.run(["git", "clean", "-fdq"])'),
+    ("no else", True,
+     'if os.environ.get("GITHUB_ACTIONS") == "true":\n        pass\n    else:\n        subprocess.run(["git", "gc"])'),
+    ("if not", True, 'if not os.environ.get("GITHUB_ACTIONS") == "true": subprocess.run(["git", "gc"])'),
+    ("depois de ;", True, 'x = os.environ.get("GITHUB_ACTIONS") == "true"; subprocess.run(["git", "gc"])'),
+    ("a guarda num texto", True,
+     'subprocess.run(["git", "gc"]); print(\'os.environ.get("GITHUB_ACTIONS") == "true"\')'),
+    ("or True", True, 'if os.environ.get("GITHUB_ACTIONS") == "true" or True: subprocess.run(["git", "gc"])'),
+]
+
+
+@pytest.mark.parametrize("caso, acusa, linha", SO_NO_GITHUB_TERMINAL)
+def test_k25_volta2_so_no_github_no_terminal_so_no_comeco_da_linha_e_direto_no_git(caso, acusa, linha):
+    """Volta 2 de quem quebrou, achado 1 (20/11): a guarda "só no GitHub" valia em qualquer lugar da linha. Agora só no
+    começo da linha, seguida direto de `&&` e de um comando do git sozinho."""
+    achados = codigos(conferir({"relatorios/x/a.sh": f"#!/bin/bash\n{linha}\n"}), "K25")
+    assert bool(achados) is acusa, caso
+
+
+@pytest.mark.parametrize("caso, acusa, linha", SO_NO_GITHUB_PYTHON)
+def test_k25_volta2_so_no_github_no_python_so_dentro_do_if_escrito_assim(caso, acusa, linha):
+    """Volta 2, achado 1: no Python, só o comando dentro do bloco de `if os.environ.get("GITHUB_ACTIONS") == "true":`,
+    com o teste escrito exatamente assim (o `if not`, o `or True` e a guarda num texto não liberam)."""
+    texto = f'"""x."""\nimport os\nimport subprocess\n\n\ndef f(pasta):\n    """y."""\n    {linha}\n'
+    assert bool(codigos(conferir({"relatorios/x/a.py": texto}), "K25")) is acusa, caso

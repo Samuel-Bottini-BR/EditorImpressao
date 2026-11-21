@@ -357,3 +357,119 @@ def test_q1_a_marca_so_vale_lida_no_trabalho_do_juiz():
     assert github.marca_do_juiz(TRABALHOS[:1], lambda j: REGISTROS[j["databaseId"]]) is None
     pulado = [TRABALHOS[0], dict(TRABALHOS[1], conclusion="skipped")]
     assert github.marca_do_juiz(pulado, lambda j: REGISTROS[j["databaseId"]]) is None
+
+
+# ---------------------------------------------------------------- as perguntas novas do catálogo dos erros (19/11/2026)
+
+ARQUIVOS_DO_WINDOWS = "- `tests/test_x.py`\n- `atualizacao.py`"
+PROTECOES = "- A recusa da pasta de troca de outra conta → `tests/test_x.py::test_novo` falha sem ela (numa cópia)."
+DE_ONDE = "- O commit testado: do registro da rodada no GitHub (o agente não escreve)."
+
+
+def test_d811_trabalho_do_windows_sem_as_protecoes_e_os_testes_volta(entrega):
+    """D-811 (19/11): "na ficha de entrega, quem escreve passa a mostrar, para cada proteção, o teste que falha quando
+    ela é desligada". Trabalho do Windows sem a lista volta; item sem teste (arquivo::função) volta; teste citado que
+    não existe volta; com a lista certa, a pergunta passa."""
+    r, base, commit = entrega
+    s = secoes_certas(base, commit, arquivos=ARQUIVOS_DO_WINDOWS)
+    assert any("Cada proteção e o teste que falha sem ela" in p for p in conferir(r, s).problemas)
+    s["Cada proteção e o teste que falha sem ela"] = "- A recusa da pasta de troca: tem teste."
+    assert any("proteção sem o teste" in p for p in conferir(r, s).problemas)
+    s["Cada proteção e o teste que falha sem ela"] = "- A recusa: `tests/test_x.py::test_que_nao_existe`."
+    assert any("test_que_nao_existe" in p and "não existe" in p for p in conferir(r, s).problemas)
+    s["Cada proteção e o teste que falha sem ela"] = PROTECOES
+    assert not any("F21" in p for p in conferir(r, s).problemas)
+
+
+@pytest.mark.parametrize("arquivos", [ARQUIVOS_DO_WINDOWS, "- `tests/test_x.py`\n- `regras_dos_agentes/porteiro.py`"])
+def test_d812_trabalho_que_confere_tem_de_dizer_de_onde_vem_cada_dado(entrega, arquivos):
+    """D-812 (19/11): "De onde vem cada dado que a sua conferência usa?" no trabalho do Windows e no do porteiro: sem a
+    resposta volta; com ela, a pergunta passa."""
+    r, base, commit = entrega
+    s = secoes_certas(base, commit, arquivos=arquivos)
+    assert any("De onde vem cada dado que a conferência usa" in p for p in conferir(r, s).problemas)
+    s["De onde vem cada dado que a conferência usa"] = DE_ONDE
+    assert not any("F22" in p for p in conferir(r, s).problemas)
+
+
+def test_as_perguntas_novas_nao_valem_para_o_trabalho_so_de_testes(entrega):
+    """Pergunta nova não quebra entrega antiga: o trabalho só de testes, sem pergunta para o Samuel, não recebe as
+    perguntas novas (F21, F22, F23); nem o pacote dele as traz."""
+    r, base, commit = entrega
+    problemas = conferir(r, secoes_certas(base, commit)).problemas
+    assert not any(c in p for p in problemas for c in ("F21", "F22", "F23")), problemas
+
+
+PERGUNTA_CERTA = ("### Onde fica o aviso\n\nNa tela de conferir, o aviso aparece em cima. O que você escolhe: em cima ou "
+                  "embaixo. Minha sugestão: em cima. ![o aviso](prova.png)")
+
+
+def test_d814_pergunta_ao_samuel_sem_as_decisoes_procuradas_volta(entrega):
+    """D-814 (19/11): "antes de mandar qualquer pergunta para você, o agente anota em quais decisões suas procurou e por
+    que essa ainda não está respondida". Sem a seção volta; sem o "###" da pergunta, sem decisão, com decisão que não
+    existe ou sem o porquê volta; com tudo, passa."""
+    r, base, commit = entrega
+    r.escrever(f"{PASTA}/prova.png", "imagem")
+    s = secoes_certas(base, commit)
+    s["Perguntas para o Samuel"] = PERGUNTA_CERTA
+    titulo = "Decisões procuradas antes de cada pergunta"
+    assert any(titulo in p for p in conferir(r, s).problemas)
+    casos = {"### Outra pergunta\n\n- Procurei: D-605.\n- Por que ainda não está respondida: a D-605 não fala do aviso.":
+             "falta o \"### Onde fica o aviso\"",
+             "### Onde fica o aviso\n\n- Procurei no Livro.\n- Por que ainda não está respondida: nenhuma fala do aviso.":
+             "quais decisões do Livro",
+             "### Onde fica o aviso\n\n- Procurei: D-999.\n- Por que ainda não está respondida: a D-999 não fala dele.":
+             "D-999 não existe",
+             "### Onde fica o aviso\n\n- Procurei: D-605.": "por que ela ainda não está respondida"}
+    for corpo, falta in casos.items():
+        s[titulo] = corpo
+        assert any(falta in p and "F23" in p for p in conferir(r, s).problemas), falta
+    s[titulo] = "### Onde fica o aviso\n\n- Procurei: D-605.\n- Por que ainda não está respondida: a D-605 é sobre testes."
+    assert not any("F23" in p for p in conferir(r, s).problemas), conferir(r, s).explicar()
+
+
+# ---------------------------------------------------------------- achados 6 e 7 de quem quebrou (20/11/2026)
+
+ARQUIVO_COM_AJUDA = ('"""Y."""\n\n\ndef ajuda():\n    """Ajuda, não é teste."""\n\n\n'
+                     'EXEMPLO = """\ndef test_escrito_num_texto():\n    pass\n"""\n\n\n'
+                     'def test_de_verdade():\n    """Teste."""\n')
+
+
+def test_achado_6_so_conta_como_teste_um_def_test_do_codigo(entrega):
+    """Achado 6 (20/11): "o teste existe" aceitava a função de ajuda e o `def` escrito dentro de um texto de exemplo.
+    Agora só vale a função `test_...` do código do arquivo."""
+    r, base, commit = entrega
+    r.escrever("tests/test_y.py", ARQUIVO_COM_AJUDA)
+    r.adicionar("tests/test_y.py")
+    s = secoes_certas(base, commit)
+    s["O que já está escolhido e testado aqui"] = ("- `tests/test_y.py::ajuda`\n- `tests/test_y.py::test_escrito_num_texto`"
+                                                   "\n- `tests/test_y.py::test_de_verdade`")
+    problemas = conferir(r, s).problemas
+    assert any("tests/test_y.py::ajuda" in p and "não existe" in p for p in problemas)
+    assert any("tests/test_y.py::test_escrito_num_texto" in p and "não existe" in p for p in problemas)
+    assert not any("test_de_verdade" in p for p in problemas), problemas
+
+
+def test_achado_7_nenhuma_com_pergunta_embaixo_nao_desliga_a_conferencia(entrega):
+    """Achado 7 (20/11): começar "Perguntas para o Samuel" com "Nenhuma" desligava a conferência das perguntas escritas
+    embaixo (e a das decisões procuradas, D-814). Agora "Nenhuma" só vale sem pergunta embaixo."""
+    r, base, commit = entrega
+    s = secoes_certas(base, commit)
+    s["Perguntas para o Samuel"] = "Nenhuma por enquanto, mas:\n\n### Uma pergunta\n\nPosso fazer assim?"
+    problemas = conferir(r, s).problemas
+    assert any("O que você escolhe" in p for p in problemas)
+    assert any("Decisões procuradas antes de cada pergunta" in p for p in problemas)
+    s["Perguntas para o Samuel"] = "Nenhuma."
+    assert not any("F17" in p or "F23" in p for p in conferir(r, s).problemas)
+
+
+def test_volta2_achado_3_protecao_escrita_sem_traco_tambem_e_cobrada(entrega):
+    """Volta 2 de quem quebrou, achado 3 (20/11): uma proteção escrita numa linha sem "-", embaixo do primeiro item,
+    virava continuação dele e passava sem teste. Agora é cobrada; a linha com espaço no começo continua o item."""
+    r, base, commit = entrega
+    s = secoes_certas(base, commit, arquivos=ARQUIVOS_DO_WINDOWS)
+    s["De onde vem cada dado que a conferência usa"] = DE_ONDE
+    s["Cada proteção e o teste que falha sem ela"] = PROTECOES + "\nA conferência da licença, sem teste nenhum."
+    assert any("proteção sem o teste" in p and "licença" in p for p in conferir(r, s).problemas)
+    s["Cada proteção e o teste que falha sem ela"] = PROTECOES + "\n  (continuação do item de cima, com espaço.)"
+    assert not any("F21" in p for p in conferir(r, s).problemas)

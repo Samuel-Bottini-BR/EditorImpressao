@@ -1,0 +1,152 @@
+"""Sondagem da K25 (quem tenta quebrar, 20/11): cada caso vira um arquivo de mentira e passa pelo porteiro do ramo.
+
+Só lê: nenhum comando dos casos é rodado; o porteiro só lê o texto.
+"""
+import sys
+
+sys.path.insert(0, r"D:\programas\EditorImpressao\.claude\worktrees\regras-catalogo")
+from regras_dos_agentes import porteiro  # noqa: E402
+
+CAB = '"""x."""\nimport os\nimport shlex\nimport subprocess\nimport subprocess as sp\nfrom subprocess import run\n\n\ndef f(pasta, raiz, x):\n    """y."""\n'
+
+# (rótulo, esperado: True = devia acusar, False = não devia, linha de código)
+PY = [
+    ("lista direta gc", True, 'subprocess.run(["git", "gc"])'),
+    ("git -C gc", True, 'subprocess.run(["git", "-C", raiz, "gc"])'),
+    ("git --git-dir gc", True, 'subprocess.run(["git", "--git-dir", raiz, "gc"])'),
+    ("git --git-dir= gc", True, 'subprocess.run(["git", f"--git-dir={raiz}", "gc"])'),
+    ("os.system fetch --depth", True, 'os.system("git fetch --depth=1 origin x")'),
+    ("shell=True texto", True, 'subprocess.run("git fetch --depth 1 origin x", shell=True)'),
+    ("apelido sp", True, 'sp.run(["git", "stash"])'),
+    ("from import run", True, 'run(["git", "stash", "push"])'),
+    (".split()", True, 'subprocess.run("git fetch --depth=1 origin x".split())'),
+    ("shlex.split", True, 'subprocess.run(shlex.split("git fetch --depth=1 origin x"))'),
+    ("lista guardada e passada a outra função", True, 'cmd = ["git", "gc"]; rodar(cmd)'),
+    ("programa numa variável", True, 'GIT = "git"; subprocess.run([GIT, "gc"])'),
+    ("caminho do git.exe", True, 'subprocess.run([r"C:\\Program Files\\Git\\cmd\\git.exe", "gc"])'),
+    ("git maintenance", True, 'subprocess.run(["git", "maintenance", "run"])'),
+    ("git repack -a -d", True, 'subprocess.run(["git", "repack", "-a", "-d"])'),
+    ("git reflog expire", True, 'subprocess.run(["git", "reflog", "expire", "--expire=now", "--all"])'),
+    ("git remote set-url (grava no .git/config)", True, 'subprocess.run(["git", "remote", "set-url", "origin", x])'),
+    ("git branch -D de outro", True, 'subprocess.run(["git", "branch", "-D", "obra-2026-10-26"])'),
+    ("git clean -fdx", True, 'subprocess.run(["git", "clean", "-fdx"])'),
+    ("git config --global grava", True, 'subprocess.run(["git", "config", "--global", "user.name", "x"])'),
+    ("git config sem valor só lê", False, 'subprocess.run(["git", "config", "core.hooksPath"])'),
+    ("git config --get", False, 'subprocess.run(["git", "config", "--get", "core.hooksPath"])'),
+    ("git -c chave=valor commit", False, 'subprocess.run(["git", "-c", "core.autocrlf=false", "status"])'),
+    ("git stash list", False, 'subprocess.run(["git", "stash", "list"])'),
+    ("git fetch normal", False, 'subprocess.run(["git", "fetch", "origin"])'),
+    ("git clone --depth (repo novo)", False, 'subprocess.run(["git", "clone", "--depth=1", x, pasta])'),
+    ("git fetch --unshallow", False, 'subprocess.run(["git", "fetch", "--unshallow"])'),
+    ("git rm -r --cached (só o índice)", False, 'subprocess.run(["git", "rm", "-r", "--cached", "x"])'),
+    ("rm -rf lista", True, 'subprocess.run(["rm", "-rf", pasta])'),
+    ("rm -fr", True, 'subprocess.run(["rm", "-fr", pasta])'),
+    ("rm -r -f", True, 'subprocess.run(["rm", "-r", "-f", pasta])'),
+    ("rm -f -r", True, 'subprocess.run(["rm", "-f", "-r", pasta])'),
+    ("rm --recursive", True, 'subprocess.run(["rm", "--recursive", pasta])'),
+    ("rm -Rf", True, 'subprocess.run(["rm", "-Rf", pasta])'),
+    ("rm -rvf", True, 'subprocess.run(["rm", "-rvf", pasta])'),
+    ("/usr/bin/rm -rf", True, 'subprocess.run(["/usr/bin/rm", "-rf", pasta])'),
+    ("bash -c rm -rf", True, 'subprocess.run(["bash", "-c", f"rm -rf {pasta}"])'),
+    ("bash -c cd && rm -rf", True, 'subprocess.run(["bash", "-c", f"cd {pasta} && rm -rf modelos"])'),
+    ("powershell Remove-Item -Recurse", True, 'subprocess.run(["powershell", "-Command", f"Remove-Item {pasta} -Recurse -Force"])'),
+    ("powershell -Recurse:$true", True, 'subprocess.run(["powershell", "-Command", f"Remove-Item {pasta} -Recurse:$true"])'),
+    ("powershell -Rec", True, 'subprocess.run(["powershell", "-Command", f"Remove-Item {pasta} -Rec"])'),
+    ("powershell ri -r", True, 'subprocess.run(["powershell", "-Command", f"ri {pasta} -r -fo"])'),
+    ("powershell rd -Recurse", True, 'subprocess.run(["powershell", "-Command", f"rd {pasta} -Recurse"])'),
+    ("powershell del -Recurse", True, 'subprocess.run(["powershell", "-Command", f"del {pasta} -Recurse"])'),
+    ("powershell rmdir -r", True, 'subprocess.run(["powershell", "-Command", f"rmdir {pasta} -r"])'),
+    ("powershell pipeline gci | Remove-Item -Recurse", True, 'subprocess.run(["powershell", "-Command", f"Get-ChildItem {pasta} | Remove-Item -Recurse"])'),
+    ("Remove-Item guardado num texto que começa com ele", True, 's = f"Remove-Item {pasta} -Recurse"; rodar(s)'),
+    ("rd -Recurse guardado num texto", True, 's = f"rd {pasta} -Recurse"; rodar(s)'),
+    ("if (Test-Path) Remove-Item guardado", True, 's = f"if (Test-Path {pasta}) {{ Remove-Item {pasta} -Recurse }}"; rodar(s)'),
+    ("splatting @p", True, 'subprocess.run(["powershell", "-Command", "$p=@{Recurse=$true}; Remove-Item x @p"])'),
+    ("-Recurse:$false (não apaga dentro)", False, 'subprocess.run(["powershell", "-Command", f"Remove-Item {pasta} -Recurse:$false"])'),
+    ("Remove-Item -Force sem -Recurse", False, 'subprocess.run(["powershell", "-Command", f"Remove-Item {pasta} -Force"])'),
+    ("rm -f arquivo", False, 'subprocess.run(["rm", "-f", pasta])'),
+    ("rm -i (não -r)", False, 'subprocess.run(["rm", "-if", pasta])'),
+    ("rm --preserve-root sem -r", False, 'subprocess.run(["rm", "--preserve-root", pasta])'),
+    ("cmd rd /s /q", True, 'subprocess.run(["cmd", "/c", "rd", "/s", "/q", pasta])'),
+    ("cmd rmdir sem /s (certo)", False, 'subprocess.run(["cmd", "/c", "rmdir", pasta])'),
+    ("(Get-Item).Delete() (certo)", False, 'subprocess.run(["powershell", "-Command", f"(Get-Item {pasta}).Delete()"])'),
+    ("(Get-Item).Delete($true)", True, 'subprocess.run(["powershell", "-Command", f"(Get-Item {pasta}).Delete($true)"])'),
+    ("texto de exemplo num print", False, 'print("não rode git gc aqui")'),
+    ("texto que começa com git gc num print (falso alarme conhecido)", False, 'print("git gc é proibido")'),
+    ("texto 'rm -rf' começando, num aviso", False, 'aviso = "rm -rf não é usado aqui"'),
+    ("conferiu outra coisa antes (islink de outro caminho)", True, 'os.path.islink(raiz)\n    subprocess.run(["rm", "-rf", pasta])'),
+    ("só a palavra islink num texto antes", True, 'print("não confiro islink")\n    subprocess.run(["rm", "-rf", pasta])'),
+    ("só a palavra islink num comentário antes", True, '# islink\n    subprocess.run(["rm", "-rf", pasta])'),
+    ("rm -rf no texto de Remove-Item (powershell rm)", True, 'subprocess.run(["powershell", "-Command", f"rm {pasta} -r -fo"])'),
+    ("os.popen", True, 'os.popen("git gc")'),
+    ("getattr subprocess", True, 'getattr(subprocess, "run")(["git", "gc"])'),
+    ("check_output git config set", True, 'subprocess.check_output(["git", "config", "set", "core.x", "y"])'),
+]
+
+TERM = [
+    (".sh", "fetch --depth", True, 'git fetch --depth=1 origin x'),
+    (".sh", "\"git\" entre aspas", True, '"git" fetch --depth=1 origin x'),
+    (".sh", "$GIT variável", True, '$GIT fetch --depth=1 origin x'),
+    (".sh", "git -C", True, 'git -C "$D" gc'),
+    (".sh", "rm -rf", True, 'rm -rf "$X"'),
+    (".sh", "rm -r -f", True, 'rm -r -f "$X"'),
+    (".sh", "rm -fr", True, 'rm -fr "$X"'),
+    (".sh", "command rm -rf", True, 'command rm -rf "$X"'),
+    (".sh", "find -exec rm -rf", True, 'find . -name x -exec rm -rf {} +'),
+    (".sh", "find -delete", True, 'find "$X" -delete'),
+    (".sh", "git clean -fdx", True, 'git clean -fdq -- .'),
+    (".sh", "git rm -rq --cached (só índice)", False, "git rm -rq --cached --ignore-unmatch -- . ':(exclude).github'"),
+    (".sh", "[ -L ] de OUTRA pasta antes", True, '[ -L "$OUTRA" ] && exit 1\nrm -rf "$X"'),
+    (".sh", "echo com [ -L antes", True, 'echo "use [ -L x ] antes"\nrm -rf "$X"'),
+    (".sh", "rm -rf depois de # na mesma linha (comentário)", False, 'echo oi # rm -rf "$X"'),
+    (".sh", "# dentro de aspas esconde o comando", True, 'echo "#" ; rm -rf "$X"'),
+    (".sh", "heredoc com [ -L", True, "cat <<EOF\n[ -L x ]\nEOF\nrm -rf \"$X\""),
+    (".ps1", "Remove-Item -Recurse", True, 'Remove-Item $x -Recurse -Force'),
+    (".ps1", "-Recurse:$true", True, 'Remove-Item $x -Recurse:$true'),
+    (".ps1", "ri -r", True, 'ri $x -r'),
+    (".ps1", "gci | Remove-Item -Recurse", True, 'Get-ChildItem $x | Remove-Item -Recurse'),
+    (".ps1", "splatting", True, '$p=@{Recurse=$true}; Remove-Item $x @p'),
+    (".ps1", "comentário de bloco <# #>", False, '<#\nRemove-Item $x -Recurse\n#>'),
+    (".ps1", "Test-Path antes (não é conferir atalho)", True, 'if (Test-Path $x) { Remove-Item $x -Recurse }'),
+    (".ps1", "LinkType de outro antes", True, '(Get-Item $y).LinkType\nRemove-Item $x -Recurse'),
+    (".ps1", "git fetch --depth", True, 'git fetch --depth=1 origin x'),
+    (".ps1", "& git", True, '& git fetch --depth=1 origin x'),
+    (".ps1", "& \"git.exe\"", True, '& "git.exe" gc'),
+    (".cmd", "rd /s /q", True, 'rd /s /q "%X%"'),
+    (".cmd", "rmdir /s", True, 'rmdir /s /q "%X%"'),
+    (".cmd", "git fetch --depth", True, 'git fetch --depth=1 origin x'),
+    (".cmd", "powershell Remove-Item -Recurse", True, 'powershell -c "Remove-Item %X% -Recurse"'),
+    (".cmd", "rem não conta", False, 'rem git gc'),
+    (".bat", "rmdir sem /s (certo)", False, 'rmdir "%X%"'),
+    (".psm1", "Remove-Item -Recurse", True, 'Remove-Item $x -Recurse'),
+    (".py.txt", "arquivo .txt com comandos (não é script)", False, 'git gc'),
+    (".yml", "workflow do GitHub com run: git fetch --depth", True, 'run: git fetch --depth=1 origin x'),
+]
+
+
+def rodar_py():
+    print("=== Python ===")
+    for rotulo, esperado, linha in PY:
+        fonte = CAB + "    " + linha + "\n"
+        try:
+            achados = [a for a in porteiro.conferir_codigo(["scripts/sonda.py"], lambda _c, f=fonte: f) if a.conferencia == "K25"]
+        except Exception as e:  # noqa: BLE001
+            print(f"ERRO   {rotulo}: {e!r}")
+            continue
+        acusou = bool(achados)
+        marca = "ok   " if acusou == esperado else ("PASSA" if esperado else "FALSO")
+        print(f"{marca} acusou={acusou!s:5} {rotulo}")
+
+
+def rodar_term():
+    print("=== Terminal ===")
+    for ext, rotulo, esperado, linha in TERM:
+        nome = f"scripts/sonda{ext}"
+        fonte = "#!/usr/bin/env bash\n" + linha + "\n"
+        achados = [a for a in porteiro.conferir_codigo([nome], lambda _c, f=fonte: f) if a.conferencia == "K25"]
+        acusou = bool(achados)
+        marca = "ok   " if acusou == esperado else ("PASSA" if esperado else "FALSO")
+        print(f"{marca} acusou={acusou!s:5} {ext:6} {rotulo}")
+
+
+rodar_py()
+rodar_term()

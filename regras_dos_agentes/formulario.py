@@ -6,6 +6,15 @@ perguntas das etiquetas do trabalho (Windows: quantas perguntas do Windows o Sam
 em quais páginas foi conferido), montado pela mesma tabela do pacote. O agente preenche no próprio ONDE-PAREI, com os
 títulos de seção daqui (`CAMPOS`, o lugar único dos títulos).
 
+Perguntas novas do catálogo dos erros (19/11/2026, cada uma com o "ok" do Samuel no Livro):
+- F21 (D-811), trabalho do Windows e do instalador: cada proteção e cada conferência do resultado, com o teste que
+  falha quando ela é desligada; o programa confere que cada item cita um teste (`arquivo::função`) que existe.
+- F22 (D-812), trabalho que confere algo (`TRABALHO_QUE_CONFERE`): de onde vem cada dado que a conferência usa.
+- F23 (D-814), só quando há pergunta para o Samuel: para cada uma, as decisões do Livro procuradas antes (que existem
+  no Livro da versão de teste) e por que ela ainda não está respondida.
+Quais campos valem para um trabalho, uma função só decide (`vale_para`), para o formulário e para o pacote. Um
+trabalho que não tem a etiqueta (nem pergunta, no F23) não recebe o campo novo: o formulário de antes continua passando.
+
 Três etapas (a mesma conferência, mais exigente a cada uma):
 - `quebrar`: antes de ir ao agente que tenta quebrar;
 - `prova`: antes da prova à vista na tela do Samuel (exige o relatório de quem quebrou, F19);
@@ -30,6 +39,7 @@ conferências de cada campo.
 
 from __future__ import annotations
 
+import ast
 import re
 from dataclasses import dataclass, field
 from fnmatch import fnmatch
@@ -47,14 +57,26 @@ ETAPAS = ("quebrar", "prova", "pronto")
 NOME_DAS_ETAPAS = {"quebrar": "antes de ir ao agente que tenta quebrar", "prova": "antes da prova à vista",
                    "pronto": "antes do rótulo de pronto para conferir"}
 
-# (código, título da seção no ONDE-PAREI, etapa em que passa a ser obrigatório, etiqueta que o exige: "*" = todas)
-CAMPOS: list[tuple[str, str, str, str]] = [
+# As etiquetas do trabalho "que confere algo" (D-812): o do Windows e do instalador (a peça confere o resultado do que
+# pede ao Windows) e o do porteiro (o pacote `regras_dos_agentes/`, o gancho e as provas do porteiro, que a tabela marca
+# como da gerente, GER). O trabalho que só acrescenta um teste comum (só TESTE) fica de fora: assim o formulário de
+# antes, de um trabalho só de testes, continua passando (ressalva da entrega de 19/11; pedir à gerente uma etiqueta
+# própria "conferência" na tabela, se ela quiser mais justo).
+TRABALHO_QUE_CONFERE = ("WIN", "GER")
+
+# (código, título da seção no ONDE-PAREI, etapa em que passa a ser obrigatório, quem o exige): "*" = todo trabalho; uma
+# etiqueta; ou uma tupla de etiquetas (basta o trabalho ter uma). Quem decide é `vale_para`, o lugar único.
+CAMPOS: list[tuple[str, str, str, str | tuple[str, ...]]] = [
     ("F1", "Arquivos que vou mexer", "quebrar", "*"),
     ("F2", "Decisões que esta tarefa precisa cumprir", "quebrar", "*"),
     ("F3", "O que já está escolhido e testado aqui", "quebrar", "*"),
     ("F4", "Como fica para quem usa e no livro", "quebrar", "*"),
     ("F5", "A causa, a regra e todos os caminhos", "quebrar", "*"),
     ("F6", "O que pode falhar e o que o programa faz", "quebrar", "WIN"),
+    # D-811 (19/11): "para cada proteção, o teste que falha quando ela é desligada" (trabalho de Windows e instalador).
+    ("F21", "Cada proteção e o teste que falha sem ela", "quebrar", "WIN"),
+    # D-812 (19/11): "De onde vem cada dado que a sua conferência usa?" (trabalho que confere algo).
+    ("F22", "De onde vem cada dado que a conferência usa", "quebrar", TRABALHO_QUE_CONFERE),
     ("F7", "O que li da peça de fora e onde", "quebrar", "*"),
     ("F8", "O que foi feito", "quebrar", "*"),
     ("F9", "Arquivos criados ou alterados", "quebrar", "*"),
@@ -66,6 +88,10 @@ CAMPOS: list[tuple[str, str, str, str]] = [
     ("F15", "Velocidade", "quebrar", "IMG"),
     ("F16", "Ideias e bugs", "quebrar", "*"),
     ("F17", "Perguntas para o Samuel", "quebrar", "*"),
+    # D-814 (19/11): "as decisões do Livro que você procurou antes, e por que esta ainda não está respondida". Só quando
+    # há pergunta para o Samuel (`SO_COM_PERGUNTAS`); fica numa seção à parte porque a pergunta dele não leva número de
+    # decisão (§11.13, regra 2).
+    ("F23", "Decisões procuradas antes de cada pergunta", "quebrar", "*"),
     ("F18", "Commit", "quebrar", "*"),
     ("F19", "O que o agente que tentou quebrar achou", "prova", "*"),
     ("F20", "A prova de verdade", "pronto", "WIN"),
@@ -74,6 +100,21 @@ CAMPOS: list[tuple[str, str, str, str]] = [
     ("E-TELA", "O print que prova", "quebrar", "TELA"),
     ("E-IMG", "Páginas em que foi conferido", "quebrar", "IMG"),
 ]
+
+# Os campos que só são obrigatórios quando a entrega tem pergunta para o Samuel (um "###" em "Perguntas para o Samuel").
+SO_COM_PERGUNTAS = {"F23"}
+
+
+def vale_para(quem: str | tuple[str, ...], tags: set) -> bool:
+    """O campo vale para um trabalho com estas etiquetas? ("*" = todos; uma etiqueta; uma tupla: basta ter uma.)
+
+    Lugar único: o formulário (`_conferir_campos`) e o montador do pacote (`montar_pacote.formulario_em_branco`) chamam
+    esta função, para o agente receber em branco exatamente os campos que o programa vai cobrar.
+    """
+    if quem == "*":
+        return True
+    return bool(set((quem,) if isinstance(quem, str) else quem) & set(tags))
+
 
 # Os seis campos do relatório de quem tenta quebrar (proposta das regras, §6).
 CAMPOS_DE_QUEM_QUEBRA: list[tuple[str, str]] = [
@@ -189,17 +230,29 @@ class _Repositorio:
         return self._definidos
 
     def teste_existe(self, citado: str) -> bool:
-        """`tests/x.py` ou `tests/x.py::test_y` existe (o arquivo e, se dito, a função)?"""
+        """`tests/x.py` ou `tests/x.py::test_y` existe (o arquivo e, se dito, o teste)?
+
+        O teste dito tem de ser um teste de verdade, que o pytest roda: uma função `test_...` do código do arquivo, lida
+        pela árvore do Python (achado 6 de quem quebrou, 20/11: o `def` escrito dentro de um texto de exemplo e a
+        função de ajuda, que não é teste, contavam). Arquivo que não é Python válido não tem teste nenhum.
+        """
         arquivo, _, funcao = citado.partition("::")
         if not self.existe(arquivo):
             return False
         if not funcao:
             return True
         nome = funcao.split("::")[-1].split("[")[0]
+        if not nome.startswith("test"):
+            return False
         for c in self.arquivos:
             if c == arquivo or fnmatch(c, arquivo):
                 texto = (self.raiz / c).read_text(encoding="utf-8", errors="replace")
-                if re.search(rf"^\s*def\s+{re.escape(nome)}\b", texto, re.M):
+                try:
+                    arvore = ast.parse(texto.removeprefix("﻿"))
+                except (SyntaxError, ValueError):
+                    continue
+                if any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name == nome
+                       for n in ast.walk(arvore)):
                     return True
         return False
 
@@ -223,8 +276,8 @@ def _conferir_campos(s: dict[str, str], etapa: str, tags: set, r: Resultado) -> 
     """Os campos obrigatórios desta etapa e destas etiquetas: existem e não estão vazios. Devolve código → texto."""
     achados: dict[str, str] = {}
     for codigo, titulo, desde, quem in CAMPOS:
-        if ETAPAS.index(etapa) < ETAPAS.index(desde) or (quem != "*" and quem not in tags):
-            continue
+        if ETAPAS.index(etapa) < ETAPAS.index(desde) or not vale_para(quem, tags) or codigo in SO_COM_PERGUNTAS:
+            continue      # os de SO_COM_PERGUNTAS são cobrados em `_conferir_perguntas`, só quando há pergunta
         corpo = pedido_.secao(s, titulo)
         if corpo is None:
             r.problemas.append(f"falta a seção \"{titulo}\" ({codigo})")
@@ -275,6 +328,39 @@ def _conferir_citacoes(campos: dict[str, str], repo: _Repositorio, pasta: Path, 
                 r.problemas.append(f"o arquivo citado {p} não existe ({codigo})")
 
 
+def _itens_das_protecoes(corpo: str) -> list[str]:
+    """As proteções do F21: cada item da lista e, depois do primeiro item, cada linha que não começa com espaço (volta 2
+    de quem quebrou, achado 3, 20/11: proteções escritas sem "-" embaixo do primeiro item viravam continuação dele e
+    passavam sem teste). Só a linha com espaço no começo continua o item de cima; o texto antes da lista é abertura."""
+    itens: list[str] = []
+    for l in corpo.splitlines():
+        if re.match(r"^[-*]\s+|^\d+[.)]\s+", l):
+            itens.append(l)
+        elif itens and l.strip():
+            if l[:1].isspace():
+                itens[-1] += " " + l.strip()
+            else:
+                itens.append(l)
+    return itens
+
+
+def _conferir_protecoes(campos: dict[str, str], r: Resultado) -> None:
+    """F21 (D-811): uma lista, uma proteção (ou conferência do resultado) por item, cada uma com o teste
+    (`tests/x.py::test_y`) que falha quando ela é desligada. Que o teste existe, `_conferir_citacoes` confere; se a
+    lista está completa e se o teste falha mesmo, quem tenta quebrar."""
+    f21 = campos.get("F21")
+    if f21 is None or nao_se_aplica(f21):
+        return
+    itens = _itens_das_protecoes(f21)
+    if not itens:
+        r.problemas.append("\"Cada proteção e o teste que falha sem ela\" tem de ser uma lista: uma proteção por item, "
+                           "com o teste (F21)")
+    for item in itens:
+        if not any("::" in t for t in _testes_citados(item)):
+            r.problemas.append(f"proteção sem o teste que falha quando ela é desligada (`tests/x.py::test_y`): "
+                               f"{item.strip()[:70]} (F21)")
+
+
 def _conferir_conteudo(campos: dict[str, str], tags: set, repo: _Repositorio, r: Resultado) -> None:
     """O que cada campo precisa ter dentro (F4, F5, F6, F7, F11, F12, F14, F15, E-WIN, E-TELA, E-IMG)."""
     f4 = campos.get("F4")
@@ -297,6 +383,7 @@ def _conferir_conteudo(campos: dict[str, str], tags: set, repo: _Repositorio, r:
             if not re.search(padrao, f6, re.I):
                 r.problemas.append(f"\"O que pode falhar\" não fala de: {nome} (ou escreva \"não se aplica: motivo\") "
                                    "(F6)")
+    _conferir_protecoes(campos, r)
     f7 = campos.get("F7")
     if f7 is not None and not nao_se_aplica(f7):
         for item in _itens(f7):
@@ -473,14 +560,55 @@ def _conferir_f20(campos: dict[str, str], etapa: str, pasta: Path, raiz: Path, r
         r.problemas.append("a prova de verdade não cita um print ou registro que exista (F20)")
 
 
-def _conferir_perguntas(campos: dict[str, str], pasta: Path, raiz: Path, r: Resultado) -> None:
-    """F17: cada pergunta (um "###") sem palavra de dentro, com "O que você escolhe", print e a sugestão (§11.13)."""
-    f17 = campos.get("F17")
-    if f17 is None or re.match(r"^\s*-?\s*nenhuma\b", f17, re.I):
+def _blocos(corpo: str) -> list[str]:
+    """Os blocos `### título` de uma seção (cada um começa pelo título)."""
+    return re.split(r"^###\s+", corpo, flags=re.M)[1:]
+
+
+def _conferir_procuradas(s: dict[str, str], titulos: list[str], livro: Livro, r: Resultado) -> None:
+    """F23 (D-814): para cada pergunta ao Samuel, um "###" com o mesmo título, as decisões do Livro procuradas antes
+    (que existem no Livro da versão de teste) e por que ela ainda não está respondida."""
+    titulo_da_secao = next(t for c, t, _, _ in CAMPOS if c == "F23")
+    corpo = pedido_.secao(s, titulo_da_secao)
+    if corpo is None or vazio(corpo):
+        r.problemas.append(f"há pergunta para o Samuel e falta a seção \"{titulo_da_secao}\", com as decisões do "
+                           "Livro procuradas antes de cada uma e por que ela ainda não está respondida (F23)")
         return
-    blocos = re.split(r"^###\s+", f17, flags=re.M)[1:]
+    por_titulo = {b.splitlines()[0].strip().lower(): b for b in _blocos(corpo) if b.strip()}
+    for titulo in titulos:
+        bloco = por_titulo.get(titulo.strip().lower())
+        if bloco is None:
+            r.problemas.append(f"pergunta \"{titulo[:60]}\": falta o \"### {titulo[:40]}\" em \"{titulo_da_secao}\" "
+                               "(F23)")
+            continue
+        numeros = NUMERO.findall(bloco)
+        if not numeros:
+            r.problemas.append(f"pergunta \"{titulo[:60]}\": não diz quais decisões do Livro foram procuradas (F23)")
+        for numero in sorted(set(numeros)):
+            if not livro.existe(numero):
+                r.problemas.append(f"pergunta \"{titulo[:60]}\": {numero} não existe no Livro de decisões (F23)")
+        porque = re.search(r"por\s*que[^:\n]*:\s*(.+)", bloco, re.I)
+        if not porque or vazio(porque.group(1)) or len(porque.group(1).strip()) < 10:
+            r.problemas.append(f"pergunta \"{titulo[:60]}\": não diz por que ela ainda não está respondida (\"Por que "
+                               "ainda não está respondida: ...\") (F23)")
+
+
+def _conferir_perguntas(campos: dict[str, str], s: dict[str, str], livro: Livro, pasta: Path, raiz: Path,
+                        r: Resultado) -> None:
+    """F17: cada pergunta (um "###") sem palavra de dentro, com "O que você escolhe", print e a sugestão (§11.13);
+    F23 (D-814): as decisões procuradas antes de cada uma."""
+    f17 = campos.get("F17")
+    if f17 is None:
+        return
+    blocos = _blocos(f17)
+    # "Nenhuma" só vale se não há pergunta escrita embaixo (achado 7 de quem quebrou, 20/11: "Nenhuma por enquanto,
+    # mas:" seguido de um "###" desligava a conferência das perguntas e a das decisões procuradas).
+    if not blocos and re.match(r"^\s*-?\s*nenhuma\b", f17, re.I):
+        return
     if not blocos:
         r.problemas.append("cada pergunta para o Samuel vai num \"###\" próprio (F17)")
+    else:
+        _conferir_procuradas(s, [b.splitlines()[0] for b in blocos], livro, r)
     for bloco in blocos:
         titulo = bloco.splitlines()[0][:60]
         dentro = PALAVRAS_DE_DENTRO.search(bloco)
@@ -555,7 +683,7 @@ def conferir(onde_parei: Path, etapa: str, raiz: Path, pacote: Path | None = Non
     _conferir_arquivos(campos, git.arquivos_mudados(raiz, pedido.partida), pasta_rel, r)
     _conferir_commit(campos, raiz, pasta_rel, r)
     _conferir_github(campos, raiz, consultar_github, r)
-    _conferir_perguntas(campos, pasta, raiz, r)
+    _conferir_perguntas(campos, s, livro, pasta, raiz, r)
     if ETAPAS.index(etapa) >= ETAPAS.index("prova"):
         _conferir_f19(campos, pasta, raiz, r)
     if etapa == "pronto":

@@ -1,0 +1,59 @@
+"""Tenta enganar as perguntas novas do formulário (F21, F22, F23) chamando as conferências delas direto. Só lê."""
+import sys
+from pathlib import Path
+
+RAIZ = Path(r"D:\programas\EditorImpressao\.claude\worktrees\regras-catalogo")
+sys.path.insert(0, str(RAIZ))
+from regras_dos_agentes import formulario as F, pedido as P  # noqa: E402
+
+
+class LivroDeMentira:
+    def existe(self, n):
+        return n in {"D-001", "D-809"}
+
+
+def r():
+    return F.Resultado("quebrar")
+
+
+# F21: um item com teste e as outras proteções em linhas sem "-" (viram continuação do primeiro item)
+f21 = ("- Proteção A → `tests/test_conferencias_codigo.py::test_k25_acusa_o_git_que_muda_a_pasta_git_inteira_num_script`.\n"
+       "Proteção B, sem teste nenhum.\n"
+       "Proteção C, sem teste nenhum.\n")
+x = r(); F._conferir_protecoes({"F21": f21}, x)
+print("F21 continuação sem '-':", "PASSA (enganou)" if not x.problemas else x.problemas)
+
+# F21: "não se aplica" com motivo inventado num trabalho do Windows
+x = r(); F._conferir_protecoes({"F21": "Não se aplica: este trabalho não tem proteção nenhuma, juro."}, x)
+print("F21 'não se aplica' num trabalho do Windows:", "PASSA" if not x.problemas else x.problemas)
+
+# F21: o "teste" citado é uma função de ajuda, não um teste
+repo = F._Repositorio(RAIZ)
+for citado in ["tests/test_conferencias_codigo.py::_conferir",
+               "tests/test_conferencias_formulario.py::repo",
+               "tests/test_conferencias_codigo.py::test_que_nao_existe"]:
+    print(f"teste_existe({citado!r}) =", repo.teste_existe(citado))
+
+# F21: a mesma função de teste citada para tudo
+f21b = "\n".join(f"- Proteção {i} → `tests/test_conferencias_codigo.py::test_k25_acusa_o_git_que_muda_a_pasta_git_inteira_num_script`." for i in range(5))
+x = r(); F._conferir_protecoes({"F21": f21b}, x)
+print("F21 o mesmo teste para 5 proteções:", "PASSA" if not x.problemas else x.problemas)
+
+# F22: só existe; texto qualquer
+print("F22 'xxxxxxxxxx' é vazio?", F.vazio("xxxxxxxxxx"))
+
+# F23: "Nenhuma" no começo do F17 desliga a conferência de todas as perguntas que vêm depois
+texto = ("## Perguntas para o Samuel\n\nNenhuma por enquanto, mas:\n\n### Posso mudar a regra?\n\nA D-809 diz... (sem print, "
+         "sem 'o que você escolhe', sem sugestão)\n\n## Commit\n\nabc\n")
+s = P.secoes(texto)
+campos = {"F17": P.secao(s, "Perguntas para o Samuel")}
+x = r(); F._conferir_perguntas(campos, s, LivroDeMentira(), RAIZ, RAIZ, x)
+print("F17 começando com 'Nenhuma' e uma pergunta embaixo:", "PASSA (enganou)" if not x.problemas else x.problemas)
+
+# F23: bloco com uma decisão qualquer que existe e um porquê de enchimento com 10 letras
+texto = ("## Perguntas para o Samuel\n\n### Posso mudar?\n\nNa tela X... O que você escolhe: sim ou não. Sugestão: sim. "
+         "(a.png)\n\n## Decisões procuradas antes de cada pergunta\n\n### Posso mudar?\n\nD-001. Por que: aaaaaaaaaa\n")
+s = P.secoes(texto)
+campos = {"F17": P.secao(s, "Perguntas para o Samuel")}
+x = r(); F._conferir_perguntas(campos, s, LivroDeMentira(), RAIZ, RAIZ, x)
+print("F23 com D-001 e 'Por que: aaaaaaaaaa':", [p for p in x.problemas if "F23" in p] or "PASSA (só quem quebra vê)")

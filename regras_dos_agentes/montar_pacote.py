@@ -10,7 +10,8 @@ pedido toca, o commit de partida e o ramo. O programa devolve o texto que o agen
      com o aviso das contradições (as já resolvidas pelo Samuel dizem qual texto vale);
   4. as decisões, com as palavras copiadas do Livro (`livro.py`, nunca de memória);
   5. o formulário da entrega com os campos que essas etiquetas exigem (`formulario.CAMPOS`, os mesmos títulos que o
-     programa confere), já como títulos de seção para preencher;
+     programa confere, escolhidos pela mesma função, `formulario.vale_para`), já como títulos de seção para
+     preencher;
   6. o que ele NÃO recebeu e quando parar.
 
 Quem tenta quebrar (papel "quebrador") recebe todas as regras (D-775) e, no lugar do formulário, os seis campos do
@@ -49,6 +50,12 @@ def escolher_regras(tags: set, papel: str) -> list[dict]:
         assunto = set(r["tags"]) - {"TODO", "TESTE", "GER"}
         if "GER" in r["tags"] and not assunto and "TODO" not in r["tags"]:
             continue
+        # Regra marcada `basta_uma`: vai a todo trabalho que tem QUALQUER uma das etiquetas dela (ex.: a R157, para o
+        # trabalho do Windows e para o de testes, como a D-810 pede).
+        if r.get("basta_uma"):
+            if set(r["tags"]) & tags:
+                saida.append(r)
+            continue
         if assunto:
             if assunto & tags:
                 saida.append(r)
@@ -63,9 +70,13 @@ def formulario_em_branco(tags: set, papel: str) -> list[str]:
         return [f"## {titulo}\n\n(a preencher)\n" for _, titulo in formulario.CAMPOS_DE_QUEM_QUEBRA]
     saida = []
     for codigo, titulo, etapa, quem in formulario.CAMPOS:
-        if codigo == "F1" or (quem != "*" and quem not in tags):
+        if codigo == "F1" or not formulario.vale_para(quem, tags):
             continue          # F1 já vem preenchido no pedido
-        saida.append(f"## {titulo}\n\n(a preencher; obrigatório {formulario.NOME_DAS_ETAPAS[etapa]})\n")
+        quando = f"obrigatório {formulario.NOME_DAS_ETAPAS[etapa]}"
+        if codigo in formulario.SO_COM_PERGUNTAS:
+            quando = (f"{quando}, se houver pergunta para o Samuel: um \"###\" por pergunta, com o mesmo título, as "
+                      "decisões do Livro procuradas e \"Por que ainda não está respondida: ...\"")
+        saida.append(f"## {titulo}\n\n(a preencher; {quando})\n")
     return saida
 
 
@@ -148,6 +159,7 @@ def montar(papel: str, titulo: str, numeros: list[str], arquivos: list[str], rai
           "Se precisar mexer num arquivo fora da lista do pedido, pare e avise a gerente: o pacote muda. "
           "Se tiver pergunta para o Samuel, a regra 8 acima é o mínimo; a lista inteira está no CLAUDE.md §11.13, e a "
           "gerente devolve a pergunta que não passar. "
-          "O texto que vale é o do CLAUDE.md: a fonte de cada regra está entre parênteses; leia lá quando tiver dúvida.",
+          "O texto que vale é o do CLAUDE.md (nas regras novas do catálogo dos erros, ainda não escritas lá, a decisão "
+          "do Livro): a fonte de cada regra está entre parênteses; leia lá quando tiver dúvida.",
           ""]
     return "\n".join(p)

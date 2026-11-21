@@ -1,0 +1,84 @@
+"""Afrouxa a K25 na memória (como um ramo faria no código) e pergunta à proteção do GitHub se ela acusa.
+
+A "versão de teste" aqui é o porteiro.py de hoje do ramo (as listas ficam iguais: só o código das funções muda, que é o
+que um ramo poderia mudar sem mexer nas listas protegidas). Só lê; nada é gravado.
+"""
+import re
+import sys
+from pathlib import Path
+
+RAIZ = Path(r"D:\programas\EditorImpressao\.claude\worktrees\regras-catalogo")
+sys.path.insert(0, str(RAIZ))
+from regras_dos_agentes import leitura_do_codigo as leitura, porteiro, protecao  # noqa: E402
+
+FONTE_BASE = (RAIZ / "regras_dos_agentes" / "porteiro.py").read_text(encoding="utf-8")
+ORIG = {"k25_terminal": porteiro.k25_terminal, "comandos": leitura.comandos,
+        "lista": set(leitura.PROGRAMAS_DA_LISTA), "rodam": {k: set(v) for k, v in leitura.RODAM_COMANDO.items()},
+        "e_term": porteiro.e_comandos_de_terminal, "lista_py": list(porteiro._DO_CODIGO_PYTHON),
+        "re_compile": re.compile}
+
+# um caso que a K25 de hoje acusa e o afrouxamento deixa passar (para mostrar que afrouxou de verdade)
+CASOS = {
+    "terminal": ("scripts/x.sh", "#!/bin/bash\ngit fetch --depth=1 origin x\n"),
+    "lista guardada": ("scripts/x.py", '"""x."""\n\n\ndef f(rodar):\n    """y."""\n    cmd = ["git", "gc"]\n    rodar(cmd)\n'),
+    "texto guardado": ("scripts/x.py", '"""x."""\n\n\ndef f(rodar, p):\n    """y."""\n    rodar(f"Remove-Item {p} -Recurse")\n'),
+}
+
+
+def acusa(caso):
+    nome, fonte = CASOS[caso]
+    return any(a.conferencia == "K25" for a in porteiro.conferir_codigo([nome], lambda _c: fonte))
+
+
+def restaurar():
+    porteiro.k25_terminal = ORIG["k25_terminal"]
+    leitura.comandos = ORIG["comandos"]
+    porteiro.leitura.comandos = ORIG["comandos"]
+    leitura.PROGRAMAS_DA_LISTA.clear(); leitura.PROGRAMAS_DA_LISTA.update(ORIG["lista"])
+    for k, v in ORIG["rodam"].items():
+        leitura.RODAM_COMANDO[k] = set(v)
+    porteiro.e_comandos_de_terminal = ORIG["e_term"]
+    porteiro._DO_CODIGO_PYTHON[:] = ORIG["lista_py"]
+
+
+def m_terminal():
+    porteiro.k25_terminal = lambda c, f: []
+
+
+def m_lista():
+    leitura.PROGRAMAS_DA_LISTA.clear()
+
+
+def m_texto():
+    # o "jeito 3" (texto que começa com o comando) desligado: troca a função por uma que só lê o jeito 1
+    orig = ORIG["comandos"]
+
+    def so_chamadas(raiz):
+        saida = []
+        for linha, cmd in orig(raiz):
+            saida.append((linha, cmd))
+        # tira o que veio de texto solto: só fica o que está dentro de uma chamada de subprocess/os
+        return [s for s in saida if any(isinstance(n, __import__("ast").Call) and n.lineno == s[0]
+                                        and getattr(n.func, "attr", "") in ("run", "system", "Popen")
+                                        for n in __import__("ast").walk(raiz))]
+    leitura.comandos = so_chamadas
+    porteiro.leitura.comandos = so_chamadas
+
+
+def m_sem_k25():
+    porteiro._DO_CODIGO_PYTHON[:] = [k for k in porteiro._DO_CODIGO_PYTHON if k.__name__ != "k25"]
+
+
+MUTACOES = [("desligar a K25 nos arquivos do terminal", m_terminal, "terminal"),
+            ("desligar a lista guardada (jeito 2)", m_lista, "lista guardada"),
+            ("desligar o texto guardado (jeito 3)", m_texto, "texto guardado"),
+            ("tirar a K25 da lista de conferências do Python", m_sem_k25, "lista guardada")]
+
+for nome, mutar, caso in MUTACOES:
+    antes = acusa(caso)
+    mutar()
+    depois = acusa(caso)
+    faltam = protecao.exemplos_que_o_porteiro_nao_acha(FONTE_BASE)
+    restaurar()
+    print(f"{nome}: o caso '{caso}' acusado antes={antes} depois={depois}; "
+          f"a proteção do GitHub acusa? {'SIM' if faltam else 'NÃO'} ({len(faltam)} exemplo(s))")

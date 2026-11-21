@@ -1,0 +1,9 @@
+F21 continuação sem '-': PASSA (enganou)
+F21 'não se aplica' num trabalho do Windows: PASSA
+teste_existe('tests/test_conferencias_codigo.py::_conferir') = False
+teste_existe('tests/test_conferencias_formulario.py::repo') = False
+teste_existe('tests/test_conferencias_codigo.py::test_que_nao_existe') = False
+F21 o mesmo teste para 5 proteções: PASSA
+F22 'xxxxxxxxxx' é vazio? False
+F17 começando com 'Nenhuma' e uma pergunta embaixo: PASSA (enganou)
+F23 com D-001 e 'Por que: aaaaaaaaaa': PASSA (só quem quebra vê)
