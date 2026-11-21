@@ -1859,7 +1859,9 @@ Nesta volta não mudaram: `publicar_versao_kaique.py`, `atualizacao.py`, `core/w
   que o teste cobra não muda. Parte 3: `tests/test_decisoes_so_as_letras.py::test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro`
   "não aconteceu a tempo", o mesmo caso instável já anotado no catálogo (P1-gh-4), que não é deste trabalho. Cancelei
   a rodada antes da parte 1 terminar (era preciso outra, com o conserto).
-- **No GitHub, volta 9, de novo:** RODADA_FINAL
+- **No GitHub, volta 9, de novo:** rodada 44859326833, sobre `0e36d0a4` (o código de `011b06d0`): **success** na
+  primeira tentativa, todas as partes (1 a 5), os botões e os prints da janela real, e o porteiro (o juiz da versão
+  de teste).
 
 ## Caminho e função
 
@@ -2567,6 +2569,10 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   (antes a criavam onde a conta mandasse). Com um caminho passado na linha de comando, gravam lá, como antes.
 - **Volta 9, a peça do git agora abre todo git sem janela de console** (também os do porteiro). A resposta é a mesma
   (todas as conferências do porteiro passam no PC); só o Windows deixa de criar a janela.
+- **Volta 9, uma cópia sem repositório guardada DENTRO de outro repositório** (ex.: um `git archive` desfeito numa
+  pasta da cópia principal) acharia a pasta principal desse outro repositório, porque o git sobe as pastas. As cópias
+  das provas ficam no rascunho da sessão, fora de qualquer repositório; o teste da cópia sem repositório impede o git
+  de subir (no Windows do GitHub a pasta temporária fica dentro de um repositório).
 - **Volta 9, a pasta errada de 19/11** (`D:\programas\EditorImpressao\.claude\worktrees\EditorImpressao-arquivos\`)
   continua lá, intocada; o programa deixou de usá-la. Só a gerente decide sobre ela, com o Samuel.
 - **Volta 9, o pacote da volta 9 traz as etiquetas de tela e de imagem** (o `core/pasta_das_ferramentas.py` é novo e cai na
