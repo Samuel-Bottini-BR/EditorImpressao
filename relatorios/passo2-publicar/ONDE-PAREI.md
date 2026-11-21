@@ -2316,6 +2316,11 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   só confere o tamanho (agora a conferência da pasta lê a assinatura da cópia, o que também pega uma cópia corrompida do
   mesmo tamanho). A (9) vai para "Ideias e bugs".
 
+- **Volta 8, o conferidor do formulário devolve uma coisa só, e ela não é minha:** "o teste citado
+  tests/test_motor_kraken*.py não existe (F1)". É o padrão da lista "Arquivos que vou mexer" do pacote da volta 8,
+  copiada sem mudar (como o pacote manda): nenhum arquivo de teste tem esse nome, e o conferidor lê o padrão como um
+  teste citado. Não criei um arquivo só para passar nem mudei a lista copiada; a gerente decide (o pacote ou o
+  conferidor). Com a etapa "quebrar" e o pacote da volta 8, todo o resto passa, inclusive a rodada do GitHub.
 - **Volta 8, o defeito 1 não foi feito.** O conserto pela causa pede arquivos fora da lista do pacote (o plano está em
   "A causa, a regra e todos os caminhos", Volta 8, e o pedido à gerente em "Perguntas para o Samuel", Volta 8). Até
   lá, publicar de uma cópia de trabalho continua procurando o motor e o Visual C++ no lugar errado (a prova 6b); da
