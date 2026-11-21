@@ -2520,7 +2520,8 @@ O programa não mudou nesta volta (nenhum arquivo fora de `tests/` e do relatór
   `anexos/volta12-mutacoes-g.py.txt`; numa cópia de `866e2114`, os mesmos trechos do script do relatório 10): G1, G2,
   G3, G4 e G5 acusadas (cada uma com a linha e o uso acusado); sem mutação, a guarda passa. No relatório 10, com a guarda
   da volta 11, as cinco passavam nos 125 testes.
-- **Volta 12, no GitHub:** rodada 44945040959, sobre `866e2114` e o formulário: **success** na segunda tentativa. Na primeira, só a parte 5 falhou: `tests/test_dialogo_impressao.py` disse "5 passed" e o processo saiu com o código 0xC0000409 ( um travamento do Qt ao fechar; o mesmo tipo do instável de 20/11 em "Ideias e bugs"); esse arquivo não usa nada desta volta (`tests/test_publicar_versao.py` passou lá, 125). Na segunda tentativa, só a parte 5 rodou de novo, e passou. O porteiro, os botões e prints e as partes 1 a 4 passaram na primeira.
+- **Volta 12, no GitHub, depois da D-822** (o texto do teste com a D-822, `7543fbde`): rodada 44948053084, **success** na primeira tentativa (o porteiro, os botões e prints e as cinco partes).
+- **Volta 12, no GitHub, antes:** rodada 44945040959, sobre `866e2114` e o formulário: **success** na segunda tentativa. Na primeira, só a parte 5 falhou: `tests/test_dialogo_impressao.py` disse "5 passed" e o processo saiu com o código 0xC0000409 ( um travamento do Qt ao fechar; o mesmo tipo do instável de 20/11 em "Ideias e bugs"); esse arquivo não usa nada desta volta (`tests/test_publicar_versao.py` passou lá, 125). Na segunda tentativa, só a parte 5 rodou de novo, e passou. O porteiro, os botões e prints e as partes 1 a 4 passaram na primeira.
 
 ## Caminho e função
 
