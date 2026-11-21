@@ -83,8 +83,16 @@ print(json.dumps({
 def _copiar_o_codigo(destino: Path, ferramentas: Path) -> None:
     """O código deste ramo (o que roda: os .py da raiz, core/, regras_dos_agentes/ e as fontes do motor) no repositório
     de prova, com o caminho da pasta das ferramentas trocado na linha dele (o lugar único) para `ferramentas`. Só copia;
-    nada do projeto é mexido. No código de antes da volta 10 (a prova de reversão) a linha não existe e nada é trocado:
-    lá a pasta era calculada, e os testes mostram onde ela caía."""
+    nada do projeto é mexido.
+
+    Volta 11 (baixo 2 do relatório 9 de quem tentou quebrar, 21/11/2026): com o arquivo da regra na cópia, a linha do
+    caminho tem de estar lá exatamente uma vez; se não estiver (ela mudou, ex.: a pasta foi para `E:\\...`), o teste PARA
+    AQUI (`pytest.fail`), antes de qualquer script rodar. Antes, a cópia seguia calada com o caminho de verdade, e os
+    testes que rodam os scripts liam a pasta de verdade do Samuel. No código de antes da volta 9 (sem o arquivo da
+    regra) não há o que trocar: lá a pasta era calculada a partir do código do repositório de prova (longe da de
+    verdade), e os testes mostram onde ela caía. No código da volta 9 (`6fa766c4`: a regra existe, sem a linha) o teste
+    para aqui; a prova de reversão da volta 10 sobre ele já foi feita (`anexos/reversao-volta10-codigo-antigo.txt`).
+    Seguro mexer: a frase. Arriscado: voltar a seguir sem trocar (o caminho de verdade nos testes)."""
     for arquivo in RAIZ.glob("*.py"):
         shutil.copy2(arquivo, destino / arquivo.name)
     for pasta in ("core", "regras_dos_agentes", "motor_kraken"):
@@ -96,9 +104,12 @@ def _copiar_o_codigo(destino: Path, ferramentas: Path) -> None:
     regra = destino / "core" / "pasta_das_ferramentas.py"
     if regra.is_file():
         texto = regra.read_text(encoding="utf-8")
-        if texto.count(LINHA_DO_CAMINHO) == 1:
-            regra.write_text(texto.replace(LINHA_DO_CAMINHO, f"PASTA_DAS_FERRAMENTAS = Path({str(ferramentas)!r})"),
-                             encoding="utf-8")
+        if texto.count(LINHA_DO_CAMINHO) != 1:
+            pytest.fail(f"a linha do caminho não está em core/pasta_das_ferramentas.py como o teste espera "
+                        f"({texto.count(LINHA_DO_CAMINHO)} vez(es)): a cópia de prova ficaria com o caminho de verdade. "
+                        "Troque também LINHA_DO_CAMINHO neste teste.")
+        regra.write_text(texto.replace(LINHA_DO_CAMINHO, f"PASTA_DAS_FERRAMENTAS = Path({str(ferramentas)!r})"),
+                         encoding="utf-8")
 
 
 def _motor_de_prova(pasta: Path) -> Path:
@@ -383,3 +394,140 @@ def test_o_git_e_aberto_sem_janela_de_console(monkeypatch, tmp_path):
     git.raiz_do_repositorio(r.raiz)
     git.arquivos_do_git(r.raiz)
     assert vistos and all(v == subprocess.CREATE_NO_WINDOW for v in vistos), vistos
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Volta 11 (21/11/2026): os baixos 2, 3 e 4 do relatório 9 de quem tentou quebrar
+# ---------------------------------------------------------------------------------------------------------------------
+
+@pytest.mark.skipif(pf is None, reason="core/pasta_das_ferramentas.py ainda não existe neste código")
+def test_volta11_baixo2_a_copia_de_prova_para_se_nao_acha_a_linha_do_caminho(tmp_path, monkeypatch):
+    """Baixo 2 do relatório 9 de quem tentou quebrar (21/11/2026): a cópia de prova dos testes (`_copiar_o_codigo`) só
+    trocava o caminho da pasta das ferramentas se achasse a linha escrita exatamente como o teste espera; quando a linha
+    mudava (o próprio texto da regra diz que mudar o caminho é seguro: a pasta foi para `E:\\...`), seguia calada com o
+    caminho de verdade, e os testes que rodam os scripts liam a pasta de verdade do Samuel. Aqui a linha que o teste
+    espera é outra (como se a do código tivesse mudado): a cópia tem de PARAR na hora, com a frase do que fazer, e o
+    arquivo da regra copiado não pode ter sido trocado. Rodado com a ajuda de antes (edd39a9f): segue sem parar."""
+    monkeypatch.setattr(sys.modules[__name__], "LINHA_DO_CAMINHO",
+                        'PASTA_DAS_FERRAMENTAS = Path(r"E:\\programas\\EditorImpressao-arquivos\\ferramentas")')
+    destino = tmp_path / "copia de prova"
+    destino.mkdir()
+    with pytest.raises(pytest.fail.Exception, match="LINHA_DO_CAMINHO"):
+        _copiar_o_codigo(destino, tmp_path / "ferramentas de prova")
+    copiada = (destino / "core" / "pasta_das_ferramentas.py").read_text(encoding="utf-8")
+    assert str(tmp_path / "ferramentas de prova") not in copiada
+
+
+def test_volta11_baixo3_editorimpressao_arquivos_sem_a_ferramentas_a_montagem_do_visual_c_para(projeto):
+    """Baixo 3 do relatório 9 de quem tentou quebrar (21/11/2026), mutação V8: `EditorImpressao-arquivos` existe, mas
+    sem a `ferramentas` dentro. A montagem do Visual C++ (`empacotar.preparar_vc_redist`, que o publicar montado do zero
+    chama), rodada de uma cópia de trabalho de verdade, para com a frase da regra ("não existe a pasta das ferramentas
+    ... nada foi criado") e não cria a `ferramentas` nem a `downloads` nem baixa nada (a internet fica trancada no
+    processo). A mutação V8 (olhar a pasta de cima e criar a das ferramentas) passava em todos os testes de antes."""
+    shutil.rmtree(projeto["ferramentas"])
+    de_cima = projeto["ferramentas"].parent
+    assert de_cima.is_dir() and de_cima.name == "EditorImpressao-arquivos"
+    antes = _pastas(projeto["base"]) | _pastas(projeto["outro disco"])
+    r = _rodar_python(projeto["copia"], ["-c", "import json, empacotar\n"
+                                               "a, v, p = empacotar.preparar_vc_redist(baixar=True)\n"
+                                               "print(json.dumps({'arquivo': str(a) if a else None, 'problemas': p}))"])
+    assert r.returncode == 0, r.stderr[-3000:]
+    lido = json.loads(r.stdout.strip().splitlines()[-1])
+    assert lido["arquivo"] is None, lido
+    assert len(lido["problemas"]) == 1, lido
+    frase = lido["problemas"][0]
+    assert "não existe a pasta das ferramentas" in frase and "nada foi criado" in frase, frase
+    assert str(projeto["ferramentas"]) in frase, frase
+    assert not projeto["ferramentas"].exists(), "a montagem criou a pasta das ferramentas"
+    assert _pastas(projeto["base"]) | _pastas(projeto["outro disco"]) == antes
+
+
+@pytest.mark.skipif(pf is None, reason="core/pasta_das_ferramentas.py ainda não existe neste código")
+def test_volta11_baixo3_quem_decide_o_pode_gravar_da_montagem_do_visual_c_e_a_regra(tmp_path, monkeypatch):
+    """Baixo 3 do relatório 9 de quem tentou quebrar (21/11/2026): a montagem do Visual C++ decidia "pode gravar?" por
+    uma conta própria (`DOWNLOADS.parent.is_dir()`) e só pedia as palavras à regra; eram duas contas da mesma regra
+    (CLAUDE.md §11.12: uma regra, um lugar só). Agora quem decide é a regra (`problema_para_gravar`). Para provar que é
+    ela, a regra é trocada aqui por uma que diz "não" com a pasta lá (só a lógica de quem decide; a regra de verdade tem
+    os seus testes acima): a montagem obedece, devolve a frase da regra, não cria a `downloads` e não tenta baixar (o
+    download é trocado por um que só anota e falha). Rodado no código de antes (edd39a9f): a montagem segue pela conta
+    dela, cria a `downloads` e tenta baixar."""
+    import urllib.request
+
+    import empacotar
+
+    ferramentas = tmp_path / "EditorImpressao-arquivos" / "ferramentas"
+    ferramentas.mkdir(parents=True)
+    monkeypatch.setattr(empacotar, "DOWNLOADS", ferramentas / "downloads")
+    monkeypatch.setattr(pf, "problema_para_gravar", lambda: "PROVA: a regra diz que não dá para gravar")
+    baixou = []
+
+    def nao_baixa(*argumentos, **k):
+        """Anota que a montagem tentou baixar e falha (nada sai para a internet)."""
+        baixou.append(argumentos)
+        raise OSError("a internet está trancada neste teste")
+
+    monkeypatch.setattr(urllib.request, "urlopen", nao_baixa)
+    arquivo, versao_lida, problemas = empacotar.preparar_vc_redist(baixar=True)
+    assert arquivo is None and versao_lida == "", (arquivo, versao_lida)
+    assert problemas == ["PROVA: a regra diz que não dá para gravar"], problemas
+    assert baixou == [], "a montagem tentou baixar com a regra dizendo que não dá para gravar"
+    assert not (ferramentas / "downloads").exists(), "a montagem criou a downloads com a regra dizendo que não dá"
+
+
+def test_volta11_baixo4_o_empacotar_sem_o_motor_mostra_onde_procurou_e_o_motor_kraken(projeto):
+    """Baixo 4 do relatório 9 de quem tentou quebrar (21/11/2026), mutação V5: sem o motor do Kraken na pasta das
+    ferramentas, o que o EMPACOTAR imprime (`_avisar_pecas_faltando`, o lugar único das linhas de peça que falta, usado
+    pelo `main` e pela montagem que o publicar chama) diz onde procurou ("não existe <a pasta do motor>") e "para usar
+    um motor em outra pasta, aponte-a com --motor-kraken <pasta>" (D-820). O teste da volta 10 lia só a busca de dentro
+    (`achar_motor_kraken`): tirar a linha só no empacotar passava. Da cópia de trabalho de verdade; nada é criado."""
+    shutil.rmtree(projeto["motor"])
+    antes = _pastas(projeto["base"]) | _pastas(projeto["outro disco"])
+    r = _rodar_python(projeto["copia"], ["-c", "import empacotar\n"
+                                               "pecas = empacotar._avisar_pecas_faltando()\n"
+                                               "print('PECAS:', pecas)"])
+    assert r.returncode == 0, r.stderr[-3000:]
+    saida = r.stdout
+    assert "PECAS: None" in saida, saida[-3000:]
+    assert f"não existe {projeto['motor']}" in saida, saida[-3000:]
+    assert "aponte-a com --motor-kraken" in saida, saida[-3000:]
+    assert _pastas(projeto["base"]) | _pastas(projeto["outro disco"]) == antes
+
+
+# O publicar --motor de dentro da cópia de prova, com a chave de prova dos testes (a chave pública de prova vai pelo
+# parâmetro que o publicar já tem para os testes; a chave de verdade do Samuel nunca entra nos testes).
+PUBLICAR_O_MOTOR = r"""
+import json, sys
+from pathlib import Path
+import assinatura, publicar_versao_kaique as pub
+chave = bytes(range(32))
+try:
+    pub.publicar_motor(destino_pasta=Path(sys.argv[2]), arquivo_da_chave=Path(sys.argv[1]),
+                       chave_publica=assinatura.secret_to_public(chave).hex(), rascunho_base=Path(sys.argv[3]))
+    print(json.dumps({"parou": None}))
+except pub.Parou as erro:
+    print(json.dumps({"parou": str(erro)}))
+"""
+
+
+def test_volta11_baixo4_o_publicar_motor_sem_o_motor_para_com_onde_procurou_e_o_motor_kraken(projeto, tmp_path):
+    """Baixo 4 do relatório 9 de quem tentou quebrar (21/11/2026), mutação V6: sem o motor do Kraken na pasta das
+    ferramentas, o `publicar --motor` (`publicar_motor`, o que a frase "publique o motor antes" manda rodar) para com um
+    `Parou` que diz onde procurou ("não existe <a pasta do motor>") e "para usar um motor em outra pasta, aponte-a com
+    --motor-kraken <pasta>" (D-820). Tirar a linha só no publicar passava em todos os testes de antes. Da cópia de
+    trabalho de verdade, numa pasta das provas com espaço no nome; nada é criado (nem a pasta das provas, nem o
+    rascunho)."""
+    import assinatura
+
+    shutil.rmtree(projeto["motor"])
+    chave = tmp_path / "chave de prova.txt"                       # fora do repositório de prova (o publicar recusa dentro)
+    chave.write_text(assinatura.texto_da_chave_privada(bytes(range(32))), encoding="utf-8")
+    provas, rascunho = tmp_path / "versoes de prova", tmp_path / "rascunho de prova"
+    antes = _pastas(projeto["base"]) | _pastas(projeto["outro disco"])
+    r = _rodar_python(projeto["copia"], ["-c", PUBLICAR_O_MOTOR, str(chave), str(provas), str(rascunho)])
+    assert r.returncode == 0, r.stderr[-3000:]
+    parou = json.loads(r.stdout.strip().splitlines()[-1])["parou"]
+    assert parou and parou.startswith("não achei um motor pronto do jeito novo"), (parou, r.stdout[-2000:])
+    assert f"não existe {projeto['motor']}" in parou, parou
+    assert "aponte-a com --motor-kraken" in parou, parou
+    assert not provas.exists() and not rascunho.exists(), "o publicar --motor criou pasta sem o motor"
+    assert _pastas(projeto["base"]) | _pastas(projeto["outro disco"]) == antes

@@ -334,7 +334,7 @@ class DestinoPasta(_Destino):
         for pasta in (self._liberada(etiqueta), self._rascunho(etiqueta)):
             if pasta.is_dir():
                 return pasta
-        raise Parou(f"não há publicação {etiqueta} em {self.nome}")
+        raise Parou(f"não há publicação {etiqueta} {com_preposicao('em', self.nome)}")
 
     def liberadas(self) -> list[Path]:
         """As publicacoes liberadas da pasta, em ordem de nome: as subpastas de verdade com nome de etiqueta. Atalho
@@ -357,7 +357,8 @@ class DestinoPasta(_Destino):
             self.raiz.mkdir(parents=True, exist_ok=True)
             self._rascunho(etiqueta).mkdir()
         except OSError as erro:
-            raise Parou(f"não consegui criar o rascunho {etiqueta} em {self.nome} ({erro})") from erro
+            raise Parou(f"não consegui criar o rascunho {etiqueta} {com_preposicao('em', self.nome)}"
+                        f" ({erro})") from erro
 
     def enviar(self, etiqueta: str, arquivo: Path) -> None:
         """Copia um arquivo para o rascunho pela copia conferida (empacotar.copiar_inteiro: nome provisorio, lida de
@@ -378,7 +379,7 @@ class DestinoPasta(_Destino):
         """A soma SHA-256 do arquivo como ele esta no destino (lido de la)."""
         caminho = self._onde(etiqueta) / nome
         if not caminho.is_file():
-            raise Parou(f"{nome} não está na publicação {etiqueta} em {self.nome}")
+            raise Parou(f"{nome} não está na publicação {etiqueta} {com_preposicao('em', self.nome)}")
         return assinatura.soma_sha256(caminho)
 
     def baixar(self, etiqueta: str, nome: str, pasta_local: Path) -> Path:
@@ -396,7 +397,7 @@ class DestinoPasta(_Destino):
             alvo.parent.mkdir(parents=True, exist_ok=True)
             empacotar.copiar_inteiro(origem, alvo, vigia)
         except OSError as erro:
-            raise Parou(f"não consegui ler {nome} de {self.nome} ({erro})") from erro
+            raise Parou(f"não consegui ler {nome} {com_preposicao('de', self.nome)} ({erro})") from erro
         return alvo
 
     def liberar(self, etiqueta: str) -> None:
@@ -404,7 +405,7 @@ class DestinoPasta(_Destino):
         try:
             os.rename(self._rascunho(etiqueta), self._liberada(etiqueta))
         except OSError as erro:
-            raise Parou(f"não consegui liberar {etiqueta} em {self.nome} ({erro})") from erro
+            raise Parou(f"não consegui liberar {etiqueta} {com_preposicao('em', self.nome)} ({erro})") from erro
 
     def apagar(self, etiqueta: str) -> None:
         """Apaga a publicacao (rascunho ou liberada), so a subpasta dela. Se a subpasta for um atalho (junção ou link,
@@ -522,7 +523,7 @@ class DestinoGitHub(_Destino):
         """Os arquivos da publicacao, como o gh os descreve (nome, tamanho, digest)."""
         lido = self._ver(etiqueta, "assets")
         if lido is None:
-            raise Parou(f"não há publicação {etiqueta} em {self.nome}")
+            raise Parou(f"não há publicação {etiqueta} {com_preposicao('em', self.nome)}")
         return list(lido.get("assets") or [])
 
     def arquivos(self, etiqueta: str) -> dict[str, int]:
@@ -548,7 +549,7 @@ class DestinoGitHub(_Destino):
                     return assinatura.soma_sha256(self.baixar_vigiado(etiqueta, nome, pasta, self._vigia_da_soma))
                 finally:
                     shutil.rmtree(pasta, ignore_errors=True)
-        raise Parou(f"{nome} não está na publicação {etiqueta} em {self.nome}")
+        raise Parou(f"{nome} não está na publicação {etiqueta} {com_preposicao('em', self.nome)}")
 
     def baixar(self, etiqueta: str, nome: str, pasta_local: Path) -> Path:
         """Baixa um arquivo da publicacao para pasta_local (a leitura de volta). E o baixar_vigiado sem a vigia."""
@@ -589,7 +590,8 @@ class DestinoGitHub(_Destino):
         rascunho" (a API de apagar recebe so o numero da publicacao); escrito nas Ressalvas do passo 2."""
         situacao = self.situacao(etiqueta)
         if situacao == "liberada":
-            raise PublicacaoLiberada(f"{etiqueta} está liberada em {self.nome}: só o rascunho podia ser apagado aqui, "
+            raise PublicacaoLiberada(f"{etiqueta} está liberada {com_preposicao('em', self.nome)}"
+                                     ": só o rascunho podia ser apagado aqui, "
                                      "e NÃO apaguei")
         return self._pedir_para_apagar(etiqueta, situacao)
 
@@ -652,8 +654,13 @@ def com_preposicao(preposicao: str, nome: str) -> str:
     """"de"/"em" antes do nome de um destino, com a contracao quando o nome abre com o artigo "a" ou "o" ("de" + "a
     pasta X" = "da pasta X"; "em" + "o GitHub (...)" = "no GitHub (...)"); qualquer outro nome, so com um espaco ("de
     uma pasta"). O lugar unico dessa juncao (volta 10, observacao 6 do relatorio 8: a frase do apagar saia "de a pasta").
-    Seguro mexer: acrescentar contracao. Arriscado: mudar o nome dos destinos (DestinoPasta.nome, DestinoGitHub.nome)
-    sem o artigo na frente: a frase perde a contracao (o teste test_obs6 acusa)."""
+    Volta 11 (Lista de bugs de 21/11: "Umas 20 frases do publicar saem 'em a pasta ...' e 'em o GitHub ...'"): toda
+    frase deste arquivo que poe "em"/"de" antes do nome de um destino passa por aqui (31 lugares), menos a da D-816
+    (_frase_depois_do_pedido_de_liberar), que espera o Samuel: um teste da volta 3 cobra o pedaco "ficou liberada em".
+    A guarda tests/test_publicar_versao.py::test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao
+    acusa a frase que voltar a juntar a mao. Seguro mexer: acrescentar contracao. Arriscado: mudar o nome dos destinos
+    (DestinoPasta.nome, DestinoGitHub.nome) sem o artigo na frente: a frase perde a contracao (o teste test_obs6 acusa);
+    escrever "em {destino.nome}" numa frase nova (a guarda acusa)."""
     artigo, espaco, resto = nome.partition(" ")
     contracao = _CONTRACOES.get((preposicao, artigo)) if espaco else None
     return f"{contracao} {resto}" if contracao else f"{preposicao} {nome}"
@@ -690,36 +697,43 @@ def apagar_e_conferir(destino, etiqueta: str, so_rascunho: bool = False, acabou_
     try:
         antes = destino.situacao(etiqueta)
     except Parou as erro:
-        raise Parou(f"não consegui ler {etiqueta} em {destino.nome} antes de apagar ({erro}): NÃO pedi para apagar "
+        raise Parou(f"não consegui ler {etiqueta} {com_preposicao('em', destino.nome)}"
+                    f" antes de apagar ({erro}): NÃO pedi para apagar "
                     f"nada; {conferir}") from erro
     if antes is None:
         if acabou_de_criar:
-            raise Parou(f"não achei o rascunho {etiqueta} em {destino.nome} para apagar (pode não ter chegado a ser "
+            raise Parou(f"não achei o rascunho {etiqueta} {com_preposicao('em', destino.nome)}"
+                        " para apagar (pode não ter chegado a ser "
                         "criado, ou a leitura logo depois de criar ainda não o mostra): NÃO pedi para apagar nada; "
                         f"{conferir}")
         return Apagado(etiqueta, destino.nome, existia=False)
     if so_rascunho and antes != "rascunho":
-        raise PublicacaoLiberada(f"{etiqueta} está liberada em {destino.nome}: só o rascunho podia ser apagado aqui, "
+        raise PublicacaoLiberada(f"{etiqueta} está liberada {com_preposicao('em', destino.nome)}"
+                                 ": só o rascunho podia ser apagado aqui, "
                                  "e NÃO apaguei")
     try:
         aviso = destino.apagar_rascunho(etiqueta) if so_rascunho else destino.apagar(etiqueta)
     except PublicacaoLiberada:
         raise
     except ApagarSemResposta as erro:
-        raise Parou(f"pedi para apagar {etiqueta} em {destino.nome} e não deu para conferir se sumiu ({erro}); "
+        raise Parou(f"pedi para apagar {etiqueta} {com_preposicao('em', destino.nome)}"
+                    f" e não deu para conferir se sumiu ({erro}); "
                     f"{conferir}") from erro
     except Parou as erro:
-        raise Parou(f"não apaguei {etiqueta} em {destino.nome}: {erro}; {conferir}") from erro
+        raise Parou(f"não apaguei {etiqueta} {com_preposicao('em', destino.nome)}: {erro}; {conferir}") from erro
     try:
         depois = destino.situacao(etiqueta)
     except Parou as erro:
-        raise Parou(f"pedi para apagar {etiqueta} em {destino.nome} e não deu para conferir se sumiu ({erro}); "
+        raise Parou(f"pedi para apagar {etiqueta} {com_preposicao('em', destino.nome)}"
+                    f" e não deu para conferir se sumiu ({erro}); "
                     f"{conferir}") from erro
     if so_rascunho and depois == "liberada":
-        raise PublicacaoLiberada(f"pedi para apagar o rascunho {etiqueta} em {destino.nome}, e ele está liberado "
+        raise PublicacaoLiberada(f"pedi para apagar o rascunho {etiqueta} {com_preposicao('em', destino.nome)}"
+                                 ", e ele está liberado "
                                  "agora (foi liberado no meio)")
     if depois is not None:
-        raise Parou(f"pedi para apagar {etiqueta} em {destino.nome}, e ela continua lá" + (f" ({aviso})" if aviso else "")
+        raise Parou(f"pedi para apagar {etiqueta} {com_preposicao('em', destino.nome)}"
+                    ", e ela continua lá" + (f" ({aviso})" if aviso else "")
                     + f"; {conferir}")
     return Apagado(etiqueta, destino.nome, existia=True, aviso=aviso)
 
@@ -727,7 +741,12 @@ def apagar_e_conferir(destino, etiqueta: str, so_rascunho: bool = False, acabou_
 def _frase_depois_do_pedido_de_liberar(destino, etiqueta: str) -> str:
     """A frase do caminho de erro DEPOIS do pedido de liberar (D-816, o lugar unico): nada foi apagado; o que pode ter
     ficado (liberada, inteira, ou rascunho); como conferir; e o comando para apagar o rascunho depois. Nao le nada do
-    destino (a decisao de nao apagar nao depende de leitura, e uma leitura atrasada nao entra na frase)."""
+    destino (a decisao de nao apagar nao depende de leitura, e uma leitura atrasada nao entra na frase).
+    Volta 11: a unica frase do publicar que ainda junta "em" com o nome do destino a mao ("em a pasta"), de proposito,
+    esperando o Samuel (ONDE-PAREI do passo 2, "Perguntas para o Samuel", Volta 11): o teste da volta 3
+    test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada cobra "ficou liberada em",
+    e um teste de antes nao se muda sem o "sim" dele (D-605). Com o "sim": com_preposicao aqui tambem, o teste com
+    "ficou liberada na pasta"/"no GitHub", e esta funcao sai da excecao da guarda (_FRASES_ESPERANDO_O_SAMUEL)."""
     return (f"{etiqueta}: pedi para liberar em {destino.nome} e não deu para reconferir agora se ficou liberada. Depois "
             "do pedido de liberar, o publicar nunca apaga nada (uma leitura atrasada poderia apagar a versão já "
             "liberada), e NÃO apaguei. Ela pode ter ficado de dois jeitos: se ficou liberada em "
@@ -763,10 +782,12 @@ def publicar_arquivos(destino, etiqueta: str, titulo: str, notas: str, arquivos:
     liberar falhava e continuava rascunho (apagava o rascunho): agora o rascunho fica, e a frase diz o comando."""
     situacao = destino.situacao(etiqueta)
     if situacao == "liberada":
-        raise Parou(f"{etiqueta} já está publicada em {destino.nome}: aumente o número (versao.py ou "
+        raise Parou(f"{etiqueta} já está publicada {com_preposicao('em', destino.nome)}"
+                    ": aumente o número (versao.py ou "
                     "core/ocr_kraken.VERSAO_DO_MOTOR)")
     if situacao == "rascunho":
-        raise Parou(f"sobrou um rascunho de {etiqueta} em {destino.nome} (de uma vez interrompida): apague com "
+        raise Parou(f"sobrou um rascunho de {etiqueta} {com_preposicao('em', destino.nome)}"
+                    " (de uma vez interrompida): apague com "
                     f"{destino.comando_de_apagar(etiqueta)} e rode de novo")
     nomes = [Path(a).name for a in arquivos]
     print(f"  {destino.nome}: rascunho {etiqueta} ({', '.join(nomes)})")
@@ -780,9 +801,10 @@ def publicar_arquivos(destino, etiqueta: str, titulo: str, notas: str, arquivos:
             raise Parou(f"o rascunho de {etiqueta} tem {sorted(lidos)}, e o enviado foi {sorted(nomes)}")
         for arquivo in arquivos:
             if destino.soma(etiqueta, Path(arquivo).name) != assinatura.soma_sha256(arquivo):
-                raise Parou(f"{Path(arquivo).name} chegou diferente em {destino.nome}")
+                raise Parou(f"{Path(arquivo).name} chegou diferente {com_preposicao('em', destino.nome)}")
         conferir_lido()
-        print(f"  lido de volta de {destino.nome}: {len(nomes)} arquivo(s), somas e assinatura conferidas")
+        print(f"  lido de volta {com_preposicao('de', destino.nome)}"
+              f": {len(nomes)} arquivo(s), somas e assinatura conferidas")
         pediu_para_liberar = True
         try:
             destino.liberar(etiqueta)
@@ -791,7 +813,7 @@ def publicar_arquivos(destino, etiqueta: str, titulo: str, notas: str, arquivos:
             pediu_para_liberar = False
             raise
         if destino.situacao(etiqueta) != "liberada":
-            raise Parou(f"pedi para liberar {etiqueta} em {destino.nome}, e ela não ficou liberada")
+            raise Parou(f"pedi para liberar {etiqueta} {com_preposicao('em', destino.nome)}, e ela não ficou liberada")
     except BaseException as erro:
         if pediu_para_liberar:
             desfeito = _frase_depois_do_pedido_de_liberar(destino, etiqueta)          # D-816: nada se apaga
@@ -810,7 +832,7 @@ def publicar_arquivos(destino, etiqueta: str, titulo: str, notas: str, arquivos:
             raise Parou(f"{erro}. {desfeito}") from erro
         print(f"  {desfeito}")
         raise
-    print(f"  {etiqueta} liberada em {destino.nome}")
+    print(f"  {etiqueta} liberada {com_preposicao('em', destino.nome)}")
 
 
 def obter_motor_publicado(destino, pasta_local: Path, chave_publica: str | None = None,
@@ -826,17 +848,19 @@ def obter_motor_publicado(destino, pasta_local: Path, chave_publica: str | None 
     etiqueta, arquivo = versao.etiqueta_do_motor(v), versao.arquivo_do_motor(v)
     nome_da_assinatura = assinatura.nome_do_arquivo_da_assinatura(versao.ID_DO_PACOTE_DO_MOTOR, str(v))
     if destino.situacao(etiqueta) != "liberada" and exigir_liberado:
-        raise Parou(f"o motor do Kraken {v}, que esta versão pede, não está publicado em {destino.nome}: publique o "
-                    f"motor antes, com: {destino.comando_de_publicar_o_motor()}")
+        raise Parou(f"o motor do Kraken {v}, que esta versão pede, não está publicado "
+                    f"{com_preposicao('em', destino.nome)}: publique o motor antes, com: "
+                    f"{destino.comando_de_publicar_o_motor()}")
     presentes = destino.arquivos(etiqueta)
     if arquivo not in presentes or nome_da_assinatura not in presentes:
-        raise Parou(f"a publicação {etiqueta} em {destino.nome} não tem {arquivo} e {nome_da_assinatura}")
+        raise Parou(f"a publicação {etiqueta} {com_preposicao('em', destino.nome)}"
+                    f" não tem {arquivo} e {nome_da_assinatura}")
     texto = destino.baixar(etiqueta, nome_da_assinatura, pasta_local).read_text(encoding="utf-8", errors="replace")
     soma = destino.soma(etiqueta, arquivo)
     motivo = assinatura.conferir_versao(
         texto, assinatura.VersaoAssinada(versao.ID_DO_PACOTE_DO_MOTOR, str(v), arquivo, soma), chave_publica)
     if motivo is not None:
-        raise Parou(f"o motor publicado em {destino.nome} não confere: {motivo}")
+        raise Parou(f"o motor publicado {com_preposicao('em', destino.nome)} não confere: {motivo}")
     return empacotar.MotorPublicado(v, arquivo, soma, etiqueta)
 
 
@@ -868,16 +892,18 @@ def _conferir_versao_lida(destino, etiqueta: str, versao_do_pacote: str, nupkg: 
         motivo = assinatura.conferir_versao(
             texto, assinatura.VersaoAssinada(versao.ID_DO_PACOTE, versao_do_pacote, nupkg.name, soma), chave_publica)
         if motivo is not None:
-            raise Parou(f"a assinatura lida de {destino.nome} não confere: {motivo}")
+            raise Parou(f"a assinatura lida {com_preposicao('de', destino.nome)} não confere: {motivo}")
         try:
             indice = json.loads(destino.baixar(etiqueta, empacotar.NOME_DO_INDICE, pasta_lida)
                                 .read_text(encoding="utf-8-sig"))
             itens = [a for a in indice.get("Assets", []) if a.get("FileName") == nupkg.name]
         except (ValueError, AttributeError) as erro:
-            raise Parou(f"o índice {empacotar.NOME_DO_INDICE} lido de {destino.nome} está estragado ({erro})") from erro
+            raise Parou(f"o índice {empacotar.NOME_DO_INDICE} lido {com_preposicao('de', destino.nome)}"
+                        f" está estragado ({erro})") from erro
         if len(itens) != 1 or str(itens[0].get("SHA256", "")).lower() != soma or \
                 str(itens[0].get("Version")) != versao_do_pacote:
-            raise Parou(f"o índice {empacotar.NOME_DO_INDICE} lido de {destino.nome} não aponta para o pacote "
+            raise Parou(f"o índice {empacotar.NOME_DO_INDICE} lido {com_preposicao('de', destino.nome)}"
+                        " não aponta para o pacote "
                         "publicado")
         de_novo = obter_motor_publicado(destino, pasta_lida, chave_publica, motor.versao)
         if de_novo != motor:
@@ -984,7 +1010,8 @@ def publicar(versao_do_pacote: str, destino_pasta: Path | None = None, pasta_pro
     destino = destino or destino_de(destino_pasta)
     etiqueta = versao.etiqueta_da_versao(versao_do_pacote)
     if destino.situacao(etiqueta) is not None:
-        raise Parou(f"a versão {versao_do_pacote} já existe em {destino.nome} (publicada ou rascunho que sobrou): "
+        raise Parou(f"a versão {versao_do_pacote} já existe {com_preposicao('em', destino.nome)}"
+                    " (publicada ou rascunho que sobrou): "
                     f"aumente o número em versao.py, ou apague o rascunho com {destino.comando_de_apagar(etiqueta)}")
     vpk = vpk or empacotar.achar_vpk()
     if vpk is None:
@@ -1081,7 +1108,8 @@ def guardar_o_instalador(msi: Path, saida_final: Path, versao_do_pacote: str, de
     import empacotar
 
     alvo = Path(saida_final) / msi.name
-    frase = (f"a versão {versao_do_pacote} FOI publicada e está liberada em {destino.nome}; o instalador {msi.name} "
+    frase = (f"a versão {versao_do_pacote} FOI publicada e está liberada {com_preposicao('em', destino.nome)}"
+             f"; o instalador {msi.name} "
              f"NÃO chegou à pasta de saída ({Path(saida_final)}), mas está inteiro na publicação (lido de volta): "
              "baixe de lá")
     try:
@@ -1113,7 +1141,8 @@ def publicar_motor(destino_pasta: Path | None = None, motor_escolhido: Path | No
     v = ocr_kraken.VERSAO_DO_MOTOR
     etiqueta, nome = versao.etiqueta_do_motor(v), versao.arquivo_do_motor(v)
     if destino.situacao(etiqueta) is not None:
-        raise Parou(f"o motor {v} já existe em {destino.nome} (publicado ou rascunho que sobrou): se o motor mudou, "
+        raise Parou(f"o motor {v} já existe {com_preposicao('em', destino.nome)}"
+                    " (publicado ou rascunho que sobrou): se o motor mudou, "
                     f"aumente core/ocr_kraken.VERSAO_DO_MOTOR; rascunho velho: {destino.comando_de_apagar(etiqueta)}")
     pasta, problemas = empacotar.achar_motor_kraken(motor_escolhido)
     if pasta is None:

@@ -2792,3 +2792,99 @@ def test_obs6_a_frase_do_apagar_sai_com_a_contracao(tmp_path):
         for errado in (" de a ", " de o ", " em a ", " em o "):
             assert errado not in apagada and errado not in nao_havia, (errado, apagada, nao_havia)
     assert pub.com_preposicao("de", "uma pasta") == "de uma pasta"
+
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Volta 11 (21/11/2026): as frases do publicar com a contração ("na pasta", "no GitHub"), pela com_preposicao
+# ---------------------------------------------------------------------------------------------------------------------
+
+# A frase que ainda junta a preposição à mão, de propósito, até a resposta do Samuel (ONDE-PAREI do passo 2,
+# "Perguntas para o Samuel", Volta 11): a da D-816, cujo pedaço "ficou liberada em" é cobrado pelo teste da volta 3
+# test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada (um teste de antes não se
+# muda sem o "sim" dele, D-605). Quando a frase mudar, ela sai daqui (a guarda acusa a exceção que sobrar).
+_FRASES_ESPERANDO_O_SAMUEL = {"_frase_depois_do_pedido_de_liberar"}
+
+
+def _preposicao_a_mao(fonte: str) -> list[tuple[int, str, str]]:
+    """As frases (f-strings, como o Python as junta, também as de duas linhas) que escrevem "em " ou "de " logo antes
+    do nome de um destino (`{... .nome}` ou `{... .onde}`): (linha, função, o pedaço antes). Lido pela árvore do Python
+    (`ast`), não pelo texto da linha."""
+    import ast
+
+    achados = []
+
+    def olhar(no, funcao: str) -> None:
+        """Desce na árvore lembrando a função de fora."""
+        for filho in ast.iter_child_nodes(no):
+            dentro = filho.name if isinstance(filho, (ast.FunctionDef, ast.AsyncFunctionDef)) else funcao
+            if isinstance(filho, ast.JoinedStr):
+                partes = filho.values
+                for antes, depois in zip(partes, partes[1:]):
+                    if (isinstance(antes, ast.Constant) and isinstance(antes.value, str)
+                            and isinstance(depois, ast.FormattedValue) and isinstance(depois.value, ast.Attribute)
+                            and depois.value.attr in ("nome", "onde")
+                            and (antes.value.endswith(" em ") or antes.value.endswith(" de ")
+                                 or antes.value in ("em ", "de "))):
+                        achados.append((filho.lineno, dentro, antes.value[-30:]))
+            olhar(filho, dentro)
+
+    olhar(ast.parse(fonte), "(fora de função)")
+    return achados
+
+
+def test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao():
+    """Lista de bugs de 21/11/2026 ("Umas 20 frases do publicar saem 'em a pasta ...' e 'em o GitHub ...'"; vistas de
+    novo na prova à vista de 21/11: "não está publicado em a pasta", "lido de volta de a pasta", "liberada em a
+    pasta"): as frases juntavam a preposição com o nome do destino à mão (`f"... em {destino.nome}"`), e o nome abre com
+    o artigo ("a pasta ...", "o GitHub (...)"). A junção tem um lugar só, `com_preposicao` (volta 10, a do apagar). Esta
+    guarda lê o código do publicar e acusa toda frase que volte a escrever "em "/"de " antes do nome do destino; a
+    única exceção é a que espera o Samuel, e a exceção que não for mais precisa também é acusada. Rodado em edd39a9f:
+    acusa 31 frases fora da exceção."""
+    fonte = (RAIZ / "publicar_versao_kaique.py").read_text(encoding="utf-8")
+    achados = _preposicao_a_mao(fonte)
+    fora_da_excecao = [a for a in achados if a[1] not in _FRASES_ESPERANDO_O_SAMUEL]
+    assert fora_da_excecao == [], f"frases com a preposição escrita à mão (use com_preposicao): {fora_da_excecao}"
+    sobrando = _FRASES_ESPERANDO_O_SAMUEL - {a[1] for a in achados}
+    assert not sobrando, f"a exceção não é mais precisa (a frase já usa com_preposicao): tire {sobrando} daqui"
+
+
+@pytest.mark.parametrize("onde", ["pasta", "github"])
+def test_volta11_as_frases_do_publicar_saem_com_a_contracao_na_pasta_e_no_github(ambiente, monkeypatch, capsys, onde):
+    """Lista de bugs de 21/11/2026 (as frases "em a pasta", "de a pasta", "em o GitHub"): pelos caminhos principais do
+    publicar, na pasta das provas e no GitHub (o gh de mentira dos testes; o de verdade é da prova à vista, D-785), o
+    que sai na tela e nas frases de parada diz "na pasta"/"no GitHub" e "da pasta"/"do GitHub": a versão antes do motor
+    (para: "não está publicado na pasta"), o motor e a versão ("lido de volta da pasta", "liberada na pasta"), os dois
+    de novo ("já existe na pasta"), e a leitura de uma publicação que não há ("não há publicação ... na pasta"). O que
+    o publicar faz em cada caminho não muda (os outros testes deste arquivo cobram). Rodado em edd39a9f: "em a pasta"."""
+    a = ambiente
+    if onde == "pasta":
+        destino = pub.DestinoPasta(a["servidor"])
+        de, em = f"da pasta {a['servidor']}", f"na pasta {a['servidor']}"
+    else:
+        destino = pub.DestinoGitHub("dono/projeto")
+        monkeypatch.setattr(destino, "_gh", _GitHubDeMentira(a["tmp"]))
+        de, em = "do GitHub (dono/projeto)", "no GitHub (dono/projeto)"
+    textos = []
+
+    def parada(fazer) -> str:
+        """A frase da parada (Parou) de um caminho, guardada para a conferência do fim."""
+        with pytest.raises(pub.Parou) as erro:
+            fazer()
+        textos.append(str(erro.value))
+        return str(erro.value)
+
+    frase = parada(lambda: _publicar(a, destino=destino))
+    assert f"não está publicado {em}" in frase, frase
+    _publicar_o_motor(a, destino=destino)
+    _publicar(a, destino=destino)
+    saida = capsys.readouterr().out
+    textos.append(saida)
+    assert f"lido de volta {de}:" in saida and f"{ETIQUETA} liberada {em}" in saida, saida
+    assert f"já existe {em}" in parada(lambda: _publicar(a, destino=destino))
+    assert f"já existe {em}" in parada(lambda: _publicar_o_motor(a, destino=destino))
+    assert f"não há publicação v0.0.1 {em}" in parada(lambda: destino.arquivos("v0.0.1"))
+    assert f"não está na publicação {ETIQUETA} {em}" in parada(lambda: destino.soma(ETIQUETA, "nao-ha.txt"))
+    for texto in textos:
+        for errado in (" em a pasta", " de a pasta", " em o GitHub", " de o GitHub"):
+            assert errado not in texto, (errado, texto)

@@ -653,7 +653,9 @@ def preparar_vc_redist(baixar: bool = True) -> tuple[Path | None, str, list[str]
     Devolve (arquivo, versao, problemas). Nunca apaga nada: um arquivo que
     nao confere fica onde esta e o empacotamento para, dizendo o que fazer.
     O download vai para um nome provisorio e so ganha o nome certo depois de
-    conferido.
+    conferido. Antes de baixar, quem diz se pode gravar na pasta das ferramentas
+    e a regra (core/pasta_das_ferramentas.problema_para_gravar; volta 11), e a
+    frase de quando nao pode e a dela.
     """
     import urllib.request
 
@@ -661,11 +663,14 @@ def preparar_vc_redist(baixar: bool = True) -> tuple[Path | None, str, list[str]
     if not arquivo.is_file():
         if not baixar:
             return None, "", [f"falta {arquivo}"]
-        # nunca cria a pasta das ferramentas (volta 9: foi assim que nasceu a pasta errada de 19/11,
-        # criada inteira onde a conta mandava); so a downloads\ dentro de uma que ja existe
-        if not DOWNLOADS.parent.is_dir():
-            return None, "", [_pasta_das_ferramentas.problema_para_gravar()
-                              or f"não existe a pasta {DOWNLOADS.parent}; nada foi criado"]
+        # "pode gravar?" e da regra (core/pasta_das_ferramentas.problema_para_gravar), sem conta nem
+        # frase proprias aqui (volta 11, baixo 3 do relatorio 9: decidia por DOWNLOADS.parent.is_dir(),
+        # uma segunda conta da mesma regra, e a mutacao V8 passava). Nunca cria a pasta das ferramentas
+        # (volta 9: foi assim que nasceu a pasta errada de 19/11); so a downloads\ dentro dela (mkdir sem
+        # parents). Arriscado: voltar a decidir aqui, ou criar com parents=True.
+        problema = _pasta_das_ferramentas.problema_para_gravar()
+        if problema:
+            return None, "", [problema]
         DOWNLOADS.mkdir(exist_ok=True)
         provisorio = arquivo.with_name(arquivo.name + ".baixando")
         if provisorio.exists():
