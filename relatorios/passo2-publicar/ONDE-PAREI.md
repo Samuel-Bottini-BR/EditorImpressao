@@ -1311,6 +1311,24 @@ programa instalado faz com a versão: `atualizacao.py:1230` (lê o vc_redist.ver
   e o relatório 7 (`relatorios/passo2-publicar/quem-quebrou/relatorio-7.md:178`, rodado no PC). (Lido; o "por catálogo"
   é dedução minha, a conferir rodando.)
 
+**Volta 9.**
+- O git, a pasta comum e a principal: lido em https://git-scm.com/docs/git-worktree ("DETAILS") e
+  https://git-scm.com/docs/git-rev-parse (`--git-common-dir`, `--path-format`), já anotados na Volta 8; rodado no PC na
+  volta 8 (da cópia `passo2` e da principal, `D:/programas/EditorImpressao/.git`; fora de um repositório, código 128) e,
+  nesta volta, pelos testes num repositório de prova com cópia de trabalho de verdade.
+- O Python, o limite de tempo do `subprocess.run`: passado o `timeout`, ele fecha o processo e levanta
+  `TimeoutExpired` (https://docs.python.org/3/library/subprocess.html#subprocess.run, "timeout"). (Lido; rodado no teste
+  do git que demora.)
+- O Windows, "sem janela de console": `CREATE_NO_WINDOW` (0x08000000), "The process is a console application that is
+  being run without a console window" (https://learn.microsoft.com/windows/win32/procthread/process-creation-flags); a
+  mesma bandeira que a peça do Windows usa (`core/windows.py:168`). Não dá para ver uma janela que não abre: o teste
+  confere que a bandeira vai em toda chamada da peça do git. (Lido; a janela, deduzido.)
+- O PyInstaller, `--exclude-module`: o módulo e os que só ele importa ficam fora do pacote
+  (https://pyinstaller.org/en/stable/usage.html, "--exclude-module"). (Lido; não rodei o PyInstaller.)
+- O git, as variáveis do gancho: dentro do gancho do commit, o git põe `GIT_DIR` e `GIT_INDEX_FILE`
+  (https://git-scm.com/docs/githooks, "pre-commit" e a nota sobre as variáveis de ambiente). (Lido; rodado no teste com
+  as duas apontando para outro repositório.)
+
 ## O que foi feito
 
 1. **A assinatura digital pela peça única** (`windows.ler_assinatura_digital`, nova): o empacotar deixou de abrir o
@@ -1405,22 +1423,40 @@ programa instalado faz com a versão: `atualizacao.py:1230` (lê o vc_redist.ver
       arquivos fora da lista do pacote (o plano e o porquê em "A causa, a regra e todos os caminhos", Volta 8, e em
       "Perguntas para o Samuel", Volta 8).
 
+16. **Volta 9 (o defeito 1 da prova à vista de 20/11):** a regra "onde fica a pasta das ferramentas do Samuel" num
+    lugar só, `core/pasta_das_ferramentas.py` (ao lado da pasta principal do repositório, que a peça do git diz;
+    empacotado, nenhuma, sem perguntar; sem resposta do git, a conta de antes); os seis lugares passam a usá-la; quem
+    grava nela pergunta antes (`problema_para_gravar`) e nunca a cria; a peça do git ganhou `pasta_principal` (com limite
+    de tempo e sem as variáveis do gancho) e abre o git sem janela de console; o PyInstaller exclui `regras_dos_agentes`;
+    o repositório de prova cria cópias de trabalho de verdade.
+
 ## Arquivos criados ou alterados
 
-Desde a partida desta volta (`21f1fc50`, o pacote da volta 8); o que as voltas 1 a 7 mexeram está nos itens abaixo
+Desde a partida desta volta (`5c22a12d`, o pacote da volta 9); o que as voltas 1 a 8 mexeram está nos itens abaixo
 desta lista, no `git log` deste arquivo e nas seções "O que foi feito" e "Caminho e função".
 
-- `publicar_versao_kaique.py` (o `Apagado` e o `apagar_e_conferir`, o lugar único do apagar e das frases dele; o
-  `--apagar` e o caminho de erro passam a usar a frase dele; `apagar_publicacao` só repassa)
-- `atualizacao.py` (a leitura única da versão do Visual C++ do pacote, `versao_do_visual_c_do_pacote`, usada pelo
-  programa instalado)
-- `empacotar.py` (a conferência da pasta lê a versão do Visual C++ pela leitura única; o texto)
-- `tests/test_publicar_versao.py` (9 testes novos, 23 casos, acrescentados no fim; nenhum antigo mudou)
-- `relatorios/passo2-publicar/` (este formulário, o pacote da volta 8 e os anexos `reversao-volta8-*`)
+- `core/pasta_das_ferramentas.py` (novo: a regra única da pasta das ferramentas do Samuel)
+- `tests/test_pasta_das_ferramentas.py` (novo: 10 testes, com um repositório de prova e uma cópia de trabalho de verdade)
+- `regras_dos_agentes/conversa_com_o_git.py` (`pasta_principal` e `criar_copia_de_trabalho`; o git sempre sem janela de
+  console, e com limite de tempo quando pedido)
+- `regras_dos_agentes/repositorio_de_prova.py` (`criar_copia_de_trabalho`)
+- `empacotar.py` (`FERRAMENTAS`, `LUGARES_DO_MOTOR` e `DOWNLOADS` pela regra única; a montagem do Visual C++ não cria a
+  pasta das ferramentas; `regras_dos_agentes` em `EXCLUIR`)
+- `core/ocr_kraken.py` (o terceiro lugar do motor pela regra única)
+- `montar_motor_kraken.py`, com `compilar_detector_gravura.py` e `compilar_st_ferramentas.py` (o padrão pela regra
+  única; não gravam no padrão se a pasta das ferramentas não existe)
+- `compilar_detector_gravura.py` (idem)
+- `compilar_st_ferramentas.py` (idem; a conta que subia as pastas saiu)
+- `tests/test_empacotar.py` (1 teste novo; nenhum antigo mudou)
+- `relatorios/passo2-publicar/` (este formulário, o pacote da volta 9 e os anexos `reversao-volta9-*`)
 
-Nesta volta não mudaram: `core/windows.py`, `core/ocr_kraken.py`, `montar_motor_kraken.py`,
-`compilar_detector_gravura.py`, `tests/test_empacotar.py`, `tests/test_windows_peca.py` (o defeito 1 parou antes de
-mexer).
+Nesta volta não mudaram: `publicar_versao_kaique.py`, `atualizacao.py`, `core/windows.py`, `tests/test_publicar_versao.py`,
+`tests/test_ocr_kraken.py`.
+
+- **Volta 8** (desde `21f1fc50`, o pacote da volta 8): `publicar_versao_kaique.py` (o `Apagado` e o `apagar_e_conferir`),
+  `atualizacao.py` (`versao_do_visual_c_do_pacote`), `empacotar.py` (a leitura única), `tests/test_publicar_versao.py`
+  (9 testes novos, 23 casos) e, em `relatorios/passo2-publicar/`, este formulário, o pacote da volta 8 e os anexos
+  `reversao-volta8-*`.
 
 - **Volta 4** (desde `5f96975b`, o pacote da volta 4): `core/windows.py`, `empacotar.py`, `publicar_versao_kaique.py`,
   `tests/test_windows_peca.py` (5 testes novos e o caminho do achado 9 em texto cru; nenhum antigo mudou no que cobra),
@@ -1619,6 +1655,21 @@ mexer).
   - D-818: as proteções da pasta já montada ganharam os testes que faltavam (baixos 1 a 3), provados pelas mutações
     U8 a U12 ("Cada proteção", Volta 8).
 
+- **Volta 9:**
+  - D-605: da pasta principal, os seis lugares dão o caminho de antes
+    (`tests/test_pasta_das_ferramentas.py::test_defeito1_da_pasta_principal_nada_muda`); o programa empacotado acha o
+    motor ao lado dele e não pergunta ao git (`tests/test_pasta_das_ferramentas.py::test_d788_o_programa_empacotado_acha_o_motor_ao_lado_dele_e_nunca_pergunta_ao_git`);
+    nenhum teste antigo mudou (`git diff 5c22a12d -- tests/` só acrescenta).
+  - D-727: o Visual C++ vem da pasta de downloads certa
+    (`tests/test_pasta_das_ferramentas.py::test_defeito1_de_uma_copia_de_trabalho_os_seis_lugares_acham_a_pasta_certa`).
+  - D-767: git de verdade, cópia de trabalho de verdade, num repositório de prova; só o "empacotado" e a espia da
+    bandeira trocam uma peça, para a lógica.
+  - D-776: nada muda na conta do espaço.
+  - D-788: o primeiro lugar do motor empacotado não muda (o teste acima); a peça do git fora do pacote
+    (`tests/test_empacotar.py::test_volta9_a_peca_do_git_nao_vai_no_programa_do_kaique`).
+  - D-815: segunda e última volta deste escritor.
+  - D-818: a conferência da pasta já montada não muda (`tests/test_publicar_versao.py` inteiro passa).
+
 ## Testes
 
 - **No PC, um arquivo por vez** (19/11, com `QT_QPA_PLATFORM=offscreen`):
@@ -1776,6 +1827,24 @@ mexer).
   arquivo da peça, que lê todos os arquivos do projeto: foi o que deixou passar.) A reversão e as mutações rodaram
   com o teste antes desse conserto; a resposta que ele monta é a mesma.
 - **No GitHub, volta 8, de novo:** rodada 44847777899, sobre o ramo em `5462d882`: **success** na tentativa 2. A tentativa 1 falhou só na parte 1: o arquivo `tests/test_decisoes_pagina_em_branco.py`, que não mudou nesta volta, fechou o Python com um erro de memória do Windows (0xC0000005; em "Ideias e bugs", Volta 8); as partes 2 a 5, os botões, os prints e o porteiro passaram. A tentativa 2 refez só a parte 1, que passou. O caso que falhou na rodada anterior (`tests/test_windows_peca.py`, parte 2) passou.
+
+- **Volta 9, no PC, um arquivo por vez** (20/11, um Python por vez, por causa da memória do PC): `tests/test_pasta_das_ferramentas.py`
+  10; `tests/test_empacotar.py` 43; `tests/test_publicar_versao.py` 121; `tests/test_publicar_motor.py` 12;
+  `tests/test_publicar_servidor.py` 14; `tests/test_empacotar_teste_velocidade.py` 28; `tests/test_decisoes_atualizacao.py`
+  38; `tests/test_windows_peca.py` 69 e 2 pulados; as conferências do porteiro: `tests/test_conferencias_codigo.py` 77,
+  `tests/test_conferencias_excecoes.py` 14, `tests/test_conferencias_pacote.py` 20, `tests/test_conferencias_antes_do_commit.py`
+  12, `tests/test_conferencias_mudancas.py` 21, `tests/test_conferencias_protecao.py` 11, `tests/test_conferencias_juiz.py`
+  9; porteiro antes do commit: "nada novo" (175 lugares). `tests/test_ocr_kraken.py`: 27 passaram, 5 pulados e 1
+  falhou na primeira vez: rodando da cópia, o motor de verdade passou a ser achado (o defeito 330 consertado), e ele
+  não abriu nos 180 s do teste (estava frio, no HD externo, logo depois do travamento do PC); rodado de novo, sozinho,
+  passou (abriu em uns 170 s). Em "Ressalvas", Volta 9.
+- **Volta 9, reversão** (`anexos/reversao-volta9-codigo-antigo.txt`; o código de `5c22a12d` numa cópia à parte, com os
+  testes novos e a peça do git e o repositório de prova novos por cima, que são só a ferramenta do teste): **falham lá
+  os 2 testes do defeito** (de dentro da cópia, os seis lugares apontam para `.claude\worktrees\EditorImpressao-arquivos`
+  e o motor não é achado; sem a pasta do Samuel, a montagem usa a pasta errada) e o do pacote sem a peça do git;
+  passa lá o "da pasta principal, nada muda" (a prova de que nada muda); os 7 que pedem a regra nova pulam (ela não
+  existia).
+- **Volta 9, mutações:** ver "Cada proteção", Volta 9.
 
 ## Caminho e função
 

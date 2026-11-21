@@ -1,0 +1,47 @@
+Passo 2, volta 9: as mutacoes P1 a P11, uma por vez, numa copia de cea2b486 (git archive, v9\novo), 20/11/2026. Cada uma roda o arquivo de teste dela e devolve o arquivo ao original (conferido byte a byte). Resultado: 11 de 11 acusadas.
+
+P1 (a regra unica ignora o git (a pasta do codigo faz sempre o papel da principal); core/pasta_das_ferramentas.py; tests/test_pasta_das_ferramentas.py): ACUSADA
+    tests/test_pasta_das_ferramentas.py::test_defeito1_de_uma_copia_de_trabalho_os_seis_lugares_acham_a_pasta_certa
+    tests/test_pasta_das_ferramentas.py::test_defeito1_a_pasta_principal_vem_do_git_de_verdade
+    tests/test_pasta_das_ferramentas.py::test_falha_o_git_que_da_erro_e_o_que_demora
+    tests/test_pasta_das_ferramentas.py::test_falha_a_pasta_principal_sem_a_pasta_do_samuel_ao_lado_nao_cria_nada
+    4 failed, 6 passed in 13.30s
+P2 (a peca do git devolve a pasta de cima da copia (show-toplevel), e nao a principal; regras_dos_agentes/conversa_com_o_git.py; tests/test_pasta_das_ferramentas.py): ACUSADA
+    tests/test_pasta_das_ferramentas.py::test_defeito1_de_uma_copia_de_trabalho_os_seis_lugares_acham_a_pasta_certa
+    tests/test_pasta_das_ferramentas.py::test_defeito1_a_pasta_principal_vem_do_git_de_verdade
+    tests/test_pasta_das_ferramentas.py::test_falha_o_git_que_da_erro_e_o_que_demora
+    tests/test_pasta_das_ferramentas.py::test_falha_as_variaveis_do_gancho_do_commit_nao_mudam_a_resposta
+    tests/test_pasta_das_ferramentas.py::test_falha_a_pasta_principal_sem_a_pasta_do_samuel_ao_lado_nao_cria_nada
+    5 failed, 5 passed in 13.53s
+P3 (a regra unica deixa de olhar se o programa roda empacotado; core/pasta_das_ferramentas.py; tests/test_pasta_das_ferramentas.py): ACUSADA
+    tests/test_pasta_das_ferramentas.py::test_d788_o_programa_empacotado_acha_o_motor_ao_lado_dele_e_nunca_pergunta_ao_git
+    1 failed, 9 passed in 10.77s
+P4 (a peca do git volta a ir no pacote do Kaique (sai do EXCLUIR); empacotar.py; tests/test_empacotar.py): ACUSADA
+    tests/test_empacotar.py::test_volta9_a_peca_do_git_nao_vai_no_programa_do_kaique
+    1 failed, 42 passed in 8.13s
+P5 (o git volta a abrir com janela de console; regras_dos_agentes/conversa_com_o_git.py; tests/test_pasta_das_ferramentas.py): ACUSADA
+    tests/test_pasta_das_ferramentas.py::test_o_git_e_aberto_sem_janela_de_console
+    1 failed, 9 passed in 12.97s
+P6 (a montagem do Visual C++ volta a criar a pasta das ferramentas inteira; empacotar.py; tests/test_pasta_das_ferramentas.py): ACUSADA
+    tests/test_pasta_das_ferramentas.py::test_falha_a_pasta_principal_sem_a_pasta_do_samuel_ao_lado_nao_cria_nada
+    1 failed, 9 passed in 20.80s
+P7 (quem grava deixa de ouvir que a pasta das ferramentas nao existe; core/pasta_das_ferramentas.py; tests/test_pasta_das_ferramentas.py): ACUSADA
+    tests/test_pasta_das_ferramentas.py::test_falha_sem_git_vale_a_conta_de_antes
+    tests/test_pasta_das_ferramentas.py::test_falha_copia_sem_repositorio_git_archive
+    tests/test_pasta_das_ferramentas.py::test_falha_a_pasta_principal_sem_a_pasta_do_samuel_ao_lado_nao_cria_nada
+    3 failed, 7 passed in 16.33s
+P8 (a pergunta herda as variaveis do gancho do commit; regras_dos_agentes/conversa_com_o_git.py; tests/test_pasta_das_ferramentas.py): ACUSADA
+    tests/test_pasta_das_ferramentas.py::test_falha_as_variaveis_do_gancho_do_commit_nao_mudam_a_resposta
+    1 failed, 9 passed in 21.05s
+P9 (a regra unica pergunta sem o limite de tempo; core/pasta_das_ferramentas.py; tests/test_pasta_das_ferramentas.py): ACUSADA
+    tests/test_pasta_das_ferramentas.py::test_falha_o_git_que_da_erro_e_o_que_demora
+    1 failed, 9 passed in 11.77s
+P10 (o programa (core/ocr_kraken) volta a contar a pasta por conta propria; core/ocr_kraken.py; tests/test_pasta_das_ferramentas.py): ACUSADA
+    tests/test_pasta_das_ferramentas.py::test_defeito1_de_uma_copia_de_trabalho_os_seis_lugares_acham_a_pasta_certa
+    tests/test_pasta_das_ferramentas.py::test_d788_o_programa_empacotado_acha_o_motor_ao_lado_dele_e_nunca_pergunta_ao_git
+    2 failed, 8 passed in 11.50s
+P11 (o compilar_st_ferramentas volta a subir as pastas; compilar_st_ferramentas.py; tests/test_pasta_das_ferramentas.py): ACUSADA
+    tests/test_pasta_das_ferramentas.py::test_defeito1_de_uma_copia_de_trabalho_os_seis_lugares_acham_a_pasta_certa
+    1 failed, 9 passed in 12.92s
+sem mutacao (tests/test_pasta_das_ferramentas.py): codigo 0; 10 passed in 18.80s
+sem mutacao (tests/test_empacotar.py): codigo 0; 43 passed in 6.94s

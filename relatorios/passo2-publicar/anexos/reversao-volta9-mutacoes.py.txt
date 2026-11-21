@@ -1,0 +1,87 @@
+"""Volta 9 do passo 2: as mutacoes P1 a P11, uma por vez, numa copia do codigo (git archive do ramo), nunca no ramo.
+
+Cada mutacao troca um trecho exato (uma vez so; a copia do git archive tem a quebra de linha do Windows, e o script
+troca as duas), roda o arquivo de teste dela e devolve o arquivo ao original (conferido byte a byte).
+"Acusada" = pelo menos um teste falha. Uso: python mutar_volta9.py <pasta da copia> <arquivo de resultado>
+"""
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+COPIA = Path(sys.argv[1])
+SAIDA = Path(sys.argv[2])
+PY = r"D:\programas\EditorImpressao\.venv\Scripts\python.exe"
+PASTA = "tests/test_pasta_das_ferramentas.py"
+
+MUTACOES = [
+    ("P1", "a regra unica ignora o git (a pasta do codigo faz sempre o papel da principal)", "core/pasta_das_ferramentas.py",
+     "    return principal if principal is not None else codigo",
+     "    return codigo", PASTA),
+    ("P2", "a peca do git devolve a pasta de cima da copia (show-toplevel), e nao a principal",
+     "regras_dos_agentes/conversa_com_o_git.py",
+     '    comum = Path(_rodar(pasta, "rev-parse", "--path-format=absolute", "--git-common-dir", limite_s=limite_s,',
+     '    comum = Path(_rodar(pasta, "rev-parse", "--path-format=absolute", "--show-toplevel", limite_s=limite_s,',
+     PASTA),
+    ("P3", "a regra unica deixa de olhar se o programa roda empacotado", "core/pasta_das_ferramentas.py",
+     "    if empacotado():\n        return None\n    return _pasta_das_ferramentas_de(",
+     "    return _pasta_das_ferramentas_de(", PASTA),
+    ("P4", "a peca do git volta a ir no pacote do Kaique (sai do EXCLUIR)", "empacotar.py",
+     '    "regras_dos_agentes",\n', "", "tests/test_empacotar.py"),
+    ("P5", "o git volta a abrir com janela de console", "regras_dos_agentes/conversa_com_o_git.py",
+     '_SEM_JANELA = getattr(subprocess, "CREATE_NO_WINDOW", 0)', "_SEM_JANELA = 0", PASTA),
+    ("P6", "a montagem do Visual C++ volta a criar a pasta das ferramentas inteira", "empacotar.py",
+     "        if not DOWNLOADS.parent.is_dir():", "        if False:", PASTA),
+    ("P7", "quem grava deixa de ouvir que a pasta das ferramentas nao existe", "core/pasta_das_ferramentas.py",
+     "    if not ferramentas.is_dir():\n        return (", "    if False:\n        return (", PASTA),
+    ("P8", "a pergunta herda as variaveis do gancho do commit", "regras_dos_agentes/conversa_com_o_git.py",
+     "                        sem=_VARIAVEIS_DE_OUTRO_REPOSITORIO).stdout.strip())", "                        ).stdout.strip())",
+     PASTA),
+    ("P9", "a regra unica pergunta sem o limite de tempo", "core/pasta_das_ferramentas.py",
+     "        principal = git.pasta_principal(codigo, limite_s=LIMITE_DO_GIT_S)",
+     "        principal = git.pasta_principal(codigo, limite_s=None)", PASTA),
+    ("P10", "o programa (core/ocr_kraken) volta a contar a pasta por conta propria", "core/ocr_kraken.py",
+     "    ferramentas = pasta_das_ferramentas.pasta_das_ferramentas(raiz)\n",
+     '    ferramentas = raiz.parent / "EditorImpressao-arquivos" / "ferramentas"\n', PASTA),
+    ("P11", "o compilar_st_ferramentas volta a subir as pastas", "compilar_st_ferramentas.py",
+     "    return base.PASTA_FERRAMENTAS_PADRAO\n",
+     '    for pasta in RAIZ.parents:\n        candidata = pasta / "EditorImpressao-arquivos" / "ferramentas"\n'
+     "        if candidata.is_dir():\n            return candidata\n    return base.PASTA_FERRAMENTAS_PADRAO\n", PASTA),
+]
+
+
+def rodar_testes(arquivo: str) -> tuple[int, list[str]]:
+    """Roda o arquivo de teste na copia; devolve (codigo, os que falharam e a linha do fim)."""
+    r = subprocess.run([PY, "-m", "pytest", arquivo, "-q", "-p", "no:cacheprovider", "-rf"], cwd=COPIA,
+                       capture_output=True, text=True, encoding="utf-8", errors="replace",
+                       env={**os.environ, "QT_QPA_PLATFORM": "offscreen"},
+                       creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+    falhas = [l.split(" - ")[0].replace("FAILED ", "") for l in r.stdout.splitlines() if l.startswith("FAILED")]
+    ultima = [l for l in r.stdout.splitlines() if " passed" in l or " failed" in l]
+    return r.returncode, falhas + ultima[-1:]
+
+
+linhas = []
+for codigo, o_que, arquivo, velho, novo, teste in MUTACOES:
+    caminho = COPIA / arquivo
+    original = caminho.read_bytes()
+    texto = original.decode("utf-8")
+    if "\r\n" in texto:
+        velho, novo = velho.replace("\n", "\r\n"), novo.replace("\n", "\r\n")
+    if texto.count(velho) != 1:
+        linhas.append(f"{codigo}: NAO APLICADA (o trecho aparece {texto.count(velho)} vezes): {o_que}")
+        continue
+    caminho.write_bytes(texto.replace(velho, novo).encode("utf-8"))
+    try:
+        rc, falhas = rodar_testes(teste)
+    finally:
+        caminho.write_bytes(original)
+    assert caminho.read_bytes() == original
+    linhas.append(f"{codigo} ({o_que}; {arquivo}; {teste}): {'ACUSADA' if rc != 0 else 'NAO ACUSADA'}")
+    linhas += [f"    {f}" for f in falhas]
+    SAIDA.write_text("\n".join(linhas) + "\n", encoding="utf-8")
+for teste in (PASTA, "tests/test_empacotar.py"):
+    rc, falhas = rodar_testes(teste)
+    linhas.append(f"sem mutacao ({teste}): codigo {rc}; {falhas[-1] if falhas else ''}")
+SAIDA.write_text("\n".join(linhas) + "\n", encoding="utf-8")
+print("\n".join(linhas))
