@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prova 3 do publicar</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Prova 3 do publicar: as peças achadas na pasta das ferramentas (21/11/2026)</h1>
+<p><strong>Do que se trata.</strong> É a ferramenta que prepara as versões do programa para o notebook do Kaique (o "publicar"). Em
+20/11 ela procurava as peças (o motor do Kraken e o Visual C++) no lugar errado quando rodava de uma cópia de
+trabalho. Você escolheu o conserto mais simples: as peças ficam numa pasta só, escrita num lugar do programa,
+<code>D:\programas\EditorImpressao-arquivos\ferramentas</code> (D-820). Esta prova confere esse conserto de verdade, na sua tela.</p>
+<p><strong>Resultado: deu certo.</strong> Tudo rodou da cópia de trabalho <code>passo2</code> (ramo <code>passo2-publicar-2026-11-19</code>, <code>338565bc</code>),
+numa pasta de provas nova com espaço no nome (<code>C:\EditorImpressaoProva\versoes 3</code>). Feita pela gerente, das 11h13 às
+11h46 (horário do PC), com o jogo aberto, por decisão sua ("pode fazer tudo"); a memória livre ficou entre 3,1 e 3,9 GB.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>O que foi feito</th>
+<th>O que tinha de acontecer</th>
+<th>O que aconteceu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Publicar a versão na pasta vazia, sem o motor</td>
+<td>Parar e dizer o comando do motor</td>
+<td>Parou: "publique o motor antes, com: publicar_versao_kaique.py --motor --pasta "C:\EditorImpressaoProva\versoes 3"" (7 s)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Seguir esse comando ao pé da letra</td>
+<td>Achar o motor na pasta das ferramentas</td>
+<td>"motor do Kraken 1: D:\programas\EditorImpressao-arquivos\ferramentas\motor-kraken (conferido pela ficha)"; motor de 370 MB publicado, assinado, lido de volta (19 min, pelo HD externo)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Montar o programa do zero e publicar</td>
+<td>O Visual C++ vir da pasta das ferramentas</td>
+<td>"Visual C++: D:\programas\EditorImpressao-arquivos\ferramentas\downloads\vc_redist.x64.exe (versão 14.44.35211.0, assinatura da Microsoft conferida)"; versão 1.1.0 (439 MB) publicada, lida de volta e liberada; rascunho apagado; Setup.exe em lugar nenhum (10 min)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Olhar se nasceu pasta nova nas cópias</td>
+<td>Nenhuma</td>
+<td>195 antes, 195 depois; a pasta errada de 19/11 com a mesma data (19/11 15:44)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Listar o que vai dentro do programa montado</td>
+<td>Sem a parte das regras dos agentes; com a peça nova</td>
+<td>2.388 peças: nenhuma <code>regras_dos_agentes</code>; <code>core.pasta_das_ferramentas</code> está</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Abrir o programa montado uma vez</td>
+<td>A janela aparecer</td>
+<td>"Editor de Impressão" apareceu em 46 s e fechou normalmente</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Apagar a versão</td>
+<td>"foi apagada"</td>
+<td>"a publicação v1.1.0 foi apagada da pasta ... (conferido)"</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Apagar de novo</td>
+<td>"não existia"</td>
+<td>"v1.1.0: não existia na pasta ..., e nada foi apagado (conferido)"</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Publicar o motor apontando uma pasta que não existe</td>
+<td>Parar com aviso</td>
+<td>"PAREI: ... não existe C:\EditorImpressaoProva\nao existe"; nada criado</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Olhar o que ficou rodando</td>
+<td>Nada da prova</td>
+<td>Nenhum gh, vpk, wix ou python da prova; as janelas fechadas pela gerente</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Defeito visto de novo (já está na Lista de bugs, 21/11):</strong> frases com "em a pasta" e "de a pasta" no lugar de "na
+pasta" e "da pasta" (no passo 1, no 2 e no 3).</p>
+<p><strong>O que ficou de fora, e por quê:</strong>
+- Rodar "da pasta principal" (itens 19, segunda metade, e 21 do roteiro): a pasta principal está na versão oficial,
+  que ainda não tem o publicar. É o baixo 1 do relatório 9.
+- Cortar a internet no meio da liberação: continua sem provar (como na prova 2).
+- A gerente conferiu a pasta que o servidor serve, não a janela do servidor. O servidor só anota quem baixa; publicar
+  numa pasta não passa por ele.
+- Uma mensagem esperada no passo 1: "ATENÇÃO: EditorImpressaoPrograma-1.1.0-win.msi na pasta de saída não foi feito
+  agora" (é o instalador da prova 2, de 20/11, que continua em <code>dist\publicado\v1.1.0</code>). Não é defeito.</p>
+<p><strong>Registros:</strong> <code>C:\EditorImpressaoProva\prova8a.log</code> a <code>prova8f.log</code> (fora do git).</p>
+<p><strong>Situação:</strong> prova feita. Faltam: o conserto dos 4 problemas pequenos do relatório 9 e das frases "em a pasta", a
+conferência por um agente novo e a junção na versão de teste.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 21/11/2026 às 12:10</p>
+</body>
+</html>

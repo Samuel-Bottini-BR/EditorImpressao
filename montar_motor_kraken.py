@@ -4,6 +4,14 @@
     .venv\\Scripts\\python.exe montar_motor_kraken.py --destino X:\\pasta  # monta em outro lugar (empacotador)
     .venv\\Scripts\\python.exe montar_motor_kraken.py --so-servidor      # só recopia o servidor_kraken.py
     .venv\\Scripts\\python.exe montar_motor_kraken.py --gerar-travado    # refaz as somas do arquivo travado
+    .venv\\Scripts\\python.exe montar_motor_kraken.py --so-ficha --destino X   # testa e grava a ficha (motor.json)
+
+A FICHA DO MOTOR (passo 2 do plano da parte do Windows, 19/11/2026): depois do
+teste do fim (passo 7 abaixo), o script grava motor.json na pasta do motor (a
+versão do motor, a do protocolo e cada arquivo com o tamanho;
+gravar_ficha_do_motor) e confere o motor por ela (core/ocr_kraken.conferir_motor).
+O publicar só publica um motor que confere. Motor montado antes de 19/11 não tem
+a ficha: --so-ficha testa e grava (não monta nada de novo).
     .venv\\Scripts\\python.exe montar_motor_kraken.py --destino saida_teste\\motor-kraken   # motor para o empacotador
 
 POR QUE EXISTE
@@ -101,7 +109,12 @@ PASTA_FONTES = RAIZ / "motor_kraken"
 ARQUIVO_TRAVADO = PASTA_FONTES / "requisitos-travados.txt"
 SERVIDOR = PASTA_FONTES / "servidor_kraken.py"
 
-PASTA_FERRAMENTAS = RAIZ.parent / "EditorImpressao-arquivos" / "ferramentas"
+# A pasta das ferramentas do Samuel (D:\programas\EditorImpressao-arquivos\ferramentas): o caminho
+# esta escrito num lugar so, core/pasta_das_ferramentas.py (passo 2, volta 10, D-820; aqui era "a pasta
+# de cima deste arquivo", errada numa copia de trabalho). Este script nunca roda empacotado: nunca e None.
+from core import pasta_das_ferramentas as _pasta_das_ferramentas  # noqa: E402
+
+PASTA_FERRAMENTAS = _pasta_das_ferramentas.pasta_das_ferramentas()
 DESTINO_PADRAO = PASTA_FERRAMENTAS / "motor-kraken"
 DOWNLOADS_PADRAO = PASTA_FERRAMENTAS / "downloads"
 
@@ -554,6 +567,33 @@ def testar_o_motor(destino: Path) -> None:
           f"{len(carregadas) - do_motor} do Windows\\System32)")
 
 
+def gravar_ficha_do_motor(motor: Path) -> Path:
+    """Escreve a ficha do motor (motor.json; plano da parte do Windows, passo 2, peça 9): a versão DO MOTOR e a do
+    protocolo (lidas do lugar único, core/ocr_kraken.VERSAO_DO_MOTOR e VERSAO_PROTOCOLO) e a lista de cada arquivo
+    do motor com o tamanho. É o que core/ocr_kraken.conferir_motor lê para dizer "inteiro e da versão certa".
+
+    Só é chamada DEPOIS de o motor passar no teste (main): motor sem ficha é motor não testado. Grava num nome
+    provisório e troca de uma vez (nunca uma ficha pela metade). Devolve o caminho da ficha.
+    Arriscado: chamar sem o teste antes; escrever a ficha à mão (a lista de arquivos tem de ser a de verdade).
+    Cuidado: o motor muda (outro Kraken, outro servidor) => aumente core/ocr_kraken.VERSAO_DO_MOTOR antes de gravar,
+    senão a ficha diz "motor 1" de um motor diferente do motor 1 já publicado (o publicar recusa publicar o 1 de novo).
+    """
+    sys.path.insert(0, str(RAIZ))
+    from core import ocr_kraken
+
+    motor = Path(motor)
+    arquivos = sorted((f.relative_to(motor).as_posix(), f.stat().st_size)
+                      for f in motor.rglob("*") if f.is_file() and f.name != ocr_kraken.NOME_DA_FICHA)
+    ficha = {"formato": ocr_kraken.FORMATO_DA_FICHA, "versao_do_motor": ocr_kraken.VERSAO_DO_MOTOR,
+             "versao_protocolo": ocr_kraken.VERSAO_PROTOCOLO, "gravada_em": datetime.now().isoformat(timespec="seconds"),
+             "arquivos": [list(a) for a in arquivos]}
+    destino = motor / ocr_kraken.NOME_DA_FICHA
+    provisorio = destino.with_name(destino.name + ".gravando")
+    provisorio.write_text(json.dumps(ficha, ensure_ascii=False), encoding="utf-8")
+    os.replace(provisorio, destino)
+    return destino
+
+
 def dlls_de_lugar_errado(carregadas: list[str], motor: Path) -> list[str]:
     """As DLLs do Visual C++ carregadas que não vieram nem do motor nem do System32.
 
@@ -572,6 +612,7 @@ def dlls_de_lugar_errado(carregadas: list[str], motor: Path) -> list[str]:
 
 
 def main(argumentos: list[str] | None = None) -> int:
+    """A linha de comando (ver o cabecalho). 0 = montado, testado e com a ficha conferida; 1 = nao montou."""
     analisador = argparse.ArgumentParser(description="Monta o motor do Kraken (Python 3.12 à parte).")
     analisador.add_argument("--destino", type=Path, default=DESTINO_PADRAO,
                             help="pasta do motor (padrão: fora do git, em EditorImpressao-arquivos\\ferramentas)")
@@ -580,6 +621,8 @@ def main(argumentos: list[str] | None = None) -> int:
     analisador.add_argument("--so-servidor", action="store_true",
                             help="só recopia motor_kraken/servidor_kraken.py para um motor já montado")
     analisador.add_argument("--so-testar", action="store_true", help="só testa um motor já montado")
+    analisador.add_argument("--so-ficha", action="store_true",
+                            help="testa um motor já montado e, se passar, grava a ficha dele (motor.json)")
     analisador.add_argument("--levar-dlls-do-visual-c", action="store_true",
                             help="copia as DLLs do Visual C++ para dentro do motor, como até 29/09 "
                                  "(só para teste: o empacotador recusa esse motor)")
@@ -590,6 +633,11 @@ def main(argumentos: list[str] | None = None) -> int:
 
     inicio = time.perf_counter()
     try:
+        # volta 9: com o padrao (a pasta das ferramentas), so se ela existe; nunca a cria no lugar errado
+        usa_o_padrao = opcoes.destino == DESTINO_PADRAO or opcoes.downloads == DOWNLOADS_PADRAO
+        problema = _pasta_das_ferramentas.problema_para_gravar() if usa_o_padrao else None
+        if problema and not opcoes.gerar_travado:
+            raise ErroDeMontagem(f"{problema} (ou passe --destino e --downloads)")
         if opcoes.gerar_travado:
             gerar_travado()
             dizer(f"Pronto: {ARQUIVO_TRAVADO}")
@@ -599,10 +647,18 @@ def main(argumentos: list[str] | None = None) -> int:
                 raise ErroDeMontagem(f"Não há motor montado em {destino}.")
             shutil.copy2(SERVIDOR, destino / SERVIDOR.name)
             dizer(f"Servidor recopiado para {destino}")
-        elif not opcoes.so_testar:
+        elif not (opcoes.so_testar or opcoes.so_ficha):
             montar(destino, opcoes.downloads.resolve(), levar_dlls=opcoes.levar_dlls_do_visual_c)
         dizer("teste: abrindo o motor pelo core/ocr_kraken.py")
         testar_o_motor(destino)
+        if not opcoes.so_testar:
+            # A ficha só depois do teste (passo 2 do plano da parte do Windows): motor sem ficha = não testado.
+            dizer(f"ficha do motor: {gravar_ficha_do_motor(destino)}")
+        from core import ocr_kraken
+        problemas = ocr_kraken.conferir_motor(destino)
+        if problemas:
+            raise ErroDeMontagem("o motor não confere com a ficha: " + "; ".join(problemas))
+        dizer(f"conferido: motor {ocr_kraken.VERSAO_DO_MOTOR}, inteiro (core/ocr_kraken.conferir_motor)")
     except ErroDeMontagem as erro:
         dizer(f"\nNÃO MONTOU: {erro}")
         return 1

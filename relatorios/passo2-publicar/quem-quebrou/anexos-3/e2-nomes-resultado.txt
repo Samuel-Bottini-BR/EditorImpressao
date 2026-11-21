@@ -1,0 +1,16 @@
+pwsh.exe                             | peça recusa? sim  | falhou    | ''
+pwsh.exe. (ponto no fim)             | peça recusa? NAO  | deu certo | '<nome do computador>'
+pwsh.exe.. (dois pontos)             | peça recusa? NAO  | deu certo | '<nome do computador>'
+pwsh.exe::$DATA                      | peça recusa? NAO  | falhou    | ''
+pwsh (sem .exe)                      | peça recusa? sim  | falhou    | ''
+Update.exe                           | peça recusa? sim  | falhou    | ''
+Update.exe.                          | peça recusa? NAO  | deu certo | '<nome do computador>'
+Update.exe::$DATA                    | peça recusa? NAO  | falhou    | ''
+cmd.exe do Windows                   | peça recusa? sim  | falhou    | ''
+cmd.exe::$DATA do Windows            | peça recusa? sim  | falhou    | ''
+copia do cmd.exe fora do Windows     | peça recusa? NAO  | deu certo | 'rodei o cmd de d:\\programas\\EditorImpressao\\.claude\\worktree'
+<nome do computador>
+'7\\pwsh.exe' falhou este programa do Windows tem função própria na peça: use a f
+'\\pwsh.exe.' deu certo 
+  saiu com 0
+  fechados o programa e tudo o que ele abriu (conferido no Windows: nenhum vivo no grupo)

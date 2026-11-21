@@ -48,6 +48,7 @@ from datetime import datetime
 from pathlib import Path
 
 import compilar_detector_gravura as base
+from core import pasta_das_ferramentas
 from compilar_detector_gravura import ErroDeCompilacao, dizer
 
 RAIZ = Path(__file__).resolve().parent
@@ -58,17 +59,13 @@ NOME_RASCUNHO = "build-st-ferramentas"
 
 
 def pasta_de_ferramentas_padrao() -> Path:
-    """A pasta EditorImpressao-arquivos\\ferramentas ao lado do projeto.
+    """A pasta das ferramentas do Samuel (D:\\programas\\EditorImpressao-arquivos\\ferramentas), escrita num lugar
+    só, core/pasta_das_ferramentas.py (a mesma do compilar_detector_gravura; volta 10, D-820).
 
-    O compilar_detector_gravura procura só ao lado da pasta do script; numa
-    cópia de trabalho (git worktree, em .claude\\worktrees\\<nome>) ela fica
-    alguns níveis acima. Procura subindo; se não achar, fica a do
-    compilar_detector_gravura (a mensagem de erro dele diz o que falta).
+    Passo 2, volta 9 (o defeito 1 da prova à vista de 20/11): antes subia as pastas a partir do código e ficava com a
+    primeira EditorImpressao-arquivos\\ferramentas que existisse; numa cópia em .claude\\worktrees, achava a pasta
+    errada criada ali em 19/11. Fica como função (o nome é usado por um script antigo de relatório).
     """
-    for pasta in RAIZ.parents:
-        candidata = pasta / "EditorImpressao-arquivos" / "ferramentas"
-        if candidata.is_dir():
-            return candidata
     return base.PASTA_FERRAMENTAS_PADRAO
 
 
@@ -193,6 +190,9 @@ def testar_a_dll() -> str:
 
 
 def main(argumentos: list[str] | None = None) -> int:
+    """A linha de comando: 0 = compilou, copiou e testou a DLL; 1 = não compilou (a frase diz por quê). Com o padrão de
+    --ferramentas (a pasta das ferramentas do Samuel, core/pasta_das_ferramentas.py), para antes de qualquer coisa se
+    ela não existe: nunca a cria (passo 2, volta 9)."""
     analisador = argparse.ArgumentParser(
         description="Compila a DLL comum das ferramentas do ScanTailor (st_ferramentas).")
     analisador.add_argument("--baixar", action="store_true",
@@ -208,6 +208,11 @@ def main(argumentos: list[str] | None = None) -> int:
     try:
         if os.name != "nt":
             raise ErroDeCompilacao("Este script só compila no Windows.")
+        # volta 9: com o padrao, so se a pasta das ferramentas existe (nunca a cria no lugar errado)
+        problema = pasta_das_ferramentas.problema_para_gravar() \
+            if opcoes.ferramentas == pasta_de_ferramentas_padrao() else None
+        if problema:
+            raise ErroDeCompilacao(f"{problema} (ou passe --ferramentas)")
         versao_pyside = base.versao_do_qt_do_pyside()
         if versao_pyside != base.VERSAO_QT:
             raise ErroDeCompilacao(

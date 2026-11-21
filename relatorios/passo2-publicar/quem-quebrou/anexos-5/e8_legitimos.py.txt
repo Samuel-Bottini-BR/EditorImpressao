@@ -1,0 +1,48 @@
+"""E8 (quem tenta quebrar, volta 5): os caminhos legítimos que o programa usa passam igual no código velho e no novo?
+Também roda cada um de verdade (só os que não pedem licença e só com --version), para saber se o Windows os roda."""
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+codigo = Path(sys.argv[1])
+sys.path.insert(0, str(codigo))
+from core import windows  # noqa: E402
+import empacotar  # noqa: E402
+import publicar_versao_kaique as pub  # noqa: E402
+
+LONGO = "\\\\?\\"
+DISP = "\\\\.\\"
+casos = {
+    "gh (which)": shutil.which("gh"),
+    "gh (LUGAR_DO_GH)": str(pub.LUGAR_DO_GH),
+    "gh com prefixo longo": LONGO + str(pub.LUGAR_DO_GH),
+    "gh com prefixo de dispositivo": DISP + str(pub.LUGAR_DO_GH),
+    "gh curto 8.3": r"C:\PROGRA~1\GITHUB~1\gh.exe",
+    "gh com barras /": str(pub.LUGAR_DO_GH).replace("\\", "/"),
+    "vpk (achar_vpk)": str(empacotar.achar_vpk()),
+    "vpk com prefixo longo": LONGO + str(empacotar.achar_vpk()),
+    "python (sys.executable)": sys.executable,
+    "python com prefixo longo": LONGO + sys.executable,
+    "python com prefixo de dispositivo": DISP + sys.executable,
+    "D: sem barra (D:python.exe, pasta atual do D:)": "D:python.exe",
+    "nome sozinho python": "python",
+    "nome sozinho gh": "gh",
+    "nome sozinho vpk": "vpk",
+    "Update.exe (da lista: recusa de propósito)": r"C:\Program Files\EditorImpressao\Update.exe",
+    "pwsh (da lista: recusa de propósito)": r"C:\Program Files\PowerShell\7\pwsh.exe",
+}
+for nome, c in casos.items():
+    if not c or c == "None":
+        print(f"{nome:48} | (não achado)")
+        continue
+    m = windows._por_que_recusa(c)
+    if "da lista" in nome:                 # o atualizador e o PowerShell 7 não são rodados aqui
+        print(f"{nome:48} | {c} | Windows: (não rodado de propósito) | peça: {'RECUSA: ' + m if m else 'passa'}")
+        continue
+    try:
+        r = subprocess.run([c, "--version"], capture_output=True, timeout=30)
+        roda = f"roda (código {r.returncode})"
+    except OSError as e:
+        roda = f"não roda (erro {getattr(e, 'winerror', None)})"
+    print(f"{nome:48} | {c} | Windows: {roda} | peça: {'RECUSA: ' + m if m else 'passa'}")

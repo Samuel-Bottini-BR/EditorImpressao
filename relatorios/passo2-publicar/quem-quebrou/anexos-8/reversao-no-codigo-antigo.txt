@@ -1,0 +1,26 @@
+Reversao, volta 8: tests/test_publicar_versao.py de 011b06d0 no codigo de 21f1fc50 (git archive, quebra9\c21f1fc50), 21/11/2026. Confere com o anexo do escritor (10 falham, 111 passam).
+FAILED tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou[v9.9.9-pasta]
+FAILED tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou[v9.9.9-github]
+FAILED tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou[motor-kraken-1-pasta]
+FAILED tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou[motor-kraken-1-github]
+FAILED tests/test_publicar_versao.py::test_volta8_defeito2_o_caminho_de_erro_usa_a_mesma_frase_do_apagar
+FAILED tests/test_publicar_versao.py::test_volta8_defeito2_o_que_o_apagar_devolve_nao_mudou
+FAILED tests/test_publicar_versao.py::test_volta8_baixo6_a_versao_do_visual_c_e_lida_por_uma_funcao_so[14.44.35211.0-True]
+FAILED tests/test_publicar_versao.py::test_volta8_baixo6_a_versao_do_visual_c_e_lida_por_uma_funcao_so[14.44.35211.0\r\n-True]
+FAILED tests/test_publicar_versao.py::test_volta8_baixo6_a_versao_do_visual_c_e_lida_por_uma_funcao_so[  14.44.35211.0  -True]
+FAILED tests/test_publicar_versao.py::test_volta8_baixo6_o_publicar_e_o_programa_instalado_usam_a_mesma_leitura
+10 failed, 111 passed in 92.22s (0:01:32)
+
+Reversao, volta 9: tests/test_pasta_das_ferramentas.py e tests/test_empacotar.py de 011b06d0, com a peca do git e o repositorio de prova de 011b06d0 por cima, no codigo de 5c22a12d (quebra9\c5c22a12d). Confere com o anexo do escritor (2 falham, 1 passa, 7 pulam; 1 falha no empacotar).
+FAILED tests/test_pasta_das_ferramentas.py::test_defeito1_de_uma_copia_de_trabalho_os_seis_lugares_acham_a_pasta_certa
+FAILED tests/test_pasta_das_ferramentas.py::test_falha_a_pasta_principal_sem_a_pasta_do_samuel_ao_lado_nao_cria_nada
+SKIPPED [1] tests\test_pasta_das_ferramentas.py:164: core/pasta_das_ferramentas.py ainda não existe neste código
+SKIPPED [1] tests\test_pasta_das_ferramentas.py:174: core/pasta_das_ferramentas.py ainda não existe neste código
+SKIPPED [1] tests\test_pasta_das_ferramentas.py:189: core/pasta_das_ferramentas.py ainda não existe neste código
+SKIPPED [1] tests\test_pasta_das_ferramentas.py:207: core/pasta_das_ferramentas.py ainda não existe neste código
+SKIPPED [1] tests\test_pasta_das_ferramentas.py:228: core/pasta_das_ferramentas.py ainda não existe neste código
+SKIPPED [1] tests\test_pasta_das_ferramentas.py:255: core/pasta_das_ferramentas.py ainda não existe neste código
+SKIPPED [1] tests\test_pasta_das_ferramentas.py:280: core/pasta_das_ferramentas.py ainda não existe neste código
+2 failed, 1 passed, 7 skipped in 13.73s
+FAILED tests/test_empacotar.py::test_volta9_a_peca_do_git_nao_vai_no_programa_do_kaique
+1 failed, 42 passed in 7.24s

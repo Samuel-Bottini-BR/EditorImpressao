@@ -1,0 +1,42 @@
+"""E9 (quem tenta quebrar, volta 5): um programa aberto PARADO tem só uma linha (thread) na foto do Windows?
+Se tivesse duas, o `_soltar_o_programa_parado` poderia soltar a primeira e falhar na segunda: o programa teria rodado
+um instante e mesmo assim o laço diria `abriu: False` (e o publicar, NadaSaiu = "nada saiu do PC").
+Abre o gh de verdade e o python parados, conta as linhas, e fecha sem nunca soltar (nada roda, nada vai à rede)."""
+import ctypes
+import subprocess
+import sys
+from pathlib import Path
+
+codigo = Path(sys.argv[1])
+sys.path.insert(0, str(codigo))
+from core import windows  # noqa: E402
+
+k = ctypes.windll.kernel32
+
+
+def linhas(pid: int) -> int:
+    foto = k.CreateToolhelp32Snapshot(windows._FOTO_DAS_LINHAS, 0)
+    n = 0
+    try:
+        e = windows._THREADENTRY32()
+        e.dwSize = ctypes.sizeof(e)
+        ok = k.Thread32First(foto, ctypes.byref(e))
+        while ok:
+            if e.th32OwnerProcessID == pid:
+                n += 1
+            ok = k.Thread32Next(foto, ctypes.byref(e))
+    finally:
+        k.CloseHandle(foto)
+    return n
+
+
+for programa in (r"C:\Program Files\GitHub CLI\gh.exe", sys.executable):
+    contagem = {}
+    for _ in range(30):
+        p = subprocess.Popen([programa, "--version"], creationflags=windows._ABRIR_PARADO,
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        n = linhas(p.pid)
+        contagem[n] = contagem.get(n, 0) + 1
+        p.kill()
+        p.wait(10)
+    print(f"{programa}: linhas na foto, aberto parado (30 vezes): {contagem}")

@@ -1,0 +1,18 @@
+G1 soma com +: 1 failed, 124 deselected in 1.20s
+      FAILED tests/test_publicar_versao.py::test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao
+G2 variavel: 1 failed, 124 deselected in 0.76s
+      FAILED tests/test_publicar_versao.py::test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao
+G3 parentese: 1 failed, 124 deselected in 0.74s
+      FAILED tests/test_publicar_versao.py::test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao
+G4 .format: 1 failed, 124 deselected in 0.78s
+      FAILED tests/test_publicar_versao.py::test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao
+G5 por: 1 failed, 124 deselected in 0.74s
+      FAILED tests/test_publicar_versao.py::test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao
+J1 G1 com o nome num f-string: 1 passed, 124 deselected in 0.59s
+J2 G4 com o nome num f-string: 1 passed, 124 deselected in 0.58s
+J3 G3 com f-string dentro de f-string: 1 passed, 124 deselected in 0.58s
+J4 com_preposicao('por', ...): 1 passed, 124 deselected in 0.55s
+J5 'em a pasta {self.raiz}' escrito no texto (DestinoPasta.liberar): 1 passed, 124 deselected in 0.57s
+J6 getattr(destino, 'nome'): 1 passed, 124 deselected in 0.58s
+J7 G2 com a variavel num f-string: 1 passed, 124 deselected in 0.58s
+sem mutacao: 1 passed, 124 deselected in 0.60s

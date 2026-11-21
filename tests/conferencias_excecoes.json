@@ -1,7 +1,11 @@
 {
  "explicacao": "Lista de exceções do porteiro (D-791, D-800, D-802). Gerada por `python -m regras_dos_agentes excecoes --gerar`; não escreva à mão. Um item por lugar (arquivo, conferência, texto, quantas). Só diminui: cada conserto tira o seu item no mesmo commit. Item novo só com o 'sim' do Samuel. Enquanto 'situacao' for 'proposta', a lista não vale e o teste que barra o repositório fica parado; a gerente liga trocando para 'valendo' e escrevendo o 'sim' dele em 'sim_do_samuel'.",
  "situacao": "valendo",
- "sim_do_samuel": {"decisao": "D-801", "em": "19/11/2026", "palavras": "ok (à pergunta \"a lista entra assim, e o porteiro passa a barrar erro novo? Sugiro que sim.\"); e os 56 de fora do plano, D-802: \"ok, continuamos assim e vamos proceguir\""},
+ "sim_do_samuel": {
+  "decisao": "D-801",
+  "em": "19/11/2026",
+  "palavras": "ok (à pergunta \"a lista entra assim, e o porteiro passa a barrar erro novo? Sugiro que sim.\"); e os 56 de fora do plano, D-802: \"ok, continuamos assim e vamos proceguir\""
+ },
  "gerada_em": "2026-11-19",
  "commit_lido": "69b3937cbeca4b09ed29e42c70580213f89604bf",
  "itens": [
@@ -1473,19 +1477,6 @@
    "data": "2026-11-19",
    "passo": "4",
    "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
-  },
-  {
-   "arquivo": "empacotar.py",
-   "conferencia": "K01",
-   "funcao": "assinatura_do_arquivo",
-   "texto": "saida = subprocess.run([\"powershell\", \"-NoProfile\", \"-NonInteractive\", \"-Command\", comando],",
-   "quantas": 1,
-   "linhas_quando_gerada": [
-    527
-   ],
-   "data": "2026-11-19",
-   "passo": "2",
-   "motivo": "o publicar passa a ler a assinatura pela peça única do Windows"
   },
   {
    "arquivo": "empacotar_teste_velocidade.py",

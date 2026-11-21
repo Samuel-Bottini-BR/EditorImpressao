@@ -1,0 +1,84 @@
+"""Mutacoes V1 a V8 de quem tentou quebrar a volta 10 do passo 2 (relatorio 9).
+
+Uma por vez, numa copia de 09b30933 (git archive, pasta `novo`), devolvida ao original byte a byte.
+Diferentes das S1 a S18 (escritor, volta 10), T1 a T17 (escritor, jeito do git) e das B, P, U, R, Y, Z, W anteriores.
+Um Python por vez; um arquivo de teste por vez. Nada fora da copia e mexido.
+"""
+import hashlib
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+NOVO = Path(sys.argv[1])
+PY = r"D:\programas\EditorImpressao\.venv\Scripts\python.exe"
+P = "tests/test_pasta_das_ferramentas.py"
+
+MUTACOES = [
+    ("V1", "empacotar.py", "o empacotar escreve o caminho de novo por conta propria (copia da constante, nao conta)",
+     "FERRAMENTAS = _pasta_das_ferramentas.pasta_das_ferramentas()",
+     'FERRAMENTAS = Path(r"D:\\programas\\EditorImpressao-arquivos\\ferramentas")',
+     [[P, "-k", "defeito1_de_uma_copia"]]),
+    ("V2", "compilar_st_ferramentas.py", "o compilar do st_ferramentas escreve o caminho de novo (copia da constante)",
+     "    return base.PASTA_FERRAMENTAS_PADRAO",
+     '    return Path(r"D:\\programas\\EditorImpressao-arquivos\\ferramentas")',
+     [[P, "-k", "defeito1_de_uma_copia"]]),
+    ("V3", "core/ocr_kraken.py", "o Kraken le a constante direto e, empacotado, olha a pasta do Samuel",
+     "    ferramentas = pasta_das_ferramentas.pasta_das_ferramentas()",
+     "    ferramentas = pasta_das_ferramentas.PASTA_DAS_FERRAMENTAS",
+     [[P, "-k", "d788 or obs8"]]),
+    ("V4", "empacotar.py", "a busca do motor deixa de dizer onde procurou (mantem o --motor-kraken)",
+     '            problemas.append(f"não existe {lugar}")',
+     '            problemas.append("não existe a pasta do motor")',
+     [[P, "-k", "sem_o_motor"]]),
+    ("V5", "empacotar.py", "o empacotar (juntar_pecas) deixa de mostrar a linha de como apontar outro motor",
+     '            problemas += [f"  {e}" for e in erros]',
+     '            problemas += [f"  {e}" for e in erros if "--motor-kraken" not in e]',
+     [[P], ["tests/test_empacotar.py"]]),
+    ("V6", "publicar_versao_kaique.py", "o publicar --motor deixa de mostrar a linha de como apontar outro motor",
+     '        raise Parou("não achei um motor pronto do jeito novo: " + "; ".join(problemas))',
+     '        raise Parou("não achei um motor pronto do jeito novo: " + "; ".join(p for p in problemas if "--motor-kraken" not in p))',
+     [[P], ["tests/test_publicar_versao.py"]]),
+    ("V7", "core/pasta_das_ferramentas.py", "pode gravar aceita um ARQUIVO chamado ferramentas (exists em vez de is_dir)",
+     "    if not ferramentas.is_dir():",
+     "    if not ferramentas.exists():",
+     [[P]]),
+    ("V8", "empacotar.py", "a montagem do Visual C++ olha a pasta de cima e cria a das ferramentas (a B5 dentro do empacotar)",
+     "        if not DOWNLOADS.parent.is_dir():",
+     "        if not DOWNLOADS.parent.parent.is_dir():",
+     [[P], ["tests/test_empacotar.py"]]),
+]
+EXTRA_V8 = ("        DOWNLOADS.mkdir(exist_ok=True)", "        DOWNLOADS.mkdir(parents=True, exist_ok=True)")
+
+
+def sha(b: bytes) -> str:
+    return hashlib.sha256(b).hexdigest()[:12]
+
+
+for cod, arquivo, descricao, velho, novo, testes in MUTACOES:
+    alvo = NOVO / arquivo
+    original = alvo.read_bytes()
+    texto = original.decode("utf-8")
+    assert texto.count(velho) == 1, (cod, "o trecho nao esta uma vez so")
+    mudado = texto.replace(velho, novo)
+    if cod == "V8":
+        assert mudado.count(EXTRA_V8[0]) == 1
+        mudado = mudado.replace(*EXTRA_V8)
+    alvo.write_bytes(mudado.encode("utf-8"))
+    resultados = []
+    inicio = time.time()
+    try:
+        for t in testes:
+            r = subprocess.run([PY, "-m", "pytest", *t, "-q", "-p", "no:cacheprovider"], cwd=NOVO,
+                               capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=900,
+                               creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+            ultima = [l for l in r.stdout.strip().splitlines() if l.strip()][-1]
+            resultados.append((" ".join(t), ultima, r.returncode))
+    finally:
+        alvo.write_bytes(original)
+    igual = sha(alvo.read_bytes()) == sha(original)
+    acusada = any(rc != 0 for _, _, rc in resultados)
+    for t, ultima, rc in resultados:
+        print(f"{cod} | {arquivo} | {descricao} | {t} | {ultima} | rc={rc}")
+    print(f"{cod} | {'ACUSADA' if acusada else 'NAO ACUSADA'} | {time.time() - inicio:.0f} s | "
+          f"{'devolvido igual' if igual else 'DIFERENTE'}", flush=True)

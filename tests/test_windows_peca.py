@@ -1003,3 +1003,583 @@ def test_as_frases_concordam_e_nao_levam_numero_do_windows():
     for erro in (2, 3, 5, 1155, 1460):
         assert "código" not in windows.resposta_do_pedido(f"erro:{erro}", None, "t", None, [], 60).motivo
 
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# A assinatura digital de um arquivo (passo 2 do plano: o PowerShell do empacotar passa pela peça)
+# ---------------------------------------------------------------------------------------------------------------------
+
+def test_a_assinatura_digital_e_lida_pela_peca_de_verdade(tmp_path):
+    """Passo 2 (lista de exceções, K01): o publicar lia a assinatura digital do Visual C++ abrindo o PowerShell por
+    conta própria (`empacotar.assinatura_do_arquivo`). Agora a peça tem a função própria (`ler_assinatura_digital`),
+    que roda de verdade, sem pergunta do Windows: um programa assinado pela Microsoft (o próprio PowerShell do Windows)
+    dá "Valid" com o assinante da Microsoft; um script sem assinatura dá "NotSigned"; um arquivo que não existe dá
+    FALHOU (nunca um "não assinado" inventado), com a frase em português."""
+    powershell_do_windows = windows.pasta_do_sistema() / "WindowsPowerShell" / "v1.0" / "powershell.exe"
+    assinado = windows.ler_assinatura_digital(powershell_do_windows)
+    assert assinado.deu_certo, assinado
+    assert assinado.dados["status"] in ("Valid", "NotTrusted", "UnknownError"), assinado.dados
+    assert "Microsoft" in assinado.dados["assinante"] or assinado.dados["status"] != "Valid", assinado.dados
+    falso = tmp_path / "sem assinatura, com acento ção.ps1"     # script sem assinatura: o Windows diz NotSigned
+    falso.write_text("Write-Output 'oi'", encoding="utf-8")
+    sem = windows.ler_assinatura_digital(falso)
+    assert sem.deu_certo and sem.dados["status"] == "NotSigned", sem
+    assert sem.dados["assinante"] == ""
+    nada = windows.ler_assinatura_digital(tmp_path / "nao-existe.exe")
+    assert nada.desfecho == windows.FALHOU and nada.motivo and "código" not in nada.motivo, nada
+
+
+def test_o_empacotar_le_a_assinatura_pela_peca_e_nao_abre_o_powershell(tmp_path, monkeypatch):
+    """Passo 2: `empacotar.assinatura_do_arquivo` chama a função da peça (um lugar só) e não abre nenhum programa por
+    conta própria. Falha da peça vira "erro: <motivo>" (o mesmo formato de antes), que nunca confere."""
+    import empacotar
+
+    rodou = []
+    monkeypatch.setattr(empacotar.subprocess, "run", lambda *a, **k: rodou.append(a))
+    pedidos = []
+
+    def ler(arquivo):
+        """A peça de mentira só para ver que é ela que o empacotar chama (o teste de cima roda a de verdade)."""
+        pedidos.append(Path(arquivo))
+        return windows.Resposta(windows.FALHOU, "o arquivo sumiu", "teste")
+
+    monkeypatch.setattr(windows, "ler_assinatura_digital", ler)
+    lido = empacotar.assinatura_do_arquivo(tmp_path / "x.exe")
+    assert pedidos == [tmp_path / "x.exe"] and rodou == []
+    assert lido["status"].startswith("erro: ") and empacotar.vc_redist_confere(lido)
+
+
+def test_o_powershell_nao_herda_os_modulos_do_powershell_7(tmp_path, monkeypatch):
+    """Bug de 19/11/2026 (achado na rodada 44642471223 do GitHub, passo 2): no Windows do GitHub o Python roda dentro do
+    PowerShell 7, e o PowerShell do Windows aberto pela peça herdava a lista de pastas de módulos dele (PSModulePath);
+    o "Get-AuthenticodeSignature" falhava ("CouldNotAutoloadMatchingModule") e a assinatura do Visual C++ nunca era
+    lida (o teste antigo do empacotar não via: erro também "não confere"). A Microsoft documenta o caso
+    (about_PSModulePath, 5.1: "Inherited PowerShell 7 module paths precede the Windows PowerShell system module path
+    [...] This breaks module autoloading"). Agora a peça abre o PowerShell sem a lista herdada (ele monta a de fábrica).
+    Aqui o caso é refeito no PC: uma pasta de módulos na frente da lista, com um módulo de segurança que o PowerShell
+    do Windows não consegue carregar; o rodar e o lançar solto da peça continuam funcionando."""
+    falso = tmp_path / "Modulos7" / "Microsoft.PowerShell.Security"
+    falso.mkdir(parents=True)
+    (falso / "Microsoft.PowerShell.Security.psd1").write_text(
+        "@{ ModuleVersion = '7.0.0.0'; RootModule = 'quebrado.psm1'; "
+        "FunctionsToExport = @('Get-AuthenticodeSignature'); CmdletsToExport = @() }", encoding="utf-8")
+    (falso / "quebrado.psm1").write_text("throw 'este modulo nao carrega no Windows PowerShell'", encoding="utf-8")
+    monkeypatch.setenv("PSModulePath", f"{tmp_path / 'Modulos7'};{os.environ.get('PSModulePath', '')}")
+    powershell_do_windows = windows.pasta_do_sistema() / "WindowsPowerShell" / "v1.0" / "powershell.exe"
+    lido = windows.ler_assinatura_digital(powershell_do_windows)
+    assert lido.deu_certo and lido.dados["status"], lido
+    saida = tmp_path / "solto.txt"
+    r = windows.lancar_powershell_solto(
+        f"$s = Get-AuthenticodeSignature -LiteralPath {windows.aspas_do_powershell(powershell_do_windows)}\n"
+        f"[System.IO.File]::WriteAllText({windows.aspas_do_powershell(saida)}, [string]$s.Status)\n"
+        # espera um pouco antes de sair: um script que termina antes de a peça ver o sinal é dado como "saiu sem
+        # começar" (o fim do script apaga a pasta com o sinal); defeito do lançar solto anotado para a Lista de bugs
+        "[System.Threading.Thread]::Sleep(2000)")
+    assert r.deu_certo, r
+    for _ in range(100):
+        if saida.exists():
+            break
+        time.sleep(0.1)
+    assert saida.exists() and saida.read_text(encoding="utf-8-sig").strip(), "o lançado solto não leu a assinatura"
+
+
+def test_o_lancado_solto_apaga_a_pasta_de_troca_sem_seguir_atalho(tmp_path):
+    """D-809 (Samuel, 19/11: "ok"; o atalho de pasta só sai sem levar o que está do outro lado): o script lançado solto
+    apaga a própria pasta de troca no fim. Antes ele usava o apagar recursivo do PowerShell, que, no PowerShell do
+    Windows, entra num atalho (junção) que esteja dentro da pasta e apaga o que está do outro lado (o mesmo desenho
+    do caso da pasta modelos/ esvaziada em 18/11). Agora ele confere cada item: atalho sai só ele (o Windows tira só a
+    junção, RemoveDirectory), o resto é apagado. Aqui o próprio script põe na pasta de troca um atalho para uma pasta
+    de verdade com um arquivo; depois do fim, a pasta de troca sumiu e o arquivo do outro lado continua."""
+    alvo = tmp_path / "pasta de verdade"
+    alvo.mkdir()
+    (alvo / "importante.txt").write_text("fica", encoding="utf-8")
+    sinal = tmp_path / "pasta-de-troca.txt"
+    copia = tmp_path / "o-script-lancado.ps1"
+    r = windows.lancar_powershell_solto(
+        "New-Item -ItemType Junction -Path (Join-Path $PSScriptRoot 'atalho') "
+        f"-Target {windows.aspas_do_powershell(alvo)} | Out-Null\n"
+        f"[System.IO.File]::Copy($PSCommandPath, {windows.aspas_do_powershell(copia)}, $true)\n"
+        f"[System.IO.File]::WriteAllText({windows.aspas_do_powershell(sinal)}, $PSScriptRoot)\n"
+        "[System.Threading.Thread]::Sleep(1500)")
+    assert r.deu_certo, r
+    for _ in range(150):
+        if sinal.exists() and not Path(sinal.read_text(encoding="utf-8-sig").strip()).exists():
+            break
+        time.sleep(0.1)
+    troca = Path(sinal.read_text(encoding="utf-8-sig").strip())
+    assert not troca.exists(), "a pasta de troca tinha de ser apagada"
+    assert (alvo / "importante.txt").is_file(), "o apagar entrou no atalho e apagou o que estava do outro lado"
+    # O jeito antigo (o apagar recursivo do PowerShell) não entrou no atalho NESTE Windows (conferido em 19/11), mas o
+    # comportamento muda com a versão e a Microsoft avisa do "known issue" do -Recurse: o que o teste cobra para não
+    # voltar é o script lançado não usar o apagar recursivo e conferir o atalho antes (o que o porteiro também acusa).
+    lancado = copia.read_text(encoding="utf-8-sig")
+    assert "-Recurse" not in lancado and "ReparsePoint" in lancado, lancado
+
+
+def test_o_lancado_solto_curto_nunca_vira_saiu_sem_comecar():
+    """Bug de 19/11/2026 (anotado no passo 2 e medido por quem tentou quebrar: 4 de 15 com um script vazio): o script
+    lançado solto dava o sinal de vida DENTRO da pasta que ele mesmo apaga no fim; um script curto apagava o sinal antes
+    de a peça olhar, e a peça dizia "o processo lançado saiu sem começar" de uma coisa que rodou (quem tentasse de novo
+    faria a coisa duas vezes). Agora o sinal fica numa pasta de troca à parte, que só a peça apaga depois de ver. A
+    falha era de tempo: o teste lança 20 vezes um script vazio, e todas têm de dar certo."""
+    falhas = [r for r in (windows.lancar_powershell_solto("") for _ in range(20)) if not r.deu_certo]
+    assert falhas == [], f"{len(falhas)} de 20: {falhas[0]}"
+
+
+_PAI_E_FILHO = r'''
+import subprocess, sys, time
+from pathlib import Path
+pasta = Path(sys.argv[1])
+if sys.argv[2] == "pai":
+    subprocess.Popen([sys.executable, __file__, str(pasta), "filho"])
+import os
+n = 0
+while True:
+    n += 1
+    provisorio = pasta / (sys.argv[2] + ".tmp")
+    provisorio.write_text(str(n))
+    try:
+        os.replace(provisorio, pasta / (sys.argv[2] + ".txt"))
+    except OSError:
+        pass
+    time.sleep(0.1)
+'''
+
+
+def _ainda_vive(arquivo: Path, espera_s: float = 1.5) -> bool:
+    """O processo que escreve neste arquivo a cada 0,1 s ainda escreve?"""
+    def ler() -> str:
+        """O número escrito agora (vazio se não deu para ler)."""
+        try:
+            return arquivo.read_text()
+        except OSError:
+            return ""
+
+    antes = ler()
+    time.sleep(espera_s)
+    return ler() not in ("", antes)
+
+
+def test_fechar_o_programa_em_grupo_fecha_tambem_o_que_ele_abriu(tmp_path):
+    """Passo 2, achado 2 de quem tentou quebrar: a vigia do espaço fechava o vpk e deixava o programa que ele abre para
+    fazer o .msi (cmd.exe e wix.exe) escrevendo no C:. Agora o programa roda num grupo do Windows (`abrir_em_grupo`), e
+    `fechar_tudo` fecha ele e tudo o que ele abriu, e confere no Windows que nenhum ficou vivo. De verdade: um processo
+    abre outro; os dois escrevem num arquivo a cada 0,1 s; depois de fechar, nenhum escreve mais."""
+    script = tmp_path / "pai_e_filho.py"
+    script.write_text(_PAI_E_FILHO, encoding="utf-8")
+    programa, r = windows.abrir_em_grupo([PY, str(script), str(tmp_path), "pai"])
+    assert r.deu_certo and programa is not None, r
+    with programa:
+        for _ in range(100):
+            if (tmp_path / "filho.txt").exists():
+                break
+            time.sleep(0.1)
+        assert _ainda_vive(tmp_path / "filho.txt", 0.5) and programa.vivos() >= 2   # o python do .venv abre outro
+        fechado = programa.fechar_tudo()
+        assert fechado.deu_certo, fechado
+        assert programa.vivos() == 0
+    assert not _ainda_vive(tmp_path / "pai.txt") and not _ainda_vive(tmp_path / "filho.txt")
+    recusado, r = windows.abrir_em_grupo([str(windows.pasta_do_sistema() / "cmd.exe"), "/c", "exit"])
+    assert recusado is None and r.desfecho == windows.FALHOU, "o grupo também recusa programa com função própria"
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Passo 2, volta 3 (relatório 2 de quem tentou quebrar, 19/11/2026)
+# ---------------------------------------------------------------------------------------------------------------------
+
+def test_bat_e_cmd_sao_recusados_pelo_rodar_pelo_lancar_e_pelo_grupo(tmp_path, monkeypatch):
+    """Achado 3 do relatório 2 de quem tentou quebrar (19/11/2026, família F2, "o vizinho passa"): a peça fechada
+    recusava os programas da pasta do Windows, mas um arquivo .bat ou .cmd de fora dela passava, e o Windows o rodava
+    pelo C:\\Windows\\System32\\cmd.exe (o próprio CreateProcess entrega o lote ao cmd.exe; documentação do subprocess:
+    "batch files (*.bat or *.cmd) may be launched by the operating system in a system shell"). Agora o rodar genérico,
+    o lançar solto e o grupo recusam pela MESMA regra o que não é programa do Windows de verdade: a extensão depois de
+    o Windows completar o caminho, e o começo do arquivo ("MZ"). De verdade: o lote escreveria um arquivo; nada é
+    escrito. Os jeitos de escrever: maiúscula, ponto e espaço no fim (o Windows tira), o prefixo de caminho longo, o
+    fluxo de dados (::$DATA), só o nome (pela pasta atual) e um lote com o nome de .exe."""
+    marca = tmp_path / "o-lote-rodou.txt"
+    lote = f'@echo %COMSPEC%> "{marca}"\r\n'
+    for nome in ("x.bat", "y.cmd", "Z.BAT", "disfarcado.exe"):
+        (tmp_path / nome).write_text(lote, encoding="ascii")
+    jeitos = [str(tmp_path / "x.bat"), str(tmp_path / "y.cmd"), str(tmp_path / "Z.BAT"), str(tmp_path / "x.bat") + ".",
+              str(tmp_path / "x.bat") + " ", "\\\\?\\" + str(tmp_path / "y.cmd"), str(tmp_path / "x.bat") + "::$DATA",
+              str(tmp_path / "disfarcado.exe"), "x.bat", "y.cmd"]
+    monkeypatch.chdir(tmp_path)
+    for jeito in jeitos:
+        r = windows.rodar_e_esperar([jeito])
+        assert r.desfecho == windows.FALHOU and "função própria" in r.motivo, (jeito, r)
+        r = windows.lancar_solto([jeito], tmp_path / "sinal.txt", espera_s=1)
+        assert r.desfecho == windows.FALHOU and "função própria" in r.motivo, (jeito, r)
+        programa, r = windows.abrir_em_grupo([jeito])
+        assert programa is None and "função própria" in r.motivo, (jeito, r)
+    time.sleep(0.5)
+    assert not marca.exists(), "um arquivo de lote rodou pelo cmd.exe: " + marca.read_text(errors="replace")
+    # o programa de verdade continua passando (a recusa não pega o que não devia)
+    assert windows.rodar_e_esperar([PY, "-c", "print(1)"], letras="utf-8").deu_certo
+    assert "não achei" in windows.rodar_e_esperar(["C:\\nao\\existe.exe"]).motivo
+
+
+# Um pai que abre um filho logo ao começar; os dois anotam o número do processo e escrevem uma batida a cada 0,1 s, e
+# saem sozinhos depois de 20 s (se algum escapar do grupo num teste, não fica rodando para sempre).
+_PAI_E_FILHO_QUE_ACABA = r'''
+import os, subprocess, sys, time
+from pathlib import Path
+pasta, papel = Path(sys.argv[1]), sys.argv[2]
+if papel == "pai":
+    subprocess.Popen([sys.executable, __file__, str(pasta), "filho"])
+(pasta / (papel + ".pid")).write_text(str(os.getpid()))
+fim = time.monotonic() + 20
+n = 0
+while time.monotonic() < fim:
+    n += 1
+    provisorio = pasta / (papel + ".tmp")
+    provisorio.write_text(str(n))
+    try:
+        os.replace(provisorio, pasta / (papel + ".txt"))
+    except OSError:
+        pass
+    time.sleep(0.1)
+'''
+
+
+def _esperar(arquivo: Path, limite_s: float = 20) -> None:
+    """Espera o arquivo aparecer (o processo começou)."""
+    fim = time.monotonic() + limite_s
+    while not arquivo.exists() and time.monotonic() < fim:
+        time.sleep(0.1)
+
+
+def _fechar_o_que_sobrou(pasta: Path) -> None:
+    """Fecha, pelo número anotado, os processos de teste que escaparam (só os deste teste)."""
+    for pid in pasta.glob("*.pid"):
+        try:
+            os.kill(int(pid.read_text()), 9)
+        except (OSError, ValueError):
+            pass
+
+
+def test_o_programa_nasce_parado_e_so_roda_dentro_do_grupo(tmp_path, monkeypatch):
+    """Achado 4 do relatório 2 de quem tentou quebrar (19/11/2026, família F5): o programa era aberto já rodando e
+    posto no grupo depois; um filho aberto nesse instante ficava fora do grupo, e o `fechar_tudo` dizia "fechados
+    (conferido)" com ele vivo. Agora ele nasce parado, entra no grupo, a peça confere que entrou e só então o solta. De
+    verdade: o instante entre abrir o programa e pô-lo no grupo é aumentado de propósito em 3 s (o abrir do Python
+    demora 3 s a mais para devolver; mais que o Python leva para abrir o filho); mesmo assim o filho nasce dentro do
+    grupo e o `fechar_tudo` fecha os dois."""
+    verdadeiro = subprocess.Popen
+
+    class PopenQueDemora(verdadeiro):
+        """O abrir de sempre, que só devolve 3 s depois (o instante de antes, aumentado)."""
+
+        def __init__(self, *argumentos, **opcoes):
+            super().__init__(*argumentos, **opcoes)
+            time.sleep(3)
+
+    script = tmp_path / "pai_e_filho.py"
+    script.write_text(_PAI_E_FILHO_QUE_ACABA, encoding="utf-8")
+    monkeypatch.setattr(windows.subprocess, "Popen", PopenQueDemora)
+    try:
+        programa, r = windows.abrir_em_grupo([PY, str(script), str(tmp_path), "pai"])
+        monkeypatch.setattr(windows.subprocess, "Popen", verdadeiro)
+        assert r.deu_certo and programa is not None, r
+        with programa:
+            _esperar(tmp_path / "filho.txt")
+            assert _ainda_vive(tmp_path / "filho.txt", 0.5), "o filho não começou"
+            fechado = programa.fechar_tudo()
+            assert fechado.deu_certo and "conferido" in fechado.motivo, fechado
+            assert not _ainda_vive(tmp_path / "filho.txt") and not _ainda_vive(tmp_path / "pai.txt"), \
+                "o filho escapou do grupo e continua rodando"
+    finally:
+        _fechar_o_que_sobrou(tmp_path)
+
+
+def test_fechar_tudo_so_diz_conferido_quando_o_windows_diz_que_nenhum_ficou(tmp_path, monkeypatch):
+    """Achado 4 do relatório 2 (a frase "conferido" sem teste que a acuse) e achado 9 (sem a leitura do grupo, a frase
+    dizia "algum continua rodando"). Três casos, num programa de verdade no grupo: (1) o filho morre JÁ no
+    `fechar_tudo`, antes de soltar o grupo (o fechar-ao-fechar do fim do `with` não conta); (2) se a leitura do grupo
+    diz que um continua vivo (trocada de propósito), a resposta é "continua(m) rodando", nunca "conferido"; (3) se o
+    Windows não responde à leitura do grupo, a resposta é "não deu para conferir"."""
+    script = tmp_path / "pai_e_filho.py"
+    script.write_text(_PAI_E_FILHO_QUE_ACABA, encoding="utf-8")
+    try:
+        programa, r = windows.abrir_em_grupo([PY, str(script), str(tmp_path), "pai"])
+        assert r.deu_certo, r
+        with programa:
+            _esperar(tmp_path / "filho.txt")
+            fechado = programa.fechar_tudo()
+            assert fechado.deu_certo, fechado
+            assert not _ainda_vive(tmp_path / "filho.txt"), "o filho só morreu ao soltar o grupo"
+        for arquivo in tmp_path.glob("*.txt"):
+            arquivo.unlink()
+        programa, r = windows.abrir_em_grupo([PY, str(script), str(tmp_path), "pai"])
+        assert r.deu_certo, r
+        with programa:
+            _esperar(tmp_path / "filho.txt")
+            monkeypatch.setattr(programa, "vivos", lambda: 1)                          # um continua vivo
+            fechado = programa.fechar_tudo(espera_s=1)
+            assert fechado.desfecho == windows.FALHOU and "continua" in fechado.motivo, fechado
+            monkeypatch.setattr(programa, "vivos", lambda: None)                       # o Windows não responde
+            fechado = programa.fechar_tudo(espera_s=1)
+            assert fechado.desfecho == windows.FALHOU and "não deu para conferir" in fechado.motivo, fechado
+            assert "continua rodando" not in fechado.motivo
+            monkeypatch.undo()
+            assert programa.fechar_tudo().deu_certo
+    finally:
+        _fechar_o_que_sobrou(tmp_path)
+
+
+def test_o_lancado_solto_apaga_a_primeira_pasta_se_a_segunda_nao_nasce(monkeypatch):
+    """Achado 9 do relatório 2 (a mesma linha de cuidado): se a segunda pasta de troca (a do sinal de vida) não pudesse
+    ser criada, a primeira ficava no disco até a limpeza do dia seguinte. Agora ela é apagada na hora."""
+    criadas = []
+    verdadeira = windows.criar_pasta_de_troca
+
+    def segunda_falha():
+        """A primeira nasce de verdade; a segunda, disco cheio."""
+        if criadas:
+            raise OSError(28, "No space left on device (de mentira)")
+        criadas.append(verdadeira())
+        return criadas[-1]
+
+    monkeypatch.setattr(windows, "criar_pasta_de_troca", segunda_falha)
+    r = windows.lancar_powershell_solto("")
+    assert r.desfecho == windows.FALHOU and criadas
+    assert not criadas[0].exists(), f"a primeira pasta de troca ficou: {criadas[0]}"
+
+
+def test_um_lote_que_a_peca_nao_acha_tambem_e_recusado_pela_extensao(tmp_path):
+    """Achado 3 do relatório 2, a outra metade da regra: quando a peça não acha o arquivo (o Windows procura o nome
+    sozinho em lugares onde a peça não olha, como a pasta do programa que chama; CreateProcessW, "the system searches
+    for the executable file in the following sequence"), o começo do arquivo não pode ser lido; a extensão .bat ou .cmd,
+    lida do caminho completado pelo Windows, recusa mesmo assim. (Rodado: um .bat que começa com "MZ" não vai ao cmd.exe,
+    o Windows recusa com o erro 216; por isso o começo do arquivo basta quando ele existe.)"""
+    # Passo 2, volta 4, achado 9 do relatório 3 de quem tentou quebrar (voltou a quem escreveu pela D-775): os caminhos
+    # em texto cru. Antes, num texto comum, o "\n" virava quebra de linha e o "\e" dava o aviso de escape inválido: o
+    # caminho testado não era o escrito.
+    for nome in (r"C:\nao\existe.bat", r"C:\nao\existe.CMD", r"C:\nao\existe.bat. ", "nao-existe-em-lugar-nenhum.cmd"):
+        r = windows.rodar_e_esperar([nome])
+        assert r.desfecho == windows.FALHOU and "função própria" in r.motivo, (nome, r)
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Passo 2, volta 4 (relatório 3 de quem tentou quebrar, 20/11/2026)
+# ---------------------------------------------------------------------------------------------------------------------
+
+def _tres_caminhos_recusam(programa: str, tmp_path: Path, frase: str = "função própria") -> list[str]:
+    """Passa o programa pelos três caminhos genéricos da peça (rodar, lançar solto, grupo) e devolve os que NÃO
+    recusaram com a frase (vazio = os três recusaram)."""
+    falhas = []
+    r = windows.rodar_e_esperar([programa], limite_s=20)
+    if not (r.desfecho == windows.FALHOU and frase in r.motivo):
+        falhas.append(f"rodar: {r.desfecho} {r.motivo!r} {(r.dados or {}).get('saida', '')[:20]!r}")
+    r = windows.lancar_solto([programa], tmp_path / "sinal.txt", espera_s=1)
+    if not (r.desfecho == windows.FALHOU and frase in r.motivo):
+        falhas.append(f"lançar: {r.desfecho} {r.motivo!r}")
+    programa_no_grupo, r = windows.abrir_em_grupo([programa])
+    if programa_no_grupo is not None:
+        with programa_no_grupo:
+            programa_no_grupo.fechar_tudo()
+        falhas.append("grupo: abriu")
+    elif frase not in r.motivo:
+        falhas.append(f"grupo: {r.motivo!r}")
+    return falhas
+
+
+def test_volta4_o_nome_com_ponto_no_fim_e_lido_como_o_windows_completa(tmp_path, monkeypatch):
+    """Achado 2 do relatório 3 de quem tentou quebrar (20/11/2026, família F2, "o vizinho passa"): a regra única da
+    peça lia o nome do programa de dois jeitos. O lote era conferido pelo nome completado pelo Windows, mas a lista de
+    nomes com função própria e o nome sozinho, pelo texto cru: `pwsh.exe.`, `pwsh.exe..` e `Update.exe.` passavam, e
+    o Windows tira o ponto do fim e roda o programa (Microsoft Learn, "File path formats", "Trim characters": "all
+    trailing periods and spaces (U+0020) are removed"). Achado junto nesta volta: o nome sozinho `whoami.exe.` rodava o
+    whoami DA PASTA DO WINDOWS (o Windows acha pelo PATH; o `shutil.which` não). Agora o nome é lido uma vez só, como o
+    Windows o completa, e todas as conferências usam esse nome. De verdade: um "pwsh.exe" e um "Update.exe" de prova
+    (cópias do hostname.exe do Windows, inofensivo) numa pasta do teste, pelos três caminhos; e o programa de fora com
+    ponto no fim continua passando (a recusa não pega o que não devia)."""
+    sistema = windows.pasta_do_sistema()
+    pasta_do_pwsh = tmp_path / "PowerShell" / "7"
+    pasta_do_pwsh.mkdir(parents=True)
+    pwsh = pasta_do_pwsh / "pwsh.exe"
+    update = tmp_path / "Update.exe"
+    comum = tmp_path / "provaeco.exe"
+    for copia in (pwsh, update, comum):
+        shutil.copyfile(sistema / "hostname.exe", copia)
+    jeitos = [str(pwsh) + ".", str(pwsh) + "..", str(pwsh) + ". ", str(pwsh) + " .", str(update) + ".",
+              str(update) + "...", "whoami.exe.", "hostname.exe..", "whoami.exe. "]
+    falhas = {jeito: _tres_caminhos_recusam(jeito, tmp_path) for jeito in jeitos}
+    assert not any(falhas.values()), {j: f for j, f in falhas.items() if f}
+    # pelo PATH também (o nome sozinho, como o Windows procura): o "pwsh.exe." achado na pasta do PowerShell de prova
+    monkeypatch.setenv("PATH", str(pasta_do_pwsh) + os.pathsep + os.environ["PATH"])
+    assert _tres_caminhos_recusam("pwsh.exe.", tmp_path) == []
+    # o programa de fora, com o ponto no fim, continua rodando (o Windows tira o ponto; não está na lista)
+    r = windows.rodar_e_esperar([str(comum) + "."])
+    assert r.deu_certo and r.dados["saida"], r
+
+
+def test_volta4_o_programa_que_nao_deixa_ler_e_recusado_com_frase_propria(tmp_path):
+    """Achado 6 do relatório 3 (regressão sem uso hoje): os atalhos de aplicativo da Loja (`winget.exe` e outros em
+    %LOCALAPPDATA%\\Microsoft\\WindowsApps) não deixam ler o começo do arquivo, e a peça os recusava com "este programa
+    do Windows tem função própria na peça: use a função dela", uma função que não existe. Recusar na dúvida continua
+    certo; a frase agora é a verdadeira: "não consegui ler o programa para saber se é um programa do Windows". De
+    verdade: um programa de prova (cópia do hostname.exe) aberto por outro sem deixar ninguém ler (compartilhamento
+    zero, pelo Windows); e, se este computador tiver algum atalho da Loja, ele também."""
+    import _winapi
+
+    programa = tmp_path / "trancado.exe"
+    shutil.copyfile(windows.pasta_do_sistema() / "hostname.exe", programa)
+    trancado = _winapi.CreateFile(str(programa), _winapi.GENERIC_READ, 0, 0, _winapi.OPEN_EXISTING, 0, 0)
+    try:
+        with pytest.raises(OSError):
+            open(programa, "rb").close()
+        assert _tres_caminhos_recusam(str(programa), tmp_path, "não consegui ler o programa") == []
+    finally:
+        _winapi.CloseHandle(trancado)
+    assert windows.rodar_e_esperar([str(programa)]).deu_certo, "solto, o mesmo programa roda"
+    da_loja = sorted((Path(os.environ.get("LOCALAPPDATA", "")) / "Microsoft" / "WindowsApps").glob("*.exe"))
+    for atalho in da_loja[:3]:
+        try:
+            open(atalho, "rb").close()
+            continue                                   # este deixa ler: não é o caso
+        except OSError:
+            pass
+        r = windows.rodar_e_esperar([str(atalho), "--version"], limite_s=20)
+        assert r.desfecho == windows.FALHOU and "não consegui ler o programa" in r.motivo, (atalho, r)
+        assert "função própria" not in r.motivo
+
+
+def test_volta4_a_segunda_olhada_depois_do_path_recusa_o_lote_achado_pelo_pathext(tmp_path, monkeypatch):
+    """Achado 10 do relatório 3 (família F3, proteção sem teste): a olhada de depois de achar o nome sozinho pelo PATH
+    (`shutil.which`, que usa as extensões do PATHEXT) não tinha teste. Caso em que só ela recusa: um lote numa pasta do
+    PATH, pedido só pelo nome, sem extensão: o `which` o acha como .BAT; antes disso nada indica lote (o nome não tem
+    extensão e não existe na pasta atual)."""
+    pasta = tmp_path / "no-path"
+    pasta.mkdir()
+    marca = tmp_path / "o-lote-rodou.txt"
+    (pasta / "loteprovav4.bat").write_text(f'@echo x> "{marca}"\r\n', encoding="ascii")
+    monkeypatch.setenv("PATH", str(pasta) + os.pathsep + os.environ["PATH"])
+    monkeypatch.chdir(tmp_path)
+    assert _tres_caminhos_recusam("loteprovav4", tmp_path) == []
+    assert not marca.exists()
+
+
+def test_volta4_rodar_em_grupo_e_o_laco_unico_com_a_saida_a_vigia_e_o_tempo(tmp_path, monkeypatch):
+    """Achado 8 do relatório 3 (§11.12, ponto 1: uma peça só para cada conversa com o que está fora): o laço "rodar um
+    programa, olhar a vigia e fechar" estava escrito no `rodar_vpk` (pela peça, num grupo) e no gh do publicar (com o
+    subprocess direto, sem grupo, fechando só o gh). Agora é `windows.rodar_em_grupo`, que os dois usam. De verdade:
+    (1) com a saída guardada, o código de saída e o que o programa escreveu; (2) a vigia manda parar: o programa E o
+    filho que ele abriu são fechados (conferido no Windows); (3) o tempo esgotado também fecha tudo; (4) o que tem
+    função própria é recusado sem abrir."""
+    r = windows.rodar_em_grupo([PY, "-c", "import sys; print('oi'); print('erro', file=sys.stderr); sys.exit(3)"],
+                               capturar=True)
+    assert r.desfecho == windows.FALHOU and r.dados["codigo"] == 3, r
+    assert r.dados["saida"] == "oi" and r.dados["erros"] == "erro", r
+    assert windows.rodar_em_grupo([PY, "-c", "print('certo')"], capturar=True).dados["saida"] == "certo"
+    script = tmp_path / "pai_e_filho.py"
+    script.write_text(_PAI_E_FILHO_QUE_ACABA, encoding="utf-8")
+    try:
+        def vigia():
+            """Manda parar quando o filho já escreve."""
+            return "o disco ficou abaixo da reserva (de mentira)" if (tmp_path / "filho.txt").exists() else None
+
+        # o soltar do grupo é segurado (como no teste do achado 4 da volta 3): quem fecha o filho tem de ser o laço,
+        # não o fechar-ao-fechar do fim do `with` (com ele, fechar só o programa principal também passaria)
+        segurados = []
+        soltar_de_verdade = windows.ProgramaEmGrupo.soltar
+        monkeypatch.setattr(windows.ProgramaEmGrupo, "soltar", lambda self: segurados.append(self))
+        try:
+            r = windows.rodar_em_grupo([PY, str(script), str(tmp_path), "pai"], vigia=vigia, intervalo_s=0.2,
+                                       capturar=True)
+            assert segurados, "o grupo não passou pelo soltar"
+            assert r.desfecho == windows.FALHOU and r.dados["parou"] == "o disco ficou abaixo da reserva (de mentira)", r
+            assert r.dados["codigo"] is None and r.dados["fechado"] is True, r
+            assert not _ainda_vive(tmp_path / "filho.txt") and not _ainda_vive(tmp_path / "pai.txt")
+        finally:
+            monkeypatch.setattr(windows.ProgramaEmGrupo, "soltar", soltar_de_verdade)
+            for programa in segurados:
+                soltar_de_verdade(programa)
+        for arquivo in tmp_path.glob("*.txt"):
+            arquivo.unlink()
+        inicio = time.monotonic()
+        r = windows.rodar_em_grupo([PY, str(script), str(tmp_path), "pai"], limite_s=3, intervalo_s=0.2)
+        assert time.monotonic() - inicio < 15 and "não terminou em 3 segundos" in r.dados["parou"], r
+        assert not _ainda_vive(tmp_path / "filho.txt")
+    finally:
+        _fechar_o_que_sobrou(tmp_path)
+    r = windows.rodar_em_grupo([str(windows.pasta_do_sistema() / "cmd.exe"), "/c", "exit"])
+    assert r.desfecho == windows.FALHOU and "função própria" in r.motivo and not r.dados.get("abriu"), r
+
+
+def test_volta4_a_peca_manda_gravar_no_disco_antes_de_trocar_o_nome(tmp_path, monkeypatch):
+    """Achado 11 do relatório 3: o que grava num nome provisório e troca pelo nome certo não pedia ao Windows para
+    gravar no disco antes de trocar (se a luz cair logo depois, o nome certo podia ficar com o conteúdo pela metade).
+    Agora a peça tem um lugar só para isso (`windows.gravar_no_disco`: o flush do Python e o os.fsync, que no Windows é
+    o _commit, "Flushes a file directly to disk"), usado antes de trocar o nome. Aqui: a ordem, lida pelo que o Python
+    pede ao sistema (o os.fsync de verdade roda), na gravação do script de um PowerShell de verdade (a mesma gravação
+    do aviso, da tarefa e da pasta segura)."""
+    ordem = []
+    verdadeiro_fsync, verdadeiro_replace = os.fsync, os.replace
+    monkeypatch.setattr(os, "fsync", lambda fd: (ordem.append("gravar no disco"), verdadeiro_fsync(fd))[1])
+    monkeypatch.setattr(os, "replace", lambda a, b: (ordem.append(("trocar", Path(b).name)), verdadeiro_replace(a, b))[1])
+    r = windows.rodar_powershell("[Console]::Out.Write('gravado')")
+    assert r.deu_certo and r.dados["saida"] == "gravado", r
+    i = ordem.index(("trocar", "script.ps1"))
+    assert i > 0 and ordem[i - 1] == "gravar no disco", ordem
+    with open(tmp_path / "x.bin", "wb") as arquivo:
+        arquivo.write(b"x")
+        windows.gravar_no_disco(arquivo)
+    assert ordem[-1] == "gravar no disco"
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Passo 2, volta 5 (relatório 4 de quem tentou quebrar, 20/11/2026)
+# ---------------------------------------------------------------------------------------------------------------------
+
+def test_volta5_o_programa_num_fluxo_escondido_de_outro_arquivo_e_recusado(tmp_path, monkeypatch):
+    """Achado 5 do relatório 4 de quem tentou quebrar (família F2, D-813): o programa gravado como FLUXO escondido de
+    outro arquivo (`nada.txt:pwsh.exe`) passava pela peça, que lia o nome como "nada.txt:pwsh.exe" e não achava "pwsh"
+    na lista; o Windows roda esse caminho. Lido (Microsoft Learn, "File Streams"): o nome completo de um fluxo é
+    "filename:stream name:stream type"; o ":" é reservado num nome ("Naming Files, Paths, and Namespaces") e, depois da
+    letra do disco, só aparece para dizer um fluxo. Agora qualquer ":" depois da letra do disco é recusado, com frase
+    própria, pelos três caminhos. De verdade: uma cópia do hostname.exe gravada como fluxo (com o nome da lista e com
+    outro nome); sem a peça, o Windows a roda; pela peça, não. O "::$DATA" de um lote continua com a frase do lote."""
+    sistema = windows.pasta_do_sistema()
+    nada = tmp_path / "nada.txt"
+    nada.write_text("nada", encoding="utf-8")
+    programa = (sistema / "hostname.exe").read_bytes()
+    for fluxo in ("pwsh.exe", "outro.exe"):
+        with open(str(nada) + ":" + fluxo, "wb") as arquivo:
+            arquivo.write(programa)
+    sem_a_peca = subprocess.run([str(nada) + ":pwsh.exe"], capture_output=True, timeout=20)
+    assert sem_a_peca.returncode == 0 and sem_a_peca.stdout.strip(), "o Windows não rodou o fluxo (o caso não vale)"
+    monkeypatch.chdir(tmp_path)
+    for jeito in (str(nada) + ":pwsh.exe", str(nada) + ":outro.exe", str(nada) + ":pwsh.exe:$DATA",
+                  "nada.txt:pwsh.exe", str(nada) + ":pwsh.exe."):
+        assert _tres_caminhos_recusam(jeito, tmp_path, "fluxo escondido") == [], jeito
+    (tmp_path / "x.bat").write_text("@echo x\r\n", encoding="ascii")
+    r = windows.rodar_e_esperar([str(tmp_path / "x.bat") + "::$DATA"])
+    assert r.desfecho == windows.FALHOU and "função própria" in r.motivo, r
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Passo 2, volta 6 (relatório 5 de quem tentou quebrar, 20/11/2026)
+# ---------------------------------------------------------------------------------------------------------------------
+
+def test_volta6_achado3_o_caminho_de_rede_e_recusado_com_a_frase_propria(tmp_path):
+    """Achado 3 do relatório 5 de quem tentou quebrar (20/11/2026, família F7: o escrito não bate com o código): o caminho
+    de rede (`\\\\localhost\\C$\\...`, `\\\\?\\UNC\\...`) e o caminho que o Windows não completa com uma letra de disco eram
+    recusados (certo) com a frase de outro motivo, "este programa do Windows tem função própria na peça: use a função
+    dela", que manda usar uma função que não existe. Agora a recusa é a mesma, pelos três caminhos da peça (o rodar, o
+    lançar solto e o grupo), com a frase própria (`FRASE_CAMINHO_DE_REDE`), que não manda usar função nenhuma. Nada roda:
+    a recusa vem antes de abrir."""
+    barra = chr(92)
+    sistema = windows.pasta_do_sistema()
+    hostname = str(sistema / "hostname.exe")
+    for caminho in (barra * 2 + "localhost" + barra + "C$" + hostname[2:],
+                    barra * 2 + "127.0.0.1" + barra + "ADMIN$" + barra + "System32" + barra + "hostname.exe",
+                    barra * 2 + "?" + barra + "UNC" + barra + "localhost" + barra + "C$" + hostname[2:],
+                    barra * 2 + "outro-computador" + barra + "pasta" + barra + "programa.exe",
+                    barra * 2 + "?" + barra + "GLOBALROOT" + barra + "Device" + barra + "Coisa" + barra + "x.exe",
+                    barra * 2 + "." + barra + "pipe" + barra + "programa.exe"):
+        motivo = windows.rodar_e_esperar([caminho]).motivo
+        assert motivo and "use a função dela" not in motivo and "rede" in motivo, (caminho, motivo)
+        assert _tres_caminhos_recusam(caminho, tmp_path, windows.FRASE_CAMINHO_DE_REDE) == [], caminho
+    # o programa de fora pela letra do disco continua passando, e o da pasta do Windows continua com a frase de sempre
+    assert windows.rodar_e_esperar([PY, "-c", "print(1)"], letras="utf-8").deu_certo
+    assert windows.rodar_e_esperar([hostname]).motivo == windows.FRASE_TEM_FUNCAO_PROPRIA

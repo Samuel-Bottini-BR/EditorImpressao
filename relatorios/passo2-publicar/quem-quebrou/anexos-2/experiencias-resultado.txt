@@ -1,0 +1,19 @@
+== grupo_casos.py (copia 0d51ad5e, Thu Nov 19 23:41:13 HPBC 2026)
+E1 true.exe 40 vezes: 0 vezes 'não deixou pôr no grupo'; set()
+E2 fechar_tudo com o processo fora do grupo: desfecho='deu certo' motivo='fechados o programa e tudo o que ele abriu (conferido)'; continua vivo=True
+E3 _programa_com_funcao_propria(x.bat) = False
+E3 abrir_em_grupo(x.bat): deu certo; o cmd.exe rodou e escreveu: C:\WINDOWS\system32\cmd.exe
+E3 rodar_e_esperar(x.bat): deu certo; escreveu: C:\WINDOWS\system32\cmd.exe
+
+== liberada_apagada.py
+caso 1 (leitura atrasada): a resposta do liberar se perdeu (de mentira). a publicação v9.9.9 foi apagada de a pasta C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\848d7b72-406b-4bfe-aabf-f5b3005d7b22\scratchpad\q3\casos-lib2\servidor1 (conferido)
+caso 1: a versão liberada continua? False
+caso 2 (liberar falha, continua rascunho): o destino não deixou liberar (de mentira). a publicação v9.9.9 foi apagada de a pasta C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\848d7b72-406b-4bfe-aabf-f5b3005d7b22\scratchpad\q3\casos-lib2\servidor2 (conferido)
+caso 2: sobrou rascunho? None
+
+== test_quebra_msi.py
+  motor-kraken-1 liberada em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4062\test_msi_pela_metade_fica_e_a_0\servidor
+  v9.9.9 liberada em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4062\test_msi_pela_metade_fica_e_a_0\servidor
+NA PASTA DE SAIDA: ['v9.9.9', 'v9.9.9/EditorImpressaoPrograma-9.9.9-win.msi']
+NO DESTINO: liberada
+1 passed in 1.43s

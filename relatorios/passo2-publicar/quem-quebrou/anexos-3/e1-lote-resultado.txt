@@ -1,0 +1,28 @@
+caso                                          | Windows cru                  | marca? | peça recusa? | rodar_e_esperar
+a.bat                                         | codigo 0                     | SIM    | sim          | falhou 
+b.CMD                                         | codigo 0                     | SIM    | sim          | falhou 
+c.batx                                        | OSError 193 %1 não é um aplicativo Win32 válido | nao    | sim          | falhou 
+d.cmdfoo                                      | OSError 193 %1 não é um aplicativo Win32 válido | nao    | sim          | falhou 
+e.bat1                                        | OSError 193 %1 não é um aplicativo Win32 válido | nao    | sim          | falhou 
+f.btm                                         | OSError 193 %1 não é um aplicativo Win32 válido | nao    | sim          | falhou 
+g.com                                         | OSError 216 Esta versão de %1 não é compatível com a versão do Windows sendo executada. Verifique as informações de sistema do computador e contate o fornecedor do software | nao    | sim          | falhou 
+h.ps1                                         | OSError 193 %1 não é um aplicativo Win32 válido | nao    | sim          | falhou 
+i.vbs                                         | OSError 193 %1 não é um aplicativo Win32 válido | nao    | sim          | falhou 
+j.js                                          | OSError 193 %1 não é um aplicativo Win32 válido | nao    | sim          | falhou 
+k                                             | OSError 193 %1 não é um aplicativo Win32 válido | nao    | sim          | falhou 
+l.txt                                         | OSError 193 %1 não é um aplicativo Win32 válido | nao    | sim          | falhou 
+nome-bem-comprido.batch                       | OSError 193 %1 não é um aplicativo Win32 válido | nao    | sim          | falhou 
+outro-comprido.cmdx                           | OSError 193 %1 não é um aplicativo Win32 válido | nao    | sim          | falhou 
+mz.bat (MZ)                                   | OSError 216 Esta versão de %1 não é compatível com a versão do Windows sendo executada. Verifique as informações de sistema do computador e contate o fornecedor do software | nao    | sim          | falhou 
+mz2.batx (MZ)                                 | OSError 216 Esta versão de %1 não é compatível com a versão do Windows sendo executada. Verifique as informações de sistema do computador e contate o fornecedor do software | nao    | NAO          | falhou 
+mz3.cmdx (MZ)                                 | OSError 216 Esta versão de %1 não é compatível com a versão do Windows sendo executada. Verifique as informações de sistema do computador e contate o fornecedor do software | nao    | NAO          | falhou 
+a.bat. (ponto)                                | codigo 1                     | nao    | sim          | falhou 
+a.bat (espaco)                                | codigo 0                     | SIM    | sim          | falhou 
+a.bat::$DATA                                  | OSError 193 %1 não é um aplicativo Win32 válido | nao    | sim          | falhou 
+a.BaT. .                                      | codigo 1                     | nao    | sim          | falhou 
+curto de nome-bem-comprido.batch: NOME-B~1.BAT | tempo                        | nao    | sim          | falhou 
+curto de outro-comprido.cmdx: OUTRO-~1.CMD    | tempo                        | nao    | sim          | falhou 
+curto de a.bat: a.bat                         | codigo 0                     | SIM    | sim          | falhou 
+so o nome a.bat (pasta atual)                 | OSError 2 O sistema não pode encontrar o arquivo especificado | nao    | sim          | falhou 
+so o nome a (PATHEXT)                         | OSError 2 O sistema não pode encontrar o arquivo especificado | nao    | NAO          | falhou 
+so o nome k                                   | OSError 2 O sistema não pode encontrar o arquivo especificado | nao    | sim          | falhou 

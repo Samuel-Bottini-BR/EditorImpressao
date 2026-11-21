@@ -1,0 +1,25 @@
+pasta dos casos: C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\85bc5c33-3dbe-4d9d-9032-bb0a97954262\scratchpad\v5\casos7v
+fluxo numa pasta: True; nome curto: C:\Users\fotog\AppData\Local\Temp\claude\B9CA07~1\85BC5C~1\SCRATC~1\v5\casos7v\inocente.exe
+jeito                                         | Windows roda? | peça recusa? (frase) | o que a peça leu
+base: nada.txt:pwsh.exe                       | sim (rodou) | NÃO  <== FURO () | C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\85bc5c33-3dbe-4d9d-9032-bb0a97954262\scratchpad\v5\casos7v\nada.txt:pwsh.exe
+host MZ: inocente.exe:pwsh.exe                | sim (rodou) | NÃO  <== FURO () | C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\85bc5c33-3dbe-4d9d-9032-bb0a97954262\scratchpad\v5\casos7v\inocente.exe:pwsh.exe
+host MZ: inocente.exe:outro.exe               | sim (rodou) | NÃO  <== FURO () | C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\85bc5c33-3dbe-4d9d-9032-bb0a97954262\scratchpad\v5\casos7v\inocente.exe:outro.exe
+\\?\ + nada.txt:pwsh.exe                      | sim (rodou) | NÃO  <== FURO () | C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\85bc5c33-3dbe-4d9d-9032-bb0a97954262\scratchpad\v5\casos7v\nada.txt:pwsh.exe
+\\?\ + inocente.exe:pwsh.exe                  | sim (rodou) | NÃO  <== FURO () | C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\85bc5c33-3dbe-4d9d-9032-bb0a97954262\scratchpad\v5\casos7v\inocente.exe:pwsh.exe
+\\?\ + inocente.exe:outro.exe                 | sim (rodou) | NÃO  <== FURO () | C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\85bc5c33-3dbe-4d9d-9032-bb0a97954262\scratchpad\v5\casos7v\inocente.exe:outro.exe
+\\.\ + inocente.exe:pwsh.exe                  | sim (rodou) | NÃO  <== FURO () | C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\85bc5c33-3dbe-4d9d-9032-bb0a97954262\scratchpad\v5\casos7v\inocente.exe:pwsh.exe
+\??\ + inocente.exe:pwsh.exe                  | não (123)     | SIM (função própria) | None
+relativo inocente.exe:pwsh.exe                | não (2)       | NÃO () | inocente.exe:pwsh.exe
+relativo .\inocente.exe:pwsh.exe              | sim (rodou) | NÃO  <== FURO () | C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\85bc5c33-3dbe-4d9d-9032-bb0a97954262\scratchpad\v5\casos7v\inocente.exe:pwsh.exe
+relativo nada.txt:outro.exe                   | não (2)       | NÃO () | nada.txt:outro.exe
+letra sem barra C:inocente.exe:pwsh.exe       | sim (rodou) | NÃO  <== FURO () | C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\85bc5c33-3dbe-4d9d-9032-bb0a97954262\scratchpad\v5\casos7v\inocente.exe:pwsh.exe
+maiúsculas                                    | sim (rodou) | NÃO  <== FURO () | C:\USERS\FOTOG\APPDATA\LOCAL\TEMP\CLAUDE\B9CA076AD002E817\85BC5C33-3DBE-4D9D-9032-BB0A97954262\SCRATCHPAD\V5\CASOS7V\INOCENTE.EXE:PWSH.EXE
+barras /                                      | sim (rodou) | NÃO  <== FURO () | C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\85bc5c33-3dbe-4d9d-9032-bb0a97954262\scratchpad\v5\casos7v\inocente.exe:pwsh.exe
+com :$DATA                                    | não (123)     | NÃO () | C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\85bc5c33-3dbe-4d9d-9032-bb0a97954262\scratchpad\v5\casos7v\inocente.exe:pwsh.exe:$DATA
+com ponto no fim                              | sim (rodou) | NÃO  <== FURO () | C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\85bc5c33-3dbe-4d9d-9032-bb0a97954262\scratchpad\v5\casos7v\inocente.exe:pwsh.exe
+fluxo numa pasta                              | sim (rodou) | NÃO  <== FURO () | C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\85bc5c33-3dbe-4d9d-9032-bb0a97954262\scratchpad\v5\casos7v\pastinha:pwsh.exe
+UNC localhost C$                              | sim (rodou) | SIM (função própria) | None
+\\?\UNC\localhost                             | sim (rodou) | SIM (função própria) | None
+nome curto 8.3 + :pwsh.exe                    | sim (rodou) | NÃO  <== FURO () | C:\Users\fotog\AppData\Local\Temp\claude\B9CA07~1\85BC5C~1\SCRATC~1\v5\casos7v\inocente.exe:pwsh.exe
+\\?\ + nome curto + :pwsh.exe                 | sim (rodou) | NÃO  <== FURO () | C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\85bc5c33-3dbe-4d9d-9032-bb0a97954262\scratchpad\v5\casos7v\inocente.exe:pwsh.exe
+furos (o Windows roda e a peça deixa): 15

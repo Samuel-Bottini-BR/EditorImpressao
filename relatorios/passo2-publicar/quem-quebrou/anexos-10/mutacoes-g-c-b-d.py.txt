@@ -1,0 +1,85 @@
+"""Mutacoes do quem-quebra da volta 11 (relatorio 10). Roda numa copia (git archive) em pasta temporaria; nunca no
+repositorio. Cada mutacao: troca um pedaco de um arquivo da copia, roda um arquivo de teste, anota o resumo, desfaz."""
+import subprocess
+import sys
+from pathlib import Path
+
+COPIA = Path(sys.argv[1])
+PY = r"D:\programas\EditorImpressao\.venv\Scripts\python.exe"
+so = sys.argv[2:]
+
+MUTACOES = [
+    # G: vizinhos da guarda das frases (F2): a preposicao a mao de outro jeito, em frase fora dos caminhos do teste
+    ("G1 concatenacao: o motor publicado 'em ' + destino.nome", "publicar_versao_kaique.py",
+     "raise Parou(f\"o motor publicado {com_preposicao('em', destino.nome)} não confere: {motivo}\")",
+     "raise Parou(\"o motor publicado em \" + destino.nome + f\" não confere: {motivo}\")",
+     ["tests/test_publicar_versao.py"]),
+    ("G2 variavel local: guardar_o_instalador 'liberada em {onde}'", "publicar_versao_kaique.py",
+     "    frase = (f\"a versão {versao_do_pacote} FOI publicada e está liberada {com_preposicao('em', destino.nome)}\"",
+     "    onde = destino.nome\n    frase = (f\"a versão {versao_do_pacote} FOI publicada e está liberada em {onde}\"",
+     ["tests/test_publicar_versao.py"]),
+    ("G3 parentese: '(em {destino.nome})' no indice estragado", "publicar_versao_kaique.py",
+     "raise Parou(f\"o índice {empacotar.NOME_DO_INDICE} lido {com_preposicao('de', destino.nome)}\"\n"
+     "                        f\" está estragado ({erro})\") from erro",
+     "raise Parou(f\"o índice {empacotar.NOME_DO_INDICE} (em {destino.nome})\"\n"
+     "                        f\" está estragado ({erro})\") from erro",
+     ["tests/test_publicar_versao.py"]),
+    ("G4 .format: DestinoPasta.liberar", "publicar_versao_kaique.py",
+     "raise Parou(f\"não consegui liberar {etiqueta} {com_preposicao('em', self.nome)} ({erro})\") from erro",
+     "raise Parou(\"não consegui liberar {} em {} ({})\".format(etiqueta, self.nome, erro)) from erro",
+     ["tests/test_publicar_versao.py"]),
+    ("G5 'por' em vez de 'em' (por a pasta): o rascunho que sobrou", "publicar_versao_kaique.py",
+     "raise Parou(f\"sobrou um rascunho de {etiqueta} {com_preposicao('em', destino.nome)}\"",
+     "raise Parou(f\"sobrou um rascunho de {etiqueta} deixado por {destino.nome}\"",
+     ["tests/test_publicar_versao.py"]),
+    # C: a com_preposicao
+    ("C1 sem a contracao de+o (do GitHub)", "publicar_versao_kaique.py",
+     "(\"de\", \"o\"): \"do\", ", "", ["tests/test_publicar_versao.py"]),
+    ("C2 sem a contracao em+a (na pasta)", "publicar_versao_kaique.py",
+     "(\"em\", \"a\"): \"na\", ", "", ["tests/test_publicar_versao.py"]),
+    # B: baixo 2 e 3
+    ("B1 copia de prova: so para quando a linha aparece mais de uma vez", "tests/test_pasta_das_ferramentas.py",
+     "if texto.count(LINHA_DO_CAMINHO) != 1:", "if texto.count(LINHA_DO_CAMINHO) > 1:",
+     ["tests/test_pasta_das_ferramentas.py"]),
+    ("B2 montagem: cria a downloads antes de perguntar a regra", "empacotar.py",
+     "        problema = _pasta_das_ferramentas.problema_para_gravar()\n        if problema:\n"
+     "            return None, \"\", [problema]\n        DOWNLOADS.mkdir(exist_ok=True)",
+     "        DOWNLOADS.mkdir(parents=True, exist_ok=True)\n"
+     "        problema = _pasta_das_ferramentas.problema_para_gravar()\n        if problema:\n"
+     "            return None, \"\", [problema]",
+     ["tests/test_pasta_das_ferramentas.py"]),
+    ("B3 montagem: a regra so e perguntada quando a pasta de cima nao existe", "empacotar.py",
+     "        problema = _pasta_das_ferramentas.problema_para_gravar()\n        if problema:",
+     "        problema = None if DOWNLOADS.parent.parent.is_dir() else _pasta_das_ferramentas.problema_para_gravar()\n"
+     "        if problema:",
+     ["tests/test_pasta_das_ferramentas.py"]),
+    # D: a D-821 so na segunda juncao
+    ("D1 a frase da D-816 com 'liberada em' de volta (so a segunda juncao)", "publicar_versao_kaique.py",
+     "            f\"{com_preposicao('em', destino.nome)}, está inteira",
+     "            f\"em {destino.nome}, está inteira",
+     ["tests/test_publicar_versao.py", "-k", "volta3_achado1 or volta11 or d816"]),
+]
+
+for nome, arquivo, velho, novo, teste in MUTACOES:
+    if so and not any(nome.startswith(s) for s in so):
+        continue
+    alvo = COPIA / arquivo
+    original = alvo.read_text(encoding="utf-8")
+    n = original.count(velho)
+    if n != 1:
+        print(f"{nome}: o pedaco aparece {n} vez(es); NAO RODADA", flush=True)
+        continue
+    alvo.write_text(original.replace(velho, novo), encoding="utf-8")
+    try:
+        r = subprocess.run([PY, "-m", "pytest", *teste, "-q", "-p", "no:cacheprovider", "-x"], cwd=COPIA,
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=1500)
+        linhas = [l for l in r.stdout.splitlines() if l.strip()]
+        falhas = [l for l in linhas if l.startswith("FAILED")]
+        print(f"{nome}: {linhas[-1] if linhas else r.stderr[-300:]}", flush=True)
+        for f in falhas[:4]:
+            print(f"    {f[:200]}", flush=True)
+    finally:
+        alvo.write_text(original, encoding="utf-8")
+print("sem mutacao: conferir a copia volta igual ->",
+      subprocess.run(["git", "--no-pager", "diff", "--no-index", "--stat", str(COPIA / "publicar_versao_kaique.py"),
+                      str(COPIA / "publicar_versao_kaique.py")], capture_output=True, text=True).returncode)

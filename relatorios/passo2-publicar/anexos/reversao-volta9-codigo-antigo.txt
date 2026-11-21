@@ -1,0 +1,18 @@
+Passo 2, volta 9: os testes novos (tests/test_pasta_das_ferramentas.py e o novo de tests/test_empacotar.py, do commit cea2b486) no codigo de 5c22a12d (git archive numa copia a parte, v9\antigo), com a peca do git e o repositorio de prova novos por cima (so a ferramenta do teste: o codigo antigo do programa nao os usa para achar as pastas), 20/11/2026.
+Resultado: falham os 2 testes do defeito e o do pacote sem a peca do git; passa o 'da pasta principal, nada muda'; os 7 que pedem a regra nova pulam (core/pasta_das_ferramentas.py nao existia).
+
+PASSED tests/test_pasta_das_ferramentas.py::test_defeito1_da_pasta_principal_nada_muda
+SKIPPED [1] tests\test_pasta_das_ferramentas.py:164: core/pasta_das_ferramentas.py ainda não existe neste código
+SKIPPED [1] tests\test_pasta_das_ferramentas.py:174: core/pasta_das_ferramentas.py ainda não existe neste código
+SKIPPED [1] tests\test_pasta_das_ferramentas.py:189: core/pasta_das_ferramentas.py ainda não existe neste código
+SKIPPED [1] tests\test_pasta_das_ferramentas.py:204: core/pasta_das_ferramentas.py ainda não existe neste código
+SKIPPED [1] tests\test_pasta_das_ferramentas.py:225: core/pasta_das_ferramentas.py ainda não existe neste código
+SKIPPED [1] tests\test_pasta_das_ferramentas.py:252: core/pasta_das_ferramentas.py ainda não existe neste código
+SKIPPED [1] tests\test_pasta_das_ferramentas.py:277: core/pasta_das_ferramentas.py ainda não existe neste código
+FAILED tests/test_pasta_das_ferramentas.py::test_defeito1_de_uma_copia_de_trabalho_os_seis_lugares_acham_a_pasta_certa
+FAILED tests/test_pasta_das_ferramentas.py::test_falha_a_pasta_principal_sem_a_pasta_do_samuel_ao_lado_nao_cria_nada
+2 failed, 1 passed, 7 skipped in 9.53s
+___________ test_volta9_a_peca_do_git_nao_vai_no_programa_do_kaique ___________
+    def test_volta9_a_peca_do_git_nao_vai_no_programa_do_kaique():
+FAILED tests/test_empacotar.py::test_volta9_a_peca_do_git_nao_vai_no_programa_do_kaique
+1 failed, 42 passed in 6.21s

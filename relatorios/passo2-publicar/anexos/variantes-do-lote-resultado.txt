@@ -1,0 +1,19 @@
+Rodado no PC (Windows 11, 20/11/2026), volta 3 do passo 2: cada jeito de escrever um lote, pelo subprocess sem shell.
+Script: variantes-do-lote.py.txt e lote-que-comeca-com-mz.py.txt (pasta de rascunho da conversa).
+
+'d\\variantes2\\x.bat' codigo 0 RODOU PELO CMD | abspath: riantes2\x.bat
+'\\variantes2\\x.bat.' codigo 1 não rodou | abspath: riantes2\x.bat
+'\\variantes2\\x.bat ' codigo 0 RODOU PELO CMD | abspath: riantes2\x.bat
+'d\\variantes2\\X.BAT' codigo 0 RODOU PELO CMD | abspath: riantes2\X.BAT
+'d\\variantes2\\x.bat' codigo 1 não rodou | abspath: riantes2\x.bat
+'ntes2\\x.bat::$DATA' erro 193 não rodou | abspath: 2\x.bat::$DATA
+'es2\\disfarcado.exe' erro 216 não rodou | abspath: disfarcado.exe
+
+O .bat que começa com MZ:
+                     ^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+                             cwd,
+                             ^^^^
+                             startupinfo)
+                             ^^^^^^^^^^^^
+OSError: [WinError 216] Esta versão de %1 não é compatível com a versão do Windows sendo executada. Verifique as informações de sistema do computador e contate o fornecedor do software

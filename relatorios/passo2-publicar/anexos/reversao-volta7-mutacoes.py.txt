@@ -1,0 +1,80 @@
+"""Volta 7 do passo 2 (20/11/2026): cada proteção nova desta volta desligada numa cópia (git archive de 25c514ad, na
+pasta de rascunho desta conversa, v7\\novo), uma por vez; o arquivo volta ao original depois de cada uma (conferido byte
+a byte). Mutações próprias (R1 a R12), diferentes das Y1 a Y10 da volta 6 e das Z1 a Z11 de quem quebrou. Para cada
+uma roda o arquivo de teste inteiro que deve acusá-la. Uso: python -X utf8 mutar7.py <pasta da cópia>"""
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+COPIA = Path(sys.argv[1])
+PY = r"D:\programas\EditorImpressao\.venv\Scripts\python.exe"
+PUB = "tests/test_publicar_versao.py"
+EMP = "tests/test_empacotar.py"
+
+MUTACOES = [
+    ("R1", "a conferência da pasta não lê a assinatura (aceita qualquer Visual C++)", "empacotar.py",
+     "        versao_do_vc, errado = conferir_o_visual_c(visual_c)",
+     "        versao_do_vc, errado = \"14.44.35211.0\", []", PUB),
+    ("R2", "a conferência da pasta não cobra o arquivo da versão", "empacotar.py",
+     "        elif not arquivo_da_versao.is_file():", "        elif False:", PUB),
+    ("R3", "a conferência da pasta não compara a versão com a da assinatura", "empacotar.py",
+     "            if lida != versao_do_vc:", "            if False:", PUB),
+    ("R4", "o Tesseract conferido só pela pasta tesseract\\ existir", "empacotar.py",
+     "    faltam = [r for r in relativos_do_tesseract() if not ((pasta / r).is_file() and (pasta / r).stat().st_size > 0)]",
+     "    faltam = [] if (pasta / PASTA_DO_TESSERACT).is_dir() else [PASTA_DO_TESSERACT]", PUB),
+    ("R5", "o Tesseract aceita arquivo vazio", "empacotar.py",
+     "if not ((pasta / r).is_file() and (pasta / r).stat().st_size > 0)]",
+     "if not (pasta / r).is_file()]", PUB),
+    ("R6", "o pacote depois do vpk sem cobrar o Tesseract", "empacotar.py",
+     "    saida_ += relativos_do_tesseract()\r\n", "    saida_ += []\r\n", PUB),
+    ("R7", "o pacote depois do vpk sem cobrar a versão do Visual C++", "empacotar.py",
+     ",\r\n                   f\"{atualizacao.PASTA_DO_QUE_SE_INSTALA}/{atualizacao.VC_REDIST_VERSAO}\"]",
+     "]", PUB),
+    ("R8", "o empacotar chamado sozinho mexe na pasta antes de conferir (a ordem de antes)", "empacotar.py",
+     "    problemas = conferir_pasta_pronta(pasta, versao_do_pacote, saida)\r\n"
+     "    problemas = problemas or preparar_saida(pasta, saida, pecas, motor, arquivo_do_motor)",
+     "    problemas = preparar_saida(pasta, saida, pecas, motor, arquivo_do_motor)\r\n"
+     "    problemas = problemas or conferir_pasta_pronta(pasta, versao_do_pacote, saida)", PUB),
+    ("R9", "a régua única do Visual C++ ignora o que vc_redist_confere diz", "empacotar.py",
+     "    return assinatura.get(\"versao\", \"\") or \"\", vc_redist_confere(assinatura)",
+     "    return assinatura.get(\"versao\", \"\") or \"\", []", EMP),
+    ("R10", "a montagem confere o Visual C++ por outra conta, que aceita tudo (duas réguas)", "empacotar.py",
+     "    versao, problemas = conferir_o_visual_c(arquivo)", "    versao, problemas = \"14.0\", []", EMP),
+    ("R11", "o --pasta do comando com '=' e sem aspas (quebra no espaço)", "publicar_versao_kaique.py",
+     "        return f' --pasta \"{self.raiz}\"'", "        return f' --pasta={self.raiz}'", PUB),
+    ("R12", "a conferência da pasta não cobra o Visual C++ na saída do instalador (a segunda passada)", "empacotar.py",
+     "    elif saida.vc_em_instalar:\r\n        # a regua da montagem",
+     "    elif saida.vc_em_instalar and saida.nome != INSTALADOR.nome:\r\n        # a regua da montagem", PUB),
+]
+
+
+def main() -> int:
+    ambiente = dict(os.environ, QT_QPA_PLATFORM="offscreen", PYTHONIOENCODING="utf-8")
+    acusadas = 0
+    for codigo, o_que, arquivo, velho, novo, teste in MUTACOES:
+        alvo = COPIA / arquivo
+        original = alvo.read_bytes()
+        texto = original.decode("utf-8")
+        if texto.count(velho) != 1:
+            print(f"{codigo}: o trecho não foi achado uma vez só ({texto.count(velho)}): NÃO RODADA")
+            continue
+        alvo.write_bytes(texto.replace(velho, novo).encode("utf-8"))
+        try:
+            r = subprocess.run([PY, "-m", "pytest", teste, "-q", "-p", "no:cacheprovider", "--tb=no", "-rf"],
+                               cwd=COPIA, env=ambiente, capture_output=True, text=True, encoding="utf-8",
+                               errors="replace", timeout=1800)
+        finally:
+            alvo.write_bytes(original)
+        assert alvo.read_bytes() == original
+        fim = [linha for linha in r.stdout.splitlines() if " passed" in linha or " failed" in linha][-1:]
+        quem = [linha.split("::", 1)[1][:90] for linha in r.stdout.splitlines() if linha.startswith("FAILED")][:3]
+        acusou = r.returncode != 0
+        acusadas += acusou
+        print(f"{codigo} ({o_que}) -> {teste}: {'ACUSADA' if acusou else 'NAO acusada'} {fim} {quem}")
+    print(f"\n{acusadas} de {len(MUTACOES)} acusadas; cada arquivo devolvido ao original (conferido byte a byte).")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

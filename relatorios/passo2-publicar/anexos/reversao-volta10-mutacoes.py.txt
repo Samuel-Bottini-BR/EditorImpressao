@@ -1,0 +1,107 @@
+"""Mutações S1 a S18 da volta 10, jeito A (D-820; letra nova: S). Uma por vez, numa cópia do código do ramo (git
+archive), cada uma desliga uma proteção; roda só o teste que tem de acusá-la; devolve o arquivo ao original, byte a
+byte, e confere. S11 a S18 são as T9 a T11 e T13 a T17 do jeito do git, refeitas sobre o código do jeito A.
+
+Uso: python mutacoes_s.py <pasta da cópia> <arquivo de saída>
+"""
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+COPIA = Path(sys.argv[1])
+SAIDA = Path(sys.argv[2])
+PY = sys.executable
+TPF = "tests/test_pasta_das_ferramentas.py"
+TPV = "tests/test_publicar_versao.py"
+LOCAL = '"EditorImpressao-arquivos" / "ferramentas"'
+
+MUTACOES = [
+    ("S1", "core/pasta_das_ferramentas.py", "a regra volta a calcular a pasta pela pasta de cima do código",
+     "    return PASTA_DAS_FERRAMENTAS\n",
+     "    return Path(__file__).resolve().parent.parent.parent / NOME_DA_PASTA_DO_SAMUEL / \"ferramentas\"\n",
+     TPF, "defeito1_de_uma_copia"),
+    ("S2", "empacotar.py", "o empacotar volta a calcular a pasta por conta própria",
+     "FERRAMENTAS = _pasta_das_ferramentas.pasta_das_ferramentas()\n", f"FERRAMENTAS = RAIZ.parent / {LOCAL}\n",
+     TPF, "defeito1_de_uma_copia"),
+    ("S3", "montar_motor_kraken.py", "o montar do motor volta a calcular a pasta por conta própria",
+     "PASTA_FERRAMENTAS = _pasta_das_ferramentas.pasta_das_ferramentas()\n",
+     f"PASTA_FERRAMENTAS = RAIZ.parent / {LOCAL}\n", TPF, "defeito1_de_uma_copia"),
+    ("S4", "compilar_detector_gravura.py", "o compilador volta a calcular a pasta por conta própria",
+     "PASTA_FERRAMENTAS_PADRAO = _pasta_das_ferramentas.pasta_das_ferramentas()\n",
+     f"PASTA_FERRAMENTAS_PADRAO = RAIZ.parent / {LOCAL}\n", TPF, "defeito1_de_uma_copia"),
+    ("S5", "core/ocr_kraken.py", "o Kraken volta a calcular o terceiro lugar por conta própria",
+     "    ferramentas = pasta_das_ferramentas.pasta_das_ferramentas()\n",
+     f"    ferramentas = raiz.parent / {LOCAL}\n", TPF, "defeito1_de_uma_copia"),
+    ("S6", "core/pasta_das_ferramentas.py", "empacotado, a regra devolve a pasta das ferramentas",
+     "    if empacotado():\n        return None\n    return PASTA_DAS_FERRAMENTAS\n",
+     "    if False:\n        return None\n    return PASTA_DAS_FERRAMENTAS\n", TPF, "d788"),
+    ("S7", "empacotar.py", "a frase do motor que falta deixa de dizer como apontar outro",
+     '        problemas.append("para usar um motor em outra pasta, aponte-a com --motor-kraken <pasta>")\n',
+     "        pass\n", TPF, "sem_o_motor"),
+    ("S8", "core/pasta_das_ferramentas.py", "o pode gravar cria a pasta das ferramentas",
+     "    if not ferramentas.is_dir():\n",
+     "    ferramentas.mkdir(parents=True, exist_ok=True)\n    if not ferramentas.is_dir():\n", TPF, "b5 or b1_b3"),
+    ("S9", "core/pasta_das_ferramentas.py", "a regra volta a perguntar ao git",
+     "    return PASTA_DAS_FERRAMENTAS\n",
+     "    from regras_dos_agentes import conversa_com_o_git as _git\n"
+     "    _git.raiz_do_repositorio(Path(__file__).resolve().parent)\n    return PASTA_DAS_FERRAMENTAS\n",
+     TPF, "d820_a_pasta"),
+    ("S10", "regras_dos_agentes/conversa_com_o_git.py", "a peça do git abre o git com janela de console",
+     "                           creationflags=_SEM_JANELA)", "                           creationflags=0)",
+     TPF, "sem_janela"),
+    ("S11", "publicar_versao_kaique.py", "a frase do apagar volta ao 'de' sem contração (a T9)",
+     "foi apagada {com_preposicao('de', self.onde)} (conferido)", "foi apagada de {self.onde} (conferido)",
+     TPV, "obs6"),
+    ("S12", "publicar_versao_kaique.py", "a contração do 'em' some (a T10)",
+     '("em", "a"): "na", ("em", "o"): "no"}', "}", TPV, "obs6"),
+    ("S13", "core/ocr_kraken.py", "o Kraken volta a olhar o sys.frozen por conta própria (a T11)",
+     "    if pasta_das_ferramentas.empacotado():\n        lugares.append(",
+     '    if getattr(sys, "frozen", False):\n        lugares.append(', TPF, "obs8"),
+    ("S14", "montar_motor_kraken.py", "o montar do motor deixa de parar sem a pasta das ferramentas (a B1)",
+     "        if problema and not opcoes.gerar_travado:", "        if False:", TPF, "b1_b3"),
+    ("S15", "compilar_detector_gravura.py", "o compilar do detector deixa de parar (a B2)",
+     '        if problema:\n            raise ErroDeCompilacao(f"{problema} (ou passe --ferramentas)")\n        versao_pyside = versao_do_qt_do_pyside()',
+     '        if False:\n            raise ErroDeCompilacao(f"{problema} (ou passe --ferramentas)")\n        versao_pyside = versao_do_qt_do_pyside()',
+     TPF, "b1_b3"),
+    ("S16", "compilar_st_ferramentas.py", "o compilar do st_ferramentas deixa de parar (a B3)",
+     '        if problema:\n            raise ErroDeCompilacao(f"{problema} (ou passe --ferramentas)")',
+     '        if False:\n            raise ErroDeCompilacao(f"{problema} (ou passe --ferramentas)")', TPF, "b1_b3"),
+    ("S17", "montar_motor_kraken.py", "o montar do motor só confere com os dois de fábrica (a B4)",
+     "usa_o_padrao = opcoes.destino == DESTINO_PADRAO or opcoes.downloads == DOWNLOADS_PADRAO",
+     "usa_o_padrao = opcoes.destino == DESTINO_PADRAO and opcoes.downloads == DOWNLOADS_PADRAO", TPF, "b4"),
+    ("S18", "core/pasta_das_ferramentas.py", "o pode gravar olha a pasta de cima (a B5)",
+     "    if not ferramentas.is_dir():", "    if not ferramentas.parent.is_dir():", TPF, "b5"),
+]
+
+
+def main() -> None:
+    linhas = []
+    for nome, arquivo, o_que, velho, novo, teste, filtro in MUTACOES:
+        caminho = COPIA / arquivo
+        original = caminho.read_bytes()
+        texto = original.decode("utf-8")
+        texto_lf = texto.replace("\r\n", "\n")
+        assert texto_lf.count(velho) == 1, (nome, "o trecho não bate")
+        mudado = texto_lf.replace(velho, novo)
+        if "\r\n" in texto:
+            mudado = mudado.replace("\n", "\r\n")
+        caminho.write_bytes(mudado.encode("utf-8"))
+        inicio = time.perf_counter()
+        try:
+            r = subprocess.run([PY, "-m", "pytest", teste, "-q", "-p", "no:cacheprovider", "-k", filtro], cwd=COPIA,
+                               capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=1200)
+            fim = (r.stdout.strip().splitlines() or ["(sem saída)"])[-1]
+            acusada = r.returncode != 0 and "failed" in fim
+        finally:
+            caminho.write_bytes(original)
+        assert caminho.read_bytes() == original, (nome, "não voltou ao original")
+        linha = (f"{nome} | {arquivo} | {o_que} | {teste} -k \"{filtro}\" | {fim} | "
+                 f"{'ACUSADA' if acusada else 'NAO ACUSADA'} | {time.perf_counter() - inicio:.0f} s | devolvido igual")
+        print(linha, flush=True)
+        linhas.append(linha)
+    SAIDA.write_text("\n".join(linhas) + "\n", encoding="utf-8")
+
+
+if __name__ == "__main__":
+    main()

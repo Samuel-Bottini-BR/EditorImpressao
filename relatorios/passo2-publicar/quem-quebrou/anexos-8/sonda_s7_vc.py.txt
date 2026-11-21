@@ -1,0 +1,31 @@
+"""Sonda S7: o programa instalado (atualizacao.instalar_visual_c_se_faltar) antes (21f1fc50) e depois (011b06d0) da
+leitura unica, para cada jeito do arquivo da versao. So a logica: o 'ler' (o Visual C++ instalado) e o 'rodar' (o
+instalador) sao trocados por anotacoes; nada e instalado. Uso: python sonda_s7_vc.py <pasta da copia>"""
+import json
+import sys
+import tempfile
+from pathlib import Path
+
+sys.path.insert(0, sys.argv[1])
+import atualizacao  # noqa: E402
+
+atualizacao.registrar = lambda *a, **k: None
+CASOS = {"sem arquivo": None, "certo": b"14.44.35211.0", "vazio": b"", "com a marca de UTF-8": b"\xef\xbb\xbf14.44.35211.0",
+         "UTF-16": "14.44.35211.0".encode("utf-16"), "bytes estranhos": b"14.44.\xff35211.0"}
+saida = {}
+for nome, conteudo in CASOS.items():
+    for instalado in (None, (14, 0, 0), (14, 50, 0)):
+        with tempfile.TemporaryDirectory() as t:
+            pasta = Path(t)
+            (pasta / atualizacao.PASTA_DO_QUE_SE_INSTALA).mkdir()
+            (pasta / atualizacao.PASTA_DO_QUE_SE_INSTALA / atualizacao.VC_REDIST_NOME).write_bytes(b"MZ")
+            if conteudo is not None:
+                (pasta / atualizacao.PASTA_DO_QUE_SE_INSTALA / atualizacao.VC_REDIST_VERSAO).write_bytes(conteudo)
+            rodou = []
+            try:
+                r = atualizacao.instalar_visual_c_se_faltar(pasta, ler=lambda: instalado,
+                                                            rodar=lambda c, s: rodou.append(1) or (0, ""))
+                saida[f"{nome} | instalado {instalado}"] = f"devolve {r}, instalou: {bool(rodou)}"
+            except Exception as e:  # noqa: BLE001
+                saida[f"{nome} | instalado {instalado}"] = f"ERRO {type(e).__name__}"
+print(json.dumps(saida, ensure_ascii=True, indent=1))

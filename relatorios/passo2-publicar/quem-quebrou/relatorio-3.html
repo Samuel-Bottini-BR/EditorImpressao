@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo 2: terceira conferência de quem tentou quebrar</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Passo 2 do plano da parte do Windows: terceira conferência de quem tentou quebrar (20/11/2026)</h1>
+<p>Sou um agente novo nesta volta (D-815): não escrevi este código e não fiz as voltas 1 e 2. Não mexi no código do
+outro. Não rodei o vpk, o PyInstaller nem o <code>gh release</code>, não publiquei nada, não pedi licença de administrador e não
+abri janela na tela do Samuel. Tudo o que rodei foi numa cópia do código (<code>git archive</code> de <code>e4263c0a</code> e de <code>9cd555a5</code>)
+na pasta de rascunho desta conversa, um arquivo de teste por vez.</p>
+<h2>Pedido</h2>
+<ul>
+<li>Papel: quebrador</li>
+<li>Commit de partida: c8897f3a</li>
+<li>Ramo: passo2-publicar-2026-11-19</li>
+</ul>
+<h2>Arquivos que vou mexer</h2>
+<ul>
+<li><code>publicar_versao_kaique.py</code></li>
+<li><code>empacotar.py</code></li>
+<li><code>montar_motor_kraken.py</code></li>
+<li><code>core/ocr_kraken.py</code></li>
+<li><code>versao.py</code></li>
+<li><code>core/windows.py</code></li>
+<li><code>tests/test_windows_peca.py</code></li>
+<li><code>servidor_das_versoes.py</code></li>
+<li><code>tests/test_empacotar.py</code></li>
+<li><code>tests/test_publicar_*.py</code></li>
+<li><code>relatorios/passo2-publicar/</code></li>
+</ul>
+<p>(A lista é a do pacote, copiada sem mudar. Na prática só escrevi em <code>relatorios/passo2-publicar/quem-quebrou/</code>:
+este relatório e a pasta <code>anexos-3/</code>.)</p>
+<h2>Veredito</h2>
+<p><strong>NÃO ESTÁ PRONTO para a prova à vista.</strong> Os 10 achados da volta 2 foram consertados e, na pasta das provas, pela
+causa: desliguei cada conserto numa cópia, 18 desligamentos meus, e 15 foram acusados pelo teste. Dos 3 que não
+foram, dois são proteções em dobro e um é uma olhada que não achei como alcançar (achado 10). Mas achei <strong>dois
+problemas médios</strong>:</p>
+<ol>
+<li><strong>No GitHub, a versão já liberada ainda pode ser apagada.</strong> O conserto lê a situação mais uma vez antes de
+   apagar. Se a leitura do GitHub vier atrasada duas vezes seguidas, em vez de uma, o publicar apaga a versão
+   liberada e diz "foi apagada (conferido)". O teste do conserto imita só uma leitura atrasada, exatamente o número
+   de leituras que o código faz. A etiqueta fica no GitHub, e o mesmo número de versão pode voltar com outro conteúdo.
+   É o que a decisão da gerente queria evitar.</li>
+<li><strong>A recusa da peça do Windows ainda deixa passar o PowerShell 7 e o atualizador do Velopack com um ponto no fim do
+   nome</strong> (<code>pwsh.exe.</code>). O Windows tira o ponto e roda o programa. A mesma função tira o ponto para conferir o .bat e
+   o .cmd, mas não para conferir a lista de nomes. É a regra única com dois jeitos de ler o nome.</li>
+</ol>
+<p>Os outros são baixos (frases que dizem mais do que se sabe, uma regressão sem uso hoje, um teste com o caminho
+escrito errado). Pela D-775, volta para quem escreveu; a gerente decide se manda consertar antes ou se leva à prova
+com eles escritos. Não escrevo "PRONTO PARA CONFERIR" (D-798): ainda falta a prova à vista. Nunca "aprovado": só o
+Samuel aprova.</p>
+<h2>Decisões que esta tarefa precisa cumprir</h2>
+<ul>
+<li>D-775 "o agente vai tentar quebrar antes de fazer o teste real na tela né?" · "ok". Aqui: tentei quebrar sem
+  pergunta do Windows; o resultado vai à gerente.</li>
+<li>D-815 (no Livro do ramo <code>obra-2026-10-26</code>; o pacote diz "NÃO ACHADA" porque o Livro deste ramo ainda não a tem).
+  Aqui: sou um agente novo nesta volta.</li>
+<li>D-798 "fechou". Aqui: sem o rótulo de pronto.</li>
+<li>D-767 "não faça mais nada escodindo ou de mentira". Aqui: a peça do Windows (o lote, os nomes, o grupo) rodou de
+  verdade no Windows; o vpk e o GitHub, não (proibidos neste pedido): no GitHub usei o gh de mentira dos próprios
+  testes.</li>
+<li>D-773 "A" (o rascunho de prova no GitHub, liberado só na prova e apagado no fim). Aqui: achados 1, 3 e 4.</li>
+<li>D-776 "Sim, no C só tem que cuidar para não encher o disco C inteiro". Aqui: achado 7.</li>
+</ul>
+<h2>O que li</h2>
+<ul>
+<li><code>.claude/agents/verificador.md</code>, o <code>CLAUDE.md</code> inteiro, <code>memoria/INDICE.md</code> e <code>memoria/catalogo-de-erros.md</code>
+  (famílias F1 a F10).</li>
+<li>O meu pacote (<code>anexos/pacote-quem-quebra-volta3.md</code>), os relatórios 1 e 2 de quem tentou quebrar, o formulário do
+  outro (<code>ONDE-PAREI.md</code>: "O que o agente que tentou quebrar achou", "Caminho e função", "Cada proteção e o teste que
+  falha sem ela", "De onde vem cada dado", "Ressalvas") e os anexos <code>reversao-volta3-codigo-antigo.txt</code>,
+  <code>reversao-volta3-resultado.txt</code> e <code>reversao-volta3-mutacoes.py.txt</code>.</li>
+<li>O plano v3, passo 2 (worktree <code>plano-windows</code>).</li>
+<li>O código da volta 3 inteiro (<code>git diff 9cd555a5 e4263c0a</code>): <code>core/windows.py</code> (<code>_nao_e_programa_do_windows</code>,
+  <code>_programa_com_funcao_propria</code>, <code>abrir_em_grupo</code>, <code>_soltar_o_programa_parado</code>, <code>ProgramaEmGrupo.fechar_tudo</code>,
+  <code>lancar_powershell_solto</code>), <code>empacotar.py</code> (<code>vigia_do_espaco</code>, <code>copiar_inteiro</code>, <code>espaco_que_vai_usar</code>,
+  <code>rodar_vpk</code>, <code>zipar_motor</code>), <code>publicar_versao_kaique.py</code> (<code>apagar_publicacao</code>, <code>DestinoPasta.apagar_rascunho</code>,
+  <code>DestinoGitHub.apagar_rascunho</code>, <code>DestinoGitHub._gh</code>, <code>publicar_arquivos</code>, <code>guardar_o_instalador</code>,
+  <code>conferencia_do_fim</code>), <code>servidor_das_versoes.py</code>, <code>versao.py</code> e os testes novos.</li>
+<li>Peça de fora, o que ela aceita (D-813): o que o Windows faz com cada nome eu não li de novo, <strong>rodei</strong>: o mesmo
+  arquivo de lote com 28 nomes e jeitos de chamar, e o que o Windows rodou de verdade (anexo
+  <code>anexos-3/e1-lote-resultado.txt</code>). Lido de novo: Microsoft Learn, CreateProcessW (o Windows tira o ponto e o espaço
+  do fim do nome, pelo GetFullPathNameW) e as citações do Python que o outro pôs no comentário da peça.</li>
+</ul>
+<h2>O que conferi nas falhas, nas peças de fora e nos caminhos</h2>
+<p><strong>Os 10 achados da volta 2, refeitos por mim numa cópia.</strong></p>
+<p>Rodei os testes novos da volta 3 no código da volta 2 (<code>anexos-3/reversao-no-codigo-da-volta2.txt</code>): 5 falham em
+<code>test_windows_peca.py</code>, 10 em <code>test_publicar_versao.py</code> e 1 em <code>test_publicar_servidor.py</code>. Bate com o anexo do outro
+(mais o teste da cópia cortada no meio, que ele fez depois).</p>
+<p>Depois desliguei cada conserto no código novo, um por vez, com um script meu (<code>anexos-3/mutar.py.txt</code>,
+<code>anexos-3/mutar2.py.txt</code>; resultado em <code>anexos-3/mutacoes-resultado.txt</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Achado da volta 2</th>
+<th>O que eu desliguei</th>
+<th>O teste falhou?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>o apagar do GitHub não olha se ficou liberada logo antes de pedir</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>1</td>
+<td>o apagar não olha a primeira leitura (só a do destino)</td>
+<td><strong>não</strong>: proteção em dobro (a do destino cobre)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>a cópia grava direto no nome certo</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>2</td>
+<td>a conferência do fim não acusa o pedaço <code>.copiando</code></td>
+<td>sim</td>
+</tr>
+<tr>
+<td>2</td>
+<td>o .msi comparado só pelo tamanho, sem a soma</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>3</td>
+<td>a peça não lê o começo do arquivo (só a extensão)</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>3</td>
+<td>a peça não olha a extensão (só o começo)</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>3</td>
+<td>a segunda olhada, depois de achar o nome no PATH</td>
+<td><strong>não</strong> (achado 10)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>o grupo abre o programa rodando, sem parar</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>4</td>
+<td>a conferência "ele está no grupo" desligada</td>
+<td><strong>não</strong>: o outro já escreveu que é em dobro</td>
+</tr>
+<tr>
+<td>5</td>
+<td>o caminho de erro nunca apaga o rascunho</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>6</td>
+<td>sem a comparação "o motor mudou"</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>7</td>
+<td>o motor baixado fora da conta</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>7</td>
+<td>o download do motor sem a vigia</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>7</td>
+<td>a vigia única nunca manda parar</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>8</td>
+<td>o servidor trata o nome repetido como inexistente</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>9</td>
+<td>a primeira pasta de troca fica</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>9</td>
+<td>sem leitura do grupo, "continua rodando"</td>
+<td>sim</td>
+</tr>
+</tbody>
+</table>
+<p><strong>O apagar que só apaga rascunho.</strong></p>
+<ul>
+<li>Na pasta das provas está certo pela construção. O apagar do caminho de erro só toca a subpasta do rascunho; a
+  liberada é outra pasta, que ele nem olha.</li>
+<li>No GitHub, não. A regra "só o rascunho" depende de a leitura estar em dia. O código lê duas vezes antes de apagar
+  (uma em <code>apagar_publicacao</code>, outra em <code>DestinoGitHub.apagar_rascunho</code>). Com uma leitura atrasada, a segunda vê
+  "liberada" e não apaga. Com duas, apaga (achado 1).</li>
+<li>O outro escreveu nas Ressalvas que sobra "um instante" no GitHub, entre a leitura e o pedido de apagar. Não é só
+  um instante. É qualquer atraso que dure duas leituras.</li>
+</ul>
+<p><strong>A cópia conferida com nome provisório.</strong></p>
+<ul>
+<li>Funciona. A cópia cortada no meio nunca deixa o nome certo, e o pedaço é apagado e conferido.</li>
+<li>A cópia é lida de volta e a soma comparada. O .msi da pasta de saída é comparado com o feito no rascunho.</li>
+<li>Desliguei cada uma dessas partes e o teste dela falhou.</li>
+<li>Ressalva: "lida de volta do disco" é lida do que o Windows ainda guarda na memória. O código não força a gravação
+  no disco antes de trocar o nome (achado 11).</li>
+</ul>
+<p><strong>A recusa do .bat e do .cmd, tentando passar por ela.</strong> Rodei de verdade (<code>anexos-3/e1-lote-resultado.txt</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Jeito de chamar</th>
+<th>O Windows roda pelo cmd.exe?</th>
+<th>A peça recusa?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>a.bat</code>, <code>b.CMD</code>, <code>a.bat</code> (espaço no fim)</td>
+<td>sim</td>
+<td>sim</td>
+</tr>
+<tr>
+<td><code>a.bat.</code>, <code>a.BaT. .</code> (ponto no fim)</td>
+<td>não (sai com código 1)</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>nome curto <code>NOME-B~1.BAT</code> (de <code>nome-bem-comprido.batch</code>), <code>OUTRO-~1.CMD</code></td>
+<td>sai com código 0, sem o lote escrever a marca</td>
+<td>sim</td>
+</tr>
+<tr>
+<td><code>c.batx</code>, <code>d.cmdfoo</code>, <code>e.bat1</code>, <code>f.btm</code>, <code>.batch</code>, <code>.cmdx</code></td>
+<td>não (erro 193)</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>arquivo sem extensão que começa com texto</td>
+<td>não (193)</td>
+<td>sim</td>
+</tr>
+<tr>
+<td><code>g.com</code> que não é programa</td>
+<td>não (216)</td>
+<td>sim</td>
+</tr>
+<tr>
+<td><code>.ps1</code>, <code>.vbs</code>, <code>.js</code>, <code>.txt</code></td>
+<td>não (193)</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>atalho <code>.lnk</code> para o cmd.exe</td>
+<td>não (193)</td>
+<td>sim (rodar e grupo)</td>
+</tr>
+<tr>
+<td>lote que começa com "MZ", com <code>.bat</code>, <code>.batx</code> ou <code>.cmdx</code></td>
+<td>não (216)</td>
+<td><code>.bat</code>: sim; os outros: não, e o Windows também não roda</td>
+</tr>
+<tr>
+<td>só o nome <code>a</code> (<code>PATHEXT</code>), <code>a.bat</code></td>
+<td>não acha (erro 2)</td>
+<td><code>a</code>: não; <code>a.bat</code>: sim</td>
+</tr>
+<tr>
+<td><code>a.bat::$DATA</code></td>
+<td>não (193)</td>
+<td>sim</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>O <code>wscript</code> está na pasta do Windows: recusado pela pasta.</li>
+<li>Nada do que tentei roda pelo cmd.exe passando pela peça. A regra de olhar a coisa de verdade (a extensão do nome já
+  completado pelo Windows, mais o começo do arquivo) segura o lote.</li>
+<li>O que passa é outra coisa: a <strong>lista de nomes</strong> da mesma função (achado 2). Também passa uma <strong>cópia</strong> do cmd.exe
+  fora da pasta do Windows (achado 5).</li>
+</ul>
+<p><strong>O programa que nasce parado e entra no grupo antes de ser solto.</strong> Rodei de verdade (<code>anexos-3/e3-e4-resultado.txt</code>):</p>
+<ul>
+<li>Desliguei o "nascer parado" e o teste dele falhou.</li>
+<li>Um filho aberto com a bandeira de sair do grupo (<code>CREATE_BREAKAWAY_FROM_JOB</code>) <strong>não saiu</strong>. Ele estava entre os vivos
+  do grupo e morreu no <code>fechar_tudo</code>.</li>
+<li>Um atalho <code>.lnk</code> é recusado também pelo grupo.</li>
+<li>O que não provoquei: um antivírus que injeta uma linha no programa parado. Pela leitura do código, isso faz o
+  soltar devolver 0, e o programa é fechado com "não consegui soltar": falha segura, nunca solto fora do grupo.</li>
+<li>O que fica de fora do grupo, pela documentação: o que nasce pelo WMI. O outro escreveu isso. O vpk de verdade não
+  foi aberto assim (é da prova à vista).</li>
+</ul>
+<p><strong>A vigia única e o "motor-kraken-" num lugar só.</strong></p>
+<ul>
+<li>A regra da vigia mora num lugar só (<code>empacotar.vigia_do_espaco</code>), e os quatro usos a chamam: o vpk, a compressão do
+  motor, a cópia e o download pelo gh.</li>
+<li>O que ficou em dois lugares é o laço "rodar um programa, olhar a vigia e fechar" (achado 8).</li>
+<li>Ficou de fora da vigia o download que o GitHub faz para somar um arquivo grande (achado 7).</li>
+<li>"motor-kraken-" só aparece escrito em <code>versao.py</code>. Procurei no código inteiro, fora os comentários. O que sobra é
+  outra coisa: a pasta <code>motor-kraken\</code>, que é <code>core/ocr_kraken.NOME_DA_PASTA</code>.</li>
+</ul>
+<p><strong>O que os consertos podem ter quebrado.</strong> Rodei na cópia, um arquivo por vez (<code>anexos-3/arredor-um-arquivo-por-vez.txt</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Arquivo de teste</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_windows_peca.py</code></td>
+<td>62 passaram, 2 pulados</td>
+</tr>
+<tr>
+<td><code>test_publicar_versao.py</code></td>
+<td>49 passaram</td>
+</tr>
+<tr>
+<td><code>test_publicar_servidor.py</code></td>
+<td>14 passaram</td>
+</tr>
+<tr>
+<td><code>test_publicar_motor.py</code></td>
+<td>12 passaram</td>
+</tr>
+<tr>
+<td><code>test_empacotar.py</code></td>
+<td>41 passaram</td>
+</tr>
+<tr>
+<td><code>test_windows_janela_de_prova.py</code></td>
+<td>10 passaram</td>
+</tr>
+<tr>
+<td><code>test_decisoes_atualizacao.py</code></td>
+<td>38 passaram</td>
+</tr>
+<tr>
+<td><code>test_decisoes_ajudante_da_atualizacao.py</code></td>
+<td>37 passaram</td>
+</tr>
+<tr>
+<td><code>test_decisoes_testes_a_distancia.py</code></td>
+<td>13 passaram</td>
+</tr>
+<tr>
+<td><code>test_decisoes_desinstalar.py</code> e <code>_pasta.py</code></td>
+<td>25 e 5 falham, <strong>também no código da volta 2 e no worktree</strong>: não é deste passo (achado 12)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>A rodada do GitHub 44675872042 deu success. Pelo registro dela, rodou o código de <code>2e906e94</code> (e <code>668192b4</code> na parte
+  2, na segunda tentativa). Entre <code>e4263c0a</code> e esses dois só mudaram documentos e três explicações de função num
+  teste: o código testado é o desta volta.</li>
+<li>Na peça do passo 1, há uma <strong>regressão sem uso hoje</strong>: os atalhos de aplicativo da Loja da Microsoft passaram a ser
+  recusados com uma frase falsa (achado 6).</li>
+<li>O vpk de verdade do PC (<code>C:\Users\fotog\.dotnet\tools\vpk.exe</code>) começa com "MZ" e passa pela peça.</li>
+<li>O repositório não ficou raso: <code>--is-shallow-repository</code> = false antes e depois.</li>
+</ul>
+<h2>Caminhos que o outro não listou</h2>
+<ol>
+<li><strong>O GitHub com a leitura atrasada por mais de uma vez</strong> depois do liberar (achado 1).</li>
+<li><strong>O nome do programa com ponto no fim</strong>, na lista de nomes com função própria (achado 2).</li>
+<li><strong>A leitura que falha depois de pedir para apagar</strong> (achado 3).</li>
+<li><strong>O rascunho recém-criado que a leitura ainda não acha</strong> (achado 4).</li>
+<li><strong>Uma cópia de um programa do Windows fora da pasta do Windows</strong> (achado 5).</li>
+<li><strong>Um atalho de aplicativo da Loja (WindowsApps)</strong> passado ao rodar, ao lançar ou ao grupo (achado 6).</li>
+<li><strong>A soma lida do GitHub quando ele não dá a soma pronta</strong>: baixa o arquivo inteiro para o C: (achado 7).</li>
+</ol>
+<h2>Falhas não pensadas e resultado não conferido</h2>
+<ul>
+<li><strong>Resultado não conferido (F5):</strong></li>
+<li>a decisão de apagar depende de quantas leituras estão atrasadas (achado 1);</li>
+<li>"NÃO apaguei" depois de pedir para apagar (achado 3);</li>
+<li>"foi apagada (conferido)" sem pedir nada (achado 4);</li>
+<li>"lida de volta do disco" sem forçar a gravação (achado 11).</li>
+<li><strong>O vizinho passa (F2):</strong> <code>pwsh.exe.</code> e <code>Update.exe.</code> (achado 2); a cópia do cmd.exe (achado 5).</li>
+<li><strong>Proteção sem teste, ou teste afinado ao código (F3):</strong></li>
+<li>o teste do achado 1 imita exatamente uma leitura atrasada (achado 1);</li>
+<li>a segunda olhada depois do PATH (achado 10).</li>
+<li><strong>O escrito não bate com o código (F7):</strong> o caminho do teste do lote (achado 9) e "lida de volta do disco"
+  (achado 11).</li>
+<li><strong>O teste supõe o computador (F4):</strong> os testes do desinstalar no PC (achado 12, não é deste passo).</li>
+<li><strong>Peça duplicada (§11.12.1):</strong> o laço de rodar com a vigia, em dois lugares (achado 8).</li>
+<li><strong>F1 (dado que o conferido troca) e F9 (mexer no que é do Samuel):</strong> não achei caso novo. Nenhuma junção, nada
+  mudou no Windows, o repositório não ficou raso.</li>
+</ul>
+<h2>As regras que conferi</h2>
+<ul>
+<li><strong>§11.12 (uma regra, um lugar):</strong></li>
+<li>a recusa é uma função só para o rodar, o lançar e o grupo, e isso está cumprido;</li>
+<li>dentro dela, o nome é lido de dois jeitos (achado 2);</li>
+<li>a vigia é uma só; o laço que a aplica, não (achado 8).</li>
+<li><strong>§11.12.2 (nada dado como feito sem conferir):</strong> falha nos achados 1, 3 e 4.</li>
+<li><strong>§11.12.3 (a lista das falhas):</strong> faltam os caminhos 1 a 7 acima.</li>
+<li><strong>§11.12.6 e D-813 (tudo o que a peça de fora aceita):</strong></li>
+<li>para o lote, cumprida, e rodada de verdade (pelo outro e por mim);</li>
+<li>para a lista de nomes, não: o ponto no fim, que o próprio comentário da peça cita, não vale ali.</li>
+<li><strong>D-811 (cada proteção com o teste que falha sem ela):</strong> cumprida nos 10 achados. Fica o teste afinado do achado 1
+  e uma olhada sem teste (achado 10).</li>
+<li><strong>D-776:</strong> a conta e a vigia pegam o motor baixado. Fica de fora o download para somar (achado 7).</li>
+<li><strong>D-795:</strong> sem mudança nesta volta. O Setup.exe continua fora da lista do destino (conferido no código).</li>
+<li><strong>Decisão da gerente (depois de pedir para liberar, uma versão liberada nunca é apagada, D-014):</strong></li>
+<li>cumprida na pasta das provas;</li>
+<li>no GitHub, pela metade (achado 1).</li>
+<li><strong>D-798:</strong> o ramo não tem rótulo de pronto.</li>
+<li><strong>D-809:</strong> não criei junção.</li>
+<li><strong>CLAUDE.md §10.9 (apagar):</strong> só apaguei o que eu criei, dentro da minha pasta de rascunho.</li>
+</ul>
+<h2>Achados</h2>
+<ol>
+<li>
+<p><strong>MÉDIO: no GitHub, duas leituras atrasadas depois de liberar fazem o publicar apagar a versão liberada.</strong>
+   - Onde (código <code>e4263c0a</code>): <code>publicar_versao_kaique.py:539</code>, <code>:509</code>, <code>:520</code> e <code>:617</code>; <code>tests/test_publicar_versao.py:955</code>.
+     Nas funções <code>apagar_publicacao</code> (o caminho <code>so_rascunho</code>),
+     <code>DestinoGitHub.apagar_rascunho</code>, <code>DestinoGitHub._pedir_para_apagar</code> e <code>publicar_arquivos</code> (o <code>except
+     BaseException</code>). O teste é <code>tests/test_publicar_versao.py</code>, classe <code>_GitHubQueLiberaEPerdeAResposta</code>
+     (<code>self.atrasadas = 1</code>).
+   - O que acontece:</p>
+<ul>
+<li>o liberar chega ao GitHub e a resposta se perde;</li>
+<li>a leitura de <code>apagar_publicacao</code> e a de <code>apagar_rascunho</code> ainda dizem "rascunho";</li>
+<li>o publicar pede para apagar, e sem <code>--cleanup-tag</code>, porque acha que é rascunho;</li>
+<li>a versão liberada some e a frase diz "a publicação v9.9.9 foi apagada de o GitHub (dono/projeto) (conferido)".</li>
+<li>O pior: a etiqueta <code>v9.9.9</code> fica no GitHub. O próximo publicar com o mesmo número não acha publicação nenhuma,
+ cria outra e a libera nessa etiqueta. É exatamente o "número livre para outro conteúdo" que a decisão da gerente
+ queria evitar.</li>
+<li>Provado com o gh de mentira dos próprios testes, mudando só o atraso de 1 para 2 leituras
+ (<code>anexos-3/testes_q.py.txt</code>, Q1; resultado em <code>anexos-3/testes_q-resultado.txt</code>).</li>
+<li>Não sei se o GitHub de verdade atrasa duas leituras. O ponto é outro: o conserto funciona para o número de
+ leituras que o código faz, e o teste imita esse número.</li>
+<li>O que pedir (a gerente decide, porque mexe na decisão dela):</li>
+<li><strong>(a) Sugestão:</strong> depois de pedir para liberar, não apagar nada, em nenhum destino. Um rascunho no GitHub não
+   aparece para o programa do Kaique. A frase diz exatamente o que ficou ("pode ter ficado liberada ou como
+   rascunho; confira e, se for rascunho, apague com <code>--apagar</code>"). É uma regra só, sem depender de leitura.</li>
+<li><strong>(b)</strong> Manter como está, e escrever no plano que, no GitHub, a regra depende de a leitura estar em dia.</li>
+<li>Com um teste que use dois ou mais atrasos.</li>
+</ul>
+</li>
+<li>
+<p><strong>MÉDIO: a peça do Windows deixa rodar o PowerShell 7 e o atualizador do Velopack com um ponto no fim do nome.</strong>
+   - Onde: <code>core/windows.py:1118</code> e <code>core/windows.py:1040</code>. Em <code>_programa_com_funcao_propria</code> (a linha
+     <code>if nome.removesuffix(".exe") in PROGRAMAS_COM_FUNCAO_PROPRIA</code>) e <code>_caminho_do_programa</code> (o <code>strip()</code> não tira o
+     ponto do fim). Usada pelo <code>rodar_e_esperar</code>, pelo <code>lancar_solto</code> e pelo <code>abrir_em_grupo</code>.
+   - O que acontece:</p>
+<ul>
+<li><code>pwsh.exe</code> é recusado, mas <code>pwsh.exe.</code>, <code>pwsh.exe..</code> e <code>Update.exe.</code> passam;</li>
+<li>o Windows tira o ponto do fim e roda o <code>pwsh.exe</code> (CreateProcessW, pelo GetFullPathNameW);</li>
+<li>a mesma função já tira o ponto para conferir o .bat e o .cmd (<code>os.path.abspath</code>), mas compara a lista de nomes
+   pelo nome cru.</li>
+<li>Provado de verdade, com um <code>pwsh.exe</code> de prova (uma cópia do <code>hostname.exe</code>) numa pasta minha: o rodar e o
+ grupo rodaram <code>pwsh.exe.</code> e devolveram o nome do computador (<code>anexos-3/e2_nomes.py.txt</code>,
+ <code>anexos-3/e2-nomes-resultado.txt</code>). O <code>pwsh.exe::$DATA</code> passa pela peça, mas o Windows não o roda.</li>
+<li>Já existia no código da volta 2 (conferi: <code>pwsh.exe.</code> passava lá). Mas está na função que esta volta mexeu, e
+ ela é "a regra única".</li>
+<li>Família F2, de novo na peça do passo 1.</li>
+<li>O que pedir: ler o nome <strong>uma vez só</strong>, já completado pelo Windows (o mesmo <code>abspath</code>, ou o <code>resolve</code>), e usar
+ esse nome em todas as conferências da função: a lista, a pasta do Windows e o lote. Com um teste para
+ <code>pwsh.exe.</code>, <code>pwsh.exe..</code> e <code>Update.exe.</code> no rodar, no lançar e no grupo.</li>
+</ul>
+</li>
+<li>
+<p><strong>BAIXO-MÉDIO: a frase diz "NÃO apaguei" depois de ter pedido para apagar o rascunho.</strong>
+   - Onde: <code>publicar_versao_kaique.py:630</code> (<code>publicar_arquivos</code>, o ramo <code>except Parou as outro</code> com <code>pediu_para_liberar</code>).
+   - O que acontece:</p>
+<ul>
+<li>o liberar falha e o GitHub continua com o rascunho;</li>
+<li>o apagar do rascunho dá certo;</li>
+<li>a leitura de depois não responde (a rede caiu);</li>
+<li>a frase diz "não deu para ler a situação agora ... NÃO apaguei", e o rascunho foi apagado.</li>
+<li>Provado com o gh de mentira (Q2).</li>
+<li>O que pedir: o apagar diz à frase se chegou a pedir. Se pediu: "pedi para apagar o rascunho e não deu para
+ conferir se sumiu".</li>
+</ul>
+</li>
+<li>
+<p><strong>BAIXO-MÉDIO: "foi apagada (conferido)" sem ter pedido nada, com o rascunho ainda no GitHub.</strong>
+   - Onde: <code>publicar_versao_kaique.py:550</code> (<code>apagar_publicacao</code>, o <code>if antes is None: return None</code>), <code>:620</code> (a frase
+     de <code>publicar_arquivos</code>) e <code>:600</code> (o <code>criar_rascunho</code> fora do <code>try</code>).
+   - O que acontece:</p>
+<ul>
+<li>o rascunho acabou de ser criado;</li>
+<li>o envio falha;</li>
+<li>a leitura ainda não acha o rascunho (o mesmo atraso do achado 1);</li>
+<li>o apagar entende "já sumiu", não pede nada, e a frase diz "foi apagada ... (conferido)";</li>
+<li>o rascunho fica.</li>
+<li>Provado com o gh de mentira (Q3).</li>
+<li>Já era assim antes desta volta.</li>
+<li>Também: o <code>criar_rascunho</code> fica fora do <code>try</code>. Se ele cria e a resposta se perde, nada é desfeito e a frase não
+ diz que pode ter ficado um rascunho. O próximo publicar avisa ("sobrou um rascunho").</li>
+<li>O que pedir: no caminho de erro, "não achei" logo depois de criar não é "sumiu". A frase diz "não achei o
+ rascunho para apagar; confira com <code>--apagar</code>".</li>
+</ul>
+</li>
+<li>
+<p><strong>BAIXO: uma cópia do cmd.exe (ou de qualquer programa do Windows) fora da pasta do Windows passa pela peça.</strong>
+   - Onde: <code>core/windows.py:1108</code> (<code>_programa_com_funcao_propria</code>): a regra é pela pasta.
+   - Provado: <code>meu-cmd.exe</code> (cópia do <code>cmd.exe</code>) numa pasta minha rodou <code>/c echo</code> pelo rodar genérico
+     (<code>anexos-3/e2-nomes-resultado.txt</code>).
+   - É escolha da gerente no passo 1 ("a regra é pela pasta"). Só um código que copia um programa do Windows de
+     propósito faz isso.
+   - O que pedir (a gerente decide):</p>
+<ul>
+<li>escrever como limite da peça;</li>
+<li>ou comparar a coisa de verdade: o nome original gravado dentro do programa, ou quem assinou.</li>
+</ul>
+</li>
+<li>
+<p><strong>BAIXO: regressão sem uso hoje: os atalhos de aplicativo da Loja são recusados com uma frase falsa.</strong>
+   - Onde: <code>core/windows.py:1104</code> (<code>_nao_e_programa_do_windows</code>, o <code>except OSError: return True</code>).
+   - O que acontece:</p>
+<ul>
+<li>o <code>winget.exe</code> e o atalho <code>python.exe</code> de <code>%LOCALAPPDATA%\Microsoft\WindowsApps</code> não deixam ler o começo do
+   arquivo (erro 22);</li>
+<li>a peça recusa com "este programa do Windows tem função própria na peça: use a função dela";</li>
+<li>não existe essa função;</li>
+<li>no código da volta 2, o <code>winget --version</code> rodava.</li>
+<li>Nenhum chamador usa isso hoje. Pode aparecer nos passos 3 a 5.</li>
+<li>O que pedir: uma frase própria ("não consegui ler o programa para saber se é um programa do Windows"), e a
+ escolha escrita (recusar na dúvida está certo; a frase é que não).</li>
+</ul>
+</li>
+<li>
+<p><strong>BAIXO: a soma lida do GitHub baixa arquivos grandes para o C: fora da conta e da vigia.</strong>
+   - Onde: <code>publicar_versao_kaique.py:462</code> e <code>:470</code>, <code>DestinoGitHub.soma</code> (baixa para
+     <code>%TEMP%\publicar-soma-...</code> quando o GitHub não dá o "digest").
+   - O que acontece: é o vizinho do achado 7 da volta 2. Sem o "digest", a leitura de volta baixa o pacote (uns
+     460 MB), o .msi (uns 826 MB) e o motor, duas vezes (o motor é lido no começo e na conferência). Isso vai para o C:,
+     sem a vigia e fora da conta.
+   - As Ressalvas dizem "mais lento, ainda certo", e não falam do disco.
+   - O que pedir: baixar para o rascunho com <code>baixar_vigiado</code> e a vigia, e contar. Ou escrever que, sem o "digest",
+     o C: pode encher (D-776).</p>
+</li>
+<li>
+<p><strong>BAIXO: o laço "rodar um programa, olhar a vigia e fechar" está em dois lugares.</strong>
+   - Onde: <code>empacotar.py:1424</code> (<code>rodar_vpk</code>, pela peça, num grupo) e <code>publicar_versao_kaique.py:391</code> (<code>DestinoGitHub._gh</code>, o
+     <code>subprocess.Popen</code> direto, sem a peça nem o grupo).
+   - O que acontece:</p>
+<ul>
+<li>a regra da vigia é uma só;</li>
+<li>o jeito de esperar, de fechar e de tratar o Ctrl+C foi escrito duas vezes, e cada um fecha de um jeito;</li>
+<li>o gh continua rodando fora da peça, como as Ressalvas já dizem ("duas peças de conversa com o GitHub").</li>
+<li>O que pedir: a gerente decide se o gh passa pela peça (o <code>abrir_em_grupo</code> já faz o laço), ou se fica escrito
+ como está.</li>
+</ul>
+</li>
+<li>
+<p><strong>BAIXO: o teste do lote que não se acha usa um caminho escrito errado.</strong>
+   - Onde: <code>tests/test_windows_peca.py:1354</code>, <code>test_um_lote_que_a_peca_nao_acha_tambem_e_recusado_pela_extensao</code>
+     (<code>"C:\nao\existe.bat"</code> num texto comum).
+   - O que acontece:</p>
+<ul>
+<li>o <code>\n</code> vira uma quebra de linha, e o caminho testado não é o escrito;</li>
+<li>o <code>\e</code> dá o aviso "invalid escape sequence" (são os 3 avisos da rodada do arquivo);</li>
+<li>o Python diz que isso vai virar erro no futuro, e aí o arquivo inteiro deixa de rodar.</li>
+<li>Hoje o teste ainda cobra a extensão: a mutação que tira a extensão faz ele falhar.</li>
+<li>O que pedir: texto cru (<code>r"C:\nao\existe.bat"</code>).</li>
+</ul>
+</li>
+<li>
+<p><strong>BAIXO: uma olhada da peça sem teste, que não achei como alcançar.</strong></p>
+<ul>
+<li>Onde: <code>core/windows.py:1141</code> (<code>_programa_com_funcao_propria</code>), o <code>or _nao_e_programa_do_windows(caminho)</code> do fim
+  (depois de achar o nome pelo PATH).</li>
+<li>Desliguei: os 62 testes da peça passam.</li>
+<li>Não achei um caso em que ela importe. O nome sozinho que vira <code>.BAT</code> pelo <code>PATHEXT</code> o Windows não roda (ele
+  procura <code>.exe</code>), e o atalho para um lote a primeira olhada já pega.</li>
+<li>O que pedir: um teste, ou a explicação de que é em dobro na seção "Cada proteção".</li>
+</ul>
+</li>
+<li>
+<p><strong>BAIXO: "lida de volta do disco" não força a gravação no disco.</strong></p>
+<ul>
+<li>Onde: <code>empacotar.py:1363</code> e <code>empacotar.py:1416</code> (<code>copiar_inteiro</code>: lê de volta e troca o nome com <code>os.replace</code>, sem <code>os.fsync</code>).</li>
+<li>O que acontece:</li>
+<li>a leitura vem do que o Windows ainda guarda na memória;</li>
+<li>se o HD externo sair ou a luz cair logo depois, o arquivo pode ficar com o nome certo e o conteúdo pela
+    metade.</li>
+<li>O programa do Kaique confere a soma assinada e recusaria esse pacote. O .msi da pasta de saída, não.</li>
+<li>O que pedir: <code>os.fsync</code> da cópia antes de ler de volta e de trocar o nome, ou corrigir o texto.</li>
+</ul>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO (não é deste passo): dois arquivos de teste do desinstalar falham no PC.</strong></p>
+<ul>
+<li>Onde: <code>tests/test_decisoes_desinstalar_pasta.py:96</code> (a proteção do teste); <code>tests/test_decisoes_desinstalar.py</code>
+  (25 falham) e <code>tests/test_decisoes_desinstalar_pasta.py</code> (5 falham).</li>
+<li>Falham igual no worktree do passo 2 e no código da volta 2.</li>
+<li>A proteção do próprio teste recusa qualquer "C:\" no comando, e no PC a pasta temporária fica no C:. No GitHub
+  ela fica no D:, e eles passam.</li>
+<li>É a família F4. Para a Lista de bugs.</li>
+</ul>
+</li>
+</ol>
+<h2>O que falta para a prova à vista</h2>
+<ol>
+<li>Quem escreveu consertar os achados 1 e 2, cada um com o teste que falha sem o conserto. O 1 precisa antes da
+   escolha da gerente, (a) ou (b). De preferência também os achados 3, 4, 6 e 9.</li>
+<li>Ou a gerente decidir levar à prova com eles escritos. O roteiro da prova não passa pelos achados 2 a 12. O
+   achado 1 só aparece se a leitura do GitHub atrasar, o que a prova não provoca.</li>
+<li>Uma rodada do GitHub sobre o conserto, e outro agente novo para conferir (D-815).</li>
+<li>Na prova à vista, item 8 do roteiro: depois do <code>--apagar</code>, conferir também que a etiqueta sumiu do GitHub (as
+   etiquetas do repositório), não só a publicação.</li>
+</ol>
+<h2>Para a gerente: o que ficou fora do projeto</h2>
+<ul>
+<li>Na pasta de rascunho desta conversa
+  (<code>C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\848d7b72-406b-4bfe-aabf-f5b3005d7b22\scratchpad\v3\</code>)
+  deixei:</li>
+<li>as cópias do código: <code>novo\</code> (<code>e4263c0a</code>) e <code>velho\</code> (<code>9cd555a5</code>, com os três arquivos de teste novos copiados
+    por cima);</li>
+<li>as pastas das experiências <code>casos1\</code> a <code>casos4\</code>, com os lotes, o atalho <code>.lnk</code>, o <code>pwsh.exe</code> e o <code>Update.exe</code>
+    de prova (cópias do <code>hostname.exe</code>) e a cópia do <code>cmd.exe</code>;</li>
+<li>os scripts.</li>
+<li>Não apaguei nada.</li>
+<li>Os processos de prova que abri foram fechados.</li>
+<li>Nenhuma junção foi criada. Nada mudou no Windows: nenhuma tarefa, licença, pergunta de administrador ou janela. O
+  atalho <code>.lnk</code> foi escrito como arquivo, pelo próprio Windows, dentro de <code>casos3\</code>.</li>
+<li>Consultei o GitHub duas vezes, para a situação da rodada 44675872042 e o registro dela. O repositório não ficou
+  raso.</li>
+<li>No projeto, só escrevi este relatório (três formatos) e a pasta <code>quem-quebrou/anexos-3/</code>.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 20/11/2026 às 01:59</p>
+</body>
+</html>

@@ -1,0 +1,2 @@
+C:\Program Files\GitHub CLI\gh.exe: linhas na foto, aberto parado (30 vezes): {1: 30}
+D:\programas\EditorImpressao\.venv\Scripts\python.exe: linhas na foto, aberto parado (30 vezes): {1: 30}

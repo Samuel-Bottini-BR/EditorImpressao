@@ -1,0 +1,87 @@
+"""E5 (quem tenta quebrar, volta 4): os vizinhos do nome com ponto no fim, rodados de verdade pela peça do Windows.
+Só programas inofensivos: cópias do hostname.exe com os nomes pwsh.exe e Update.exe numa pasta minha, e o whoami.exe e o
+hostname.exe da pasta do Windows. Nada pede licença; nenhuma janela.
+Uso: python e5_nomes.py <copia do codigo> <pasta dos casos>"""
+import ctypes
+import os
+import shutil
+import sys
+from pathlib import Path
+
+RAIZ, CASOS = Path(sys.argv[1]), Path(sys.argv[2])
+sys.path.insert(0, str(RAIZ))
+from core import windows  # noqa: E402
+
+if CASOS.exists():
+    shutil.rmtree(CASOS)
+pasta = CASOS / "pasta-de-programas"
+pasta.mkdir(parents=True)
+sistema = windows.pasta_do_sistema()
+for nome in ("pwsh.exe", "Update.exe"):
+    shutil.copyfile(sistema / "hostname.exe", pasta / nome)
+# um fluxo escondido (ADS) com o nome pwsh.exe, dentro de um arquivo de texto
+(pasta / "nada.txt").write_text("nada", encoding="utf-8")
+with open(str(pasta / "nada.txt") + ":pwsh.exe", "wb") as f:
+    f.write((sistema / "hostname.exe").read_bytes())
+os.environ["PATH"] = str(pasta) + os.pathsep + os.environ["PATH"]     # só o PATH deste processo
+os.chdir(pasta)
+
+curto = ctypes.create_unicode_buffer(600)
+ctypes.windll.kernel32.GetShortPathNameW(str(pasta / "pwsh.exe"), curto, 600)
+P = str(pasta)
+S = str(sistema)
+casos = [
+    ("A pwsh.exe (caminho inteiro)", P + r"\pwsh.exe"),
+    ("A pwsh.exe. ", P + r"\pwsh.exe. "),
+    ("A PWSH.EXE. .", P + r"\PWSH.EXE. ."),
+    ("A pwsh (sem extensao)", P + r"\pwsh"),
+    ("A pwsh.exe\\.", P + r"\pwsh.exe\."),
+    ("A sub\\..\\pwsh.exe.", P + r"\sub\..\pwsh.exe."),
+    ("A pwsh.exe/ (barra no fim)", P + "/pwsh.exe/"),
+    ("A 8.3: " + curto.value, curto.value),
+    ("A \\\\?\\ + pwsh.exe", "\\\\?\\" + P + r"\pwsh.exe"),
+    ("A \\\\?\\ + pwsh.exe.", "\\\\?\\" + P + r"\pwsh.exe."),
+    ("A \\\\.\\ + pwsh.exe.", "\\\\.\\" + P + r"\pwsh.exe."),
+    ("A \\??\\ + pwsh.exe", "\\??\\" + P + r"\pwsh.exe"),
+    ("A relativo .\\pwsh.exe.", r".\pwsh.exe."),
+    ("A aspas no meio: \"pwsh.exe\".", '"' + P + r'\pwsh.exe".'),
+    ("A pwsh.exe::$DATA", P + r"\pwsh.exe::$DATA"),
+    ("A ADS nada.txt:pwsh.exe", P + r"\nada.txt:pwsh.exe"),
+    ("A Update.exe. (caminho)", P + r"\Update.exe."),
+    ("B so o nome: pwsh.exe.", "pwsh.exe."),
+    ("B so o nome: PWSH.EXE..", "PWSH.EXE.."),
+    ("B so o nome: pwsh", "pwsh"),
+    ("B so o nome: pwsh. ", "pwsh. "),
+    ("B so o nome: \"pwsh.exe\"", '"pwsh.exe"'),
+    ("B so o nome: pwsh.exe<TAB>", "pwsh.exe\t"),
+    ("B so o nome: update.", "update."),
+    ("B so o nome: Update.exe. .", "Update.exe. ."),
+    ("C whoami.exe. (so o nome)", "whoami.exe."),
+    ("C whoami (so o nome)", "whoami"),
+    ("C caminho do Windows + whoami.exe.", S + r"\whoami.exe."),
+    ("C \\\\?\\ + whoami.exe", "\\\\?\\" + S + r"\whoami.exe"),
+    ("C \\??\\ + whoami.exe", "\\??\\" + S + r"\whoami.exe"),
+    ("C \\??\\ + whoami.exe.", "\\??\\" + S + r"\whoami.exe."),
+    ("C \\??\\UNC\\localhost\\C$...", "\\??\\UNC\\localhost\\" + S.replace(":", "$", 1) + r"\whoami.exe"),
+    ("C System32\\..\\System32\\whoami.exe", S + r"\..\System32\whoami.exe"),
+    ("C \\Windows\\System32\\whoami.exe (sem letra)", S[2:] + r"\whoami.exe"),
+]
+for nome, programa in casos:
+    try:
+        motivo = windows._por_que_recusa(programa)
+    except Exception as erro:  # noqa: BLE001
+        motivo = f"(a peça levantou {erro!r})"
+    r = windows.rodar_e_esperar([programa], limite_s=20)
+    saida = ((r.dados or {}).get("saida", "") or "").strip().replace(os.environ.get("COMPUTERNAME", "@@"), "<pc>")
+    saida = saida.replace(os.environ.get("USERNAME", "@@").lower(), "<conta>")
+    # o que o Windows faria SEM a peça (o subprocess direto), para saber se o nome roda de verdade
+    import subprocess
+    try:
+        cru = subprocess.run([programa], capture_output=True, timeout=20, creationflags=windows.CREATE_NO_WINDOW)
+        windows_roda = f"roda (código {cru.returncode})" if cru.returncode == 0 else f"código {cru.returncode}"
+    except OSError as erro:
+        windows_roda = f"não roda ({getattr(erro, 'winerror', None) or erro.errno})"
+    except subprocess.TimeoutExpired:
+        windows_roda = "tempo"
+    print(f"{nome:44} | peça: {'RECUSA' if motivo else 'deixa':6} | Windows sem a peça: {windows_roda:18} | "
+          f"pela peça: {r.desfecho} {saida[:30]!r}", flush=True)

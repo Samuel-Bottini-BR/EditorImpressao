@@ -1,0 +1,56 @@
+"""Volta 12 do passo 2: as mutacoes G1 a G5 do relatorio 10 (os mesmos trechos do script de quem quebrou,
+quem-quebrou/anexos-10/mutacoes-g-c-b-d.py.txt), uma por vez, numa copia a parte, contra a guarda NOVA das frases.
+Cada arquivo volta como estava (conferido byte a byte). Uso: python mutacoes_g.py <copia> <resultado>"""
+import subprocess
+import sys
+from pathlib import Path
+
+COPIA, RESULTADO = Path(sys.argv[1]), Path(sys.argv[2])
+PY = r"D:\programas\EditorImpressao\.venv\Scripts\python.exe"
+TESTE = ["tests/test_publicar_versao.py", "-k", "volta11_nenhuma"]
+MUTACOES = [
+    ("G1 concatenacao: o motor publicado 'em ' + destino.nome",
+     "raise Parou(f\"o motor publicado {com_preposicao('em', destino.nome)} não confere: {motivo}\")",
+     "raise Parou(\"o motor publicado em \" + destino.nome + f\" não confere: {motivo}\")"),
+    ("G2 variavel local: guardar_o_instalador 'liberada em {onde}'",
+     "    frase = (f\"a versão {versao_do_pacote} FOI publicada e está liberada {com_preposicao('em', destino.nome)}\"",
+     "    onde = destino.nome\n    frase = (f\"a versão {versao_do_pacote} FOI publicada e está liberada em {onde}\""),
+    ("G3 parentese: '(em {destino.nome})' no indice estragado",
+     "raise Parou(f\"o índice {empacotar.NOME_DO_INDICE} lido {com_preposicao('de', destino.nome)}\"\n"
+     "                        f\" está estragado ({erro})\") from erro",
+     "raise Parou(f\"o índice {empacotar.NOME_DO_INDICE} (em {destino.nome})\"\n"
+     "                        f\" está estragado ({erro})\") from erro"),
+    ("G4 .format: DestinoPasta.liberar",
+     "raise Parou(f\"não consegui liberar {etiqueta} {com_preposicao('em', self.nome)} ({erro})\") from erro",
+     "raise Parou(\"não consegui liberar {} em {} ({})\".format(etiqueta, self.nome, erro)) from erro"),
+    ("G5 'por' em vez de 'em' (por a pasta): o rascunho que sobrou",
+     "raise Parou(f\"sobrou um rascunho de {etiqueta} {com_preposicao('em', destino.nome)}\"",
+     "raise Parou(f\"sobrou um rascunho de {etiqueta} deixado por {destino.nome}\""),
+]
+
+
+def rodar() -> str:
+    """A guarda, na copia; devolve o resumo e a linha acusada."""
+    r = subprocess.run([PY, "-m", "pytest", *TESTE, "-q", "-p", "no:cacheprovider"], cwd=COPIA, capture_output=True,
+                       text=True, encoding="utf-8", errors="replace", timeout=900)
+    linhas = [l for l in r.stdout.splitlines() if l.strip()]
+    acusado = [l for l in linhas if l.lstrip().startswith("E ") and "frases com a preposição escrita à mão" in l][:1]
+    return (linhas[-1] if linhas else r.stderr[-300:]) + "".join(f"\n      {a.strip()[:260]}" for a in acusado)
+
+
+alvo = COPIA / "publicar_versao_kaique.py"
+original = alvo.read_bytes()
+texto = original.decode("utf-8").replace("\r\n", "\n")
+saida = []
+for nome, velho, novo in MUTACOES:
+    assert texto.count(velho) == 1, nome
+    alvo.write_bytes(texto.replace(velho, novo).encode("utf-8"))
+    try:
+        saida.append(f"{nome}: {rodar()}")
+    finally:
+        alvo.write_bytes(original)
+    assert alvo.read_bytes() == original
+    print(saida[-1], flush=True)
+saida.append(f"sem mutacao: {rodar()}")
+RESULTADO.write_text("\n".join(saida) + "\n", encoding="utf-8")
+print(saida[-1])

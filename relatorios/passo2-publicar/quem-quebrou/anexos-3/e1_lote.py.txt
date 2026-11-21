@@ -1,0 +1,64 @@
+"""E1: o que o Windows roda pelo cmd.exe e o que a peca recusa (volta 3 de quem tenta quebrar)."""
+import ctypes, os, shutil, subprocess, sys
+from ctypes import wintypes
+from pathlib import Path
+
+RAIZ = Path(sys.argv[1]); CASOS = Path(sys.argv[2])
+sys.path.insert(0, str(RAIZ))
+from core import windows  # noqa
+
+if CASOS.exists():
+    shutil.rmtree(CASOS)
+CASOS.mkdir(parents=True)
+marca = CASOS / "marca.txt"
+LOTE = f'@echo off\r\necho %COMSPEC% rodou {{nome}}>> "{marca}"\r\n'
+
+def curto(p):
+    buf = ctypes.create_unicode_buffer(520)
+    n = ctypes.windll.kernel32.GetShortPathNameW(str(p), buf, 520)
+    return buf.value if n else None
+
+casos = []
+def lote(nome, prefixo=b""):
+    p = CASOS / nome
+    p.write_bytes(prefixo + LOTE.format(nome=nome).encode())
+    return p
+
+# 1. nomes do lote
+for nome in ["a.bat", "b.CMD", "c.batx", "d.cmdfoo", "e.bat1", "f.btm", "g.com", "h.ps1", "i.vbs", "j.js",
+             "k", "l.txt", "nome-bem-comprido.batch", "outro-comprido.cmdx"]:
+    casos.append((nome, str(lote(nome))))
+# 2. lote que comeca com MZ
+for nome in ["mz.bat", "mz2.batx", "mz3.cmdx"]:
+    casos.append((nome + " (MZ)", str(lote(nome, b"MZ\r\n"))))
+# 3. nomes escritos de outro jeito
+a = CASOS / "a.bat"
+casos += [("a.bat. (ponto)", str(a) + "."), ("a.bat (espaco)", str(a) + " "), ("a.bat::$DATA", str(a) + "::$DATA"),
+          ("a.BaT. .", str(CASOS / "a.BaT. ."))]
+for nome in ["nome-bem-comprido.batch", "outro-comprido.cmdx", "a.bat"]:
+    c = curto(CASOS / nome)
+    if c:
+        casos.append((f"curto de {nome}: {Path(c).name}", c))
+# 4. so o nome, pela pasta atual
+casos += [("so o nome a.bat (pasta atual)", "a.bat"), ("so o nome a (PATHEXT)", "a"), ("so o nome k", "k")]
+
+def rodar_cru(cmd):
+    try:
+        r = subprocess.run([cmd], capture_output=True, timeout=20, cwd=str(CASOS))
+        return f"codigo {r.returncode}"
+    except OSError as e:
+        return f"OSError {getattr(e, 'winerror', '')} {e.strerror}"
+    except subprocess.TimeoutExpired:
+        return "tempo"
+
+os.chdir(CASOS)
+print(f"{'caso':45} | {'Windows cru':28} | marca? | peça recusa? | rodar_e_esperar")
+for nome, cmd in casos:
+    marca.unlink(missing_ok=True)
+    cru = rodar_cru(cmd)
+    rodou = marca.exists()
+    marca.unlink(missing_ok=True)
+    recusa = windows._programa_com_funcao_propria(cmd)
+    r = windows.rodar_e_esperar([cmd], limite_s=20)
+    rodou2 = marca.exists()
+    print(f"{nome:45} | {cru:28} | {'SIM' if rodou else 'nao':6} | {'sim' if recusa else 'NAO':12} | {r.desfecho} {'(RODOU PELO CMD)' if rodou2 else ''}")

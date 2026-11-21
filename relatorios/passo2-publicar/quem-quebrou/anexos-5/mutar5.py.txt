@@ -1,0 +1,58 @@
+"""Quem tenta quebrar, volta 5 (D-811): mutações MINHAS, diferentes das do escritor, uma por vez, numa CÓPIA
+(git archive de 35ec0c27). Cada uma desliga ou entorta uma proteção e roda os arquivos de teste INTEIROS que deviam
+acusar. Acusada = algum teste falhou. Uso: python mutar5.py <cópia> <saída>"""
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+COPIA, SAIDA = Path(sys.argv[1]), Path(sys.argv[2])
+PY = sys.executable
+PV, WP = "tests/test_publicar_versao.py", "tests/test_windows_peca.py"
+NL = chr(10)
+M = [
+    ("X1 o 'nem abriu' vira qualquer erro do liberar (D-816: depois do pedido, apagaria)", "publicar_versao_kaique.py",
+     "        except NadaSaiu:" + NL, "        except Parou:" + NL, [PV]),
+    ("X2 o gh fechado por tempo no laço sai como 'não abriu' (NadaSaiu no lugar de SemResposta)", "core/windows.py",
+     'return _falhou(motivo, f"{comando[0]}: {fechado.motivo}", abriu=True,',
+     'return _falhou(motivo, f"{comando[0]}: {fechado.motivo}", abriu=False,', [PV, WP]),
+    ("X3 NadaSaiu vira um caso de SemResposta (o delete que nem abriu diria 'pedi para apagar')",
+     "publicar_versao_kaique.py", "class NadaSaiu(Parou):", "class NadaSaiu(SemResposta):", [PV]),
+    ("X4 o fluxo só quando há dois ':' (o relativo sem letra passa)", "core/windows.py",
+     "    return \":\" in resto" + NL, "    return texto.count(\":\") > 1" + NL, [WP]),
+    ("X5 o fluxo olhado só no fim (depois do nome sozinho)", "core/windows.py",
+     "    if _e_fluxo_escondido(caminho):" + NL + "        return FRASE_FLUXO_ESCONDIDO" + NL, "", [WP]),
+    ("X6 a pasta das provas sem o --pasta no comando de apagar", "publicar_versao_kaique.py",
+     "        return f' --pasta \"{self.raiz}\"'", "        return ''", [PV]),
+    ("X7 o tempo de fábrica do gh ignora LIMITE_DO_PEDIDO_S", "publicar_versao_kaique.py",
+     "        limite_s = limite_s or self.LIMITE_DO_PEDIDO_S", "        limite_s = limite_s or 600", [PV]),
+    ("X8 o fluxo escondido aceito se o nome do fluxo não é da lista", "core/windows.py",
+     "    return \":\" in resto" + NL,
+     "    return \":\" in resto and resto.rsplit(\":\", 1)[-1].lower().removesuffix(\".exe\") in PROGRAMAS_COM_FUNCAO_PROPRIA" + NL,
+     [WP]),
+]
+
+
+def rodar(testes):
+    amb = {**os.environ, "QT_QPA_PLATFORM": "offscreen", "PYTHONIOENCODING": "utf-8"}
+    f = subprocess.run([PY, "-m", "pytest", "-q", "-p", "no:cacheprovider", "--tb=line", *testes], cwd=COPIA,
+                       capture_output=True, text=True, encoding="utf-8", errors="replace", env=amb)
+    linhas = [l for l in f.stdout.splitlines() if l.strip()]
+    falhos = [l for l in linhas if l.startswith("FAILED")]
+    return f.returncode == 0, (linhas[-1] if linhas else f.stderr[-200:]), falhos
+
+
+saida = []
+for nome, arq, velho, novo, testes in M:
+    caminho = COPIA / arq
+    original = caminho.read_text(encoding="utf-8")
+    try:
+        assert original.count(velho) == 1, f"{nome}: trecho aparece {original.count(velho)} vezes"
+        caminho.write_text(original.replace(velho, novo), encoding="utf-8")
+        ok, fim, falhos = rodar(testes)
+        saida.append(f"{nome}: {'NÃO acusada' if ok else 'acusada'} ({fim})")
+        saida += [f"    {l[:200]}" for l in falhos[:6]]
+    finally:
+        caminho.write_text(original, encoding="utf-8")
+    print("\n".join(saida[-1 - min(6, len(falhos) if not ok else 0):]), flush=True)
+SAIDA.write_text("\n".join(saida) + "\n", encoding="utf-8")

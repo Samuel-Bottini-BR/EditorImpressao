@@ -1,0 +1,42 @@
+"""E3: um atalho .lnk para o cmd.exe, e um filho que tenta sair do grupo (CREATE_BREAKAWAY_FROM_JOB)."""
+import os, shutil, subprocess, sys, time
+from pathlib import Path
+RAIZ = Path(sys.argv[1]); CASOS = Path(sys.argv[2])
+sys.path.insert(0, str(RAIZ))
+from core import windows  # noqa
+if CASOS.exists():
+    shutil.rmtree(CASOS)
+CASOS.mkdir(parents=True)
+# 1. o atalho: o arquivo .lnk escrito pelo proprio Windows (WScript.Shell, so cria o arquivo; nada muda no Windows)
+lnk = CASOS / "atalho-do-cmd.lnk"
+try:
+    import win32com.client
+    atalho = win32com.client.Dispatch("WScript.Shell").CreateShortcut(str(lnk))
+    atalho.TargetPath = str(windows.pasta_do_sistema() / "cmd.exe")
+    atalho.Arguments = "/c echo rodou"
+    atalho.Save()
+except Exception as erro:  # noqa
+    print("nao consegui criar o .lnk:", erro)
+if lnk.exists():
+    for c in (str(lnk), str(lnk)[:-4] + ".LNK"):
+        try:
+            cru = subprocess.run([c], capture_output=True, timeout=20); cru = f"codigo {cru.returncode}"
+        except OSError as e:
+            cru = f"OSError {e.winerror}"
+        r = windows.rodar_e_esperar([c], limite_s=20)
+        print(f".lnk {Path(c).name}: Windows cru: {cru} | peça recusa? {windows._programa_com_funcao_propria(c)} | {r.desfecho}")
+# 2. o filho que tenta sair do grupo
+marca = CASOS / "filho.txt"
+script = ("import subprocess, sys\n"
+          "try:\n"
+          "    p = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(30)'], creationflags=0x01000000)\n"
+          "    open(sys.argv[1], 'w').write('SAIU DO GRUPO pid %d' % p.pid)\n"
+          "except OSError as e:\n"
+          "    open(sys.argv[1], 'w').write('o Windows nao deixou sair: %r' % (e,))\n")
+prog, r = windows.abrir_em_grupo([sys.executable, "-c", script, str(marca)])
+print("abrir_em_grupo:", r.desfecho, r.motivo)
+if prog:
+    prog.esperar(20)
+    print("filho:", marca.read_text() if marca.exists() else "(nada)")
+    print("fechar_tudo:", prog.fechar_tudo().motivo)
+    prog.soltar()

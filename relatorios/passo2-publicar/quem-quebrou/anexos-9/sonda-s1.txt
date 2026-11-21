@@ -1,0 +1,22 @@
+{
+ "cwd": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\passo2",
+ "empacotar.FERRAMENTAS": "D:\\programas\\EditorImpressao-arquivos\\ferramentas",
+ "empacotar.DOWNLOADS": "D:\\programas\\EditorImpressao-arquivos\\ferramentas\\downloads",
+ "empacotar.LUGARES_DO_MOTOR": [
+  "D:\\programas\\EditorImpressao\\.claude\\worktrees\\passo2\\motor-kraken",
+  "D:\\programas\\EditorImpressao-arquivos\\ferramentas\\motor-kraken",
+  "D:\\programas\\EditorImpressao\\.claude\\worktrees\\passo2\\saida_teste\\motor-kraken"
+ ],
+ "ocr_kraken.lugares_do_motor": [
+  "D:\\programas\\EditorImpressao\\.claude\\worktrees\\passo2\\motor-kraken",
+  "D:\\programas\\EditorImpressao-arquivos\\ferramentas\\motor-kraken"
+ ],
+ "montar_motor_kraken.PASTA_FERRAMENTAS": "D:\\programas\\EditorImpressao-arquivos\\ferramentas",
+ "compilar_detector_gravura.PASTA_FERRAMENTAS_PADRAO": "D:\\programas\\EditorImpressao-arquivos\\ferramentas",
+ "compilar_st_ferramentas.pasta_de_ferramentas_padrao": "D:\\programas\\EditorImpressao-arquivos\\ferramentas",
+ "problema_para_gravar": null,
+ "motor do empacotar": "D:\\programas\\EditorImpressao-arquivos\\ferramentas\\motor-kraken",
+ "erros do empacotar": [],
+ "motor do programa": "D:\\programas\\EditorImpressao-arquivos\\ferramentas\\motor-kraken",
+ "git importado?": false
+}

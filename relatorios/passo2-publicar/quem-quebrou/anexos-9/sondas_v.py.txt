@@ -1,0 +1,86 @@
+"""Sondas de quem tentou quebrar a volta 10 do passo 2 (relatorio 9). Nada aqui roda os scripts que gravam, nem o
+motor do Kraken, nem o git que muda alguma coisa. Uso:
+
+    python sondas_v.py s1            (de dentro da copia passo2 de verdade: os seis lugares e o motor, so lendo)
+    python sondas_v.py s2            (o caminho escrito de outro jeito, D-813: o que o "e o de fabrica?" dos scripts diz)
+    python sondas_v.py s3 <novo>     (a copia do codigo do teste, quando a linha do caminho muda de jeito)
+"""
+import json
+import os
+import sys
+from pathlib import Path, PureWindowsPath
+
+qual = sys.argv[1]
+sys.path.insert(0, os.getcwd())
+
+if qual == "s1":
+    import compilar_detector_gravura
+    import compilar_st_ferramentas
+    import empacotar
+    import montar_motor_kraken
+    from core import ocr_kraken, pasta_das_ferramentas as pf
+    motor, erros = empacotar.achar_motor_kraken()
+    print(json.dumps({
+        "cwd": os.getcwd(),
+        "empacotar.FERRAMENTAS": str(empacotar.FERRAMENTAS),
+        "empacotar.DOWNLOADS": str(empacotar.DOWNLOADS),
+        "empacotar.LUGARES_DO_MOTOR": [str(p) for p in empacotar.LUGARES_DO_MOTOR],
+        "ocr_kraken.lugares_do_motor": [str(p) for p in ocr_kraken.lugares_do_motor()],
+        "montar_motor_kraken.PASTA_FERRAMENTAS": str(montar_motor_kraken.PASTA_FERRAMENTAS),
+        "compilar_detector_gravura.PASTA_FERRAMENTAS_PADRAO": str(compilar_detector_gravura.PASTA_FERRAMENTAS_PADRAO),
+        "compilar_st_ferramentas.pasta_de_ferramentas_padrao": str(compilar_st_ferramentas.pasta_de_ferramentas_padrao()),
+        "problema_para_gravar": pf.problema_para_gravar(),
+        "motor do empacotar": str(motor) if motor else None,
+        "erros do empacotar": erros,
+        "motor do programa": str(ocr_kraken.achar_pasta_do_motor() or ""),
+        "git importado?": "regras_dos_agentes.conversa_com_o_git" in sys.modules,
+    }, ensure_ascii=False, indent=1))
+
+elif qual == "s2":
+    import ctypes
+    padrao = Path(r"D:\programas\EditorImpressao-arquivos\ferramentas")
+    buf = ctypes.create_unicode_buffer(600)
+    ctypes.windll.kernel32.GetShortPathNameW(str(padrao), buf, 600)
+    curto = buf.value
+    jeitos = {
+        "minusculas": r"d:\programas\editorimpressao-arquivos\ferramentas",
+        "barras /": "D:/programas/EditorImpressao-arquivos/ferramentas",
+        "barra no fim": "D:\\programas\\EditorImpressao-arquivos\\ferramentas\\",
+        "com .": r"D:\programas\.\EditorImpressao-arquivos\ferramentas",
+        "com ..": r"D:\programas\EditorImpressao\..\EditorImpressao-arquivos\ferramentas",
+        "\\\\?\\": r"\\?\D:\programas\EditorImpressao-arquivos\ferramentas",
+        "\\\\localhost\\D$": r"\\localhost\D$\programas\EditorImpressao-arquivos\ferramentas",
+        "nome curto": curto,
+    }
+    for nome, texto in jeitos.items():
+        p = Path(texto)
+        print(f"{nome:18} | igual ao de fabrica (o que os scripts comparam): {p == padrao!s:5} | "
+              f"o mesmo lugar no disco: {os.path.samefile(p, padrao) if p.exists() else 'nao existe'} | {texto}")
+
+elif qual == "s3":
+    novo = Path(sys.argv[2])
+    sys.path.insert(0, str(novo))
+    regra = novo / "core" / "pasta_das_ferramentas.py"
+    original = regra.read_bytes()
+    linha = 'PASTA_DAS_FERRAMENTAS = Path(r"D:\\programas\\EditorImpressao-arquivos\\ferramentas")'
+    # o "seguro mexer" do docstring: a linha muda de jeito (um comentario no fim, ou a pasta muda de lugar)
+    jeitos = {
+        "comentario no fim": linha + "  # D-820",
+        "a pasta mudou de lugar": linha.replace("D:\\programas", "E:\\programas"),
+    }
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("t", novo / "tests" / "test_pasta_das_ferramentas.py")
+    try:
+        for nome, nova_linha in jeitos.items():
+            regra.write_bytes(original.decode("utf-8").replace(linha, nova_linha).encode("utf-8"))
+            t = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(t)
+            destino = Path(__file__).resolve().parent / f"s3-{nome.replace(' ', '-')}"
+            destino.mkdir(exist_ok=True)
+            t._copiar_o_codigo(destino, Path(r"C:\pasta de prova\ferramentas"))
+            copiado = (destino / "core" / "pasta_das_ferramentas.py").read_text(encoding="utf-8")
+            achada = [l for l in copiado.splitlines() if l.startswith("PASTA_DAS_FERRAMENTAS")]
+            print(f"{nome}: a copia do teste ficou com: {achada}")
+    finally:
+        regra.write_bytes(original)
+    print("devolvido igual:", regra.read_bytes() == original)

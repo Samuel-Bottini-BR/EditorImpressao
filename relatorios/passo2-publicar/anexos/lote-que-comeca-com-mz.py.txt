@@ -1,0 +1,11 @@
+import subprocess, sys
+from pathlib import Path
+pasta = Path(sys.argv[1])
+pasta.mkdir(parents=True, exist_ok=True)
+marca = pasta / "rodou.txt"
+marca.unlink(missing_ok=True)
+lote = pasta / "mz.bat"
+lote.write_bytes(b"MZ\r\n@echo rodou> \"" + str(marca).encode() + b"\"\r\n")
+r = subprocess.run([str(lote)], capture_output=True)
+print("codigo", r.returncode, r.stdout[:200], r.stderr[:200])
+print("rodou?", marca.exists())

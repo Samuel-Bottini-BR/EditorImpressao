@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo 2, volta 6: sexta conferência de quem tentou quebrar</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Passo 2 do plano da parte do Windows: sexta conferência de quem tentou quebrar (20/11/2026)</h1>
+<p>Sou um agente novo nesta volta (D-815). Não escrevi este código e não fiz as voltas anteriores. Não mexi no código do
+outro.</p>
+<p>O que <strong>não</strong> fiz:</p>
+<ul>
+<li>não rodei o publicar, o PyInstaller, o vpk nem o <code>gh release</code> de verdade (D-785, item 8);</li>
+<li>não pedi licença de administrador e não abri janela na tela do Samuel;</li>
+<li>não disparei rodada do GitHub (só consultei a 44800950547);</li>
+<li>não mexi em <code>C:\EditorImpressaoProva</code> nem na pasta <code>dist\EditorImpressao</code> da prova (só li).</li>
+</ul>
+<p>Tudo rodou em cópias do código (<code>git archive</code> de <code>b9300da8</code> e de <code>3abf9acf</code>), na pasta de rascunho desta conversa, um
+arquivo de teste por vez.</p>
+<h2>Pedido</h2>
+<ul>
+<li>Papel: quebrador</li>
+<li>Commit de partida: 73e36716</li>
+<li>Ramo: passo2-publicar-2026-11-19</li>
+</ul>
+<h2>Arquivos que vou mexer</h2>
+<ul>
+<li><code>publicar_versao_kaique.py</code></li>
+<li><code>empacotar.py</code></li>
+<li><code>core/windows.py</code></li>
+<li><code>tests/test_windows_peca.py</code></li>
+<li><code>tests/test_empacotar.py</code></li>
+<li><code>tests/test_publicar_*.py</code></li>
+<li><code>relatorios/passo2-publicar/</code></li>
+</ul>
+<p>(Copiado do pacote sem mudar. Na prática só escrevi em <code>relatorios/passo2-publicar/quem-quebrou/</code>: este relatório, nos
+três formatos, e a pasta <code>anexos-6/</code>. O pacote <code>anexos/pacote-quem-quebra-volta6.md</code>, que a gerente gerou, vai no mesmo
+commit, como ela pediu.)</p>
+<h2>Veredito</h2>
+<p><strong>NÃO ESTÁ PRONTO: o defeito da prova está consertado pela causa, mas a conferência da pasta que vem de fora ainda
+deixa passar uma pasta errada até o Kaique.</strong></p>
+<p>O que está certo:</p>
+<ul>
+<li><strong>O defeito da prova de 20/11 está consertado pela causa.</strong> A montagem do zero agora põe o Visual C++ antes da ficha.
+  A mesma conferência roda para os dois caminhos, e de novo antes do vpk. Rodei os testes novos no código antigo: 7 de 8
+  falham, como o outro escreveu. No código novo, todos passam.</li>
+<li><strong>Os 3 baixos do relatório 5 estão consertados.</strong> A frase do motor dá o comando com o <code>--pasta</code>, e segui-la publica na
+  pasta. O caminho de rede tem a frase própria. O apagar em que o gh nem abre ganhou teste.</li>
+<li><strong>Nada do que funcionava em volta quebrou.</strong> 11 arquivos de teste, um por vez, todos passam. A rodada do GitHub
+  44800950547 passou na primeira tentativa, sobre o código desta volta.</li>
+</ul>
+<p>O que impede (achado 1, médio): a pasta pronta (<code>--pasta-pronta</code>) é conferida bem menos que a montada. Uma pasta sem o
+Tesseract e com um "Visual C++" qualquer, sem a versão dele ao lado, passa em todas as conferências e é publicada. No
+notebook do Kaique, esse arquivo é rodado pela tarefa do Windows como SYSTEM, e com o Visual C++ velho instalado o
+programa nem tenta trocar. A tentação existe agora: a pasta da prova de 20/11 "só falta o Visual C++", e copiar o
+arquivo à mão para dentro dela passaria.</p>
+<p>Mais 4 baixos (um deles no roteiro da prova: o item 14 não dá para fazer depois do 13) e 5 observações. Desliguei 11
+proteções minhas, diferentes das 10 do outro: os testes acusaram 7.</p>
+<p>Pela D-775, a gerente decide se volta para quem escreveu antes da prova à vista. Se seguir para a prova sem consertar o
+achado 1, o roteiro precisa da troca do achado 2 e de nunca usar <code>--pasta-pronta</code> numa pasta arrumada à mão. Nunca
+"aprovado": só o Samuel aprova.</p>
+<h2>Decisões que esta tarefa precisa cumprir</h2>
+<ul>
+<li>D-727 "pode, se tiver qualquer coisa que o kaique precise, ele tem que estar no instalador né". Aqui: <strong>pela
+  metade</strong>. Montada do zero: o Visual C++ e a versão dele vão no pacote (o teste novo confere os dois, com e sem o
+  instalador). Pela pasta pronta: só se cobra que exista um arquivo com o nome <code>vc_redist.x64.exe</code>, e o Tesseract nem
+  é procurado (achado 1).</li>
+<li>D-767 "não faça mais nada escodindo ou de mentira". Aqui: <strong>cumprida no que o teste novo mostra</strong>. O PyInstaller de
+  mentira do teste não é mais pronto que o de verdade em nada do que se confere (comparei com a pasta da prova, abaixo).
+  Ao contrário: a pasta de mentira antiga (<code>_pasta_pronta</code>) é menos completa que a de verdade e passa justamente porque
+  a conferência é fraca (achado 1). O vpk de verdade continua só na prova à vista.</li>
+<li>D-773 "A". Aqui: <strong>cumprida</strong>. Na pasta das provas, a frase do motor que falta diz
+  <code>publicar_versao_kaique.py --motor --pasta "&lt;pasta&gt;"</code>, e o teste segue a frase e confere que nada vai ao GitHub. As
+  aspas do caminho não têm teste (achado 5).</li>
+<li>D-775 "ok". Aqui: tentei quebrar, sem pergunta do Windows. O resultado vai à gerente.</li>
+<li>D-776 "Sim, no C só tem que cuidar para não encher o disco C inteiro". Aqui: nada desta volta toca a conta do espaço
+  nem a vigia (conferido no diff). O Visual C++ (uns 25 MB) entra no tamanho da pasta, que a conta já mede do disco.</li>
+<li>D-777 "ok, fica assim". Aqui: nada mudou no .msi (conferido no diff); o teste novo cobra o .msi só com o instalador.</li>
+<li>D-785 (item 8, publicar sempre à vista). Aqui: não rodei o publicar de verdade.</li>
+<li>D-788 "1" e D-789 "A". Aqui: o teste novo cobra que o pacote montado do zero sai sem o motor solto; nada mudou no
+  motor publicado.</li>
+<li>D-795 "ok". Aqui: nada mudou no Setup.exe; o teste novo confere que nenhum rascunho sobra.</li>
+<li>D-815 "ok". Aqui: sou um agente novo nesta volta, sem memória da anterior.</li>
+<li>D-816 "A , mas onde estamos antes de você fazer qualquer processo" e D-817 "pode". Aqui: nada desta volta toca o
+  liberar nem o apagar depois do pedido; os <code>test_d816_*</code> passam no arquivo inteiro (85 de 85).</li>
+</ul>
+<h2>O que li</h2>
+<ul>
+<li><code>.claude/agents/verificador.md</code> e o <code>CLAUDE.md</code> inteiro (na cópia <code>passo2</code>; difere da do projeto só na parte da
+  Central), com atenção ao §4.7, §11.8, §11.12 (os 6 pontos) e §11.13.</li>
+<li><code>memoria/INDICE.md</code> (na cópia <code>passo2</code>), <code>memoria/geral/atualizador.md</code> (só existe na pasta do projeto,
+  <code>D:\programas\EditorImpressao\memoria\geral\atualizador.md</code>; na cópia <code>passo2</code> não há) e o catálogo dos erros
+  (<code>obra-juncao</code>, famílias F1 a F10).</li>
+<li>O meu pacote (<code>anexos/pacote-quem-quebra-volta6.md</code>). Ele diz "D-815 a D-817: NÃO ACHADA NO LIVRO"; achei as três no
+  Livro da <code>obra-juncao</code> (linhas 1105 a 1107) e li inteiras, com as outras 10 pedidas.</li>
+<li>No ONDE-PAREI do escritor, todas as partes "Volta 6": "Onde parei", decisões, "O que já está escolhido", "A causa, a
+  regra e todos os caminhos" (a tabela dos 10 caminhos), "O que pode falhar", "O que li", "O que foi feito", "Testes",
+  "Caminho e função", "Cada proteção", "De onde vem cada dado", "Ressalvas", "Ideias e bugs", "O que o agente que tentou
+  quebrar achou" e "A prova de verdade" (itens 1 a 15).</li>
+<li>O relatório 5 de quem tentou quebrar e os anexos <code>reversao-volta6-*</code> e <code>volta6-a-pasta-da-prova.txt</code>.</li>
+<li>O código: <code>git diff b9300da8 3abf9acf</code> inteiro. Li inteiras, no código novo: <code>construir_pasta</code>,
+  <code>preparar_pasta_para_o_velopack</code>, <code>preparar_saida</code>, <code>construir_pacote_do_velopack</code>, <code>conferir_pasta_pronta</code>,
+  <code>esperados_no_pacote_do_velopack</code>, <code>conferir_pacote_do_velopack</code>, <code>gravar_ficha_da_versao</code>, <code>preparar_vc_redist</code>,
+  <code>vc_redist_confere</code>, <code>comando_do_pyinstaller</code> (empacotar); <code>publicar</code>, <code>obter_motor_publicado</code>, <code>_Destino</code> e
+  <code>DestinoPasta</code> (os comandos), <code>_pedir_para_apagar</code>, <code>main</code> (publicar); <code>_caminho_do_programa</code> e <code>_por_que_recusa</code>
+  (peça do Windows); <code>instalar_visual_c_se_faltar</code> e <code>preparar_o_computador</code> (atualizacao). E os testes novos inteiros.</li>
+<li>O registro da prova (<code>C:\EditorImpressaoProva\publicar-versao.log</code> e <code>publicar-motor.log</code>, UTF-16) e a pasta
+  <code>dist\EditorImpressao</code> da cópia <code>passo2</code> (797 MB), só lidos.</li>
+<li>Peça de fora: nesta volta nada novo. A única é <code>shutil.copy2</code> (biblioteca do Python): copia o conteúdo e a data; se o
+  disco enche no meio, levanta <code>OSError</code> e deixa o arquivo pela metade (documentação do Python, <code>shutil</code>). Conferi esse
+  caso rodando (sonda S4, abaixo).</li>
+</ul>
+<h2>O que conferi nas falhas, nas peças de fora e nos caminhos</h2>
+<h3>O defeito da prova: a causa e a prova de reversão (anexo <code>reversao-testes-novos-no-codigo-antigo.txt</code>)</h3>
+<ul>
+<li>No registro da prova (lido): a montagem disse "pronto: ...\dist\EditorImpressao (797 MB)" e logo depois
+  "PAREI: a pasta do programa não serve: ... não tem o Visual C++ em instalar\". Bate com a causa que o outro escreveu.</li>
+<li>Na pasta da prova (lida): <code>.exe</code>, <code>_internal</code>, <code>tesseract</code>, a ficha (versão 1.1.0, saída "atualização", commit
+  <code>b9300da8</code>) e nenhuma <code>instalar\</code>. A conferência do código novo, rodada sobre ela, ainda recusa ("não tem o Visual
+  C++"), como o item 14 do roteiro espera.</li>
+<li>Os testes novos no código de <code>b9300da8</code> (cópia minha, com os dois arquivos de teste de <code>3abf9acf</code> por cima): <strong>7 de 8
+  falham</strong>, como o outro escreveu. Os dois do defeito falham com a frase da prova. O do achado 1 passa (a proteção já
+  existia). Ressalva pequena: o caso <code>[github]</code> do achado 2 falha no código antigo só porque a função nova não existia
+  (<code>AttributeError</code>); no GitHub o comando antigo já estava certo. Ele prova "o mesmo resultado nos dois destinos", não um
+  defeito.</li>
+<li>No código novo: <code>test_publicar_versao.py</code> 85 passaram; <code>test_windows_peca.py</code> 69 passaram e 2 pulados.</li>
+</ul>
+<h3>O PyInstaller de mentira contra a pasta de verdade (D-767)</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>PyInstaller de mentira do teste</th>
+<th>A pasta de verdade da prova (só lida)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>o <code>.exe</code></td>
+<td>um arquivo que começa com "MZ"</td>
+<td><code>EditorImpressao.exe</code>, 21,9 MB</td>
+</tr>
+<tr>
+<td><code>_internal</code></td>
+<td>só o que os <code>--add-data</code> mandam (recursos, modelos, a DLL)</td>
+<td>isso e mais o Python inteiro (29 pastas)</td>
+</tr>
+<tr>
+<td><code>tesseract</code>, a ficha, <code>COMO USAR.txt</code></td>
+<td>postos pelo <code>construir_pasta</code> de verdade</td>
+<td>os mesmos, postos pelo mesmo código</td>
+</tr>
+<tr>
+<td><code>instalar\</code></td>
+<td>posto pelo <code>construir_pasta</code> de verdade (volta 6)</td>
+<td>não tem (código antigo)</td>
+</tr>
+</tbody>
+</table>
+<p>Nada do que as conferências cobram (o <code>.exe</code>, os modelos, a DLL, o Tesseract, o Visual C++, a ficha, nenhum
+<code>motor-kraken\</code>) existe na de mentira sem existir na de verdade. <strong>O teste novo não passa por usar algo mais pronto que
+o de verdade.</strong> O que a de mentira não tem (o Python) nenhuma conferência olha. Lido na fonte e na pasta.</p>
+<h3>Os caminhos até o vpk (a tabela do outro, conferida um por um)</h3>
+<table>
+<thead>
+<tr>
+<th>Caminho</th>
+<th>Passa pela mesma conferência antes do vpk?</th>
+<th>Chega com a pasta certa?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>publicar montado do zero</td>
+<td>sim, duas vezes (cedo e antes do vpk)</td>
+<td>sim: a montagem confere o Visual C++ pela assinatura e pelo tamanho</td>
+</tr>
+<tr>
+<td>publicar <code>--pasta-pronta</code></td>
+<td>sim</td>
+<td><strong>não sempre:</strong> só se cobra o nome do arquivo do Visual C++; o Tesseract e a versão do Visual C++ não (achado 1)</td>
+</tr>
+<tr>
+<td>a segunda passada do instalador</td>
+<td>sim (<code>conferir_pasta_pronta(INSTALADOR)</code>, depois de pôr o motor)</td>
+<td>sim, a mesma pasta da primeira</td>
+</tr>
+<tr>
+<td>a volta da pasta depois do instalador</td>
+<td>não vai ao vpk; tira o zip do motor, também com erro (<code>finally</code>)</td>
+<td>sim</td>
+</tr>
+<tr>
+<td><code>construir_pacote_do_velopack</code> chamado sozinho</td>
+<td>sim, mas <strong>depois</strong> de <code>preparar_saida</code> mexer na pasta (achado 4)</td>
+<td>a pasta recusada já foi mudada</td>
+</tr>
+<tr>
+<td>a pasta portátil e o Inno</td>
+<td>não vai ao vpk; sem <code>instalar\</code> (o teste cobra)</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>a conferência do pacote depois do vpk</td>
+<td>lê o mesmo campo <code>vc_em_instalar</code></td>
+<td>a parte do Visual C++ não tem teste (achado 3)</td>
+</tr>
+</tbody>
+</table>
+<h3>A cópia do Visual C++ que falha no meio, e a pasta de antes do conserto (sondas, anexo <code>sondas6-*</code>)</h3>
+<ul>
+<li><strong>Cópia cortada</strong> (teste do outro) e <strong>disco cheio no meio</strong> (minha sonda S4: a cópia escreve 5 bytes e levanta
+  "Não há espaço suficiente no disco"): a montagem para, a ficha não é gravada, o rascunho do C: é apagado, o vpk não
+  roda, e a frase diz "PAREI: o disco não deixou terminar (...\instalar\vc_redist.x64.exe)". A pasta pela metade fica em
+  <code>dist\</code>, e um <code>--pasta-pronta</code> nela é recusado ("não tem a ficha da versão: monte de novo"). <strong>Nada passa como pronto.</strong></li>
+<li><strong>A pasta de antes do conserto:</strong> a da prova de 20/11 é recusada (rodado). Mas se alguém copiar à mão um
+  <code>vc_redist.x64.exe</code> para dentro dela, ela passa: a ficha diz o commit <code>b9300da8</code>, e ninguém lê o commit (sonda S2).
+  Junto com o achado 1.</li>
+</ul>
+<h3>Um lugar só (§11.12)</h3>
+<ul>
+<li><strong>Pôr o Visual C++:</strong> só <code>preparar_pasta_para_o_velopack</code>, chamada só pela montagem (grep em todo o projeto fora de
+  <code>tests</code>, <code>dist</code>, <code>build</code>). O Inno copia o seu para <code>build\</code> em outro lugar (<code>construir_instalador</code>), outro instalador,
+  de antes; não é deste trabalho.</li>
+<li><strong>"A saída leva o Visual C++?":</strong> o campo <code>Saida.vc_em_instalar</code>, lido nos três lugares (montagem, conferência da
+  pasta, conferência do pacote). Sem desvio para um caso.</li>
+<li><strong>"O Visual C++ é o oficial?":</strong> aqui há <strong>duas réguas</strong> para a mesma regra. A montagem confere pela assinatura da
+  Microsoft (<code>vc_redist_confere</code>) e pelo tamanho; a pasta pronta, só pelo nome do arquivo (achado 1).</li>
+<li><strong>Os comandos das frases:</strong> <code>comando_de_apagar</code> e <code>comando_de_publicar_o_motor</code>, pelos mesmos
+  <code>_argumentos_do_destino</code>. Procurei <code>--motor</code>, <code>--apagar</code> e <code>.py --</code> nas frases do publicar e do empacotar: fora o
+  cabeçalho e o <code>main</code>, nenhum comando do destino escrito à mão.</li>
+<li><strong>A frase do caminho de rede:</strong> sai da regra única <code>_por_que_recusa</code>, pelos três caminhos da peça.</li>
+</ul>
+<h3>As mutações minhas (anexo <code>mutacoes6-resultado.txt</code>; script <code>mutar_quebra6.py.txt</code>)</h3>
+<p>Numa cópia de <code>3abf9acf</code>, uma por vez, o arquivo devolvido ao original depois de cada uma (conferido byte a byte). Rodei
+o arquivo de teste inteiro, não só os testes novos.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>O que desliguei</th>
+<th>Acusada?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Z1</td>
+<td>a montagem não grava a versão do Visual C++ ao lado dele</td>
+<td>sim (2 testes novos)</td>
+</tr>
+<tr>
+<td>Z2</td>
+<td>a conferência do pacote depois do vpk deixa de procurar o Visual C++</td>
+<td><strong>não</strong> (85 + 41 passam)</td>
+</tr>
+<tr>
+<td>Z3</td>
+<td>o publicar deixa de conferir a pasta cedo</td>
+<td>sim (um teste antigo)</td>
+</tr>
+<tr>
+<td>Z4</td>
+<td>o publicar montado do zero passa <code>pecas=None</code> (o pacote não é conferido no Tesseract)</td>
+<td><strong>não</strong></td>
+</tr>
+<tr>
+<td>Z5</td>
+<td>o pedido de apagar trata qualquer erro do gh como "pedi" (outra rota do achado 1)</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Z6</td>
+<td>o comando da pasta sem as aspas no caminho</td>
+<td><strong>não</strong></td>
+</tr>
+<tr>
+<td>Z7</td>
+<td>a conferência só olha se a pasta <code>instalar\</code> existe</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Z8</td>
+<td><code>preparar_saida</code> volta a pôr o Visual C++ (dois lugares)</td>
+<td><strong>não</strong> (85 + 12 + 41 passam)</td>
+</tr>
+<tr>
+<td>Z9</td>
+<td>a montagem põe o Visual C++ só na saída com .msi</td>
+<td>sim (4 testes novos)</td>
+</tr>
+<tr>
+<td>Z10</td>
+<td>a conferência antes do vpk confere como pasta portátil</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Z11</td>
+<td>o caminho de rede com a frase do "não consegui ler"</td>
+<td>sim (3 testes)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>7 de 11 acusadas.</strong> As 4 que passam estão nos achados 3, 5 e na observação 1.</p>
+<h3>O que já funcionava em volta (§11.8; anexo <code>arredor-um-arquivo-por-vez.txt</code>)</h3>
+<p>Código de <code>3abf9acf</code>, um arquivo por vez: <code>test_publicar_versao.py</code> 85; <code>test_empacotar.py</code> 41;
+<code>test_publicar_motor.py</code> 12; <code>test_windows_peca.py</code> 69 e 2 pulados; <code>test_publicar_servidor.py</code> 14;
+<code>test_windows_janela_de_prova.py</code> 10; <code>test_decisoes_atualizacao.py</code> 38; <code>test_decisoes_ajudante_da_atualizacao.py</code>
+37; <code>test_decisoes_testes_a_distancia.py</code> 13; <code>test_decisoes_brasao.py</code> 22; <code>test_nome_do_pacote.py</code> 5. Todos passam,
+e bate com o que o outro escreveu. Nenhum teste antigo mudou nesta volta (o diff dos testes só acrescenta).</p>
+<h3>A rodada do GitHub 44800950547 (anexo <code>rodada-44800950547-o-que-foi-testado.txt</code>)</h3>
+<p>Consultei uma vez: tentativa 1, success, todas as partes, os botões, o porteiro e o resumo. O registro diz "código
+trocado pelo de passo2-publicar-2026-11-19 (d73e7fc8...)". De <code>3abf9acf</code> a <code>d73e7fc8</code> nenhum <code>.py</code> mudou (conferido
+no <code>git diff</code>). Então o código testado é o desta volta.</p>
+<h2>Caminhos que o outro não listou</h2>
+<ol>
+<li><strong>A pasta pronta "arrumada à mão"</strong> (a da prova de 20/11 com o Visual C++ copiado para dentro): passa pela
+   conferência, com o código antigo dentro e sem a versão do Visual C++ (achado 1 e sonda S2).</li>
+<li><strong>O item 14 do roteiro depois do item 13:</strong> a pasta de 20/11 é a mesma <code>dist\EditorImpressao</code> que o item 13 apaga e
+   monta de novo (achado 2).</li>
+<li><strong>A pasta recusada pelo empacotar chamado sozinho é mudada antes da recusa</strong> (achado 4).</li>
+<li><strong>A conferência do pacote depois do vpk sem o Visual C++</strong> (achado 3): o outro a chama de "a prova forte".</li>
+</ol>
+<h2>Falhas não pensadas e resultado não conferido</h2>
+<ul>
+<li><strong>Dá como pronto o que não conferiu (F5) e a conferência que acredita num dado fraco (F1):</strong> a pasta pronta passa com
+  um "Visual C++" que ninguém conferiu, sem o Tesseract e sem a versão (achado 1). O dado que decide é só "existe um
+  arquivo com esse nome".</li>
+<li><strong>Proteção sem teste (F3):</strong> a parte do Visual C++ da conferência do pacote (Z2, achado 3); o Tesseract no pacote
+  montado do zero (Z4, achado 3); as aspas do comando (Z6, achado 5); o "lugar único" do Visual C++ (Z8, observação 1).</li>
+<li><strong>Mexer antes de conferir:</strong> a pasta recusada já mudou (achado 4).</li>
+<li><strong>O escrito não bate (F7):</strong> o roteiro da prova pede uma coisa que não dá para fazer naquela ordem (achado 2); "agora
+  o teste novo percorre o Tesseract" é verdade, mas o teste não acusa se a conferência dele sumir (achado 3).</li>
+<li><strong>F9 (mexer no que é do Samuel sem ele ver):</strong> nada. Não criei junção. <code>git rev-parse --is-shallow-repository</code> deu
+  <code>false</code> no começo. Não mexi em <code>dist\</code> nem em <code>C:\EditorImpressaoProva</code>.</li>
+</ul>
+<h2>As regras que conferi</h2>
+<ul>
+<li><strong>§11.12 (uma regra, um lugar):</strong> cumprida para pôr o Visual C++, para "a saída leva o Visual C++?" e para os
+  comandos das frases. Fica de fora "o Visual C++ é o oficial?", com duas réguas (achado 1).</li>
+<li><strong>§11.12.2 (nada dado como feito sem conferir):</strong> cumprida na montagem (o tamanho do original conferido pela
+  assinatura). Não cumprida na pasta pronta (achado 1).</li>
+<li><strong>§11.12.3 (a lista das falhas):</strong> a do outro cobre a cópia cortada, o disco cheio e a pasta sem o Visual C++; faltam
+  os caminhos 1 a 4 acima.</li>
+<li><strong>§11.12.4 e D-767:</strong> o teste novo passa pela montagem de verdade, e a parte de mentira não é mais pronta que a de
+  verdade. O vpk de verdade fica para a prova à vista.</li>
+<li><strong>§11.12.6 (ler a peça de fora):</strong> nesta volta só o <code>shutil.copy2</code>; o caso do disco cheio conferido rodando.</li>
+<li><strong>§11.8 (o novo não estraga):</strong> os 11 arquivos ao redor passam; nenhum teste antigo mudou.</li>
+<li><strong>§4.7 e D-811 (reversão):</strong> confere (7 de 8). Das minhas 11 mutações, 7 acusadas.</li>
+<li><strong>D-815:</strong> agente novo.</li>
+<li><strong>CLAUDE.md §10.9:</strong> só criei arquivos dentro da minha pasta de rascunho e da pasta deste relatório. Não apaguei nada
+  (ver "Para a gerente").</li>
+</ul>
+<h2>Achados</h2>
+<ol>
+<li>
+<p><strong>MÉDIO: a pasta pronta (<code>--pasta-pronta</code>) passa com um "Visual C++" que ninguém conferiu, sem a versão dele e sem o
+   Tesseract, e é publicada.</strong>
+   - Onde: <code>empacotar.py:1710</code> (<code>conferir_pasta_pronta</code> só cobra <code>visual_c.is_file()</code>); <code>empacotar.py:1546</code> (a
+     conferência do pacote cobra só o nome do Visual C++, não <code>vc_redist.versao.txt</code>); <code>publicar_versao_kaique.py:948</code>
+     (com a pasta pronta, <code>pecas=None</code>, e a conferência do pacote não procura o Tesseract); a pasta de mentira dos testes
+     antigos, <code>tests/test_publicar_versao.py:149</code> (<code>_pasta_pronta</code>: 11 bytes "MZ visual c", sem a versão, sem o
+     Tesseract), é publicada pelos testes antigos (29 chamadas de <code>_publicar(a</code> no arquivo).
+   - Lido na fonte: <code>atualizacao.py:1230</code> lê a versão de <code>vc_redist.versao.txt</code>; sem ele, vale "0.0.0".
+     <code>preparar_o_computador</code> (rodado pela tarefa do Windows, como SYSTEM) chama <code>instalar_visual_c_se_faltar</code>, que roda
+     o <code>vc_redist.x64.exe</code> do pacote.
+   - Provado (sondas S1 e S1b, anexo <code>sondas6-resultado.txt</code>): a pasta de mentira passa na conferência e é publicada; o
+     pacote sai <strong>sem</strong> <code>tesseract/</code>, <strong>sem</strong> a versão do Visual C++, e com os 11 bytes no lugar dele. No programa
+     instalado, com um Visual C++ mais velho já no notebook, o programa nem tenta trocar e diz que deu certo (<code>True</code>).
+   - Dedução (não rodei): sem nenhum Visual C++ instalado, a tarefa roda como SYSTEM o arquivo que veio na pasta, que
+     ninguém conferiu. Sem o Tesseract, o achar texto do Kaique não funciona.
+   - Por que médio, e não grave: só acontece com uma pasta feita à mão no PC do Samuel, e o pacote leva a assinatura
+     dele. Por que não baixo: a montagem tem a conferência de verdade (<code>vc_redist_confere</code>, a assinatura da
+     Microsoft) e a pasta pronta não; é a mesma regra com duas réguas (§11.12), e a pasta da prova de 20/11 convida a
+     "só copiar o Visual C++" para não esperar os 4 minutos do PyInstaller.
+   - Não é desta volta: já era assim em <code>b9300da8</code>. Mas a volta 6 chama <code>conferir_pasta_pronta</code> de "a função única de a
+     pasta está pronta para o vpk" e diz que "a pasta pronta continua cobrada igual".
+   - O que pedir: <code>conferir_pasta_pronta</code> cobrar da pasta pronta o mesmo que a montagem garante, pelos mesmos lugares:
+     o Visual C++ pela <code>vc_redist_confere(assinatura_do_arquivo(...))</code> (a peça única que já existe), a
+     <code>vc_redist.versao.txt</code> e o Tesseract (a lista de <code>_destinos_das_pecas</code> ou <code>conferir_tesseract</code>); e a conferência do
+     pacote cobrar também a <code>vc_redist.versao.txt</code>. <strong>Cuidado:</strong> a pasta de mentira <code>_pasta_pronta</code> dos testes antigos
+     deixaria de passar. Arrumá-la para ser como a de verdade é mudar um teste antigo: pede o "pode" do Samuel, como na
+     D-817. Se a gerente preferir não mexer agora: na prova, nunca usar <code>--pasta-pronta</code> numa pasta arrumada à mão.</p>
+</li>
+<li>
+<p><strong>BAIXO: o item 14 do roteiro da prova não dá para fazer depois do item 13.</strong>
+   - Onde: <code>relatorios/passo2-publicar/ONDE-PAREI.md:2001</code> (item 14) e <code>:1997</code> (item 13); <code>empacotar.py:919</code>
+     (<code>construir_pasta</code> apaga <code>dist\EditorImpressao</code> antes de montar).
+   - A pasta que a prova de 20/11 montou é <code>D:\programas\EditorImpressao\.claude\worktrees\passo2\dist\EditorImpressao</code>
+     (lido no registro). O item 13 monta de novo <strong>essa mesma pasta</strong>. Depois dele, a pasta de 20/11 não existe mais.
+   - Provado (sonda S5): depois do item 13, a pasta passa na conferência (agora tem o Visual C++), e o item 14 para em
+     "a versão 1.1.0 já existe", não em "não tem o Visual C++". Quem olhar só o "PAREI" pode achar que o item 14 passou.
+   - O que pedir: no roteiro, fazer o item 14 <strong>antes</strong> do 13 (o motor 1 já está publicado na pasta das provas, e a
+     versão 1.1.0 ainda não: conferido em <code>C:\EditorImpressaoProva\versoes</code>).</p>
+</li>
+<li>
+<p><strong>BAIXO: duas conferências do pacote depois do vpk não têm teste que as acuse.</strong>
+   - Onde: <code>empacotar.py:1546</code> (o Visual C++ em <code>esperados_no_pacote_do_velopack</code>, linha que a volta 6 mudou) e
+     <code>publicar_versao_kaique.py:955</code> (<code>pecas = empacotar._PECAS</code>, que faz a conferência do pacote procurar o Tesseract).
+   - Desliguei cada uma numa cópia (Z2 e Z4): <code>test_publicar_versao.py</code> (85) e <code>test_empacotar.py</code> (41) passam.
+   - Por quê: o vpk de mentira copia a pasta inteira para o pacote; o que a pasta tem, o pacote tem. Só um vpk que
+     deixasse algo de fora mostraria a conferência agindo.
+   - Importa porque o outro escreve, em "De onde vem cada dado": "a prova é a conferência do pacote depois do vpk, que
+     abre o pacote e procura o Visual C++". Essa prova não tem teste. Também "agora o teste novo percorre o Tesseract"
+     (Ideias e bugs, volta 6): percorre, mas não acusa se a conferência sumir.
+   - O que pedir: um teste com um vpk de mentira que deixa <code>instalar\</code> (ou <code>tesseract\</code>) de fora do pacote e cobra a
+     recusa "o pacote do Velopack saiu errado". Um para cada.</p>
+</li>
+<li>
+<p><strong>BAIXO: o empacotar chamado sozinho mexe na pasta antes de recusá-la.</strong>
+   - Onde: <code>empacotar.py:1616</code> (<code>preparar_saida</code> roda antes) e <code>:1619</code> (a conferência depois). Dentro de
+     <code>preparar_saida</code>, <code>empacotar.py:1256</code> grava o <code>motor-exigido.json</code> e <code>:1258</code> apaga os zips de motor de <code>instalar\</code>.
+   - Provado (sonda S3): uma pasta de fora sem o Visual C++, com um <code>instalar\motor-kraken-1.zip</code>, é recusada; depois da
+     recusa, o zip sumiu e apareceu o <code>motor-exigido.json</code>.
+   - Nenhum código chama assim hoje (o publicar confere antes, e para antes). Mas a conferência foi posta ali justamente
+     para "quem chamasse esta função direto, com uma pasta de fora".
+   - O que pedir: conferir a pasta <strong>antes</strong> de <code>preparar_saida</code> (a conferência não depende de nada que <code>preparar_saida</code>
+     faz) e, se quiser, de novo depois.</p>
+</li>
+<li>
+<p><strong>BAIXO: as aspas do caminho no comando da pasta não têm teste.</strong>
+   - Onde: <code>publicar_versao_kaique.py:315</code> (<code>--pasta "&lt;pasta&gt;"</code>), que serve à frase do motor e às frases do apagar.
+   - Desliguei as aspas (Z6): 85 passam. As pastas dos testes não têm espaço no nome.
+   - Hoje está certo, e a pasta da prova (<code>C:\EditorImpressaoProva\versoes</code>) não tem espaço. Uma pasta com espaço daria
+     um comando que, seguido, não aponta para a pasta.
+   - O que pedir: um caso com espaço no nome da pasta no teste do achado 2 do relatório 5 (o que segue a frase).</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO: o "lugar único" de pôr o Visual C++ não é cobrado por teste.</strong>
+   - Onde: <code>empacotar.py:1252</code> (<code>preparar_saida</code>). Fazê-la pôr o Visual C++ de novo (Z8) passa em 85 + 12 + 41 testes.
+     Hoje não faz mal (o mesmo arquivo copiado duas vezes); o texto da função já diz que é arriscado. Só anotar.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO: a frase do caminho de rede tem "(que tem função própria na peça)" para os testes antigos passarem.</strong>
+   - Onde: <code>core/windows.py:1153</code>. O outro escreve isso às claras. A frase fica longa, mas diz o motivo de verdade e não
+     manda usar função que não existe. Mudar os testes antigos pediria o "pode" do Samuel. Não pede conserto.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO: o teste mostra "assinatura da Microsoft conferida" para um arquivo de mentira.</strong>
+   - Onde: <code>empacotar.py:692</code> imprime a frase a partir das peças; no teste novo, as peças são trocadas e o arquivo é de
+     mentira. Só a saída do teste diz isso; no uso de verdade, <code>juntar_pecas</code> confere antes. Não pede conserto.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO: a ficha da versão guarda o commit, mas ninguém o lê.</strong>
+   - Onde: <code>empacotar.py:1704</code> (a conferência lê só a versão e a saída). Uma pasta feita com o código antigo passa como
+     desta versão (sonda S2). Junto com o achado 1; se ele for consertado pela assinatura e pela versão do Visual C++, o
+     caso da pasta de 20/11 arrumada à mão também para. Comparar o commit com o atual mudaria o uso normal (montar e
+     depois fazer um commit de documento): fica como ideia, não pedido.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO: a cópia do Visual C++ só confere o tamanho.</strong></p>
+<ul>
+<li>Onde: <code>empacotar.py:1198</code>. Uma cópia corrompida do mesmo tamanho passaria. É muito improvável; o original foi
+  conferido pela assinatura logo antes. Só anotar.</li>
+</ul>
+</li>
+</ol>
+<h2>O que falta para a prova à vista</h2>
+<ol>
+<li>A gerente decide se o achado 1 volta para quem escreveu antes da prova (ele pede o "pode" do Samuel para arrumar a
+   pasta de mentira dos testes antigos).</li>
+<li>Os itens 13 a 15 do roteiro <strong>não bastam como estão</strong>:
+   - <strong>fazer o item 14 antes do 13</strong> (achado 2);
+   - no item 13, além de ver <code>lib/app/instalar/vc_redist.x64.exe</code> dentro do pacote: ver também
+     <code>lib/app/instalar/vc_redist.versao.txt</code> (com "14.44.35211.0") e que o <code>vc_redist.x64.exe</code> dentro do pacote tem o
+     mesmo tamanho do baixado (uns 25 MB). As conferências do programa só olham o nome;
+   - antes do item 13, olhar na linha "Visual C++: ..." de onde ele veio. Rodando da cópia <code>passo2</code>, ele vem de
+     <code>D:\programas\EditorImpressao\.claude\worktrees\EditorImpressao-arquivos\ferramentas\downloads\</code> (o bug da Lista
+     de bugs de 20/11). Se o arquivo sumir de lá, a montagem baixa da internet;
+   - acrescentar: o item 6 (<code>--com-instalador</code>) <strong>montado do zero</strong>, e depois dele ver que
+     <code>dist\EditorImpressao\instalar\</code> ficou só com o Visual C++ e a versão dele (o zip do motor tem de sair);
+   - no item 15, seguir a frase ao pé da letra e ver o motor chegar na janela do servidor, e nada no GitHub.</li>
+<li>O que só a publicação de verdade mostra, do vpk em diante: o vpk de verdade nunca recebeu uma pasta montada do zero
+   por este caminho, nem uma com <code>instalar\</code> dentro. A assinatura, o envio e a leitura de volta são os mesmos das voltas
+   anteriores, também nunca rodados de verdade pelo publicar. Os itens 4 a 12 do roteiro cobrem isso.</li>
+</ol>
+<h2>Para a gerente: o que ficou fora do projeto</h2>
+<p>Tudo fica na pasta de rascunho desta conversa, em
+<code>C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\14e42ebb-3236-41f4-94f5-20370c33bd91\scratchpad\quebra6\</code>:</p>
+<ul>
+<li><code>antigo\</code> (o código de <code>b9300da8</code>, com os dois arquivos de teste de <code>3abf9acf</code> por cima), <code>novo\</code> (<code>3abf9acf</code>, onde
+  rodaram as mutações; cada arquivo devolvido ao original, conferido) e <code>sonda\</code> (<code>3abf9acf</code>, com as minhas sondas no
+  fim de <code>tests\test_publicar_versao.py</code>);</li>
+<li>os scripts e os resultados (<code>mutar_quebra6.py</code>, <code>mutacoes-resultado.txt</code>, <code>sondas-resultado.txt</code>,
+  <code>reversao-no-codigo-antigo.txt</code>, <code>arredor.txt</code>) e o texto deste relatório.</li>
+</ul>
+<p><strong>Um cuidado para a gerente:</strong> a pasta de rascunho é a mesma da conversa do escritor, e a pasta <code>v6\</code> ao lado é dele.
+No começo, extraí por engano o <code>git archive</code> de <code>3abf9acf</code> em cima de <code>v6\novo\</code>, que já era uma cópia de <code>3abf9acf</code>.
+O conteúdo ficou igual (conferi com <code>diff -r</code>: só sobram as pastas <code>__pycache__</code> e <code>saida_teste</code> dele), nada foi
+apagado. Também criei <code>v6\antigo\</code> e logo o movi para <code>quebra6\antigo\</code>. Fora isso não mexi em <code>v6\</code>.</p>
+<p>O pytest cria as pastas dos testes em <code>C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\</code> (ele mesmo guarda só as
+últimas). Não apaguei nada em lugar nenhum.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 20/11/2026 às 16:14</p>
+</body>
+</html>

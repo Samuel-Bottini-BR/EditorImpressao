@@ -1,0 +1,97 @@
+"""Quem quebra, voltas 8 e 9 do passo 2 (relatorio 8): mutacoes B1 a B9, DIFERENTES das P1 a P11 e U1 a U12.
+
+Uma por vez, numa copia de 011b06d0 (git archive, quebra9\\c011b06d0). Cada uma troca um trecho exato (tem de achar o
+trecho uma vez so), roda os arquivos de teste dela, e devolve o arquivo ao original (conferido byte a byte).
+ACUSADA = algum teste falhou; PASSOU = nenhum teste viu a protecao desligada.
+"""
+import subprocess
+import sys
+from pathlib import Path
+
+COPIA = Path(__file__).resolve().parent / "c011b06d0"
+PY = r"D:\programas\EditorImpressao\.venv\Scripts\python.exe"
+
+M = [
+    ("B1", "o montar_motor_kraken deixa de parar quando a pasta das ferramentas nao existe (a protecao do main)",
+     "montar_motor_kraken.py",
+     "        if problema and not opcoes.gerar_travado:\n",
+     "        if False:\n",
+     ["tests/test_pasta_das_ferramentas.py", "tests/test_publicar_motor.py", "tests/test_empacotar.py"]),
+    ("B2", "o compilar_detector_gravura deixa de parar quando a pasta das ferramentas nao existe",
+     "compilar_detector_gravura.py",
+     "        if problema:\n            raise ErroDeCompilacao(f\"{problema} (ou passe --ferramentas)\")\n",
+     "        if False:\n            raise ErroDeCompilacao(f\"{problema} (ou passe --ferramentas)\")\n",
+     ["tests/test_pasta_das_ferramentas.py"]),
+    ("B3", "o compilar_st_ferramentas deixa de parar quando a pasta das ferramentas nao existe",
+     "compilar_st_ferramentas.py",
+     "        if problema:\n            raise ErroDeCompilacao(f\"{problema} (ou passe --ferramentas)\")\n",
+     "        if False:\n            raise ErroDeCompilacao(f\"{problema} (ou passe --ferramentas)\")\n",
+     ["tests/test_pasta_das_ferramentas.py"]),
+    ("B4", "o montar_motor_kraken so confere quando o destino E os downloads sao os de fabrica (or -> and)",
+     "montar_motor_kraken.py",
+     "opcoes.destino == DESTINO_PADRAO or opcoes.downloads == DOWNLOADS_PADRAO",
+     "opcoes.destino == DESTINO_PADRAO and opcoes.downloads == DOWNLOADS_PADRAO",
+     ["tests/test_pasta_das_ferramentas.py", "tests/test_publicar_motor.py"]),
+    ("B5", "'pode gravar?' passa a olhar a pasta EditorImpressao-arquivos, e nao a ferramentas dentro dela",
+     "core/pasta_das_ferramentas.py",
+     "    if not ferramentas.is_dir():\n",
+     "    if not ferramentas.parent.is_dir():\n",
+     ["tests/test_pasta_das_ferramentas.py", "tests/test_empacotar.py"]),
+    ("B6", "a peca do git aceita qualquer pasta comum (deixa de exigir que se chame .git)",
+     "regras_dos_agentes/conversa_com_o_git.py",
+     "    if comum.name != \".git\" or not comum.parent.is_dir():\n",
+     "    if not comum.parent.is_dir():\n",
+     ["tests/test_pasta_das_ferramentas.py"]),
+    ("B7", "a pergunta deixa de tirar so a GIT_COMMON_DIR do ambiente (uma condicao de dentro da lista)",
+     "regras_dos_agentes/conversa_com_o_git.py",
+     "(\"GIT_DIR\", \"GIT_WORK_TREE\", \"GIT_COMMON_DIR\", \"GIT_INDEX_FILE\")",
+     "(\"GIT_DIR\", \"GIT_WORK_TREE\", \"GIT_INDEX_FILE\")",
+     ["tests/test_pasta_das_ferramentas.py"]),
+    ("B8", "o git que passa do tempo deixa de virar GitFalhou (o erro do Python sobe cru)",
+     "regras_dos_agentes/conversa_com_o_git.py",
+     "    except subprocess.TimeoutExpired as erro:\n",
+     "    except ZeroDivisionError as erro:\n",
+     ["tests/test_pasta_das_ferramentas.py"]),
+    ("B9", "o caminho de erro do publicar apaga sem o 'acabou de criar' (o 'nao achei o rascunho' vira 'nao existia')",
+     "publicar_versao_kaique.py",
+     "apagar_e_conferir(destino, etiqueta, so_rascunho=True, acabou_de_criar=True).frase",
+     "apagar_e_conferir(destino, etiqueta, so_rascunho=True, acabou_de_criar=False).frase",
+     ["tests/test_publicar_versao.py"]),
+]
+
+
+def rodar(testes):
+    r = subprocess.run([PY, "-B", "-m", "pytest", *testes, "-q", "-p", "no:cacheprovider", "-x", "--no-header", "-rf"],
+                       cwd=COPIA, capture_output=True, text=True, encoding="utf-8", errors="replace",
+                       env={**__import__("os").environ, "QT_QPA_PLATFORM": "offscreen"}, timeout=1800)
+    linhas = [l for l in r.stdout.splitlines() if l.startswith("FAILED") or l.startswith("ERROR")
+              or " passed" in l or " failed" in l or " error" in l]
+    return r.returncode, linhas
+
+
+def main(escolhidas):
+    for codigo, o_que, arquivo, de, para, testes in M:
+        if escolhidas and codigo not in escolhidas:
+            continue
+        caminho = COPIA / arquivo
+        original = caminho.read_bytes()
+        texto = original.decode("utf-8")
+        if "\r\n" in texto:              # o git archive desta maquina grava com CRLF
+            de, para = de.replace("\n", "\r\n"), para.replace("\n", "\r\n")
+        if texto.count(de) != 1:
+            print(f"{codigo}: o trecho aparece {texto.count(de)} vezes; mutacao nao aplicada", flush=True)
+            continue
+        try:
+            caminho.write_bytes(texto.replace(de, para).encode("utf-8"))
+            codigo_saida, linhas = rodar(testes)
+        finally:
+            caminho.write_bytes(original)
+        assert caminho.read_bytes() == original
+        veredito = "ACUSADA" if codigo_saida != 0 else "PASSOU (nenhum teste viu)"
+        print(f"{codigo} ({o_que}; {arquivo}; {', '.join(testes)}): {veredito}", flush=True)
+        for l in linhas:
+            print(f"    {l}", flush=True)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

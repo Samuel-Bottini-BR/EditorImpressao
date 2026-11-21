@@ -1,0 +1,57 @@
+"""Caso de quem tenta quebrar: depois de pedir para liberar, uma leitura atrasada diz "rascunho" uma vez, e o publicar
+apaga a versão que JÁ estava liberada (a regra "só o rascunho é apagado" é decidida numa leitura e o apagar lê de novo
+por conta própria). Também o caso direto: liberar falha de verdade (continua rascunho) e o rascunho é apagado.
+Roda na cópia do código (argv[1]); a pasta de trabalho é argv[2]."""
+import sys
+from pathlib import Path
+
+copia, pasta = Path(sys.argv[1]), Path(sys.argv[2])
+sys.path.insert(0, str(copia))
+import publicar_versao_kaique as pub  # noqa: E402
+
+pasta.mkdir(parents=True, exist_ok=True)
+arquivo = pasta / "a.txt"
+arquivo.write_text("conteudo", encoding="utf-8")
+
+
+class LeituraAtrasada(pub.DestinoPasta):
+    """Liberar muda de verdade e depois dá erro (a resposta da rede se perdeu); a primeira leitura depois disso ainda
+    vê o estado antigo (como uma leitura atrasada do GitHub), as seguintes veem o de verdade."""
+
+    def __init__(self, raiz):
+        super().__init__(raiz)
+        self.depois = None
+
+    def liberar(self, etiqueta):
+        super().liberar(etiqueta)
+        self.depois = 0
+        raise pub.Parou("a resposta do liberar se perdeu (de mentira)")
+
+    def situacao(self, etiqueta):
+        verdade = super().situacao(etiqueta)
+        if self.depois is not None:
+            self.depois += 1
+            if self.depois == 1:
+                return "rascunho"
+        return verdade
+
+
+d = LeituraAtrasada(pasta / "servidor1")
+try:
+    pub.publicar_arquivos(d, "v9.9.9", "t", "n", [arquivo], lambda: None)
+except pub.Parou as erro:
+    print("caso 1 (leitura atrasada):", erro)
+print("caso 1: a versão liberada continua?", (pasta / "servidor1" / "v9.9.9").is_dir())
+
+
+class LiberarFalha(pub.DestinoPasta):
+    def liberar(self, etiqueta):
+        raise pub.Parou("o destino não deixou liberar (de mentira)")
+
+
+d = LiberarFalha(pasta / "servidor2")
+try:
+    pub.publicar_arquivos(d, "v9.9.9", "t", "n", [arquivo], lambda: None)
+except pub.Parou as erro:
+    print("caso 2 (liberar falha, continua rascunho):", erro)
+print("caso 2: sobrou rascunho?", d.situacao("v9.9.9"))

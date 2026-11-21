@@ -1,0 +1,11 @@
+FRASE: o GitHub não deixou enviar EditorImpressaoPrograma-9.9.9-full.nupkg: HTTP 502 ao enviar (de mentira). ATENÇÃO: pedi para apagar v9.9.9 em o GitHub (dono/projeto) e não deu para conferir se sumiu (parei o pedido ao GitHub (release view): o programa não terminou em 600 segundos); confira com: gh release view v9.9.9 -R dono/projeto --json isDraft ("isDraft": true é rascunho; false, liberada; "release not found", não ficou nada); e apague com: publicar_versao_kaique.py --apagar v9.9.9
+PEDIDO DE APAGAR SAIU? False
+O RASCUNHO CONTINUA NO GITHUB? True
+FRASE: não consegui falar com o GitHub pelo gh (não consegui abrir o programa). v9.9.9: pedi para liberar em o GitHub (dono/projeto) e não deu para reconferir agora se ficou liberada. Depois do pedido de liberar, o publicar nunca apaga nada (uma leitura atrasada poderia apagar a versão já liberada), e NÃO apaguei. Ela pode ter ficado de dois jeitos: se ficou liberada em o GitHub (dono/projeto), está inteira (tudo foi lido de volta antes do pedido) e vale: não publique de novo com v9.9.9; se ficou como rascunho, apague depois com: publicar_versao_kaique.py --apagar v9.9.9; e publique de novo. Para conferir qual dos dois: gh release view v9.9.9 -R dono/projeto --json isDraft ("isDraft": true é rascunho; false, liberada; "release not found", não ficou nada)
+O EDIT SAIU? False
+SITUACAO: True
+COMANDO DA FRASE: publicar_versao_kaique.py --apagar v9.9.9 --pasta "C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4269\test_q3_o_comando_da_frase_apa0\servidor"
+SITUACAO DEPOIS: None
+NO GITHUB DEPOIS: None etiquetas apagadas: ['v9.9.9']
+NA PASTA DEPOIS: rascunho
+4 passed in 2.04s

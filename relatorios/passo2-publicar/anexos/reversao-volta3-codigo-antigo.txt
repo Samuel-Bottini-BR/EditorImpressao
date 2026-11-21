@@ -1,0 +1,19 @@
+Volta 3 do passo 2 (20/11/2026): os testes novos rodados sobre o código ANTIGO (9cd555a5, o da volta 2), numa cópia fora do projeto. Os que falham ali são os do defeito consertado; os que passam ali (achados 5, 6 e o do soltar do grupo) cobram proteções que já existiam e são provados pela mutação (reversao-volta3-resultado.txt).
+FAILED tests/test_windows_peca.py::test_bat_e_cmd_sao_recusados_pelo_rodar_pelo_lancar_e_pelo_grupo
+FAILED tests/test_windows_peca.py::test_o_programa_nasce_parado_e_so_roda_dentro_do_grupo
+FAILED tests/test_windows_peca.py::test_fechar_tudo_so_diz_conferido_quando_o_windows_diz_que_nenhum_ficou
+FAILED tests/test_windows_peca.py::test_o_lancado_solto_apaga_a_primeira_pasta_se_a_segunda_nao_nasce
+FAILED tests/test_windows_peca.py::test_um_lote_que_a_peca_nao_acha_tambem_e_recusado_pela_extensao
+5 failed, 57 passed, 2 skipped, 3 warnings in 56.82s
+FAILED tests/test_publicar_versao.py::test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada
+FAILED tests/test_publicar_versao.py::test_volta3_achado1_no_github_a_leitura_atrasada_tambem_nunca_apaga_a_liberada
+FAILED tests/test_publicar_versao.py::test_volta3_achado2_o_msi_que_nao_termina_de_copiar_nao_fica_com_o_nome_certo
+FAILED tests/test_publicar_versao.py::test_volta3_achado2_o_msi_da_pasta_de_saida_e_comparado_com_o_do_rascunho
+FAILED tests/test_publicar_versao.py::test_volta3_achado2_a_frase_do_fim_nao_diz_apagado_sem_conferir
+FAILED tests/test_publicar_versao.py::test_volta3_achado7_o_motor_baixado_entra_na_conta_e_na_vigia
+FAILED tests/test_publicar_versao.py::test_volta3_achado7_o_gh_que_baixa_e_fechado_pela_vigia
+FAILED tests/test_publicar_versao.py::test_volta3_achado7_o_nome_do_motor_so_em_versao_py
+FAILED tests/test_publicar_versao.py::test_volta3_a_copia_conferida_le_de_volta_e_obedece_a_vigia
+9 failed, 39 passed in 21.31s
+FAILED tests/test_publicar_servidor.py::test_achado8_o_nome_repetido_aparece_na_janela_como_repetido_e_nao_como_inexistente
+1 failed, 13 passed in 9.74s

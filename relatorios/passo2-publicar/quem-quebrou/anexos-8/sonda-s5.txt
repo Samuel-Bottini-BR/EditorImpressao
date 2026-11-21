@@ -1,0 +1,37 @@
+{
+ "normal": {
+  "forma": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\passo2",
+  "ferramentas": "D:\\programas\\EditorImpressao-arquivos\\ferramentas",
+  "git": "D:\\programas\\EditorImpressao"
+ },
+ "minusculas": {
+  "forma": "d:\\programas\\editorimpressao\\.claude\\worktrees\\passo2",
+  "ferramentas": "D:\\programas\\EditorImpressao-arquivos\\ferramentas",
+  "git": "D:\\programas\\EditorImpressao"
+ },
+ "barras": {
+  "forma": "D:/programas/EditorImpressao/.claude/worktrees/passo2",
+  "ferramentas": "D:\\programas\\EditorImpressao-arquivos\\ferramentas",
+  "git": "D:\\programas\\EditorImpressao"
+ },
+ "prefixo longo": {
+  "forma": "\\\\?\\D:\\programas\\EditorImpressao\\.claude\\worktrees\\passo2",
+  "ferramentas": "D:\\programas\\EditorImpressao-arquivos\\ferramentas",
+  "git": "D:\\programas\\EditorImpressao"
+ },
+ "nome curto": {
+  "forma": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\passo2",
+  "ferramentas": "D:\\programas\\EditorImpressao-arquivos\\ferramentas",
+  "git": "D:\\programas\\EditorImpressao"
+ },
+ "localhost": {
+  "forma": "\\\\localhost\\D$\\programas\\EditorImpressao\\.claude\\worktrees\\passo2",
+  "ferramentas": "D:\\programas\\EditorImpressao-arquivos\\ferramentas",
+  "git": "D:\\programas\\EditorImpressao"
+ },
+ "com ..": {
+  "forma": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\passo2\\core\\..",
+  "ferramentas": "D:\\programas\\EditorImpressao-arquivos\\ferramentas",
+  "git": "D:\\programas\\EditorImpressao"
+ }
+}

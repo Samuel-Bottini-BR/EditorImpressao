@@ -1216,19 +1216,40 @@ def precisa_do_visual_c(instalada: tuple[int, int, int] | None, do_pacote: str) 
     return (maior, menor, build) > instalada
 
 
+def versao_do_visual_c_do_pacote(pasta: Path) -> str | None:
+    """A versao do Visual C++ que vem no pacote, lida do arquivo da versao em <pasta>\\instalar\\; None se ele nao existe.
+
+    A LEITURA UNICA desse arquivo (passo 2, volta 8; achado 6 do relatorio 7 de quem tentou quebrar, CLAUDE.md §11.12:
+    "um dado e lido e gravado por uma funcao so"). Quem escreve e a montagem (empacotar.preparar_pasta_para_o_velopack,
+    em UTF-8). Quem le: a conferencia do publicar (empacotar.conferir_pasta_pronta: a versao lida tem de ser igual a da
+    assinatura do Visual C++) e o programa instalado (instalar_visual_c_se_faltar: decide se instala). Antes os dois
+    liam cada um do seu jeito; ficou o jeito do publicar (o que a prova a vista de 20/11 conferiu): UTF-8, trocando o
+    que nao e UTF-8 pela marca de troca (nunca levanta erro de texto), e tirando os espacos e a quebra de linha das
+    pontas. Um erro do disco ao ler (sem licenca, arquivo preso) sobe, como antes nos dois.
+    Arriscado: ler esse arquivo noutro lugar, ou mudar o jeito so para um dos dois (a conferencia passaria a aceitar o
+    que o programa do Kaique le diferente)."""
+    arquivo = Path(pasta) / PASTA_DO_QUE_SE_INSTALA / VC_REDIST_VERSAO
+    if not arquivo.is_file():
+        return None
+    return arquivo.read_text(encoding="utf-8", errors="replace").strip()
+
+
 def instalar_visual_c_se_faltar(pasta: Path, ler: Callable[[], tuple | None] = _ler_versao_do_visual_c,
                                 rodar: Callable[[list[str], int], tuple[int, str]] = _rodar) -> bool:
     """O Visual C++ oficial que vai dentro do pacote (D-727), em silencio, so se faltar.
 
     Devolve False so quando tentou instalar e deu erro (D-749: a preparacao
     conta como nao feita); sem o instalador no pacote ou sem precisar, True.
+    A versao do pacote vem da leitura unica (versao_do_visual_c_do_pacote, a mesma do publicar); sem o arquivo da
+    versao, "0.0.0" (so instala se nao ha Visual C++ nenhum), como antes.
     """
     exe = pasta / PASTA_DO_QUE_SE_INSTALA / VC_REDIST_NOME
     if not exe.is_file():
         registrar(f"Visual C++: o pacote não tem {exe} (não instalei)")
         return True
-    do_pacote = (pasta / PASTA_DO_QUE_SE_INSTALA / VC_REDIST_VERSAO).read_text(encoding="utf-8").strip() \
-        if (pasta / PASTA_DO_QUE_SE_INSTALA / VC_REDIST_VERSAO).is_file() else "0.0.0"
+    # a leitura unica, a mesma da conferencia do publicar (volta 8, achado 6 do relatorio 7); sem o arquivo, "0.0.0"
+    lida = versao_do_visual_c_do_pacote(pasta)
+    do_pacote = "0.0.0" if lida is None else lida
     instalada = ler()
     if not precisa_do_visual_c(instalada, do_pacote):
         return True

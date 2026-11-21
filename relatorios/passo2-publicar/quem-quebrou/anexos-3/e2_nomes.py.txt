@@ -1,0 +1,32 @@
+"""E2: a lista de nomes com funcao propria (pwsh, update) e a regra da pasta, escritas de outro jeito."""
+import os, shutil, subprocess, sys
+from pathlib import Path
+
+RAIZ = Path(sys.argv[1]); CASOS = Path(sys.argv[2])
+sys.path.insert(0, str(RAIZ))
+from core import windows  # noqa
+
+if CASOS.exists():
+    shutil.rmtree(CASOS)
+(CASOS / "PowerShell" / "7").mkdir(parents=True)
+sistema = windows.pasta_do_sistema()
+# um "pwsh.exe" de prova: a copia do hostname.exe do Windows (inofensivo; escreve o nome do computador)
+pwsh = CASOS / "PowerShell" / "7" / "pwsh.exe"
+shutil.copyfile(sistema / "hostname.exe", pwsh)
+update = CASOS / "Update.exe"
+shutil.copyfile(sistema / "hostname.exe", update)
+# uma copia do cmd.exe fora da pasta do Windows
+cmd = CASOS / "meu-cmd.exe"
+shutil.copyfile(sistema / "cmd.exe", cmd)
+
+casos = [("pwsh.exe", [str(pwsh)]), ("pwsh.exe. (ponto no fim)", [str(pwsh) + "."]),
+         ("pwsh.exe.. (dois pontos)", [str(pwsh) + ".."]),
+         ("pwsh.exe::$DATA", [str(pwsh) + "::$DATA"]), ("pwsh (sem .exe)", [str(pwsh)[:-4]]),
+         ("Update.exe", [str(update)]), ("Update.exe.", [str(update) + "."]), ("Update.exe::$DATA", [str(update) + "::$DATA"]),
+         ("cmd.exe do Windows", [str(sistema / "cmd.exe"), "/c", "echo %COMSPEC%"]),
+         ("cmd.exe::$DATA do Windows", [str(sistema / "cmd.exe") + "::$DATA", "/c", "echo oi"]),
+         ("copia do cmd.exe fora do Windows", [str(cmd), "/c", "echo rodei o cmd de %CD%"])]
+for nome, comando in casos:
+    recusa = windows._programa_com_funcao_propria(comando[0])
+    r = windows.rodar_e_esperar(comando, limite_s=20)
+    print(f"{nome:36} | peça recusa? {'sim' if recusa else 'NAO':4} | {r.desfecho:9} | {(r.dados or {}).get('saida', '')[:60]!r}")

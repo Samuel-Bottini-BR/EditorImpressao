@@ -1,0 +1,11 @@
+G1 concatenacao: o motor publicado 'em ' + destino.nome: 1 failed, 124 deselected in 0.75s
+      E       AssertionError: frases com a preposição escrita à mão (use com_preposicao): [(864, 'obter_motor_publicado', "'o motor publicado em ' + destino.nome")]
+G2 variavel local: guardar_o_instalador 'liberada em {onde}': 1 failed, 124 deselected in 0.75s
+      E       AssertionError: frases com a preposição escrita à mão (use com_preposicao): [(1112, 'guardar_o_instalador', 'onde = destino.nome')]
+G3 parentese: '(em {destino.nome})' no indice estragado: 1 failed, 124 deselected in 0.79s
+      E       AssertionError: frases com a preposição escrita à mão (use com_preposicao): [(902, 'conferir', '{destino.nome}')]
+G4 .format: DestinoPasta.liberar: 1 failed, 124 deselected in 0.76s
+      E       AssertionError: frases com a preposição escrita à mão (use com_preposicao): [(408, 'liberar', "'não consegui liberar {} em {} ({})'.format(etiqueta, self.n")]
+G5 'por' em vez de 'em' (por a pasta): o rascunho que sobrou: 1 failed, 124 deselected in 0.74s
+      E       AssertionError: frases com a preposição escrita à mão (use com_preposicao): [(790, 'publicar_arquivos', '{destino.nome}')]
+sem mutacao: 1 passed, 124 deselected in 0.55s

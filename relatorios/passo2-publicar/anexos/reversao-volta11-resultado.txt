@@ -1,0 +1,35 @@
+M1 (V8 do relatorio 9): a montagem do Visual C++ olha a pasta de cima e cria a das ferramentas
+  tests/test_pasta_das_ferramentas.py -k "volta11_baixo3": 2 failed, 15 deselected in 4.58s
+      FAILED tests/test_pasta_das_ferramentas.py::test_volta11_baixo3_editorimpressao_arquivos_sem_a_ferramentas_a_montagem_do_visual_c_para
+      FAILED tests/test_pasta_das_ferramentas.py::test_volta11_baixo3_quem_decide_o_pode_gravar_da_montagem_do_visual_c_e_a_regra
+M2: a montagem volta a decidir pela conta propria (o codigo de edd39a9f)
+  tests/test_pasta_das_ferramentas.py -k "volta11_baixo3": 1 failed, 1 passed, 15 deselected in 3.55s
+      FAILED tests/test_pasta_das_ferramentas.py::test_volta11_baixo3_quem_decide_o_pode_gravar_da_montagem_do_visual_c_e_a_regra
+M3 (V5): o empacotar deixa de mostrar a linha do --motor-kraken
+  tests/test_pasta_das_ferramentas.py -k "volta11_baixo4": 1 failed, 1 passed, 15 deselected in 5.29s
+      FAILED tests/test_pasta_das_ferramentas.py::test_volta11_baixo4_o_empacotar_sem_o_motor_mostra_onde_procurou_e_o_motor_kraken
+M4 (V6): o publicar --motor deixa de mostrar a linha do --motor-kraken
+  tests/test_pasta_das_ferramentas.py -k "volta11_baixo4": 1 failed, 1 passed, 15 deselected in 5.64s
+      FAILED tests/test_pasta_das_ferramentas.py::test_volta11_baixo4_o_publicar_motor_sem_o_motor_para_com_onde_procurou_e_o_motor_kraken
+M5: a com_preposicao sem a contracao
+  tests/test_publicar_versao.py -k "volta11 or obs6": 3 failed, 1 passed, 121 deselected in 2.05s
+      FAILED tests/test_publicar_versao.py::test_obs6_a_frase_do_apagar_sai_com_a_contracao
+      FAILED tests/test_publicar_versao.py::test_volta11_as_frases_do_publicar_saem_com_a_contracao_na_pasta_e_no_github[pasta]
+      FAILED tests/test_publicar_versao.py::test_volta11_as_frases_do_publicar_saem_com_a_contracao_na_pasta_e_no_github[github]
+M6: a frase do liberar (caminho principal) volta a juntar a mao
+  tests/test_publicar_versao.py -k "volta11": 3 failed, 122 deselected in 3.45s
+      FAILED tests/test_publicar_versao.py::test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao
+      FAILED tests/test_publicar_versao.py::test_volta11_as_frases_do_publicar_saem_com_a_contracao_na_pasta_e_no_github[pasta]
+      FAILED tests/test_publicar_versao.py::test_volta11_as_frases_do_publicar_saem_com_a_contracao_na_pasta_e_no_github[github]
+M7: uma frase fora dos caminhos do teste (o liberar que falha) volta a juntar a mao
+  tests/test_publicar_versao.py -k "volta11": 1 failed, 2 passed, 122 deselected in 3.20s
+      FAILED tests/test_publicar_versao.py::test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao
+M8: a frase da D-816 consertada sem tirar a excecao da guarda
+  tests/test_publicar_versao.py -k "volta11_nenhuma": 1 failed, 124 deselected in 0.81s
+      FAILED tests/test_publicar_versao.py::test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao
+M9 (baixo 2): a copia de prova volta a seguir calada quando nao acha a linha
+  tests/test_pasta_das_ferramentas.py -k "volta11_baixo2": 1 failed, 16 deselected in 0.75s
+      FAILED tests/test_pasta_das_ferramentas.py::test_volta11_baixo2_a_copia_de_prova_para_se_nao_acha_a_linha_do_caminho
+sem mutacao (a copia como esta):
+  tests/test_pasta_das_ferramentas.py -k "volta11": 5 passed, 12 deselected in 7.62s
+  tests/test_publicar_versao.py -k "volta11 or obs6 or volta3_achado1": 6 passed, 119 deselected in 3.91s

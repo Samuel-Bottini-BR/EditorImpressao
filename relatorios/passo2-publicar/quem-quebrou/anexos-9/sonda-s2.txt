@@ -1,0 +1,8 @@
+minusculas         | igual ao de fabrica (o que os scripts comparam): True  | o mesmo lugar no disco: True | d:\programas\editorimpressao-arquivos\ferramentas
+barras /           | igual ao de fabrica (o que os scripts comparam): True  | o mesmo lugar no disco: True | D:/programas/EditorImpressao-arquivos/ferramentas
+barra no fim       | igual ao de fabrica (o que os scripts comparam): True  | o mesmo lugar no disco: True | D:\programas\EditorImpressao-arquivos\ferramentas\
+com .              | igual ao de fabrica (o que os scripts comparam): True  | o mesmo lugar no disco: True | D:\programas\.\EditorImpressao-arquivos\ferramentas
+com ..             | igual ao de fabrica (o que os scripts comparam): False | o mesmo lugar no disco: True | D:\programas\EditorImpressao\..\EditorImpressao-arquivos\ferramentas
+\\?\               | igual ao de fabrica (o que os scripts comparam): False | o mesmo lugar no disco: True | \\?\D:\programas\EditorImpressao-arquivos\ferramentas
+\\localhost\D$     | igual ao de fabrica (o que os scripts comparam): False | o mesmo lugar no disco: True | \\localhost\D$\programas\EditorImpressao-arquivos\ferramentas
+nome curto         | igual ao de fabrica (o que os scripts comparam): True  | o mesmo lugar no disco: True | D:\programas\EditorImpressao-arquivos\ferramentas

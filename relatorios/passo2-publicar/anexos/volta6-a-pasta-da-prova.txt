@@ -1,0 +1,46 @@
+Volta 6 (20/11/2026): a pasta que o publicar de verdade montou na prova a vista de 20/11 (codigo de b9300da8),
+so lida (nada foi mudado nela). Pasta: dist\EditorImpressao desta copia.
+
+== o primeiro nivel da pasta ==
+total 21394
+drwxr-xr-x 1 fotog 197609        0 Nov 20 14:37 .
+drwxr-xr-x 1 fotog 197609        0 Nov 20 14:36 ..
+-rw-r--r-- 1 fotog 197609      347 Nov 20 14:37 COMO USAR.txt
+-rwxr-xr-x 1 fotog 197609 21874558 Nov 20 14:36 EditorImpressao.exe
+drwxr-xr-x 1 fotog 197609        0 Nov 20 14:37 _internal
+drwxr-xr-x 1 fotog 197609        0 Nov 20 14:37 tesseract
+-rw-r--r-- 1 fotog 197609      183 Nov 20 14:37 versao-do-pacote.json
+
+== instalar\ existe? ==
+ls: cannot access 'dist/EditorImpressao/instalar': No such file or directory
+
+== _internal\modelos e _internal\core\nativo (o que o PyInstaller pos pelos --add-data) ==
+dist/EditorImpressao/_internal/core/nativo:
+st_ferramentas.dll
+st_ferramentas.txt
+st_gravura.dll
+st_gravura.txt
+
+dist/EditorImpressao/_internal/modelos:
+doclayout.onnx
+doctr
+mobile_sam
+
+== a ficha da versao ==
+{
+ "versao": "1.1.0",
+ "saida": "atualização",
+ "commit": "b9300da88c1a8a325ee523eebf8604e3af8c6e6e",
+ "arquivos_mudados_sem_commit": 0,
+ "montada_em": "2026-11-20T14:37:18"
+}
+
+== empacotar.conferir_pasta_pronta(<esta pasta>, '1.1.0') no codigo de b9300da8 ==
+['a pasta d:\\programas\\EditorImpressao\\.claude\\worktrees\\passo2\\dist\\EditorImpressao não tem o Visual C++ em instalar\\']
+
+== o fim do registro da prova (C:\EditorImpressaoProva\publicar-versao.log, UTF-16, so lido) ==
+=== Versao em pasta (atualização) ===
+  Visual C++: D:\programas\EditorImpressao\.claude\worktrees\EditorImpressao-arquivos\ferramentas\downloads\vc_redist.x64.exe  (versão 14.44.35211.0, assinatura da Microsoft conferida)
+  pronto: D:\programas\EditorImpressao\.claude\worktrees\passo2\dist\EditorImpressao  (797 MB)
+    rascunho do disco de dentro: apagado (conferido)
+PAREI: a pasta do programa não serve: a pasta D:\programas\EditorImpressao\.claude\worktrees\passo2\dist\EditorImpressao não tem o Visual C++ em instalar\

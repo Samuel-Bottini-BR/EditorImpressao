@@ -1,0 +1,8 @@
+J1 G1 com o nome num f-string: 125 passed in 80.69s (0:01:20)
+J2 G4 com o nome num f-string: 125 passed in 85.82s (0:01:25)
+J3 G3 com f-string dentro de f-string: 125 passed in 78.31s (0:01:18)
+J4 com_preposicao('por', ...): 125 passed in 84.32s (0:01:24)
+J5 'em a pasta {self.raiz}' escrito no texto (DestinoPasta.liberar): 125 passed in 81.51s (0:01:21)
+J6 getattr(destino, 'nome'): 125 passed in 80.31s (0:01:20)
+J7 G2 com a variavel num f-string: 125 passed in 82.64s (0:01:22)
+sem mutacao: 125 passed in 81.87s (0:01:21)

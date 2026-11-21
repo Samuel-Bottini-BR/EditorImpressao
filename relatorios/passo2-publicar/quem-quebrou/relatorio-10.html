@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo 2: décima conferência de quem tentou quebrar (volta 11)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Passo 2 do plano da parte do Windows: décima conferência de quem tentou quebrar (volta 11, 21/11/2026)</h1>
+<p>Do que se trata: é a ferramenta que prepara as versões do programa para o notebook do Kaique (o "publicar"), que roda
+só no PC do Samuel. A volta 11 consertou os 4 problemas pequenos do relatório 9 e as frases que saíam "em a pasta",
+"de a pasta" e "em o GitHub" em vez de "na pasta", "da pasta" e "no GitHub".</p>
+<p>Sou um agente novo nesta volta (D-815). Não escrevi nada desta volta nem das anteriores. Não mexi no código: as
+mutações e as sondas foram em cópias (<code>git archive</code>) na pasta de rascunho desta conversa, <code>v10q\</code>.</p>
+<p>O que <strong>não</strong> fiz:</p>
+<ul>
+<li>não rodei o publicar, o PyInstaller, o vpk nem o <code>gh release</code> de verdade (D-785, item 8: a gerente roda, à vista);</li>
+<li>não abri janela nem pergunta do Windows na tela do Samuel;</li>
+<li>não disparei rodada do GitHub (só li a 44936850048);</li>
+<li>não rodei <code>tests/test_ocr_kraken.py</code> (esta volta não mexe no Kraken); um Python por vez, um arquivo de teste por vez,
+  com a memória livre conferida antes de cada rodada (entre 3,5 e 3,9 GB, com o jogo aberto);</li>
+<li>não mexi em <code>C:\EditorImpressaoProva</code> (só listei), na pasta errada de 19/11 nem na junção <code>modelos</code>; nenhum comando
+  de git que muda o <code>.git</code> (<code>--is-shallow-repository</code> = false na cópia e na pasta principal, antes e depois).</li>
+</ul>
+<h2>Pedido</h2>
+<ul>
+<li>Papel: quebrador</li>
+<li>Commit de partida: edd39a9f (a ponta conferida: baba4eb8; o último código: 97a5c4b6)</li>
+<li>Ramo: passo2-publicar-2026-11-19</li>
+</ul>
+<h2>Veredito</h2>
+<p><strong>PRONTO PARA CONFERIR: os quatro consertos resolvem a causa num lugar só, as 33 junções de "em"/"de" com o nome do
+destino passaram todas pela mesma função, e o único teste antigo que mudou foi a linha que o Samuel autorizou (D-821).</strong>
+Nenhum dos três problemas que achei chega ao Kaique nem ao livro.</p>
+<p>Ficam 3 baixos e 4 observações:</p>
+<ul>
+<li><strong>Baixo 1:</strong> a guarda que impede "em {destino}" escrito à mão olha só um jeito de escrever. Escrito de outros quatro
+  jeitos ("em " + nome, uma variável, "(em {…})", <code>.format</code>), passa em todos os testes. Hoje nenhuma frase está errada
+  (contei: zero junções à mão).</li>
+<li><strong>Baixo 2:</strong> o item 19 do roteiro da prova à vista manda usar a pasta <code>versoes 3</code> "nova e vazia", e ela já tem o motor
+  publicado na prova 3. Repetido como está, não para onde o roteiro espera.</li>
+<li><strong>Baixo 3:</strong> duas frases do formulário ficaram com o texto de antes da resposta do Samuel (dizem que a frase da D-816
+  não mudou).</li>
+</ul>
+<p>Nunca "aprovado": só o Samuel aprova.</p>
+<p>O que está certo (provado rodando, não só lido):</p>
+<ul>
+<li><strong>A reversão confere com a do outro, teste por teste.</strong> No código de partida (<code>edd39a9f</code>) com os testes novos, falham
+  os 3 casos das frases e o "quem decide o pode gravar"; no código de antes da D-821 (<code>1624a05a</code>), falham o teste da
+  volta 3 mudado e a guarda (anexo <code>anexos-10/reversao-no-codigo-antigo.txt</code>).</li>
+<li><strong>As contas do outro conferem:</strong> a guarda acha 33 junções em <code>edd39a9f</code>, 2 em <code>1624a05a</code> (as da D-816) e 0 agora
+  (anexo <code>anexos-10/contar-juncoes-resultado.txt</code>).</li>
+<li><strong>Os consertos dos baixos 2, 3 e 4 têm teste que acusa:</strong> as minhas mutações B1, B2, B3 e D1 foram todas acusadas.</li>
+<li><strong>No PC, um arquivo por vez, tudo passa;</strong> no GitHub, a rodada 44936850048 testou <code>97a5c4b6</code> (o último código) e deu
+  success em tudo.</li>
+</ul>
+<h2>Decisões que esta tarefa precisa cumprir</h2>
+<p>Palavras copiadas do Livro da <code>obra-2026-10-26</code>.</p>
+<ul>
+<li><strong>D-767</strong> "não faça mais nada escodindo ou de mentira" · "não quero fazer consertos quero que funcione". Conferi: os
+  testes novos dos baixos 3 e 4 rodam o código de verdade de uma cópia de trabalho de verdade; a única peça trocada é a
+  regra dizendo "não" (no teste de "quem decide"), escrita como tal. <strong>Cumprida.</strong></li>
+<li><strong>D-775</strong> "o agente vai tentar quebrar antes de fazer o teste real na tela né?" · "ok". Esta é a etapa 3. <strong>Cumprida.</strong></li>
+<li><strong>D-785</strong> "ok, mais ainda existem mais casos na opção A" · "ok". Nada à vista rodado; só o roteiro mudou. <strong>Cumprida</strong>
+  (com o baixo 2 no roteiro).</li>
+<li><strong>D-798</strong> só quem confere escreve "PRONTO PARA CONFERIR". O formulário do outro não traz o rótulo. <strong>Cumprida.</strong></li>
+<li><strong>D-807</strong> o conjunto inteiro só no GitHub. Li a rodada, não rodei o inteiro no PC. <strong>Cumprida.</strong></li>
+<li><strong>D-813</strong> "a recusa compara a coisa de verdade, não o texto". A guarda das frases compara o texto de um jeito só
+  (baixo 1). <strong>Pela metade</strong> na guarda; o código de hoje está certo.</li>
+<li><strong>D-815</strong> agente novo em cada volta de quem quebra. <strong>Cumprida</strong> (sou novo).</li>
+<li><strong>D-816</strong> "A , mas onde estamos antes de você fazer qualquer processo". O que o publicar faz depois do pedido de
+  liberar não mudou (os <code>test_d816_*</code> passam); só as palavras, pela D-821. <strong>Cumprida.</strong></li>
+<li><strong>D-817</strong> "pode". O teste que saiu na volta 4 continua fora; o substituto passa. <strong>Cumprida.</strong></li>
+<li><strong>D-818</strong> "vai ter que reprogramar?" · "A". A régua do Visual C++ e a conferência da pasta já montada não mudaram
+  (<code>test_d818_*</code> passam). <strong>Cumprida.</strong></li>
+<li><strong>D-819</strong> "sempre se deve se ver se é a coisa mais simples, ou melhor de se fazer". Cada conserto traz o mais simples
+  e o escolhido, com o porquê. <strong>Cumprida.</strong></li>
+<li><strong>D-820</strong> "A". A pasta das ferramentas continua num lugar só; a montagem do Visual C++ agora pergunta só a ela.
+  <strong>Cumprida.</strong></li>
+<li><strong>D-821</strong> "ok, mas qual vai ser o proximo passo, todo resto está funcionando?". A frase da D-816 sai "na pasta"/"no
+  GitHub"; o teste da volta 3 mudou numa linha só (conferido no <code>git diff</code>); a guarda não tem exceção. <strong>Cumprida.</strong></li>
+<li><strong>D-605 / CLAUDE.md §11.8</strong> nenhum teste antigo muda para passar. Conferido linha a linha (abaixo). <strong>Cumprida.</strong></li>
+</ul>
+<h2>O que li</h2>
+<ul>
+<li><code>.claude/agents/verificador.md</code>, o <code>CLAUDE.md</code> inteiro (§4.6, §4.7, §11.8, §11.12 com os seis pontos e a D-813,
+  §11.13), <code>memoria/INDICE.md</code>, <code>memoria/licoes.md</code> e o caderno dos erros da <code>obra-2026-10-26</code> (famílias F1 a F10).</li>
+<li>Na cópia <code>passo2</code> (ponta <code>baba4eb8</code>): o ONDE-PAREI (o começo e a Volta 11 inteira, em todas as seções), o relatório 9
+  (os achados que esta volta consertou), a prova 3 de hoje e os anexos <code>reversao-volta11-*</code> e <code>volta11-*</code>.</li>
+<li>O Livro da <code>obra-2026-10-26</code>: D-767, D-775, D-785, D-798, D-807, D-813, D-815 a D-821, inteiras.</li>
+<li>O código: <code>git diff edd39a9f..baba4eb8</code> inteiro (<code>empacotar.py</code>, <code>publicar_versao_kaique.py</code> e os dois arquivos de
+  teste), <code>core/pasta_das_ferramentas.py</code>, e todo uso de <code>.nome</code> e <code>.onde</code> de destino no programa.</li>
+</ul>
+<h2>O que conferi</h2>
+<h3>A rodada do GitHub (lida, não disparada)</h3>
+<p>Rodada 44936850048: o log diz 71 vezes o commit <code>97a5c4b6</code> (o último que mexe em código; depois dele só o
+ONDE-PAREI mudou, conferido com <code>git diff --stat 97a5c4b6..baba4eb8</code>). Success no porteiro (o juiz da versão de
+teste), nos botões e prints da janela real e nas cinco partes do conjunto inteiro. Lá: <code>test_pasta_das_ferramentas.py</code>
+17 passaram, <code>test_publicar_versao.py</code> 125.</p>
+<h3>No PC, um arquivo por vez</h3>
+<table>
+<thead>
+<tr>
+<th>Arquivo</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tests/test_pasta_das_ferramentas.py</code></td>
+<td>17 passaram</td>
+</tr>
+<tr>
+<td><code>tests/test_publicar_versao.py</code></td>
+<td>125 passaram</td>
+</tr>
+<tr>
+<td><code>tests/test_empacotar.py</code></td>
+<td>43 passaram</td>
+</tr>
+<tr>
+<td><code>tests/test_publicar_motor.py</code></td>
+<td>12 passaram</td>
+</tr>
+<tr>
+<td><code>tests/test_publicar_servidor.py</code></td>
+<td>14 passaram</td>
+</tr>
+<tr>
+<td><code>tests/test_decisoes_atualizacao.py</code></td>
+<td>38 passaram</td>
+</tr>
+<tr>
+<td><code>tests/test_decisoes.py</code></td>
+<td>27 passaram</td>
+</tr>
+<tr>
+<td>as nove <code>tests/test_conferencias_*.py</code></td>
+<td>12, 77, 2, 14, 34, 9, 21, 20 e 11: todas passam</td>
+</tr>
+<tr>
+<td>o porteiro no repositório inteiro</td>
+<td>"nada novo (4922 arquivos lidos; a lista deixa 175 lugares)"</td>
+</tr>
+<tr>
+<td>o conferidor do formulário, etapa "quebrar", com o pacote da volta 11</td>
+<td>passa, com um aviso K14 (observação 2)</td>
+</tr>
+</tbody>
+</table>
+<p>A cópia <code>passo2</code> ficou sem nenhuma mudança depois de cada rodada (<code>git status</code> vazio).</p>
+<h3>Algum teste antigo mudou além da linha da D-821? (§11.8)</h3>
+<p>Li <code>git diff edd39a9f..baba4eb8 -- tests/</code> linha a linha:</p>
+<ul>
+<li><code>tests/test_publicar_versao.py</code>: dentro de testes antigos, só a linha autorizada
+  (<code>"ficou liberada em"</code> → <code>"ficou liberada na pasta"</code>) e um comentário em cima dela. O resto é acrescentado no fim (a
+  guarda e o teste das frases).</li>
+<li><code>tests/test_pasta_das_ferramentas.py</code>: nenhum teste antigo mudou. Mudou a ajuda <code>_copiar_o_codigo</code> (o pedido do baixo
+  2): ela agora <strong>para</strong> quando não acha a linha do caminho, em vez de seguir. Isso deixa os testes antigos mais
+  rigorosos, não mais fáceis: está escrito no formulário. O resto é acrescentado no fim.</li>
+</ul>
+<h3>Cada conserto resolve a causa, num lugar só? (§11.12)</h3>
+<ul>
+<li><strong>Baixo 1 e observação 4 (o roteiro):</strong> os itens 19 e 21 agora são só da cópia, e os comandos têm o Python da pasta
+  principal escrito inteiro. Resolve. Mas o item 19 ficou com uma pasta que não está mais vazia (baixo 2 deste relatório).</li>
+<li><strong>Baixo 2 (a cópia de prova dos testes):</strong> a troca do caminho continua num lugar só (<code>_copiar_o_codigo</code>), e agora para
+  com <code>pytest.fail</code> quando a linha não aparece exatamente uma vez. A mutação B1 (só parar quando aparece mais de uma
+  vez) foi acusada.</li>
+<li><strong>Baixo 3 (o "pode gravar?" do Visual C++):</strong> a conta própria (<code>DOWNLOADS.parent.is_dir()</code>) e a segunda frase saíram;
+  quem decide é <code>problema_para_gravar</code>. Procurei outra conta da mesma pergunta no programa: não há (o caminho só está
+  escrito em <code>core/pasta_das_ferramentas.py</code>; os outros lugares são textos de ajuda). As mutações B2 (criar a
+  <code>downloads</code> antes de perguntar) e B3 (só perguntar quando a pasta de cima não existe) foram acusadas.</li>
+<li><strong>Baixo 4 (a frase do <code>--motor-kraken</code>):</strong> um teste pelo que o empacotar imprime e um pelo <code>Parou</code> do
+  <code>publicar --motor</code>. As mutações M3 e M4 do outro mostram que cada um acusa só o seu lugar.</li>
+<li><strong>As frases:</strong> as 33 junções passam pela <code>com_preposicao</code>; nenhuma ficou à mão (contei pela própria guarda, e procurei
+  à mão todo uso de <code>destino.nome</code>, <code>self.nome</code> e <code>Apagado.onde</code>: os que sobram são "para a pasta", o nome no começo da
+  linha e o <code>Apagado(..., destino.nome)</code> que a frase do apagar junta pela mesma função). Fora do publicar, nenhum arquivo
+  usa o nome de um destino numa frase. As mutações C1 e C2 (tirar uma contração da tabela) foram acusadas, e D1 (a
+  segunda junção da D-816 de volta para "liberada em") também.</li>
+</ul>
+<h3>A guarda pega o vizinho? (F2, D-813; anexo <code>anexos-10/mutacoes-g-c-b-d-resultado.txt</code>)</h3>
+<p>Numa cópia de <code>baba4eb8</code>, uma mutação por vez, <code>tests/test_publicar_versao.py</code> inteiro:</p>
+<table>
+<thead>
+<tr>
+<th>Mutação</th>
+<th>O que sai na frase</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G1</td>
+<td><code>"o motor publicado em " + destino.nome</code></td>
+<td>125 passam</td>
+</tr>
+<tr>
+<td>G2</td>
+<td><code>onde = destino.nome</code> e depois <code>f"... liberada em {onde}"</code> (no instalador que não chegou)</td>
+<td>125 passam</td>
+</tr>
+<tr>
+<td>G3</td>
+<td><code>f"... (em {destino.nome}) ..."</code> (no índice estragado)</td>
+<td>125 passam</td>
+</tr>
+<tr>
+<td>G4</td>
+<td><code>"não consegui liberar {} em {} ({})".format(...)</code></td>
+<td>125 passam</td>
+</tr>
+<tr>
+<td>G5</td>
+<td><code>f"... deixado por {destino.nome}"</code> ("por a pasta")</td>
+<td>125 passam</td>
+</tr>
+</tbody>
+</table>
+<p>As cinco saem "em a pasta" (ou "por a pasta") para quem lê, e nenhum teste vê. O outro escreveu a ressalva só do G2 (a
+variável). O G3 é o mais perto do jeito que a guarda procura: é um f-string com <code>destino.nome</code>, e passa só porque a
+guarda pede um espaço antes do "em" (<code>endswith(" em ")</code>), e ali há um parêntese.</p>
+<h2>Achados</h2>
+<ol>
+<li>
+<p><strong>BAIXO: a guarda das frases olha um jeito só de escrever "em {destino}".</strong>
+   - Onde: <code>tests/test_publicar_versao.py</code>, <code>_preposicao_a_mao</code> (a comparação <code>antes.value.endswith(" em ")</code> /
+     <code>" de "</code>, só f-string, só <code>{… .nome}</code> e <code>{… .onde}</code> logo depois).
+   - Provado: as mutações G1 a G4 acima. Quatro jeitos de escrever "em a pasta" passam em todos os testes. O G5 mostra
+     que a <code>com_preposicao</code> só conhece "de" e "em" ("por" e "a" também se juntam com o artigo: "pela pasta", "à pasta");
+     hoje não há frase assim.
+   - Hoje nenhuma frase está errada: contei zero junções à mão e li todos os usos do nome do destino. É a família F2 de
+     novo (a conferência olha o jeito mais comum).
+   - O que pedir: a guarda cobrar a coisa de verdade, não o texto em volta. Uma ideia simples: todo uso de <code>.nome</code> (e
+     <code>.onde</code>) de um destino no <code>publicar_versao_kaique.py</code> tem de estar dentro de <code>com_preposicao(...)</code>, no começo da
+     frase ou depois de "para " (uma lista curta dos lugares aceitos); qualquer outro uso, inclusive guardar numa
+     variável, é acusado. Isso pega G1 a G4. Se a gerente achar que não vale a pena agora, basta a ressalva do outro
+     ganhar os quatro jeitos.</p>
+</li>
+<li>
+<p><strong>BAIXO: o item 19 do roteiro manda usar uma pasta que já não está vazia.</strong>
+   - Onde: <code>relatorios/passo2-publicar/ONDE-PAREI.md</code>, "A prova de verdade", item 19 (o reescrito na volta 11): "numa
+     pasta de provas nova e vazia com espaço no nome: ... <code>--pasta "C:\EditorImpressaoProva\versoes 3"</code> tem de parar com
+     'publique o motor antes'".
+   - Provado (só listei): <code>C:\EditorImpressaoProva\versoes 3</code> tem <code>motor-kraken-1</code>, publicado na prova 3 de hoje
+     (11h33). Repetido como está, o publicar não para em "publique o motor antes", porque o motor já está lá. O item 21
+     também usa <code>versoes 3</code> (ali não faz mal: a versão 1.1.0 foi apagada no fim da prova).
+   - O item diz que a gerente o repete "da pasta principal" depois da junção. É o mesmo tipo do baixo 1 do relatório 9
+     (roteiro que não dá para seguir ao pé da letra).
+   - O que pedir: trocar o nome da pasta do item 19 por uma nova (ex.: <code>versoes 6</code>), e conferir antes que ela não existe.</p>
+</li>
+<li>
+<p><strong>BAIXO: duas frases do formulário dizem que a frase da D-816 não mudou.</strong>
+   - Onde: <code>relatorios/passo2-publicar/ONDE-PAREI.md</code>, "Como cumpri cada uma", Volta 11, D-816 ("a frase de depois do
+     pedido de liberar não mudou (nem as palavras)"); e "Como fica para quem usa e no livro", Volta 11 ("A frase do
+     caminho de erro depois do pedido de liberar (a da D-816) fica como está até a resposta da pergunta").
+   - Provado (lido): depois da D-821 (<code>97a5c4b6</code>), as palavras dessa frase mudaram ("pedi para liberar na pasta", "se
+     ficou liberada na pasta"). O resto do formulário já diz isso (a seção D-821 logo abaixo, "O que foi feito", item 18).
+   - É a família F7 (o escrito não bate com o código), num texto pequeno; o conferidor do formulário não pega isso.
+   - O que pedir: acertar as duas frases ("as palavras mudaram pela D-821; o que o publicar faz, não").</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO 1: a reversão e as mutações do outro conferem.</strong>
+   - A minha reversão deu o mesmo resultado que o anexo dele, teste por teste, nos dois códigos de antes. As mutações M1
+     a M9 dele não repeti (li o script; as minhas B1 a B3, C1, C2 e D1 cobrem os mesmos lugares de outro jeito, e foram
+     todas acusadas).
+   - Três dos testes novos passam no código de partida (a montagem sem a <code>ferramentas</code> e o <code>--motor-kraken</code> nas duas
+     telas): eles cobram o que o código já fazia certo sem teste. A prova deles é a mutação, não a reversão; está
+     escrito assim no formulário. Não é ressalva grave, porque não são conserto de defeito, são proteção nova.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO 2: o registro do servidor das versões no git (a gerente pediu a minha opinião, não a decisão).</strong>
+   - O que é: <code>relatorios/servidor-das-versoes/registro-2026-11-21-111014.txt</code>, uma linha ("servindo
+     C:\EditorImpressaoProva\versoes 3 em http://127.0.0.1:8765/"), escrita pelo servidor na prova 3. Entrou no git no
+     commit <code>0a3b54a9</code>, só ele, sem mudar.
+   - Minha opinião: <strong>pode ficar</strong> (é pequeno, não tem segredo e é o registro de uma prova de verdade). Mas a causa
+     continua: o servidor grava o registro dentro do repositório por padrão (<code>servidor_das_versoes.py</code>, o <code>--registro</code>
+     de fábrica em <code>relatorios/servidor-das-versoes/</code>). Cada prova nova vai criar outro arquivo fora do git, o
+     conferidor vai acusar, e alguém vai pôr no git de novo. O conferidor também avisa (K14) que o arquivo está fora da
+     lista do pedido. Duas saídas, para a gerente escolher: o roteiro passar <code>--registro</code> para
+     <code>C:\EditorImpressaoProva\</code> (onde já ficam os outros registros da prova), ou uma linha no <code>.gitignore</code> para esses
+     registros. Qualquer das duas é mudança fora desta volta.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO 3: a <code>com_preposicao</code> é chamada em 33 lugares com a mesma tabela.</strong>
+   - É o jeito certo (uma regra, um lugar só). Só anoto que ela depende de o nome do destino começar pelo artigo ("a
+     pasta", "o GitHub"); o <code>test_obs6</code> acusa se isso mudar (a mutação C1 foi acusada por ele).</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO 4: o Livro desta cópia é antigo.</strong>
+   - O <code>pacote</code> da ferramenta das regras, rodado da cópia, não acha D-816 a D-820 (o outro anotou para a Lista de bugs).
+     Conferi as palavras no Livro da <code>obra-2026-10-26</code>: as que o formulário copiou batem.</p>
+</li>
+</ol>
+<h2>O que falta</h2>
+<ul>
+<li>Para a prova à vista: o baixo 2 (a pasta do item 19). O resto do roteiro está como o relatório 9 pediu.</li>
+<li>Para juntar: os baixos 1 e 3 (ou a decisão da gerente de deixar o 1 como ressalva).</li>
+</ul>
+<h2>Para a gerente: o que ficou fora do projeto</h2>
+<p>Na pasta de rascunho desta conversa,
+<code>C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\52740cda-b98f-4183-a448-ea9ff84b0439\scratchpad\</code> (criada
+nesta tarefa):</p>
+<ul>
+<li><code>v10q\antigo</code>, <code>v10q\meio</code> e <code>v10q\novo</code>: o código de <code>edd39a9f</code>, <code>1624a05a</code> e <code>baba4eb8</code> (<code>git archive</code>, inteiro:
+  <strong>uns 826 MB cada, 2,5 GB no total</strong>; eu devia ter tirado as pastas grandes). Em <code>antigo\tests\</code> e <code>meio\tests\</code> estão
+  por cima os dois arquivos de teste de <code>baba4eb8</code>. A <code>novo\</code> voltou como saiu do git: conferi depois, arquivo por arquivo, os quatro que mudei contra o
+  <code>git show baba4eb8</code>, iguais sem contar o fim de linha (o <code>git archive</code> grava com CRLF). A última linha do meu script
+  (<code>sem mutacao: ... -&gt; 0</code>) não conferia nada (comparava o arquivo com ele mesmo); a conferência que vale é esta.
+  Não apaguei: pela regra, quem decide é a gerente.</li>
+<li><code>mutar.py</code>, <code>contar.py</code>, <code>mutacoes.txt</code>, <code>reversao.txt</code>, <code>dec.md</code>, <code>pub_edd.py</code>, <code>pub_1624.py</code> e <code>run.log</code> (o
+  registro da rodada 44936850048, uns 0,9 MB). As cópias que importam estão em <code>quem-quebrou/anexos-10/</code>.</li>
+</ul>
+<p>O pytest também cria as pastas dele em <code>C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\</code> (ele guarda só as últimas).
+Não apaguei nada em lugar nenhum.</p>
+<h2>Fontes</h2>
+<ul>
+<li>Python 3.14, módulo <code>ast</code>: um f-string vira <code>JoinedStr</code> com partes <code>Constant</code> e <code>FormattedValue</code>; dois pedaços de
+  f-string lado a lado viram um só (por isso a guarda vê as frases de duas linhas); concatenação com <code>+</code> é <code>BinOp</code>, e
+  <code>.format</code> é uma chamada: nenhum dos dois é <code>JoinedStr</code> (por isso G1 e G4 passam).</li>
+<li>Rodada do GitHub 44936850048 (lida com <code>gh run view</code>).</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 21/11/2026 às 15:46</p>
+</body>
+</html>

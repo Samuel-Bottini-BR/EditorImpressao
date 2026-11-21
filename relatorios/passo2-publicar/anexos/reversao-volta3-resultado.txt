@@ -1,0 +1,82 @@
+Volta 3 do passo 2 (20/11/2026): cada proteção nova desligada numa cópia (git archive do commit 4817c2f4 e depois, fora do projeto); o teste dela tem de falhar (ACUSOU). Script: reversao-volta3-mutacoes.py.txt.
+Primeira passada (as linhas NÃO APLICADA eram de mutações de várias linhas, que não casavam com o CRLF da cópia; refeitas na segunda passada):
+B1: ACUSOU - apagar só o rascunho: o caminho de erro volta a apagar a publicação inteira - test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada (1 failed in 2.48s)
+
+B1: ACUSOU - apagar só o rascunho: o caminho de erro volta a apagar a publicação inteira - test_volta3_achado1_no_github_a_leitura_atrasada_tambem_nunca_apaga_a_liberada (1 failed in 1.91s)
+
+B1b: NÃO APLICADA (o texto aparece 0 vezes) - o GitHub apaga sem ler de novo logo antes de pedir
+
+B1c: NÃO APLICADA (o texto aparece 0 vezes) - a pasta de destino apaga as duas subpastas no apagar do rascunho
+
+B1d: NÃO ACUSOU - o apagar não lê de novo depois de pedir (a liberada que surgiu no meio) - test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada (1 passed in 1.58s)
+
+B2: NÃO APLICADA (o texto aparece 0 vezes) - a cópia vai direto para o nome certo (sem o provisório)
+
+B2b: ACUSOU - a cópia não é lida de volta - test_volta3_a_copia_conferida_le_de_volta_e_obedece_a_vigia (1 failed in 0.88s)
+
+B2c: ACUSOU - a conferência do fim não compara o .msi - test_volta3_achado2_o_msi_da_pasta_de_saida_e_comparado_com_o_do_rascunho (1 failed in 1.99s)
+
+B2c: ACUSOU - a conferência do fim não compara o .msi - test_volta3_achado2_o_msi_que_nao_termina_de_copiar_nao_fica_com_o_nome_certo (1 failed in 1.81s)
+
+B2d: ACUSOU - o .msi volta ao shutil.copyfile - test_volta3_achado2_o_msi_que_nao_termina_de_copiar_nao_fica_com_o_nome_certo (1 failed in 1.88s)
+
+B2e: NÃO APLICADA (o texto aparece 0 vezes) - a cópia não obedece a vigia no meio
+
+B3: NÃO APLICADA (o texto aparece 0 vezes) - a peça deixa de olhar se é programa do Windows de verdade
+
+B3b: ACUSOU - só a extensão (sem o começo do arquivo) - test_bat_e_cmd_sao_recusados_pelo_rodar_pelo_lancar_e_pelo_grupo (1 failed, 3 warnings in 1.02s)
+
+B3c: ACUSOU - só o começo do arquivo (sem a extensão) - test_um_lote_que_a_peca_nao_acha_tambem_e_recusado_pela_extensao (1 failed in 0.79s)
+
+B4: ACUSOU - o programa do grupo nasce rodando (sem parar e soltar) - test_o_programa_nasce_parado_e_so_roda_dentro_do_grupo (1 failed in 3.84s)
+
+B4b: NÃO APLICADA (o texto aparece 0 vezes) - fechar_tudo diz conferido sem fechar o grupo (só o programa)
+
+B4c: NÃO APLICADA (o texto aparece 0 vezes) - fechar_tudo diz conferido sem ler o grupo
+
+B9: NÃO APLICADA (o texto aparece 0 vezes) - sem leitura do grupo, a frase volta a dizer 'continua rodando'
+
+B9b: NÃO APLICADA (o texto aparece 0 vezes) - a primeira pasta de troca fica quando a segunda não nasce
+
+B5: ACUSOU - o rascunho fica no destino quando o liberar falha - test_volta3_achado5_o_liberar_que_falha_e_continua_rascunho_apaga_o_rascunho (1 failed in 1.56s)
+
+B6: ACUSOU - sem a comparação 'o motor mudou' - test_volta3_achado6_o_motor_trocado_durante_a_publicacao_impede_liberar (1 failed in 1.58s)
+
+B7: ACUSOU - o motor baixado fora da conta - test_volta3_achado7_o_motor_baixado_entra_na_conta_e_na_vigia (1 failed in 1.72s)
+
+B7b: ACUSOU - o download do motor sem a vigia - test_volta3_achado7_o_motor_baixado_entra_na_conta_e_na_vigia (1 failed in 2.34s)
+
+B7c: ACUSOU - o gh não obedece a vigia - test_volta3_achado7_o_gh_que_baixa_e_fechado_pela_vigia (1 failed in 61.02s (0:01:01))
+
+B7d: ACUSOU - o nome do motor escrito à mão no publicar - test_volta3_achado7_o_nome_do_motor_so_em_versao_py (1 failed in 0.78s)
+
+B8: NÃO APLICADA (o texto aparece 0 vezes) - a janela volta a dizer 'não existe' do nome repetido
+
+Segunda passada (as de várias linhas, e a B1d depois de o teste passar a cobrar a frase 'ficou liberada em'; a B2 com o teste da cópia cortada no meio):
+B1b: ACUSOU - o GitHub apaga sem ler de novo logo antes de pedir - test_volta3_achado1_no_github_a_leitura_atrasada_tambem_nunca_apaga_a_liberada (1 failed in 1.69s)
+
+B1c: ACUSOU - a pasta de destino apaga as duas subpastas no apagar do rascunho - test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada (1 failed in 1.60s)
+
+B1d: ACUSOU - o apagar não lê de novo depois de pedir (a liberada que surgiu no meio) - test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada (1 failed in 1.57s)
+
+B2: NÃO ACUSOU - a cópia vai direto para o nome certo (sem o provisório) - test_volta3_achado2_o_msi_que_nao_termina_de_copiar_nao_fica_com_o_nome_certo (1 passed in 1.72s)
+
+B2e: ACUSOU - a cópia não obedece a vigia no meio - test_volta3_a_copia_conferida_le_de_volta_e_obedece_a_vigia (1 failed in 0.78s)
+
+B3: ACUSOU - a peça deixa de olhar se é programa do Windows de verdade - test_bat_e_cmd_sao_recusados_pelo_rodar_pelo_lancar_e_pelo_grupo (1 failed in 0.81s)
+
+B4b: ACUSOU - fechar_tudo diz conferido sem fechar o grupo (só o programa) - test_fechar_tudo_so_diz_conferido_quando_o_windows_diz_que_nenhum_ficou (1 failed in 2.60s)
+
+B4b: ACUSOU - fechar_tudo diz conferido sem fechar o grupo (só o programa) - test_volta3_achado4_a_vigia_fecha_o_filho_do_vpk_antes_de_soltar_o_grupo (1 failed in 2.91s)
+
+B4c: ACUSOU - fechar_tudo diz conferido sem ler o grupo - test_fechar_tudo_so_diz_conferido_quando_o_windows_diz_que_nenhum_ficou (1 failed in 3.71s)
+
+B9: ACUSOU - sem leitura do grupo, a frase volta a dizer 'continua rodando' - test_fechar_tudo_so_diz_conferido_quando_o_windows_diz_que_nenhum_ficou (1 failed in 4.83s)
+
+B9b: ACUSOU - a primeira pasta de troca fica quando a segunda não nasce - test_o_lancado_solto_apaga_a_primeira_pasta_se_a_segunda_nao_nasce (1 failed in 0.92s)
+
+B8: ACUSOU - a janela volta a dizer 'não existe' do nome repetido - test_achado8_o_nome_repetido_aparece_na_janela_como_repetido_e_nao_como_inexistente (1 failed in 2.83s)
+
+B2: NÃO ACUSOU - a cópia vai direto para o nome certo (sem o provisório) - test_volta3_achado2_o_msi_que_nao_termina_de_copiar_nao_fica_com_o_nome_certo (1 passed in 2.11s)
+
+B2: ACUSOU - a cópia vai direto para o nome certo (sem o provisório) - test_volta3_a_copia_cortada_no_meio_nunca_deixa_o_nome_certo (1 failed in 1.67s)

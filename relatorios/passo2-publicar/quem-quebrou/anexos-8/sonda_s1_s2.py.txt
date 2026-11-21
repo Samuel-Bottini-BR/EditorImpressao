@@ -1,0 +1,19 @@
+"""Sonda S1/S2 (quem quebra, volta 8 e 9): de dentro da copia de trabalho REAL (.claude/worktrees/passo2), onde cada
+lugar procura as ferramentas, com o git normal e sem git no caminho. So le; nada grava."""
+import json, os, sys, time
+sys.path.insert(0, os.getcwd())
+t0 = time.perf_counter()
+from core import pasta_das_ferramentas as pf
+f = pf.pasta_das_ferramentas()
+t1 = time.perf_counter()
+import empacotar
+from core import ocr_kraken
+arq = empacotar.DOWNLOADS / empacotar.VC_REDIST_NOME
+print(json.dumps({
+    "PATH tem git": any(os.path.isfile(os.path.join(p, "git.exe")) for p in os.environ["PATH"].split(os.pathsep)),
+    "pasta_das_ferramentas": str(f), "existe": f.is_dir(), "segundos do git": round(t1 - t0, 3),
+    "problema_para_gravar": pf.problema_para_gravar(),
+    "empacotar.DOWNLOADS": str(empacotar.DOWNLOADS), "vc_redist achado ali": arq.is_file(),
+    "tamanho": arq.stat().st_size if arq.is_file() else None,
+    "motor do programa": str(ocr_kraken.achar_pasta_do_motor()),
+}, ensure_ascii=False, indent=1))

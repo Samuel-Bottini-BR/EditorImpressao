@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo 2: quarta conferência de quem tentou quebrar</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Passo 2 do plano da parte do Windows: quarta conferência de quem tentou quebrar (20/11/2026)</h1>
+<p>Sou um agente novo nesta volta (D-815). Não escrevi este código e não fiz as voltas 1 a 3. Não mexi no código do
+outro.</p>
+<p>O que <strong>não</strong> fiz:
+- não rodei o vpk, o PyInstaller nem o <code>gh release</code>;
+- não publiquei nada e não pedi licença de administrador;
+- não abri janela na tela do Samuel.</p>
+<p>O que rodei de verdade no Windows (só o que não pede licença):
+- a peça do Windows, com cópias do <code>hostname.exe</code> numa pasta minha;
+- o <code>gh --version</code>, que não fala com o GitHub.</p>
+<p>Tudo rodou em cópias do código (<code>git archive</code> de <code>595cc293</code> e de <code>5f96975b</code>), na pasta de rascunho desta conversa, um
+arquivo de teste por vez.</p>
+<h2>Pedido</h2>
+<ul>
+<li>Papel: quebrador</li>
+<li>Commit de partida: c75566a1</li>
+<li>Ramo: passo2-publicar-2026-11-19</li>
+</ul>
+<h2>Arquivos que vou mexer</h2>
+<ul>
+<li><code>publicar_versao_kaique.py</code></li>
+<li><code>empacotar.py</code></li>
+<li><code>core/windows.py</code></li>
+<li><code>tests/test_windows_peca.py</code></li>
+<li><code>tests/test_empacotar.py</code></li>
+<li><code>tests/test_publicar_*.py</code></li>
+<li><code>relatorios/passo2-publicar/</code></li>
+</ul>
+<p>(Copiado do pacote sem mudar. Na prática só escrevi em <code>relatorios/passo2-publicar/quem-quebrou/</code>: este relatório,
+nos três formatos, e a pasta <code>anexos-4/</code>.)</p>
+<h2>Veredito</h2>
+<p><strong>NÃO ESTÁ PRONTO para a prova à vista.</strong> Falta um conserto pequeno.</p>
+<p><strong>Os 12 achados do relatório 3 estão consertados pela causa.</strong>
+- Depois do pedido de liberar, o publicar não apaga mais nada (D-816). Isso não depende de leitura nenhuma.
+- O nome do programa é lido uma vez só, como o Windows o completa.
+- O gh e o vpk passam pelo mesmo laço da peça.</p>
+<p>Desliguei 10 proteções numa cópia, uma por vez. Os testes acusaram 6. As 4 que passaram estão explicadas nos achados
+3, 7 e 8.</p>
+<p><strong>Achei um problema médio.</strong> Há três frases do publicar que mandam rodar <code>--apagar &lt;versão&gt;</code> sem dizer o destino.
+- Na pasta das provas, quem segue a frase apaga no GitHub, e não na pasta.
+- O <code>--apagar</code> apaga a versão do GitHub mesmo liberada, com a etiqueta.
+- Esta volta criou o lugar único que escreve esse comando certo (<code>comando_de_apagar</code>), mas três frases antigas
+  continuam escritas à mão, sem o destino.</p>
+<p>Os outros achados são baixos: frases que dizem mais do que aconteceu, três proteções sem teste, um vizinho do nome e um
+texto que promete demais.</p>
+<p>Pela D-775, volta para quem escreveu. Não escrevo "PRONTO PARA CONFERIR" (D-798): falta a prova à vista. Nunca
+"aprovado": só o Samuel aprova.</p>
+<h2>Decisões que esta tarefa precisa cumprir</h2>
+<ul>
+<li>D-816 "A , mas onde estamos antes de você fazer qualquer processo". Aqui: <strong>cumprida</strong>.</li>
+<li>Depois do pedido de liberar, nada é apagado, nos dois destinos (código lido e testes com 1, 2, 3 e 10 leituras
+    atrasadas).</li>
+<li>Antes do pedido, o rascunho continua sendo apagado na hora (mutação A1: desligar isso faz um teste falhar).</li>
+<li>Fica um caso de borda: o achado 4.</li>
+<li>D-767 "não faça mais nada escodindo ou de mentira". Aqui: a peça do Windows rodou de verdade (o nome, o gh no laço). O
+  GitHub e o vpk só com as peças de mentira dos testes, que provam só a lógica em volta.</li>
+<li>D-773 "A". Aqui: a frase nova diz como conferir e o comando de apagar. O achado 1 mostra uma frase antiga que manda
+  apagar no destino errado.</li>
+<li>D-775 "ok". Aqui: tentei quebrar, sem pergunta do Windows. O resultado vai à gerente.</li>
+<li>D-776 "Sim, no C só tem que cuidar para não encher o disco C inteiro". Aqui: <strong>cumprida</strong> no download para somar
+  (vai ao rascunho do C:, passa pela vigia e entra na conta; mutações do outro V11 a V15 e a minha A7).</li>
+<li>D-795 "ok". Aqui: nada mudou no Setup.exe (conferido no código).</li>
+<li>D-811 "ok". Aqui: <strong>pela metade</strong>. Três proteções passam com o teste desligado (achados 3 e 7).</li>
+<li>D-812 "ok". Aqui: a frase da D-816 não usa dado do destino. "Pedi" ou "não pedi" vem do caminho do código. Um furo: o
+  achado 2.</li>
+<li>D-813 "ok". Aqui: o nome, rodado em 34 jeitos de escrever (anexo <code>e5-nomes-resultado.txt</code>). Passa um: o fluxo
+  escondido de um arquivo (achado 5).</li>
+<li>D-798 "fechou". Aqui: sem o rótulo de pronto.</li>
+</ul>
+<h2>O que li</h2>
+<ul>
+<li><code>.claude/agents/verificador.md</code> e o <code>CLAUDE.md</code> inteiro (§4.7, §11.8 e o §11.12 com os 6 pontos).</li>
+<li><code>memoria/INDICE.md</code> e <code>memoria/catalogo-de-erros.md</code> (famílias F1 a F10).</li>
+<li>O meu pacote (<code>anexos/pacote-quem-quebra-volta4.md</code>). Os textos da D-811 a D-813 e da D-816 vieram do pedido da
+  gerente.</li>
+<li>Os relatórios 1, 2 e 3 de quem tentou quebrar.</li>
+<li>No formulário do escritor (<code>ONDE-PAREI.md</code>), as seções da volta 4: decisões, "O que o agente que tentou quebrar
+  achou", "Cada proteção", "De onde vem cada dado", "Ressalvas" e "A prova de verdade".</li>
+<li>Os anexos <code>reversao-volta4-*</code> e <code>volta4-nome-e-loja*</code>.</li>
+<li>O código da volta 4 (<code>git diff 5f96975b 595cc293</code>):</li>
+<li>em <code>publicar_versao_kaique.py</code>: <code>_Destino</code>, <code>apagar_publicacao</code>, <code>_frase_depois_do_pedido_de_liberar</code>,
+    <code>publicar_arquivos</code>, <code>DestinoGitHub._gh</code> e <code>soma</code>, a conta em <code>publicar</code> e <code>publicar_motor</code>, e <code>main</code>;</li>
+<li>em <code>core/windows.py</code>: <code>_como_o_windows_completa</code>, <code>_caminho_do_programa</code>, <code>_por_que_recusa</code>,
+    <code>_por_que_nao_e_programa</code>, <code>rodar_em_grupo</code>, <code>abrir_em_grupo</code> (com <code>capturar</code>), <code>ProgramaEmGrupo.esperar</code>,
+    <code>gravar_no_disco</code> e <code>_gravar_por_inteiro</code>;</li>
+<li>em <code>empacotar.py</code>: <code>rodar_vpk</code>, <code>copiar_inteiro</code>, <code>zipar_motor</code> e <code>vigia_do_espaco</code>.</li>
+<li>Peça de fora (D-813):</li>
+<li>Microsoft Learn: "File path formats on Windows systems", na parte do corte dos pontos e espaços do fim (citada pelo
+    outro e conferida rodando);</li>
+<li>a ordem em que o CreateProcess procura um nome sozinho;</li>
+<li>o <code>communicate</code> do Python.</li>
+<li>O que o Windows aceita de verdade eu não deduzi: rodei (E5 e E6).</li>
+</ul>
+<h2>O que conferi nas falhas, nas peças de fora e nos caminhos</h2>
+<h3>Os 12 achados do relatório 3, um por um</h3>
+<table>
+<thead>
+<tr>
+<th>Achado</th>
+<th>O que vi</th>
+<th>Desligado numa cópia, o teste acusa?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 (D-816)</td>
+<td>Depois do pedido de liberar, nenhum caminho chama o apagar. Procurei todos os apagar do código (o caminho de erro, o Ctrl+C, a vigia, o <code>--apagar</code>, o <code>_fim</code>, a conferência do fim): o <code>_fim</code> só apaga o rascunho do C: e a conferência só lê.</td>
+<td>sim: V1 do outro; minha A2 (marcar "pedi" só depois de o liberar responder)</td>
+</tr>
+<tr>
+<td>1, a outra metade</td>
+<td>Antes do pedido de liberar, o erro continua apagando o rascunho.</td>
+<td>sim: minha A1 (<code>test_a_leitura_de_volta_que_nao_bate_nao_libera_e_apaga_o_rascunho_do_destino</code>)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Nome lido uma vez, como o Windows completa. Rodei 34 jeitos (abaixo).</td>
+<td>sim: minhas A3 (só o nome sozinho) e A4 (só o caminho com pasta)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>A frase diz se pediu. Achei o vizinho ao contrário: "pedi" sem ter pedido (meu achado 2).</td>
+<td>V4 a V7 do outro, sim; minha A5 (o gh de verdade sem a resposta), <strong>não</strong> (meu achado 3)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>O criar foi para dentro do <code>try</code>. "Não achei" logo depois de criar não vira "sumiu".</td>
+<td>sim: V2 e V3</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Escrito como limite da peça.</td>
+<td>não se aplica</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Frase própria para o programa que não deixa ler.</td>
+<td>sim: V9</td>
+</tr>
+<tr>
+<td>7</td>
+<td>O download para somar vai ao rascunho, pela vigia, e entra na conta; a subpasta é apagada.</td>
+<td>sim: V11 a V15; minha A7 (a subpasta não apagada); minha A10 (o destino não volta ao estado de antes no fim), <strong>não</strong> (observação, achado 8)</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>windows.rodar_em_grupo</code> é o único laço do gh e do vpk. Procurei outros <code>subprocess</code>: só sobram o PyInstaller e o Inno Setup, que não são deste achado. O gh de verdade (<code>gh --version</code>) rodou pelo laço, com a saída guardada (anexo E6).</td>
+<td>V16 a V19b, sim; minha A9 (o grupo sem guardar a saída), sim; minha A6 (sem juntar a saída depois de fechar), <strong>não</strong> (observação, achado 8)</td>
+</tr>
+<tr>
+<td>9</td>
+<td>O texto cru está lá; o arquivo compila sem aviso.</td>
+<td>não se aplica</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Teste novo; a V10 do outro prova que ele cobra.</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>11</td>
+<td>O <code>os.fsync</code> está na cópia, no motor comprimido e na peça. O texto promete mais do que o código faz (meu achado 6).</td>
+<td>sim: V20 a V23</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Os dois arquivos do desinstalar continuam falhando no PC (25 e 5), como no relatório 3. Família F4; está em "Ideias e bugs".</td>
+<td>não se aplica</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Reversão.</strong> Rodei os testes novos no código de <code>5f96975b</code> (anexo <code>reversao-testes-novos-no-codigo-antigo.txt</code>).
+- Em <code>test_publicar_versao.py</code>, os 22 testes novos falham.
+- Em <code>test_windows_peca.py</code>, falham 4 de 5. O que passa é o do achado 10: a proteção já existia.
+- Bate com o anexo do outro: 26 de 27.</p>
+<p><strong>O teste antigo que saiu</strong> (<code>test_volta3_achado5_o_liberar_que_falha_e_continua_rascunho_apaga_o_rascunho</code>).
+- <strong>A troca está certa.</strong> Ela muda só o que a D-816 mudou.
+- O mesmo caso (o mesmo destino de prova, <code>_DestinoQueNaoLibera</code>, na pasta) é cobrado em
+  <code>test_d816_o_liberar_que_falha_e_fica_rascunho_nao_apaga_e_diz_o_comando[pasta]</code>, e também no GitHub.
+- O teste novo prova que o jeito antigo saiu: o rascunho continua e a frase diz o comando. E prova que o comando
+  apaga.
+- A outra metade da decisão antiga (o erro antes de liberar apaga) continua cobrada (mutação A1).
+- Essa troca vai ao Samuel pela gerente (§11.8).</p>
+<h3>O nome do programa, rodado de verdade (E5, anexo <code>e5-nomes-resultado.txt</code>)</h3>
+<p>Usei cópias do <code>hostname.exe</code> chamadas <code>pwsh.exe</code> e <code>Update.exe</code>, numa pasta minha posta só no PATH do meu processo,
+mais o <code>whoami.exe</code> da pasta do Windows.
+- A peça recusa 30 dos 34 jeitos de escrever. Exemplos: o ponto e o espaço no fim, maiúsculas, sem extensão, o nome
+  curto (8.3), <code>\\?\</code>, <code>\\.\</code>, <code>\??\</code>, o caminho relativo, a barra no fim, <code>pasta\..\</code>, o nome sozinho pelo PATH, as
+  aspas, o TAB, o <code>whoami.exe.</code> sozinho e com a pasta, o <code>System32\..\System32</code> e o caminho sem a letra do disco.
+- Os 4 que a peça deixa passar: três o Windows também não roda (as aspas no meio, o <code>::$DATA</code> e o <code>\??\UNC\localhost</code>).
+  O quarto ele roda: <strong>o fluxo escondido <code>nada.txt:pwsh.exe</code></strong> (meu achado 5).
+- A peça não recusa nada que o Windows deixaria rodar por um desses nomes, fora esse.</p>
+<h3>O laço único e o Ctrl+C</h3>
+<ul>
+<li>O vpk e o gh chamam <code>rodar_em_grupo</code> com a mesma vigia, o mesmo tempo e o mesmo fechar.</li>
+<li>No Ctrl+C, os dois fecham o grupo e repassam a interrupção (<code>except BaseException: fechar_tudo; raise</code>).</li>
+<li>A diferença entre os dois está só no que se faz com o resultado:</li>
+<li>o vpk escreve no terminal e devolve a frase;</li>
+<li>o gh guarda a saída e levanta Parou ou SemResposta.</li>
+<li>O caso igual dos dois é cobrado pelo teste do achado 8 (as mutações V16 a V19b do outro).</li>
+</ul>
+<h3>O que mudou na peça do passo 1 (§11.8)</h3>
+<p>O <code>_gravar_por_inteiro</code> agora pede <code>fsync</code>. Ele grava os scripts, a tarefa, o aviso, o segredo e a ficha da pasta
+segura.</p>
+<p>Rodei os arquivos ao redor, um por vez, no código novo (anexo <code>arredor-um-arquivo-por-vez.txt</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Arquivo de teste</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_windows_peca.py</code></td>
+<td>67 passaram, 2 pulados</td>
+</tr>
+<tr>
+<td><code>test_publicar_versao.py</code></td>
+<td>70 passaram</td>
+</tr>
+<tr>
+<td><code>test_publicar_servidor.py</code></td>
+<td>14 passaram</td>
+</tr>
+<tr>
+<td><code>test_publicar_motor.py</code></td>
+<td>12 passaram</td>
+</tr>
+<tr>
+<td><code>test_empacotar.py</code></td>
+<td>41 passaram</td>
+</tr>
+<tr>
+<td><code>test_windows_janela_de_prova.py</code></td>
+<td>10 passaram</td>
+</tr>
+<tr>
+<td><code>test_decisoes_atualizacao.py</code></td>
+<td>38 passaram</td>
+</tr>
+<tr>
+<td><code>test_decisoes_ajudante_da_atualizacao.py</code></td>
+<td>37 passaram</td>
+</tr>
+<tr>
+<td><code>test_decisoes_testes_a_distancia.py</code></td>
+<td>13 passaram</td>
+</tr>
+<tr>
+<td><code>test_decisoes_brasao.py</code></td>
+<td>22 passaram</td>
+</tr>
+<tr>
+<td><code>test_decisoes_desinstalar.py</code> e <code>_pasta.py</code></td>
+<td>25 e 5 falham, como antes (achado 12 do relatório 3, F4)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>As frases da recusa só são usadas em <code>core/windows.py</code> e nos testes dele.</li>
+<li>O nome novo da função antiga só é chamado ali.</li>
+<li>Não vi nada já escolhido que mudou.</li>
+<li>Fica o que o outro já escreveu: o lado com licença de administrador não rodou.</li>
+</ul>
+<h3>A rodada do GitHub 44748591841</h3>
+<ul>
+<li>Consultei duas vezes, com 5 minutos de intervalo.</li>
+<li>O resultado: success na 3ª tentativa.</li>
+<li>O registro diz "TESTADO_SHA: 324cebb3" em todas as partes, inclusive na parte 2 da 3ª tentativa (código trocado às
+  14:48).</li>
+<li>Entre <code>595cc293</code> e <code>324cebb3</code> só mudou o <code>ONDE-PAREI.md</code> (<code>git diff --stat</code>). Então o código testado é o desta volta.</li>
+</ul>
+<h2>Caminhos que o outro não listou</h2>
+<ol>
+<li><strong>A frase que manda rodar o <code>--apagar</code> quando a publicação já existe</strong> (o começo de <code>publicar_arquivos</code>, o de
+   <code>publicar</code> e o de <code>publicar_motor</code>). Ela não passa pelo <code>comando_de_apagar</code> (achado 1).</li>
+<li><strong>A leitura que fica sem resposta dentro do apagar do rascunho no GitHub</strong>, antes de pedir (achado 2).</li>
+<li><strong>O gh que nem abre no pedido de liberar</strong> (achado 4).</li>
+<li><strong>O programa num fluxo escondido de outro arquivo</strong> (<code>arquivo:nome.exe</code>; achado 5).</li>
+<li><strong>As outras gravações "nome provisório e depois troca"</strong> que o texto de <code>gravar_no_disco</code> diz que passam por ela
+   (achado 6).</li>
+</ol>
+<h2>Falhas não pensadas e resultado não conferido</h2>
+<ul>
+<li><strong>Peça duplicada (§11.12.1):</strong> o comando de apagar escrito à mão em três frases, ao lado do lugar único novo
+  (achado 1).</li>
+<li><strong>Dá como feito o que não fez (F5):</strong></li>
+<li>"pedi para apagar" sem ter pedido (achado 2);</li>
+<li>"pedi para liberar" com o gh sem abrir (achado 4).</li>
+<li><strong>Proteção sem teste (F3):</strong></li>
+<li>a troca "o gh fechado por tempo vira sem resposta" no <code>_gh</code> de verdade (achado 3);</li>
+<li>a frase "outra pessoa liberou no meio" pelo caminho do GitHub (achado 3).</li>
+<li><strong>O vizinho passa (F2):</strong> o fluxo escondido (achado 5).</li>
+<li><strong>O escrito não bate com o código (F7):</strong> "todo código que grava num nome provisório" (achado 6).</li>
+<li><strong>F1 e F9:</strong> não achei caso novo. Nenhuma junção, nada mudou no Windows, o repositório não ficou raso.</li>
+</ul>
+<h2>As regras que conferi</h2>
+<ul>
+<li><strong>§11.12 (uma regra, um lugar):</strong></li>
+<li>cumprida na recusa da peça, no laço e na frase da D-816;</li>
+<li>não cumprida no comando de apagar (achado 1).</li>
+<li><strong>§11.12.2 (nada dado como feito sem conferir):</strong> os achados 2 e 4.</li>
+<li><strong>§11.12.3 (a lista das falhas):</strong> faltam os caminhos 1 a 5 acima.</li>
+<li><strong>§11.12.4 e D-767:</strong> a peça rodou de verdade. O GitHub e o vpk ficam para a prova à vista.</li>
+<li><strong>§11.12.6 e D-813:</strong> o nome foi rodado de verdade; o fluxo escondido passa (achado 5).</li>
+<li><strong>§11.8:</strong> os testes antigos passam. A única troca de teste é a da D-816, e está certa.</li>
+<li><strong>§4.7 e D-811:</strong> a reversão bate (26 de 27). Das minhas 10 mutações, 6 foram acusadas.</li>
+<li><strong>D-816:</strong> cumprida (acima).</li>
+<li><strong>D-776:</strong> cumprida no download para somar.</li>
+<li><strong>D-798:</strong> sem rótulo de pronto.</li>
+<li><strong>D-809:</strong> não criei junção.</li>
+<li><strong>CLAUDE.md §10.9:</strong> só criei e apaguei dentro da minha pasta de rascunho.</li>
+</ul>
+<h2>Achados</h2>
+<ol>
+<li>
+<p><strong>MÉDIO: na pasta das provas, três frases mandam apagar no GitHub.</strong>
+   - Onde: <code>publicar_versao_kaique.py</code>, nas linhas 685 (<code>publicar_arquivos</code>, "sobrou um rascunho"), 898 (<code>publicar</code>,
+     "já existe") e 1025 (<code>publicar_motor</code>, "já existe").
+   - As três escrevem <code>--apagar {etiqueta}</code> à mão, sem o <code>--pasta</code> do destino.
+   - Sem <code>--pasta</code>, o <code>--apagar</code> vai ao GitHub. Lá ele apaga a publicação em qualquer situação: liberada também, com a
+     etiqueta (<code>--cleanup-tag</code>).
+   - Provado com o gh de mentira dos testes (Q4, anexos <code>test_quebra4.py.txt</code> e <code>testes_q4-resultado.txt</code>):</p>
+<ul>
+<li>na pasta sobra um rascunho da v9.9.9;</li>
+<li>o publicar para com "apague o rascunho com --apagar v9.9.9";</li>
+<li>rodei exatamente esse comando;</li>
+<li>a v9.9.9 <strong>liberada</strong> do GitHub foi apagada, com a etiqueta;</li>
+<li>o rascunho da pasta continua lá.</li>
+<li>Já era assim antes desta volta. Mas a volta 4 criou <code>comando_de_apagar</code> como o lugar único desse comando (o
+ <code>--pasta</code> incluído) e deixou estas três cópias sem ele: é a conta duplicada do §11.12.</li>
+<li>Quando pode acontecer: quando a mesma versão existe na pasta das provas e no GitHub.</li>
+<li>O que pedir: as três frases passam a usar <code>destino.comando_de_apagar(etiqueta)</code>, com um teste que segue a frase de
+ cada uma na pasta e confere que o GitHub não é tocado.</li>
+</ul>
+</li>
+<li>
+<p><strong>BAIXO: "pedi para apagar" sem ter pedido.</strong>
+   - Onde: <code>publicar_versao_kaique.py:562</code> (<code>DestinoGitHub.apagar_rascunho</code> lê a situação antes de pedir) e <code>:624</code>
+     (<code>apagar_publicacao</code>, <code>except SemResposta</code>).
+   - O que acontece:</p>
+<ul>
+<li>o envio falha, antes de liberar;</li>
+<li>a leitura de antes de apagar responde;</li>
+<li>a segunda leitura, dentro do <code>apagar_rascunho</code>, fica sem resposta (o gh é fechado por tempo);</li>
+<li>a frase diz "pedi para apagar v9.9.9 ... e não deu para conferir se sumiu";</li>
+<li><strong>nenhum pedido de apagar saiu</strong>, e o rascunho continua no GitHub (Q1).</li>
+<li>É o vizinho ao contrário do achado 3 do relatório 3.</li>
+<li>O efeito é pequeno: a frase manda conferir e dá o comando.</li>
+<li>O que pedir: a leitura de dentro do apagar, quando falha, não vira "pedi". Por exemplo, ler fora do pedido, ou o
+ destino dizer à frase se o <code>delete</code> chegou a sair. Com um teste.</li>
+</ul>
+</li>
+<li>
+<p><strong>BAIXO: duas proteções do apagar sem teste.</strong>
+   - <strong>(a)</strong> <code>publicar_versao_kaique.py:453</code>: no <code>_gh</code> de verdade, o gh fechado por tempo ou pela vigia vira
+     <code>SemResposta</code>.</p>
+<ul>
+<li>Troquei por <code>Parou</code> comum (mutação A5): os 70 testes passam.</li>
+<li>Os testes do achado 3 levantam <code>SemResposta</code> direto do gh de mentira, e não passam por essa linha.</li>
+<li>Sem ela, um pedido de apagar que saiu e ficou sem resposta volta a dizer "não apaguei" (o achado 3 do relatório
+   3 de volta).</li>
+<li><strong>(b)</strong> <code>publicar_versao_kaique.py:622-623</code> (<code>except PublicacaoLiberada: raise</code> dentro de <code>apagar_publicacao</code>).</li>
+<li>Tirei (mutação A8): os 70 passam.</li>
+<li>A frase "outra pessoa ou outro publicar a liberou no meio" pelo caminho do GitHub não é cobrada. Nada é apagado a
+   mais; muda só a frase.</li>
+<li>O que pedir: um teste para cada uma (D-811). Para o (a), um gh de prova que demora e o <code>limite_s</code> curto, como o
+ do achado 8.</li>
+</ul>
+</li>
+<li>
+<p><strong>BAIXO: "pedi para liberar" quando o gh nem abriu.</strong>
+   - Onde: <code>publicar_versao_kaique.py:701</code> (a marca vem antes de <code>destino.liberar</code>) e <code>:449</code> (o <code>_gh</code> que não abre
+     levanta <code>Parou</code> comum).
+   - O que acontece:</p>
+<ul>
+<li>o gh não abre no pedido de liberar, e nada saiu do PC;</li>
+<li>mesmo assim, o publicar diz "pedi para liberar" e deixa o rascunho no GitHub (Q2).</li>
+<li>Pela D-816, antes do pedido o rascunho seria apagado. Quando o gh responde com erro, não dá para saber, e ficar
+ sem apagar está certo. Mas aqui o código sabe que nada saiu (<code>abriu: False</code>).</li>
+<li>Não apaga nada a mais. Deixa um rascunho e uma frase que não é verdade.</li>
+<li>O que pedir: a gerente decide. Pode ficar como está, mas escrito como escolha; ou o "não abriu" não conta como
+ pedido.</li>
+</ul>
+</li>
+<li>
+<p><strong>BAIXO: o programa num fluxo escondido de outro arquivo passa pela lista de nomes.</strong>
+   - Onde: <code>core/windows.py:1191</code> (<code>_por_que_recusa</code>, <code>nome = caminho.name.lower()</code>).
+   - O que acontece:</p>
+<ul>
+<li>gravei uma cópia do <code>hostname.exe</code> como fluxo escondido <code>nada.txt:pwsh.exe</code>;</li>
+<li>o Windows roda esse caminho;</li>
+<li>a peça lê o nome como <code>nada.txt:pwsh.exe</code>, não acha "pwsh" na lista e deixa rodar (E5).</li>
+<li>É da mesma família do limite do achado 5 do relatório 3: é preciso gravar uma cópia de propósito.</li>
+<li>O que pedir:</li>
+<li>escrever como limite, junto do achado 5;</li>
+<li>ou comparar também o nome depois do último ":" (o nome do fluxo).</li>
+</ul>
+</li>
+<li>
+<p><strong>BAIXO: o texto de <code>gravar_no_disco</code> promete mais do que o código faz.</strong>
+   - Onde: <code>core/windows.py:1015</code>.
+   - O texto diz "todo código que grava num nome provisório e depois troca pelo nome certo chama esta função".
+   - Não é verdade. A ficha do motor, que é deste passo, grava assim sem ela (<code>montar_motor_kraken.py:586-588</code>). Também
+     o PDF de saída (<code>core/pipeline.py</code>) e os projetos (<code>projetos.py</code>), que não são deste passo.
+   - Família F7.
+   - O que pedir: corrigir o texto, nomeando quem chama. Ou a ficha do motor passa a usar a função. Os outros dois não
+     devem mudar sem pedido (§11.8).</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO: o <code>--apagar</code> apaga também uma versão liberada.</strong>
+   - Rodei o comando da frase da D-816 numa versão liberada na pasta, e ela foi apagada (Q3).
+   - O outro já escreveu isso nas Ressalvas ("não foi pedido; fica escrito"). Confere.
+   - Com o achado 1, o risco aumenta: o comando pode ir ao destino errado.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO: duas mutações sem efeito que se veja hoje.</strong>
+   - A6: o laço não junta a saída depois de fechar. Hoje ninguém usa essa saída.
+   - A10: o destino não volta ao estado de antes no fim do publicar. Hoje ninguém reaproveita o destino.
+   - Não pedem conserto. No máximo, uma linha em "Cada proteção" dizendo que são arrumação.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO (não é deste passo): os dois arquivos do desinstalar continuam falhando no PC.</strong>
+   - São 25 e 5 testes, como no relatório 3: família F4.
+   - Já está em "Ideias e bugs" para a Lista de bugs.</p>
+</li>
+</ol>
+<h2>O que falta para a prova à vista</h2>
+<ol>
+<li>Quem escreveu consertar o achado 1, com o teste que falha sem o conserto. De preferência também os achados 2, 3 e 6.
+   Os achados 4 e 5 a gerente decide.</li>
+<li>Uma rodada do GitHub sobre o conserto, e outro agente novo para conferir (D-815).</li>
+<li>Na prova à vista, além do roteiro do outro (itens 10 a 12):
+   - no fim, rodar o <code>--apagar</code> <strong>com</strong> <code>--pasta</code> na pasta e <strong>sem</strong> ele no GitHub, e conferir em cada destino que o
+     outro não foi tocado;
+   - olhar no Gerenciador de Tarefas que o gh de verdade some depois de cada pedido.</li>
+</ol>
+<h2>Para a gerente: o que ficou fora do projeto</h2>
+<p>Tudo fica na pasta de rascunho desta conversa, em
+<code>C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\85bc5c33-3dbe-4d9d-9032-bb0a97954262\scratchpad\v4\</code>:
+- as cópias do código: <code>novo\</code> (<code>595cc293</code>, com o meu <code>tests\test_quebra4.py</code>), <code>velho\</code> (<code>5f96975b</code>, com os dois
+  arquivos de teste novos por cima) e <code>mut\</code> (as mutações; cada arquivo foi devolvido ao original);
+- os casos do E5 (<code>casos5\</code>): as cópias do <code>hostname.exe</code> e o fluxo escondido;
+- os scripts e o registro da rodada.</p>
+<p>Não apaguei nada fora dela. Os processos de prova terminaram sozinhos.</p>
+<p>Nada mudou no Windows: nenhuma tarefa, licença, pergunta de administrador ou janela. O PATH mudou só dentro do meu
+processo de Python. Nenhuma junção foi criada.</p>
+<p>O repositório não ficou raso: <code>--is-shallow-repository</code> deu false antes e depois.</p>
+<p>No projeto, só escrevi este relatório (<code>.md</code>, <code>.html</code>, <code>.pdf</code>) e a pasta <code>quem-quebrou/anexos-4/</code>, num commit só
+com esses arquivos (<code>[skip ci]</code>), como o relatório 3. O pacote da volta 4 (<code>anexos/pacote-quem-quebra-volta4.md</code>), que
+não é meu, ficou de fora do commit.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 20/11/2026 às 11:26</p>
+</body>
+</html>

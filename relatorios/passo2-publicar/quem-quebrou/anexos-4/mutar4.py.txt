@@ -1,0 +1,64 @@
+"""Quem tenta quebrar, volta 4 (D-811): desliga uma proteção por vez numa CÓPIA (git archive de 595cc293) e roda o
+arquivo de teste inteiro que deveria acusar. Uso: python mutar4.py <copia> <saida>"""
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+COPIA, SAIDA = Path(sys.argv[1]), Path(sys.argv[2])
+PY = sys.executable
+PV, WP = "tests/test_publicar_versao.py", "tests/test_windows_peca.py"
+
+M = [
+    ("A1 D-816 (antes do pedido): o erro antes de liberar nunca apaga o rascunho", "publicar_versao_kaique.py",
+     "                aviso = apagar_publicacao(destino, etiqueta, so_rascunho=True, acabou_de_criar=True)\n",
+     "                raise Parou('mutado: nao apaguei')\n", [PV]),
+    ("A2 D-816: a marca 'pedi para liberar' so depois de o liberar responder", "publicar_versao_kaique.py",
+     "        pediu_para_liberar = True\n        destino.liberar(etiqueta)\n",
+     "        destino.liberar(etiqueta)\n        pediu_para_liberar = True\n", [PV]),
+    ("A3 achado 2: so o nome sozinho sem o corte do fim", "core/windows.py",
+     "    return texto.rstrip(\". \")\n", "    return texto\n", [WP]),
+    ("A4 achado 2: o caminho com pasta sem o GetFullPathNameW", "core/windows.py",
+     "        return os.path.abspath(texto)\n    return texto.rstrip", "        return texto\n    return texto.rstrip", [WP]),
+    ("A5 achado 3: o gh fechado por tempo vira Parou comum (nao SemResposta)", "publicar_versao_kaique.py",
+     "            raise SemResposta(f\"parei o pedido ao GitHub", "            raise Parou(f\"parei o pedido ao GitHub", [PV]),
+    ("A6 achado 8: o laco nao junta a saida depois de fechar", "core/windows.py",
+     "                        programa.esperar(5)                      # junta", "                        pass  # junta",
+     [WP, PV]),
+    ("A7 achado 7: a subpasta baixada para somar nao e apagada depois", "publicar_versao_kaique.py",
+     "                finally:\n                    shutil.rmtree(pasta, ignore_errors=True)\n        raise Parou(f\"{nome} não está",
+     "                finally:\n                    pass\n        raise Parou(f\"{nome} não está", [PV]),
+    ("A8 achado 3: PublicacaoLiberada do proprio apagar vira 'nao apaguei' comum", "publicar_versao_kaique.py",
+     "    except PublicacaoLiberada:\n        raise\n    except SemResposta as erro:\n",
+     "    except SemResposta as erro:\n", [PV]),
+    ("A9 achado 8: o grupo ignora 'capturar' (a saida do gh nao e guardada)", "core/windows.py",
+     "        guardar = subprocess.PIPE if capturar else None\n", "        guardar = None\n", [WP, PV]),
+    ("A10 achado 7: o publicar nao devolve a soma ao estado de antes no fim", "publicar_versao_kaique.py",
+     "    finally:\n        destino.usar_rascunho(None, None)\n        _fim(", "    finally:\n        _fim(", [PV]),
+]
+
+
+def rodar(testes):
+    amb = {**os.environ, "QT_QPA_PLATFORM": "offscreen"}
+    r = subprocess.run([PY, "-m", "pytest", *testes, "-q", "-p", "no:cacheprovider", "-x"], cwd=COPIA,
+                       capture_output=True, text=True, encoding="utf-8", errors="replace", env=amb, timeout=1800)
+    ultima = [l for l in r.stdout.splitlines() if "passed" in l or "failed" in l or "error" in l.lower()]
+    falhou = [l for l in r.stdout.splitlines() if l.startswith("FAILED") or l.startswith("ERROR")]
+    return r.returncode, (ultima[-1] if ultima else r.stdout[-300:]), falhou[:3]
+
+
+linhas = []
+for nome, arquivo, de, para, testes in M:
+    caminho = COPIA / arquivo
+    original = caminho.read_text(encoding="utf-8")
+    if original.count(de) != 1:
+        linhas.append(f"{nome}: NAO APLICADA (o trecho aparece {original.count(de)} vezes)")
+        continue
+    caminho.write_text(original.replace(de, para), encoding="utf-8")
+    try:
+        codigo, resumo, falhou = rodar(testes)
+    finally:
+        caminho.write_text(original, encoding="utf-8")
+    linhas.append(f"{nome}: {'ACUSADA' if codigo != 0 else 'NAO ACUSADA'} ({resumo}) {falhou}")
+    print(linhas[-1], flush=True)
+SAIDA.write_text("\n".join(linhas) + "\n", encoding="utf-8")

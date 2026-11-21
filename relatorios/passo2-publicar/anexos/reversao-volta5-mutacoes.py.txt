@@ -1,0 +1,79 @@
+"""Volta 5 do passo 2 (D-811): desliga cada proteção nova ou consertada nesta volta, uma por vez, numa CÓPIA do código
+(git archive, fora do projeto) e roda o teste que a cobra. Acusada = o teste falhou com a proteção desligada.
+
+Uso: python reversao-volta5-mutacoes.py <pasta da cópia> <arquivo do resultado>
+"""
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+COPIA, SAIDA = Path(sys.argv[1]), Path(sys.argv[2])
+PY = sys.executable
+PV, WP = "tests/test_publicar_versao.py", "tests/test_windows_peca.py"
+A1 = PV + "::test_volta5_achado1_as_frases_de_ja_existe_dao_o_comando_do_destino"
+NL = chr(10)
+
+M = [
+    ("W1a achado 1: 'sobrou um rascunho' com o comando à mão", "publicar_versao_kaique.py",
+     'f"{destino.comando_de_apagar(etiqueta)} e rode de novo")', 'f"--apagar {etiqueta} e rode de novo")',
+     [A1 + "[publicar_arquivos]"]),
+    ("W1b achado 1: 'a versão já existe' com o comando à mão", "publicar_versao_kaique.py",
+     'ou apague o rascunho com {destino.comando_de_apagar(etiqueta)}")', 'ou apague o rascunho com --apagar {etiqueta}")',
+     [A1 + "[versao]"]),
+    ("W1c achado 1: 'o motor já existe' com o comando à mão", "publicar_versao_kaique.py",
+     'rascunho velho: {destino.comando_de_apagar(etiqueta)}")', 'rascunho velho: --apagar {etiqueta}")',
+     [A1 + "[motor]"]),
+    ("W2 achado 2: qualquer 'sem resposta' do apagar vira 'pedi'", "publicar_versao_kaique.py",
+     "    except ApagarSemResposta as erro:" + NL, "    except SemResposta as erro:" + NL,
+     [PV + "::test_volta5_achado2_a_leitura_sem_resposta_antes_do_pedido_nao_vira_pedi_para_apagar"]),
+    ("W2b achado 2: o pedido de apagar sem resposta não é marcado como pedido", "publicar_versao_kaique.py",
+     "            raise ApagarSemResposta(str(erro)) from erro", "            raise",
+     [PV + "::test_volta5_achado3a_o_gh_de_verdade_fechado_por_tempo_no_apagar_diz_que_pediu"]),
+    ("W3a achado 3: o gh fechado por tempo vira Parou comum", "publicar_versao_kaique.py",
+     'raise SemResposta(f"parei o pedido ao GitHub', 'raise Parou(f"parei o pedido ao GitHub',
+     [PV + "::test_volta5_achado3a_o_gh_de_verdade_fechado_por_tempo_no_apagar_diz_que_pediu"]),
+    ("W3b achado 3: sem o 'except PublicacaoLiberada: raise' do apagar", "publicar_versao_kaique.py",
+     "    except PublicacaoLiberada:" + NL + "        raise" + NL + "    except ApagarSemResposta",
+     "    except ApagarSemResposta",
+     [PV + "::test_volta5_achado3b_liberada_antes_do_pedido_no_github_continua_publicacao_liberada"]),
+    ("W4 achado 4: o gh que nem abriu conta como pedido de liberar", "publicar_versao_kaique.py",
+     "        except NadaSaiu:" + NL, "        except ZeroDivisionError:" + NL,
+     [PV + "::test_volta5_achado4_o_gh_que_nem_abre_no_liberar_nao_conta_como_pedido"]),
+    ("W4b achado 4: o _gh que não abriu levanta Parou comum", "publicar_versao_kaique.py",
+     'raise NadaSaiu(f"não consegui falar com o GitHub', 'raise Parou(f"não consegui falar com o GitHub',
+     [PV + "::test_volta5_achado4_so_o_gh_que_nao_abriu_de_verdade_e_nada_saiu"]),
+    ("W5 achado 5: sem a recusa do fluxo escondido", "core/windows.py",
+     "    if _e_fluxo_escondido(caminho):" + NL, "    if False:" + NL,
+     [WP + "::test_volta5_o_programa_num_fluxo_escondido_de_outro_arquivo_e_recusado"]),
+]
+
+
+def rodar(testes: list[str]) -> tuple[bool, str]:
+    """Roda os testes na cópia; (todos passaram?, a última linha)."""
+    ambiente = {**os.environ, "QT_QPA_PLATFORM": "offscreen"}
+    feito = subprocess.run([PY, "-m", "pytest", "-q", "-p", "no:cacheprovider", *testes], cwd=COPIA,
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", env=ambiente)
+    linhas = [l for l in feito.stdout.splitlines() if l.strip()]
+    return feito.returncode == 0, (linhas[-1] if linhas else feito.stderr[-200:])
+
+
+linhas = []
+todos = sorted({t for m in M for t in m[4]})
+ok, fim = rodar(todos)
+linhas.append(f"SEM MUTAÇÃO: {'passaram' if ok else 'FALHARAM'} ({fim})")
+for item in M:
+    nome, arquivo, velho, novo, testes = item[:5]
+    guardados = {}
+    try:
+        caminho = COPIA / arquivo
+        atual = guardados.setdefault(arquivo, caminho.read_text(encoding="utf-8"))
+        assert atual.count(velho) == 1, f"{nome}: o trecho aparece {atual.count(velho)} vezes em {arquivo}"
+        caminho.write_text(atual.replace(velho, novo), encoding="utf-8")
+        ok, fim = rodar(testes)
+        linhas.append(f"{nome}: {'NÃO acusada' if ok else 'acusada'} ({fim})")
+    finally:
+        for arq, texto in guardados.items():
+            (COPIA / arq).write_text(texto, encoding="utf-8")
+    print(linhas[-1], flush=True)
+SAIDA.write_text("\n".join(linhas) + "\n", encoding="utf-8")

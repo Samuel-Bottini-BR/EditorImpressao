@@ -26,16 +26,26 @@ class GitFalhou(RuntimeError):
     """O git não respondeu do jeito esperado. A mensagem diz, em português, o que foi pedido e o que ele disse."""
 
 
+# A bandeira do Windows "não abrir janela de console" (a mesma que a peça do Windows usa em core/windows.py); fora do
+# Windows não existe e vale 0. Passo 2, volta 9: sem ela, um git aberto por um programa sem console (ex.: de dentro de
+# uma janela) piscaria uma janela preta na tela. Fica (volta 10) por ser bom por si, para o porteiro também.
+_SEM_JANELA = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+
+
 def _rodar(raiz: Path | str, *args: str, entrada: str | None = None, aceitar: tuple[int, ...] = (0,),
            ambiente_extra: dict[str, str] | None = None) -> subprocess.CompletedProcess:
     """Roda `git <args>` na pasta `raiz` e devolve o resultado; código fora de `aceitar` vira `GitFalhou`.
 
     `GIT_OPTIONAL_LOCKS=0` evita que uma leitura (ex.: `git status`) grave no índice enquanto o gancho do commit roda.
+    Sempre sem janela de console (`_SEM_JANELA`). Sem limite de tempo (o `fetch` de um ramo grande pode demorar).
+    Passo 2, volta 10 (D-820): saiu o limite de tempo e a lista de variáveis a não herdar, que só a pergunta da pasta
+    principal usava (a regra da pasta das ferramentas não pergunta mais ao git); ver o ONDE-PAREI do passo 2, Volta 10.
     """
     ambiente = dict(os.environ, GIT_OPTIONAL_LOCKS="0", LC_ALL="C", **(ambiente_extra or {}))
     try:
         r = subprocess.run(["git", "-c", "core.quotepath=false", *args], cwd=str(raiz), input=entrada,
-                           capture_output=True, text=True, encoding="utf-8", errors="replace", env=ambiente)
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", env=ambiente,
+                           creationflags=_SEM_JANELA)
     except FileNotFoundError as erro:
         raise GitFalhou("o git não está instalado ou não está no caminho do Windows") from erro
     except OSError as erro:
@@ -53,6 +63,12 @@ def _lista_z(texto: str) -> list[str]:
 def raiz_do_repositorio(pasta: Path | str) -> Path:
     """A pasta de cima da cópia (worktree) que contém `pasta`."""
     return Path(_rodar(pasta, "rev-parse", "--show-toplevel").stdout.strip())
+
+
+def criar_copia_de_trabalho(raiz: Path | str, pasta: Path | str, ramo: str) -> None:
+    """Cria uma cópia de trabalho (`git worktree add -b <ramo> <pasta>`) do repositório `raiz`. Só para os
+    repositórios de prova (`repositorio_de_prova.py`): nada aqui toca o repositório do projeto."""
+    _rodar(raiz, "worktree", "add", "-q", "-b", ramo, str(pasta))
 
 
 def arquivos_do_git(raiz: Path | str) -> list[str]:

@@ -1,0 +1,31 @@
+Mutacoes B1 a B9 (diferentes das P1 a P11 e U1 a U12), numa copia de 011b06d0 (git archive, quebra9\c011b06d0), 21/11/2026. Primeira passada: as de varias linhas nao se aplicaram (a copia tem CRLF); a segunda passada as aplicou. Cada arquivo devolvido ao original, conferido byte a byte. Resultado: 2 de 9 acusadas (B8, B9); 7 passam em todos os testes (B1 a B7).
+
+--- passada 1
+B1: o trecho aparece 0 vezes; mutacao nao aplicada
+B2: o trecho aparece 0 vezes; mutacao nao aplicada
+B3: o trecho aparece 0 vezes; mutacao nao aplicada
+B4 (o montar_motor_kraken so confere quando o destino E os downloads sao os de fabrica (or -> and); montar_motor_kraken.py; tests/test_pasta_das_ferramentas.py, tests/test_publicar_motor.py): PASSOU (nenhum teste viu)
+    22 passed in 15.97s
+B5: o trecho aparece 0 vezes; mutacao nao aplicada
+B6: o trecho aparece 0 vezes; mutacao nao aplicada
+B7 (a pergunta deixa de tirar so a GIT_COMMON_DIR do ambiente (uma condicao de dentro da lista); regras_dos_agentes/conversa_com_o_git.py; tests/test_pasta_das_ferramentas.py): PASSOU (nenhum teste viu)
+    10 passed in 11.18s
+B8: o trecho aparece 0 vezes; mutacao nao aplicada
+B9 (o caminho de erro do publicar apaga sem o 'acabou de criar' (o 'nao achei o rascunho' vira 'nao existia'); publicar_versao_kaique.py; tests/test_publicar_versao.py): ACUSADA
+    FAILED tests/test_publicar_versao.py::test_volta4_achado4_nao_achei_logo_depois_de_criar_nao_e_apagado
+    1 failed, 62 passed in 72.51s (0:01:12)
+
+--- passada 2
+B1 (o montar_motor_kraken deixa de parar quando a pasta das ferramentas nao existe (a protecao do main); montar_motor_kraken.py; tests/test_pasta_das_ferramentas.py, tests/test_publicar_motor.py, tests/test_empacotar.py): PASSOU (nenhum teste viu)
+    65 passed in 21.56s
+B2 (o compilar_detector_gravura deixa de parar quando a pasta das ferramentas nao existe; compilar_detector_gravura.py; tests/test_pasta_das_ferramentas.py): PASSOU (nenhum teste viu)
+    10 passed in 13.35s
+B3 (o compilar_st_ferramentas deixa de parar quando a pasta das ferramentas nao existe; compilar_st_ferramentas.py; tests/test_pasta_das_ferramentas.py): PASSOU (nenhum teste viu)
+    10 passed in 12.57s
+B5 ('pode gravar?' passa a olhar a pasta EditorImpressao-arquivos, e nao a ferramentas dentro dela; core/pasta_das_ferramentas.py; tests/test_pasta_das_ferramentas.py, tests/test_empacotar.py): PASSOU (nenhum teste viu)
+    53 passed in 21.36s
+B6 (a peca do git aceita qualquer pasta comum (deixa de exigir que se chame .git); regras_dos_agentes/conversa_com_o_git.py; tests/test_pasta_das_ferramentas.py): PASSOU (nenhum teste viu)
+    10 passed in 14.82s
+B8 (o git que passa do tempo deixa de virar GitFalhou (o erro do Python sobe cru); regras_dos_agentes/conversa_com_o_git.py; tests/test_pasta_das_ferramentas.py): ACUSADA
+    FAILED tests/test_pasta_das_ferramentas.py::test_falha_o_git_que_da_erro_e_o_que_demora
+    1 failed, 5 passed in 10.41s

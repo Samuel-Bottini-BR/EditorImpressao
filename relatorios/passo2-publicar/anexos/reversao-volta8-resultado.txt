@@ -1,0 +1,68 @@
+Passo 2, volta 8: as mutacoes U1 a U12, uma por vez, numa copia de b2863630 (git archive no rascunho da sessao, v8\novo), 20/11/2026.
+Cada uma roda o arquivo de testes do publicar inteiro (tests/test_publicar_versao.py) e devolve o arquivo ao original (conferido byte a byte).
+Resultado: 12 de 12 acusadas. Duas passadas: na primeira, U2, U5 e U12 nao se aplicaram (o trecho tinha quebra de linha e a copia do git archive tem a do Windows; o script passou a trocar as duas); e a U11 da primeira forma (tirar a AUTHORS da propria lista unica) quebrava o preparo de todos os testes (101 erros: o zip estrito da montagem acusa), entao foi trocada por uma que tira a AUTHORS so da conferencia da pasta. A copia sem mutacao: 121 passam.
+
+== Primeira passada
+U1 (o --apagar volta a escrever a frase por conta propria (a antiga); publicar_versao_kaique.py): ACUSADA
+    tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou[v9.9.9-pasta]
+    tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou[v9.9.9-github]
+    tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou[motor-kraken-1-pasta]
+    tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou[motor-kraken-1-github]
+    4 failed, 117 passed in 71.30s (0:01:11)
+U2: NAO APLICADA (o trecho aparece 0 vezes): a frase ignora se havia o que apagar (sempre 'foi apagada')
+U3 (o apagar diz que havia o que apagar quando a leitura de antes nao achou nada; publicar_versao_kaique.py): ACUSADA
+    tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou[v9.9.9-pasta]
+    tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou[v9.9.9-github]
+    tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou[motor-kraken-1-pasta]
+    tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou[motor-kraken-1-github]
+    tests/test_publicar_versao.py::test_volta8_defeito2_o_que_o_apagar_devolve_nao_mudou
+    5 failed, 116 passed in 76.93s (0:01:16)
+U4 (o caminho de erro escreve a sua propria frase de 'apagada'; publicar_versao_kaique.py): ACUSADA
+    tests/test_publicar_versao.py::test_a_leitura_de_volta_que_nao_bate_nao_libera_e_apaga_o_rascunho_do_destino
+    tests/test_publicar_versao.py::test_achado1_erro_antes_de_liberar_no_github_apaga_e_diz_que_apagou
+    tests/test_publicar_versao.py::test_volta4_achado4_nao_achei_logo_depois_de_criar_nao_e_apagado
+    tests/test_publicar_versao.py::test_volta5_achado4_o_gh_que_nem_abre_no_liberar_nao_conta_como_pedido
+    tests/test_publicar_versao.py::test_volta8_defeito2_o_caminho_de_erro_usa_a_mesma_frase_do_apagar
+    5 failed, 116 passed in 78.09s (0:01:18)
+U5: NAO APLICADA (o trecho aparece 0 vezes): o programa instalado volta a ler o arquivo da versao por conta propria
+U6 (a conferencia do publicar volta a ler o arquivo da versao por conta propria; empacotar.py): ACUSADA
+    tests/test_publicar_versao.py::test_volta8_baixo6_o_publicar_e_o_programa_instalado_usam_a_mesma_leitura
+    1 failed, 120 passed in 83.79s (0:01:23)
+U7 (a leitura unica deixa de tirar os espacos e a quebra de linha; atualizacao.py): ACUSADA
+    tests/test_publicar_versao.py::test_volta8_baixo6_a_versao_do_visual_c_e_lida_por_uma_funcao_so[14.44.35211.0\r\n-True]
+    tests/test_publicar_versao.py::test_volta8_baixo6_a_versao_do_visual_c_e_lida_por_uma_funcao_so[  14.44.35211.0  -True]
+    2 failed, 119 passed in 84.08s (0:01:24)
+U8 (a regua do Visual C++ deixa de olhar quem assinou (so a condicao do assinante); empacotar.py): ACUSADA
+    tests/test_publicar_versao.py::test_volta8_baixo1b_um_programa_da_microsoft_que_nao_e_o_visual_c_e_recusado_pela_mesma_regua
+    1 failed, 120 passed in 78.27s (0:01:18)
+U9 (a regua aceita o estado 'erro' da leitura que falhou (so a condicao do estado); empacotar.py): ACUSADA
+    tests/test_publicar_versao.py::test_volta8_baixo1a_a_leitura_da_assinatura_que_falha_nunca_vira_passou
+    1 failed, 120 passed in 70.19s (0:01:10)
+U10 (a versao do arquivo comparada so nos dois primeiros pedacos; empacotar.py): ACUSADA
+    tests/test_publicar_versao.py::test_volta8_baixo6_a_versao_do_visual_c_e_lida_por_uma_funcao_so[14.44-False]
+    tests/test_publicar_versao.py::test_volta8_baixo2_o_arquivo_da_versao_vazio_ou_pela_metade_e_recusado[14.44]
+    tests/test_publicar_versao.py::test_volta8_baixo2_o_arquivo_da_versao_vazio_ou_pela_metade_e_recusado[14.44.35211]
+    3 failed, 118 passed in 69.52s (0:01:09)
+U11 (a lista unica do Tesseract perde so a licenca AUTHORS; empacotar.py): ACUSADA
+    20 passed, 101 errors in 39.10s
+U12: NAO APLICADA (o trecho aparece 0 vezes): a conferencia do pacote depois do vpk deixa de cobrar as licencas
+sem mutacao (a copia devolvida ao original): codigo 0; 121 passed in 76.04s (0:01:16)
+
+== Segunda passada (U2, U5, U11 na segunda forma, U12)
+U2 (a frase ignora se havia o que apagar (sempre 'foi apagada'); publicar_versao_kaique.py): ACUSADA
+    tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou[v9.9.9-pasta]
+    tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou[v9.9.9-github]
+    tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou[motor-kraken-1-pasta]
+    tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou[motor-kraken-1-github]
+    4 failed, 117 passed in 85.64s (0:01:25)
+U5 (o programa instalado volta a ler o arquivo da versao por conta propria; atualizacao.py): ACUSADA
+    tests/test_publicar_versao.py::test_volta8_baixo6_o_publicar_e_o_programa_instalado_usam_a_mesma_leitura
+    1 failed, 120 passed in 82.24s (0:01:22)
+U11 (a conferencia da pasta deixa de cobrar so a licenca AUTHORS; empacotar.py): ACUSADA
+    tests/test_publicar_versao.py::test_volta8_baixo3_sem_a_licenca_do_tesseract_a_pasta_e_o_pacote_sao_recusados[AUTHORS]
+    1 failed, 120 passed in 70.20s (0:01:10)
+U12 (a conferencia do pacote depois do vpk deixa de cobrar as licencas; empacotar.py): ACUSADA
+    tests/test_publicar_versao.py::test_volta8_baixo3_sem_a_licenca_do_tesseract_a_pasta_e_o_pacote_sao_recusados[LICENSE]
+    tests/test_publicar_versao.py::test_volta8_baixo3_sem_a_licenca_do_tesseract_a_pasta_e_o_pacote_sao_recusados[AUTHORS]
+    2 failed, 119 passed in 74.47s (0:01:14)
+sem mutacao (a copia devolvida ao original): codigo 0; 121 passed in 73.13s (0:01:13)

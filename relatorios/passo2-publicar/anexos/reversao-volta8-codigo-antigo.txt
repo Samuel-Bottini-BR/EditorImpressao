@@ -1,0 +1,27 @@
+Passo 2, volta 8: os testes novos de tests/test_publicar_versao.py (commit 44029d6a, com a correcao do caso 1a) rodados no codigo de 21f1fc50 (git archive numa copia a parte, no rascunho da sessao, v8\antigo), o arquivo de testes inteiro, 20/11/2026.
+Resultado: 10 dos 23 casos novos falham; os 13 que passam cobram protecoes que ja existiam (provadas pelas mutacoes U8 a U12); os 98 antigos passam.
+
+PASSED tests/test_publicar_versao.py::test_volta8_baixo6_a_versao_do_visual_c_e_lida_por_uma_funcao_so[\xef\xbb\xbf14.44.35211.0-False]
+PASSED tests/test_publicar_versao.py::test_volta8_baixo6_a_versao_do_visual_c_e_lida_por_uma_funcao_so[\xff\xfe1\x004\x00.\x004\x004\x00.\x003\x005\x002\x001\x001\x00.\x0
+PASSED tests/test_publicar_versao.py::test_volta8_baixo6_a_versao_do_visual_c_e_lida_por_uma_funcao_so[-False]
+PASSED tests/test_publicar_versao.py::test_volta8_baixo6_a_versao_do_visual_c_e_lida_por_uma_funcao_so[14.44-False]
+PASSED tests/test_publicar_versao.py::test_volta8_baixo1a_a_leitura_da_assinatura_que_falha_nunca_vira_passou
+PASSED tests/test_publicar_versao.py::test_volta8_baixo1b_um_programa_da_microsoft_que_nao_e_o_visual_c_e_recusado_pela_mesma_regua
+PASSED tests/test_publicar_versao.py::test_volta8_baixo2_o_arquivo_da_versao_vazio_ou_pela_metade_e_recusado[]
+PASSED tests/test_publicar_versao.py::test_volta8_baixo2_o_arquivo_da_versao_vazio_ou_pela_metade_e_recusado[14.44]
+PASSED tests/test_publicar_versao.py::test_volta8_baixo2_o_arquivo_da_versao_vazio_ou_pela_metade_e_recusado[14.44.35211]
+PASSED tests/test_publicar_versao.py::test_volta8_baixo2_o_arquivo_da_versao_vazio_ou_pela_metade_e_recusado[14]
+PASSED tests/test_publicar_versao.py::test_volta8_baixo2_o_arquivo_da_versao_vazio_ou_pela_metade_e_recusado[ \n]
+PASSED tests/test_publicar_versao.py::test_volta8_baixo3_sem_a_licenca_do_tesseract_a_pasta_e_o_pacote_sao_recusados[LICENSE]
+PASSED tests/test_publicar_versao.py::test_volta8_baixo3_sem_a_licenca_do_tesseract_a_pasta_e_o_pacote_sao_recusados[AUTHORS]
+FAILED tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou[v9.9.9-pasta]
+FAILED tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou[v9.9.9-github]
+FAILED tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou[motor-kraken-1-pasta]
+FAILED tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou[motor-kraken-1-github]
+FAILED tests/test_publicar_versao.py::test_volta8_defeito2_o_caminho_de_erro_usa_a_mesma_frase_do_apagar
+FAILED tests/test_publicar_versao.py::test_volta8_defeito2_o_que_o_apagar_devolve_nao_mudou
+FAILED tests/test_publicar_versao.py::test_volta8_baixo6_a_versao_do_visual_c_e_lida_por_uma_funcao_so[14.44.35211.0-True]
+FAILED tests/test_publicar_versao.py::test_volta8_baixo6_a_versao_do_visual_c_e_lida_por_uma_funcao_so[14.44.35211.0\r\n-True]
+FAILED tests/test_publicar_versao.py::test_volta8_baixo6_a_versao_do_visual_c_e_lida_por_uma_funcao_so[  14.44.35211.0  -True]
+FAILED tests/test_publicar_versao.py::test_volta8_baixo6_o_publicar_e_o_programa_instalado_usam_a_mesma_leitura
+10 failed, 111 passed in 77.08s (0:01:17)

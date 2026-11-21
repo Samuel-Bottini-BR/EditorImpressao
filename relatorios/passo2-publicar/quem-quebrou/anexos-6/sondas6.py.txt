@@ -1,0 +1,117 @@
+# ======================= SONDAS de quem tenta quebrar, volta 6 (so nesta copia de rascunho) =======================
+
+def test_sonda1_pasta_pronta_sem_tesseract_e_com_visual_c_falso_e_publicada(ambiente):
+    """S1: uma --pasta-pronta SEM a pasta tesseract\, com um 'Visual C++' de 11 bytes que nao e o da Microsoft e SEM
+    o vc_redist.versao.txt passa por conferir_pasta_pronta e e publicada (a montagem do zero confere tudo isso)."""
+    a = ambiente
+    pasta = a["pasta"]
+    assert not (pasta / empacotar.PASTA_DO_TESSERACT).exists()
+    vc = pasta / atualizacao.PASTA_DO_QUE_SE_INSTALA / atualizacao.VC_REDIST_NOME
+    assert vc.read_bytes() == b"MZ visual c"
+    assert not (pasta / atualizacao.PASTA_DO_QUE_SE_INSTALA / atualizacao.VC_REDIST_VERSAO).exists()
+    assert empacotar.conferir_pasta_pronta(pasta, VERSAO) == []
+    _publicar_o_motor(a)
+    _publicar(a)
+    etiqueta = versao.etiqueta_da_versao(VERSAO)
+    dentro = _no_pacote(empacotar.nupkg_inteiro(a["servidor"] / etiqueta, VERSAO))
+    print("SONDA1 publicada; tesseract no pacote?", any(n.startswith("tesseract/") for n in dentro),
+          "; versao do VC no pacote?", f"instalar/{atualizacao.VC_REDIST_VERSAO}" in dentro,
+          "; VC no pacote:", dentro.get(f"instalar/{atualizacao.VC_REDIST_NOME}"))
+    assert (a["servidor"] / etiqueta).is_dir()
+
+
+def test_sonda1b_o_programa_instalado_com_essa_pasta_nao_atualiza_o_visual_c_velho(tmp_path):
+    """S1b: no notebook, sem o vc_redist.versao.txt o pacote vale '0.0.0': com um Visual C++ mais velho instalado, o
+    programa NAO instala o novo (atualizacao.instalar_visual_c_se_faltar), e diz que esta tudo certo (True)."""
+    (tmp_path / "instalar").mkdir()
+    (tmp_path / "instalar" / atualizacao.VC_REDIST_NOME).write_bytes(b"MZ visual c")
+    rodou = []
+    certo = atualizacao.instalar_visual_c_se_faltar(tmp_path, ler=lambda: (14, 29, 30133),
+                                                    rodar=lambda c, t: (rodou.append(c), (0, ""))[1])
+    print("SONDA1b devolveu", certo, "; rodou o instalador do VC?", bool(rodou))
+    assert certo is True and rodou == []
+
+
+def test_sonda2_pasta_pronta_de_outro_commit_e_aceita(ambiente):
+    """S2: a ficha diz o commit de que a pasta saiu, mas ninguem o le: uma pasta de b9300da8 (antes do conserto) e
+    aceita como desta versao."""
+    a = ambiente
+    ficha_p = a["pasta"] / empacotar.NOME_DA_FICHA_DA_VERSAO
+    ficha = json.loads(ficha_p.read_text(encoding="utf-8"))
+    ficha["commit"] = "b9300da88c1a8a325ee523eebf8604e3af8c6e6e"
+    ficha["arquivos_mudados_sem_commit"] = 7
+    ficha_p.write_text(json.dumps(ficha), encoding="utf-8")
+    assert empacotar.conferir_pasta_pronta(a["pasta"], VERSAO) == []
+
+
+def test_sonda3_o_empacotar_direto_mexe_na_pasta_antes_de_recusar(ambiente, capsys):
+    """S3: construir_pacote_do_velopack chamado direto com uma pasta de fora recusada (sem o Visual C++): preparar_saida
+    roda ANTES da conferencia e escreve o motor-exigido.json e apaga um zip do motor de instalar\ na pasta recusada."""
+    a = ambiente
+    de_fora = _pasta_pronta(a["tmp"] / "de-fora" / "EditorImpressao", VERSAO)
+    instalar = de_fora / atualizacao.PASTA_DO_QUE_SE_INSTALA
+    (instalar / atualizacao.VC_REDIST_NOME).unlink()
+    zip_do_motor = instalar / versao.arquivo_do_motor(ocr_kraken.VERSAO_DO_MOTOR)
+    zip_do_motor.write_bytes(b"zip do motor que estava la")
+    antes = _tudo_em(de_fora)
+    motor = empacotar.MotorPublicado(ocr_kraken.VERSAO_DO_MOTOR, versao.arquivo_do_motor(ocr_kraken.VERSAO_DO_MOTOR),
+                                     "0" * 64, ETIQUETA_DO_MOTOR)
+    assert empacotar.construir_pacote_do_velopack(a["tmp"] / "s", VERSAO, empacotar.ATUALIZACAO, de_fora, motor,
+                                                  vpk=a["vpk"]) is None
+    depois = _tudo_em(de_fora)
+    print("SONDA3 antes:", antes)
+    print("SONDA3 depois:", depois)
+    assert antes != depois
+
+
+def test_sonda4_disco_cheio_na_copia_do_visual_c(ambiente, montar_de_verdade, monkeypatch, capsys):
+    """S4: a copia do Visual C++ para instalar\ falha com 'disco cheio' no meio: a frase, a ficha, o rascunho."""
+    a = ambiente
+    original = shutil.copy2
+
+    def copia_que_enche(origem, alvo, *x, **k):
+        if Path(origem) == montar_de_verdade["vc"]:
+            Path(alvo).write_bytes(VC_DE_PROVA[:5])
+            raise OSError(28, "Não há espaço suficiente no disco", str(alvo))
+        return original(origem, alvo, *x, **k)
+
+    monkeypatch.setattr(empacotar.shutil, "copy2", copia_que_enche)
+    _publicar_o_motor(a)
+    def publicar_do_teste(v, destino_pasta=None, pasta_pronta=None, chave=None, **k):
+        return pub_publicar_original(v, pasta_pronta=pasta_pronta, arquivo_da_chave=a["chave"], chave_publica=PUBLICA,
+                                     vpk=a["vpk"], rascunho_base=a["rascunho"], pasta_de_saida=a["saida"],
+                                     destino=pub.DestinoPasta(a["servidor"]), **k)
+
+    monkeypatch.setattr(pub, "publicar", publicar_do_teste)
+    capsys.readouterr()
+    codigo = pub.main(["--pasta", str(a["servidor"])])
+    saida = capsys.readouterr().out
+    pasta = montar_de_verdade["pasta"]
+    print("SONDA4 codigo", codigo)
+    print("SONDA4 SAIDA INTEIRA >>>", saida, "<<<")
+    print("SONDA4 ficha existe?", (pasta / empacotar.NOME_DA_FICHA_DA_VERSAO).exists(),
+          "; conferir:", empacotar.conferir_pasta_pronta(pasta, versao.VERSAO))
+    print("SONDA4 rascunhos:", _rascunhos_que_sobraram(a), "; vpk rodou:", _vezes_que_o_vpk_rodou(a))
+    assert codigo == 1
+
+
+pub_publicar_original = pub.publicar
+
+
+def test_sonda5_roteiro_item14_depois_do_item13(ambiente, montar_de_verdade):
+    """S5: o roteiro da prova manda o item 13 (montar do zero e publicar) e DEPOIS o item 14 (a pasta da prova de 20/11
+    com --pasta-pronta). Mas a pasta de 20/11 e a mesma dist\EditorImpressao que o item 13 apaga e monta de novo."""
+    a = ambiente
+    _publicar_o_motor(a)
+    pub.publicar(versao.VERSAO, arquivo_da_chave=a["chave"], chave_publica=PUBLICA, vpk=a["vpk"],
+                 rascunho_base=a["rascunho"], pasta_de_saida=a["saida"], destino=pub.DestinoPasta(a["servidor"]))
+    pasta = montar_de_verdade["pasta"]
+    print("SONDA5 conferir_pasta_pronta da pasta 'de 20/11' depois do item 13:",
+          empacotar.conferir_pasta_pronta(pasta, versao.VERSAO))
+    with pytest.raises(pub.Parou) as erro:
+        pub.publicar(versao.VERSAO, pasta_pronta=pasta, arquivo_da_chave=a["chave"], chave_publica=PUBLICA,
+                     vpk=a["vpk"], rascunho_base=a["rascunho"], pasta_de_saida=a["saida"],
+                     destino=pub.DestinoPasta(a["servidor"]))
+    print("SONDA5 item 14 depois do 13 diz:", erro.value)
+
+

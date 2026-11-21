@@ -1,0 +1,40 @@
+Z1 (a montagem nao grava a versao do Visual C++ (vc_redist.versao.txt) ao lado dele): ACUSADA
+    tests/test_publicar_versao.py: ['2 failed, 83 passed in 36.70s']
+        FAILED tests/test_publicar_versao.py::test_volta6_a_versao_montada_do_zero_leva_o_visual_c_e_e_publicada[False]
+        FAILED tests/test_publicar_versao.py::test_volta6_a_versao_montada_do_zero_leva_o_visual_c_e_e_publicada[True]
+Z2 (a conferencia do pacote depois do vpk deixa de procurar o Visual C++): NAO ACUSADA
+    tests/test_publicar_versao.py: ['85 passed in 37.04s']
+    tests/test_empacotar.py: ['41 passed in 0.93s']
+Z3 (o publicar deixa de conferir a pasta cedo (fica so a conferencia de antes do vpk)): ACUSADA
+    tests/test_publicar_versao.py: ['1 failed, 84 passed in 37.71s']
+        FAILED tests/test_publicar_versao.py::test_a_pasta_pronta_de_outra_versao_e_recusada
+Z4 (o publicar montado do zero esquece as pecas (a conferencia do pacote nao procura o Tesseract)): NAO ACUSADA
+    tests/test_publicar_versao.py: ['85 passed in 36.74s']
+Z5 (o pedido de apagar trata qualquer erro do gh como 'pedi' (outra rota do achado 1, nao a Y7)): ACUSADA
+    tests/test_publicar_versao.py: ['1 failed, 84 passed in 36.43s']
+        FAILED tests/test_publicar_versao.py::test_volta6_achado1_o_apagar_em_que_o_gh_nem_abre_diz_nao_apaguei
+Z6 (o comando do destino pasta sem aspas no caminho (quebra com espaco no caminho)): NAO ACUSADA
+    tests/test_publicar_versao.py: ['85 passed in 36.29s']
+Z7 (a conferencia da pasta so olha se a pasta instalar\ existe, nao o arquivo): ACUSADA
+    tests/test_publicar_versao.py: ['1 failed, 84 passed in 36.16s']
+        FAILED tests/test_publicar_versao.py::test_volta6_a_mesma_conferencia_da_pasta_em_todos_os_caminhos
+Z8 (preparar_saida volta a por o Visual C++ (dois lugares poem o mesmo arquivo)): NAO ACUSADA
+    tests/test_publicar_versao.py: ['85 passed in 36.14s']
+    tests/test_publicar_motor.py: ['12 passed in 0.97s']
+    tests/test_empacotar.py: ['41 passed in 1.46s']
+Z9 (a montagem poe o Visual C++ so na saida com .msi (confunde os campos)): ACUSADA
+    tests/test_publicar_versao.py: ['4 failed, 81 passed in 35.34s']
+        FAILED tests/test_publicar_versao.py::test_volta6_a_versao_montada_do_zero_leva_o_visual_c_e_e_publicada[False]
+        FAILED tests/test_publicar_versao.py::test_volta6_a_versao_montada_do_zero_leva_o_visual_c_e_e_publicada[True]
+        FAILED tests/test_publicar_versao.py::test_volta6_a_mesma_conferencia_da_pasta_em_todos_os_caminhos
+        FAILED tests/test_publicar_versao.py::test_volta6_a_copia_do_visual_c_pela_metade_nao_deixa_a_ficha
+Z10 (a conferencia de antes do vpk confere como pasta portatil (a saida errada)): ACUSADA
+    tests/test_publicar_versao.py: ['1 failed, 84 passed in 36.65s']
+        FAILED tests/test_publicar_versao.py::test_volta6_a_mesma_conferencia_da_pasta_em_todos_os_caminhos
+Z11 (o caminho de rede com a frase de outro motivo (a do 'nao consegui ler o programa')): ACUSADA
+    tests/test_windows_peca.py: ['3 failed, 66 passed, 2 skipped in 47.76s']
+        FAILED tests/test_windows_peca.py::test_a_recusa_vale_para_o_caminho_escrito_de_outro_jeito
+        FAILED tests/test_windows_peca.py::test_a_recusa_resolve_o_caminho_inteiro_antes_de_tirar_o_prefixo
+        FAILED tests/test_windows_peca.py::test_volta6_achado3_o_caminho_de_rede_e_recusado_com_a_frase_propria
+
+7 de 11 acusadas; cada arquivo devolvido ao original (conferido byte a byte).

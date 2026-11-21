@@ -1,0 +1,7 @@
+== código 35ec0c27 (sem mudança)
+A FRASE: o motor do Kraken 1, que esta versão pede, não está publicado em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4319\test_q5b_na_pasta_a_frase_do_m0\servidor: publique o motor antes (--motor)
+2 passed in 0.47s
+== código 35ec0c27 com a mutação X3 (class NadaSaiu(SemResposta))
+E   AssertionError: pedi para apagar v9.9.9 em o GitHub (dono/projeto) e não deu para conferir se sumiu (não consegui falar com o GitHub pelo gh (não consegui abrir o programa)); confira com: gh release view v9.9.9 -R dono/projeto --json isDraft ("isDraft": true é rascunho; false, liberada; "rel
+1 failed, 1 deselected in 0.46s
+1

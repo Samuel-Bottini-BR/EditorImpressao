@@ -1,0 +1,28 @@
+Volta 7 (20/11/2026): tests/test_publicar_versao.py de 4e8fdd98 rodado no codigo de db4b377a (git archive numa copia a parte, na pasta de rascunho desta conversa, v7\antigo; so este arquivo de teste trocado).
+
+== os testes novos da volta 7 ==
+E   Failed: DID NOT RAISE Parou
+E   Failed: DID NOT RAISE Parou
+E   Failed: DID NOT RAISE Parou
+E   Failed: DID NOT RAISE Parou
+E   Failed: DID NOT RAISE Parou
+E   Failed: DID NOT RAISE Parou
+E   Failed: DID NOT RAISE Parou
+E   Failed: DID NOT RAISE Parou
+E   AssertionError: a pasta recusada foi mudada antes da recusa
+FAILED tests/test_publicar_versao.py::test_d818_a_pasta_ja_montada_e_conferida_igual_a_montada_do_zero[sem o Tesseract]
+FAILED tests/test_publicar_versao.py::test_d818_a_pasta_ja_montada_e_conferida_igual_a_montada_do_zero[sem um idioma do Tesseract]
+FAILED tests/test_publicar_versao.py::test_d818_a_pasta_ja_montada_e_conferida_igual_a_montada_do_zero[um Visual C++ falso]
+FAILED tests/test_publicar_versao.py::test_d818_a_pasta_ja_montada_e_conferida_igual_a_montada_do_zero[sem a versao do Visual C++]
+FAILED tests/test_publicar_versao.py::test_d818_a_pasta_ja_montada_e_conferida_igual_a_montada_do_zero[a versao do Visual C++ errada]
+FAILED tests/test_publicar_versao.py::test_volta7_achado3_o_pacote_sem_uma_peca_e_recusado_depois_do_vpk[instalar/vc_redist.versao.txt]
+FAILED tests/test_publicar_versao.py::test_volta7_achado3_o_pacote_sem_uma_peca_e_recusado_depois_do_vpk[tesseract/]
+FAILED tests/test_publicar_versao.py::test_volta7_achado3_o_pacote_sem_uma_peca_e_recusado_depois_do_vpk[tesseract/tessdata/script/Fraktur.traineddata]
+FAILED tests/test_publicar_versao.py::test_volta7_achado4_o_empacotar_chamado_sozinho_recusa_antes_de_mexer_na_pasta
+PASSED tests/test_publicar_versao.py::test_volta7_achado3_o_pacote_sem_uma_peca_e_recusado_depois_do_vpk[instalar/vc_redist.x64.exe]
+PASSED tests/test_publicar_versao.py::test_volta7_achado3_o_pacote_montado_do_zero_sem_o_tesseract_e_recusado
+PASSED tests/test_publicar_versao.py::test_volta7_achado5_a_pasta_das_provas_com_espaco_no_nome
+9 failed, 3 passed, 85 deselected in 7.35s
+
+== o arquivo inteiro (os testes antigos com a pasta de mentira nova continuam passando no codigo antigo) ==
+9 failed, 88 passed in 51.02s

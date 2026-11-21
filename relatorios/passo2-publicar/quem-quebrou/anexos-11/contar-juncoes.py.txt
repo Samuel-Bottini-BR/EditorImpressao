@@ -1,0 +1,11 @@
+"""Conta o que a guarda NOVA acusa num publicar antigo (so leitura)."""
+import ast, sys
+from pathlib import Path
+teste = Path(r"D:/programas/EditorImpressao/.claude/worktrees/passo2/tests/test_publicar_versao.py").read_text(encoding="utf-8")
+arv = ast.parse(teste)
+ped = [n for n in arv.body if (isinstance(n, ast.FunctionDef) and n.name == "_preposicao_a_mao")
+       or (isinstance(n, ast.Assign) and any(getattr(t, "id", "") in ("_RECEBEM_O_NOME_DO_DESTINO", "_ANTES_DO_NOME_NA_FRASE") for t in n.targets))]
+ns = {}; exec(compile(ast.Module(body=ped, type_ignores=[]), "g", "exec"), ns)
+for p in sys.argv[1:]:
+    a = ns["_preposicao_a_mao"](Path(p).read_text(encoding="utf-8"))
+    print(Path(p).name, len(a))

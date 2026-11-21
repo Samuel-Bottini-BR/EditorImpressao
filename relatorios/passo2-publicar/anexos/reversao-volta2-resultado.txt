@@ -1,0 +1,29 @@
+Prova de reversão da volta 2 do passo 2 (19-20/11/2026), numa cópia à parte (git archive do ramo no rascunho da sessão, fora do projeto). Cada proteção nova e as nove do achado 3 de quem tentou quebrar foram desligadas, e o teste delas tem de falhar.
+
+Primeira rodada (commit 17cd8635):
+A1 o rascunho no GitHub apagado com --cleanup-tag: ACUSADA (1 failed in 1.51s) [tests/test_publicar_versao.py::test_achado1_apagar_um_rascunho_no_github_le_de_volta_e_nao_acusa_erro_falso]
+A1b o aviso do gh vira 'não apagou' sem ler de volta: PASSOU (não acusada) (1 passed in 1.75s) [tests/test_publicar_versao.py::test_achado1_erro_antes_de_liberar_no_github_apaga_e_diz_que_apagou]
+A2 fechar o grupo fecha só o programa principal: ACUSADA (1 failed in 16.80s) [tests/test_publicar_versao.py::test_achado2_a_vigia_fecha_o_vpk_e_o_que_ele_abriu]
+A2b o grupo sem fechar-ao-fechar e sem conferir: PASSOU (não acusada) (1 passed in 4.85s) [tests/test_windows_peca.py::test_fechar_o_programa_em_grupo_fecha_tambem_o_que_ele_abriu]
+A4 depois de liberar, a leitura que falha apaga a versão: ACUSADA (1 failed in 1.78s) [tests/test_publicar_versao.py::test_achado4_depois_de_liberar_a_leitura_que_falha_nao_apaga_a_versao]
+A5 o erro do disco sai cru: ACUSADA (1 failed in 1.47s) [tests/test_publicar_versao.py::test_achado5_erro_do_disco_vira_frase]
+A6 o sinal de vida volta para a pasta que o script apaga: ACUSADA (1 failed in 12.36s) [tests/test_windows_peca.py::test_o_lancado_solto_curto_nunca_vira_saiu_sem_comecar]
+A7 o servidor entrega nome repetido: ACUSADA (1 failed in 1.12s) [tests/test_publicar_servidor.py::test_achado7_nome_repetido_em_duas_versoes_nao_e_entregue]
+A8 a atualização aceita o motor em instalar: ACUSADA (1 failed in 1.44s) [tests/test_publicar_versao.py::test_achado8_o_arquivo_do_motor_em_instalar_e_recusado_na_atualizacao]
+A9 a conta do .msi volta a 5 vezes: ACUSADA (1 failed in 1.37s) [tests/test_publicar_versao.py::test_d776_a_conta_do_espaco_e_a_reserva_de_20_gb]
+A11 a etiqueta com quebra de linha passa: ACUSADA (1 failed in 1.20s) [tests/test_publicar_versao.py::test_achado11_etiqueta_com_quebra_de_linha_e_recusada]
+N1 a lista lida do destino não é conferida: ACUSADA (1 failed, 3 passed in 5.47s) [tests/test_publicar_versao.py::test_n1_n3_n4_n14_cada_leitura_de_volta_errada_impede_liberar]
+N3 o índice lido do destino não é conferido: ACUSADA (1 failed, 3 passed in 3.44s) [tests/test_publicar_versao.py::test_n1_n3_n4_n14_cada_leitura_de_volta_errada_impede_liberar]
+N4 o motor não é lido de novo antes de liberar: ACUSADA (1 failed, 3 passed in 3.64s) [tests/test_publicar_versao.py::test_n1_n3_n4_n14_cada_leitura_de_volta_errada_impede_liberar]
+N5 o apagar não confere que sumiu: ACUSADA (1 failed in 1.43s) [tests/test_publicar_versao.py::test_n5_o_apagar_que_nao_apaga_e_acusado]
+N6 a conferência do fim nunca acusa o Setup.exe: ACUSADA (1 failed in 1.33s) [tests/test_publicar_versao.py::test_n6_a_conferencia_do_fim_acusa_o_setup_exe]
+N8 o .msi vai para a pasta de saída antes de publicar: ACUSADA (1 failed in 2.18s) [tests/test_publicar_versao.py::test_n8_o_msi_nao_fica_na_pasta_de_saida_se_a_versao_nao_saiu]
+N10 o Ctrl+C não fecha o vpk: PASSOU (não acusada) (1 passed in 3.27s) [tests/test_publicar_versao.py::test_n10_ctrl_c_fecha_o_vpk_e_o_que_ele_abriu]
+N13 o servidor serve por junção: ACUSADA (1 failed in 1.16s) [tests/test_publicar_servidor.py::test_n13_o_servidor_nao_serve_por_uma_juncao]
+N14 a assinatura lida do destino não é conferida: ACUSADA (1 failed, 3 passed in 3.87s) [tests/test_publicar_versao.py::test_n1_n3_n4_n14_cada_leitura_de_volta_errada_impede_liberar]
+
+As que não acusaram na primeira rodada, de novo (commit do teste novo do A1b):
+A1b o aviso do gh vira 'não apagou' sem ler de volta: ACUSADA (1 failed in 1.38s) [tests/test_publicar_versao.py::test_achado1_quem_decide_se_apagou_e_a_leitura_de_volta]
+N10 o Ctrl+C não fecha o vpk (e o grupo sem o fechar-ao-fechar, que também cobria): ACUSADA (1 failed in 3.41s) [tests/test_publicar_versao.py::test_n10_ctrl_c_fecha_o_vpk_e_o_que_ele_abriu]
+
+A2b (a conferência de que nada ficou vivo depois de fechar o grupo): não acusada sozinha. É dupla proteção: o TerminateJobObject já fecha tudo, e com ele desligado o A2 acusa. Fica escrito para quem tenta quebrar.

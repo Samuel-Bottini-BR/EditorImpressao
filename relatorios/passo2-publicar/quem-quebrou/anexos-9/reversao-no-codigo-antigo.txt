@@ -1,0 +1,26 @@
+Os testes de 09b30933 (tests/test_pasta_das_ferramentas.py e tests/test_publicar_versao.py) no codigo de 6fa766c4 (git archive), PC do Samuel, 21/11/2026
+E   AssertionError: assert None == WindowsPath('D:/programas/EditorImpressao-arquivos/ferramentas')
+E   AssertionError: procuram fora de C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4614\test_defeito1_de_uma_copia_de_0\outro disco\EditorImpressao-arquivos\ferramentas: {'empacotar.DOWNLOADS': 'C:\\Users\\fotog\\AppData\\Local\\Temp\\pytest-of-foto
+E   AssertionError: procuram fora de C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4614\test_d820_da_pasta_principal_o0\outro disco\EditorImpressao-arquivos\ferramentas: {'empacotar.DOWNLOADS': 'C:\\Users\\fotog\\AppData\\Local\\Temp\\pytest-of-foto
+E   AssertionError: procuram fora de C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4614\test_achado1_sem_git_ou_com_o_0\outro disco\EditorImpressao-arquivos\ferramentas: {'empacotar.DOWNLOADS': 'C:\\Users\\fotog\\AppData\\Local\\Temp\\pytest-of-foto
+E   AssertionError: {'arquivo': None, 'problemas': ['C:\\Users\\fotog\\AppData\\Local\\Temp\\pytest-of-fotog\\pytest-4614\\test_falha_sem_...); não é o Visual C++ 2015-2022 x64 (produto: ); versão inesperada:  (apague à mão e rode de novo para baixar outro)']}
+E   AssertionError: não existe C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4614\test_d820_sem_o_motor_a_frase_0\programas do samuel\copia\.claude\worktrees\minha copia\motor-kraken; não existe C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pyte
+E   AssertionError: ('montar_motor_kraken.py', '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: (['--destino', 'C:\\Users\\fotog\\AppData\\Local\\Temp\\pytest-of-fotog\\pytest-4614\\test_b4_o_montar_do_motor_para0\...: <urlopen error [WinError 10061] Nenhuma conexão pôde ser feita porque a máquina de destino as recusou ativamente>
+E   AttributeError: <module 'core.pasta_das_ferramentas' from 'C:\\Users\\fotog\\AppData\\Local\\Temp\\claude\\b9ca076ad002e817\\14e42ebb-3236-41f4-94f5-20370c33bd91\\scratchpad\\quebra10\\antigo\\core\\pasta_das_ferramentas.py'> has no attribute 'PASTA_DAS_FE
+E   AssertionError: [WindowsPath('C:/Users/fotog/AppData/Local/Temp/claude/b9ca076ad002e817/14e42ebb-3236-41f4-94f5-20370c33bd91/scratchpad/quebra10/antigo/motor-kraken')]
+PASSED tests/test_pasta_das_ferramentas.py::test_d788_o_programa_empacotado_acha_o_motor_ao_lado_dele_e_nunca_pergunta_ao_git
+PASSED tests/test_pasta_das_ferramentas.py::test_o_git_e_aberto_sem_janela_de_console
+FAILED tests/test_pasta_das_ferramentas.py::test_d820_a_pasta_das_ferramentas_esta_escrita_num_lugar_so
+FAILED tests/test_pasta_das_ferramentas.py::test_defeito1_de_uma_copia_de_trabalho_os_seis_lugares_acham_a_pasta_certa
+FAILED tests/test_pasta_das_ferramentas.py::test_d820_da_pasta_principal_os_seis_lugares_dao_a_mesma_pasta
+FAILED tests/test_pasta_das_ferramentas.py::test_achado1_sem_git_ou_com_o_git_recusando_os_seis_lugares_dao_a_mesma_pasta
+FAILED tests/test_pasta_das_ferramentas.py::test_falha_sem_a_pasta_das_ferramentas_a_montagem_para_e_nao_cria_nada
+FAILED tests/test_pasta_das_ferramentas.py::test_d820_sem_o_motor_a_frase_diz_onde_procurou_e_como_apontar_outro
+FAILED tests/test_pasta_das_ferramentas.py::test_b1_b3_os_tres_scripts_que_gravam_param_sem_a_pasta_das_ferramentas
+FAILED tests/test_pasta_das_ferramentas.py::test_b4_o_montar_do_motor_para_se_um_dos_dois_lugares_e_o_de_fabrica
+FAILED tests/test_pasta_das_ferramentas.py::test_b5_pode_gravar_olha_a_pasta_das_ferramentas_e_nao_a_de_cima
+FAILED tests/test_pasta_das_ferramentas.py::test_obs8_esta_empacotado_mora_num_lugar_so
+10 failed, 2 passed in 24.23s
+FAILED tests/test_publicar_versao.py::test_obs6_a_frase_do_apagar_sai_com_a_contracao
+1 failed, 121 deselected in 4.15s

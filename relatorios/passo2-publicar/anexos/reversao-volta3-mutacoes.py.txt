@@ -1,0 +1,161 @@
+"""Prova de reversão da volta 3 do passo 2 (D-811): cada proteção nova é desligada numa cópia do código (git archive,
+fora do projeto) e o teste dela tem de falhar. Uso: python mutar3.py <copia>"""
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+copia = Path(sys.argv[1])
+PY = sys.executable
+SO = sys.argv[2].split(",") if len(sys.argv) > 2 else []
+V, W, S = "tests/test_publicar_versao.py", "tests/test_windows_peca.py", "tests/test_publicar_servidor.py"
+
+MUTACOES = [
+    ("B1", "apagar só o rascunho: o caminho de erro volta a apagar a publicação inteira",
+     "publicar_versao_kaique.py",
+     "            aviso = apagar_publicacao(destino, etiqueta, so_rascunho=True)",
+     "            aviso = apagar_publicacao(destino, etiqueta)",
+     [V + "::test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada",
+      V + "::test_volta3_achado1_no_github_a_leitura_atrasada_tambem_nunca_apaga_a_liberada"]),
+    ("B1b", "o GitHub apaga sem ler de novo logo antes de pedir",
+     "publicar_versao_kaique.py",
+     "        situacao = self.situacao(etiqueta)\n        if situacao == \"liberada\":\n            raise PublicacaoLiberada(",
+     "        situacao = \"rascunho\"\n        if situacao == \"liberada\":\n            raise PublicacaoLiberada(",
+     [V + "::test_volta3_achado1_no_github_a_leitura_atrasada_tambem_nunca_apaga_a_liberada"]),
+    ("B1c", "a pasta de destino apaga as duas subpastas no apagar do rascunho",
+     "publicar_versao_kaique.py",
+     "        pasta = self._rascunho(etiqueta)\n        if pasta.is_symlink() or pasta.is_junction():\n            raise Parou",
+     "        return self.apagar(etiqueta)\n        pasta = self._rascunho(etiqueta)\n        if pasta.is_symlink() or pasta.is_junction():\n            raise Parou",
+     [V + "::test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada"]),
+    ("B1d", "o apagar não lê de novo depois de pedir (a liberada que surgiu no meio)",
+     "publicar_versao_kaique.py",
+     "    if so_rascunho and depois == \"liberada\":",
+     "    if False:",
+     [V + "::test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada"]),
+    ("B2", "a cópia vai direto para o nome certo (sem o provisório)",
+     "empacotar.py",
+     "    provisorio = alvo.with_name(alvo.name + \".copiando\")\n    comecou",
+     "    provisorio = alvo\n    comecou",
+     [V + "::test_volta3_achado2_o_msi_que_nao_termina_de_copiar_nao_fica_com_o_nome_certo",
+      V + "::test_volta3_a_copia_cortada_no_meio_nunca_deixa_o_nome_certo"]),
+    ("B2b", "a cópia não é lida de volta",
+     "empacotar.py",
+     "        if provisorio.stat().st_size != copiados or lido.hexdigest() != soma.hexdigest():",
+     "        if False:",
+     [V + "::test_volta3_a_copia_conferida_le_de_volta_e_obedece_a_vigia"]),
+    ("B2c", "a conferência do fim não compara o .msi",
+     "publicar_versao_kaique.py",
+     "    linhas += _conferir_o_msi_da_saida(saida, no_saida, msi_feito)",
+     "    pass",
+     [V + "::test_volta3_achado2_o_msi_da_pasta_de_saida_e_comparado_com_o_do_rascunho",
+      V + "::test_volta3_achado2_o_msi_que_nao_termina_de_copiar_nao_fica_com_o_nome_certo"]),
+    ("B2d", "o .msi volta ao shutil.copyfile",
+     "publicar_versao_kaique.py",
+     "        empacotar.copiar_inteiro(msi, alvo)",
+     "        shutil.copyfile(msi, alvo)",
+     [V + "::test_volta3_achado2_o_msi_que_nao_termina_de_copiar_nao_fica_com_o_nome_certo"]),
+    ("B2e", "a cópia não obedece a vigia no meio",
+     "empacotar.py",
+     "                    if motivo:\n                        raise OSError(f\"parei de copiar",
+     "                    if False:\n                        raise OSError(f\"parei de copiar",
+     [V + "::test_volta3_a_copia_conferida_le_de_volta_e_obedece_a_vigia"]),
+    ("B3", "a peça deixa de olhar se é programa do Windows de verdade",
+     "core/windows.py",
+     "    começa com \"MZ\"; ou se existe e não deu para ler (na dúvida, sim). Arquivo que não existe: não (o Windows não acha\n    e o rodar devolve \"não achei o programa\").\"\"\"\n",
+     "    começa com \"MZ\"; ou se existe e não deu para ler (na dúvida, sim). Arquivo que não existe: não (o Windows não acha\n    e o rodar devolve \"não achei o programa\").\"\"\"\n    return False\n",
+     [W + "::test_bat_e_cmd_sao_recusados_pelo_rodar_pelo_lancar_e_pelo_grupo"]),
+    ("B3b", "só a extensão (sem o começo do arquivo)",
+     "core/windows.py",
+     "            return arquivo.read(len(_COMECO_DE_PROGRAMA)) != _COMECO_DE_PROGRAMA",
+     "            return False",
+     [W + "::test_bat_e_cmd_sao_recusados_pelo_rodar_pelo_lancar_e_pelo_grupo"]),
+    ("B3c", "só o começo do arquivo (sem a extensão)",
+     "core/windows.py",
+     "    if completo.rstrip(\". \").lower().endswith(_EXTENSOES_DE_LOTE):",
+     "    if False:",
+     [W + "::test_um_lote_que_a_peca_nao_acha_tambem_e_recusado_pela_extensao"]),
+    ("B4", "o programa do grupo nasce rodando (sem parar e soltar)",
+     "core/windows.py",
+     "                                    creationflags=_ABRIR_PARADO)",
+     "                                    creationflags=0)",
+     [W + "::test_o_programa_nasce_parado_e_so_roda_dentro_do_grupo"]),
+    ("B4b", "fechar_tudo diz conferido sem fechar o grupo (só o programa)",
+     "core/windows.py",
+     "        if not w.kernel32.TerminateJobObject(self._grupo, 1):\n            erro = _ler_erro()\n            self.processo.kill()\n            return _falhou(\"não consegui fechar os programas do grupo (fechei",
+     "        self.processo.kill()\n        return _certo(\"fechados o programa e tudo o que ele abriu (conferido no Windows: nenhum vivo no grupo)\")\n        if not w.kernel32.TerminateJobObject(self._grupo, 1):\n            erro = _ler_erro()\n            self.processo.kill()\n            return _falhou(\"não consegui fechar os programas do grupo (fechei",
+     [W + "::test_fechar_tudo_so_diz_conferido_quando_o_windows_diz_que_nenhum_ficou",
+      V + "::test_volta3_achado4_a_vigia_fecha_o_filho_do_vpk_antes_de_soltar_o_grupo"]),
+    ("B4c", "fechar_tudo diz conferido sem ler o grupo",
+     "core/windows.py",
+     "        if lido == 0:\n            return _certo(",
+     "        if True:\n            return _certo(",
+     [W + "::test_fechar_tudo_so_diz_conferido_quando_o_windows_diz_que_nenhum_ficou"]),
+    ("B9", "sem leitura do grupo, a frase volta a dizer 'continua rodando'",
+     "core/windows.py",
+     "        if lido is None:\n            return _falhou(\"pedi para fechar o programa e o que ele abriu, e não deu para conferir",
+     "        if False:\n            return _falhou(\"pedi para fechar o programa e o que ele abriu, e não deu para conferir",
+     [W + "::test_fechar_tudo_so_diz_conferido_quando_o_windows_diz_que_nenhum_ficou"]),
+    ("B9b", "a primeira pasta de troca fica quando a segunda não nasce",
+     "core/windows.py",
+     "    except OSError as erro:\n        apagar_pasta_de_troca(pasta)\n        return _falhou(\"não consegui preparar o script (o disco",
+     "    except OSError as erro:\n        return _falhou(\"não consegui preparar o script (o disco",
+     [W + "::test_o_lancado_solto_apaga_a_primeira_pasta_se_a_segunda_nao_nasce"]),
+    ("B5", "o rascunho fica no destino quando o liberar falha",
+     "publicar_versao_kaique.py",
+     "            aviso = apagar_publicacao(destino, etiqueta, so_rascunho=True)",
+     "            raise Parou(\"de mentira: não apaguei\")",
+     [V + "::test_volta3_achado5_o_liberar_que_falha_e_continua_rascunho_apaga_o_rascunho"]),
+    ("B6", "sem a comparação 'o motor mudou'",
+     "publicar_versao_kaique.py",
+     "        if de_novo != motor:",
+     "        if False:",
+     [V + "::test_volta3_achado6_o_motor_trocado_durante_a_publicacao_impede_liberar"]),
+    ("B7", "o motor baixado fora da conta",
+     "publicar_versao_kaique.py",
+     "                                                baixado_para_o_rascunho=tamanho_do_motor)",
+     "                                                )",
+     [V + "::test_volta3_achado7_o_motor_baixado_entra_na_conta_e_na_vigia"]),
+    ("B7b", "o download do motor sem a vigia",
+     "publicar_versao_kaique.py",
+     "                                                      empacotar.vigia_do_espaco(rascunho))",
+     "                                                      None)",
+     [V + "::test_volta3_achado7_o_motor_baixado_entra_na_conta_e_na_vigia"]),
+    ("B7c", "o gh não obedece a vigia",
+     "publicar_versao_kaique.py",
+     "                    motivo = vigia() or (f\"o gh",
+     "                    motivo = None or (f\"o gh",
+     [V + "::test_volta3_achado7_o_gh_que_baixa_e_fechado_pela_vigia"]),
+    ("B7d", "o nome do motor escrito à mão no publicar",
+     "publicar_versao_kaique.py",
+     "ETIQUETA_ACEITA = re.compile(rf\"^(v\\d+\\.\\d+\\.\\d+|{re.escape(versao.PREFIXO_DO_MOTOR)}\\d+)$\")",
+     "ETIQUETA_ACEITA = re.compile(r\"^(v\\d+\\.\\d+\\.\\d+|motor-kraken-\\d+)$\")",
+     [V + "::test_volta3_achado7_o_nome_do_motor_so_em_versao_py"]),
+    ("B8", "a janela volta a dizer 'não existe' do nome repetido",
+     "servidor_das_versoes.py",
+     "        if len(achados) > 1:\n            return None, (f\"está em",
+     "        if len(achados) > 1:\n            return None, \"não existe aqui (404)\"\n            return None, (f\"está em",
+     [S + "::test_achado8_o_nome_repetido_aparece_na_janela_como_repetido_e_nao_como_inexistente"]),
+]
+
+ambiente = {**os.environ, "QT_QPA_PLATFORM": "offscreen"}
+for codigo, o_que, arquivo, velho, novo, testes in MUTACOES:
+    caminho = copia / arquivo
+    original = caminho.read_bytes()
+    texto = original.decode("utf-8")
+    if "\r\n" in texto:  # o git archive pode entregar com CRLF
+        velho, novo = velho.replace("\n", "\r\n"), novo.replace("\n", "\r\n")
+    if SO and codigo not in SO:
+        continue
+    if texto.count(velho) != 1:
+        print(f"{codigo}: NÃO APLICADA (o texto aparece {texto.count(velho)} vezes) - {o_que}", flush=True)
+        continue
+    caminho.write_bytes(texto.replace(velho, novo).encode("utf-8"))
+    try:
+        for teste in testes:
+            r = subprocess.run([PY, "-m", "pytest", teste, "-q", "-p", "no:cacheprovider", "-x"], cwd=copia,
+                               capture_output=True, text=True, env=ambiente, timeout=600)
+            ultima = (r.stdout.strip().splitlines() or ["?"])[-1]
+            print(f"{codigo}: {'ACUSOU' if r.returncode != 0 else 'NÃO ACUSOU'} - {o_que} - {teste.split('::')[-1]}"
+                  f" ({ultima})", flush=True)
+    finally:
+        caminho.write_bytes(original)

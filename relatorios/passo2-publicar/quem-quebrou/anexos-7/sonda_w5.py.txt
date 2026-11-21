@@ -1,0 +1,25 @@
+"""Quem quebra, volta 7: o que a mutacao W5 (a leitura que falha vira 'passou' na regua unica) deixaria passar.
+Roda numa copia (quebra7\w5) com a W5 aplicada; a leitura da assinatura falha de proposito (o PowerShell 'nao termina')."""
+import shutil, sys, tempfile
+from pathlib import Path
+COPIA = Path(sys.argv[1]); PECAS = Path(sys.argv[2])
+sys.path.insert(0, str(COPIA))
+import empacotar, atualizacao, versao
+from core import windows
+windows.rodar_powershell = lambda texto, limite_s=600, segredo=None: windows._falhou("o PowerShell não terminou no tempo", "limite")
+baixados = Path(tempfile.mkdtemp(prefix="w5-")) / "downloads"; baixados.mkdir()
+shutil.copyfile(PECAS / "oficial.exe", baixados / empacotar.VC_REDIST_NOME)
+empacotar.DOWNLOADS = baixados
+arquivo, versao_vc, problemas = empacotar.preparar_vc_redist(baixar=False)
+print("montagem (preparar_vc_redist), com a leitura falhando:", arquivo, repr(versao_vc), problemas)
+pasta = baixados.parent / "EditorImpressao"; (pasta / empacotar.INTERNO).mkdir(parents=True)
+(pasta / f"{empacotar.NOME}.exe").write_bytes(b"MZ")
+for r in empacotar.relativos_do_tesseract():
+    (pasta / r).parent.mkdir(parents=True, exist_ok=True); (pasta / r).write_bytes(b"t")
+pecas = empacotar.PecasDosDetectores(None, None, None, None, arquivo, versao_vc)
+print("a montagem põe o Visual C++:", empacotar.preparar_pasta_para_o_velopack(pasta, pecas),
+      "| versao.txt =", repr((pasta / "instalar" / atualizacao.VC_REDIST_VERSAO).read_text(encoding="utf-8")))
+empacotar.gravar_ficha_da_versao(pasta, empacotar.ATUALIZACAO)
+print("conferência da pasta:", empacotar.conferir_pasta_pronta(pasta, versao.VERSAO) or "PASSA")
+print("o programa instalado, com um Visual C++ mais velho no notebook:",
+      atualizacao.precisa_do_visual_c((14, 30, 0), ""), "(False = não instala)")

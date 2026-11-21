@@ -1,0 +1,16 @@
+A linha mudada na copia: PASTA_DAS_FERRAMENTAS = Path(r"E:\programas\EditorImpressao-arquivos\ferramentas")
+
+== com a ajuda de ANTES (o arquivo de teste de edd39a9f)
+E       AssertionError: procuram fora de C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4655\test_defeito1_de_uma_copia_de_0\outro disco\EditorImpressao-arquivos\ferramentas: {'empacotar.DOWNLOADS': 'E:\\programas\\EditorImpressao-arquivos\\ferramentas', 'empacotar.LUGARES_DO_MOTOR': 'E:\\programas\\EditorImpressao-arquivos\\ferramentas', 'ocr_kraken.lugares_do_motor': 'E:\\programas\\Ed
+FAILED tests/test_pasta_da_volta10.py::test_defeito1_de_uma_copia_de_trabalho_os_seis_lugares_acham_a_pasta_certa
+1 failed in 2.71s
+
+== com a ajuda NOVA (o arquivo de teste de 1624a05a)
+            if texto.count(LINHA_DO_CAMINHO) != 1:
+                            f"({texto.count(LINHA_DO_CAMINHO)} vez(es)): a c�pia de prova ficaria com o caminho de verdade. "
+                            "Troque tamb�m LINHA_DO_CAMINHO neste teste.")
+E               Failed: a linha do caminho n�o est� em core/pasta_das_ferramentas.py como o teste espera (0 vez(es)): a c�pia de prova ficaria com o caminho de verdade. Troque tamb�m LINHA_DO_CAMINHO neste teste.
+ERROR tests/test_pasta_das_ferramentas.py::test_defeito1_de_uma_copia_de_trabalho_os_seis_lugares_acham_a_pasta_certa
+1 error in 2.07s
+
+A linha da copia voltou ao original (conferido byte a byte).

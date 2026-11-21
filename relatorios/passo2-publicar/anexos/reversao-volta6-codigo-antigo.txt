@@ -1,0 +1,20 @@
+Volta 6 (20/11/2026): os testes novos (de 3abf9acf) rodados no codigo de b9300da8 (git archive numa copia a parte, na pasta de rascunho desta conversa; so os dois arquivos de teste trocados pelos de 3abf9acf).
+
+E   publicar_versao_kaique.Parou: a pasta do programa não serve: a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4341\test_volta6_a_versao_montada_d0\repositorio-do-empacotar\dist\EditorImpressao não tem o Visual C++ em instalar\
+E   publicar_versao_kaique.Parou: a pasta do programa não serve: a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4341\test_volta6_a_versao_montada_d1\repositorio-do-empacotar\dist\EditorImpressao não tem o Visual C++ em instalar\
+E   AssertionError: a montagem para a atualização tem de pôr o Visual C++
+E   AssertionError: assert WindowsPath('C:/Users/fotog/AppData/Local/Temp/pytest-of-fotog/pytest-4341/test_volta6_a_copia_do_visual_0/repositorio-do-empacotar/dist/EditorImpressao') is None
+E   AssertionError: o motor do Kraken 1, que esta versão pede, não está publicado em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4341\test_volta6_achado2_a_frase_do0\servidor: publique o motor antes (--motor)
+E   AttributeError: 'DestinoGitHub' object has no attribute 'comando_de_publicar_o_motor'
+FAILED tests/test_publicar_versao.py::test_volta6_a_versao_montada_do_zero_leva_o_visual_c_e_e_publicada[False]
+FAILED tests/test_publicar_versao.py::test_volta6_a_versao_montada_do_zero_leva_o_visual_c_e_e_publicada[True]
+FAILED tests/test_publicar_versao.py::test_volta6_a_mesma_conferencia_da_pasta_em_todos_os_caminhos
+FAILED tests/test_publicar_versao.py::test_volta6_a_copia_do_visual_c_pela_metade_nao_deixa_a_ficha
+FAILED tests/test_publicar_versao.py::test_volta6_achado2_a_frase_do_motor_que_falta_da_o_comando_do_destino[pasta]
+FAILED tests/test_publicar_versao.py::test_volta6_achado2_a_frase_do_motor_que_falta_da_o_comando_do_destino[github]
+PASSED tests/test_publicar_versao.py::test_volta6_achado1_o_apagar_em_que_o_gh_nem_abre_diz_nao_apaguei
+6 failed, 1 passed, 78 deselected in 1.57s
+
+E   AssertionError: ('\\\\localhost\\C$\\WINDOWS\\system32\\hostname.exe', 'este programa do Windows tem função própria na peça: use a função dela')
+FAILED tests/test_windows_peca.py::test_volta6_achado3_o_caminho_de_rede_e_recusado_com_a_frase_propria
+1 failed, 70 deselected in 0.43s

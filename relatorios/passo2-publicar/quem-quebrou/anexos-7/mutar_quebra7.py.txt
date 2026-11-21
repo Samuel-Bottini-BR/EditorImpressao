@@ -1,0 +1,75 @@
+"""Quem quebra, volta 7 (20/11/2026): proteções desligadas numa cópia de 25c514ad (quebra7\novo), uma por vez; o
+arquivo volta ao original depois de cada uma (conferido byte a byte). Mutações W1 a W6, diferentes das R1 a R12 do
+escritor, das Y da volta 6 e das Z do relatório 6. Para cada uma, roda os arquivos de teste inteiros que deviam acusá-la.
+Uso: python -X utf8 mutar_quebra7.py <pasta da cópia>"""
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+COPIA = Path(sys.argv[1])
+PY = r"D:\programas\EditorImpressao\.venv\Scripts\python.exe"
+PUB, EMP, DEC = "tests/test_publicar_versao.py", "tests/test_empacotar.py", "tests/test_decisoes_atualizacao.py"
+
+MUTACOES = [
+    ("W1", "a conferência da pasta tem régua própria do Visual C++: só 'assinatura válida', de quem for", "empacotar.py",
+     "        versao_do_vc, errado = conferir_o_visual_c(visual_c)",
+     "        _a = assinatura_do_arquivo(visual_c)\n"
+     "        versao_do_vc, errado = _a.get('versao', '') or '', ([] if _a.get('status') == 'Valid' else ['x'])",
+     [PUB, EMP]),
+    ("W2", "a conferência da pasta deixa de cobrar as licenças do Tesseract", "empacotar.py",
+     "    faltam = [r for r in relativos_do_tesseract() if not ((pasta / r).is_file()",
+     "    faltam = [r for r in relativos_do_tesseract() if not r.endswith(('LICENSE', 'AUTHORS')) and not ((pasta / r).is_file()",
+     [PUB, EMP]),
+    ("W3", "a conferência do pacote depois do vpk deixa de cobrar as licenças do Tesseract", "empacotar.py",
+     "    saida_ += relativos_do_tesseract()",
+     "    saida_ += [r for r in relativos_do_tesseract() if not r.endswith(('LICENSE', 'AUTHORS'))]",
+     [PUB, EMP, DEC]),
+    ("W4", "a versão do arquivo comparada por 'começa com' (o arquivo vazio passa)", "empacotar.py",
+     "            if lida != versao_do_vc:",
+     "            if not versao_do_vc.startswith(lida):",
+     [PUB, EMP]),
+    ("W5", "a leitura da assinatura que falha vira 'passou' na régua única", "empacotar.py",
+     "    return assinatura.get(\"versao\", \"\") or \"\", vc_redist_confere(assinatura)",
+     "    if str(assinatura.get('status', '')).startswith('erro'):\n        return assinatura.get('versao', '') or '', []\n"
+     "    return assinatura.get(\"versao\", \"\") or \"\", vc_redist_confere(assinatura)",
+     [PUB, EMP]),
+    ("W6", "o publicar não confere cedo só a pasta pronta (desvio para um caso)", "publicar_versao_kaique.py",
+     "        problemas = empacotar.conferir_pasta_pronta(pasta, versao_do_pacote)",
+     "        problemas = [] if pasta_pronta is not None else empacotar.conferir_pasta_pronta(pasta, versao_do_pacote)",
+     [PUB]),
+]
+
+
+def main() -> int:
+    ambiente = dict(os.environ, QT_QPA_PLATFORM="offscreen", PYTHONIOENCODING="utf-8")
+    acusadas = 0
+    for codigo, o_que, arquivo, velho, novo, testes in MUTACOES:
+        alvo = COPIA / arquivo
+        original = alvo.read_bytes()
+        texto = original.decode("utf-8")
+        if texto.count(velho) != 1:
+            print(f"{codigo}: o trecho não foi achado uma vez só ({texto.count(velho)}): NÃO RODADA", flush=True)
+            continue
+        alvo.write_bytes(texto.replace(velho, novo).encode("utf-8"))
+        resultados, acusou = [], False
+        try:
+            for teste in testes:
+                r = subprocess.run([PY, "-m", "pytest", teste, "-q", "-p", "no:cacheprovider", "--tb=no", "-rf"],
+                                   cwd=COPIA, env=ambiente, capture_output=True, text=True, encoding="utf-8",
+                                   errors="replace", timeout=1800)
+                fim = [l for l in r.stdout.splitlines() if " passed" in l or " failed" in l][-1:]
+                quem = [l.split("::", 1)[1][:100] for l in r.stdout.splitlines() if l.startswith("FAILED")][:3]
+                resultados.append(f"{teste}: {fim} {quem}")
+                acusou = acusou or r.returncode != 0
+        finally:
+            alvo.write_bytes(original)
+        assert alvo.read_bytes() == original
+        acusadas += acusou
+        print(f"{codigo} ({o_que}): {'ACUSADA' if acusou else 'NAO acusada'}\n    " + "\n    ".join(resultados), flush=True)
+    print(f"\n{acusadas} de {len(MUTACOES)} acusadas; cada arquivo devolvido ao original (conferido byte a byte).")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
