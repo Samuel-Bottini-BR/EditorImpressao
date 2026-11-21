@@ -16,6 +16,8 @@ aprovação do Samuel). Ficha irmã: [testes-a-distancia.md](testes-a-distancia.
 
 ## O que vale hoje
 
+- **Publicar (20-21/11):** a pasta montada do zero recebe o Visual C++ na montagem; a pasta já montada é conferida igual à montada do zero, pela mesma régua (D-818: "vai ter que reprogramar?" · "A"); as peças (motor do Kraken, Visual C++) vêm de uma pasta escrita num lugar só, `D:\programas\EditorImpressao-arquivos\ferramentas`, rodando da pasta principal ou de uma cópia de trabalho; se faltar, para e avisa (D-820: "não era melhor só ver se está instaldo no pc?" · "A"). Provado à vista em 20/11 (prova nº 2, 7 passos), antes da volta 10; falta o pedaço curto da prova e juntar (ramo `passo2-publicar-2026-11-19`).
+
 - **A peça:** Velopack 1.2.161, que fica, com a nossa proteção em volta dos dois defeitos dele (D-779: "ta vamos
   continuar com ele, mas o que fazemos para ele não dar defeito e porque nossa peças em voltadele deram defeito?").
 - **Nome interno do pacote:** `EditorImpressaoPrograma` (`versao.ID_DO_PACOTE`, um lugar só; D-763, "ok, pode fazer").
@@ -49,6 +51,8 @@ aprovação do Samuel). Ficha irmã: [testes-a-distancia.md](testes-a-distancia.
   instalador em toda versão → só quando ele pedir (D-777); uma frase de falha → três (D-778).
 
 ## Tentado e descartado
+
+- 20-21/11/2026 — achar a pasta das ferramentas perguntando ao git onde fica a pasta principal (voltas 9 e 10 do passo 2): sem resposta do git, voltava calado à pasta errada (relatório 8); trocado pelo caminho escrito num lugar só (D-820). A gerente tinha aceitado o jeito do git sem perguntar (D-819).
 
 - **A diferença ("só o que mudou"):** ~20 MB para baixar, mas o notebook remonta o pacote inteiro (22-23 min contra
   7,5 min inteiro, medido) e a assinatura não confere a diferença (lido no código, não provado).

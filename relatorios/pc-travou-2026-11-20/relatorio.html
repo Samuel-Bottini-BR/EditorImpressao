@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>O PC travou na noite de 20/11/2026</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>O PC travou na noite de 20/11/2026</h1>
+<p>Investigação feita só lendo os registros do Windows, em 20/11/2026 às 22h20, sem mudar nada no computador.</p>
+<h2>O que aconteceu, em duas frases</h2>
+<p>Às 21:57:44, no meio de uma partida de Teamfight Tactics, a placa de vídeo NVIDIA parou de funcionar de repente: o jogo anotou "a placa de vídeo foi removida", a tela congelou (a tela verde) e o PC foi religado 30 segundos depois.</p>
+<p>Na volta, às 21:58, o Windows não conseguiu ligar a outra parte de vídeo, a AMD (a que cuida da tela e do brilho), e usou o "vídeo de emergência" dele: por isso os ícones ficaram grandes e o brilho não mexia; no reinício seguinte, às 22:04, a AMD voltou ao normal, mas a NVIDIA continua <strong>desativada</strong>.</p>
+<h2>Os nossos trabalhos causaram isso?</h2>
+<p><strong>Na noite de 20/11: não há nenhuma prova de que sim, e há provas de que não.</strong></p>
+<p>O que é certo:</p>
+<ul>
+<li><strong>Nenhum comando nosso mexeu em vídeo, driver, brilho ou resolução.</strong> Procurei em todas as conversas e em todos os agentes do dia. As únicas vezes em que aparecem as palavras de desligar aparelho (como "Disable-PnpDevice" ou "pnputil") são da gerente <strong>procurando</strong> por elas, às 22:01, depois do travamento.</li>
+<li><strong>Na hora do defeito, o agente não estava rodando nada.</strong> O último comando dele terminou às 21:56:58. O seguinte começou às 21:57:46, dois segundos depois de a placa cair, e era só uma busca de palavras num arquivo de texto. Ele nunca devolveu resultado, porque o PC já tinha travado.</li>
+<li><strong>Os trabalhos pesados tinham acabado bem antes.</strong> A montagem do programa (PyInstaller e vpk) terminou por volta das 19h17. O último teste pesado no PC terminou às 21h02. Nos 55 minutos antes do travamento, só rodaram coisas leves: consultar o GitHub, o git e ler arquivos.</li>
+<li><strong>O Windows não deu alarme de falta de memória em 20/11.</strong> Ele dá esse alarme quando a memória acaba, e deu em 19/11 (veja abaixo). Em 20/11, nenhum.</li>
+</ul>
+<p>O que é suspeita (não dá para provar com o que se lê sem administrador):</p>
+<ul>
+<li><strong>A parte da Acer que controla ventoinha, energia e placa de vídeo começou a falhar às 21:34</strong>, 23 minutos antes do travamento. O serviço da Predator pergunta ao notebook, a cada um ou dois segundos, como estão as coisas. A partir das 21:34:31 ele recebeu erro em quase todas as perguntas: foram mais de mil até 21:57:45. Antes disso, desde o começo de 19/11, não houve nenhum. Isso sugere que o problema veio do próprio notebook (calor, energia, ou o controle da Acer), e não de um programa.</li>
+<li><strong>Alguém marcou a NVIDIA como "desativada" às 21:57:42</strong>, dois segundos antes de o jogo perder a placa. O Windows guarda a hora em que cada aparelho foi mexido, e a da NVIDIA é essa. Não dá para saber quem foi sem administrador. Não fomos nós (veja acima), e você estava no meio da partida. Pode ter sido o próprio Windows, o programa da NVIDIA ou o da Acer reagindo à placa que falhava.</li>
+</ul>
+<p><strong>Em 19/11, às 18h03, os nossos trabalhos ajudaram, sim.</strong> É certo:</p>
+<ul>
+<li>Naquele minuto, o Windows anotou que a memória tinha acabado. Os três que mais gastavam: o jogo (4,5 GB), um Python nosso (4,4 GB, era a bateria completa de testes que a gerente rodava no PC) e o programa de sobreposição da NVIDIA (2,3 GB).</li>
+<li>No mesmo segundo caíram, por falta de memória, o programa do Windows que desenha a tela (por isso ela piscou preta e verde), o serviço da Predator, o Chrome e o programa da NVIDIA.</li>
+<li>Na manhã de 19/11, entre 8h41 e 8h46, um Python nosso chegou a gastar 13 GB, também com o jogo aberto.</li>
+<li>Em 17/11, às 18h16, o programa que desenha a tela também caiu por falta de memória, durante os nossos testes do instalador. Nesse dia o Windows não deu o alarme, então aqui é só suspeita.</li>
+</ul>
+<p><strong>Mais um travamento em 20/11, às 13h13.</strong> Você reiniciou o PC às 13:12. Ele ligou às 13:13 e não gravou mais nada por 15 minutos, até ser religado às 13:28. Nenhum agente nosso estava rodando (o último comando foi às 13:11). A causa não se sabe.</p>
+<h2>Como consertar a tela e o brilho</h2>
+<p>Do mais simples ao mais trabalhoso. Pare no passo em que tudo ficar bom.</p>
+<p><strong>Passo 1: conferir se a tela já está certa.</strong> Às 22:20 os registros mostram a tela já de volta ao normal: 1920 × 1080, escala de 125%, reconhecida como "Monitor integrado" pela AMD.</p>
+<ul>
+<li>Clique com o botão direito num lugar vazio da área de trabalho e escolha "Configurações de exibição".</li>
+<li>Em "Escala", deve estar <strong>125% (Recomendado)</strong>. Em "Resolução da tela", <strong>1920 × 1080 (Recomendado)</strong>.</li>
+<li>Se algum não estiver assim, escolha o que tem "(Recomendado)".</li>
+<li>Se só os ícones da área de trabalho estiverem grandes: botão direito na área de trabalho, "Exibir", "Ícones médios".</li>
+<li>Às 22:02 a escala foi mudada, mas essa mudança ficou guardada só para o "vídeo de emergência". Com a AMD funcionando, ela não vale.</li>
+</ul>
+<p><strong>Passo 2: o brilho.</strong> Agora o Windows já consegue controlar o brilho de novo. Mas ele está guardado em <strong>0%, o mínimo</strong>.</p>
+<ul>
+<li>Aperte <strong>Fn + seta para a direita</strong> algumas vezes (nos notebooks Acer, é a tecla de aumentar o brilho).</li>
+<li>Ou aperte <strong>Windows + A</strong> e arraste a barra do sol para a direita.</li>
+<li>O que deve ver: a tela clareando. Se a barra do sol não aparecer, reinicie o PC (Iniciar, Energia, Reiniciar) e tente de novo.</li>
+</ul>
+<p><strong>Passo 3: ligar a placa NVIDIA de novo.</strong> Enquanto ela estiver desativada, o jogo e tudo o que usa a placa NVIDIA ficam mais lentos. O jogo já está rodando na AMD desde as 22:07.</p>
+<ul>
+<li>Clique com o botão direito no botão Iniciar e escolha <strong>"Gerenciador de Dispositivos"</strong>.</li>
+<li>Abra <strong>"Adaptadores de vídeo"</strong>. A "NVIDIA GeForce GTX 1650" aparece com uma setinha para baixo no desenho: é o sinal de desativada.</li>
+<li>Clique nela com o botão direito e escolha <strong>"Habilitar dispositivo"</strong>. O Windows pode perguntar se você permite: essa pergunta é dele, e quem decide é você.</li>
+<li>O que deve ver: a setinha some, e a tela pode piscar uma vez.</li>
+<li>Reinicie o PC (Iniciar, Energia, Reiniciar).</li>
+<li>Se, ao jogar de novo, a tela travar outra vez, é sinal de defeito na placa NVIDIA ou no programa dela (o "driver", que faz a placa conversar com o Windows). Aí vá para o passo 5.</li>
+</ul>
+<p><strong>Passo 4: se a tela congelar de novo e o PC ainda responder.</strong> Aperte ao mesmo tempo <strong>Windows + Ctrl + Shift + B</strong>. Isso reinicia só o vídeo: a tela fica preta um segundo, dá um bipe e volta. Muitas vezes evita desligar à força.</p>
+<p><strong>Passo 5 (o mais trabalhoso): atualizar os programas do vídeo.</strong></p>
+<ul>
+<li>O programa da AMD é de agosto de 2024. O da NVIDIA é de abril de 2026.</li>
+<li>Baixe os dois na página de suporte da Acer, pelo modelo do notebook (o código fica na etiqueta embaixo dele). O da NVIDIA também pode vir pelo aplicativo da NVIDIA.</li>
+<li>Instale primeiro o da AMD, reinicie, depois o da NVIDIA, e reinicie de novo.</li>
+<li>Se a NVIDIA continuar caindo mesmo assim, vale levar a uma assistência técnica: pode ser calor ou defeito da placa.</li>
+</ul>
+<h2>Como evitar que aconteça de novo</h2>
+<ul>
+<li><strong>Não jogar enquanto os nossos trabalhos pesados rodam no PC.</strong> São eles: montar o programa, empacotar, a bateria completa de testes. Em 19/11, jogo e testes juntos acabaram com a memória duas vezes. Sugestão para a gerente: antes de um trabalho pesado, conferir a memória livre e pedir para fechar o jogo, ou mandar a bateria completa para o GitHub.</li>
+<li><strong>Deixar a ventilação livre.</strong> Use o notebook numa mesa dura, nunca em cama ou almofada. No PredatorSense, deixe a ventoinha no modo automático ou no mais forte enquanto joga.</li>
+<li><strong>Olhar a temperatura da placa no PredatorSense</strong> quando for jogar depois de religar a NVIDIA. Se ela passar de uns 85 °C, ou se a placa cair de novo, o problema é do notebook, não de programa.</li>
+<li><strong>Atualizar o programa do vídeo da AMD</strong> (passo 5), porque ele está dois anos atrás do da NVIDIA.</li>
+</ul>
+<h2>A tela verde: o que é</h2>
+<ul>
+<li><strong>Este Windows não é de teste.</strong> É o Windows 11 Home normal, versão 25H2, com a atualização de novembro de 2026 (26200.9974). Ele não está inscrito no programa de testes da Microsoft (Insider).</li>
+<li><strong>A tela verde de erro do Windows só existe nas versões de teste.</strong> Nas versões normais, a tela de erro era azul, e desde 2025 é preta.</li>
+<li><strong>E não houve tela de erro do Windows nesta noite.</strong> Quando ela acontece, o Windows guarda o código do erro e um arquivo do travamento. Desta vez o código ficou zerado e nenhum arquivo novo foi gravado (o último é de 20/10).</li>
+<li><strong>O mais provável:</strong> a imagem parada da placa de vídeo que travou. Quando a placa trava com a memória de imagem vazia, a tela costuma ficar verde. Isso é explicação provável, não certeza.</li>
+</ul>
+<h2>Para consulta: a linha do tempo, com as provas</h2>
+<p>Horas do relógio do PC.</p>
+<table>
+<thead>
+<tr>
+<th>Hora</th>
+<th>O que aconteceu</th>
+<th>Onde está escrito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>20/11 13:12</td>
+<td>Você reinicia pelo menu Iniciar</td>
+<td>registro do Sistema, aviso 1074</td>
+</tr>
+<tr>
+<td>13:13 a 13:28</td>
+<td>O PC liga e não grava mais nada por 15 minutos; religado à força</td>
+<td>Sistema, avisos 41 e 6008</td>
+</tr>
+<tr>
+<td>17:57 a 19:17</td>
+<td>Montagem e envio do programa (PyInstaller, vpk), pesados</td>
+<td>conversa da gerente</td>
+</tr>
+<tr>
+<td>20:06</td>
+<td>Jogo aberto, usando a placa NVIDIA</td>
+<td>registro do jogo (TFT)</td>
+</tr>
+<tr>
+<td>21:02</td>
+<td>Último teste pesado nosso no PC</td>
+<td>conversa da gerente</td>
+</tr>
+<tr>
+<td>21:34:31</td>
+<td>Começam os erros do controle da Acer (mais de mil até 21:57:45)</td>
+<td>registro do WMI, aviso 5858, "AcerGamingFunction"</td>
+</tr>
+<tr>
+<td>21:56:58</td>
+<td>Termina o último comando do agente antes do travamento</td>
+<td>conversa do agente</td>
+</tr>
+<tr>
+<td>21:57:42</td>
+<td>A ficha da NVIDIA no Windows é mexida (ela ficou "desativada")</td>
+<td>hora gravada na ficha do aparelho</td>
+</tr>
+<tr>
+<td>21:57:44</td>
+<td>O jogo anota: "placa de vídeo removida"</td>
+<td>registro do jogo: "GPU crash detected", "DXGI_ERROR_DEVICE_REMOVED"</td>
+</tr>
+<tr>
+<td>21:57:45</td>
+<td>Última pergunta do serviço da Predator registrada</td>
+<td>registro do WMI</td>
+</tr>
+<tr>
+<td>21:57:46</td>
+<td>O agente começa uma busca de palavras, que nunca termina</td>
+<td>arquivo de saída vazio do agente</td>
+</tr>
+<tr>
+<td>21:57:48</td>
+<td>O jogo tenta gravar o relatório de falha (fica vazio)</td>
+<td>pasta de falhas do jogo</td>
+</tr>
+<tr>
+<td>21:58:18</td>
+<td>O PC liga de novo</td>
+<td>Sistema, aviso 12</td>
+</tr>
+<tr>
+<td>21:58:35</td>
+<td>A tela entra como "Monitor genérico", ligada pelo vídeo de emergência</td>
+<td>registro dos aparelhos, aviso 442</td>
+</tr>
+<tr>
+<td>22:02:55</td>
+<td>Mudança da escala, guardada só para o vídeo de emergência</td>
+<td>registro de escala da tela</td>
+</tr>
+<tr>
+<td>22:04:03</td>
+<td>Você reinicia pelo menu Iniciar</td>
+<td>Sistema, aviso 1074</td>
+</tr>
+<tr>
+<td>22:04:29</td>
+<td>Liga: AMD funcionando, tela "Monitor integrado"; NVIDIA desativada</td>
+<td>estado dos aparelhos agora</td>
+</tr>
+<tr>
+<td>22:07</td>
+<td>Jogo aberto de novo, agora na AMD</td>
+<td>registro do jogo</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Por que o Windows diz que o PC desligou às 21:28:18, se o agente rodou até 21:57?</strong> Essa hora não é a do travamento. O Windows grava uma marca de "ainda estou ligado" uma vez por hora, contando da hora em que o PC ligou. O PC tinha ligado às 13:28:18, e a última marca saiu às 21:28:18, oito horas depois, no mesmo segundo. O travamento veio depois da marca. O registro do Sistema ficou quieto de 21:20 a 21:58 porque não aconteceu nada que ele anote. Outros registros do Windows (o do WMI e o do PowerShell) têm anotações até 21:57:45.</p>
+<p><strong>Como estão as peças agora (22:20):</strong></p>
+<ul>
+<li>AMD Radeon: funcionando. Programa de agosto de 2024.</li>
+<li>NVIDIA GeForce GTX 1650: desativada (código 22, a marca de desativada está gravada). Programa de abril de 2026, instalado em 15/05/2026.</li>
+<li>Nenhum programa de vídeo foi trocado pelo Windows Update nos últimos dias. A última atualização do Windows foi a de segurança de 11/11.</li>
+<li>Serviços da NVIDIA ("NVIDIA Display Container") e da Acer ("Predator Service" e "PSAgent"): rodando.</li>
+<li>Tela: 1920 × 1080, escala 125%, brilho guardado em 0%.</li>
+</ul>
+<p><strong>O que não deu para ler sem administrador</strong> (não pedi licença):</p>
+<ul>
+<li>as pastas de relatórios de travamento do Windows (<code>C:\Windows\LiveKernelReports</code> e <code>C:\Windows\Minidump</code>). Dá só para ver a data delas: 02/11 e 20/10, nenhuma de 20/11;</li>
+<li>a temperatura;</li>
+<li>quem marcou a NVIDIA como desativada.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 20/11/2026 às 22:25</p>
+</body>
+</html>

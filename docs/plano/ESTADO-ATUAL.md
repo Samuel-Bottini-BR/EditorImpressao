@@ -8,6 +8,15 @@ Escrito em 24/09/2026. A ordem de autoridade é:
 
 O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que vale é o Plano Definitivo.
 
+> **Onde o projeto está em 21/11/2026, madrugada (vale sobre tudo abaixo; detalhe na [PARTE -42](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
+> - **Passo 2 (publicar): a prova à vista foi feita duas vezes.** A primeira achou um defeito (o Visual C++ cobrado antes de ser posto); a segunda passou nos 7 passos, inclusive o GitHub de verdade, e achou 2 defeitos (as peças procuradas no lugar errado numa cópia de trabalho; a frase depois de apagar).
+> - **Voltas 6 a 10 de conserto** (a última rodada do GitHub de cada volta passou). O último agente que tentou quebrar escreveu **PRONTO PARA CONFERIR** (relatório 9), com 4 baixos.
+> - **D-818** (a pasta já montada conferida igual à montada do zero), **D-819** (regra: comparar sempre o jeito mais simples e escolher o melhor) e **D-820** (as peças do publicar numa pasta escrita num lugar só, `D:\programas\EditorImpressao-arquivos\ferramentas`).
+> - **Esperando ele:** "Quer fazer agora ou amanhã?" o pedaço curto da prova (uns 10 minutos, com o jogo fechado). Também: se habilitou a NVIDIA (o PC travou às 21h57 de 20/11; a placa ficou desativada) e o que apagar (9,8 GB de cópias dos agentes, a pasta errada de 19/11, a pasta da prova).
+> - Depois da prova (sugestão da gerente): os 4 baixos do relatório 9, outra conferência e a junção do passo 2 e das regras do catálogo na versão de teste.
+> - Nada do processamento das páginas mudou. O programa ainda não está pronto para o Kaique.
+>
+> **Antes (20/11, tarde), já superado:**
 > **Onde o projeto está em 20/11/2026, tarde (vale sobre tudo abaixo; detalhe na [PARTE -41](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
 > - **Passo 2 (publicar, o Kraken à parte, o servidor das versões de prova): voltas 4 e 5 feitas.** A conferência da volta 5, por um agente novo, **não achou nada médio nem grave** (3 problemas pequenos; consertar depois da prova é sugestão da gerente, sem resposta dele). As duas rodadas do GitHub passaram.
 > - **D-817:** o teste antigo que cobrava "a liberação falha → apaga o rascunho" saiu; o mesmo caso é cobrado do jeito novo (D-816).

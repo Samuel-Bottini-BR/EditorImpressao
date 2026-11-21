@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 20/11/2026, tarde (PARTE -41; a anterior, PARTE -40, é da manhã do mesmo dia). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 21/11/2026, madrugada (PARTE -42; a anterior, PARTE -41, é da tarde de 20/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -11,6 +11,115 @@ Pasta do projeto: `D:\programas\EditorImpressao` (mudou de
 `C:\Users\fotog\Desktop\EditorImpressao` em 07/09/2026; essa pasta antiga virou
 o backup). Repositório git ligado a
 `https://github.com/Samuel-Bottini-BR/EditorImpressao`.
+
+---
+
+# PARTE -42 — Checkpoint de 21/11/2026, madrugada: a prova à vista do passo 2 (publicar) feita duas vezes; voltas 6 a 10 de conserto (o Visual C++ cobrado antes de ser posto, a pasta já montada, a frase do apagar, as peças achadas numa pasta escrita num lugar só); D-818 a D-820; o PC do Samuel travou (a NVIDIA caiu com um jogo aberto) (leia isto primeiro)
+
+Conversa `14e42ebb`, aberta pelo `/projeto` às 17h30 UTC de 20/11 (relógio do Samuel, UTC−4: 13h30) e fechada às 06h18 UTC de 21/11 (02h18 dele). Escrito das falas salvas (`falas_da_conversa.py --todas --desde 2026-11-20T17:10`, 48 falas: 1 da conversa anterior e 47 desta), do git de todos os ramos e da Central. O Samuel pediu: **"vamos dar check point"** (06h18 UTC).
+
+- **Nada rodando no fechamento** (conferido: nenhum agente, nenhum python no PC, nenhuma rodada do GitHub em andamento).
+- Nada do processamento das páginas mudou. O programa ainda não está pronto para o Kaique.
+
+## 0. Para recomeçar
+
+1. `git -C D:\programas\EditorImpressao fetch origin`. Versão oficial `fase-1` (ponta: este checkpoint). Versão de teste `obra-2026-10-26` (worktree `.claude\worktrees\obra-juncao`, ponta `38c9fcdf`, Livro até a **D-820**). Passo 2: ramo `passo2-publicar-2026-11-19` (worktree `.claude\worktrees\passo2`, ponta `338565bc`; conserto da D-820 em `e9617727`, último commit de código `09b30933`).
+2. **Pergunta aberta (chat, 06h08 UTC de 21/11), sem resposta** (ele pediu o checkpoint): "O próximo passo é o pedaço curto da prova com você (uns 10 minutos, com o jogo fechado) [...] Quer fazer agora ou amanhã?" O pedaço: o item 19 do roteiro "A prova de verdade" (`relatorios/passo2-publicar/ONDE-PAREI.md`, ramo do passo 2): seguir ao pé da letra a frase do motor, **da cópia `passo2`**, numa pasta com espaço no nome, e ver o motor achado em `D:\programas\EditorImpressao-arquivos\ferramentas`; o item 18 (o `--apagar` dizendo "foi apagada" e, de novo, "não existia"); o item 20 (listar o pacote montado e ver que a peça do git não vai nele). **Atenção ao relatório 9, baixo 1:** os itens 19 (segunda metade) e 21 pedem "da pasta principal", mas a pasta principal está no `fase-1`, que não tem o `publicar_versao_kaique.py`: fazer só da cópia `passo2`. Comandos com o caminho inteiro do python (`D:\programas\EditorImpressao\.venv\Scripts\python.exe`; a cópia `passo2` não tem `.venv`). A pasta da prova é `C:\EditorImpressaoProva\` (o servidor das versões abre com `servidor_das_versoes.py --pasta C:\EditorImpressaoProva\versoes`; cada janela com `python -u` para a saída aparecer na hora).
+3. **Antes de qualquer trabalho pesado no PC dele:** conferir a memória livre e pedir para fechar o jogo (ver §4).
+4. Depois do pedaço da prova (sugestão da gerente, não decisão dele): um escritor para os 4 baixos do relatório 9 (pela D-815, o da volta 10 só fez uma volta e pode fazer mais uma); um agente novo tenta quebrar; a junção do passo 2 no obra (rodada do GitHub antes, D-807) e depois `regras-catalogo-2026-11-19`; o catálogo dos erros do passo 2 (D-803).
+
+## 1. Os trabalhos, pelo git (21/11, 06h18 UTC)
+
+| Trabalho | Situação |
+|---|---|
+| Passos 0 e 1 | Juntados no obra (PARTE -39). Sem mudança. |
+| **Passo 2**, ramo `passo2-publicar-2026-11-19` | **Prova à vista nº 1** (20/11, 18h27 a 18h45 UTC): o motor 1 publicado na pasta da prova (assinado, lido de volta, conferido); a versão 1.1.0 **parou** em "não tem o Visual C++ em instalar\" (a conferência da pasta rodava antes de o Visual C++ ser posto; os testes usavam uma pasta de mentira já pronta). **Volta 6** (escritor novo; `3abc3953` a `73e36716`, código `3abf9acf`; GitHub 44800950547 success): o Visual C++ posto pela montagem; os 3 baixos do relatório 5. **Relatório 6** (`db4b377a`): NÃO ESTÁ PRONTO, 1 médio (a pasta já montada conferida menos) → **D-818**. **Volta 7** (o mesmo escritor; código `4e8fdd98`/`25c514ad`; GitHub 44816609032 success): uma régua só para o Visual C++ e uma lista só para o Tesseract. **Relatório 7** (`c2d6f319`/`21f1fc50`): **PRONTO PARA CONFERIR**, 6 baixos. **Prova à vista nº 2** (21h51 a 23h25 UTC de 20/11; registros `C:\EditorImpressaoProva\prova1.log` a `prova7c.log`): os 7 passos deram certo (pasta antiga recusada; montagem do zero publicada e baixada inteira pelo servidor, com o Visual C++ de 25.635.768 bytes, a versão "14.44.35211.0" e o Tesseract com 6 idiomas no pacote; erro de propósito no meio limpo; instalador .msi de 785 MB com o motor; pouco espaço recusado; pasta nova sem motor; GitHub de verdade: motor e versão publicados, lidos de volta, liberados e apagados, etiquetas conferidas, nenhum gh preso). Achou **2 defeitos**: as peças procuradas no lugar errado rodando de uma cópia de trabalho (a frase do motor seguida ao pé da letra não achou o motor); a frase "não existe (conferido)" depois de apagar. Ficou sem provar: cortar a internet no meio da liberação. **Volta 8** (escritor novo; `df40b18e` a `5c22a12d`, código `5462d882`; GitHub 44847777899 success na 2ª tentativa): a frase do apagar e os 6 baixos; o defeito 1 parou (pedia arquivos fora da lista). **Volta 9** (o mesmo; `d8d36d1d` a `82b610f9`, código `011b06d0`; GitHub 44859326833 success): o defeito 1 perguntando ao git (lista ampliada pela gerente, sem perguntar a ele: erro, ver §5). **Relatório 8** (`6fa766c4`): NÃO ESTÁ PRONTO, 1 médio (sem resposta do git, voltava calado à pasta errada). **Volta 10** (escritor novo; `070b571c` a `accafb80`): começou remendando o jeito do git (`c1ba406d`, `f7d3b8a8`) e, pela **D-820**, refez no jeito A (conserto `e9617727`, último commit de código `09b30933`; GitHub 44869743074 success, sobre `3529cf9c`). **Relatório 9** (`338565bc`): **PRONTO PARA CONFERIR**, 4 baixos (itens 19/21 do roteiro "da pasta principal"; a troca do caminho nos testes cai calada no caminho de verdade se a linha mudar; o "pode gravar?" do Visual C++ com conta própria em `empacotar.py:666-668`; a frase "aponte-a com --motor-kraken" sem teste por quem a mostra) e 6 observações. Falta o pedaço curto da prova. |
+| Regras do catálogo (D-809 a D-814), ramo `regras-catalogo-2026-11-19` | Prontas (`3a63a918`), sem mudança; esperam o passo 2 entrar. |
+| Passos 3 a 6 | Não começados. |
+
+**Os 4 acertos de texto da ficha da entrega** que a gerente disse às 21h34 UTC que cuidaria (a linha da D-818, duas citações, a lista de arquivos) foram feitos pelo escritor da volta 8 (formulário que passa no conferidor). **Escolhas técnicas da gerente nesta parte (não são decisões dele):** a junção `modelos` na cópia `passo2` (para `D:\programas\EditorImpressao\modelos`, fora do git); ampliar a lista da volta 9 e aceitar o jeito do git (desfeito pela D-820); não pôr limite de tempo nas perguntas do porteiro ao git (o defeito que pedia isso sumiu com a D-820; seria coisa nova); voltas 7 e 9 com o mesmo escritor da volta anterior (D-815 permite duas). A ficha do motor foi gravada com o "ok" dele (`D:\programas\EditorImpressao-arquivos\ferramentas\motor-kraken\motor.json`, 18h20 UTC).
+
+## 2. As falas do Samuel e o destino de cada uma (UTC)
+
+- "ele verificou tudo?" (17h11, conversa anterior) → respondido lá; a pergunta "Quer que um agente novo confira as correções...?" ficou para esta conversa.
+- "onde tinhamos parado exactamente antes?" (17h37) → as duas perguntas sem resposta.
+- **"confira as correções"** (17h38) → agente novo conferiu: as 6 certas; achou mais 6 anotações erradas.
+- "corrigir porque?" (18h06) → explicado. **"corrija e depois faremos o que?"** (18h07) → corrigido (`8a3bf749`): sugestão marcada como sugestão, defeito do desinstalar confirmado pelo relatório 4, 5 ideias e 2 defeitos que faltavam, 20 perguntas reabertas na Central (não 11).
+- **"ok"** (18h18) → ficha do motor gravada. **"estou"** (18h25) → prova nº 1.
+- "abriu umas 3 telas no meu pc" (18h34, print) → explicado (as janelas da prova).
+- **"pode concertar"** (18h43) → volta 6 (o defeito da prova e os 3 baixos do relatório 5).
+- "já passou 15 minutos" (19h21) · "cade os resultados? esta em quantos %w" (19h35) · "?" (19h35) → explicado (rodada cancelada e refeita; 90%).
+- "vai ter que reprogramar?" (20h28) → não; **"A"** (20h33) → **D-818**.
+- "o que estamos fazendo o que aconteceu?" (21h44) · "que seis pequenos? me da o contexto" (21h45) · "porque deixar para depois? isso não vai fazer refazer coisas depois se não fizermos agora?" (21h48) · "como assim prova? fala de maneira mais simples" (21h49) · "a prova vai ter que fazer programação?" (21h50) → explicados.
+- **"pode, depois se tiver problema começamos tudo junto ou pelos 6 pequenos e o que são esses 6 pequenos no que influenciam?"** (21h51) → prova nº 2. Ele deu as duas saídas ("começamos tudo junto ou pelos 6 pequenos"); juntar foi proposta da gerente ("um agente conserta esse e os 6 pequenos de uma vez"), e o "pode" dele das 00h05 confirmou.
+- "apareceu só uns power shells na minha tela, era para acontecer isso?" (22h04) → sim. "terminou?" (22h35) → lento por pouca memória (jogo aberto). **"pode fazer o teste assim mesmo"** (22h37).
+- "o que acontceu?" (23h55) · "então, está funcionando, mas tem alguns defeitos?" (00h04) → sim, 2. **"pode"** (00h05) → volta 8.
+- "onde estamos agora?" (01h17) → resumo.
+- **"deu uma tela verde no meu pc, travou tudo e tive que desligar ele a força e quando abri tinha desconfigurado minha tela / até o brilho do meu pc eu não consigo mexer mais, o que você fez?"** (02h01, print) → investigado (§4).
+- **"coloca o agnete que estava trabalhando para continuar e coloca outro agente para entender o que aconteceu com meu computador."** (02h07) → os dois feitos.
+- "o que estamos fazendo agora?" (03h19) · "não entendi, explica de maneira mais facil" (04h30) → explicado.
+- **"não era melhor só ver se está instaldo no pc?"** (04h31) · "não tem varios programas que precisam que tu tenha outros programas instalados para poder usar eles, como drives? como eles fazem?" (04h32) · **"porque você escolheu o jeito mais dificil e nem perguntou para mim?"** (04h33) → a gerente admitiu o erro.
+- **"nova regra, sempre se deve se ver se é a coisa mais simples, ou melhor de se fazer, tem vezes que o mais simples é melhor e tem vezes que o mais complicado é melhor"** (04h34) → **D-819**.
+- "para arrumar isso, vai demorar muito?" (04h35) · "como assim remendar?" · "como assim lugar fixo?" (04h37) · "porque não faz do jeito que os instaladores comuns são, que a pessoa quando vai instalar ela escolhe onde vai ficar? e nesse diretorio fica tudo junto" (04h39) · "não entendi," (04h40) · "ok, entendi" · "ele está fazendo do outro jeito agora?" (04h41) · "a versão do git, já está acabando de fazer?" (04h42) · "então o que estamos criando mesmo?" · "a versão B é usada por quais app?" (04h44) → explicados. Às 04h39 a gerente ofereceu, sem perguntar: "Dá para pôr a escolha da pasta, mas seria uma mudança nessa decisão. Se quiser, vira uma pergunta separada." (o lugar da instalação no notebook do Kaique, hoje fixo em Arquivos de Programas, D-723/D-733). Ele respondeu "não entendi," e "ok, entendi"; não pediu a pergunta.
+- **"A"** (04h45) · "mas pera ai , o que os programadores senior recomendam em casos assim?" (04h46) → **D-820**; pedido do agente mudado.
+- "vamos dar check point" (06h18) → este checkpoint.
+
+## 3. Decisões desta parte
+
+- **D-818** (20/11): a pasta já montada (`--pasta-pronta`) conferida igual à montada do zero; os testes antigos podem mudar só a pasta de mentira. Palavras: "vai ter que reprogramar?" · "A".
+- **D-819** (21/11): regra de trabalho: comparar sempre o jeito mais simples com os outros e escolher o melhor. Palavras: "nova regra, sempre se deve se ver se é a coisa mais simples, ou melhor de se fazer, tem vezes que o mais simples é melhor e tem vezes que o mais complicado é melhor" (antes: "porque você escolheu o jeito mais dificil e nem perguntou para mim?"). **Leitura da gerente, dita a ele às 04h36 ("Quando a escolha muda alguma coisa para você, eu pergunto"):** quando os caminhos mudam o trabalho, o risco ou o que ele vê, as opções vão a ele. Ela também tinha prometido às 04h33 anotar o erro no catálogo dos erros: vai no catálogo do fim do passo 2 (D-803). **Falta pôr a regra no texto do CLAUDE.md e dos agentes, mostrando a ele antes.**
+- **D-820** (21/11): as peças do publicar numa pasta escrita num lugar só, `D:\programas\EditorImpressao-arquivos\ferramentas`, sem perguntar ao git; se faltar, para e avisa. Palavras: "não era melhor só ver se está instaldo no pc?" · "A".
+- **Lista de bugs e Lista de espera (20-21/11), dos relatórios das voltas 6 a 10 (sem pedido dele):** no Plano, seções 5 e 6.
+- Continua faltando corrigir o texto do CLAUDE.md e dos agentes para D-796, D-797, D-798, D-807, D-813, D-815 e agora D-819.
+
+## 4. O PC do Samuel travou (20/11, 21h57 no relógio dele)
+
+Relatório (só leitura, por um agente): `relatorios/pc-travou-2026-11-20/relatorio.html`.
+- **A NVIDIA caiu no meio do jogo** (Teamfight Tactics): o registro do jogo anota às 21:57:44 "GPU crash detected" / "DXGI_ERROR_DEVICE_REMOVED". A chave da NVIDIA foi marcada desativada às 21:57:42 (quem, não se sabe sem administrador). O serviço da Acer (Predator) dava aviso sem parar desde 21:34 (aviso 5858, `AcerGamingFunction`, mais de mil vezes até 21:57). Não houve tela de erro do Windows (este Windows não é Insider). Outro travamento às 13h13 de 20/11, sem agente rodando.
+- **Nossos trabalhos:** naquela noite, sem prova de culpa (agente parado no momento; último teste pesado no PC às 21h02; sem alarme de memória). **Em 19/11 18h03, ajudamos, sim** (o Windows anotou que a memória tinha acabado: jogo 4,5 GB + os nossos testes completos no PC 4,4 GB + a sobreposição da NVIDIA 2,3 GB).
+- Depois de ele reiniciar às 22h04, o vídeo AMD voltou (1920×1080); **a NVIDIA continua desativada (código 22)** e o brilho ficou em 0%. Passos dados a ele: Fn + seta para a direita; Gerenciador de Dispositivos > NVIDIA > Habilitar dispositivo > reiniciar. **Não se sabe se ele fez.**
+- **Regra da gerente daqui em diante:** antes de qualquer trabalho pesado no PC dele, conferir a memória livre e pedir para fechar o jogo. Enquanto a NVIDIA estiver desligada, medida de velocidade no PC sai errada.
+
+## 5. Erros da gerente nesta parte
+
+- **Aceitou sem perguntar o plano mais complicado de um agente** (achar a pasta das ferramentas perguntando ao git) como "detalhe técnico". Trouxe um defeito novo (relatório 8) e custou duas voltas. Ele: "porque você escolheu o jeito mais dificil e nem perguntou para mim?" → D-819.
+- Disse "15 minutos" para uma rodada que levou mais (uma foi cancelada e refeita): dar o tempo pelo git, não de cabeça.
+- Explicações compridas e com palavras de dentro ("prova", "lugar fixo", "remendar", "seis pequenos" sem contexto): ele pediu de novo várias vezes. O que funcionou: três linhas, o que é, o que muda, a pergunta.
+- Ao gravar a D-819 no Livro, um `\f` virou caractere estragado (corrigido em `133921b6`). Caminho do Windows em script: `chr(92)` ou texto cru.
+
+## 6. Descobertas de comportamento real
+
+- O publicar montado do zero nunca tinha rodado antes de 20/11: os testes usavam uma pasta de mentira mais pronta do que a de verdade (o Visual C++ já em `instalar\`). D-767 confirmada na prática.
+- Rodando de uma cópia de trabalho (`.claude\worktrees\...`), tudo o que calculava "a pasta de cima do código" caía em `.claude\worktrees`; um agente de 19/11 criou ali `EditorImpressao-arquivos\ferramentas\downloads\vc_redist.x64.exe` (idêntico ao certo). **Essa pasta continua lá, sem uso**; apagar só com o "sim" dele (sugestão da gerente: depois que o conserto entrar).
+- O publicar usa `%LOCALAPPDATA%\EditorImpressao\troca` (da peça do Windows, para rodar o vpk em grupo); fica vazia no fim.
+- Python com `| Tee-Object` no PowerShell 5.1: a saída só aparece no fim sem `-u`; o registro sai em UTF-16.
+- O lançador do Git for Windows (`C:\Program Files\Git\cmd\git.exe`) abre outro git: matar o primeiro não fecha o segundo, e `subprocess.run(timeout=)` no Windows espera a saída sem limite (2 s viraram 14,9 s; relatório 8).
+- As cópias de código dos agentes ocupam **9,8 GB** na pasta de rascunho desta conversa (`C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\14e42ebb-3236-41f4-94f5-20370c33bd91\scratchpad`); o C: foi de 46 para ~30 GB livres. A pasta da prova `C:\EditorImpressaoProva` tem ~0,7 GB. **Nada apagado; perguntar a ele.**
+- Testes instáveis, novos: `tests/test_decisoes_pagina_em_branco.py` no GitHub (0xC0000005). No PC: `tests/test_decisoes_preparo_d749.py` (3 casos falham, igual no código antigo).
+
+## 7. O que espera o Samuel
+
+1. **"Quer fazer agora ou amanhã?"**: o pedaço curto da prova (§0.2), uns 10 minutos, com o jogo fechado.
+2. A NVIDIA desativada e o brilho (§4): se já habilitou e se está tudo normal.
+3. Apagar (só com o "sim" dele): a pasta errada `D:\programas\EditorImpressao\.claude\worktrees\EditorImpressao-arquivos\`; os 9,8 GB da pasta de rascunho desta conversa; `C:\EditorImpressaoProva`; e os de antes (`C:\Users\fotog\AppData\Local\Temp\tmpqhb16hsh`, `C:\Users\fotog\AppData\Local\Temp\w5-f5nn64f9`, `C:\pr-medida`, `D:\agente_temp_testes`, as pastas de rascunho das conversas `85bc5c33` e `848d7b72`).
+4. `C:\Users\editortestes` continua lá mesmo depois de reiniciar (devia ter saído).
+5. Sem resposta, de antes: "Ponho na lista de ideias para depois da entrega?" (escolher sozinho só os testes do código mudado); D-709 (o agente espera o "sim" depois do plano?); D-710 (modelos por tarefa); Claude Code no PC do Kaique; as 4 da revisão do código; X3/X6/X9/X10; as **20** perguntas da Central reabertas (lista na PARTE -41, §6.5). (A escolha do lugar da instalação no notebook do Kaique foi só oferecida, §2, 04h39; ele não pediu a pergunta.)
+6. Testes dele de antes: girar com a capa aberta e no Dividir; "Livros recentes" depois do F1; a folha espremida com a Mão.
+
+## 8. Central de decisões
+
+Lida no começo e no checkpoint: nenhuma ordem, teste ou ideia nova; nenhuma resposta depois de 17/11. **O quadro continua sem atualização desde 18/11** (falta o plano da parte do Windows e D-791 a D-820).
+
+## 9. Testes
+
+- GitHub do passo 2, última: **44869743074, success** (sobre `3529cf9c`; código até `09b30933`, volta 10). Houve rodadas que não passaram no caminho: 44799633578 (v6, cancelada), 44844944908 (v8, falhou num teste do agente, consertado em `5462d882`), 44857903442 (v9, falhou num teste, consertado em `011b06d0`); a 44847777899 só passou na 2ª tentativa. Antes: 44800950547 (v6), 44816609032 (v7), 44847777899 (v8, 2ª tentativa), 44859326833 (v9), todas success.
+- No PC (agentes, um arquivo por vez): publicar 122, empacotar 43, pasta das ferramentas 12, motor 12, servidor 14, peça do Windows 69 (+2 pulados), Kraken 27 (sem os 6 que abrem o motor), conferências do porteiro 200, decisões da atualização 38: todos passando.
+- Comandos: PARTE -39 §8.
+
+## 10. Próximo passo recomendado
+
+Perguntar de novo "Quer fazer agora o pedaço curto da prova (uns 10 minutos, com o jogo fechado)?" e, com o "sim", conferir a memória livre e fazer os itens 18 a 20 do roteiro, só da cópia `passo2`.
+
 
 ---
 
