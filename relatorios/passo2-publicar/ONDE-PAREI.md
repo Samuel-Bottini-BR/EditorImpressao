@@ -1657,12 +1657,15 @@ abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" 
 - `regras_dos_agentes/conversa_com_o_git.py` (saíram `pasta_principal`, o limite de tempo e a lista de variáveis a não
   herdar; fica o git sem janela)
 - `core/ocr_kraken.py` (`lugares_do_motor` pela regra, e "está empacotado?" pela regra)
-- `empacotar.py` (a pasta pela regra; a frase do motor que falta diz como apontar outro), `montar_motor_kraken.py`,
-  `compilar_detector_gravura.py`, `compilar_st_ferramentas.py` (a pasta pela regra; o "pode gravar?" sem argumento)
+- `empacotar.py` (a pasta pela regra; a frase do motor que falta diz como apontar outro)
+- `montar_motor_kraken.py` (a pasta pela regra; o "pode gravar?" sem argumento)
+- `compilar_detector_gravura.py` (idem)
+- `compilar_st_ferramentas.py` (o "pode gravar?" sem argumento; o texto)
 - `publicar_versao_kaique.py` (`com_preposicao` e `Apagado.frase`)
 - `tests/test_pasta_das_ferramentas.py` (refeito para o jeito A: 12 testes; os do jeito do git saíram, lista em "O que
   já está escolhido e testado aqui", Volta 10)
-- `tests/test_publicar_versao.py` (1 teste novo), `tests/test_empacotar.py` (o texto de explicação de um teste da volta 9)
+- `tests/test_publicar_versao.py` (1 teste novo)
+- `tests/test_empacotar.py` (o texto de explicação de um teste da volta 9)
 - `relatorios/passo2-publicar/` (este formulário, o pacote da volta 10 e os anexos `reversao-volta10-*` e `volta10-*`)
 
 - **Volta 9** (desde `5c22a12d`, o pacote da volta 9): o `core/pasta_das_ferramentas.py` e o
@@ -1875,7 +1878,7 @@ abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" 
 
 - **Volta 9:**
   - D-605: da pasta principal, os seis lugares dão o caminho de antes
-    (`tests/test_pasta_das_ferramentas.py::test_defeito1_da_pasta_principal_nada_muda`); o programa empacotado acha o
+    (`test_defeito1_da_pasta_principal_nada_muda` (da volta 9; saiu na volta 10, D-820)); o programa empacotado acha o
     motor ao lado dele e não pergunta ao git (`tests/test_pasta_das_ferramentas.py::test_d788_o_programa_empacotado_acha_o_motor_ao_lado_dele_e_nunca_pergunta_ao_git`);
     nenhum teste antigo mudou (`git diff 5c22a12d -- tests/` só acrescenta).
   - D-727: o Visual C++ vem da pasta de downloads certa
@@ -2095,7 +2098,7 @@ abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" 
 - **Volta 9, mutações:** ver "Cada proteção", Volta 9.
 - **No GitHub, volta 9:** a rodada 44857678174 foi cancelada por mim (duas docstrings vieram depois dela). A rodada
   44857903442, sobre `32d863ec` (o código de `974a3f60`): **failure** em duas partes. Parte 5: um teste meu,
-  `tests/test_pasta_das_ferramentas.py::test_falha_copia_sem_repositorio_git_archive`: no Windows do GitHub a pasta
+  `test_falha_copia_sem_repositorio_git_archive` (da volta 9; saiu na volta 10, D-820): no Windows do GitHub a pasta
   temporária fica dentro de um repositório, e o git o achava (o teste supunha a pasta temporária do PC; família F4 do
   catálogo). Consertado em `011b06d0`: o teste impede o git de subir além da pasta dele (GIT_CEILING_DIRECTORIES); o
   que o teste cobra não muda. Parte 3: `tests/test_decisoes_so_as_letras.py::test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro`
@@ -2286,7 +2289,7 @@ abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" 
   | `compilar_st_ferramentas.py` | `pasta_de_ferramentas_padrao` → `compilar_detector_gravura.PASTA_FERRAMENTAS_PADRAO`; no padrão, `problema_para_gravar` antes |
   Prova do mesmo resultado nos seis, de uma cópia de trabalho de verdade e da pasta principal:
   `tests/test_pasta_das_ferramentas.py::test_defeito1_de_uma_copia_de_trabalho_os_seis_lugares_acham_a_pasta_certa` e
-  `tests/test_pasta_das_ferramentas.py::test_defeito1_da_pasta_principal_nada_muda`.
+  `test_defeito1_da_pasta_principal_nada_muda` (da volta 9; saiu na volta 10, D-820).
 
 - **Volta 10 (jeito A)** ("onde fica a pasta das ferramentas" → `core/pasta_das_ferramentas.pasta_das_ferramentas`, que
   devolve `PASTA_DAS_FERRAMENTAS`):
@@ -2519,12 +2522,12 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   - P4 (a peça do git volta ao pacote) → `tests/test_empacotar.py::test_volta9_a_peca_do_git_nao_vai_no_programa_do_kaique`.
   - P5 (o git com janela) → `tests/test_pasta_das_ferramentas.py::test_o_git_e_aberto_sem_janela_de_console`.
   - P6 (a montagem cria a pasta inteira) →
-    `tests/test_pasta_das_ferramentas.py::test_falha_a_pasta_principal_sem_a_pasta_do_samuel_ao_lado_nao_cria_nada`.
-  - P7 (quem grava não ouve que a pasta falta) → `tests/test_pasta_das_ferramentas.py::test_falha_sem_git_vale_a_conta_de_antes`
-    e `tests/test_pasta_das_ferramentas.py::test_falha_copia_sem_repositorio_git_archive`.
+    `test_falha_a_pasta_principal_sem_a_pasta_do_samuel_ao_lado_nao_cria_nada` (da volta 9; saiu na volta 10, D-820).
+  - P7 (quem grava não ouve que a pasta falta) → `test_falha_sem_git_vale_a_conta_de_antes` (da volta 9; saiu na volta 10, D-820)
+    e `test_falha_copia_sem_repositorio_git_archive` (da volta 9; saiu na volta 10, D-820).
   - P8 (a pergunta herda as variáveis do gancho) →
-    `tests/test_pasta_das_ferramentas.py::test_falha_as_variaveis_do_gancho_do_commit_nao_mudam_a_resposta`.
-  - P9 (sem o limite de tempo) → `tests/test_pasta_das_ferramentas.py::test_falha_o_git_que_da_erro_e_o_que_demora`.
+    `test_falha_as_variaveis_do_gancho_do_commit_nao_mudam_a_resposta` (da volta 9; saiu na volta 10, D-820).
+  - P9 (sem o limite de tempo) → `test_falha_o_git_que_da_erro_e_o_que_demora` (da volta 9; saiu na volta 10, D-820).
   **11 de 11 acusadas.** A cópia sem mutação: os dois arquivos passam inteiros.
 
 - **Volta 10, jeito A** (`anexos/reversao-volta10-resultado.txt`; script `anexos/reversao-volta10-mutacoes.py.txt`),
