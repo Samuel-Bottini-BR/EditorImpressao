@@ -2676,7 +2676,7 @@ def test_volta8_baixo1a_a_leitura_da_assinatura_que_falha_nunca_vira_passou(ambi
     def powershell_que_nao_termina(texto, limite_s=120, **k):
         """A conversa com o PowerShell que passa do tempo (como a peça responde quando ele não termina)."""
         lidos.append(texto)
-        return windows._falhou("o PowerShell não terminou no tempo", "passou de 120 s")
+        return windows.Resposta(windows.FALHOU, "o PowerShell não terminou no tempo", "passou de 120 s")
 
     monkeypatch.setattr(windows, "rodar_powershell", powershell_que_nao_termina)
     problemas = empacotar.conferir_pasta_pronta(pasta, VERSAO)
