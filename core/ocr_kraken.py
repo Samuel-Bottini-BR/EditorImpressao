@@ -159,11 +159,17 @@ def lugares_do_motor() -> list[Path]:
        antigo nº 330): era "a pasta de cima do código", que numa cópia de trabalho é .claude\\worktrees, e o motor não
        era achado. Empacotado (o programa do Kaique) este lugar não existe e nada é perguntado ao git: a lista fica com
        os dois primeiros, e o primeiro, o que acha o motor dele, não muda (D-788).
+
+    Volta 10 (relatório 8 de quem tentou quebrar): "está empacotado?" é a pergunta da regra
+    (`pasta_das_ferramentas.empacotado`, a mesma que decide se o lugar 3 existe; observação 8: antes era escrita aqui
+    também). Rodando de uma cópia de trabalho com o git sem responder, a regra não sabe o lugar 3 e levanta
+    `pasta_das_ferramentas.SemPastaPrincipal` (achado 1): esta função a deixa subir (nunca procura no lugar errado), e o
+    `MotorKraken` a transforma em "indisponível" com a frase.
     """
     from core import pasta_das_ferramentas
 
     lugares = []
-    if getattr(sys, "frozen", False):
+    if pasta_das_ferramentas.empacotado():
         lugares.append(Path(sys.executable).resolve().parent / NOME_DA_PASTA)
     raiz = _raiz_do_codigo()
     lugares.append(raiz / NOME_DA_PASTA)
@@ -358,9 +364,17 @@ class MotorKraken:
         return self._processo is not None and self._processo.poll() is None
 
     def _comando(self) -> tuple[list[str] | None, Path | None, ResultadoOCR | None]:
+        """(o comando que abre o motor, a pasta dele, None) ou (None, None, o aviso "indisponível"). Volta 10 (achado 1
+        do relatório 8): quando a regra da pasta das ferramentas não sabe onde ela fica (uma cópia de trabalho com o git
+        sem responder), o aviso é a frase da regra, e o programa continua (nunca um erro que feche a janela)."""
+        from core import pasta_das_ferramentas
+
         if self._comando_de_teste:
             return self._comando_de_teste, None, None
-        pasta = self.pasta if self.pasta is not None else achar_pasta_do_motor()
+        try:
+            pasta = self.pasta if self.pasta is not None else achar_pasta_do_motor()
+        except pasta_das_ferramentas.SemPastaPrincipal as erro:
+            return None, None, _indisponivel(str(erro), "a pasta das ferramentas não pôde ser achada")
         if pasta is None or not _e_motor(pasta):
             onde = str(pasta) if pasta is not None else ", ".join(str(p) for p in lugares_do_motor())
             return None, None, _indisponivel(_AVISO_AUSENTE, f"motor não encontrado em: {onde}")

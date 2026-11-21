@@ -90,6 +90,21 @@ def pasta_principal(pasta: Path | str, limite_s: float | None = 30) -> Path | No
     return comum.parent
 
 
+def e_copia_de_trabalho(pasta: Path | str) -> bool:
+    """A pasta é a raiz de uma cópia cujo repositório mora em OUTRO lugar (o `.git` dela é um arquivo, e não uma pasta)?
+    Sem rodar o git e sem ler o arquivo: só olha o que o `.git` é. False quando o `.git` é uma pasta (a pasta principal)
+    ou não existe (uma cópia sem repositório, feita com `git archive`).
+
+    Lido no git (https://git-scm.com/docs/gitrepository-layout): "you can have a plain text file `.git` at the root of
+    your working tree, containing `gitdir: <path>` to point at the real directory that has the repository", "usually
+    managed via the git submodule and git worktree commands" (as cópias de trabalho de `.claude\\worktrees` e os
+    submódulos). Passo 2, volta 10 (achado 1 do relatório 8 de quem tentou quebrar): numa pasta assim, a pasta de cima
+    NÃO é a principal, e quem precisa da principal não pode trocá-la pela pasta de cima quando o git não responde
+    (core/pasta_das_ferramentas.py). Arriscado: ler o conteúdo do arquivo para achar a principal sem o git (seria uma
+    segunda resposta para a mesma pergunta, e contornaria a recusa do git por dono diferente)."""
+    return (Path(pasta) / ".git").is_file()
+
+
 def criar_copia_de_trabalho(raiz: Path | str, pasta: Path | str, ramo: str) -> None:
     """Cria uma cópia de trabalho (`git worktree add -b <ramo> <pasta>`) do repositório `raiz`. Só para os
     repositórios de prova (`repositorio_de_prova.py`): nada aqui toca o repositório do projeto."""

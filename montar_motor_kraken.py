@@ -114,7 +114,9 @@ SERVIDOR = PASTA_FONTES / "servidor_kraken.py"
 # numa copia de trabalho). Este script nunca roda empacotado: nunca e None.
 from core import pasta_das_ferramentas as _pasta_das_ferramentas  # noqa: E402
 
-PASTA_FERRAMENTAS = _pasta_das_ferramentas.pasta_das_ferramentas(RAIZ)
+# Volta 10 (achado 1 do relatorio 8): numa copia de trabalho com o git sem responder, a regra
+# nao sabe a pasta, e o script para aqui, ao carregar, com a frase (pasta_das_ferramentas_ou_parar).
+PASTA_FERRAMENTAS = _pasta_das_ferramentas.pasta_das_ferramentas_ou_parar(RAIZ)
 DESTINO_PADRAO = PASTA_FERRAMENTAS / "motor-kraken"
 DOWNLOADS_PADRAO = PASTA_FERRAMENTAS / "downloads"
 

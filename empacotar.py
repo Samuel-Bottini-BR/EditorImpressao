@@ -181,7 +181,9 @@ PASTA_DO_TESSERACT = "tesseract"    # core/ocr_tesseract.lugares_do_tesseract
 # nunca roda empacotado, entao ela nunca e None aqui.
 from core import pasta_das_ferramentas as _pasta_das_ferramentas  # noqa: E402
 
-FERRAMENTAS = _pasta_das_ferramentas.pasta_das_ferramentas(RAIZ)
+# Volta 10 (achado 1 do relatorio 8): numa copia de trabalho com o git sem responder, a regra
+# nao sabe a pasta, e o script para aqui, ao carregar, com a frase (pasta_das_ferramentas_ou_parar).
+FERRAMENTAS = _pasta_das_ferramentas.pasta_das_ferramentas_ou_parar(RAIZ)
 # Onde procurar um motor do Kraken pronto, em ordem (o primeiro VALIDO vale;
 # --motor-kraken passa outro). O de EditorImpressao-arquivos\ferramentas foi
 # montado ate 29/09 com as DLLs do Visual C++ dentro, e e recusado.

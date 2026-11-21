@@ -73,7 +73,9 @@ SHA256_BOOST = "090cefea470bca990fa3f3ed793d865389426915b37a2a3258524a7258f0790c
 # numa copia de trabalho). Este script nunca roda empacotado: nunca e None.
 from core import pasta_das_ferramentas as _pasta_das_ferramentas  # noqa: E402
 
-PASTA_FERRAMENTAS_PADRAO = _pasta_das_ferramentas.pasta_das_ferramentas(RAIZ)
+# Volta 10 (achado 1 do relatorio 8): numa copia de trabalho com o git sem responder, a regra
+# nao sabe a pasta, e o script para aqui, ao carregar, com a frase (pasta_das_ferramentas_ou_parar).
+PASTA_FERRAMENTAS_PADRAO = _pasta_das_ferramentas.pasta_das_ferramentas_ou_parar(RAIZ)
 
 CMAKE_CANDIDATOS = [
     Path(r"C:\Program Files\CMake\bin\cmake.exe"),

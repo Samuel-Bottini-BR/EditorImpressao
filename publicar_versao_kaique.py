@@ -636,11 +636,27 @@ class Apagado:
 
     @property
     def frase(self) -> str:
-        """A frase do desfecho, para a tela (o --apagar) e para o fim da frase de erro do publicar."""
+        """A frase do desfecho, para a tela (o --apagar) e para o fim da frase de erro do publicar. Volta 10 (observacao
+        6 do relatorio 8): com a contracao ("da pasta", "no GitHub"), pela com_preposicao."""
         if not self.existia:
-            return f"{self.etiqueta}: não existia em {self.onde}, e nada foi apagado (conferido)"
-        return f"a publicação {self.etiqueta} foi apagada de {self.onde} (conferido)" + (
+            return f"{self.etiqueta}: não existia {com_preposicao('em', self.onde)}, e nada foi apagado (conferido)"
+        return f"a publicação {self.etiqueta} foi apagada {com_preposicao('de', self.onde)} (conferido)" + (
             f"; {self.aviso}" if self.aviso else "")
+
+
+# A contracao do portugues de "de" e "em" com o artigo que abre o nome do destino ("a pasta ...", "o GitHub (...)").
+_CONTRACOES = {("de", "a"): "da", ("de", "o"): "do", ("em", "a"): "na", ("em", "o"): "no"}
+
+
+def com_preposicao(preposicao: str, nome: str) -> str:
+    """"de"/"em" antes do nome de um destino, com a contracao quando o nome abre com o artigo "a" ou "o" ("de" + "a
+    pasta X" = "da pasta X"; "em" + "o GitHub (...)" = "no GitHub (...)"); qualquer outro nome, so com um espaco ("de
+    uma pasta"). O lugar unico dessa juncao (volta 10, observacao 6 do relatorio 8: a frase do apagar saia "de a pasta").
+    Seguro mexer: acrescentar contracao. Arriscado: mudar o nome dos destinos (DestinoPasta.nome, DestinoGitHub.nome)
+    sem o artigo na frente: a frase perde a contracao (o teste test_obs6 acusa)."""
+    artigo, espaco, resto = nome.partition(" ")
+    contracao = _CONTRACOES.get((preposicao, artigo)) if espaco else None
+    return f"{contracao} {resto}" if contracao else f"{preposicao} {nome}"
 
 
 def apagar_publicacao(destino, etiqueta: str, so_rascunho: bool = False, acabou_de_criar: bool = False) -> str | None:
