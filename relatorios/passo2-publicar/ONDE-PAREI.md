@@ -176,6 +176,12 @@ seções das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `git
   volta 3 com "ficou liberada na pasta", a guarda das frases sem exceção. Os dois testes falham no código de antes
   (`anexos/reversao-volta11-d821.md`). **Próximo:** um agente novo tenta quebrar (D-815).
 
+- 21/11, **volta 12 (o mesmo escritor da volta 11; a segunda e última volta dele, D-815)**: os 3 baixos do relatório 10
+  de quem tentou quebrar (`quem-quebrou/relatorio-10.md`, commit `8f89d941`, "Achados" 1 a 3). O Samuel autorizou
+  (21/11, chat: à pergunta "Conserto as 3 agora?", "ok"). Partida `8f89d941`. Lido: o relatório 10 inteiro e o script
+  das mutações dele (`quem-quebrou/anexos-10/mutacoes-g-c-b-d.py.txt`). O plano está em "A causa, a regra e todos os
+  caminhos", Volta 12, escrito antes de mexer.
+
 ## Decisões que esta tarefa precisa cumprir
 
 - D-767 "não faça mais nada escodindo ou de mentira" · "não quero fazer consertos quero que funcione". Aqui: o publicar
@@ -417,6 +423,10 @@ seções das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `git
   inteiro está no Livro da `obra-2026-10-26`). Aqui: a frase da D-816 pela `com_preposicao`, como as outras; o teste da
   volta 3 passa a cobrar "ficou liberada na pasta"; a guarda sem exceção.
 
+**Volta 12:** as mesmas decisões da volta 11 (acima), com a D-821. O pedido da gerente, com as palavras do Samuel
+desta vez: à pergunta "Conserto as 3 agora?", "ok" (21/11, chat). Aqui: só os 3 baixos; nenhum teste de antes da volta
+11 muda; a guarda das frases é da volta 11 e pode mudar (pedido da gerente).
+
 ## O que já está escolhido e testado aqui
 
 - `tests/test_empacotar.py`: o motor do jeito novo passa e o velho, com atalhos ou de outro protocolo, é recusado
@@ -641,6 +651,12 @@ isso): `tests/test_publicar_versao.py::test_volta3_achado1_uma_leitura_atrasada_
   (com um comentário em cima: a D-821 e o pedaço de antes). O teste roda só na pasta das provas; nenhum outro teste
   (nem do GitHub) cobrava "ficou liberada em" (busca em `tests/`). O resto do teste não mudou.
 
+**Volta 12 (antes de mexer).** O que esta volta toca e já está escolhido e testado:
+- `tests/test_publicar_versao.py::test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao` e a ajuda
+  `_preposicao_a_mao` (volta 11, desta mesma tarefa, ainda não juntada): o pedido manda mudar a guarda. O que ela cobra
+  continua (nenhuma frase junta "em"/"de" com o destino à mão) e passa a cobrar também os outros jeitos (G1 a G4).
+- Nenhum outro teste muda. O programa não muda (só o teste da guarda e textos do formulário).
+
 ## Como fica para quem usa e no livro
 
 - **O Kaique: nada muda** na tela nem no livro (nenhum arquivo de `ui/` nem do processamento das páginas). O PDF que
@@ -771,6 +787,10 @@ mesma frase de hoje ("não existe a pasta das ferramentas ... nada foi criado");
 da prova à vista passa a dar os comandos com o Python da pasta principal e só da cópia `passo2`. Problema novo
 possível: nenhum para quem usa; nos testes, se a linha do caminho mudar, os testes da pasta das ferramentas param todos
 com a frase "troque também LINHA_DO_CAMINHO" (antes seguiam com o caminho de verdade).
+
+**Volta 12:** o Kaique: nada muda. O Samuel: nada muda no que o publicar diz (as frases não mudam); o roteiro da
+prova à vista passa a usar uma pasta de provas nova no item 19 e a gravar o registro do servidor das versões fora do
+repositório. O PDF não muda.
 
 ## A causa, a regra e todos os caminhos
 
@@ -1343,6 +1363,38 @@ lugares saiu junto com a pergunta ao git.
   (`ast`, as frases como o Python as junta, também as de duas linhas) e acusa "em "/"de " logo antes de `{… .nome}`,
   para a regra não voltar a ser escrita à mão. **A exceção, escrita na guarda com o motivo:** a frase da D-816
   (`_frase_depois_do_pedido_de_liberar`), até a resposta da pergunta.
+
+**Volta 12 (os 3 baixos do relatório 10), antes de mexer.**
+
+*Baixo 1 (a guarda das frases olha um jeito só).*
+- **Por que:** a guarda procurava um texto ("em "/"de " logo antes de `{… .nome}` num f-string). Os outros jeitos de
+  escrever a mesma junção (somar textos com `+`, guardar o nome numa variável, um parêntese antes do "em", o `.format`)
+  não são esse texto, e passavam (mutações G1 a G4 do relatório 10).
+- **O mais simples (o escolhido, e o pedido):** cobrar a coisa de verdade: todo uso do nome de um destino (`.nome`,
+  `.onde`) no `publicar_versao_kaique.py` tem de estar num destes lugares, e só neles: dentro de `com_preposicao(...)`;
+  passado ao `Apagado(...)` (que guarda o nome e escreve a frase pela `com_preposicao`); no começo de uma frase (só
+  espaço antes); ou logo depois de "para " ("para a pasta" está certo). Qualquer outro uso é acusado, inclusive guardar
+  numa variável. Lido pela árvore do Python. **O outro:** acrescentar à guarda velha um caso por jeito (`+`,
+  `.format`, parêntese): é o remendo por caso (§11.12) e o próximo jeito passaria de novo.
+- **O G5 ("por a pasta"):** a guarda nova acusa, porque "por " não está na lista dos lugares aceitos. Mas ela não
+  conserta: a `com_preposicao` só conhece "de" e "em", e quem escrever `com_preposicao("por", ...)` teria "por a pasta"
+  sem acusação. Ampliar a `com_preposicao` seria coisa nova; não faço (pedido).
+- **A prova:** numa cópia, as mutações G1 a G4 do relatório 10 (os mesmos trechos do script dele) e o G5: acusadas pela
+  guarda nova; o código de hoje: nenhuma acusação.
+
+*Baixo 2 (o item 19 do roteiro usa uma pasta que já tem o motor).*
+- **Por que:** a `C:\EditorImpressaoProva\versoes 3` recebeu o motor na prova 3 de 21/11; repetido, o publicar não
+  para em "publique o motor antes".
+- **O escolhido (o mais simples):** a pasta do item 19 passa a ser `versoes 6` (listei `C:\EditorImpressaoProva`: há
+  `versoes`, `versoes 2` e `versoes 3`; a `versoes 6` não existe), com a frase de que a `versoes 3` já tem o motor e de
+  conferir antes que a nova não existe. Junto, o servidor das versões no roteiro com `--registro`: lido no código
+  (`servidor_das_versoes.py`, linhas 353 a 357), a opção existe e recebe **um arquivo** (não uma pasta); sem ela, o
+  registro vai para `relatorios/servidor-das-versoes/` dentro do repositório. O roteiro passa a dar um arquivo em
+  `C:\EditorImpressaoProva\` (`--registro "C:\EditorImpressaoProva\servidor-<a prova>.txt"`). O registro da prova 3
+  que já está no git (`0a3b54a9`) fica. Só texto.
+
+*Baixo 3 (duas frases do formulário de antes da D-821).* Passam a dizer o que vale hoje: as palavras da frase da D-816
+mudaram pela D-821; o que o publicar faz, não. Só texto.
 
 ## O que pode falhar e o que o programa faz
 
