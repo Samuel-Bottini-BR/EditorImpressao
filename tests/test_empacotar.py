@@ -611,7 +611,8 @@ def test_volta9_a_peca_do_git_nao_vai_no_programa_do_kaique():
     """D-605 e D-788: o programa do Kaique nao leva a peca do git nem as regras dos agentes (regras_dos_agentes): a linha
     de comando do PyInstaller exclui `regras_dos_agentes` (empacotar.EXCLUIR), na versao em pasta e na de um arquivo so.
     Este teste so confere a linha de comando; o pacote montado de verdade so a prova a vista mostra (o item 20 do roteiro
-    do passo 2; observacao 4 do relatorio 8). Desde a volta 10 (D-820), a regra da pasta das ferramentas nem pergunta ao
+    do passo 2; observacao 4 do relatorio 8; este texto mudou na volta 10). Desde a volta 10 (D-820), a regra da pasta das
+    ferramentas nem pergunta ao
     git."""
     for onefile in (False, True):
         comando = empacotar.comando_do_pyinstaller(onefile)
