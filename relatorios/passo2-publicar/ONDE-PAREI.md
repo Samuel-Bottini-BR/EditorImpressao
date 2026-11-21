@@ -1375,7 +1375,7 @@ lugares saiu junto com a pergunta ao git.
   `.onde`) no `publicar_versao_kaique.py` tem de estar num destes lugares, e só neles: dentro de `com_preposicao(...)`;
   passado ao `Apagado(...)` (que guarda o nome e escreve a frase pela `com_preposicao`); no começo de uma frase (só
   espaço antes); ou logo depois de "para " ("para a pasta" está certo). Qualquer outro uso é acusado, inclusive guardar
-  numa variável. Lido pela árvore do Python. **O outro:** acrescentar à guarda velha um caso por jeito (`+`,
+  numa variável. **(Gerente, 21/11, D-823: não é bem assim. O relatório 11 mostrou jeitos que ainda passam: o nome sozinho num pedaço com chaves, somado com "em ", passado a `.format` ou numa variável; chaves dentro de chaves; `com_preposicao('por', ...)`; `getattr`. O Samuel escolheu não caçar mais esses jeitos: estão na Lista de bugs de 21/11. Hoje nenhuma frase está errada.)** Lido pela árvore do Python. **O outro:** acrescentar à guarda velha um caso por jeito (`+`,
   `.format`, parêntese): é o remendo por caso (§11.12) e o próximo jeito passaria de novo.
 - **O G5 ("por a pasta"):** a guarda nova acusa, porque "por " não está na lista dos lugares aceitos. Mas ela não
   conserta: a `com_preposicao` só conhece "de" e "em", e quem escrever `com_preposicao("por", ...)` teria "por a pasta"
@@ -1949,7 +1949,7 @@ programa instalado faz com a versão: `atualizacao.py:1230` (lê o vc_redist.ver
     - **Baixo 1:** a guarda das frases (`tests/test_publicar_versao.py`, `_preposicao_a_mao`) cobra a coisa de verdade:
       todo uso de `.nome`/`.onde` no `publicar_versao_kaique.py` tem de estar dentro de `com_preposicao(...)`, passado
       ao `Apagado(...)`, no começo de uma frase ou logo depois de "para "; o resto é acusado (os lugares aceitos numa
-      lista curta, `_RECEBEM_O_NOME_DO_DESTINO` e `_ANTES_DO_NOME_NA_FRASE`). As mutações G1 a G5 do relatório 10 são
+      lista curta, `_RECEBEM_O_NOME_DO_DESTINO` e `_ANTES_DO_NOME_NA_FRASE`). **(Gerente, 21/11, D-823: não é bem assim. O relatório 11 mostrou jeitos que ainda passam: o nome sozinho num pedaço com chaves, somado com "em ", passado a `.format` ou numa variável; chaves dentro de chaves; `com_preposicao('por', ...)`; `getattr`. O Samuel escolheu não caçar mais esses jeitos: estão na Lista de bugs de 21/11. Hoje nenhuma frase está errada.)** As mutações G1 a G5 do relatório 10 são
       acusadas; o código de hoje, não.
     - **O G5 ("por a pasta"):** a guarda nova **acusa** (o "por " não é lugar aceito). Mas não conserta: a
       `com_preposicao` só conhece "de" e "em", e quem escrevesse `com_preposicao("por", ...)` teria "por a pasta" sem
