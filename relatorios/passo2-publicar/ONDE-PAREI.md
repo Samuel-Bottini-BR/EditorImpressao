@@ -168,10 +168,13 @@ seções das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `git
 - 21/11, volta 11 feita: plano `b3e187d5`; testes e código `1624a05a` (os testes escritos antes do conserto de cada
   baixo e rodados no código de antes: falham lá; `anexos/reversao-volta11-codigo-antigo.txt`); mutações M1 a M9 em
   `anexos/reversao-volta11-resultado.txt`; a prova do baixo 2 numa cópia em `anexos/volta11-baixo2-a-linha-mudada.txt`.
-  **Parei numa frase:** a da D-816 (um teste da volta 3 cobra "ficou liberada em"): pergunta em "Perguntas para o
-  Samuel", Volta 11. `--is-shallow-repository` = false antes e depois; nenhuma junção criada; a pasta errada de 19/11,
-  a junção `modelos` e `C:\EditorImpressaoProva` não foram tocadas. **Próximo:** a gerente decide a pergunta; um agente
-  novo tenta quebrar (D-815).
+  Parei numa frase (a da D-816; um teste da volta 3 cobrava "ficou liberada em") e perguntei. `--is-shallow-repository` = false antes e depois; nenhuma junção criada; a pasta errada de 19/11,
+  a junção `modelos` e `C:\EditorImpressaoProva` não foram tocadas.
+- 21/11, **a resposta do Samuel (D-821)**, trazida pela gerente. A gerente: "Só uma palavra numa mensagem: trocar "em a
+  pasta" por "na pasta". [...] Para corrigir, é preciso mudar uma linha de um teste antigo, e isso pede o seu "sim".
+  Posso trocar?" Ele: "ok". Feito em `97a5c4b6`: a frase da D-816 pela `com_preposicao` (as duas junções), o teste da
+  volta 3 com "ficou liberada na pasta", a guarda das frases sem exceção. Os dois testes falham no código de antes
+  (`anexos/reversao-volta11-d821.md`). **Próximo:** um agente novo tenta quebrar (D-815).
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -409,6 +412,10 @@ seções das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `git
   o conjunto inteiro só no GitHub). Aqui: no PC, um arquivo por vez; o conjunto inteiro na rodada do GitHub, no fim.
 - D-785 "ok, mais ainda existem mais casos na opção A" · "ok". Aqui: nada à vista rodado por mim; só o roteiro da
   gerente muda (itens 19 e 21 e os comandos).
+- D-821 (21/11/2026, a resposta à pergunta desta volta; a linha ainda não está no Livro, as palavras vêm da gerente)
+  "ok" (à pergunta "Só uma palavra numa mensagem: trocar "em a pasta" por "na pasta". [...] Para corrigir, é preciso
+  mudar uma linha de um teste antigo, e isso pede o seu "sim". Posso trocar?"). Aqui: a frase da D-816 pela
+  `com_preposicao`, como as outras; o teste da volta 3 passa a cobrar "ficou liberada na pasta"; a guarda sem exceção.
 
 ## O que já está escolhido e testado aqui
 
@@ -625,6 +632,14 @@ Se algum teste antigo precisar mudar o que cobra, paro e escrevo em "Perguntas p
 - `_conferir_frase_d816` e os `test_d816_*`: cobram "NÃO apaguei", "pode ter ficado", "não deu para reconferir agora", o
   comando de conferir e o de apagar; não cobram "em"; passam com a contração (conferido na cópia à parte).
 - Livro: D-605, D-727, D-767, D-816, D-817, D-818, D-819, D-820.
+
+**O teste antigo mudado pela D-821** (a única exceção à regra de não mudar teste antigo, autorizada pelo Samuel só para
+isso): `tests/test_publicar_versao.py::test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada`
+(volta 3 desta tarefa, 20/11), uma linha:
+- antes: `assert "ficou liberada em" in str(erro.value), "a frase tem de dizer que a versão ficou liberada (lido depois)"`
+- depois: `assert "ficou liberada na pasta" in str(erro.value), "a frase tem de dizer que a versão ficou liberada (lido depois)"`
+  (com um comentário em cima: a D-821 e o pedaço de antes). O teste roda só na pasta das provas; nenhum outro teste
+  (nem do GitHub) cobrava "ficou liberada em" (busca em `tests/`). O resto do teste não mudou.
 
 ## Como fica para quem usa e no livro
 
@@ -1828,8 +1843,9 @@ programa instalado faz com a versão: `atualizacao.py:1230` (lê o vc_redist.ver
       conta própria nem a segunda frase.
     - **Baixo 4:** um teste pelo que o empacotar imprime e um pelo `Parou` do `publicar --motor`, sem o motor.
     - **As frases sem contração:** 31 frases do `publicar_versao_kaique.py` passam pela `com_preposicao`; a guarda que lê o
-      código e o teste pelos caminhos principais (pasta e GitHub). **Ficou de fora, esperando o Samuel:** a frase da
-      D-816 (`_frase_depois_do_pedido_de_liberar`), com dois "em" à mão.
+      código e o teste pelos caminhos principais (pasta e GitHub). A frase da D-816
+      (`_frase_depois_do_pedido_de_liberar`) ficou de fora até a resposta do Samuel e entrou depois dela (D-821,
+      `97a5c4b6`), com o teste da volta 3 mudado numa linha.
     - A lista das frases (a linha é a do código de partida, `edd39a9f`; o destino é "a pasta X" ou "o GitHub (...)"):
 
       | Linha | Onde | Antes | Agora |
@@ -1865,7 +1881,7 @@ programa instalado faz com a versão: `atualizacao.py:1230` (lê o vc_redist.ver
       | 987 | `publicar` | a versão … já existe em … | … na / no … |
       | 1084 | `guardar_o_instalador` | … FOI publicada e está liberada em …; o instalador … | … na / no … |
       | 1116 | `publicar_motor` | o motor … já existe em … | … na / no … |
-      | 731 e 733-734 | `_frase_depois_do_pedido_de_liberar` (D-816) | pedi para liberar em … · se ficou liberada em … | **sem mudar** (a pergunta) |
+      | 731 e 733-734 | `_frase_depois_do_pedido_de_liberar` (D-816) | pedi para liberar em … · se ficou liberada em … | pedi para liberar na / no … · se ficou liberada na / no … (D-821, depois da resposta) |
 
       Ficam como estão, porque já estão certas: "não consegui enviar … para a pasta …" (`DestinoPasta.enviar`, "para" não
       se contrai), "a pasta …: rascunho v…" e "a pasta …, v…: …" (o nome no começo). Fora do publicar não há frase com
@@ -1881,7 +1897,8 @@ abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" 
   `com_preposicao` e da frase da D-816)
 - `tests/test_pasta_das_ferramentas.py` (a ajuda `_copiar_o_codigo` para quando não acha a linha; 5 testes novos;
   nenhum antigo mudou)
-- `tests/test_publicar_versao.py` (2 testes novos, 3 casos; nenhum antigo mudou)
+- `tests/test_publicar_versao.py` (2 testes novos, 3 casos; um antigo mudou numa linha, pela D-821: o da volta 3,
+  listado em "O que já está escolhido e testado aqui", Volta 11)
 - `relatorios/servidor-das-versoes/registro-2026-11-21-111014.txt` (o registro do servidor das versões da prova 3,
   escrito pela gerente em 21/11 às 11h10; posto no git sem mudar, num commit só dele, porque o conferidor o
   acusava fora de commit)
@@ -2158,8 +2175,10 @@ abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" 
 
 - **Volta 11:**
   - D-605: nenhum teste de antes desta volta mudou (só a ajuda `_copiar_o_codigo`, que não é teste, e os testes novos).
-    Rodados no PC, um arquivo por vez, todos passam (em "Testes", Volta 11). O teste da volta 3 que cobra "ficou
-    liberada em" não mudou: a frase dele ficou como está, e a pergunta vai ao Samuel.
+    Rodados no PC, um arquivo por vez, todos passam (em "Testes", Volta 11). O teste da volta 3 que cobrava "ficou
+    liberada em" não mudou sem licença: parei, perguntei, e só mudou depois do "ok" dele (D-821), numa linha.
+  - D-821: a frase da D-816 pela `com_preposicao`; o teste da volta 3 com "ficou liberada na pasta"; a guarda sem
+    exceção. Prova: os dois testes falham no código de antes e passam no novo (`anexos/reversao-volta11-d821.md`).
   - D-767: os testes novos dos baixos 3 e 4 rodam o código de verdade de uma cópia de trabalho de verdade (o repositório
     de prova com `git worktree add`), com a internet trancada no processo; a única peça trocada é a da lógica de quem
     decide (a regra dizendo "não", no `test_volta11_baixo3_quem_decide_...`), escrita como tal no texto do teste.
@@ -2400,6 +2419,11 @@ abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" 
   lugares procuram em `E:\programas\...`, o caminho de verdade; com a nova, para na montagem com a frase). Sem mutação,
   os testes da volta 11 passam na cópia (`anexos/reversao-volta11-resultado.txt`, fim).
 - **Volta 11, mutações:** ver "Cada proteção", Volta 11.
+- **Volta 11, D-821, no PC** (memória livre entre 2,5 e 2,7 GB, com o jogo aberto): `tests/test_publicar_versao.py`
+  125 passaram; `tests/test_publicar_motor.py` 12; `tests/test_publicar_servidor.py` 14;
+  `tests/test_decisoes_atualizacao.py` 38; `tests/test_pasta_das_ferramentas.py` 17. Reversão: o teste da volta 3
+  mudado e a guarda sem exceção falham no código de `1624a05a` (`anexos/reversao-volta11-d821.md`).
+- **Volta 11, D-821, no GitHub:** rodada 44936850048, sobre `97a5c4b6`: **success** na primeira tentativa: o porteiro (o juiz da versão de teste), os botões e os prints da janela real e as cinco partes do conjunto inteiro.
 - **Volta 11, no GitHub:** rodada 44926684833 do GitHub, sobre `0a3b54a9` (o código de `1624a05a`; depois só a pasta do relatório e o registro do servidor da prova 3): **success** na primeira tentativa: o porteiro (o juiz da versão de teste), os botões e os prints da janela real e as cinco partes do conjunto inteiro.
 
 ## Caminho e função
@@ -2598,7 +2622,7 @@ abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" 
     e `test_volta11_baixo4_o_publicar_motor_sem_o_motor_para_com_onde_procurou_e_o_motor_kraken` (as duas frases com
     "não existe <a pasta do motor>" e "aponte-a com --motor-kraken").
   - "de"/"em" + o nome do destino → `publicar_versao_kaique.com_preposicao`: as 31 frases da lista em "O que foi
-    feito", Volta 11, e o `Apagado.frase` (volta 10); a exceção é a frase da D-816, esperando o Samuel. Prova:
+    feito", Volta 11, a frase da D-816 (D-821) e o `Apagado.frase` (volta 10); sem exceção. Prova:
     `test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao` (todas as frases do arquivo, pela
     árvore do Python) e `test_volta11_as_frases_do_publicar_saem_com_a_contracao_na_pasta_e_no_github` (o mesmo
     resultado na pasta e no GitHub, pelos caminhos principais).
@@ -3211,9 +3235,9 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   o publicar, o PyInstaller, o vpk e o gh de verdade (a gerente roda, à vista).
 - **Volta 10, a ressalva da volta 9** "sem git num computador com uma cópia de trabalho (não acontece ...)" estava
   errada; com o jeito A, o git não entra mais na conta.
-- **Volta 11, uma frase ficou sem a contração, de propósito:** a da D-816 ("se ficou liberada em a pasta ..."), porque
-  um teste da volta 3 cobra "ficou liberada em" (a regra do pedido: não mudar teste antigo; pergunta em "Perguntas para
-  o Samuel", Volta 11). A guarda das frases tem essa função como exceção escrita, e acusa se a exceção sobrar.
+- **Volta 11, um teste antigo mudou** (D-821, com o "ok" do Samuel): o da volta 3 cobra agora "ficou liberada na
+  pasta" em vez de "ficou liberada em". A linha de antes e a de depois estão em "O que já está escolhido e testado
+  aqui", Volta 11.
 - **Volta 11, a guarda das frases lê só o `publicar_versao_kaique.py`** e só o jeito `{... .nome}` / `{... .onde}`
   logo depois de "em "/"de ". Uma frase nova que guarde o nome do destino numa variável com outro nome e escreva "em
   {lugar}" não é vista pela guarda (o teste pelos caminhos principais pega as frases que ele percorre).
@@ -3458,7 +3482,8 @@ técnico do conserto que o Samuel autorizou").
 (A pergunta 2 do primeiro jeito, sobre duas linhas de um teste da volta 9, deixou de existir: os testes do jeito do git
 saíram, por ordem da gerente.)
 
-**Volta 11: uma pergunta (a gerente leva ao Samuel, se achar preciso). Parei nesta frase.**
+**Volta 11: uma pergunta. RESPONDIDA (D-821, 21/11/2026): "ok", a opção A; feita em `97a5c4b6`.** O texto da
+pergunta fica abaixo, como foi.
 
 - **Do que se trata.** É a ferramenta que prepara as versões do programa para o notebook do Kaique (o "publicar"), que
   você roda pela linha de comando. Ela escreve frases como "não há publicação v1.2.0 em a pasta ..." e "liberada em o
@@ -3504,8 +3529,9 @@ GitHub; o último commit de código e testes da volta 9 é 011b06d0 (depois dele
 Volta 10: 09b30933 (o último commit de código e testes da volta 10, no jeito A, depois de `e9617727` e de dois commits só de texto dos testes; o primeiro jeito, o do git, ficou em
 `c1ba406d` e foi trocado; depois de `09b30933` só a pasta deste relatório muda).
 
-Volta 11: o último commit de código e testes é `1624a05a`; depois dele vieram os anexos (`d4cb42df`) e o registro do
-servidor da prova 3, da gerente, posto no git sem mudar: 0a3b54a9 (depois dele só a pasta deste relatório muda).
+Volta 11: o código e os testes dos baixos e das 31 frases ficaram em `1624a05a`; depois vieram os anexos (`d4cb42df`)
+e o registro do servidor da prova 3, da gerente, posto no git sem mudar (`0a3b54a9`). Depois da resposta do Samuel
+(D-821), o último commit de código e testes da volta 11 é 97a5c4b6 (depois dele só a pasta deste relatório muda).
 
 ## O que o agente que tentou quebrar achou
 
