@@ -2772,3 +2772,23 @@ def test_volta8_baixo3_sem_a_licenca_do_tesseract_a_pasta_e_o_pacote_sao_recusad
     saida = capsys.readouterr().out
     assert "o pacote do Velopack saiu errado" in saida and relativo in saida, saida
     assert pub.DestinoPasta(a["servidor"]).situacao(ETIQUETA) is None
+
+
+
+def test_obs6_a_frase_do_apagar_sai_com_a_contracao(tmp_path):
+    """Observação 6 do relatório 8 de quem tentou quebrar (21/11/2026): a frase do apagar saía "foi apagada de a pasta
+    ...", "de o GitHub (...)" e "não existia em a pasta ...", sem a contração. Agora, no lugar único das frases do apagar
+    (`Apagado.frase`, pela `com_preposicao`): "da pasta", "do GitHub", "na pasta", "no GitHub", nos dois destinos. O
+    sentido não muda: "foi apagada" e "(conferido)" continuam só quando havia o que apagar. Rodado em 6fa766c4: sai
+    "de a pasta"."""
+    pasta = pub.DestinoPasta(tmp_path / "versoes de prova")
+    github = pub.DestinoGitHub("dono/nome")
+    esperado = [(pasta, "da pasta", "na pasta"), (github, "do GitHub (dono/nome)", "no GitHub (dono/nome)")]
+    for destino, de, em in esperado:
+        apagada = pub.Apagado("v9.9.9", destino.nome, existia=True).frase
+        assert apagada.startswith(f"a publicação v9.9.9 foi apagada {de}") and apagada.endswith("(conferido)"), apagada
+        nao_havia = pub.Apagado("v9.9.9", destino.nome, existia=False).frase
+        assert nao_havia.startswith(f"v9.9.9: não existia {em}") and "nada foi apagado (conferido)" in nao_havia, nao_havia
+        for errado in (" de a ", " de o ", " em a ", " em o "):
+            assert errado not in apagada and errado not in nao_havia, (errado, apagada, nao_havia)
+    assert pub.com_preposicao("de", "uma pasta") == "de uma pasta"
