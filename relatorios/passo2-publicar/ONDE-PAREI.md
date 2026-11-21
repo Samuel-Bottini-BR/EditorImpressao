@@ -6,15 +6,16 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
 ## Pedido
 
 - Papel: implementador
-- Commit de partida: 5c22a12d
+- Commit de partida: 6fa766c4
 - Ramo: passo2-publicar-2026-11-19
 
 ## Arquivos que vou mexer
 
-- `core/pasta_das_ferramentas.py` (novo)
-- `tests/test_pasta_das_ferramentas.py` (novo)
+- `core/pasta_das_ferramentas.py`
+- `tests/test_pasta_das_ferramentas.py`
 - `regras_dos_agentes/conversa_com_o_git.py`
 - `regras_dos_agentes/repositorio_de_prova.py`
+- `core/windows.py`
 - `compilar_st_ferramentas.py`
 - `publicar_versao_kaique.py`
 - `empacotar.py`
@@ -23,11 +24,12 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
 - `core/ocr_kraken.py`
 - `tests/test_empacotar.py`
 - `tests/test_publicar_*.py`
-- `tests/test_ocr_kraken.py`
+- `tests/test_windows_peca.py`
+- `tests/test_conferencias_*.py`
 - `relatorios/passo2-publicar/`
 
-(Volta 9, 20/11/2026: as duas seções acima são as do pacote da volta 9, `anexos/pacote-volta9.md`, copiadas sem mudar.
-As das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `git log` deste arquivo.)
+(Volta 10, 21/11/2026: as duas seções acima são as do pacote da volta 10, `anexos/pacote-volta10.md`, copiadas sem
+mudar. As das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `git log` deste arquivo.)
 
 ## Onde parei
 
@@ -132,6 +134,19 @@ As das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `git log` 
   o do pacote; mutações P1 a P11: 11 de 11 acusadas. `--is-shallow-repository` = false antes e depois; nenhuma junção
   criada; a pasta errada de 19/11 e a junção `modelos` não foram tocadas. **Próximo:** a rodada do GitHub (em
   "Testes") e a entrega à gerente; depois um agente novo tenta quebrar (D-815) e a prova à vista (item 19).
+
+- 21/11, **volta 10 (escritor novo, D-815; o das voltas 8 e 9 já usou as duas)**: o relatório 8 de quem tentou quebrar
+  (`quem-quebrou/relatorio-8.md`, "NÃO ESTÁ PRONTO": 1 médio, 2 baixos, 7 observações). Pedido da gerente: o achado 1
+  (numa cópia de trabalho, sem resposta do git, a regra volta calada à pasta errada de 19/11), o achado 2 (o limite de
+  tempo do git não segura com o lançador do Git for Windows), o achado 3 (as proteções B1 a B5 sem teste), três
+  observações (a frase do apagar sem a contração, o "está empacotado?" e o "30 s" em dois lugares) e o roteiro. Partida
+  `6fa766c4`. Lido: as regras do implementador, o CLAUDE.md inteiro, a memória (índice; `memoria/geral/atualizador.md`
+  da pasta principal, porque a cópia não a tem; o catálogo dos erros da `obra-juncao`), o pacote da volta 10, no Livro
+  da `obra-juncao` as linhas inteiras de D-605, D-727, D-767, D-776, D-785, D-788, D-813, D-815 e D-818, este formulário
+  (Onde parei, Volta 9) e o relatório 8 inteiro com os anexos dele (sondas S1, S2, S6 e as mutações B). O PC travou
+  ontem à noite: um arquivo de teste por vez, um Python por vez, nada do motor de verdade. Rascunho: `v10\` (as outras
+  pastas não são tocadas). O plano (D-709) está em "A causa, a regra e todos os caminhos", Volta 10, escrito antes de
+  mexer.
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -309,6 +324,31 @@ As das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `git log` 
 - D-815 "ok". Aqui: é a minha segunda e última volta.
 - D-818 "vai ter que reprogramar?" · "A". Aqui: a conferência da pasta já montada não muda.
 
+**Volta 10 (21/11/2026), as decisões do pedido (palavras copiadas do Livro da `obra-juncao`):**
+- D-605 "A partir de agora, nenhuma função nova, ou nova escolha dentro do programa pode alterar o que já está
+  escolhido e testado, coisas novas não podem criar novos problemas, essa é uma nova regra que todos os agentes precisam
+  ler". Aqui: da pasta principal, da cópia sem repositório e no programa empacotado, nada muda; só a cópia de trabalho
+  com o git sem responder passa a parar com a frase. Os testes antigos que cobram o que muda estão listados em "O que já
+  está escolhido e testado aqui", Volta 10.
+- D-727 "pode, se tiver qualquer coisa que o kaique precise, ele tem que estar no instalador né". Aqui: o Visual C++
+  continua indo no pacote; só deixa de ser tirado da pasta errada quando o git não responde.
+- D-767 "não faça mais nada escodindo ou de mentira" · "não quero fazer consertos quero que funcione" · "quero que faça
+  as coisas certas e sem bugs ou erros, deveria ter pensado nesses erros na hora de montar a estrutura do atualizador e
+  testes a distancias". Aqui: a prova roda com o git de verdade, nos dois jeitos do relatório (sem git no caminho; o git
+  recusando o dono), numa cópia de trabalho de verdade; o git que demora é um git de verdade que demora.
+- D-776 "Sim, no C só tem que cuidar para não encher o disco C inteiro". Aqui: nada muda na conta do espaço.
+- D-785 "ok, mais ainda existem mais casos na opção A" · "ok". Aqui: nada à vista nesta volta (o publicar de verdade
+  fica para a gerente); os testes são do código e não abrem janela.
+- D-788 "1" (a primeira opção). Aqui: empacotado, o motor continua procurado primeiro ao lado do programa, sem perguntar
+  nada ao git.
+- D-813 "ok". Aqui: a lista do que o git aceita e de como ele pode deixar de responder está em "O que li da peça de
+  fora e onde", Volta 10; a regra nova olha a coisa de verdade (o `.git` é arquivo ou pasta), não o nome da pasta.
+- D-815 "pode conferir se não está ocorrendo alucinação por estar com contexto cheio" · "estou falando do agente que
+  está trabalhando" · "esses agentes que você criou, sempre que vai fazer uma tarefa nova, chama outro com a mesmas
+  instruções ou ifac rodando sempre o mesmo com memorias compactadas?" · "ok". Aqui: sou escritor novo; comecei pela
+  ficha.
+- D-818 "vai ter que reprogramar?" · "A". Aqui: a conferência da pasta já montada não muda.
+
 ## O que já está escolhido e testado aqui
 
 - `tests/test_empacotar.py`: o motor do jeito novo passa e o velho, com atalhos ou de outro protocolo, é recusado
@@ -472,6 +512,27 @@ Se algum teste antigo precisar mudar o que cobra, paro e escrevo em "Perguntas p
   (`relatorios/conferir/dividir-2026-10-06/verificador/scripts/recompilar.py` chama `pasta_de_ferramentas_padrao`).
 - Livro: D-605, D-727, D-767, D-788.
 
+**Volta 10 (antes de mexer).** O que esta volta toca e já está escolhido e testado:
+- `core/pasta_das_ferramentas.py` e `tests/test_pasta_das_ferramentas.py` (volta 9, ainda não juntados): da pasta
+  principal e da cópia com o git respondendo, os seis lugares acham a pasta certa; sem git e na cópia sem repositório,
+  a conta de antes; empacotado, nada perguntado. **Duas linhas de um teste da volta 9 cobram justamente o defeito do
+  achado 1** (`test_falha_o_git_que_da_erro_e_o_que_demora`: o `.git` em arquivo que aponta para lugar nenhum e a cópia
+  com o git que passa do tempo "valem a pasta do próprio código"). O conserto pedido muda essas duas respostas: isso vai
+  em "Perguntas para o Samuel", Volta 10 (é mudar teste antigo, como na D-818, e precisa do sim).
+- A peça do git (`regras_dos_agentes/conversa_com_o_git.py`): usada pelo porteiro, pelo juiz da rodada do GitHub e pelas
+  conferências (`tests/test_conferencias_*.py`). O juiz roda **só com o pacote `regras_dos_agentes`** tirado da versão
+  de teste (`.github/scripts/porteiro_juiz.sh`, no ramo `claude/list-server-files-gkos8v`; cobrado por
+  `tests/test_conferencias_juiz.py::test_o_script_do_workflow_busca_o_juiz_da_versao_de_teste_e_barra_o_erro_novo`), e
+  o pacote diz que "não importa nada do programa" (`regras_dos_agentes/__init__.py`).
+- `core/ocr_kraken.lugares_do_motor`: `tests/test_ocr_kraken.py` (pelo menos dois lugares) e o teste da D-788 em
+  `tests/test_pasta_das_ferramentas.py` (empacotado: o primeiro lugar é ao lado do programa).
+- `empacotar.DOWNLOADS`, `empacotar.LUGARES_DO_MOTOR`, `montar_motor_kraken.PASTA_FERRAMENTAS`,
+  `compilar_detector_gravura.PASTA_FERRAMENTAS_PADRAO`, `compilar_st_ferramentas.pasta_de_ferramentas_padrao`: os nomes
+  continuam (testes antigos e um script de relatório os usam).
+- A frase do apagar (`publicar_versao_kaique.Apagado.frase`): `tests/test_publicar_versao.py` cobra "foi apagada" e
+  "(conferido)", e que a frase do `--apagar` é a do `Apagado` (não cobra o "de a pasta").
+- Livro: D-605, D-727, D-767, D-788, D-813.
+
 ## Como fica para quem usa e no livro
 
 - **O Kaique: nada muda** na tela nem no livro (nenhum arquivo de `ui/` nem do processamento das páginas). O PDF que
@@ -578,6 +639,19 @@ não muda antes e depois). O Samuel, publicando de uma cópia de trabalho (a da 
   sem janela de console.
 Da pasta principal, nada muda. Problema novo possível: nos testes rodados de uma cópia no PC, os testes do Kraken que
 pulavam (o defeito 330) passam a rodar o motor de verdade (mais lentos e mais pesados; em "Ressalvas", Volta 9).
+
+**Volta 10:** o Kaique: nada muda (o programa dele nunca pergunta ao git; o PDF não muda). O Samuel (ou a gerente),
+rodando o publicar, o empacotar, o montar do motor ou os compiladores **de uma cópia de trabalho**:
+- com o git respondendo (o normal): nada muda, a pasta certa;
+- com o git sem responder (fora do caminho, recusando a pasta por ser de outro dono, demorando ou dando erro): antes, o
+  programa seguia calado com a pasta errada de 19/11 e o Visual C++ de lá; agora para logo no começo, antes de procurar
+  ou gravar qualquer coisa, com uma frase que diz o que houve ("não sei onde fica a pasta das ferramentas: ... o git
+  disse ...") e o que fazer (consertar o git, com o comando que ele mesmo sugere, ou rodar da pasta principal);
+- rodando da pasta principal, nada muda, com ou sem git;
+- a frase do `--apagar` passa a sair com a contração: "foi apagada da pasta ..." / "do GitHub (...)" e "não existia na
+  pasta ..." / "no GitHub (...)".
+Problema novo possível: quem roda de uma cópia com o git quebrado não consegue mais nem o `--apagar` (o publicar para
+ao carregar); é de propósito (o pedido: "o programa para"), e a frase diz o que fazer.
 
 ## A causa, a regra e todos os caminhos
 
@@ -1009,6 +1083,87 @@ mudou desde a partida desta volta (as listas das voltas anteriores ficam no `git
   sem internet, "Não", desligar no meio: não se aplica à pergunta (ler o git não grava nada nem pede licença); quem
   grava depois continua com as frases de hoje.
 
+**Volta 10 (o relatório 8; escrito antes de mexer).**
+
+*Achado 1 (médio): numa cópia de trabalho, sem resposta do git, a pasta errada de 19/11.*
+- **Por que aconteceu:** `core/pasta_das_ferramentas.pasta_principal` tratava "o git não respondeu" do mesmo jeito em
+  qualquer pasta: a pasta do próprio código fazia o papel da principal. Isso é certo na pasta principal (o `.git` é uma
+  pasta) e na cópia sem repositório; numa cópia de trabalho (o `.git` é um arquivo), a pasta de cima do código é
+  `.claude\worktrees`, que é exatamente a conta errada do defeito 1. A volta 9 escreveu o caso como "não acontece";
+  acontece (o git fora do caminho; o git recusando a pasta por ser de outro dono, quando o HD externo vai para outro
+  Windows ou o Windows é reinstalado).
+- **A regra (num lugar só):** "onde fica a pasta das ferramentas" continua em `core/pasta_das_ferramentas.py`. Parte
+  nova: se o código roda de uma pasta cujo `.git` é um arquivo (cópia de trabalho ou submódulo: o repositório mora em
+  outro lugar) e o git não diz a pasta principal (falhou, ou o repositório não tem uma), **não há resposta**: a regra
+  levanta `SemPastaPrincipal`, com a frase do porquê (o que o git disse) e do que fazer. "O `.git` é um arquivo?" é
+  pergunta sobre o git: fica na peça do git (`conversa_com_o_git.e_copia_de_trabalho`, que só olha se é arquivo, sem ler
+  o conteúdo e sem rodar o git). Na pasta principal, na cópia sem repositório e empacotado: nada muda.
+- **Todos os caminhos** (grep de `pasta_das_ferramentas(`, `problema_para_gravar(`, `pasta_principal(` fora de `tests/`):
+  1. `empacotar.FERRAMENTAS` (ao carregar; dela saem `DOWNLOADS` e `LUGARES_DO_MOTOR[1]`) → hoje
+     `pasta_das_ferramentas`; passa a `pasta_das_ferramentas_ou_parar` (nova, na regra: a pasta, ou para o script com a
+     frase, sem o rastro técnico). Quem importa o empacotar para junto: `publicar_versao_kaique.py`,
+     `servidor_das_versoes.py`, `empacotar_teste_velocidade.py`.
+  2. `montar_motor_kraken.PASTA_FERRAMENTAS` (ao carregar; dela saem `DESTINO_PADRAO` e `DOWNLOADS_PADRAO`) → passa a
+     `pasta_das_ferramentas_ou_parar`.
+  3. `compilar_detector_gravura.PASTA_FERRAMENTAS_PADRAO` (ao carregar) → passa a `pasta_das_ferramentas_ou_parar`.
+  4. `compilar_st_ferramentas.pasta_de_ferramentas_padrao` → a do 3 (o script importa o 3: para junto).
+  5. `core/ocr_kraken.lugares_do_motor` (o programa e o diagnóstico, rodando pelas fontes) → `pasta_das_ferramentas`,
+     que levanta `SemPastaPrincipal`; `MotorKraken._comando` a recebe e devolve "indisponível" com a frase (o programa
+     não fecha; o Kraken continua desligado no programa); `achar_pasta_do_motor` a deixa subir.
+  6. "Pode gravar?" (`empacotar.preparar_vc_redist`, `montar_motor_kraken.main`, os dois `main` dos compiladores) →
+     `problema_para_gravar`, que devolve a mesma frase.
+  Todos chegam em `pasta_principal` por `_pasta_das_ferramentas_de`; nenhum tem conta própria.
+- **Ler o arquivo `.git` para achar a principal sem o git (avaliado, não feito):** daria uma segunda resposta para a
+  mesma pergunta, que pode divergir da do git (o `gitdir:` e o `commondir` podem ser caminhos relativos; o git 2.48 em
+  diante escreve caminhos relativos com `worktree.useRelativePaths`), e, quando o git recusa a pasta por ser de outro
+  dono, contornaria uma proteção dele, escondendo o que o Samuel precisa resolver para usar o git naquela cópia de
+  qualquer jeito (nem o commit funciona). A frase do git já diz o que fazer (ele escreve o comando do `safe.directory`).
+- **A prova:** com o git de verdade, de dentro de uma cópia de trabalho de verdade, nos dois jeitos do relatório (sem
+  git no caminho do Windows; o git recusando o dono, `GIT_TEST_ASSUME_DIFFERENT_OWNER=1`, sem a configuração global e a
+  do sistema, para nenhum `safe.directory` mudar o resultado): os seis lugares param com a frase, nada é criado, a pasta
+  errada não é usada; e da pasta principal, sem git, nada muda. Tem de falhar em `6fa766c4`.
+
+*Achado 2 (baixo): o limite de tempo do git não segura com o lançador do Git for Windows.*
+- **Por que aconteceu:** `conversa_com_o_git._rodar` usa `subprocess.run(timeout=...)`. Lido no Python 3.14
+  (`Lib/subprocess.py`, 554 a 570): no Windows, passado o tempo, ele fecha só o processo que abriu e depois espera, sem
+  limite, a saída dele (`communicate()`). O git que o Windows acha pelo caminho de sempre
+  (`C:\Program Files\Git\cmd\git.exe`) é um lançador que abre o git de verdade como filho, e o filho segura a saída.
+- **Medido por mim** (`v10\exp1.py`, um git de verdade que demora de verdade: um apelido do git que espera 12 s,
+  `git -c "alias.espera=!sleep 12" espera`, pelo lançador, limite de 2 s): pela peça do git de hoje, 12,1 s; pela
+  `core/windows.rodar_em_grupo`, 2,1 s, com "fechados o programa e tudo o que ele abriu (conferido no Windows: nenhum
+  vivo no grupo)". O conserto pedido funciona. Custo: uns 22 ms a mais por pergunta ao git (98 contra 120 ms, 20 vezes
+  cada).
+- **Parei antes de mexer:** abrir o git pela peça do Windows faz a peça do git importar `core/windows.py`. O juiz da
+  rodada do GitHub roda só com o pacote `regras_dos_agentes` (o `porteiro_juiz.sh` tira da versão de teste só esse
+  pacote e a lista de exceções), e um teste antigo cobra isso rodando o script de verdade
+  (`tests/test_conferencias_juiz.py::test_o_script_do_workflow_busca_o_juiz_da_versao_de_teste_e_barra_o_erro_novo`):
+  com a importação, o juiz não carrega e o teste quebra. Consertar pede mexer fora da lista (o script do juiz, no ramo
+  da gerente; o teste antigo; a frase "o pacote não importa nada do programa" em `regras_dos_agentes/__init__.py`). Uma
+  saída "se não der para importar, abre do jeito antigo" seria o segundo jeito de abrir programa. A pergunta à gerente
+  está em "Perguntas para o Samuel", Volta 10.
+
+*Achado 3 (baixo): as proteções B1 a B5 sem teste.* Só testes, sem mudar o código das proteções:
+- B1 a B3: o `main` de cada script (`montar_motor_kraken`, `compilar_detector_gravura`, `compilar_st_ferramentas`),
+  rodado com o padrão de dentro de uma cópia de trabalho de prova sem a pasta das ferramentas: a frase, código 1, nenhuma
+  pasta nova (com a internet trancada no processo, para a mutação não baixar nada).
+- B4: o `montar_motor_kraken` com só o `--destino` passado (o `--downloads` de fábrica) e com só o `--downloads`: para.
+- B5: `EditorImpressao-arquivos` existe e a `ferramentas` não: "pode gravar?" diz que não.
+
+*Observações (4):*
+- **A frase do apagar sem a contração** ("de a pasta", "de o GitHub", "em a pasta"): o lugar único das frases do apagar
+  é `publicar_versao_kaique.Apagado.frase`. O nome do destino (`DestinoPasta.nome`, `DestinoGitHub.nome`) começa pelo
+  artigo ("a pasta", "o GitHub"). Uma função só, `com_preposicao`, junta "de"/"em" com o artigo ("da", "do", "na",
+  "no"), e a `Apagado.frase` a usa. As outras frases do publicar com "em {destino.nome}" (umas 20) ficam como estão: o
+  pedido é só a do apagar (em "Ideias e bugs").
+- **"Está empacotado?" em dois lugares:** `core/ocr_kraken.lugares_do_motor` passa a perguntar à
+  `pasta_das_ferramentas.empacotado()` (a mesma função que decide se a pasta das ferramentas existe). Os outros lugares
+  do programa com `sys.frozen` (`ocr_tesseract`, `paginas_em_outro_processo`, `atualizacao`, `windows`...) são outra
+  pergunta e outros arquivos (em "Ideias e bugs").
+- **"30 s" em dois lugares:** a peça do git é a dona do limite (`pasta_principal(limite_s=30)`); a regra deixa de ter o
+  próprio `LIMITE_DO_GIT_S` e usa o da peça.
+
+*O roteiro (5):* três itens novos em "A prova de verdade", Volta 10, e o item 8 riscado.
+
 ## O que pode falhar e o que o programa faz
 
 | O que pode dar errado | O que o publicar faz |
@@ -1112,6 +1267,28 @@ mudou desde a partida desta volta (as listas das voltas anteriores ficam no `git
   programa instalado); disco cheio e desligar no meio: não se aplica a ler um arquivo de poucos bytes (nada é gravado).
 - *Baixos 1 a 3 e 5:* só testes e o roteiro; o programa não muda.
 - Esta volta não pede licença ao Windows, não pede "Sim" ou "Não" a ninguém e não fala com a internet.
+
+**Volta 10 (antes de escrever).** Cada jeito de o git não responder, rodando de uma **cópia de trabalho**, e o que o
+programa faz:
+- *O git não está no caminho do Windows:* para com a frase ("... o git não está instalado ou não está no caminho do
+  Windows"), antes de procurar ou gravar; nada é criado.
+- *O git recusa a pasta por ser de outro dono* (HD levado para outro Windows, Windows reinstalado): para com a frase, que
+  traz o texto do git (ele escreve o comando do `safe.directory`).
+- *O git que demora:* passado o limite da peça (30 s), para com a frase. Com o lançador do Git for Windows o limite não
+  segura (achado 2, parado: ver "Perguntas").
+- *O git que dá erro* (a pasta principal mudou de lugar ou sumiu; o `.git` aponta para lugar nenhum): para com a frase.
+- *O repositório não tem pasta principal* (a pasta comum não se chama `.git`): para com a frase.
+- *O código sem a peça do git* (não acontece pelas fontes): a conta de antes, como hoje (sem a peça não dá para saber se
+  é cópia).
+Fora da cópia de trabalho, nada muda: *pasta principal* sem git → a conta de antes, que lá é a certa; *cópia sem
+repositório* (sem `.git`) → a conta de antes (a observação 9 continua); *empacotado* → nada perguntado.
+Quem recebe a falha: os scripts (empacotar, publicar, servidor das versões, montar do motor, compiladores) param ao
+carregar, com a frase e o código 1, sem o rastro técnico; o programa pelas fontes (o Kraken) fica "indisponível" com a
+frase e não fecha; o diagnóstico do OCR (`core/ocr_diagnostico.py`, fora da lista) para com o rastro técnico e a frase
+no fim (ressalva). Uma falha não fica guardada: a próxima pergunta pergunta de novo ao git.
+Disco cheio, sem licença, "Não", sem internet, desligar no meio: não se aplica (decidir a pasta não grava nada nem pede
+licença; quem grava depois continua com as frases de hoje). A frase do apagar: só muda a contração; o "apagada" continua
+saindo só com a leitura de volta conferida.
 
 ## O que li da peça de fora e onde
 
@@ -1334,6 +1511,38 @@ programa instalado faz com a versão: `atualizacao.py:1230` (lê o vc_redist.ver
 - O git, as variáveis do gancho: dentro do gancho do commit, o git põe `GIT_DIR` e `GIT_INDEX_FILE`
   (https://git-scm.com/docs/githooks, "pre-commit" e a nota sobre as variáveis de ambiente). (Lido; rodado no teste com
   as duas apontando para outro repositório.)
+
+**Volta 10.**
+- O Python, `subprocess.run` com `timeout` no Windows
+  (`C:\Users\fotog\AppData\Local\Python\pythoncore-3.14-64\Lib\subprocess.py`, linhas 554 a 570, lido): `process.kill()`
+  e, `if _mswindows`, `exc.stdout, exc.stderr = process.communicate()`, sem limite. Fecha só o processo aberto; a saída
+  só termina quando todos os que a herdaram terminam. (Lido; medido em `v10\exp1.py`.)
+- O Git for Windows 2.53.0: `Get-Command git -All` acha `C:\Program Files\Git\mingw64\bin\git.exe` e
+  `C:\Program Files\Git\cmd\git.exe`; fora do Git Bash, o caminho do Windows tem só o `cmd\` (o lançador). (Rodado.)
+- O git, a recusa por dono diferente: no código do git (`setup.c`, `ensure_valid_ownership`, lido em
+  https://raw.githubusercontent.com/git/git/master/setup.c): a pasta é aceita se ela, a pasta do git e o arquivo `.git`
+  são do usuário atual **e** `GIT_TEST_ASSUME_DIFFERENT_OWNER` não está ligado; senão vale só o `safe.directory` da
+  configuração protegida (`git_protected_config`: a global, a do sistema, a da linha de comando; nunca a do repositório).
+  Por isso a prova liga `GIT_TEST_ASSUME_DIFFERENT_OWNER=1` e desliga a configuração global e a do sistema
+  (`GIT_CONFIG_GLOBAL` para um arquivo vazio, `GIT_CONFIG_NOSYSTEM=1`): a recusa é a mesma do HD levado a outro
+  Windows, e nenhum `safe.directory` da máquina muda o resultado. Neste PC não há `safe.directory` (rodado:
+  `git config --global --get-all safe.directory` e `--system`, nada).
+- O git, o arquivo `.git` (https://git-scm.com/docs/gitrepository-layout): "you can have a plain text file `.git` at the
+  root of your working tree, containing `gitdir:` <path> to point at the real directory that has the repository",
+  "usually managed via the git submodule and git worktree commands"; o `commondir`: "If the specified path is relative,
+  it is relative to $GIT_DIR". No `setup.c` (`read_gitfile_gently`): o arquivo tem de começar por "gitdir: ", o caminho
+  relativo é resolvido, e a pasta apontada tem de ser um repositório. (Lido; usado só para decidir "é cópia?", olhando
+  se o `.git` é arquivo.)
+- O Python, `SystemExit` (https://docs.python.org/3/library/exceptions.html#SystemExit): quando o valor é um texto, "the
+  object's value is printed and the exit status is one", sem o rastro técnico. Por isso os scripts param por ela; o
+  programa (a janela) nunca a recebe (o Kraken recebe a `SemPastaPrincipal`, que é um erro comum).
+- O Python, `functools.lru_cache`: guarda o que a função devolve; uma exceção não fica guardada (deduzido da
+  documentação, que fala só do resultado; rodado no teste: a segunda pergunta pergunta de novo).
+- A peça do Windows, `core/windows.rodar_em_grupo` (lida): abre o programa parado, põe num grupo do Windows com
+  fechar-ao-fechar, solta, e no limite fecha o grupo inteiro e confere 0 vivos. Abre o programa com o console de quem
+  chama (sem a bandeira de não abrir janela) e com a entrada herdada; com a saída guardada, devolve a saída sem os
+  espaços das pontas. Para a peça do git usá-la, faltariam: abrir sem janela, a entrada fechada e a saída como veio (a
+  do `-z` não pode perder espaço).
 
 ## O que foi feito
 
@@ -2758,6 +2967,39 @@ ficaria com a conta dele; não recomendo.
 
 **Volta 9:** nenhuma pergunta. A gerente aceitou o plano da volta 8 inteiro e ampliou a lista do pacote ("é detalhe
 técnico do conserto que o Samuel autorizou").
+
+**Volta 10: duas perguntas, as duas para a gerente primeiro** (ela decide se vão ao Samuel).
+
+*Pergunta 1 (o achado 2: o limite de tempo do git). Parei antes de mexer.*
+- Do que se trata: quando o publicar (ou o empacotar, ou o montar do motor) roda de uma cópia de trabalho, ele pergunta
+  ao git onde está a pasta principal, com um limite de 30 segundos. Com o git que o Windows acha pelo caminho de sempre
+  (o "lançador" do Git for Windows), o limite não segura: medido, um git que demora 12 s com limite de 2 s só devolveu
+  aos 12,1 s.
+- O que acontece hoje: o `rev-parse` quase nunca trava; mas o limite está escrito como proteção e não protege.
+- O conserto pedido (abrir o git pela peça do Windows, o mesmo grupo do vpk e do gh) **funciona**: medido, 2,1 s, e o
+  Windows confere que nada ficou vivo. Custa uns 22 ms a mais por pergunta ao git.
+- Por que parei: a peça do git é também a do juiz da rodada do GitHub, que roda só com o pacote das regras dos agentes
+  (sem o `core/`). Se a peça do git passar a usar a peça do Windows, o juiz não carrega, e o teste antigo que roda o
+  script do juiz de verdade quebra. Consertar pede mexer fora da lista: o script do juiz (no ramo da gerente), esse teste
+  antigo e a frase "o pacote não importa nada do programa".
+- O que você escolhe:
+  - **A (sugestão):** abrir o git pela peça do Windows, e o juiz passa a levar também `core/__init__.py` e
+    `core/windows.py` da versão de teste (a gerente muda o `porteiro_juiz.sh` no ramo dela; eu mudo o teste antigo do
+    juiz para copiar os dois arquivos e a frase do pacote). Muda: o porteiro passa a precisar da peça do Windows (só roda
+    no Windows, como já roda hoje no PC e no GitHub); cada pergunta ao git, uns 22 ms mais lenta.
+  - **B:** tirar o limite (a pergunta espera o git como todas as outras perguntas ao git; se ele travar, o comando fica
+    parado à vista e o Ctrl+C funciona) e escrever isso, em vez de uma proteção que não protege. Nada fora da lista.
+  - **C:** deixar como está e anotar.
+- Nada do que já funciona muda em B e C; em A, o juiz e o teste dele mudam junto. Nada muda para o Kaique em nenhuma.
+
+*Pergunta 2 (o achado 1): duas linhas de um teste da volta 9 cobram o defeito.*
+- Do que se trata: o teste `test_falha_o_git_que_da_erro_e_o_que_demora` (escrito na volta 9, ainda não juntado) diz
+  que, numa cópia de trabalho cujo git dá erro ou demora, "vale a pasta do próprio código". É exatamente o defeito que o
+  relatório 8 achou e que a gerente pediu para consertar.
+- O que fiz: as duas linhas passaram a cobrar o contrário (o programa para com a frase). O resto do teste continua igual.
+  É mudar teste antigo, como na D-818, que foi autorizada pelo Samuel "só para isso".
+- O que você escolhe: **sim (sugestão)**, vale a mudança das duas linhas; ou **não**, e o conserto do achado 1 volta
+  (as duas linhas só passam com o defeito).
 
 ## Commit
 
