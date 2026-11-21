@@ -1,0 +1,18 @@
+G1 concatenacao: o motor publicado 'em ' + destino.nome: 125 passed in 90.50s (0:01:30)
+G2 variavel local: guardar_o_instalador 'liberada em {onde}': 125 passed in 89.05s (0:01:29)
+G3 parentese: '(em {destino.nome})' no indice estragado: 125 passed in 81.92s (0:01:21)
+G4 .format: DestinoPasta.liberar: 125 passed in 88.10s (0:01:28)
+G5 'por' em vez de 'em' (por a pasta): o rascunho que sobrou: 125 passed in 90.50s (0:01:30)
+C1 sem a contracao de+o (do GitHub): 1 failed, 121 passed in 93.00s (0:01:32)
+    FAILED tests/test_publicar_versao.py::test_obs6_a_frase_do_apagar_sai_com_a_contracao
+C2 sem a contracao em+a (na pasta): 1 failed, 36 passed in 25.29s
+    FAILED tests/test_publicar_versao.py::test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada
+B1 copia de prova: so para quando a linha aparece mais de uma vez: 1 failed, 12 passed in 22.37s
+    FAILED tests/test_pasta_das_ferramentas.py::test_volta11_baixo2_a_copia_de_prova_para_se_nao_acha_a_linha_do_caminho
+B2 montagem: cria a downloads antes de perguntar a regra: 1 failed, 4 passed in 17.01s
+    FAILED tests/test_pasta_das_ferramentas.py::test_falha_sem_a_pasta_das_ferramentas_a_montagem_para_e_nao_cria_nada
+B3 montagem: a regra so e perguntada quando a pasta de cima nao existe: 1 failed, 13 passed in 20.34s
+    FAILED tests/test_pasta_das_ferramentas.py::test_volta11_baixo3_editorimpressao_arquivos_sem_a_ferramentas_a_montagem_do_visual_c_para
+D1 a frase da D-816 com 'liberada em' de volta (so a segunda juncao): 1 failed, 107 deselected in 4.91s
+    FAILED tests/test_publicar_versao.py::test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada
+sem mutacao: conferir a copia volta igual -> 0

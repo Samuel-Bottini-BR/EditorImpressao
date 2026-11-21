@@ -1,0 +1,17 @@
+== edd39a9f + testes de baba4eb8: test_publicar_versao -k volta11
+FAILED tests/test_publicar_versao.py::test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao
+FAILED tests/test_publicar_versao.py::test_volta11_as_frases_do_publicar_saem_com_a_contracao_na_pasta_e_no_github[pasta]
+FAILED tests/test_publicar_versao.py::test_volta11_as_frases_do_publicar_saem_com_a_contracao_na_pasta_e_no_github[github]
+3 failed, 122 deselected in 3.34s
+== edd39a9f + testes de baba4eb8: test_pasta_das_ferramentas -k volta11
+PASSED tests/test_pasta_das_ferramentas.py::test_volta11_baixo2_a_copia_de_prova_para_se_nao_acha_a_linha_do_caminho
+PASSED tests/test_pasta_das_ferramentas.py::test_volta11_baixo3_editorimpressao_arquivos_sem_a_ferramentas_a_montagem_do_visual_c_para
+PASSED tests/test_pasta_das_ferramentas.py::test_volta11_baixo4_o_empacotar_sem_o_motor_mostra_onde_procurou_e_o_motor_kraken
+PASSED tests/test_pasta_das_ferramentas.py::test_volta11_baixo4_o_publicar_motor_sem_o_motor_para_com_onde_procurou_e_o_motor_kraken
+FAILED tests/test_pasta_das_ferramentas.py::test_volta11_baixo3_quem_decide_o_pode_gravar_da_montagem_do_visual_c_e_a_regra
+1 failed, 4 passed, 12 deselected in 10.94s
+== 1624a05a + testes de baba4eb8: -k 'volta3_achado1 or volta11_nenhuma'
+PASSED tests/test_publicar_versao.py::test_volta3_achado1_no_github_a_leitura_atrasada_tambem_nunca_apaga_a_liberada
+FAILED tests/test_publicar_versao.py::test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada
+FAILED tests/test_publicar_versao.py::test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao
+2 failed, 1 passed, 122 deselected in 2.86s

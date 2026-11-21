@@ -1,0 +1,11 @@
+import sys, ast, importlib.util
+sys.path.insert(0, "D:/programas/EditorImpressao/.claude/worktrees/passo2/tests")
+src = open("D:/programas/EditorImpressao/.claude/worktrees/passo2/tests/test_publicar_versao.py", encoding="utf-8").read()
+tree = ast.parse(src)
+fn = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "_preposicao_a_mao"][0]
+ns = {}
+exec(compile(ast.Module(body=[fn], type_ignores=[]), "g", "exec"), ns)
+for f in sys.argv[1:]:
+    a = ns["_preposicao_a_mao"](open(f, encoding="utf-8").read())
+    print(f, len(a))
+    for x in a: print("   ", x)
