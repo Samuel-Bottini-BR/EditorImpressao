@@ -6,28 +6,28 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
 ## Pedido
 
 - Papel: implementador
-- Commit de partida: 21f1fc50
+- Commit de partida: 5c22a12d
 - Ramo: passo2-publicar-2026-11-19
 
 ## Arquivos que vou mexer
 
+- `core/pasta_das_ferramentas.py` (novo)
+- `tests/test_pasta_das_ferramentas.py` (novo)
+- `regras_dos_agentes/conversa_com_o_git.py`
+- `regras_dos_agentes/repositorio_de_prova.py`
+- `compilar_st_ferramentas.py`
 - `publicar_versao_kaique.py`
 - `empacotar.py`
 - `montar_motor_kraken.py`
 - `compilar_detector_gravura.py`
 - `core/ocr_kraken.py`
-- `core/windows.py`
-- `atualizacao.py`
-- `tests/test_windows_peca.py`
 - `tests/test_empacotar.py`
 - `tests/test_publicar_*.py`
-- `tests/test_motor_kraken*.py`
-- `tests/test_ocr_kraken*.py`
+- `tests/test_ocr_kraken.py`
 - `relatorios/passo2-publicar/`
 
-(Volta 8, 20/11/2026: as duas seções acima são as do pacote da volta 8, `anexos/pacote-volta8.md`, copiadas sem mudar.
-As das voltas anteriores (`anexos/pacote-volta7.md`, `anexos/pacote-volta6.md`, `anexos/pacote-volta4.md` e a primeira
-entrega, de `03c91599`) estão nos pacotes e no `git log` deste arquivo.)
+(Volta 9, 20/11/2026: as duas seções acima são as do pacote da volta 9, `anexos/pacote-volta9.md`, copiadas sem mudar.
+As das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `git log` deste arquivo.)
 
 ## Onde parei
 
@@ -118,6 +118,14 @@ entrega, de `03c91599`) estão nos pacotes e no `git log` deste arquivo.)
   à gerente está em "Perguntas para o Samuel", Volta 8, e o plano em "A causa, a regra e todos os caminhos", Volta 8.
   `--is-shallow-repository` = false antes e depois; nenhuma junção criada; a pasta errada de 19/11 e a junção `modelos`
   não foram tocadas (só listadas). **Próximo:** a gerente decide a lista do defeito 1 (uma volta 9, minha segunda).
+
+- 20/11, **volta 9 (o mesmo escritor da volta 8; a segunda e última volta dele, D-815)**: o defeito 1 da prova à vista
+  (as peças procuradas no lugar errado quando o publicar roda de uma cópia de trabalho). A gerente aceitou o plano da
+  volta 8 inteiro e mandou o pacote da volta 9 (partida `5c22a12d`), com os arquivos que faltavam. O PC do Samuel travou
+  às 21h57 no começo da volta (interrompido depois de ler o pacote; nada ficou pela metade: `git status` limpo, sem
+  commit da volta 9). Cuidado pedido: um arquivo de teste por vez no PC, nada pesado ao mesmo tempo, o conjunto inteiro
+  só no GitHub. Rascunho: `v9\`. O plano (D-709) é o da volta 8 ("A causa", Volta 8), com o que a gerente cobrou, em
+  "A causa, a regra e todos os caminhos", Volta 9.
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -280,6 +288,21 @@ entrega, de `03c91599`) estão nos pacotes e no `git log` deste arquivo.)
 - D-818 "vai ter que reprogramar?" · "A". Aqui: as duas proteções do Visual C++ da pasta já montada (a leitura que falha
   e a mesma régua) e a versão dele ganham os testes que faltavam; a régua não muda.
 
+**Volta 9 (20/11/2026), as decisões do pedido (palavras copiadas do Livro):**
+- D-605 "A partir de agora, nenhuma função nova, ou nova escolha dentro do programa pode alterar o que já está
+  escolhido e testado, coisas novas não podem criar novos problemas, essa é uma nova regra que todos os agentes precisam
+  ler". Aqui: o programa do Kaique (empacotado) acha o motor como hoje e nunca pergunta ao git; da pasta principal, os
+  seis lugares dão o mesmo caminho de hoje; nenhum teste antigo muda.
+- D-727 "pode, se tiver qualquer coisa que o kaique precise, ele tem que estar no instalador né". Aqui: o Visual C++
+  continua vindo da pasta de downloads das ferramentas, agora a certa também de uma cópia.
+- D-767 "não faça mais nada escodindo ou de mentira". Aqui: a prova roda com um git de verdade, numa cópia de trabalho
+  de verdade (`git worktree add`), num repositório de prova em pasta temporária com espaço no nome.
+- D-776 "Sim, no C só tem que cuidar para não encher o disco C inteiro". Aqui: nada muda na conta do espaço.
+- D-788 "1". Aqui: o motor do programa instalado continua procurado ao lado do programa, primeiro lugar da lista, como
+  hoje; o programa empacotado não leva a peça do git.
+- D-815 "ok". Aqui: é a minha segunda e última volta.
+- D-818 "vai ter que reprogramar?" · "A". Aqui: a conferência da pasta já montada não muda.
+
 ## O que já está escolhido e testado aqui
 
 - `tests/test_empacotar.py`: o motor do jeito novo passa e o velho, com atalhos ou de outro protocolo, é recusado
@@ -428,6 +451,21 @@ Se algum teste antigo precisar mudar o que cobra, paro e escrevo em "Perguntas p
   pelo nome: os nomes têm de continuar existindo) e o programa instalado (o motor ao lado do programa, D-788).
 - Livro: D-605, D-727, D-767, D-773, D-788, D-816, D-817, D-818.
 
+**Volta 9 (antes de mexer).** O que esta volta toca e já está escolhido e testado:
+- `core/ocr_kraken.lugares_do_motor` e `achar_pasta_do_motor`: `tests/test_ocr_kraken.py` (um teste cobra pelo menos dois
+  lugares; os do motor de verdade pulam quando ele não é achado). O programa instalado: o primeiro lugar é ao lado do
+  programa (D-788, a mudança para `motor-kraken\<versão>` é do passo 3).
+- `empacotar.LUGARES_DO_MOTOR` e `empacotar.DOWNLOADS`: `tests/test_empacotar.py` troca os dois pelo nome
+  (`test_achar_motor_pula_o_velho_e_fica_com_o_novo`, `test_pecas_faltando_param_antes_do_pyinstaller`,
+  `test_d818_a_montagem_e_a_pasta_usam_a_mesma_regua_do_visual_c`): os nomes continuam existindo.
+- `empacotar.EXCLUIR`: `tests/test_empacotar_teste_velocidade.py` cobra que todos vão ao PyInstaller; ganhar um nome não
+  o quebra.
+- A peça do git (`regras_dos_agentes/conversa_com_o_git.py`): usada pelo porteiro e pelas conferências
+  (`tests/test_conferencias_*.py`); o que cada função devolve não muda.
+- `montar_motor_kraken`, `compilar_detector_gravura`, `compilar_st_ferramentas`: os nomes dos padrões continuam
+  (`relatorios/conferir/dividir-2026-10-06/verificador/scripts/recompilar.py` chama `pasta_de_ferramentas_padrao`).
+- Livro: D-605, D-727, D-767, D-788.
+
 ## Como fica para quem usa e no livro
 
 - **O Kaique: nada muda** na tela nem no livro (nenhum arquivo de `ui/` nem do processamento das páginas). O PDF que
@@ -522,6 +560,18 @@ jeitos de arquivo que o relatório 7 testou). O Samuel, publicando:
   dentro de `.claude\worktrees`.)
 - O PDF: nada muda antes e depois (esta volta não toca o caminho do livro).
 Problema novo possível: nenhum que eu saiba; o que só a prova à vista mostra está em "A prova de verdade", Volta 8.
+
+**Volta 9:** o Kaique: nada muda (o programa dele acha o motor ao lado do programa, como hoje, e nem sabe do git; o PDF
+não muda antes e depois). O Samuel, publicando de uma cópia de trabalho (a da versão de teste ou a de um agente):
+- o `--motor` acha o motor em `D:\programas\EditorImpressao-arquivos\ferramentas\motor-kraken`, como da pasta principal
+  (antes: "não achei", procurando em `.claude\worktrees\EditorImpressao-arquivos`);
+- o Visual C++ vem da pasta de downloads certa (antes, da pasta errada de 19/11, ou baixado para lá);
+- se a pasta das ferramentas não existir ao lado da pasta principal, a montagem para com uma frase e não cria pasta
+  nenhuma (antes criava a pasta inteira onde a conta mandasse);
+- o programa rodado pelas fontes de uma cópia acha o motor do Kraken (o defeito antigo nº 330), e o git é perguntado
+  sem janela de console.
+Da pasta principal, nada muda. Problema novo possível: nos testes rodados de uma cópia no PC, os testes do Kraken que
+pulavam (o defeito 330) passam a rodar o motor de verdade (mais lentos e mais pesados; em "Ressalvas", Volta 9).
 
 ## A causa, a regra e todos os caminhos
 
@@ -919,6 +969,39 @@ Samuel").*
 Samuel) passa a descrever a pergunta sem aspas; as citações do vpk de mentira e do arquivo da versão do Visual C++ saem
 do jeito que o conferidor lê como "arquivo ou teste citado"; "Arquivos criados ou alterados" passa a listar só o que
 mudou desde a partida desta volta (as listas das voltas anteriores ficam no `git log` e nos pacotes).
+
+**Volta 9 (o defeito 1; o plano da volta 8, aceito pela gerente, com o que ela cobrou):**
+- **A regra, num lugar só:** `core/pasta_das_ferramentas.py`. "A pasta principal" = a que o git diz para a cópia onde o
+  código está (a peça única do git, `conversa_com_o_git.pasta_principal`: `rev-parse --path-format=absolute
+  --git-common-dir`, a pasta de cima, quando ela se chama `.git`). "A pasta das ferramentas" = a pasta
+  `EditorImpressao-arquivos\ferramentas` ao lado da pasta principal. Empacotado (o programa do Kaique): nenhuma, sem
+  perguntar nada. Sem git, fora de um repositório, git que não responde: a pasta do próprio código faz o papel da
+  principal (a conta de hoje, certa na pasta principal). "Pode gravar lá?": só se a pasta das ferramentas já existe
+  (uma função só, que os que gravam chamam antes; nunca cria a pasta das ferramentas).
+- **Os seis lugares** passam a usá-la: `empacotar.DOWNLOADS`, `empacotar.LUGARES_DO_MOTOR`,
+  `core/ocr_kraken.lugares_do_motor`, `montar_motor_kraken.PASTA_FERRAMENTAS`,
+  `compilar_detector_gravura.PASTA_FERRAMENTAS_PADRAO` e `compilar_st_ferramentas.pasta_de_ferramentas_padrao`. Grep
+  (`RAIZ.parent`, `parent / "EditorImpressao-arquivos"`, `EditorImpressao-arquivos`, `.parents`): fora deles, a mesma
+  conta só em `rodada_gravura_1_2.py` (o acervo, não as ferramentas; fora da lista: em "Ideias e bugs"); o resto escreve
+  o caminho do acervo inteiro (`D:\programas\EditorImpressao-arquivos\...`), outra coisa.
+- **Quem grava na pasta das ferramentas** (a montagem do Visual C++ em `empacotar.preparar_vc_redist`; o
+  `montar_motor_kraken.py` e os dois compiladores, quando usam o padrão) pergunta antes à função única se pode, e para
+  com a frase se a pasta não existe. Assim nenhum caminho cria pasta no lugar errado.
+- **O git sem janela:** no jeito que a peça do git já usa (o `subprocess.run` dela, com a bandeira do Windows de não
+  abrir console, a mesma que a peça do Windows usa) e com limite de tempo na pergunta nova. Nenhum segundo jeito de abrir
+  programa.
+- **O programa do Kaique:** a peça do git sai do pacote (`regras_dos_agentes` no `--exclude-module` do PyInstaller,
+  pela lista `empacotar.EXCLUIR`), com teste em `tests/test_empacotar.py`; e, empacotado, a função única devolve "nenhuma"
+  antes de qualquer pergunta (teste).
+- **A prova:** `tests/test_pasta_das_ferramentas.py`, com um repositório de prova de verdade (`RepositorioDeProva`, com
+  uma ajuda nova para criar a cópia de trabalho por `git worktree add`), numa pasta com espaço no nome, com o código
+  deste ramo copiado nele; um Python à parte roda de dentro da cópia e lê os seis lugares e o motor achado. Tem de
+  falhar em `5c22a12d`.
+- **Os casos** (cada um com teste): sem git (o git não está no caminho do Windows); cópia sem repositório (`git
+  archive`); pasta principal sem `EditorImpressao-arquivos` ao lado (e nada é criado); pasta com espaço no nome; o git
+  que demora (o limite de tempo) e o que dá erro; empacotado (sem perguntar). Disco cheio, sem licença, arquivo preso,
+  sem internet, "Não", desligar no meio: não se aplica à pergunta (ler o git não grava nada nem pede licença); quem
+  grava depois continua com as frases de hoje.
 
 ## O que pode falhar e o que o programa faz
 
