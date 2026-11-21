@@ -187,12 +187,15 @@ def test_falha_sem_git_vale_a_conta_de_antes(tmp_path, monkeypatch):
 
 
 @pytest.mark.skipif(pf is None, reason="core/pasta_das_ferramentas.py ainda não existe neste código")
-def test_falha_copia_sem_repositorio_git_archive(tmp_path):
+def test_falha_copia_sem_repositorio_git_archive(tmp_path, monkeypatch):
     """Uma cópia feita com `git archive` (sem `.git`), como as das provas de reversão: o git de verdade diz "not a git
     repository", e vale a pasta do próprio código. A pasta das ferramentas ao lado dela não existe: quem grava ouve a
-    frase, e nada é criado."""
+    frase, e nada é criado. O git não pode subir além da pasta do teste (GIT_CEILING_DIRECTORIES, documentação do git):
+    no Windows do GitHub a pasta temporária fica dentro do repositório baixado, e o git acharia ele (rodada 44857903442;
+    família F4 do catálogo: o teste supunha a pasta temporária do PC)."""
     codigo = tmp_path / "copia sem git" / "codigo"
     codigo.mkdir(parents=True)
+    monkeypatch.setenv("GIT_CEILING_DIRECTORIES", str(tmp_path))
     with pytest.raises(git.GitFalhou):
         git.pasta_principal(codigo)
     assert _mesma(pf.pasta_principal(codigo), codigo)
