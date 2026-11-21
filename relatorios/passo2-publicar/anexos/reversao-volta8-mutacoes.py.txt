@@ -1,0 +1,98 @@
+"""Volta 8 do passo 2: as mutacoes U1 a U12, uma por vez, numa copia do codigo (git archive do ramo), nunca no ramo.
+
+Cada mutacao troca um trecho exato (tem de aparecer uma vez so), roda o arquivo de testes inteiro do publicar, e
+devolve o arquivo ao original (conferido byte a byte). "Acusada" = pelo menos um teste falha.
+Uso: python mutar_volta8.py <pasta da copia> <arquivo de resultado>
+"""
+import subprocess
+import sys
+from pathlib import Path
+
+COPIA = Path(sys.argv[1])
+SAIDA = Path(sys.argv[2])
+PY = r"D:\programas\EditorImpressao\.venv\Scripts\python.exe"
+
+MUTACOES = [
+    ("U1", "o --apagar volta a escrever a frase por conta propria (a antiga)", "publicar_versao_kaique.py",
+     "            print(apagar_e_conferir(destino_de(lido.pasta), _conferir_etiqueta(lido.apagar)).frase)",
+     "            apagar_e_conferir(destino_de(lido.pasta), _conferir_etiqueta(lido.apagar))\n"
+     "            print(f\"{lido.apagar}: não existe em {destino_de(lido.pasta).nome} (conferido)\")"),
+    ("U2", "a frase ignora se havia o que apagar (sempre 'foi apagada')", "publicar_versao_kaique.py",
+     "        if not self.existia:\n            return f\"{self.etiqueta}: não existia",
+     "        if False:\n            return f\"{self.etiqueta}: não existia"),
+    ("U3", "o apagar diz que havia o que apagar quando a leitura de antes nao achou nada", "publicar_versao_kaique.py",
+     "        return Apagado(etiqueta, destino.nome, existia=False)",
+     "        return Apagado(etiqueta, destino.nome, existia=True)"),
+    ("U4", "o caminho de erro escreve a sua propria frase de 'apagada'", "publicar_versao_kaique.py",
+     "                desfeito = apagar_e_conferir(destino, etiqueta, so_rascunho=True, acabou_de_criar=True).frase",
+     "                apagar_e_conferir(destino, etiqueta, so_rascunho=True, acabou_de_criar=True)\n"
+     "                desfeito = f\"o rascunho {etiqueta} foi apagado (conferido)\""),
+    ("U5", "o programa instalado volta a ler o arquivo da versao por conta propria", "atualizacao.py",
+     "    lida = versao_do_visual_c_do_pacote(pasta)\n    do_pacote = \"0.0.0\" if lida is None else lida",
+     "    arquivo = pasta / PASTA_DO_QUE_SE_INSTALA / VC_REDIST_VERSAO\n"
+     "    do_pacote = arquivo.read_text(encoding=\"utf-8\").strip() if arquivo.is_file() else \"0.0.0\""),
+    ("U6", "a conferencia do publicar volta a ler o arquivo da versao por conta propria", "empacotar.py",
+     "        lida = None if errado else atualizacao.versao_do_visual_c_do_pacote(pasta)",
+     "        _a = instalar / atualizacao.VC_REDIST_VERSAO\n"
+     "        lida = None if errado or not _a.is_file() else _a.read_text(encoding=\"utf-8\", errors=\"replace\").strip()"),
+    ("U7", "a leitura unica deixa de tirar os espacos e a quebra de linha", "atualizacao.py",
+     "    return arquivo.read_text(encoding=\"utf-8\", errors=\"replace\").strip()",
+     "    return arquivo.read_text(encoding=\"utf-8\", errors=\"replace\")"),
+    ("U8", "a regua do Visual C++ deixa de olhar quem assinou (so a condicao do assinante)", "empacotar.py",
+     "    if not (assinante.startswith(\"CN=Microsoft Corporation,\") and \"O=Microsoft Corporation\" in assinante):",
+     "    if not assinante:"),
+    ("U9", "a regua aceita o estado 'erro' da leitura que falhou (so a condicao do estado)", "empacotar.py",
+     "    if assinatura.get(\"status\") != \"Valid\":",
+     "    if assinatura.get(\"status\") != \"Valid\" and not str(assinatura.get(\"status\")).startswith(\"erro\"):"),
+    ("U10", "a versao do arquivo comparada so nos dois primeiros pedacos", "empacotar.py",
+     "            if lida != versao_do_vc:",
+     "            if lida.split(\".\")[:2] != versao_do_vc.split(\".\")[:2]:"),
+    # U11, segunda forma: a primeira (tirar a AUTHORS da propria lista unica) quebrava a montagem dos testes inteira
+    # (o zip(strict=True) de _destinos_das_pecas acusa: 101 erros de preparo), e nao provava o teste da licenca.
+    ("U11", "a conferencia da pasta deixa de cobrar so a licenca AUTHORS", "empacotar.py",
+     "    faltam = [r for r in relativos_do_tesseract() if not ((pasta / r).is_file() and (pasta / r).stat().st_size > 0)]",
+     "    faltam = [r for r in relativos_do_tesseract() if not r.endswith(\"/AUTHORS\")"
+     " and not ((pasta / r).is_file() and (pasta / r).stat().st_size > 0)]"),
+    ("U12", "a conferencia do pacote depois do vpk deixa de cobrar as licencas", "empacotar.py",
+     "    saida_ += relativos_do_tesseract()\n",
+     "    saida_ += [r for r in relativos_do_tesseract() if r.rsplit(\"/\", 1)[-1] not in LICENCAS_DO_TESSERACT]\n"),
+]
+
+
+def rodar_testes() -> tuple[int, list[str]]:
+    """Roda o arquivo de testes do publicar inteiro na copia; devolve (codigo, os que falharam)."""
+    r = subprocess.run([PY, "-m", "pytest", "tests/test_publicar_versao.py", "-q", "-p", "no:cacheprovider", "-rf"],
+                       cwd=COPIA, capture_output=True, text=True, encoding="utf-8", errors="replace",
+                       env={**__import__("os").environ, "QT_QPA_PLATFORM": "offscreen"})
+    falhas = [l.split(" - ")[0].replace("FAILED ", "") for l in r.stdout.splitlines() if l.startswith("FAILED")]
+    ultima = [l for l in r.stdout.splitlines() if " passed" in l or " failed" in l]
+    return r.returncode, falhas + ultima[-1:]
+
+
+SO = set(sys.argv[3].split(",")) if len(sys.argv) > 3 else None   # rodar so estas (ex.: U2,U5,U12)
+linhas = []
+for codigo, o_que, arquivo, velho, novo in MUTACOES:
+    if SO is not None and codigo not in SO:
+        continue
+    caminho = COPIA / arquivo
+    original = caminho.read_bytes()
+    texto = original.decode("utf-8")
+    if "\r\n" in texto:          # a copia do git archive tem quebra de linha do Windows
+        velho, novo = velho.replace("\n", "\r\n"), novo.replace("\n", "\r\n")
+    if texto.count(velho) != 1:
+        linhas.append(f"{codigo}: NAO APLICADA (o trecho aparece {texto.count(velho)} vezes): {o_que}")
+        continue
+    caminho.write_bytes(texto.replace(velho, novo).encode("utf-8"))
+    try:
+        rc, falhas = rodar_testes()
+    finally:
+        caminho.write_bytes(original)
+    assert caminho.read_bytes() == original
+    acusada = "ACUSADA" if rc != 0 else "NAO ACUSADA"
+    linhas.append(f"{codigo} ({o_que}; {arquivo}): {acusada}")
+    linhas += [f"    {f}" for f in falhas]
+    SAIDA.write_text("\n".join(linhas) + "\n", encoding="utf-8")
+rc, falhas = rodar_testes()
+linhas.append(f"sem mutacao (a copia devolvida ao original): codigo {rc}; {falhas[-1] if falhas else ''}")
+SAIDA.write_text("\n".join(linhas) + "\n", encoding="utf-8")
+print("\n".join(linhas))

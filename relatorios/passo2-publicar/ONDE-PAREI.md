@@ -109,6 +109,16 @@ entrega, de `03c91599`) estão nos pacotes e no `git log` deste arquivo.)
   lidos, em UTF-16). Pasta de rascunho nova: `v8\` (as outras não são tocadas). O plano (D-709) está em "A causa, a
   regra e todos os caminhos", "Volta 8", escrito antes de mexer.
 
+- 20/11, volta 8 feita **em parte**: plano `df40b18e`; testes antes do código `44029d6a`; código `b2863630` (a frase do
+  `--apagar` saída do lugar único do apagar; a versão do Visual C++ do pacote lida por uma função só, a do publicar,
+  usada pelo programa instalado; os testes dos baixos 1 a 3; o roteiro e o texto do formulário). Reversão no código de
+  `21f1fc50`: 10 dos 23 casos novos falham lá, e os 98 antigos passam; mutações U1 a U12: 12 de 12 acusadas.
+  **O defeito 1 (as peças procuradas no lugar errado numa cópia) parou antes de mexer:** o conserto pela causa pede
+  arquivos fora da lista do pacote (a peça do git, um lugar novo em `core/`, o `compilar_st_ferramentas.py`); o pedido
+  à gerente está em "Perguntas para o Samuel", Volta 8, e o plano em "A causa, a regra e todos os caminhos", Volta 8.
+  `--is-shallow-repository` = false antes e depois; nenhuma junção criada; a pasta errada de 19/11 e a junção `modelos`
+  não foram tocadas (só listadas). **Próximo:** a gerente decide a lista do defeito 1 (uma volta 9, minha segunda).
+
 ## Decisões que esta tarefa precisa cumprir
 
 - D-767 "não faça mais nada escodindo ou de mentira" · "não quero fazer consertos quero que funcione". Aqui: o publicar
@@ -2001,6 +2011,28 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   - **Não acusada: R12** (a conferência deixa de cobrar o Visual C++ só na saída do instalador, a segunda passada).
     É dupla proteção: a mesma pasta já passou pela conferência como atualização (cedo, no publicar, e antes do primeiro
     vpk), e entre as duas passadas só o arquivo do motor muda. Nenhum teste a acusa sozinha; fica escrito aqui.
+
+- **Volta 8** (`anexos/reversao-volta8-resultado.txt`; script em `anexos/reversao-volta8-mutacoes.py.txt`), numa cópia de
+  `b2863630` (git archive no rascunho da sessão, `v8\novo`), uma por vez, o arquivo devolvido ao original depois de cada
+  uma (conferido byte a byte), o arquivo de testes do publicar inteiro. Diferentes das R, Y, Z e W das voltas
+  anteriores; cada uma tira uma condição de dentro da proteção, não só a desliga inteira (achado 4 do relatório 7):
+  - "foi apagada" só quando havia e sumiu: U1 (o `--apagar` volta à frase própria), U2 (a frase ignora se havia), U3
+    (a leitura de antes que não acha nada vira "havia") →
+    `tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou`.
+  - O caminho de erro usa a mesma frase: U4 (frase própria no caminho de erro) →
+    `tests/test_publicar_versao.py::test_volta8_defeito2_o_caminho_de_erro_usa_a_mesma_frase_do_apagar`.
+  - A leitura única nos dois lados: U5 (o programa instalado lê por conta própria) e U6 (a conferência do publicar lê
+    por conta própria) → `tests/test_publicar_versao.py::test_volta8_baixo6_o_publicar_e_o_programa_instalado_usam_a_mesma_leitura`.
+  - A leitura tira as pontas: U7 → `tests/test_publicar_versao.py::test_volta8_baixo6_a_versao_do_visual_c_e_lida_por_uma_funcao_so`.
+  - A régua olha quem assinou: U8 (só a condição do assinante) →
+    `tests/test_publicar_versao.py::test_volta8_baixo1b_um_programa_da_microsoft_que_nao_e_o_visual_c_e_recusado_pela_mesma_regua`.
+  - A régua não aceita a leitura que falhou: U9 (só a condição do estado) →
+    `tests/test_publicar_versao.py::test_volta8_baixo1a_a_leitura_da_assinatura_que_falha_nunca_vira_passou`.
+  - A versão comparada inteira: U10 (só os dois primeiros pedaços) →
+    `tests/test_publicar_versao.py::test_volta8_baixo2_o_arquivo_da_versao_vazio_ou_pela_metade_e_recusado`.
+  - As licenças do Tesseract: U11 (a conferência da pasta deixa de cobrar só a AUTHORS) e U12 (o pacote deixa de cobrar as licenças) →
+    `tests/test_publicar_versao.py::test_volta8_baixo3_sem_a_licenca_do_tesseract_a_pasta_e_o_pacote_sao_recusados`.
+  **12 de 12 acusadas** (a U11 na segunda forma: a primeira, tirar a AUTHORS da própria lista única, quebrava o preparo de todos os testes, porque a montagem casa a lista com as origens pelo zip estrito, e não provava o teste da licença). A cópia sem mutação: 121 de 121 passam.
 
 ## De onde vem cada dado da conferência
 
