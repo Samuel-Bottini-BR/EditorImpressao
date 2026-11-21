@@ -421,9 +421,10 @@ da gerente veio em texto). As das voltas anteriores estão nos pacotes delas, em
   inteiro está no Livro da `obra-2026-10-26`). Aqui: a frase da D-816 pela `com_preposicao`, como as outras; o teste da
   volta 3 passa a cobrar "ficou liberada na pasta"; a guarda sem exceção.
 
-**Volta 12:** as mesmas decisões da volta 11 (acima), com a D-821. O pedido da gerente, com as palavras do Samuel
-desta vez: à pergunta "Conserto as 3 agora?", "ok" (21/11, chat). Aqui: só os 3 baixos; nenhum teste de antes da volta
-11 muda; a guarda das frases é da volta 11 e pode mudar (pedido da gerente).
+**Volta 12:** as mesmas decisões da volta 11 (acima), com a D-821, e:
+- D-822 "ok". Aqui: a resposta à repetição da pergunta da gerente (Conserto as 3 agora?), no Livro da
+  `obra-2026-10-26`, commit `13a2746b`; só os 3 baixos do relatório 10; nenhum teste de antes da volta 11 muda; a guarda das frases (da
+  volta 11) muda pela D-822, e o commit que a toca cita o nome dela e a D-822.
 
 ## O que já está escolhido e testado aqui
 
@@ -2281,7 +2282,9 @@ O programa não mudou nesta volta (nenhum arquivo fora de `tests/` e do relatór
   - D-819: o jeito mais simples e o escolhido em "A causa", Volta 12 (a lista curta dos lugares aceitos, no lugar de um
     caso por jeito de escrever).
   - D-820: nada muda na pasta das ferramentas.
-  - O "ok" do Samuel (21/11, chat, à pergunta "Conserto as 3 agora?"): só os 3 baixos.
+  - D-822 ("ok", à pergunta "Conserto as 3 agora?"): só os 3 baixos. A guarda
+    `test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao` mudou com a licença dela (o texto do
+    teste e o commit `7543fbde` citam a D-822); as mutações G1 a G5 a provam.
 
 ## Testes
 
@@ -2517,7 +2520,7 @@ O programa não mudou nesta volta (nenhum arquivo fora de `tests/` e do relatór
   `anexos/volta12-mutacoes-g.py.txt`; numa cópia de `866e2114`, os mesmos trechos do script do relatório 10): G1, G2,
   G3, G4 e G5 acusadas (cada uma com a linha e o uso acusado); sem mutação, a guarda passa. No relatório 10, com a guarda
   da volta 11, as cinco passavam nos 125 testes.
-- **Volta 12, no GitHub:** rodada 44945040959, sobre `866e2114` e o formulário: **success** na segunda tentativa. Na primeira, só a parte 5 falhou: `tests/test_dialogo_impressao.py` disse "5 passed" e o processo saiu com o código 3221226505 (0xC0000409, um travamento do Qt ao fechar; o mesmo tipo do instável de 20/11 em "Ideias e bugs"); esse arquivo não usa nada desta volta (`tests/test_publicar_versao.py` passou lá, 125). Na segunda tentativa, só a parte 5 rodou de novo, e passou. O porteiro, os botões e prints e as partes 1 a 4 passaram na primeira.
+- **Volta 12, no GitHub:** rodada 44945040959, sobre `866e2114` e o formulário: **success** na segunda tentativa. Na primeira, só a parte 5 falhou: `tests/test_dialogo_impressao.py` disse "5 passed" e o processo saiu com o código 0xC0000409 ( um travamento do Qt ao fechar; o mesmo tipo do instável de 20/11 em "Ideias e bugs"); esse arquivo não usa nada desta volta (`tests/test_publicar_versao.py` passou lá, 125). Na segunda tentativa, só a parte 5 rodou de novo, e passou. O porteiro, os botões e prints e as partes 1 a 4 passaram na primeira.
 
 ## Caminho e função
 
@@ -3623,7 +3626,7 @@ pergunta fica abaixo, como foi.
 - **Onde está agora:** as outras frases já saem certas nesta volta (no ramo do passo 2, esperando quem confere). Esta
   espera a resposta.
 
-**Volta 12:** nenhuma pergunta. O Samuel autorizou os 3 baixos (21/11, chat: "Conserto as 3 agora?" · "ok").
+**Volta 12:** nenhuma pergunta. O Samuel autorizou os 3 baixos (D-822: "Conserto as 3 agora?" · "ok").
 
 ## Commit
 
@@ -3650,7 +3653,7 @@ Volta 11: o código e os testes dos baixos e das 31 frases ficaram em `1624a05a`
 e o registro do servidor da prova 3, da gerente, posto no git sem mudar (`0a3b54a9`). Depois da resposta do Samuel
 (D-821), o último commit de código e testes da volta 11 é 97a5c4b6 (depois dele só a pasta deste relatório muda).
 
-Volta 12: 866e2114 (o último commit de código e testes da volta 12: a guarda; depois dele só a pasta deste relatório muda).
+Volta 12: a guarda em `866e2114`; o texto do teste com a D-822, o último commit de código e testes da volta 12: 7543fbde (depois dele só a pasta deste relatório muda).
 
 ## O que o agente que tentou quebrar achou
 
