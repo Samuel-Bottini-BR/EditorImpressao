@@ -2384,7 +2384,7 @@ abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" 
 - **Volta 10, mutações:** ver "Cada proteção", Volta 10.
 - **Volta 10, no GitHub:** rodada 44869743074 do GitHub, sobre `3529cf9c` (o código de `09b30933`; depois só o formulário): **success**. Lá: `test_pasta_das_ferramentas.py` 12 passaram; `test_publicar_versao.py` 122; `test_empacotar.py` 42 e 1 pulou (o do Tesseract não instalado, antigo); `test_windows_peca.py` 71; `test_conferencias_juiz.py` 9; o juiz do porteiro e os botões e prints da janela real: success.
 
-- **Volta 11, no PC, um arquivo por vez** (21/11, um Python por vez, memória livre entre 3,5 e 4,8 GB com o jogo
+- **Volta 11, no PC, um arquivo por vez** (21/11, um Python por vez, memória livre entre 3,4 e 4,8 GB com o jogo
   aberto): `tests/test_pasta_das_ferramentas.py` 17 passaram (12 antigos e 5 novos); `tests/test_publicar_versao.py` 125
   (122 antigos e 3 casos novos); `tests/test_empacotar.py` 43; `tests/test_publicar_motor.py` 12;
   `tests/test_publicar_servidor.py` 14; `tests/test_decisoes_atualizacao.py` 38; `tests/test_decisoes.py` 27; as
@@ -2400,7 +2400,7 @@ abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" 
   lugares procuram em `E:\programas\...`, o caminho de verdade; com a nova, para na montagem com a frase). Sem mutação,
   os testes da volta 11 passam na cópia (`anexos/reversao-volta11-resultado.txt`, fim).
 - **Volta 11, mutações:** ver "Cada proteção", Volta 11.
-- **Volta 11, no GitHub:** rodada 44926684833 do GitHub, sobre `0a3b54a9` (o código de `1624a05a`; depois só a pasta do relatório e o registro do servidor da prova 3): **esperando o resultado** (atualizado no fim desta volta).
+- **Volta 11, no GitHub:** rodada 44926684833 do GitHub, sobre `0a3b54a9` (o código de `1624a05a`; depois só a pasta do relatório e o registro do servidor da prova 3): **success** na primeira tentativa: o porteiro (o juiz da versão de teste), os botões e os prints da janela real e as cinco partes do conjunto inteiro.
 
 ## Caminho e função
 
@@ -3475,9 +3475,9 @@ saíram, por ordem da gerente.)
 - **É defeito ou escolha:** defeito de português do programa (já está na lista de defeitos de 21/11). O que o teste
   cobra de verdade é que a frase diga que a versão pode ter ficado liberada; isso continua.
 - **O que você escolhe:**
-  - **A (sugestão): pode mudar o teste.** O teste passa a conferir "ficou liberada na pasta" (na pasta das provas) e
-    "ficou liberada no GitHub" (no GitHub). A frase sai certa como as outras. Nada do que o publicar faz muda; o Kaique
-    não vê esta frase.
+  - **A (sugestão): pode mudar o teste.** O teste (que roda na pasta das provas) passa a conferir "ficou liberada na
+    pasta". A frase sai certa como as outras, na pasta e no GitHub. Nada do que o publicar faz muda; o Kaique não vê
+    esta frase. São duas linhas de código e uma do teste.
   - **B: não mexer.** Essa frase continua "em a pasta" / "em o GitHub", a única do publicar assim.
   - Só comentário.
 - **Onde está agora:** as outras frases já saem certas nesta volta (no ramo do passo 2, esperando quem confere). Esta
