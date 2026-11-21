@@ -127,7 +127,7 @@ As das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `git log` 
   só no GitHub. Rascunho: `v9\`. O plano (D-709) é o da volta 8 ("A causa", Volta 8), com o que a gerente cobrou, em
   "A causa, a regra e todos os caminhos", Volta 9.
 
-- 20/11, volta 9 feita: plano `d8d36d1d`; código e testes `cea2b486` e duas docstrings em `974a3f60` (os testes foram escritos antes e rodados no
+- 20/11, volta 9 feita: plano `d8d36d1d`; código e testes `cea2b486`, duas docstrings em `974a3f60` e o conserto de um teste em `011b06d0` (os testes foram escritos antes e rodados no
   código de antes: 3 falharam); anexos `e7698f20`. Reversão no código de `5c22a12d`: falham os 2 testes do defeito e
   o do pacote; mutações P1 a P11: 11 de 11 acusadas. `--is-shallow-repository` = false antes e depois; nenhuma junção
   criada; a pasta errada de 19/11 e a junção `modelos` não foram tocadas. **Próximo:** a rodada do GitHub (em
@@ -1851,6 +1851,15 @@ Nesta volta não mudaram: `publicar_versao_kaique.py`, `atualizacao.py`, `core/w
   passa lá o "da pasta principal, nada muda" (a prova de que nada muda); os 7 que pedem a regra nova pulam (ela não
   existia).
 - **Volta 9, mutações:** ver "Cada proteção", Volta 9.
+- **No GitHub, volta 9:** a rodada 44857678174 foi cancelada por mim (duas docstrings vieram depois dela). A rodada
+  44857903442, sobre `32d863ec` (o código de `974a3f60`): **failure** em duas partes. Parte 5: um teste meu,
+  `tests/test_pasta_das_ferramentas.py::test_falha_copia_sem_repositorio_git_archive`: no Windows do GitHub a pasta
+  temporária fica dentro de um repositório, e o git o achava (o teste supunha a pasta temporária do PC; família F4 do
+  catálogo). Consertado em `011b06d0`: o teste impede o git de subir além da pasta dele (GIT_CEILING_DIRECTORIES); o
+  que o teste cobra não muda. Parte 3: `tests/test_decisoes_so_as_letras.py::test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro`
+  "não aconteceu a tempo", o mesmo caso instável já anotado no catálogo (P1-gh-4), que não é deste trabalho. Cancelei
+  a rodada antes da parte 1 terminar (era preciso outra, com o conserto).
+- **No GitHub, volta 9, de novo:** RODADA_FINAL
 
 ## Caminho e função
 
@@ -2759,7 +2768,8 @@ Volta 7: 25c514ad (o último commit de código e testes da volta 7; depois dele 
 Volta 8: o código ficou em `b2863630`, e um teste foi consertado depois, a pedido da rodada do GitHub; o último commit
 de código e testes da volta 8 é 5462d882 (depois dele só a pasta deste relatório muda).
 
-Volta 9: o código ficou em `cea2b486`, e duas docstrings vieram depois; o último commit de código e testes da volta 9 é 974a3f60 (depois dele só a pasta deste relatório muda).
+Volta 9: o código ficou em `cea2b486`; depois vieram duas docstrings e o conserto de um teste pedido pela rodada do
+GitHub; o último commit de código e testes da volta 9 é 011b06d0 (depois dele só a pasta deste relatório muda).
 
 ## O que o agente que tentou quebrar achou
 
