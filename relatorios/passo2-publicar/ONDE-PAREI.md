@@ -127,6 +127,12 @@ As das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `git log` 
   só no GitHub. Rascunho: `v9\`. O plano (D-709) é o da volta 8 ("A causa", Volta 8), com o que a gerente cobrou, em
   "A causa, a regra e todos os caminhos", Volta 9.
 
+- 20/11, volta 9 feita: plano `d8d36d1d`; código e testes `cea2b486` e duas docstrings em `974a3f60` (os testes foram escritos antes e rodados no
+  código de antes: 3 falharam); anexos `e7698f20`. Reversão no código de `5c22a12d`: falham os 2 testes do defeito e
+  o do pacote; mutações P1 a P11: 11 de 11 acusadas. `--is-shallow-repository` = false antes e depois; nenhuma junção
+  criada; a pasta errada de 19/11 e a junção `modelos` não foram tocadas. **Próximo:** a rodada do GitHub (em
+  "Testes") e a entrega à gerente; depois um agente novo tenta quebrar (D-815) e a prova à vista (item 19).
+
 ## Decisões que esta tarefa precisa cumprir
 
 - D-767 "não faça mais nada escodindo ou de mentira" · "não quero fazer consertos quero que funcione". Aqui: o publicar
@@ -1994,6 +2000,22 @@ Nesta volta não mudaram: `publicar_versao_kaique.py`, `atualizacao.py`, `core/w
 - **Volta 8, o defeito 1 (só o plano):** os seis caminhos da tabela de "A causa", Volta 8, passariam todos pela função
   única da pasta das ferramentas; não feito (parado).
 
+- **Volta 9** ("onde fica a pasta das ferramentas do Samuel" → `core/pasta_das_ferramentas.pasta_das_ferramentas`;
+  "a pasta principal" → `regras_dos_agentes/conversa_com_o_git.pasta_principal`; "pode gravar lá?" →
+  `core/pasta_das_ferramentas.problema_para_gravar`):
+  | Caminho | Função que usa |
+  |---|---|
+  | `publicar --motor` e `empacotar --modo pasta/tudo` (achar o motor) | `empacotar.LUGARES_DO_MOTOR` ← `pasta_das_ferramentas` |
+  | `publicar` e `empacotar` (o Visual C++ baixado) | `empacotar.DOWNLOADS` ← `pasta_das_ferramentas`; grava só depois de `DOWNLOADS.parent` existir (a frase de `problema_para_gravar`) |
+  | o programa pelas fontes e os testes (o motor do Kraken) | `core/ocr_kraken.lugares_do_motor` ← `pasta_das_ferramentas` |
+  | o programa empacotado (o do Kaique) | `core/ocr_kraken.lugares_do_motor`: o motor ao lado do programa; `pasta_das_ferramentas` devolve nada sem perguntar |
+  | `montar_motor_kraken.py` | `PASTA_FERRAMENTAS` ← `pasta_das_ferramentas`; no padrão, `problema_para_gravar` antes |
+  | `compilar_detector_gravura.py` | `PASTA_FERRAMENTAS_PADRAO` ← `pasta_das_ferramentas`; no padrão, `problema_para_gravar` antes |
+  | `compilar_st_ferramentas.py` | `pasta_de_ferramentas_padrao` → `compilar_detector_gravura.PASTA_FERRAMENTAS_PADRAO`; no padrão, `problema_para_gravar` antes |
+  Prova do mesmo resultado nos seis, de uma cópia de trabalho de verdade e da pasta principal:
+  `tests/test_pasta_das_ferramentas.py::test_defeito1_de_uma_copia_de_trabalho_os_seis_lugares_acham_a_pasta_certa` e
+  `tests/test_pasta_das_ferramentas.py::test_defeito1_da_pasta_principal_nada_muda`.
+
 ## Cada proteção e o teste que falha sem ela
 
 Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão, fora do projeto) e o teste dela falhou
@@ -2195,6 +2217,25 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
     `tests/test_publicar_versao.py::test_volta8_baixo3_sem_a_licenca_do_tesseract_a_pasta_e_o_pacote_sao_recusados`.
   **12 de 12 acusadas** (a U11 na segunda forma: a primeira, tirar a AUTHORS da própria lista única, quebrava o preparo de todos os testes, porque a montagem casa a lista com as origens pelo zip estrito, e não provava o teste da licença). A cópia sem mutação: 121 de 121 passam.
 
+- **Volta 9** (`anexos/reversao-volta9-resultado.txt`; script `anexos/reversao-volta9-mutacoes.py.txt`), numa cópia de
+  `cea2b486`, uma por vez, devolvida ao original (conferido byte a byte); cada uma tira uma condição de dentro, com
+  letra nova (P):
+  - P1 (a regra ignora o git), P2 (a peça devolve a pasta da cópia, `--show-toplevel`), P10 (o `core/ocr_kraken` volta à
+    conta própria), P11 (o `compilar_st_ferramentas` volta a subir as pastas) →
+    `tests/test_pasta_das_ferramentas.py::test_defeito1_de_uma_copia_de_trabalho_os_seis_lugares_acham_a_pasta_certa`.
+  - P3 (a regra deixa de olhar o "empacotado") →
+    `tests/test_pasta_das_ferramentas.py::test_d788_o_programa_empacotado_acha_o_motor_ao_lado_dele_e_nunca_pergunta_ao_git`.
+  - P4 (a peça do git volta ao pacote) → `tests/test_empacotar.py::test_volta9_a_peca_do_git_nao_vai_no_programa_do_kaique`.
+  - P5 (o git com janela) → `tests/test_pasta_das_ferramentas.py::test_o_git_e_aberto_sem_janela_de_console`.
+  - P6 (a montagem cria a pasta inteira) →
+    `tests/test_pasta_das_ferramentas.py::test_falha_a_pasta_principal_sem_a_pasta_do_samuel_ao_lado_nao_cria_nada`.
+  - P7 (quem grava não ouve que a pasta falta) → `tests/test_pasta_das_ferramentas.py::test_falha_sem_git_vale_a_conta_de_antes`
+    e `tests/test_pasta_das_ferramentas.py::test_falha_copia_sem_repositorio_git_archive`.
+  - P8 (a pergunta herda as variáveis do gancho) →
+    `tests/test_pasta_das_ferramentas.py::test_falha_as_variaveis_do_gancho_do_commit_nao_mudam_a_resposta`.
+  - P9 (sem o limite de tempo) → `tests/test_pasta_das_ferramentas.py::test_falha_o_git_que_da_erro_e_o_que_demora`.
+  **11 de 11 acusadas.** A cópia sem mutação: os dois arquivos passam inteiros.
+
 ## De onde vem cada dado da conferência
 
 - **Se a versão ou o motor já existem no destino:** lido do destino (a pasta; ou o GitHub pelo gh), nunca de uma
@@ -2267,6 +2308,10 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   pessoa" dos testes novos vem do Windows de verdade (a cópia do powershell.exe); o "não terminou" vem da peça do
   PowerShell trocada no teste (só a lógica em volta: o que a régua faz com uma leitura que falhou).
 
+- **Volta 9:** "a pasta principal" vem do git de verdade (a pasta comum que ele diz para a cópia), não do nome das
+  pastas; "a pasta das ferramentas existe" vem do disco; "empacotado" vem do Python (`sys.frozen`, que o PyInstaller
+  põe). Nenhum dado vem do que o próprio programa anotou.
+
 ## Máquina ou olho
 
 - Máquina: tudo o que está em "Testes" (a lógica, a pasta de verdade como destino, o servidor de verdade, a vigia com
@@ -2286,6 +2331,9 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
 
 - **Volta 8:** máquina, tudo (os testes, a reversão no código antigo, as mutações; a leitura de verdade da assinatura
   da cópia do powershell.exe). Olho: nada. A prova à vista: itens 18 e 19 de "A prova de verdade", Volta 8.
+
+- **Volta 9:** máquina, tudo (os testes com o git de verdade, a reversão, as mutações). Olho: nada. A prova à vista: o
+  item 19 de "A prova de verdade", Volta 8 (seguir a frase do motor, da cópia, numa pasta com espaço no nome).
 
 ## Ressalvas
 
@@ -2499,6 +2547,23 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   dos erros, F3). Nesta volta, cada mutação minha tira uma condição de dentro de uma proteção (o assinante, o estado
   "erro", um item da lista, um pedaço da versão), não só a desliga inteira ("Cada proteção", Volta 8).
 
+- **Volta 9, o defeito antigo nº 330 foi consertado junto, e isso pesa nos testes do PC rodados de uma cópia:**
+  agora, de uma cópia de trabalho, o motor do Kraken de verdade é achado, e os testes dele que pulavam passam a rodar.
+  Rodando de uma cópia, o motor de verdade abriu em uns 170 s (ele mora no HD externo; na primeira vez, frio depois do
+  travamento do PC, passou dos 180 s do teste e o teste falhou; na segunda passou). No GitHub não há motor: nada muda
+  lá. Da pasta principal já era assim antes.
+- **Volta 9, sem git num computador com uma cópia de trabalho** (não acontece: a cópia é feita pelo git), a regra cai
+  na conta de antes e voltaria a procurar em `.claude\worktrees`. Escrito no texto do `core/pasta_das_ferramentas.py`.
+- **Volta 9, `montar_motor_kraken.py` e os compiladores** param no padrão quando a pasta das ferramentas não existe
+  (antes a criavam onde a conta mandasse). Com um caminho passado na linha de comando, gravam lá, como antes.
+- **Volta 9, a peça do git agora abre todo git sem janela de console** (também os do porteiro). A resposta é a mesma
+  (todas as conferências do porteiro passam no PC); só o Windows deixa de criar a janela.
+- **Volta 9, a pasta errada de 19/11** (`D:\programas\EditorImpressao\.claude\worktrees\EditorImpressao-arquivos\`)
+  continua lá, intocada; o programa deixou de usá-la. Só a gerente decide sobre ela, com o Samuel.
+- **Volta 9, o pacote da volta 9 traz as etiquetas de tela e de imagem** (o `core/pasta_das_ferramentas.py` é novo e cai na
+  linha de reserva, como o aviso do pacote diz): por isso o formulário tem "O print que prova", que não se aplica a
+  este trabalho (nenhuma tela muda).
+
 ## Velocidade
 
 Não se aplica: nenhum arquivo do processamento das páginas do livro mudou; em `core/ocr_kraken.py` só
@@ -2520,6 +2585,9 @@ passos"). O tempo de publicar é medido na prova à vista.
 - Volta 8: não se aplica ao caminho do livro (só o publicar, o empacotar e a leitura de um arquivo de poucos bytes no
   preparo do programa instalado; nenhuma página passa por aqui). Rodada do filtro de velocidade: nenhuma pedida nesta
   volta (a gerente decide; a última do passo, se houver, fica com ela).
+
+- Volta 9: não se aplica ao caminho do livro (nenhuma página passa por aqui; só onde se procuram as ferramentas). O
+  programa empacotado faz o mesmo de antes. Nenhum filtro de velocidade pedido nesta volta (a gerente decide).
 
 ## Ideias e bugs
 
@@ -2626,6 +2694,12 @@ passos"). O tempo de publicar é medido na prova à vista.
 - **Volta 8, ideia (Lista de espera, observação 8 do relatório 7):** um teste que lê de verdade o Visual C++ oficial da
   pasta de downloads do Samuel quando ele existe (o PC) e diz que pulou quando não existe (o GitHub).
 
+- **Volta 9, bug do mesmo tipo, fora da lista (não mexi):** `rodada_gravura_1_2.py` acha o acervo por `RAIZ.parent`
+  (o grep da volta 9 confirmou: é o único outro lugar com a conta da pasta de cima; o resto escreve o caminho inteiro do
+  acervo). É o acervo, não as ferramentas. Para a Lista de bugs.
+- **Volta 9, para a Lista de bugs:** o motor do Kraken no HD externo leva perto dos 180 s do teste para abrir, frio
+  (falhou uma vez, passou na outra). Ideia (Lista de espera): limite maior no teste de verdade, ou o motor no C:.
+
 ## Perguntas para o Samuel
 
 Nenhuma nesta entrega. Procurei no Livro antes: a D-773, a D-776, a D-777, a D-788, a D-789, a D-790 e a D-795 respondem
@@ -2667,6 +2741,9 @@ Se a gerente preferir só o que está na lista, a saída seria ler o `.git` da c
 documentação do git), fora da peça do git: seria uma segunda conversa com o git, e o `compilar_st_ferramentas.py`
 ficaria com a conta dele; não recomendo.
 
+**Volta 9:** nenhuma pergunta. A gerente aceitou o plano da volta 8 inteiro e ampliou a lista do pacote ("é detalhe
+técnico do conserto que o Samuel autorizou").
+
 ## Commit
 
 2e906e94 (o último commit de código e testes da volta 3, com três docstrings de um teste; depois dele só este formulário muda).
@@ -2681,6 +2758,8 @@ Volta 7: 25c514ad (o último commit de código e testes da volta 7; depois dele 
 
 Volta 8: o código ficou em `b2863630`, e um teste foi consertado depois, a pedido da rodada do GitHub; o último commit
 de código e testes da volta 8 é 5462d882 (depois dele só a pasta deste relatório muda).
+
+Volta 9: o código ficou em `cea2b486`, e duas docstrings vieram depois; o último commit de código e testes da volta 9 é 974a3f60 (depois dele só a pasta deste relatório muda).
 
 ## O que o agente que tentou quebrar achou
 
@@ -2885,6 +2964,11 @@ D-815). Destino de cada achado:
 - **O defeito 1 da prova à vista (as peças no lugar errado numa cópia):** não consertado; parado (em "Perguntas para o
   Samuel", Volta 8, o pedido à gerente).
 
+**Volta 9** (o defeito 1 da prova à vista de 20/11; não há relatório novo de quem tenta quebrar nesta volta):
+- **O defeito 1 (as peças procuradas no lugar errado numa cópia):** consertado em `cea2b486`:
+  `tests/test_pasta_das_ferramentas.py::test_defeito1_de_uma_copia_de_trabalho_os_seis_lugares_acham_a_pasta_certa`
+  (falha em `5c22a12d`).
+
 ## A prova de verdade
 
 Roteiro para a gerente (não rodado; D-785, item 8; o plano: "0 perguntas do Windows"; o Samuel olha a janela, não
@@ -2973,6 +3057,10 @@ prova à vista", item 2). Substituem os itens 13 a 15 da Volta 6:**
     `D:\programas\EditorImpressao-arquivos\ferramentas`. E nenhuma pasta nova aparece em `D:\programas\EditorImpressao\.claude\worktrees`
     (olhar a lista dela antes e depois).
 
+**Volta 9:** o item 19 da Volta 8 continua o que a gerente repete com o Samuel (seguir a frase do motor ao pé da letra,
+da cópia, numa pasta com espaço no nome). Mais um olhar: depois dele, a pasta errada de 19/11 continua com a mesma data
+(o programa não a usou).
+
 ## Perguntas do Windows que o Samuel vê
 
 - Nesta entrega: 0 (nada pede licença; o publicar não pede).
@@ -2986,6 +3074,12 @@ prova à vista", item 2). Substituem os itens 13 a 15 da Volta 6:**
 
 - Volta 8: 0 (a frase do apagar e a leitura de um arquivo de poucos bytes não pedem licença nem abrem janela; a leitura
   da assinatura da cópia do powershell.exe pela peça abre o PowerShell sem janela).
+
+- Volta 9: 0 (perguntar ao git não pede licença nem abre janela; ele roda sem janela de console).
+
+## O print que prova
+
+Não se aplica: nenhuma tela do programa muda neste passo (volta 9: só onde o código procura a pasta das ferramentas; a etiqueta de tela veio do arquivo novo em core/, que ainda não tem linha na tabela).
 
 ## Páginas em que foi conferido
 
