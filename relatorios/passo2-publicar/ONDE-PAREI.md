@@ -2688,22 +2688,24 @@ D-815). Destino de cada achado:
 
 **Volta 8** (`quem-quebrou/relatorio-7.md`, commit `21f1fc50`; escritor novo, D-815; e os 2 defeitos da prova à vista de
 20/11, 18h a 19h30). Destino de cada achado:
-1. **Duas proteções do Visual C++ sem teste (W1, W5):** testes novos, a leitura que falha (a peça do PowerShell
+1. **Duas proteções do Visual C++ sem teste (W1, W5):** consertado no commit `44029d6a` (só testes; a proteção já
+   existia): testes novos, a leitura que falha (a peça do PowerShell
    responde "não terminou") e uma cópia do powershell.exe do Windows como Visual C++, lida de verdade, na pasta e na
    montagem: `tests/test_publicar_versao.py::test_volta8_baixo1a_a_leitura_da_assinatura_que_falha_nunca_vira_passou` e
    `tests/test_publicar_versao.py::test_volta8_baixo1b_um_programa_da_microsoft_que_nao_e_o_visual_c_e_recusado_pela_mesma_regua`
    (mutações U8 e U9).
-2. **A versão comparada inteira sem teste (W4):** `tests/test_publicar_versao.py::test_volta8_baixo2_o_arquivo_da_versao_vazio_ou_pela_metade_e_recusado`
+2. **A versão comparada inteira sem teste (W4):** consertado no commit `44029d6a` (só teste): `tests/test_publicar_versao.py::test_volta8_baixo2_o_arquivo_da_versao_vazio_ou_pela_metade_e_recusado`
    (5 casos; mutação U10).
-3. **As licenças do Tesseract sem teste (W2, W3):** `tests/test_publicar_versao.py::test_volta8_baixo3_sem_a_licenca_do_tesseract_a_pasta_e_o_pacote_sao_recusados`
+3. **As licenças do Tesseract sem teste (W2, W3):** consertado no commit `44029d6a` (só teste): `tests/test_publicar_versao.py::test_volta8_baixo3_sem_a_licenca_do_tesseract_a_pasta_e_o_pacote_sao_recusados`
    (as duas licenças, na pasta e no pacote; mutações U11 e U12).
-4. **A família repetida:** da gerente (catálogo); em "Ressalvas", Volta 8.
-5. **O item 14 do roteiro:** corrigido ("A prova de verdade", Volta 8, item 14).
-6. **O arquivo da versão do Visual C++ lido de dois jeitos:** consertado em `b2863630`, uma leitura só, a do publicar,
+4. **A família repetida:** não é defeito do código (é o catálogo dos erros, da gerente); em "Ressalvas", Volta 8.
+5. **O item 14 do roteiro:** consertado no commit `a203395a` ("A prova de verdade", Volta 8, item 14).
+6. **O arquivo da versão do Visual C++ lido de dois jeitos:** consertado no commit `b2863630`, uma leitura só, a do publicar,
    usada pelo programa instalado: `tests/test_publicar_versao.py::test_volta8_baixo6_a_versao_do_visual_c_e_lida_por_uma_funcao_so`
    e `tests/test_publicar_versao.py::test_volta8_baixo6_o_publicar_e_o_programa_instalado_usam_a_mesma_leitura`
    (mutações U5, U6 e U7).
-7. a 11. **Observações:** em "Ressalvas", Volta 8 (9, 10 e 11) e em "Ideias e bugs", Volta 8 (7 e 8).
+7. a 11. **Observações:** não é defeito deste passo (o próprio relatório as chama de observação); em "Ressalvas",
+   Volta 8 (9, 10 e 11) e em "Ideias e bugs", Volta 8 (7 e 8).
 - **O defeito 2 da prova à vista (a frase depois de apagar):** consertado em `b2863630`:
   `tests/test_publicar_versao.py::test_volta8_defeito2_o_apagar_diz_que_apagou_quando_apagou`,
   `tests/test_publicar_versao.py::test_volta8_defeito2_o_caminho_de_erro_usa_a_mesma_frase_do_apagar` e
