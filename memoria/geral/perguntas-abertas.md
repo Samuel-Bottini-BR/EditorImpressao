@@ -9,6 +9,12 @@ Como manter: quando ele responder, registre no plano (as duas cópias) e na fich
 daqui** (ou mova para "Respondidas recentemente" com a data). O `conferir_memoria.py` avisa quando uma pergunta desta
 lista com nome entre crases já aparece como decidida no Registro.
 
+## 0000000d. Atualização de 21/11/2026, noite (vale sobre o resto; [PARTE -43](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §8)
+
+- **Respondidas de 18 a 21/11 (não perguntar de novo):** o plano da parte do Windows v3 (D-799); os pontos do §6.3 (D-794, D-795, D-800, D-802); X4, X5, X7 (D-796 a D-798); o catálogo dos erros e as seis perguntas (D-803 a D-814); D-815 a D-823; o estudo do Kraken (aprovado em 19/11); a ficha do motor (gravada com o "ok" dele em 20/11).
+- **A próxima conversa começa por aqui (chat, 21/11 21h52 UTC):** "Sim, dá para fazer do seu jeito: 1. Primeiro: o Kaique recebe o programa que se atualiza sozinho. Uns 2 a 3 dias. 2. Depois: os testes à distância chegam para ele numa atualização, sem reinstalar. Fazemos assim?" (a proposta é dele, 21h51; muda a ordem da D-765). Depois: o jeito de trabalhar para ir mais rápido com menos remendo (conferir o plano antes do código; só grave e médio voltam; pequenos juntados pela causa no fim do passo; no máximo 2 conferências por passo): nenhuma teve o "sim".
+- **Esperam ele, de antes:** a NVIDIA desativada; o que apagar (~4,9 GB da conversa `52740cda`, 9,8 GB da `14e42ebb`, `C:\EditorImpressaoProva`, a pasta errada em `.claude\worktrees\EditorImpressao-arquivos`, `C:\pr-medida`, `D:\agente_temp_testes`); `C:\Users\editortestes`; a escolha automática dos testes na Lista de espera; D-709; D-710; Claude Code no PC do Kaique; as 4 da revisão do código; X3, X6, X9, X10; as 20 perguntas reabertas na Central; os testes dele (girar com a capa aberta e no Dividir; "Livros recentes" depois do F1; a folha espremida com a Mão).
+
 ## 0000000c. Atualização de 18/11/2026, noite (vale sobre o resto; [PARTE -38](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §9)
 
 - **Respondidas em 17-18/11 (não perguntar de novo):** as 38 da Central de 17/11 (D-752 a D-762, todas com resposta na página); a prova do Velopack e o nome do pacote (D-763, D-764); a senha dos testes à distância já existe (dita por ele em 18/11; nunca escrever em arquivo); as 16 decisões do plano da parte do Windows (D-768 a D-783); as do Kraken (D-788 a D-790); as da proposta das regras (D-784, D-791, D-792, D-793); as contradições X8, X1 e X2 (D-785, D-786, D-787).

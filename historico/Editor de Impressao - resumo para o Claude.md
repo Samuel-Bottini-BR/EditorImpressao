@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 21/11/2026, madrugada (PARTE -42; a anterior, PARTE -41, é da tarde de 20/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 21/11/2026, noite (PARTE -43; a anterior, PARTE -42, é da madrugada de 21/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -13,6 +13,130 @@ o backup). Repositório git ligado a
 `https://github.com/Samuel-Bottini-BR/EditorImpressao`.
 
 ---
+
+# PARTE -43 — Checkpoint de 21/11/2026, noite: a prova 3 do publicar passou; voltas 11 e 12 (os baixos dos relatórios 9 e 10, as frases "na pasta"); D-821 a D-823; o passo 2 e as regras do caderno de erros juntados na versão de teste; o Samuel quer um jeito mais rápido e propôs entregar em duas vezes (leia isto primeiro)
+
+Conversa `52740cda`, aberta pelo `/projeto` por volta das 14h43 UTC de 21/11 (relógio do Samuel, UTC−4: 10h43) e fechada às ~22h UTC (18h dele). Escrito das falas salvas (`falas_da_conversa.py --todas --desde 2026-11-21T06:31`: 2 falas na conversa anterior, depois do checkpoint, e 31 nesta), do git de todos os ramos e da Central. O Samuel pediu: **"vamos fazer check point e começar em outra conversa"** (21h54 UTC).
+
+## 0. Para recomeçar
+
+1. `git -C D:\programas\EditorImpressao fetch origin`. Versão oficial `fase-1` (ponta: este checkpoint). **Versão de teste `obra-2026-10-26`** (worktree `.claude\worktrees\obra-juncao`, ponta `1ca1c70a`): já tem o passo 2 (`909c710c`) e as regras do caderno de erros (`1ca1c70a`). Livro até a **D-823**.
+2. **A rodada inteira do GitHub da versão de teste (44952773951, sobre `1ca1c70a`) passou, na 2ª tentativa** (ver §9). A parte 5 falhou em `test_caixinha_do_dividir_nao_volta.py` (código 3221226505 = 0xC0000409, o Qt travando; o mesmo teste instável da Lista de bugs de 20/11; não usa nada do passo 2). As outras partes passaram; a parte 5 foi repetida e passou.
+3. **Pergunta aberta (chat, 21h52 UTC), sem resposta** (ele pediu o checkpoint logo depois): "Sim, dá para fazer do seu jeito: 1. Primeiro: o Kaique recebe o programa que se atualiza sozinho. Uns 2 a 3 dias. 2. Depois: os testes à distância chegam para ele numa atualização, sem reinstalar. Fazemos assim?" A proposta é **dele** (21h51: "teriamos como entrar só o exe que eu posso atualizar e depois entregar em uma atulização futura só a parte de eu poder fazer testes a distancia?"); a versão da gerente ainda não teve o "sim". Ela muda a ordem da D-765 ("até o .exe estar pronto para o kaique e a questão de eu poder lançar testes no pc dele funcionar"). Ver §5.
+4. **Outra pergunta aberta, ligada à de cima:** o jeito novo de trabalhar para ir mais rápido com menos remendo (§5). Nenhuma das propostas teve o "sim" dele.
+5. **Pendências da gerente antes do passo 3:** §8.8.
+6. **Antes de qualquer trabalho pesado no PC dele:** conferir a memória livre (com o jogo aberto, a memória livre ficou entre 1,9 GB (15h04, antes de começar) e 4,8 GB (medidas da gerente e dos agentes ao longo do dia)) e o C: (26,8 GB livres no checkpoint; o publicar recusa se o C: ficar abaixo de 20 GB depois do trabalho, D-776).
+
+## 1. Os trabalhos, pelo git (21/11, ~22h UTC)
+
+| Trabalho | Situação |
+|---|---|
+| **Passo 2 (publicar)**, ramo `passo2-publicar-2026-11-19` | **Juntado na versão de teste** (`909c710c`, ponta do ramo `c9f87aaf`). **Prova 3 à vista** (gerente, 11h13 a 11h46 do PC, 15h13 a 15h46 UTC, da cópia `passo2`, com o jogo aberto pela decisão dele "pode fazer tudo"): os 10 itens deram certo (relatório `relatorios/passo2-publicar/prova-3-2026-11-21.md`/`.html`/`.pdf`, `edd39a9f`, o `.pdf` fora do git; registros `C:\EditorImpressaoProva\prova8a.log` a `prova8f.log`, fora do git). **Volta 11** (escritor novo; `b3e187d5` a `baba4eb8`; código `1624a05a` e `97a5c4b6`): os 4 baixos do relatório 9, a observação 4 e 32 frases com "na pasta"/"no GitHub" pela `com_preposicao` (a última pela D-821); GitHub 44926684833 e 44936850048 success. **Relatório 10** (`8f89d941`): PRONTO PARA CONFERIR, 3 baixos. **Volta 12** (o mesmo escritor, segunda volta dele, D-815; `055d15fb` a `47333171`; código `866e2114`, `7543fbde`): os 3 baixos (D-822); GitHub 44945040959 (success na 2ª tentativa; a 1ª caiu em `test_dialogo_impressao.py`, 0xC0000409) e 44948053084 success. **Relatório 11** (`6280ddfc`): PRONTO PARA CONFERIR, 2 baixos na vigia das frases → D-823 (para aqui; Lista de bugs). Formulário corrigido pela gerente (`c9f87aaf`). |
+| Regras do caderno de erros (D-809 a D-814), ramo `regras-catalogo-2026-11-19` | **Juntadas na versão de teste** (`1ca1c70a`, ponta do ramo `3a63a918`, sem mudança desde 19/11). |
+| Lista de exceções do porteiro | **176 → 175** na junção do passo 2 (saiu o K01 de `empacotar.assinatura_do_arquivo`); nada entrou. |
+| Passos 3 a 6 do plano da parte do Windows | **Não começados.** O próximo é o passo 3 (o programa se atualizar sozinho). A ordem e o jeito de trabalhar esperam as respostas do §0.3 e §0.4. |
+
+Nenhum agente de trabalho rodando no checkpoint (os três desta conversa terminaram; só o conferente do checkpoint). Nada do processamento das páginas mudou. O programa ainda não está pronto para o Kaique.
+
+## 2. As falas do Samuel e o destino de cada uma (UTC)
+
+- (conversa anterior, depois do checkpoint) "salvou tudo que precisava?" · "minhas falas? tudo que fizemos?" (06h45-46) → respondidas lá (06h45-46): sim, com 4 pendências ditas (o quadro da Central; o texto da D-819; o caderno de erros do passo 2, "no fim do passo"; a linha do arquivo novo na tabela do porteiro, "Faço na junção"). Nesta conversa a gerente repetiu que sim.
+- "você leu tudo que precisava?" (14h59) → a gerente admitiu que não leu tudo e listou o que faltava. **"leia"** (15h01) → leu as fases do Plano, `memoria/geral/regras-de-trabalho.md`, `perguntas-abertas.md`, `licoes.md`, o caderno de erros (obra), o roteiro da prova e a PARTE -41 §6 (com a lista das 20 perguntas reabertas da Central).
+- "quero saber o que estavamos fazendo por ultimo na ultima conversa" (15h02) · "quero saber o que tinha para fazer por ultimo" (15h03) → explicados.
+- **"ok"** (15h04, à pergunta "Fazemos agora?" a prova) → a gerente conferiu a memória (15h04): 1,9 GB livres, o jogo (TFT) aberto, a NVIDIA ainda "Error" (desativada). Pediu para fechar o jogo.
+- "fechei o chrome, vê se da certo agora" (15h05) → 3,0 GB livres, o jogo continuava aberto. **"pode fazer tudo"** (15h09) → a prova 3 inteira, com a vigia de memória.
+- "e ai?" (15h20) → andamento (o motor compactando, do HD externo).
+- "pera ai" · "o que deu errado?" (15h55) → a gerente listou os erros dela (§7). "isso ficou muito confuso, o que falta fazer?" (15h56) → lista curta de 5 itens.
+- "ai vamos para fase 3 do planos?" (16h09) → explicado: é o passo 3 do plano do Windows; a Fase 3 do plano grande (seleção à mão) continua parada pela D-765. **"ok"** (16h09, à pergunta "Gravo o relatório e mando o agente dos consertos pequenos?") → relatório da prova 3 e a volta 11.
+- "quantos %?" (16h40) · "quantos %w" (17h07) → estimados pelo git e pelo tempo da rodada anterior (60%, depois 90%).
+- "estamos aonde?" (18h29) · "explica isso ai melhor" (18h33) → explicada a pergunta da frase "em a pasta".
+- "quando ele tiver fazendo atualizações vai abrir todas aquelas paginas de power shell?" (18h34) → não: as janelas eram da prova, no PC dele; no notebook do Kaique, pelas decisões dele, só o aviso, a janelinha, o ícone e o aviso de erro; essa parte é o passo 3, e a prova dela confere que nenhuma janela do PowerShell aparece.
+- "ta e o que você quer consertar agora?" (18h34) → só a palavra. **"ok, mas qual vai ser o proximo passo, todo resto está funcionando?"** (18h35) → **D-821**; respondido que não está tudo funcionando (passos 3 a 6 por construir).
+- "o que aconteceu? o que estamos fazendo?" (20h05) → resumo. **"ok"** (20h06, à pergunta "Conserto as 3 agora?") → **D-822**, volta 12.
+- **"b, mas o que faltou fazer?"** (21h38) → **D-823**; respondido o que ficou de fora do passo 2 (§3).
+- "então estamos na etapa 2 ainda?" (21h39, no meio do trabalho) → respondido na mensagem da junção (21h40): "Se passar, o passo 2 está terminado e começamos o passo 3."
+- "o resto do trabalho está em quanto tempo?" (21h45) → pelo plano-v3: passos 3 a 6, 40 a 60 h de agente e 4 sessões com ele; realista, 1 a 2 semanas (o passo 2 foi estimado em ~15 h e levou 2 dias e 12 voltas).
+- **"eu não tenho esse tempo todo, porque está demorando tanto, temos criar um plano para ser mais rapido."** (21h46) → §5.
+- **"mas vai acabar em dar um monte de remendos, como a gente pode diminuir isso?"** (21h47) → §5.
+- **"estamos aqui já faz 4 dias, tentando fazer esse .exe"** (21h49) → a gerente concordou (6 dias desde 16/11; 3 de 7 passos), admitiu a parte dela e ofereceu A ou B (§5).
+- **"teriamos como entrar só o exe que eu posso atualizar e depois entregar em uma atulização futura só a parte de eu poder fazer testes a distancia?"** (21h51) → §5, pergunta aberta.
+- "não entendi" (21h52) → encurtado para 2 linhas.
+- "vamos fazer check point e começar em outra conversa" (21h54) → este checkpoint.
+
+## 3. Decisões desta parte
+
+- **D-821** (21/11): a frase da liberação sem resposta (D-816) com a contração ("ficou liberada na pasta"); o teste da volta 3 muda só nessa linha. Palavras: "ok, mas qual vai ser o proximo passo, todo resto está funcionando?" (à pergunta "Posso trocar?"). Construída (`97a5c4b6`).
+- **D-822** (21/11): os 3 baixos do relatório 10 consertados antes de juntar. Palavras: "ok" (à pergunta "Conserto as 3 agora?"). Construída (`866e2114`, `7543fbde`).
+- **D-823** (21/11): parar de caçar os jeitos raros da vigia das frases; os 2 baixos do relatório 11 na Lista de bugs; juntar o passo 2. Palavras: "b, mas o que faltou fazer?". Juntada (`909c710c`); a prova escrita no Livro pede a rodada do GitHub passando (ver §9).
+- **Escolhas da gerente nesta parte (não são decisões dele):** o mesmo escritor nas voltas 11 e 12 (D-815 permite duas); o roteiro do servidor com `--registro` fora do repositório (pedido ao escritor junto com o baixo 2, sem perguntar: só texto do roteiro); o registro do servidor da prova 3 ficar no git (`0a3b54a9`, o agente pôs; o conferente do relatório 10 opinou que pode ficar); juntar as regras do caderno de erros logo depois do passo 2 (estava combinado na PARTE -42, §0.4, como sugestão dela).
+- **O que ficou de fora do passo 2** (dito a ele às 21h38): cortar a internet no meio da liberação (sem prova à vista); rodar o publicar "da pasta principal" (só depois da junção: fazer na versão de teste; ainda não feito); a vigia das frases com jeitos raros (Lista de bugs, D-823).
+- Continua faltando corrigir o texto do CLAUDE.md e dos agentes para D-796, D-797, D-798, D-807, D-813, D-815 e D-819.
+
+## 4. O que já funciona e o que falta, para a entrega ao Kaique (dito a ele às 18h35)
+
+- **Já funciona, provado à vista no PC dele:** a peça única do Windows que pede a licença (passo 1, sessão A de 19/11); o publicar (passo 2, provas 1 a 3 de 20 e 21/11).
+- **Falta construir:** o programa se atualizar sozinho (passo 3); os testes à distância (passo 4); desinstalar limpo (passo 5); a confirmação com a versão do Kaique (passo 6). Os 7 defeitos da etapa 5 (18/11) moram nessas partes.
+
+## 5. Ir mais rápido: o que foi dito, e o que espera o "sim" dele
+
+**Por que demora (diagnóstico da gerente, 21h46):** cada problema achado, mesmo baixo, virou uma volta inteira (escrever, GitHub ~25 min, conferente novo 30 a 60 min; 12 voltas no passo 2); um agente por vez; registro pesado (uma frase de docstring pediu número de decisão e outra rodada do GitHub, volta 12); o HD externo lento (o motor levou 19 min).
+
+**Propostas da gerente, nenhuma com o "sim" dele:**
+1. (21h46) "Só problema grave ou médio faz voltar a escrever. Os pequenos vão para a lista e são consertados todos juntos, numa volta só, no fim de cada passo." · "No máximo 2 conferências por passo." · "Escrever os passos 3, 4 e 5 em sequência, sem parar entre eles", com uma prova à vista no fim de cada um. Estimativa: 3 a 5 dias (chute). Pergunta: "Posso mudar a regra assim (só grave e médio voltam, no máximo 2 conferências por passo)?" → ele: "mas vai acabar em dar um monte de remendos, como a gente pode diminuir isso?"
+2. (21h47) Contra o remendo: "Conferir o plano antes de escrever o código" (um agente lê o plano do escritor, ~30 min; o jeito do git das voltas 9-10 teria sido barrado aí); "Os problemas pequenos juntados pela causa, não um por um" (conserto na causa, num lugar só; se só houver remendo, para e pergunta); "Grave e médio continuam voltando na hora". Pergunta: "Posso fazer assim nos passos 3, 4 e 5?" → ele: "estamos aqui já faz 4 dias, tentando fazer esse .exe".
+3. (21h50) "A: fazer tudo, com as regras novas [...] Uns 3 a 5 dias" ou "B: entregar antes, em duas vezes" (o programa sem a atualização sozinha nem os testes à distância; reinstalar depois). Sugestão: A. → ele propôs a terceira (21h51): entregar o programa que se atualiza e mandar os testes à distância depois, numa atualização.
+4. (21h51) A gerente: "Sim, dá." Leitura dela, **não conferida contra o plano-v3** (fazer antes de construir): o passo 3 entra junto com o desinstalar limpo do que essa versão põe no computador; a atualização que trouxer os testes à distância deve pedir uma vez o "Deseja permitir...?" (ligar os testes mexe no Windows) e a janelinha da senha nessa hora, não na instalação (muda a D-721/D-733/D-735, que pedem a senha na primeira abertura, e **contradiz a D-735**: "Nas atualizações seguintes, nenhuma pergunta"); 2 a 3 dias até a entrega (chute). "Fica assim, com as regras novas para ir mais rápido?" → "não entendi" → versão curta: "Fazemos assim?" → sem resposta (checkpoint).
+
+**Para a próxima conversa:** retomar a pergunta do §0.3 em poucas linhas. Antes, conferir no plano-v3 (`relatorios/plano-windows-2026-11-18/plano-v3.md`, ramo `plano-windows-2026-11-18`) o que o passo 3 precisa do passo 4 e do 5 (a primeira abertura, o ajudante, o desinstalar), e o que a ordem nova muda nas D-721, D-733, D-735, D-765. Depois, a pergunta do jeito de trabalhar (§5.1 e §5.2), uma por vez.
+
+## 6. Descobertas de comportamento real
+
+- **Tempos medidos na prova 3:** publicar o motor do Kraken da pasta do HD externo, 19 min (o zip de 370 MB; a leitura dos milhares de arquivos é lenta); montar o programa do zero e publicar a versão (439 MB), 10 min 15 s; o programa montado abre em 46 s.
+- **Rodar uma janela à vista:** `Start-Process powershell -ArgumentList` com argumentos que têm espaço quebra os parâmetros de um `-File` com `param()`. O que funcionou: um `.ps1` por passo, com os valores escritos dentro (`scratchpad\p8a.ps1` a `p8f.ps1`, a partir de `passo.ps1`), e a saída guardada em UTF-8 com `[IO.File]::WriteAllLines`.
+- **A vigia pelo Monitor:** um `powershell -Command "..."` com `$` dentro de aspas, chamado do Bash, quebra; usar um `.ps1` (`scratchpad\vigia.ps1`).
+- **O Windows mostra 0 bytes no arquivo que está sendo escrito** (`motor-kraken-1.zip.fazendo`): o tamanho da pasta só atualiza no fim; abrir o arquivo e ler `.Length` dá o tamanho de verdade.
+- **`pyi-archive_viewer.exe` chamado pelo PowerShell não imprime nada;** `python -m PyInstaller.utils.cliutils.archive_viewer -r -b <exe>` funciona (2.388 nomes).
+- **O `headSha` de `gh run view` é o do ramo do workflow** (`claude/list-server-files-gkos8v`), não o do ramo testado; o testado aparece no log ("testado: <ramo> <sha>").
+- **O servidor das versões grava o registro dentro do repositório por padrão** (`relatorios/servidor-das-versoes/`); o roteiro agora passa `--registro <arquivo>` (recebe um arquivo, não uma pasta).
+- **O jogo aberto (TFT + Riot Client + o anticheat Vanguard) ocupa uns 3,5 GB.** Com ele aberto, a prova e os agentes rodaram sem alarme (com o jogo aberto, a memória livre ficou entre 1,9 GB (15h04, antes de começar) e 4,8 GB (medidas da gerente e dos agentes ao longo do dia)).
+- **A NVIDIA continua desativada** ("Error", conferido às 15h04 e no checkpoint). Ele não respondeu se quer ligar.
+- Teste instável novo de novo: `test_caixinha_do_dividir_nao_volta.py` (0xC0000409) na parte 5 da rodada da versão de teste, como em 20/11.
+
+## 7. Erros da gerente nesta parte
+
+- Disse "uns 10 minutos" para a prova (vinha do relatório 9) sem conferir que o programa montado era de antes do conserto; depois "25 minutos"; levou 33 (11h13 a 11h46). Conferir o que a prova precisa montar antes de dar o tempo.
+- Duas janelas falharam por aspas (a primeira da prova e a vigia). Sem efeito no programa.
+- Conferiu a pasta do servidor, não a janela do servidor, como o roteiro pedia (o servidor só anota quem baixa).
+- A explicação de "o que deu errado" saiu confusa ("isso ficou muito confuso, o que falta fazer?"), e a do caminho em duas vezes também ("não entendi"). O que funcionou: 2 a 5 linhas numeradas.
+- Escreveu no Livro que a volta 11 era a "segunda volta" do escritor (D-821); era a primeira. Achado pelo conferente do relatório 11; corrigido em `c9ffbe9c`.
+- Prometeu "corrijo o texto que promete demais" (D-823) e corrigiu só o do formulário; os dois textos do teste ficaram para quando alguém mexer no teste (Lista de bugs, 21/11). Disse isso no commit, não ao Samuel.
+- **Três promessas sem cumprir na junção:** às 06h45 (conversa anterior) disse "Faço na junção" sobre a linha de `core/pasta_das_ferramentas.py` na tabela do porteiro (`regras_dos_agentes/tabela_arquivos.py`): não fez (o arquivo cai na reserva `core/*`); às 21h38 disse que rodaria o publicar "da pasta principal" na hora de juntar: não rodou (a D-820 cobra também esse caso: só a cópia de trabalho foi provada à vista); o caderno de erros do passo 2 (D-803; "eu faço", 14h46): não fez (`memoria/catalogo-de-erros.md` sem mudança desde 19/11). Achados pelo conferente do checkpoint.
+- A estimativa do plano-v3 para o passo 2 (~15 h) errou muito para menos; a gerente repetiu números do plano sem avisar antes que eram chute até ele perguntar.
+
+## 8. O que espera o Samuel
+
+1. **"Fazemos assim?"** (§0.3): o programa que se atualiza primeiro; os testes à distância depois, numa atualização.
+2. O jeito de trabalhar para ir mais rápido sem remendo (§5.1 e §5.2).
+3. A NVIDIA desativada e o brilho (PARTE -42 §4): continua "Error".
+4. Apagar (só com o "sim" dele): nesta conversa ficaram **~4,9 GB** na pasta de rascunho (`C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\52740cda-b98f-4183-a448-ea9ff84b0439\scratchpad`: `v10q` 2,4 GB e `v11q` 57 MB dos conferentes, `v11` 2,4 GB e `v12` 25 MB do escritor); `C:\EditorImpressaoProva` (1,1 GB, agora com `versoes 3` e o motor de 370 MB); e os de antes (PARTE -42 §7.3: os 9,8 GB da conversa `14e42ebb`, a pasta errada em `.claude\worktrees\EditorImpressao-arquivos`, `C:\pr-medida`, `D:\agente_temp_testes`, etc.). O C: está com 26,8 GB livres.
+5. `C:\Users\editortestes` continua lá.
+6. Sem resposta, de antes (PARTE -42 §7.5): "Ponho na lista de ideias para depois da entrega?" (escolher sozinho só os testes do código mudado); D-709 (o agente espera o "sim" depois do plano?); D-710 (modelos por tarefa); Claude Code no PC do Kaique; as 4 da revisão do código; X3/X6/X9/X10; as 20 perguntas reabertas na Central.
+7. Testes dele de antes: girar com a capa aberta e no Dividir; "Livros recentes" depois do F1; a folha espremida com a Mão.
+8. **Pendências da gerente (não precisam dele, fazer antes do passo 3):** o caderno de erros do passo 2 (D-803); a linha de `core/pasta_das_ferramentas.py` na tabela do porteiro; rodar o publicar da versão de teste (o "da pasta principal" dos itens 19 e 21 do roteiro, que a D-820 cobra); o quadro da Central (desde 18/11); o texto das regras no CLAUDE.md e nos agentes (D-796 a D-798, D-807, D-813, D-815, D-819).
+
+## 9. Central e testes
+
+- **Central:** lida no começo e no checkpoint: nenhuma ordem, teste ou ideia nova; nenhuma resposta depois de 17/11; todas as 353 respostas com `lida` ou `gerente`. O quadro continua sem atualização desde 18/11 (falta o plano da parte do Windows e D-791 a D-823).
+- **GitHub:** passo 2 no ramo: 44926684833, 44936850048, 44945040959 (2ª tentativa), 44948053084, todas success. **Versão de teste com as duas junções (`1ca1c70a`): 44952773951, success na 2ª tentativa.** Na 1ª, tudo passou menos a parte 5 (`test_caixinha_do_dividir_nao_volta.py`, 0xC0000409, o teste instável de 20/11; os outros arquivos da parte passaram, inclusive `test_publicar_versao.py` e `test_pasta_das_ferramentas.py`); a parte 5 repetida passou.
+- **No PC** (agentes, um arquivo por vez): `test_publicar_versao` 125, `test_empacotar` 43, `test_pasta_das_ferramentas` 17, `test_publicar_motor` 12, `test_publicar_servidor` 14, `test_decisoes_atualizacao` 38, `test_decisoes` 27, as nove `test_conferencias_*` 200: todos passando.
+- Comandos: PARTE -39 §8. Prova à vista: o roteiro "A prova de verdade" no `relatorios/passo2-publicar/ONDE-PAREI.md` (agora na versão de teste).
+
+## 10. Próximo passo recomendado
+
+Fazer as pendências da gerente (§8.8), conferir no plano-v3 o que a entrega em duas vezes muda, e perguntar de novo, curto: "Fazemos assim?".
+
+---
+
 
 # PARTE -42 — Checkpoint de 21/11/2026, madrugada: a prova à vista do passo 2 (publicar) feita duas vezes; voltas 6 a 10 de conserto (o Visual C++ cobrado antes de ser posto, a pasta já montada, a frase do apagar, as peças achadas numa pasta escrita num lugar só); D-818 a D-820; o PC do Samuel travou (a NVIDIA caiu com um jogo aberto) (leia isto primeiro)
 

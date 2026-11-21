@@ -8,6 +8,13 @@ Escrito em 24/09/2026. A ordem de autoridade é:
 
 O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que vale é o Plano Definitivo.
 
+> **Onde o projeto está em 21/11/2026, noite (vale sobre tudo abaixo; detalhe na [PARTE -43](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
+> - **Passo 2 (publicar) terminado e juntado na versão de teste** (`909c710c`), junto com as regras novas do caderno de erros (`1ca1c70a`). A prova 3 à vista passou; as duas últimas conferências deram PRONTO PARA CONFERIR, sem grave nem médio. D-821 a D-823.
+> - **A rodada inteira do GitHub da versão de teste (44952773951) passou**, na 2ª tentativa (a 1ª caiu na parte 5, num teste instável já conhecido, `test_caixinha_do_dividir_nao_volta.py`).
+> - **Esperando ele:** "Fazemos assim?" — entregar ao Kaique primeiro o programa que se atualiza sozinho (passo 3) e os testes à distância depois, numa atualização (proposta dele, que muda a ordem da D-765). E o jeito de trabalhar para ir mais rápido com menos remendo (propostas da gerente, sem "sim").
+> - Passos 3 a 6 não começados. Nada do processamento das páginas mudou. O programa ainda não está pronto para o Kaique.
+>
+> **Antes (21/11, madrugada), já superado:**
 > **Onde o projeto está em 21/11/2026, madrugada (vale sobre tudo abaixo; detalhe na [PARTE -42](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
 > - **Passo 2 (publicar): a prova à vista foi feita duas vezes.** A primeira achou um defeito (o Visual C++ cobrado antes de ser posto); a segunda passou nos 7 passos, inclusive o GitHub de verdade, e achou 2 defeitos (as peças procuradas no lugar errado numa cópia de trabalho; a frase depois de apagar).
 > - **Voltas 6 a 10 de conserto** (a última rodada do GitHub de cada volta passou). O último agente que tentou quebrar escreveu **PRONTO PARA CONFERIR** (relatório 9), com 4 baixos.
