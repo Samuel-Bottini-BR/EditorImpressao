@@ -190,6 +190,9 @@ def testar_a_dll() -> str:
 
 
 def main(argumentos: list[str] | None = None) -> int:
+    """A linha de comando: 0 = compilou, copiou e testou a DLL; 1 = não compilou (a frase diz por quê). Com o padrão de
+    --ferramentas (a pasta das ferramentas do Samuel, core/pasta_das_ferramentas.py), para antes de qualquer coisa se
+    ela não existe: nunca a cria (passo 2, volta 9)."""
     analisador = argparse.ArgumentParser(
         description="Compila a DLL comum das ferramentas do ScanTailor (st_ferramentas).")
     analisador.add_argument("--baixar", action="store_true",
