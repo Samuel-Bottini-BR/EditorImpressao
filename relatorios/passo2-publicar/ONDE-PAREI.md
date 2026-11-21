@@ -172,7 +172,7 @@ seções das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `git
   a junção `modelos` e `C:\EditorImpressaoProva` não foram tocadas.
 - 21/11, **a resposta do Samuel (D-821)**, trazida pela gerente. A gerente: "Só uma palavra numa mensagem: trocar "em a
   pasta" por "na pasta". [...] Para corrigir, é preciso mudar uma linha de um teste antigo, e isso pede o seu "sim".
-  Posso trocar?" Ele: "ok". Feito em `97a5c4b6`: a frase da D-816 pela `com_preposicao` (as duas junções), o teste da
+  Posso trocar?" Ele: "ok, mas qual vai ser o proximo passo, todo resto está funcionando?". Feito em `97a5c4b6`: a frase da D-816 pela `com_preposicao` (as duas junções), o teste da
   volta 3 com "ficou liberada na pasta", a guarda das frases sem exceção. Os dois testes falham no código de antes
   (`anexos/reversao-volta11-d821.md`). **Próximo:** um agente novo tenta quebrar (D-815).
 
@@ -412,10 +412,10 @@ seções das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `git
   o conjunto inteiro só no GitHub). Aqui: no PC, um arquivo por vez; o conjunto inteiro na rodada do GitHub, no fim.
 - D-785 "ok, mais ainda existem mais casos na opção A" · "ok". Aqui: nada à vista rodado por mim; só o roteiro da
   gerente muda (itens 19 e 21 e os comandos).
-- D-821 (21/11/2026, a resposta à pergunta desta volta; a linha ainda não está no Livro, as palavras vêm da gerente)
-  "ok" (à pergunta "Só uma palavra numa mensagem: trocar "em a pasta" por "na pasta". [...] Para corrigir, é preciso
-  mudar uma linha de um teste antigo, e isso pede o seu "sim". Posso trocar?"). Aqui: a frase da D-816 pela
-  `com_preposicao`, como as outras; o teste da volta 3 passa a cobrar "ficou liberada na pasta"; a guarda sem exceção.
+- D-821 "ok, mas qual vai ser o proximo passo, todo resto está funcionando?" (a resposta à pergunta desta volta, que
+  a gerente fez a ele no chat em 21/11: trocar em a pasta por na pasta, mudando uma linha de um teste antigo; o texto
+  inteiro está no Livro da `obra-2026-10-26`). Aqui: a frase da D-816 pela `com_preposicao`, como as outras; o teste da
+  volta 3 passa a cobrar "ficou liberada na pasta"; a guarda sem exceção.
 
 ## O que já está escolhido e testado aqui
 
