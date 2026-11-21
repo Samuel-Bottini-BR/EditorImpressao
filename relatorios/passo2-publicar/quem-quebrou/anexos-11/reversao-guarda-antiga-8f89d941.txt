@@ -1,0 +1,13 @@
+G1 soma com +: 1 passed, 124 deselected in 20.73s
+G2 variavel: 1 passed, 124 deselected in 0.58s
+G3 parentese: 1 passed, 124 deselected in 0.66s
+G4 .format: 1 passed, 124 deselected in 0.55s
+G5 por: 1 passed, 124 deselected in 0.59s
+J1 G1 com o nome num f-string: 1 passed, 124 deselected in 0.65s
+J2 G4 com o nome num f-string: 1 passed, 124 deselected in 0.60s
+J3 G3 com f-string dentro de f-string: 1 passed, 124 deselected in 0.70s
+J4 com_preposicao('por', ...): 1 passed, 124 deselected in 0.60s
+J5 'em a pasta {self.raiz}' escrito no texto (DestinoPasta.liberar): 1 passed, 124 deselected in 0.55s
+J6 getattr(destino, 'nome'): 1 passed, 124 deselected in 0.54s
+J7 G2 com a variavel num f-string: 1 passed, 124 deselected in 0.63s
+sem mutacao: 1 passed, 124 deselected in 0.51s

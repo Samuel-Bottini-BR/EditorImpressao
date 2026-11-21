@@ -1,0 +1,76 @@
+"""Sonda do quem-quebra da volta 12 (relatorio 11): roda a guarda NOVA das frases (_preposicao_a_mao, tirada do
+arquivo de teste pela arvore do Python, sem importar o resto) sobre o publicar de hoje com uma mutacao por vez, em
+memoria. Nao escreve em nenhum arquivo do repositorio."""
+import ast, sys
+from pathlib import Path
+
+COPIA = Path(r"D:/programas/EditorImpressao/.claude/worktrees/passo2")
+teste = (COPIA / "tests/test_publicar_versao.py").read_text(encoding="utf-8")
+arv = ast.parse(teste)
+pedacos = [n for n in arv.body if (isinstance(n, ast.FunctionDef) and n.name == "_preposicao_a_mao")
+           or (isinstance(n, ast.Assign) and any(getattr(t, "id", "") in ("_RECEBEM_O_NOME_DO_DESTINO", "_ANTES_DO_NOME_NA_FRASE") for t in n.targets))]
+assert len(pedacos) == 3, len(pedacos)
+ns = {}
+exec(compile(ast.Module(body=pedacos, type_ignores=[]), "guarda", "exec"), ns)
+guarda = ns["_preposicao_a_mao"]
+fonte = (COPIA / "publicar_versao_kaique.py").read_text(encoding="utf-8").replace("\r\n", "\n")
+
+L836 = "print(f\"  {etiqueta} liberada {com_preposicao('em', destino.nome)}\")"
+L337 = "        return pasta\n        raise Parou(f\"não há publicação {etiqueta} {com_preposicao('em', self.nome)}\")"
+L864 = "raise Parou(f\"o motor publicado {com_preposicao('em', destino.nome)} não confere: {motivo}\")"
+L790 = "raise Parou(f\"sobrou um rascunho de {etiqueta} {com_preposicao('em', destino.nome)}\""
+L709 = "return Apagado(etiqueta, destino.nome, existia=False)"
+MUT = [
+    # (codigo, o que sai, velho, novo, esperado: "erro" = frase errada que devia ser acusada; "certo" = frase certa)
+    ("H1", "liberada em a pasta (soma com um f-string que so tem o nome)", "erro", L836,
+     "print(f\"  {etiqueta} liberada em \" + f\"{destino.nome}\")"),
+    ("H2", "liberada em a pasta (print com virgula e f-string)", "erro", L836,
+     "print(f\"  {etiqueta} liberada em\", f\"{destino.nome}\")"),
+    ("H2b", "liberada em a pasta (print com virgula, nome solto)", "erro", L836,
+     "print(f\"  {etiqueta} liberada em\", destino.nome)"),
+    ("H3", "liberada em a pasta (.format com f-string)", "erro", L836,
+     "print(\"  {} liberada em {}\".format(etiqueta, f\"{destino.nome}\"))"),
+    ("H4", "liberada em a pasta (f-string dentro de f-string)", "erro", L836,
+     "print(f\"  {etiqueta} liberada em {f'{destino.nome}'}\")"),
+    ("H5", "liberada em a pasta (getattr)", "erro", L836,
+     "print(f\"  {etiqueta} liberada em {getattr(destino, 'nome')}\")"),
+    ("H6", "em a pasta escrito no texto, com a raiz (dentro do DestinoPasta)", "erro", L337,
+     "        return pasta\n        raise Parou(f\"não há publicação {etiqueta} em a pasta {self.raiz}\")"),
+    ("H7", "por a pasta pela com_preposicao", "erro", L790,
+     "raise Parou(f\"sobrou um rascunho de {etiqueta} {com_preposicao('por', destino.nome)}\""),
+    ("H8", "em na pasta (preposicao repetida antes da com_preposicao)", "erro", L864,
+     "raise Parou(f\"o motor publicado em {com_preposicao('em', destino.nome)} não confere: {motivo}\")"),
+    ("H9", "liberada em a pasta (soma com espaco no f-string)", "erro", L836,
+     "print(f\"  {etiqueta} liberada em\" + f\" {destino.nome}\")"),
+    ("H10", "liberada em a pasta (join com f-string)", "erro", L836,
+     "print(\" \".join([f\"  {etiqueta} liberada em\", f\"{destino.nome}\"]))"),
+    ("H11", "liberada em a pasta (% com f-string)", "erro", L836,
+     "print(\"  %s liberada em %s\" % (etiqueta, f\"{destino.nome}\"))"),
+    ("H12", "liberada em a pasta (str())", "erro", L836,
+     "print(f\"  {etiqueta} liberada em {str(destino.nome)}\")"),
+    ("H13", "o nome noutro argumento do Apagado (frase: 'a pasta X: nao existia em v1.2.0')", "erro", L709,
+     "return Apagado(destino.nome, etiqueta, existia=False)"),
+    # F8: frases certas (ou usos que nao sao frase) que a guarda acusaria
+    ("F8a", "com_preposicao com nome do argumento (certo)", "certo", L836,
+     "print(f\"  {etiqueta} liberada {com_preposicao('em', nome=destino.nome)}\")"),
+    ("F8b", "Apagado com nome do argumento (certo)", "certo", L709,
+     "return Apagado(etiqueta, onde=destino.nome, existia=False)"),
+    ("F8c", "nome alinhado no comeco ({:<30}) (certo)", "certo", L836,
+     "print(f\"  {destino.nome:<30} {etiqueta} liberada\")"),
+    ("F8d", "e a pasta (certo)", "certo", L836,
+     "print(f\"  {etiqueta} liberada no GitHub e {destino.nome}\")"),
+    ("F8e", "comparar o nome (nao e frase)", "certo", L836,
+     "print(f\"  {etiqueta} liberada {com_preposicao('em', destino.nome)}\") if destino.nome else None"),
+    ("F8f", "com a pasta (certo)", "certo", L836,
+     "print(f\"  {etiqueta} conferida com {destino.nome}\")"),
+]
+print("sem mutacao:", guarda(fonte))
+for cod, oque, esperado, velho, novo in MUT:
+    assert fonte.count(velho) == 1, (cod, fonte.count(velho))
+    mut = fonte.replace(velho, novo)
+    compile(mut, "m", "exec")
+    achou = guarda(mut)
+    veredito = ("ACUSADA" if achou else "PASSA") 
+    bom = (achou and esperado == "erro") or (not achou and esperado == "certo")
+    print(f"{cod} [{esperado}] {oque}: {veredito}{'' if bom else '  <-- FURO' if esperado=='erro' else '  <-- FALSO ALARME'}"
+          + (f"  {achou}" if achou else ""))

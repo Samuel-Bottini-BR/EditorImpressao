@@ -1,0 +1,21 @@
+sem mutacao: []
+H1 [erro] liberada em a pasta (soma com um f-string que so tem o nome): PASSA  <-- FURO
+H2 [erro] liberada em a pasta (print com virgula e f-string): PASSA  <-- FURO
+H2b [erro] liberada em a pasta (print com virgula, nome solto): ACUSADA  [(836, 'publicar_arquivos', "print(f'  {etiqueta} liberada em', destino.nome)")]
+H3 [erro] liberada em a pasta (.format com f-string): PASSA  <-- FURO
+H4 [erro] liberada em a pasta (f-string dentro de f-string): PASSA  <-- FURO
+H5 [erro] liberada em a pasta (getattr): PASSA  <-- FURO
+H6 [erro] em a pasta escrito no texto, com a raiz (dentro do DestinoPasta): PASSA  <-- FURO
+H7 [erro] por a pasta pela com_preposicao: PASSA  <-- FURO
+H8 [erro] em na pasta (preposicao repetida antes da com_preposicao): PASSA  <-- FURO
+H9 [erro] liberada em a pasta (soma com espaco no f-string): PASSA  <-- FURO
+H10 [erro] liberada em a pasta (join com f-string): PASSA  <-- FURO
+H11 [erro] liberada em a pasta (% com f-string): PASSA  <-- FURO
+H12 [erro] liberada em a pasta (str()): ACUSADA  [(836, 'publicar_arquivos', 'str(destino.nome)')]
+H13 [erro] o nome noutro argumento do Apagado (frase: 'a pasta X: nao existia em v1.2.0'): PASSA  <-- FURO
+F8a [certo] com_preposicao com nome do argumento (certo): ACUSADA  <-- FALSO ALARME  [(836, 'publicar_arquivos', 'nome=destino.nome')]
+F8b [certo] Apagado com nome do argumento (certo): ACUSADA  <-- FALSO ALARME  [(709, 'apagar_e_conferir', 'onde=destino.nome')]
+F8c [certo] nome alinhado no comeco ({:<30}) (certo): ACUSADA  <-- FALSO ALARME  [(836, 'publicar_arquivos', '{destino.nome:<30}')]
+F8d [certo] e a pasta (certo): ACUSADA  <-- FALSO ALARME  [(836, 'publicar_arquivos', '{destino.nome}')]
+F8e [certo] comparar o nome (nao e frase): ACUSADA  <-- FALSO ALARME  [(836, 'publicar_arquivos', 'print(f"  {etiqueta} liberada {com_preposicao(\'em\', destino.')]
+F8f [certo] com a pasta (certo): ACUSADA  <-- FALSO ALARME  [(836, 'publicar_arquivos', '{destino.nome}')]

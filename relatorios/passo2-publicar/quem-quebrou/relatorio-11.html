@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo 2: relatório 11 de quem tentou quebrar</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Passo 2 do plano da parte do Windows: décima primeira conferência de quem tentou quebrar (volta 12, 21/11/2026)</h1>
+<p>Do que se trata: é a ferramenta que prepara as versões do programa para o notebook do Kaique (o "publicar"), que roda
+só no PC do Samuel. A volta 12 consertou os 3 problemas pequenos do relatório 10: a conferência automática que impede
+as frases "em a pasta" (no lugar de "na pasta") ficou mais rigorosa; o roteiro da prova à vista ganhou uma pasta nova
+e o registro do servidor fora do repositório; e duas frases antigas do formulário foram atualizadas.</p>
+<p>Sou um agente novo nesta volta (D-815). Não escrevi nada desta volta nem das anteriores. Não mexi no código: as
+mutações e as sondas foram numa cópia pequena (<code>git archive</code>, sem a pasta <code>relatorios/</code>) na pasta de rascunho desta
+conversa, <code>v11q\</code>.</p>
+<p>O que <strong>não</strong> fiz:</p>
+<ul>
+<li>não rodei o publicar, o PyInstaller, o vpk, o servidor das versões nem o <code>gh release</code> de verdade (D-785, item 8: a
+  gerente roda, à vista); os comandos do roteiro foram conferidos lendo o código;</li>
+<li>não abri janela nem pergunta do Windows na tela do Samuel;</li>
+<li>não disparei rodada do GitHub (só li a 44948053084);</li>
+<li>um Python por vez, um arquivo de teste por vez, com a memória livre conferida antes (entre 2,3 e 3,2 GB, com o jogo
+  aberto);</li>
+<li>não mexi em <code>C:\EditorImpressaoProva</code> (só listei), na pasta errada de 19/11 nem na junção <code>modelos</code>; nenhum comando
+  de git que muda o <code>.git</code> (<code>--is-shallow-repository</code> = false antes e depois).</li>
+</ul>
+<h2>Pedido</h2>
+<ul>
+<li>Papel: quebrador</li>
+<li>Commit de partida: 8f89d941 (a ponta conferida: 47333171; o último código e teste: 7543fbde)</li>
+<li>Ramo: passo2-publicar-2026-11-19</li>
+</ul>
+<h2>Veredito</h2>
+<p><strong>PRONTO PARA CONFERIR: os três consertos fazem o que a resposta do Samuel pediu, nenhum teste de antes da volta 11
+mudou, e a conferência nova das frases acusa as cinco mutações do relatório 10 (provado: a antiga deixa passar as cinco,
+a nova acusa as cinco).</strong> Nada do que achei chega ao Kaique nem ao livro: o programa não mudou nesta volta e hoje
+nenhuma frase do publicar está errada.</p>
+<p>Ficam 2 baixos e 4 observações:</p>
+<ul>
+<li><strong>Baixo 1:</strong> a conferência nova ainda deixa passar "em a pasta" de sete jeitos novos. O mais simples: pôr o nome
+  sozinho entre chaves (<code>f"{destino.nome}"</code>) antes de somar ou de usar <code>.format</code>. Com isso, três das cinco mutações do
+  relatório 10 voltam a passar nos 125 testes, com uma mudança de poucas letras. É a mesma família do relatório 10 (F2):
+  a conferência olha o jeito comum e o vizinho passa.</li>
+<li><strong>Baixo 2:</strong> três textos (o do teste, o da ajuda dele e o "Caminho e função" do formulário) dizem que "qualquer outro
+  uso é acusado". O baixo 1 mostra que não é (F7).</li>
+<li>As observações: falsos alarmes possíveis no futuro (F8), o <code>Apagado</code> aceita o nome em qualquer posição, o roteiro não
+  escreve inteiro o comando do servidor do item 19, e o Livro diz "segunda volta" do escritor na D-821.</li>
+</ul>
+<p>Nunca "aprovado": só o Samuel aprova.</p>
+<p>O que está certo (provado rodando, não só lido):</p>
+<ul>
+<li><strong>A reversão confere:</strong> com a conferência de antes (<code>8f89d941</code>), as mutações G1 a G5 do relatório 10 passam; com a de
+  agora (<code>47333171</code>), as cinco são acusadas (anexos <code>anexos-11/reversao-guarda-antiga-8f89d941.txt</code> e
+  <code>reversao-guarda-nova-47333171.txt</code>; script <code>anexos-11/mutacoes-g-j.py.txt</code>, escrito por mim, não o do outro).</li>
+<li><strong>As contas do docstring conferem com a conferência nova:</strong> 33 usos acusados em <code>edd39a9f</code>, 2 em <code>1624a05a</code>, 0 hoje
+  (anexo <code>anexos-11/contar-juncoes-resultado.txt</code>).</li>
+<li><strong>Nenhuma frase certa de hoje é acusada:</strong> 0 achados no código de hoje; li os 43 usos do nome do destino.</li>
+<li><strong>A pasta <code>versoes 6</code> não existe</strong> (listei <code>C:\EditorImpressaoProva</code>: <code>versoes</code>, <code>versoes 2</code>, <code>versoes 3</code> e os
+  registros <code>.log</code>).</li>
+<li><strong>No PC, um arquivo por vez, tudo passa;</strong> no GitHub, a rodada 44948053084 testou <code>47110492</code> (que tem o último código,
+  <code>7543fbde</code>; depois dele só o formulário mudou) e deu success em tudo.</li>
+<li><strong>O formulário passa no conferidor</strong> (etapa "quebrar", com o pacote da volta 12): "O formulário passa", sem aviso.</li>
+</ul>
+<h2>Decisões que esta tarefa precisa cumprir</h2>
+<p>Palavras copiadas do Livro da <code>obra-2026-10-26</code> (lido depois de <code>git fetch origin obra-2026-10-26</code>).</p>
+<ul>
+<li><strong>D-775</strong> "o agente vai tentar quebrar antes de fazer o teste real na tela né?" · "ok". Esta é a etapa 3. <strong>Cumprida.</strong></li>
+<li><strong>D-798</strong> só quem confere escreve "PRONTO PARA CONFERIR", nunca sobre o que construiu. O formulário do outro não traz
+  o rótulo; eu não construí nada. <strong>Cumprida.</strong></li>
+<li><strong>D-807</strong> o conjunto inteiro só no GitHub. Li a rodada, não rodei o inteiro no PC. <strong>Cumprida.</strong></li>
+<li><strong>D-815</strong> agente novo em cada volta de quem quebra. <strong>Cumprida</strong> (sou novo). Ver a observação 4 sobre a contagem
+  das voltas do escritor.</li>
+<li><strong>D-816</strong> "A , mas onde estamos antes de você fazer qualquer processo". Nada do que o publicar faz depois do pedido de
+  liberar mudou (o programa não mudou; os <code>test_d816_*</code> passam no PC). <strong>Cumprida.</strong></li>
+<li><strong>D-819</strong> "sempre se deve se ver se é a coisa mais simples, ou melhor de se fazer". O plano da volta 12 traz o mais
+  simples (a lista curta dos lugares aceitos) e o outro (um caso por jeito), com o porquê. <strong>Cumprida.</strong> Também uso
+  essa regra no que peço no baixo 1.</li>
+<li><strong>D-820</strong> "A". A pasta das ferramentas não mudou (<code>tests/test_pasta_das_ferramentas.py</code> 17 passam). <strong>Cumprida.</strong></li>
+<li><strong>D-821</strong> "ok, mas qual vai ser o proximo passo, todo resto está funcionando?". A frase da D-816 continua "na pasta"
+  e a conferência das frases continua sem exceção. <strong>Cumprida.</strong></li>
+<li><strong>D-822</strong> "ok" (à pergunta "Conserto as 3 agora?"). (1) a conferência das frases acusa o uso do nome fora dos lugares
+  da lista, e as mutações G1 a G5 são acusadas: <strong>cumprida</strong>, com o baixo 1 (ela deixa passar outros jeitos); (2) o
+  roteiro com a <code>versoes 6</code> e o <code>--registro</code> fora do repositório: <strong>cumprida</strong> (observação 3); (3) as duas frases do
+  formulário: <strong>cumprida</strong>. O programa não mudou (conferido no <code>git diff --stat</code>).</li>
+<li><strong>D-605 / CLAUDE.md §11.8</strong> nenhum teste antigo muda para passar. Conferido linha a linha (abaixo). <strong>Cumprida.</strong></li>
+</ul>
+<h2>O que li</h2>
+<ul>
+<li><code>.claude/agents/verificador.md</code> e o <code>CLAUDE.md</code> inteiros (§4.6, §4.7, §11.8, §11.12 com os seis pontos, §11.13),
+  <code>memoria/INDICE.md</code>, <code>memoria/licoes.md</code> e o caderno dos erros da <code>obra-2026-10-26</code> (famílias F1 a F10, com F2, F7 e
+  F8 inteiras).</li>
+<li>Na cópia <code>passo2</code> (ponta <code>47333171</code>): o relatório 10 inteiro com o script das mutações dele; no ONDE-PAREI, o começo,
+  o "Onde parei" das voltas 10 a 12, todas as partes "Volta 12" de cada seção e "A prova de verdade" inteira; o pacote
+  da volta 12; o script e o resultado das mutações do escritor (<code>anexos/volta12-mutacoes-g*</code>); a prova 3 de 21/11.</li>
+<li>O Livro da <code>obra-2026-10-26</code>: D-775, D-798, D-807, D-815, D-816, D-819, D-820, D-821 e D-822, inteiras.</li>
+<li>O código: <code>git diff 8f89d941..47333171</code> inteiro; em <code>publicar_versao_kaique.py</code> os dois destinos, o <code>Apagado</code>, a
+  <code>com_preposicao</code>, a conferência do motor publicado, o começo do <code>publicar</code> e as opções da linha de comando; em
+  <code>servidor_das_versoes.py</code> as opções, a gravação do registro e o que ele faz com uma pasta que não existe.</li>
+</ul>
+<h2>O que conferi</h2>
+<h3>A rodada do GitHub (lida, não disparada)</h3>
+<p>Rodada 44948053084 (21/11, 20:46 no relógio do GitHub): o log diz 71 vezes o commit <code>47110492</code>. Ele contém <code>7543fbde</code>
+(conferido com <code>git merge-base --is-ancestor</code>), e de <code>47110492</code> até a ponta só o ONDE-PAREI mudou (<code>git diff --stat</code>).
+Success no porteiro (o juiz da versão de teste), nos botões e prints da janela real e nas cinco partes do conjunto
+inteiro. Lá: <code>test_publicar_versao.py</code> 125 passaram, <code>test_empacotar.py</code> 42 e 1 pulado, <code>test_pasta_das_ferramentas.py</code>
+17.</p>
+<h3>No PC, um arquivo por vez (na cópia <code>passo2</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Arquivo</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tests/test_publicar_versao.py</code></td>
+<td>125 passaram</td>
+</tr>
+<tr>
+<td><code>tests/test_empacotar.py</code></td>
+<td>43 passaram</td>
+</tr>
+<tr>
+<td><code>tests/test_pasta_das_ferramentas.py</code></td>
+<td>17 passaram</td>
+</tr>
+<tr>
+<td>o conferidor do formulário, etapa "quebrar", com o pacote da volta 12</td>
+<td>"O formulário passa na etapa antes de ir ao agente que tenta quebrar"</td>
+</tr>
+</tbody>
+</table>
+<p>A cópia <code>passo2</code> ficou sem nenhuma mudança depois de cada rodada (<code>git status</code> mostra só a pasta nova deste relatório).</p>
+<h3>Algum teste antigo mudou? (§11.8)</h3>
+<p>Li <code>git diff 8f89d941..47333171 -- tests/</code> linha a linha. Mudou só <code>tests/test_publicar_versao.py</code>, e só em dois
+lugares, os dois da volta 11 (desta mesma tarefa, ainda não juntada) e os dois que a D-822 nomeia:</p>
+<ul>
+<li>a ajuda <code>_preposicao_a_mao</code> (reescrita) e as duas listas novas em cima dela (<code>_RECEBEM_O_NOME_DO_DESTINO</code>,
+  <code>_ANTES_DO_NOME_NA_FRASE</code>); ninguém mais usa a ajuda (busca no repositório);</li>
+<li>o texto (docstring) de <code>test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao</code>; o corpo do teste
+  não mudou.</li>
+</ul>
+<p>Nenhum teste de antes da volta 11 mudou. O programa não mudou (<code>git diff --stat</code>: só o teste e a pasta do relatório).</p>
+<h3>Cada conserto resolve a causa, num lugar só? (§11.12)</h3>
+<ul>
+<li><strong>Baixo 1 do relatório 10 (a conferência das frases):</strong> o jeito escolhido é o certo (uma lista curta dos lugares
+  aceitos, não um caso por jeito). Mas a regra do "começo da frase" é medida no começo de cada pedaço com chaves, não no
+  começo da frase que vai para a tela: é por aí que o baixo 1 deste relatório passa.</li>
+<li><strong>Baixo 2 do relatório 10 (o roteiro):</strong> o item 19 usa a <code>versoes 6</code> e diz para conferir antes que ela não existe;
+  o item 2 dá o <code>--registro</code> num arquivo em <code>C:\EditorImpressaoProva\</code>. Conferi no <code>servidor_das_versoes.py</code>: a opção
+  <code>--registro</code> existe, recebe um arquivo (as linhas são acrescentadas ao fim, <code>open("a")</code>) e a pasta dele é criada se
+  faltar; sem a opção, o registro cai em <code>relatorios\servidor-das-versoes\</code>. O servidor abre com uma pasta que ainda não
+  existe (a lista das versões fica vazia, não dá erro), então a ordem do item 19 (o servidor antes do motor) funciona.
+  As opções <code>--pasta</code> e <code>--motor</code> do publicar existem, e a frase de parada sai com <code>--pasta "..."</code> entre aspas, como o
+  roteiro espera.</li>
+<li><strong>Baixo 3 do relatório 10 (as duas frases do formulário):</strong> as duas dizem agora que as palavras mudaram pela D-821 e
+  o que o publicar faz, não. Acertado.</li>
+</ul>
+<h3>A conferência das frases pega o vizinho? (F2, D-813)</h3>
+<p>Duas sondas, cada uma uma mutação por vez:</p>
+<ol>
+<li><strong>Só a conferência</strong> (<code>anexos-11/sonda-guarda.py.txt</code>): tira a ajuda do arquivo de teste pela árvore do Python e a
+   roda sobre o publicar de hoje mudado em memória (nenhum arquivo do repositório é escrito). Resultado em
+   <code>anexos-11/sonda-guarda-resultado.txt</code>.</li>
+<li><strong>O arquivo de teste inteiro</strong> (<code>anexos-11/mutacoes-g-j.py.txt</code>), numa cópia de <code>47333171</code>, com as mutações em
+   frases que os testes de caminho não percorrem (como o relatório 10 fez). Resultado em
+   <code>anexos-11/mutacoes-j-arquivo-inteiro-resultado.txt</code>. A cópia voltou igual ao git (conferido com <code>cmp</code>).</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Mutação</th>
+<th>O que sai para quem lê</th>
+<th>Conferência nova</th>
+<th>125 testes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>J1</td>
+<td><code>"o motor publicado em " + f"{destino.nome}" + ...</code> ("em a pasta")</td>
+<td>passa</td>
+<td>passam</td>
+</tr>
+<tr>
+<td>J2</td>
+<td><code>"não consegui liberar {} em {} ({})".format(etiqueta, f"{self.nome}", erro)</code></td>
+<td>passa</td>
+<td>passam</td>
+</tr>
+<tr>
+<td>J3</td>
+<td><code>f"... (em {f'{destino.nome}'}) ..."</code> (chaves dentro de chaves)</td>
+<td>passa</td>
+<td>passam</td>
+</tr>
+<tr>
+<td>J4</td>
+<td><code>com_preposicao('por', destino.nome)</code> ("por a pasta")</td>
+<td>passa</td>
+<td>passam</td>
+</tr>
+<tr>
+<td>J5</td>
+<td><code>f"não consegui liberar {etiqueta} em a pasta {self.raiz} ..."</code> (o nome montado à mão)</td>
+<td>passa</td>
+<td>passam</td>
+</tr>
+<tr>
+<td>J6</td>
+<td><code>f"a assinatura lida de {getattr(destino, 'nome')} ..."</code></td>
+<td>passa</td>
+<td>passam</td>
+</tr>
+<tr>
+<td>J7</td>
+<td><code>onde = f"{destino.nome}"</code> e depois <code>f"... liberada em {onde}"</code></td>
+<td>passa</td>
+<td>passam</td>
+</tr>
+<tr>
+<td>sem mutação</td>
+<td>(o código de hoje)</td>
+<td>passa</td>
+<td>passam</td>
+</tr>
+</tbody>
+</table>
+<p>Nas sondas de memória também passam: o mesmo com <code>print(... , f"{destino.nome}")</code>, <code>" ".join([..., f"{...}"])</code>,
+<code>"%s" % f"{...}"</code> e "em na pasta" (<code>f"... em {com_preposicao('em', ...)}"</code>). São acusados, como devem: o nome solto no
+<code>print</code>, o <code>str(destino.nome)</code>, e os cinco G do relatório 10.</p>
+<h3>A conferência acusa frase certa? (F8)</h3>
+<p>Hoje, nenhuma (0 achados). Mas acusaria, se alguém escrevesse (sonda de memória, <code>F8a</code> a <code>F8f</code>):
+<code>com_preposicao("em", nome=destino.nome)</code> e <code>Apagado(etiqueta, onde=destino.nome, ...)</code> (o mesmo, com o nome do
+argumento), <code>{destino.nome:&lt;30}</code> no começo, "e a pasta", "com a pasta", e um uso que não é frase
+(<code>if destino.nome: ...</code>). O escritor escreveu a ressalva só do "e ".</p>
+<h2>Achados</h2>
+<ol>
+<li>
+<p><strong>BAIXO: a conferência nova das frases deixa passar "em a pasta" de sete jeitos novos.</strong>
+   - Onde: <code>tests/test_publicar_versao.py</code>, <code>_preposicao_a_mao</code>, a função <code>aceito</code>: o nome dentro de chaves é aceito
+     quando está no começo do pedaço com chaves (<code>i == 0</code>, ou só espaço antes), mesmo que esse pedaço seja depois somado
+     a um "em ", passado a <code>.format</code>, guardado numa variável ou posto dentro de outras chaves.
+   - Provado: J1, J2, J3, J6 e J7 acima (os três G mais comuns do relatório 10 voltam a passar com <code>f"{...}"</code> em volta
+     do nome). Também passam J5 (a frase escrita com "em a pasta {self.raiz}" dentro do próprio destino, que não usa o
+     <code>.nome</code>) e J4 (a <code>com_preposicao</code> com "por", já escrito pelo escritor como ressalva e posto na Lista de espera).
+   - Hoje nenhuma frase está errada (0 achados; li os 43 usos do nome do destino). Nada disso chega ao Kaique: é a rede
+     de proteção de um teste. É a família F2 de novo.
+   - O que pedir (D-819: o mais simples e o outro):</p>
+<ul>
+<li><strong>O mais simples:</strong> o pedaço com chaves só conta como "começo da frase" se ele for a frase inteira que sai (o que
+   vai direto para <code>Parou</code>, <code>PublicacaoLiberada</code>, <code>print</code>, <code>append</code> ou <code>return</code>), e um pedaço que é só o nome
+   (<code>f"{destino.nome}"</code>) conta como uso solto. Isso pega J1, J2, J3 e J7. Junto, uma segunda conferência curta, pelo
+   texto: nenhum texto do publicar tem " em a pasta", " de a pasta", " em o GitHub" ou " de o GitHub" (pega o J5).</li>
+<li><strong>O outro:</strong> deixar como está e a ressalva do formulário ganhar estes sete jeitos. Uma conferência que lê o
+   código nunca vai ser completa (o <code>getattr</code>, J6, sempre escapa); o teste de caminho (<code>test_volta11_as_frases_...</code>)
+   já confere o que sai de verdade nos caminhos principais.</li>
+<li>A gerente escolhe; minha opinião é que o primeiro vale a pena se for feito numa volta só, e que depois disso a
+   próxima volta não deve procurar mais vizinhos desta mesma conferência (são cada vez menos prováveis).</li>
+</ul>
+</li>
+<li>
+<p><strong>BAIXO: três textos prometem mais do que a conferência faz.</strong>
+   - Onde: o texto de <code>test_volta11_nenhuma_frase_...</code> ("a guarda acusa qualquer uso do nome do destino fora dos lugares
+     aceitos"), o da ajuda <code>_preposicao_a_mao</code> ("qualquer outro uso é acusado") e o ONDE-PAREI, "Caminho e função",
+     Volta 12 ("conferida ... sobre todos os usos ... (f-string, soma, variável, <code>.format</code>, qualquer chamada)").
+   - Provado: o achado 1. É a família F7 (o escrito não bate com o código); o conferidor do formulário não pega isso.
+   - O que pedir: se o achado 1 for consertado, os textos ficam verdadeiros; se não, trocar "qualquer" pelo que ela pega
+     de fato e citar os jeitos que passam.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO 1: falsos alarmes possíveis no futuro (F8).</strong>
+   - A conferência acusaria código certo: o nome passado com o nome do argumento (<code>nome=</code>, <code>onde=</code>), com alinhamento
+     (<code>:&lt;30</code>), depois de "e " ou "com ", e qualquer uso que não é frase (uma comparação). Para os três primeiros basta
+     acrescentar um lugar à lista; para o último, a lista não tem onde: seria preciso mudar a conferência.
+   - Hoje nenhum desses existe. Só anoto para que a ressalva do formulário (que cita só o "e ") fique completa.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO 2: o <code>Apagado</code> aceita o nome em qualquer posição.</strong>
+   - <code>Apagado(destino.nome, etiqueta, existia=False)</code> (as duas trocadas) passa na conferência e daria "a pasta ...: não
+     existia em v1.2.0". Não é o defeito da preposição, e hoje as duas chamadas estão certas. Basta saber.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO 3: o comando do servidor do item 19 não está escrito inteiro.</strong>
+   - O item 19 diz "com o servidor do item 2 servindo essa pasta (<code>--registro "...servidor-prova4.txt"</code>)", e o item 2
+     tem <code>--pasta &lt;pasta de prova&gt;</code> sem aspas. Com a <code>versoes 6</code> (com espaço), quem trocar só o nome sem pôr aspas recebe
+     do servidor "unrecognized arguments: 6" e ele não abre (lido no código: só há opções, nenhum argumento solto). Não
+     estraga nada, mas é o tipo do baixo 1 do relatório 9 (roteiro que não dá para seguir ao pé da letra).
+   - Sugestão: escrever o comando inteiro no item 19:
+     <code>D:\programas\EditorImpressao\.venv\Scripts\python.exe servidor_das_versoes.py --pasta "C:\EditorImpressaoProva\versoes 6" --registro "C:\EditorImpressaoProva\servidor-prova4.txt"</code>.
+   - Detalhe: na mesma pasta já existe <code>prova4.log</code>, de 20/11 (outra numeração). O arquivo novo tem outro nome e não
+     colide; só pode confundir quem ler depois.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO 4: o Livro conta as voltas do escritor de dois jeitos.</strong>
+   - A D-821 diz "escritor da volta 11 do passo 2 (segunda volta dele, D-815)"; o ONDE-PAREI diz que a volta 11 foi a
+     primeira dele (escritor novo) e a volta 12 a segunda e última. Se a D-821 estiver certa, a volta 12 seria a
+     terceira, o que a D-815 não deixa. Pelo ONDE-PAREI (a volta 11 com uma pausa para a pergunta da D-821, retomada pelo
+     mesmo agente), a conta certa é a do ONDE-PAREI, e a frase da D-821 no Livro é que está errada. É da gerente acertar.</p>
+</li>
+</ol>
+<h2>O que falta</h2>
+<ul>
+<li>Para a prova à vista: nada que impeça; a observação 3 é só para seguir o item 19 sem tropeço.</li>
+<li>Para juntar: os baixos 1 e 2 (ou a decisão da gerente de deixá-los como ressalva).</li>
+</ul>
+<h2>Para a gerente: o que ficou fora do projeto</h2>
+<p>Na pasta de rascunho desta conversa,
+<code>C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\52740cda-b98f-4183-a448-ea9ff84b0439\scratchpad\v11q\</code>
+(criada nesta tarefa, uns 60 MB):</p>
+<ul>
+<li><code>novo\</code> e <code>antigo\</code>: o código de <code>47333171</code> e de <code>8f89d941</code> por <code>git archive</code>, sem a pasta <code>relatorios/</code> (30 MB
+  cada). A <code>novo\</code> voltou igual ao git depois das mutações (conferido com <code>cmp</code>, sem contar o fim de linha).</li>
+<li>Os scripts e resultados (cópias em <code>quem-quebrou/anexos-11/</code>), o publicar de <code>edd39a9f</code> e de <code>1624a05a</code> (para a
+  conta) e o registro da rodada 44948053084 (uns 0,9 MB).</li>
+</ul>
+<p>Continuam lá, de antes desta tarefa e não tocados por mim: <code>v10q\</code> (2,5 GB, do relatório 10), <code>v11\</code> e <code>v12\</code> (do
+escritor) e os outros arquivos soltos. O pytest também cria pastas em
+<code>C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\</code> (ele guarda só as últimas). Não apaguei nada em lugar nenhum.</p>
+<h2>Fontes</h2>
+<ul>
+<li>Python 3.14, módulo <code>ast</code>: um texto com chaves (f-string) vira <code>JoinedStr</code>, com partes <code>Constant</code> e
+  <code>FormattedValue</code>; dois pedaços lado a lado sem <code>+</code> viram um só (por isso a frase de duas linhas é vista inteira); com
+  <code>+</code> são dois <code>JoinedStr</code> separados (por isso J1 e J7 passam: o segundo pedaço começa no nome); <code>getattr</code> é uma chamada,
+  sem <code>Attribute</code> (por isso J6 passa).</li>
+<li>Python, módulo <code>argparse</code>: palavra solta que nenhuma opção espera dá o erro "unrecognized arguments" e o programa sai
+  sem abrir (observação 3).</li>
+<li><code>servidor_das_versoes.py</code>, <code>principal</code> (as opções e o registro) e <code>Versoes.publicacoes</code> → <code>DestinoPasta.liberadas</code>
+  (pasta que não existe: lista vazia).</li>
+<li>Rodada do GitHub 44948053084 (lida com <code>gh run view</code>).</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 21/11/2026 às 17:32</p>
+</body>
+</html>

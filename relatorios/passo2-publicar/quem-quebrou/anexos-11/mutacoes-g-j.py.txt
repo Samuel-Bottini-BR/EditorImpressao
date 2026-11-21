@@ -1,0 +1,80 @@
+"""Mutacoes do quem-quebra da volta 12 (relatorio 11). Roda numa copia (git archive, sem relatorios/) na pasta de
+rascunho; nunca no repositorio. Cada mutacao troca um pedaco do publicar_versao_kaique.py da copia, roda um arquivo de
+teste, anota o resumo e desfaz (conferido byte a byte).
+Uso: python mutacoes_j.py <copia> <resultado> [inteiro|guarda] [codigos...]"""
+import subprocess
+import sys
+from pathlib import Path
+
+COPIA, RESULTADO, MODO = Path(sys.argv[1]), Path(sys.argv[2]), sys.argv[3]
+SO = sys.argv[4:]
+PY = r"D:\programas\EditorImpressao\.venv\Scripts\python.exe"
+TESTE = ["tests/test_publicar_versao.py"] + (["-k", "volta11_nenhuma"] if MODO == "guarda" else [])
+
+L408 = "raise Parou(f\"não consegui liberar {etiqueta} {com_preposicao('em', self.nome)} ({erro})\") from erro"
+L790 = "raise Parou(f\"sobrou um rascunho de {etiqueta} {com_preposicao('em', destino.nome)}\""
+L864 = "raise Parou(f\"o motor publicado {com_preposicao('em', destino.nome)} não confere: {motivo}\")"
+L896 = "raise Parou(f\"a assinatura lida {com_preposicao('de', destino.nome)} não confere: {motivo}\")"
+L902 = ("raise Parou(f\"o índice {empacotar.NOME_DO_INDICE} lido {com_preposicao('de', destino.nome)}\"\n"
+        "                        f\" está estragado ({erro})\") from erro")
+L1112 = "    frase = (f\"a versão {versao_do_pacote} FOI publicada e está liberada {com_preposicao('em', destino.nome)}\""
+
+MUTACOES = [
+    # G: as do relatorio 10 (os mesmos trechos), para a reversao
+    ("G1 soma com +", L864, "raise Parou(\"o motor publicado em \" + destino.nome + f\" não confere: {motivo}\")"),
+    ("G2 variavel", L1112,
+     "    onde = destino.nome\n    frase = (f\"a versão {versao_do_pacote} FOI publicada e está liberada em {onde}\""),
+    ("G3 parentese", L902,
+     "raise Parou(f\"o índice {empacotar.NOME_DO_INDICE} (em {destino.nome})\"\n"
+     "                        f\" está estragado ({erro})\") from erro"),
+    ("G4 .format", L408, "raise Parou(\"não consegui liberar {} em {} ({})\".format(etiqueta, self.nome, erro)) from erro"),
+    ("G5 por", L790, "raise Parou(f\"sobrou um rascunho de {etiqueta} deixado por {destino.nome}\""),
+    # J: os vizinhos da guarda nova (F2)
+    ("J1 G1 com o nome num f-string", L864,
+     "raise Parou(\"o motor publicado em \" + f\"{destino.nome}\" + f\" não confere: {motivo}\")"),
+    ("J2 G4 com o nome num f-string", L408,
+     "raise Parou(\"não consegui liberar {} em {} ({})\".format(etiqueta, f\"{self.nome}\", erro)) from erro"),
+    ("J3 G3 com f-string dentro de f-string", L902,
+     "raise Parou(f\"o índice {empacotar.NOME_DO_INDICE} (em {f'{destino.nome}'})\"\n"
+     "                        f\" está estragado ({erro})\") from erro"),
+    ("J4 com_preposicao('por', ...)", L790,
+     "raise Parou(f\"sobrou um rascunho de {etiqueta} {com_preposicao('por', destino.nome)}\""),
+    ("J5 'em a pasta {self.raiz}' escrito no texto (DestinoPasta.liberar)", L408,
+     "raise Parou(f\"não consegui liberar {etiqueta} em a pasta {self.raiz} ({erro})\") from erro"),
+    ("J6 getattr(destino, 'nome')", L896,
+     "raise Parou(f\"a assinatura lida de {getattr(destino, 'nome')} não confere: {motivo}\")"),
+    ("J7 G2 com a variavel num f-string", L1112,
+     "    onde = f\"{destino.nome}\"\n    frase = (f\"a versão {versao_do_pacote} FOI publicada e está liberada em {onde}\""),
+]
+
+
+def rodar() -> str:
+    """O arquivo de teste na copia; devolve o resumo e as primeiras falhas."""
+    r = subprocess.run([PY, "-m", "pytest", *TESTE, "-q", "-p", "no:cacheprovider"], cwd=COPIA, capture_output=True,
+                       text=True, encoding="utf-8", errors="replace", timeout=1800)
+    linhas = [l for l in r.stdout.splitlines() if l.strip()]
+    falhas = [l for l in linhas if l.startswith("FAILED")][:3]
+    return (linhas[-1] if linhas else r.stderr[-300:]) + "".join(f"\n      {f[:220]}" for f in falhas)
+
+
+alvo = COPIA / "publicar_versao_kaique.py"
+original = alvo.read_bytes()
+texto = original.decode("utf-8").replace("\r\n", "\n")
+saida = []
+for nome, velho, novo in MUTACOES:
+    if SO and not any(nome.startswith(s) for s in SO):
+        continue
+    if texto.count(velho) != 1:
+        saida.append(f"{nome}: o pedaco aparece {texto.count(velho)} vez(es); NAO RODADA")
+        print(saida[-1], flush=True)
+        continue
+    alvo.write_bytes(texto.replace(velho, novo).encode("utf-8"))
+    try:
+        saida.append(f"{nome}: {rodar()}")
+    finally:
+        alvo.write_bytes(original)
+    assert alvo.read_bytes() == original
+    print(saida[-1], flush=True)
+saida.append(f"sem mutacao: {rodar()}")
+print(saida[-1], flush=True)
+RESULTADO.write_text("\n".join(saida) + "\n", encoding="utf-8")
