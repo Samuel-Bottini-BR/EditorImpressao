@@ -655,8 +655,8 @@ def com_preposicao(preposicao: str, nome: str) -> str:
     pasta X" = "da pasta X"; "em" + "o GitHub (...)" = "no GitHub (...)"); qualquer outro nome, so com um espaco ("de
     uma pasta"). O lugar unico dessa juncao (volta 10, observacao 6 do relatorio 8: a frase do apagar saia "de a pasta").
     Volta 11 (Lista de bugs de 21/11: "Umas 20 frases do publicar saem 'em a pasta ...' e 'em o GitHub ...'"): toda
-    frase deste arquivo que poe "em"/"de" antes do nome de um destino passa por aqui (31 lugares), menos a da D-816
-    (_frase_depois_do_pedido_de_liberar), que espera o Samuel: um teste da volta 3 cobra o pedaco "ficou liberada em".
+    frase deste arquivo que poe "em"/"de" antes do nome de um destino passa por aqui (31 lugares, e as duas juncoes da
+    frase da D-816, _frase_depois_do_pedido_de_liberar, pela D-821: Samuel, 21/11/2026, "ok").
     A guarda tests/test_publicar_versao.py::test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao
     acusa a frase que voltar a juntar a mao. Seguro mexer: acrescentar contracao. Arriscado: mudar o nome dos destinos
     (DestinoPasta.nome, DestinoGitHub.nome) sem o artigo na frente: a frase perde a contracao (o teste test_obs6 acusa);
@@ -742,15 +742,16 @@ def _frase_depois_do_pedido_de_liberar(destino, etiqueta: str) -> str:
     """A frase do caminho de erro DEPOIS do pedido de liberar (D-816, o lugar unico): nada foi apagado; o que pode ter
     ficado (liberada, inteira, ou rascunho); como conferir; e o comando para apagar o rascunho depois. Nao le nada do
     destino (a decisao de nao apagar nao depende de leitura, e uma leitura atrasada nao entra na frase).
-    Volta 11: a unica frase do publicar que ainda junta "em" com o nome do destino a mao ("em a pasta"), de proposito,
-    esperando o Samuel (ONDE-PAREI do passo 2, "Perguntas para o Samuel", Volta 11): o teste da volta 3
-    test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada cobra "ficou liberada em",
-    e um teste de antes nao se muda sem o "sim" dele (D-605). Com o "sim": com_preposicao aqui tambem, o teste com
-    "ficou liberada na pasta"/"no GitHub", e esta funcao sai da excecao da guarda (_FRASES_ESPERANDO_O_SAMUEL)."""
-    return (f"{etiqueta}: pedi para liberar em {destino.nome} e não deu para reconferir agora se ficou liberada. Depois "
-            "do pedido de liberar, o publicar nunca apaga nada (uma leitura atrasada poderia apagar a versão já "
-            "liberada), e NÃO apaguei. Ela pode ter ficado de dois jeitos: se ficou liberada em "
-            f"{destino.nome}, está inteira (tudo foi lido de volta antes do pedido) e vale: não publique de novo com "
+    D-821 (Samuel, 21/11/2026: "ok", a trocar "em a pasta" por "na pasta"): as duas juncoes com o nome do destino
+    passam pela com_preposicao, como as outras frases ("pedi para liberar na pasta ...", "se ficou liberada no GitHub
+    (...)"); o teste da volta 3 test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada
+    passou a cobrar "ficou liberada na pasta" (excecao a regra de nao mudar teste antigo, autorizada so para isso). O que a
+    frase diz e o que o publicar faz depois do pedido de liberar nao mudam (D-816)."""
+    return (f"{etiqueta}: pedi para liberar {com_preposicao('em', destino.nome)} e não deu para reconferir agora se "
+            "ficou liberada. Depois do pedido de liberar, o publicar nunca apaga nada (uma leitura atrasada poderia "
+            "apagar a versão já liberada), e NÃO apaguei. Ela pode ter ficado de dois jeitos: se ficou liberada "
+            f"{com_preposicao('em', destino.nome)}, está inteira (tudo foi lido de volta antes do pedido) e vale: "
+            "não publique de novo com "
             f"{etiqueta}; se ficou como rascunho, apague depois com: {destino.comando_de_apagar(etiqueta)}; e publique "
             f"de novo. Para conferir qual dos dois: {destino.como_conferir(etiqueta)}")
 

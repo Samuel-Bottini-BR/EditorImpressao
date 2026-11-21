@@ -995,7 +995,8 @@ def test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_ver
     assert (a["servidor"] / ETIQUETA).is_dir(), "a versão liberada foi apagada"
     assert sorted(f.name for f in (a["servidor"] / ETIQUETA).iterdir()), "a versão liberada ficou vazia"
     assert "NÃO apaguei" in str(erro.value) and "foi apagada" not in str(erro.value), erro.value
-    assert "ficou liberada em" in str(erro.value), "a frase tem de dizer que a versão ficou liberada (lido depois)"
+    # D-821 (Samuel, 21/11/2026: "ok", à troca de "em a pasta" por "na pasta"): antes "ficou liberada em"
+    assert "ficou liberada na pasta" in str(erro.value), "a frase tem de dizer que a versão ficou liberada (lido depois)"
 
 
 class _GitHubQueLiberaEPerdeAResposta(_GitHubDeMentira):
@@ -2799,11 +2800,8 @@ def test_obs6_a_frase_do_apagar_sai_com_a_contracao(tmp_path):
 # Volta 11 (21/11/2026): as frases do publicar com a contração ("na pasta", "no GitHub"), pela com_preposicao
 # ---------------------------------------------------------------------------------------------------------------------
 
-# A frase que ainda junta a preposição à mão, de propósito, até a resposta do Samuel (ONDE-PAREI do passo 2,
-# "Perguntas para o Samuel", Volta 11): a da D-816, cujo pedaço "ficou liberada em" é cobrado pelo teste da volta 3
-# test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada (um teste de antes não se
-# muda sem o "sim" dele, D-605). Quando a frase mudar, ela sai daqui (a guarda acusa a exceção que sobrar).
-_FRASES_ESPERANDO_O_SAMUEL = {"_frase_depois_do_pedido_de_liberar"}
+# A guarda não tem exceção (D-821, Samuel, 21/11/2026: "ok"): a frase da D-816, que ficou de fora até a resposta
+# dele, também passa pela com_preposicao.
 
 
 def _preposicao_a_mao(fonte: str) -> list[tuple[int, str, str]]:
@@ -2838,15 +2836,12 @@ def test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao():
     novo na prova à vista de 21/11: "não está publicado em a pasta", "lido de volta de a pasta", "liberada em a
     pasta"): as frases juntavam a preposição com o nome do destino à mão (`f"... em {destino.nome}"`), e o nome abre com
     o artigo ("a pasta ...", "o GitHub (...)"). A junção tem um lugar só, `com_preposicao` (volta 10, a do apagar). Esta
-    guarda lê o código do publicar e acusa toda frase que volte a escrever "em "/"de " antes do nome do destino; a
-    única exceção é a que espera o Samuel, e a exceção que não for mais precisa também é acusada. Rodado em edd39a9f:
-    acusa 31 frases fora da exceção."""
+    guarda lê o código do publicar e acusa toda frase que volte a escrever "em "/"de " antes do nome do destino, sem
+    exceção: a frase da D-816, que ficou de fora até a resposta do Samuel, também (D-821, 21/11/2026: "ok"). Rodado em
+    edd39a9f: acusa 33 junções (31 frases e as duas da D-816); em 1624a05a: acusa as duas da D-816."""
     fonte = (RAIZ / "publicar_versao_kaique.py").read_text(encoding="utf-8")
     achados = _preposicao_a_mao(fonte)
-    fora_da_excecao = [a for a in achados if a[1] not in _FRASES_ESPERANDO_O_SAMUEL]
-    assert fora_da_excecao == [], f"frases com a preposição escrita à mão (use com_preposicao): {fora_da_excecao}"
-    sobrando = _FRASES_ESPERANDO_O_SAMUEL - {a[1] for a in achados}
-    assert not sobrando, f"a exceção não é mais precisa (a frase já usa com_preposicao): tire {sobrando} daqui"
+    assert achados == [], f"frases com a preposição escrita à mão (use com_preposicao): {achados}"
 
 
 @pytest.mark.parametrize("onde", ["pasta", "github"])
