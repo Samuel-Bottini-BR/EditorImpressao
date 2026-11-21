@@ -3135,8 +3135,8 @@ de código e testes da volta 8 é 5462d882 (depois dele só a pasta deste relat�
 Volta 9: o código ficou em `cea2b486`; depois vieram duas docstrings e o conserto de um teste pedido pela rodada do
 GitHub; o último commit de código e testes da volta 9 é 011b06d0 (depois dele só a pasta deste relatório muda).
 
-Volta 10: e9617727 (o último commit de código e testes da volta 10, no jeito A; o primeiro jeito, o do git, ficou em
-`c1ba406d` e foi trocado; depois de `e9617727` só a pasta deste relatório muda).
+Volta 10: 09b30933 (o último commit de código e testes da volta 10, no jeito A, depois de `e9617727` e de dois commits só de texto dos testes; o primeiro jeito, o do git, ficou em
+`c1ba406d` e foi trocado; depois de `09b30933` só a pasta deste relatório muda).
 
 ## O que o agente que tentou quebrar achou
 
