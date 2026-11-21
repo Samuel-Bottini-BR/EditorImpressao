@@ -148,7 +148,7 @@ CAMINHOS_DO_INNO = [
 # em dezenas de MB e diminui o tempo de abertura.
 EXCLUIR = [
     # a peca do git e as regras dos agentes: so para o PC do Samuel; o programa do Kaique
-    # nunca pergunta ao git (core/pasta_das_ferramentas.py devolve None empacotado; volta 9)
+    # nunca as usa (volta 9; desde a volta 10, nem a regra da pasta das ferramentas pergunta ao git)
     "regras_dos_agentes",
     "PySide6.QtWebEngineCore", "PySide6.QtWebEngineWidgets", "PySide6.QtWebEngineQuick",
     "PySide6.QtQuick", "PySide6.QtQml", "PySide6.Qt3DCore", "PySide6.Qt3DRender",
@@ -174,16 +174,14 @@ OCULTOS = ["doxapy", "skimage.filters", "PIL._tkinter_finder",
 # ---- os detectores de texto que vao ao lado do .exe (item 1.3) ----------
 PASTA_DO_MOTOR = "motor-kraken"     # core/ocr_kraken.NOME_DA_PASTA
 PASTA_DO_TESSERACT = "tesseract"    # core/ocr_tesseract.lugares_do_tesseract
-# A pasta das ferramentas do Samuel (EditorImpressao-arquivos\ferramentas, ao lado da
-# pasta PRINCIPAL do repositorio): o lugar unico e core/pasta_das_ferramentas.py
-# (passo 2, volta 9; o defeito 1 da prova a vista de 20/11: aqui era "a pasta de
-# cima deste arquivo", que numa copia de trabalho e .claude\worktrees). O empacotar
-# nunca roda empacotado, entao ela nunca e None aqui.
+# A pasta das ferramentas do Samuel (D:\programas\EditorImpressao-arquivos\ferramentas):
+# o caminho esta escrito num lugar so, core/pasta_das_ferramentas.py (passo 2, volta 10,
+# D-820; o defeito 1 da prova a vista de 20/11: aqui era "a pasta de cima deste arquivo",
+# que numa copia de trabalho e .claude\worktrees). O empacotar nunca roda empacotado,
+# entao ela nunca e None aqui.
 from core import pasta_das_ferramentas as _pasta_das_ferramentas  # noqa: E402
 
-# Volta 10 (achado 1 do relatorio 8): numa copia de trabalho com o git sem responder, a regra
-# nao sabe a pasta, e o script para aqui, ao carregar, com a frase (pasta_das_ferramentas_ou_parar).
-FERRAMENTAS = _pasta_das_ferramentas.pasta_das_ferramentas_ou_parar(RAIZ)
+FERRAMENTAS = _pasta_das_ferramentas.pasta_das_ferramentas()
 # Onde procurar um motor do Kraken pronto, em ordem (o primeiro VALIDO vale;
 # --motor-kraken passa outro). O de EditorImpressao-arquivos\ferramentas foi
 # montado ate 29/09 com as DLLs do Visual C++ dentro, e e recusado.
@@ -547,7 +545,10 @@ def conferir_motor_kraken(pasta: Path) -> list[str]:
 def achar_motor_kraken(escolhido: Path | None = None) -> tuple[Path | None, list[str]]:
     """O motor que vai no pacote: o escolhido, ou o primeiro VALIDO de LUGARES_DO_MOTOR.
 
-    Devolve (pasta, []) ou (None, [o que ha de errado em cada lugar]).
+    Devolve (pasta, []) ou (None, [o que ha de errado em cada lugar]). Sem o escolhido e sem
+    motor em nenhum lugar, o ultimo item diz como apontar outro lugar (--motor-kraken; volta 10,
+    D-820: a frase diz onde procurou e como apontar outro lugar). O lugar unico desta busca:
+    o empacotar (juntar_pecas) e o publicar --motor a usam.
     """
     lugares = [Path(escolhido)] if escolhido else LUGARES_DO_MOTOR
     problemas = []
@@ -559,6 +560,8 @@ def achar_motor_kraken(escolhido: Path | None = None) -> tuple[Path | None, list
         if not erros:
             return lugar.resolve(), []
         problemas.extend(erros)
+    if not escolhido:
+        problemas.append("para usar um motor em outra pasta, aponte-a com --motor-kraken <pasta>")
     return None, problemas
 
 
@@ -661,7 +664,7 @@ def preparar_vc_redist(baixar: bool = True) -> tuple[Path | None, str, list[str]
         # nunca cria a pasta das ferramentas (volta 9: foi assim que nasceu a pasta errada de 19/11,
         # criada inteira onde a conta mandava); so a downloads\ dentro de uma que ja existe
         if not DOWNLOADS.parent.is_dir():
-            return None, "", [_pasta_das_ferramentas.problema_para_gravar(RAIZ)
+            return None, "", [_pasta_das_ferramentas.problema_para_gravar()
                               or f"não existe a pasta {DOWNLOADS.parent}; nada foi criado"]
         DOWNLOADS.mkdir(exist_ok=True)
         provisorio = arquivo.with_name(arquivo.name + ".baixando")

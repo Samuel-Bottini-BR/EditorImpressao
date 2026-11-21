@@ -153,18 +153,15 @@ def lugares_do_motor() -> list[Path]:
     1. Ao lado do programa instalado ({app}\\motor-kraken, quando o programa
        roda empacotado pelo PyInstaller).
     2. Na raiz do código (motor-kraken\\, para quem quiser deixar ali; fora do git).
-    3. A pasta onde montar_motor_kraken.py monta por padrão (fora do git), na pasta das ferramentas do Samuel, ao lado
-       da pasta PRINCIPAL do repositório (D:\\programas\\EditorImpressao-arquivos\\ferramentas\\motor-kraken), pelo
-       lugar único core/pasta_das_ferramentas.py. Passo 2, volta 9 (o defeito 1 da prova à vista de 20/11 e o defeito
+    3. A pasta onde montar_motor_kraken.py monta por padrão (fora do git), na pasta das ferramentas do Samuel
+       (D:\\programas\\EditorImpressao-arquivos\\ferramentas\\motor-kraken), escrita num lugar só,
+       core/pasta_das_ferramentas.py (volta 10, D-820). Passo 2, volta 9 (o defeito 1 da prova à vista de 20/11 e o defeito
        antigo nº 330): era "a pasta de cima do código", que numa cópia de trabalho é .claude\\worktrees, e o motor não
        era achado. Empacotado (o programa do Kaique) este lugar não existe e nada é perguntado ao git: a lista fica com
        os dois primeiros, e o primeiro, o que acha o motor dele, não muda (D-788).
 
-    Volta 10 (relatório 8 de quem tentou quebrar): "está empacotado?" é a pergunta da regra
-    (`pasta_das_ferramentas.empacotado`, a mesma que decide se o lugar 3 existe; observação 8: antes era escrita aqui
-    também). Rodando de uma cópia de trabalho com o git sem responder, a regra não sabe o lugar 3 e levanta
-    `pasta_das_ferramentas.SemPastaPrincipal` (achado 1): esta função a deixa subir (nunca procura no lugar errado), e o
-    `MotorKraken` a transforma em "indisponível" com a frase.
+    Volta 10 (relatório 8 de quem tentou quebrar, observação 8): "está empacotado?" é a pergunta da regra
+    (`pasta_das_ferramentas.empacotado`, a mesma que decide se o lugar 3 existe; antes era escrita aqui também).
     """
     from core import pasta_das_ferramentas
 
@@ -173,7 +170,7 @@ def lugares_do_motor() -> list[Path]:
         lugares.append(Path(sys.executable).resolve().parent / NOME_DA_PASTA)
     raiz = _raiz_do_codigo()
     lugares.append(raiz / NOME_DA_PASTA)
-    ferramentas = pasta_das_ferramentas.pasta_das_ferramentas(raiz)
+    ferramentas = pasta_das_ferramentas.pasta_das_ferramentas()
     if ferramentas is not None:
         lugares.append(ferramentas / NOME_DA_PASTA)
     return lugares
@@ -364,17 +361,9 @@ class MotorKraken:
         return self._processo is not None and self._processo.poll() is None
 
     def _comando(self) -> tuple[list[str] | None, Path | None, ResultadoOCR | None]:
-        """(o comando que abre o motor, a pasta dele, None) ou (None, None, o aviso "indisponível"). Volta 10 (achado 1
-        do relatório 8): quando a regra da pasta das ferramentas não sabe onde ela fica (uma cópia de trabalho com o git
-        sem responder), o aviso é a frase da regra, e o programa continua (nunca um erro que feche a janela)."""
-        from core import pasta_das_ferramentas
-
         if self._comando_de_teste:
             return self._comando_de_teste, None, None
-        try:
-            pasta = self.pasta if self.pasta is not None else achar_pasta_do_motor()
-        except pasta_das_ferramentas.SemPastaPrincipal as erro:
-            return None, None, _indisponivel(str(erro), "a pasta das ferramentas não pôde ser achada")
+        pasta = self.pasta if self.pasta is not None else achar_pasta_do_motor()
         if pasta is None or not _e_motor(pasta):
             onde = str(pasta) if pasta is not None else ", ".join(str(p) for p in lugares_do_motor())
             return None, None, _indisponivel(_AVISO_AUSENTE, f"motor não encontrado em: {onde}")

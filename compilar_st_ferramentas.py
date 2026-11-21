@@ -59,8 +59,8 @@ NOME_RASCUNHO = "build-st-ferramentas"
 
 
 def pasta_de_ferramentas_padrao() -> Path:
-    """A pasta EditorImpressao-arquivos\\ferramentas ao lado da pasta PRINCIPAL do repositório, pelo lugar único
-    core/pasta_das_ferramentas.py (a mesma do compilar_detector_gravura).
+    """A pasta das ferramentas do Samuel (D:\\programas\\EditorImpressao-arquivos\\ferramentas), escrita num lugar
+    só, core/pasta_das_ferramentas.py (a mesma do compilar_detector_gravura; volta 10, D-820).
 
     Passo 2, volta 9 (o defeito 1 da prova à vista de 20/11): antes subia as pastas a partir do código e ficava com a
     primeira EditorImpressao-arquivos\\ferramentas que existisse; numa cópia em .claude\\worktrees, achava a pasta
@@ -209,7 +209,7 @@ def main(argumentos: list[str] | None = None) -> int:
         if os.name != "nt":
             raise ErroDeCompilacao("Este script só compila no Windows.")
         # volta 9: com o padrao, so se a pasta das ferramentas existe (nunca a cria no lugar errado)
-        problema = pasta_das_ferramentas.problema_para_gravar(RAIZ) \
+        problema = pasta_das_ferramentas.problema_para_gravar() \
             if opcoes.ferramentas == pasta_de_ferramentas_padrao() else None
         if problema:
             raise ErroDeCompilacao(f"{problema} (ou passe --ferramentas)")

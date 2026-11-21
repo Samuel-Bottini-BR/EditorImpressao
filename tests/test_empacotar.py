@@ -608,10 +608,11 @@ def test_d818_a_montagem_e_a_pasta_usam_a_mesma_regua_do_visual_c(tmp_path, monk
 # ---------------------------------------------------------------------------
 
 def test_volta9_a_peca_do_git_nao_vai_no_programa_do_kaique():
-    """D-605 e D-788: a regra unica da pasta das ferramentas (core/pasta_das_ferramentas.py) pergunta ao git pela peca
-    unica dele (regras_dos_agentes), mas o programa do Kaique nao pergunta nem leva essa peca: o pacote do PyInstaller
-    exclui `regras_dos_agentes` (empacotar.EXCLUIR), na versao em pasta e na de um arquivo so. E a propria regra esta no
-    pacote (o core/ocr_kraken a usa)."""
+    """D-605 e D-788: o programa do Kaique nao leva a peca do git nem as regras dos agentes (regras_dos_agentes): a linha
+    de comando do PyInstaller exclui `regras_dos_agentes` (empacotar.EXCLUIR), na versao em pasta e na de um arquivo so.
+    Este teste so confere a linha de comando; o pacote montado de verdade so a prova a vista mostra (o item 20 do roteiro
+    do passo 2; observacao 4 do relatorio 8). Desde a volta 10 (D-820), a regra da pasta das ferramentas nem pergunta ao
+    git."""
     for onefile in (False, True):
         comando = empacotar.comando_do_pyinstaller(onefile)
         assert "regras_dos_agentes" in _valor_de(comando, "--exclude-module"), onefile

@@ -68,14 +68,12 @@ VERSAO_BOOST = "1.78.0"
 URL_BOOST = "https://archives.boost.io/release/1.78.0/source/boost_1_78_0.7z"
 SHA256_BOOST = "090cefea470bca990fa3f3ed793d865389426915b37a2a3258524a7258f0790c"
 
-# A pasta das ferramentas do Samuel, ao lado da pasta PRINCIPAL do repositorio: o lugar unico e
-# core/pasta_das_ferramentas.py (passo 2, volta 9; aqui era "a pasta de cima deste arquivo", errada
-# numa copia de trabalho). Este script nunca roda empacotado: nunca e None.
+# A pasta das ferramentas do Samuel (D:\programas\EditorImpressao-arquivos\ferramentas): o caminho
+# esta escrito num lugar so, core/pasta_das_ferramentas.py (passo 2, volta 10, D-820; aqui era "a pasta
+# de cima deste arquivo", errada numa copia de trabalho). Este script nunca roda empacotado: nunca e None.
 from core import pasta_das_ferramentas as _pasta_das_ferramentas  # noqa: E402
 
-# Volta 10 (achado 1 do relatorio 8): numa copia de trabalho com o git sem responder, a regra
-# nao sabe a pasta, e o script para aqui, ao carregar, com a frase (pasta_das_ferramentas_ou_parar).
-PASTA_FERRAMENTAS_PADRAO = _pasta_das_ferramentas.pasta_das_ferramentas_ou_parar(RAIZ)
+PASTA_FERRAMENTAS_PADRAO = _pasta_das_ferramentas.pasta_das_ferramentas()
 
 CMAKE_CANDIDATOS = [
     Path(r"C:\Program Files\CMake\bin\cmake.exe"),
@@ -283,7 +281,7 @@ def main(argumentos: list[str] | None = None) -> int:
         if os.name != "nt":
             raise ErroDeCompilacao("Este script só compila no Windows.")
         # volta 9: com o padrao, so se a pasta das ferramentas existe (nunca a cria no lugar errado)
-        problema = _pasta_das_ferramentas.problema_para_gravar(RAIZ) \
+        problema = _pasta_das_ferramentas.problema_para_gravar() \
             if opcoes.ferramentas == PASTA_FERRAMENTAS_PADRAO else None
         if problema:
             raise ErroDeCompilacao(f"{problema} (ou passe --ferramentas)")

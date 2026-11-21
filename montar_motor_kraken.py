@@ -109,14 +109,12 @@ PASTA_FONTES = RAIZ / "motor_kraken"
 ARQUIVO_TRAVADO = PASTA_FONTES / "requisitos-travados.txt"
 SERVIDOR = PASTA_FONTES / "servidor_kraken.py"
 
-# A pasta das ferramentas do Samuel, ao lado da pasta PRINCIPAL do repositorio: o lugar unico e
-# core/pasta_das_ferramentas.py (passo 2, volta 9; aqui era "a pasta de cima deste arquivo", errada
-# numa copia de trabalho). Este script nunca roda empacotado: nunca e None.
+# A pasta das ferramentas do Samuel (D:\programas\EditorImpressao-arquivos\ferramentas): o caminho
+# esta escrito num lugar so, core/pasta_das_ferramentas.py (passo 2, volta 10, D-820; aqui era "a pasta
+# de cima deste arquivo", errada numa copia de trabalho). Este script nunca roda empacotado: nunca e None.
 from core import pasta_das_ferramentas as _pasta_das_ferramentas  # noqa: E402
 
-# Volta 10 (achado 1 do relatorio 8): numa copia de trabalho com o git sem responder, a regra
-# nao sabe a pasta, e o script para aqui, ao carregar, com a frase (pasta_das_ferramentas_ou_parar).
-PASTA_FERRAMENTAS = _pasta_das_ferramentas.pasta_das_ferramentas_ou_parar(RAIZ)
+PASTA_FERRAMENTAS = _pasta_das_ferramentas.pasta_das_ferramentas()
 DESTINO_PADRAO = PASTA_FERRAMENTAS / "motor-kraken"
 DOWNLOADS_PADRAO = PASTA_FERRAMENTAS / "downloads"
 
@@ -637,7 +635,7 @@ def main(argumentos: list[str] | None = None) -> int:
     try:
         # volta 9: com o padrao (a pasta das ferramentas), so se ela existe; nunca a cria no lugar errado
         usa_o_padrao = opcoes.destino == DESTINO_PADRAO or opcoes.downloads == DOWNLOADS_PADRAO
-        problema = _pasta_das_ferramentas.problema_para_gravar(RAIZ) if usa_o_padrao else None
+        problema = _pasta_das_ferramentas.problema_para_gravar() if usa_o_padrao else None
         if problema and not opcoes.gerar_travado:
             raise ErroDeMontagem(f"{problema} (ou passe --destino e --downloads)")
         if opcoes.gerar_travado:
