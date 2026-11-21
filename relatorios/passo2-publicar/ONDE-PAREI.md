@@ -109,7 +109,7 @@ entrega, de `03c91599`) estão nos pacotes e no `git log` deste arquivo.)
   lidos, em UTF-16). Pasta de rascunho nova: `v8\` (as outras não são tocadas). O plano (D-709) está em "A causa, a
   regra e todos os caminhos", "Volta 8", escrito antes de mexer.
 
-- 20/11, volta 8 feita **em parte**: plano `df40b18e`; testes antes do código `44029d6a`; código `b2863630` (a frase do
+- 20/11, volta 8 feita **em parte**: plano `df40b18e`; testes antes do código `44029d6a`; código `b2863630`, e o conserto de um teste em `5462d882` (a frase do
   `--apagar` saída do lugar único do apagar; a versão do Visual C++ do pacote lida por uma função só, a do publicar,
   usada pelo programa instalado; os testes dos baixos 1 a 3; o roteiro e o texto do formulário). Reversão no código de
   `21f1fc50`: 10 dos 23 casos novos falham lá, e os 98 antigos passam; mutações U1 a U12: 12 de 12 acusadas.
@@ -1684,6 +1684,15 @@ mexer).
   proteção não sumir calada e são provados pelas mutações. Os 98 antigos passam lá.
 - **Volta 8, mutações** (`anexos/reversao-volta8-resultado.txt`; script `anexos/reversao-volta8-mutacoes.py.txt`), numa
   cópia de `b2863630`: ver "Cada proteção", Volta 8.
+- **No GitHub, volta 8:** rodada 44844944908, sobre o ramo em `a203395a` (o código de `b2863630`): **failure**, uma
+  falha só, de um teste meu: `tests/test_windows_peca.py::test_a_peca_e_fechada_ninguem_usa_o_que_tem_sublinhado_fora_dela`
+  achou no teste novo da leitura que falha o uso de uma função de dentro da peça do Windows (`windows._falhou`). As
+  partes 1, 3, 4 e 5, os botões, os prints e o porteiro passaram. Consertado em `5462d882`: o teste monta a mesma
+  resposta pelo nome público da peça (`Resposta` com `FALHOU`); o que o teste cobra não muda. No PC, um arquivo por
+  vez: `tests/test_windows_peca.py` 69 e 2 pulados; `tests/test_publicar_versao.py` 121. (Eu não tinha rodado no PC o
+  arquivo da peça, que lê todos os arquivos do projeto: foi o que deixou passar.) A reversão e as mutações rodaram
+  com o teste antes desse conserto; a resposta que ele monta é a mesma.
+- **No GitHub, volta 8, de novo:** rodada RODADA_NOVA, sobre o ramo em `5462d882`: RESULTADO_NOVO.
 
 ## Caminho e função
 
@@ -2508,7 +2517,8 @@ Volta 6: 3abf9acf (o último commit de código e testes da volta 6; depois dele 
 
 Volta 7: 25c514ad (o último commit de código e testes da volta 7; depois dele só a pasta deste relatório muda).
 
-Volta 8: b2863630 (o último commit de código e testes da volta 8; depois dele só a pasta deste relatório muda).
+Volta 8: o código ficou em `b2863630`, e um teste foi consertado depois, a pedido da rodada do GitHub; o último commit
+de código e testes da volta 8 é 5462d882 (depois dele só a pasta deste relatório muda).
 
 ## O que o agente que tentou quebrar achou
 
