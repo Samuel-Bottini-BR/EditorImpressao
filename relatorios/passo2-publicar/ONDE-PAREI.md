@@ -1692,7 +1692,7 @@ mexer).
   vez: `tests/test_windows_peca.py` 69 e 2 pulados; `tests/test_publicar_versao.py` 121. (Eu não tinha rodado no PC o
   arquivo da peça, que lê todos os arquivos do projeto: foi o que deixou passar.) A reversão e as mutações rodaram
   com o teste antes desse conserto; a resposta que ele monta é a mesma.
-- **No GitHub, volta 8, de novo:** rodada RODADA_NOVA, sobre o ramo em `5462d882`: RESULTADO_NOVO.
+- **No GitHub, volta 8, de novo:** rodada 44847777899, sobre o ramo em `5462d882`: **success** na tentativa 2. A tentativa 1 falhou só na parte 1: o arquivo `tests/test_decisoes_pagina_em_branco.py`, que não mudou nesta volta, fechou o Python com um erro de memória do Windows (0xC0000005; em "Ideias e bugs", Volta 8); as partes 2 a 5, os botões, os prints e o porteiro passaram. A tentativa 2 refez só a parte 1, que passou. O caso que falhou na rodada anterior (`tests/test_windows_peca.py`, parte 2) passou.
 
 ## Caminho e função
 
@@ -2456,6 +2456,11 @@ passos"). O tempo de publicar é medido na prova à vista.
   Boost lá, a compilação pararia ou baixaria tudo para o lugar errado. Lido no código
   (`compilar_st_ferramentas.py`, função `pasta_de_ferramentas_padrao`), não rodado. A pasta não é minha: só a gerente
   decide sobre ela, com o Samuel.
+- **Volta 8, bug (instabilidade, 21/11/2026, não impede; não é deste passo):** na rodada 44847777899, tentativa 1, o
+  arquivo `tests/test_decisoes_pagina_em_branco.py` fechou o Python com um erro de memória do Windows (código
+  3221225477, 0xC0000005, "cannot get C stack"), na parte 1 da suíte. Esse arquivo não mudou nesta volta, e na
+  rodada 44844944908, logo antes, com o mesmo código para ele, a parte 1 passou inteira. A tentativa 2 (só a parte
+  que falhou) está em "Testes". Para a Lista de bugs, com o registro da rodada como prova.
 - **Volta 8, bug do mesmo tipo, fora deste passo (não impede):** `rodada_gravura_1_2.py` acha o acervo pela pasta de
   cima do código (`RAIZ.parent`), e numa cópia de trabalho não o acha. Lido, não rodado. Para a Lista de bugs.
 - **Volta 8, ideia (Lista de espera, observação 7 do relatório 7):** decidir qual Visual C++ o publicar aceita: hoje a
