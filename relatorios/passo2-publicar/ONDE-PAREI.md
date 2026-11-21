@@ -6,30 +6,22 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
 ## Pedido
 
 - Papel: implementador
-- Commit de partida: 6fa766c4
+- Commit de partida: edd39a9f
 - Ramo: passo2-publicar-2026-11-19
 
 ## Arquivos que vou mexer
 
-- `core/pasta_das_ferramentas.py`
 - `tests/test_pasta_das_ferramentas.py`
-- `regras_dos_agentes/conversa_com_o_git.py`
-- `regras_dos_agentes/repositorio_de_prova.py`
-- `core/windows.py`
-- `compilar_st_ferramentas.py`
-- `publicar_versao_kaique.py`
 - `empacotar.py`
-- `montar_motor_kraken.py`
-- `compilar_detector_gravura.py`
-- `core/ocr_kraken.py`
-- `tests/test_empacotar.py`
-- `tests/test_publicar_*.py`
-- `tests/test_windows_peca.py`
-- `tests/test_conferencias_*.py`
+- `publicar_versao_kaique.py`
+- `tests/test_publicar_versao.py`
 - `relatorios/passo2-publicar/`
 
-(Volta 10, 21/11/2026: as duas seções acima são as do pacote da volta 10, `anexos/pacote-volta10.md`, copiadas sem
-mudar. As das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `git log` deste arquivo.)
+(Volta 11, 21/11/2026: as duas seções acima são as de `anexos/pacote-volta11.md`. O pedido da gerente veio em texto,
+sem o arquivo do pacote; montei o pacote com a ferramenta das regras (`python -m regras_dos_agentes pacote`, partida
+`edd39a9f`, os arquivos do pedido) para o conferidor do formulário. O Livro desta cópia é antigo: a ferramenta não
+achou D-816 a D-820 nele; as palavras delas estão copiadas do Livro da `obra-2026-10-26`, em "Decisões", Volta 11. As
+seções das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `git log` deste arquivo.)
 
 ## Onde parei
 
@@ -162,6 +154,17 @@ mudar. As das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `gi
   (`anexos/reversao-volta10-codigo-antigo.txt`); mutações S1 a S18: ver "Cada proteção", Volta 10.
   `--is-shallow-repository` = false antes e depois; nenhuma junção criada; a pasta errada de 19/11, a junção `modelos`
   e `C:\EditorImpressaoProva` não foram tocadas. **Próximo:** a rodada do GitHub (em "Testes") e a entrega à gerente.
+
+- 21/11, **volta 11 (escritor novo, D-815; o da volta 10 já usou as duas)**: os 4 baixos do relatório 9 de quem tentou
+  quebrar (`quem-quebrou/relatorio-9.md`, "Achados" 1 a 4), a observação 4 dele (os comandos do roteiro com o Python da
+  pasta principal) e as frases do publicar sem a contração ("em a pasta", "de a pasta", "em o GitHub"; Lista de bugs de
+  21/11, vistas de novo na prova 3). Partida `edd39a9f`. Lido: as regras do implementador, o CLAUDE.md inteiro, a
+  memória (índice, `memoria/geral/atualizador.md`, `memoria/licoes.md`), este formulário (o começo, a volta 10 inteira e
+  "A prova de verdade"), o relatório 9 ("Achados" e o resto), a prova 3 de hoje e, no Livro da `obra-2026-10-26`, as
+  linhas inteiras de D-767, D-775, D-785, D-807, D-813 e D-815 a D-820. O Samuel está com um jogo aberto: memória livre
+  conferida antes de cada rodada no PC (4,8 GB na primeira), um arquivo de teste por vez, nada abre janela. Rascunho
+  fora do projeto: a pasta de rascunho desta sessão, `v11\`. O plano (D-709) está em "A causa, a regra e todos os
+  caminhos", Volta 11, escrito antes de mexer.
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -369,6 +372,37 @@ mudar. As das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `gi
   que os programadores senior recomendam em casos assim?". Aqui: a pasta das ferramentas escrita num lugar só, sem git;
   sem a peça, a frase diz onde procurou e como apontar outro lugar.
 
+**Volta 11 (21/11/2026), as decisões do pedido (palavras copiadas do Livro da `obra-2026-10-26`):**
+- D-605 "A partir de agora, nenhuma função nova, ou nova escolha dentro do programa pode alterar o que já está
+  escolhido e testado, coisas novas não podem criar novos problemas, essa é uma nova regra que todos os agentes precisam
+  ler". Aqui: nenhum teste de antes desta volta muda o que cobra. Um teste da volta 3 cobra o pedaço de frase que o
+  conserto das contrações muda: parei nessa frase (em "Perguntas para o Samuel", Volta 11).
+- D-767 "não faça mais nada escodindo ou de mentira" · "não quero fazer consertos quero que funcione" · "quero que faça
+  as coisas certas e sem bugs ou erros, deveria ter pensado nesses erros na hora de montar a estrutura do atualizador e
+  testes a distancias". Aqui: os testes novos rodam os scripts de verdade, de uma cópia de trabalho de verdade; a única
+  peça trocada é a da lógica de "quem decide" (a regra dizendo "não"), escrita como tal.
+- D-816 "A , mas onde estamos antes de você fazer qualquer processo". Aqui: a frase de depois do pedido de liberar (a da
+  D-816) só muda nas palavras, se o Samuel deixar (a pergunta); o que ela diz e o que o publicar faz não mudam.
+- D-817 "pode". Aqui: o teste que saiu na volta 4 continua fora; o que o substituiu não muda.
+- D-818 "vai ter que reprogramar?" · "A". Aqui: a régua única do Visual C++ e a conferência da pasta já montada não
+  mudam; só o "pode gravar?" da montagem passa a ser o da regra.
+- D-819 "não era melhor só ver se está instaldo no pc?" · "porque você escolheu o jeito mais dificil e nem perguntou para
+  mim?" · "nova regra, sempre se deve se ver se é a coisa mais simples, ou melhor de se fazer, tem vezes que o mais
+  simples é melhor e tem vezes que o mais complicado é melhor". Aqui: para cada conserto, o jeito mais simples e o
+  escolhido, com o porquê, em "A causa, a regra e todos os caminhos", Volta 11.
+- D-820 "não era melhor só ver se está instaldo no pc?" · "a versão B é usada por quais app?" · "A" · "mas pera ai , o
+  que os programadores senior recomendam em casos assim?". Aqui: a pasta das ferramentas continua escrita num lugar só;
+  a montagem do Visual C++ passa a perguntar só à regra; sem o motor, as duas telas que o mostram (o empacotar e o
+  `publicar --motor`) dizem onde procuraram e "--motor-kraken", com teste em cada uma.
+- D-815 "pode conferir se não está ocorrendo alucinação por estar com contexto cheio" · "estou falando do agente que
+  está trabalhando" · "esses agentes que você criou, sempre que vai fazer uma tarefa nova, chama outro com a mesmas
+  instruções ou ifac rodando sempre o mesmo com memorias compactadas?" · "ok". Aqui: escritor novo, começando por este
+  formulário.
+- D-807 "não era para todos os testes serem no git hub que são mais rapidos ou precisam ser no meu pc?" · "ok" (resumo:
+  o conjunto inteiro só no GitHub). Aqui: no PC, um arquivo por vez; o conjunto inteiro na rodada do GitHub, no fim.
+- D-785 "ok, mais ainda existem mais casos na opção A" · "ok". Aqui: nada à vista rodado por mim; só o roteiro da
+  gerente muda (itens 19 e 21 e os comandos).
+
 ## O que já está escolhido e testado aqui
 
 - `tests/test_empacotar.py`: o motor do jeito novo passa e o velho, com atalhos ou de outro protocolo, é recusado
@@ -560,6 +594,31 @@ Se algum teste antigo precisar mudar o que cobra, paro e escrevo em "Perguntas p
   "(conferido)" e que a do `--apagar` é a do `Apagado`.
 - Livro: D-605, D-727, D-767, D-788, D-813, D-819, D-820.
 
+**Volta 11 (antes de mexer).** O que esta volta toca e já está escolhido e testado:
+- `tests/test_pasta_das_ferramentas.py` (voltas 9 e 10 desta tarefa): os 12 testes continuam cobrando o mesmo. Só a
+  montagem da cópia de prova (`_copiar_o_codigo`, a ajuda, não um teste) passa a parar quando não acha a linha do
+  caminho; os testes ganham companhia (baixos 2, 3 e 4), nenhum muda.
+- `empacotar.preparar_vc_redist`: `tests/test_pasta_das_ferramentas.py::test_falha_sem_a_pasta_das_ferramentas_a_montagem_para_e_nao_cria_nada`
+  (a frase "não existe a pasta das ferramentas ... nada foi criado" e nada criado),
+  `tests/test_empacotar.py::test_d818_a_montagem_e_a_pasta_usam_a_mesma_regua_do_visual_c` e os testes da volta 8 em
+  `tests/test_publicar_versao.py` (com o arquivo já baixado: não passam pelo "pode gravar?"). D-727, D-818.
+- `empacotar.achar_motor_kraken` e `juntar_pecas`: `test_d820_sem_o_motor_a_frase_diz_onde_procurou_e_como_apontar_outro`
+  e `tests/test_empacotar.py::test_achar_motor_pula_o_velho_e_fica_com_o_novo`. Não mudam (só ganham os testes pelas
+  duas telas).
+- As frases do publicar (`publicar_versao_kaique.py`): `tests/test_publicar_versao.py` inteiro (122 casos) cobra o que
+  cada caminho faz e pedaços das frases. Procurei (busca por "em ", "de ", "liberada em", "publicad", "existe em",
+  "lido de" nas conferências dos testes) e rodei o arquivo inteiro numa cópia à parte com as contrações feitas em
+  todas as frases: **121 passam e 1 falha**,
+  `test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada` (volta 3 desta tarefa,
+  20/11), que cobra `"ficou liberada em" in str(erro.value)`: o pedaço da frase da D-816
+  (`_frase_depois_do_pedido_de_liberar`, "se ficou liberada em a pasta ..."), que com a contração vira "se ficou
+  liberada na pasta ...". Pela regra do pedido ("Se um teste antigo cobra a frase errada, não mude: liste o teste, o
+  que ele cobra e pare"), essa frase fica como está e a pergunta vai em "Perguntas para o Samuel", Volta 11.
+- `test_obs6_a_frase_do_apagar_sai_com_a_contracao` (volta 10): a frase do apagar já tem a contração; não muda.
+- `_conferir_frase_d816` e os `test_d816_*`: cobram "NÃO apaguei", "pode ter ficado", "não deu para reconferir agora", o
+  comando de conferir e o de apagar; não cobram "em"; passam com a contração (conferido na cópia à parte).
+- Livro: D-605, D-727, D-767, D-816, D-817, D-818, D-819, D-820.
+
 ## Como fica para quem usa e no livro
 
 - **O Kaique: nada muda** na tela nem no livro (nenhum arquivo de `ui/` nem do processamento das páginas). O PDF que
@@ -680,6 +739,16 @@ pulavam (o defeito 330) passam a rodar o motor de verdade (mais lentos e mais pe
   / "no GitHub (...)".
 Problema novo possível: se um dia a pasta das ferramentas mudar de lugar no PC do Samuel, é preciso mudar a linha de
 `core/pasta_das_ferramentas.py` (um lugar só); até lá, as frases dizem onde procuraram.
+
+**Volta 11:** o Kaique: nada muda (nenhum arquivo do programa dele; o PDF não muda). O Samuel (ou a gerente),
+rodando o publicar, lê as frases em português certo: "não há publicação v1.2.0 na pasta ...", "lido de volta da pasta
+...", "v1.2.0 liberada na pasta ...", "não está publicado no GitHub (...)" (antes: "em a pasta", "de a pasta", "em o
+GitHub"). O que cada frase diz e o que o publicar faz não mudam. A frase do caminho de erro depois do pedido de liberar
+(a da D-816) fica como está até a resposta da pergunta. Sem a pasta das ferramentas, a montagem do Visual C++ diz a
+mesma frase de hoje ("não existe a pasta das ferramentas ... nada foi criado"); agora é a regra quem decide. O roteiro
+da prova à vista passa a dar os comandos com o Python da pasta principal e só da cópia `passo2`. Problema novo
+possível: nenhum para quem usa; nos testes, se a linha do caminho mudar, os testes da pasta das ferramentas param todos
+com a frase "troque também LINHA_DO_CAMINHO" (antes seguiam com o caminho de verdade).
 
 ## A causa, a regra e todos os caminhos
 
@@ -1173,6 +1242,86 @@ lugares saiu junto com a pergunta ao git.
 
 *O roteiro:* o item 8 riscado, o item 18 com as frases novas e os itens 19 a 22 (em "A prova de verdade", Volta 10).
 
+**Volta 11 (os 4 baixos do relatório 9, a observação 4 e as frases sem contração), antes de mexer.**
+
+*Baixo 1 e observação 4 (o roteiro).*
+- **Por que:** a pasta principal (`D:\programas\EditorImpressao`) está na versão oficial (`fase-1`), que não tem o
+  publicar nem a regra da pasta das ferramentas; e a cópia `passo2` não tem `.venv`. Seguidos ao pé da letra, os itens
+  19 (segunda metade) e 21 dão "arquivo não encontrado", e os comandos que começam por `.venv\Scripts\` não acham o
+  Python.
+- **O mais simples (o escolhido):** reescrever os dois itens (só da cópia `passo2`; "da pasta principal" fica para a
+  gerente repetir depois de o trabalho entrar na versão de teste, sem trocar ramo nenhum) e pôr o caminho inteiro do
+  Python da pasta principal nos comandos. Não há outro jeito que valha: trocar o ramo da pasta principal mexe no que é
+  do Samuel.
+
+*Baixo 2 (a cópia de prova dos testes cai calada no caminho de verdade).*
+- **Por que:** `_copiar_o_codigo` só troca o caminho se achar a linha escrita exatamente como hoje, e segue sem trocar
+  quando não acha. Foi feito assim para a prova de reversão no código da volta 9, onde a linha não existia. Se a linha
+  mudar (o próprio texto da regra diz que mudar o caminho é seguro), a cópia fica com o caminho de verdade e os testes
+  que rodam os scripts leem a pasta de verdade do Samuel.
+- **O mais simples:** com o arquivo da regra na cópia, a linha não achada exatamente uma vez faz o teste parar na hora
+  (`pytest.fail`), com a frase do que fazer. Ganha: uma condição; nenhum script roda com o caminho de verdade; a troca
+  de uma linha achada uma vez é certa (não precisa de outra conferência). Perde: a prova de reversão rodada no código da
+  volta 9 (`6fa766c4`, onde o arquivo da regra existe sem a linha) passa a parar na montagem; a da volta 10 já foi feita
+  e está guardada (`anexos/reversao-volta10-codigo-antigo.txt`), e as próximas rodam sobre código que tem a linha. No
+  código de antes da volta 9 (sem o arquivo da regra) nada muda: não há o que trocar, e lá a pasta era calculada a partir
+  do código do repositório de prova, longe da pasta de verdade.
+- **O outro:** trocar a atribuição qualquer que seja o caminho (uma busca por `PASTA_DAS_FERRAMENTAS = ...`) e
+  conferir, rodando um Python na cópia, que o caminho ficou o de prova. Ganha: os testes andariam sozinhos se a pasta
+  mudasse de lugar. Perde: mais código e um Python a mais por teste; e o que ele ganha não se usa, porque o teste da
+  D-820 fixa o caminho `D:\programas\EditorImpressao-arquivos\ferramentas` (uma mudança de lugar exige mexer no teste
+  de qualquer jeito).
+- **Escolhido: o mais simples.** Não muda o trabalho de ninguém, nem o risco, nem o que o Samuel vê (é a ajuda dos
+  testes): não é pergunta (D-819).
+- **A prova:** numa cópia à parte, com a linha mudada para `E:\programas\...` (o caso do relatório): com a ajuda de
+  hoje, um teste da cópia de trabalho roda e procura no caminho de verdade (`E:\...`); com a nova, para na montagem com
+  a frase. Só testes que leem; nenhum script que grava roda com o caminho de verdade.
+
+*Baixo 3 (a montagem do Visual C++ decide "pode gravar?" por conta própria).*
+- **Por que:** `empacotar.preparar_vc_redist` decide com `DOWNLOADS.parent.is_dir()` e só pede as palavras à regra
+  (com uma segunda frase para quando as duas discordam). Hoje dão o mesmo, mas são duas contas da mesma regra: a
+  mutação V8 (olhar a pasta de cima e criar a das ferramentas) passa em todos os testes.
+- **O mais simples (o escolhido, e o pedido):** `problema = problema_para_gravar(); if problema: return None, "",
+  [problema]`, sem a conta e sem a segunda frase. A `downloads\` continua sendo criada só dentro de uma pasta das
+  ferramentas que existe (`mkdir` sem `parents`). Não há outro jeito que não seja manter a conta própria.
+- **A prova:** (1) da cópia de trabalho de verdade, `EditorImpressao-arquivos` existindo sem a `ferramentas` dentro: a
+  montagem para com a frase da regra e nada é criado nem baixado (pega a V8); (2) quem decide é a regra: com a regra
+  dizendo "não" e a pasta lá, a montagem obedece (falha no código de hoje, que segue pela conta dele e tenta baixar; a
+  internet trancada no teste).
+
+*Baixo 4 (a frase "aponte-a com --motor-kraken" sem teste por quem a mostra).*
+- **Por que:** o teste da volta 10 lê a função de dentro (`achar_motor_kraken`); as duas telas que a mostram (o
+  empacotar, por `_avisar_pecas_faltando`, que imprime o que `juntar_pecas` junta; e o `publicar --motor`, pelo `Parou`
+  de `publicar_motor`) podem tirar a linha sem nenhum teste ver (mutações V5 e V6).
+- **O mais simples (o escolhido):** um teste por tela, da cópia de trabalho de verdade, sem o motor: o que o empacotar
+  imprime (`_avisar_pecas_faltando`, o lugar único das linhas de peça que falta, usado pelo `main` e pela montagem) e o
+  `Parou` do `publicar_motor` (com a chave de prova dos testes, a chave pública de prova pelo parâmetro que já existe
+  para os testes). Cada um cobra "não existe <a pasta do motor>" (onde procurou) e "aponte-a com --motor-kraken". Rodar
+  o `main` do empacotar pediria trocar a conferência dos modelos (a cópia de prova não os tem): peça de mentira sem
+  ganho, porque o `main` só chama `_avisar_pecas_faltando`.
+- **A prova de reversão:** numa cópia à parte, a linha tirada só no empacotar (V5) faz falhar só o teste do empacotar; só
+  no publicar (V6), só o do publicar.
+
+*As frases sem contração (Lista de bugs de 21/11).*
+- **Por que:** as frases juntam a preposição com o nome do destino à mão (`f"... em {destino.nome}"`,
+  `f"... de {self.nome}"`), e o nome começa pelo artigo ("a pasta ...", "o GitHub (...)"). A contração só foi feita no
+  lugar das frases do apagar (volta 10, `Apagado.frase`, pela `com_preposicao`).
+- **A regra (num lugar só):** `publicar_versao_kaique.com_preposicao` junta "de"/"em" com o nome do destino. Todos os
+  caminhos: busca (`grep`) por `em {`, `de {`, `.nome}` em `publicar_versao_kaique.py`, `empacotar.py`,
+  `servidor_das_versoes.py`, `atualizacao.py`, `montar_motor_kraken.py`, e por " em a ", " de a ", " em o ", " de o "
+  em todo o código: as frases estão só no `publicar_versao_kaique.py`, 32 lugares (a lista, frase → onde → como fica, em
+  "O que foi feito", Volta 11). "para {destino.nome}" ("para a pasta") e o nome no começo da linha ("a pasta ...:
+  rascunho ...") já estão certos e ficam. No `empacotar.py`, "e a {saida.nome}" não é nome de destino.
+- **O mais simples (o escolhido):** cada frase chama a `com_preposicao`, como a do apagar já faz. **Os outros:** (a) uma
+  propriedade "em/de" em cada destino (uma camada a mais sobre a mesma função, sem ganho); (b) o nome sem o artigo e
+  cada frase escrevendo "na pasta"/"no GitHub" à mão (frases duplicadas por destino: a gambiarra que a §11.12 proíbe).
+- **A prova:** (1) pelos caminhos principais, na pasta das provas e no GitHub (o gh de mentira dos testes): publicar a
+  versão sem o motor, o motor, a versão, e de novo os dois; o que sai na tela e nos `Parou` tem "na pasta"/"no GitHub",
+  "da pasta"/"do GitHub", e nunca " em a ", " de a ", " em o ", " de o "; (2) uma guarda que lê o código
+  (`ast`, as frases como o Python as junta, também as de duas linhas) e acusa "em "/"de " logo antes de `{… .nome}`,
+  para a regra não voltar a ser escrita à mão. **A exceção, escrita na guarda com o motivo:** a frase da D-816
+  (`_frase_depois_do_pedido_de_liberar`), até a resposta da pergunta.
+
 ## O que pode falhar e o que o programa faz
 
 | O que pode dar errado | O que o publicar faz |
@@ -1291,6 +1440,20 @@ lugares saiu junto com a pergunta ao git.
 - *A pasta das ferramentas mudar de lugar no PC do Samuel:* as frases dizem onde procuraram; muda-se uma linha.
 - Disco cheio, sem licença, "Não", sem internet, desligar no meio: não se aplica à regra (só um caminho escrito); quem
   grava depois continua com as frases de hoje.
+
+**Volta 11 (antes de escrever).** O que pode falhar e o que o programa faz:
+- *A montagem do Visual C++ sem a pasta das ferramentas* (outro PC, o HD desligado, a `EditorImpressao-arquivos` sem a
+  `ferramentas`): a regra diz por que não dá; a montagem para com essa frase, nada é criado nem baixado (como hoje, agora
+  decidido pela regra). *Um arquivo chamado `ferramentas` no lugar da pasta:* a regra olha se é pasta (`is_dir`), então
+  para do mesmo jeito.
+- *A pasta das ferramentas existe e a `downloads\` não:* a montagem cria só a `downloads\` dentro dela e baixa, como
+  hoje (sem internet: "não consegui baixar o Visual C++ ...", como hoje).
+- *As frases:* só as palavras mudam; nenhuma decisão, leitura ou pedido ao destino muda. Disco cheio, sem licença, "Não",
+  sem internet, arquivo preso, desligar no meio: o publicar faz o mesmo de hoje, com as frases de hoje (as que têm
+  destino, com a contração).
+- *Os testes, se a linha do caminho mudar:* param na montagem da cópia de prova com a frase do que fazer; nenhum script
+  roda contra a pasta de verdade.
+- Esta volta não pede licença ao Windows, não abre janela e não fala com a internet.
 
 ## O que li da peça de fora e onde
 
@@ -3117,6 +3280,29 @@ técnico do conserto que o Samuel autorizou").
 (A pergunta 2 do primeiro jeito, sobre duas linhas de um teste da volta 9, deixou de existir: os testes do jeito do git
 saíram, por ordem da gerente.)
 
+**Volta 11: uma pergunta (a gerente leva ao Samuel, se achar preciso). Parei nesta frase.**
+
+- **Do que se trata.** É a ferramenta que prepara as versões do programa para o notebook do Kaique (o "publicar"), que
+  você roda pela linha de comando. Ela escreve frases como "não há publicação v1.2.0 em a pasta ..." e "liberada em o
+  GitHub". Você pediu o português certo ("na pasta", "no GitHub"). Consertei todas as frases menos uma.
+- **A frase que ficou.** É a que aparece quando a internet cai logo depois de pedir para liberar a versão (a da sua
+  escolha de 20/11: "depois de pedir para liberar, o programa nunca apaga nada"). Ela diz hoje: "... Ela pode ter ficado
+  de dois jeitos: se ficou liberada em a pasta C:\EditorImpressaoProva\versoes 3, está inteira ...". Com o conserto,
+  ficaria "... se ficou liberada na pasta C:\EditorImpressaoProva\versoes 3, está inteira ...".
+- **Por que parei.** Um teste automático feito em 20/11 confere que essa frase tem o pedaço "ficou liberada em". Com o
+  conserto, o pedaço vira "ficou liberada na" e o teste falha. A regra é nunca mudar um teste antigo para ele passar sem
+  você deixar.
+- **É defeito ou escolha:** defeito de português do programa (já está na lista de defeitos de 21/11). O que o teste
+  cobra de verdade é que a frase diga que a versão pode ter ficado liberada; isso continua.
+- **O que você escolhe:**
+  - **A (sugestão): pode mudar o teste.** O teste passa a conferir "ficou liberada na pasta" (na pasta das provas) e
+    "ficou liberada no GitHub" (no GitHub). A frase sai certa como as outras. Nada do que o publicar faz muda; o Kaique
+    não vê esta frase.
+  - **B: não mexer.** Essa frase continua "em a pasta" / "em o GitHub", a única do publicar assim.
+  - Só comentário.
+- **Onde está agora:** as outras frases já saem certas nesta volta (no ramo do passo 2, esperando quem confere). Esta
+  espera a resposta.
+
 ## Commit
 
 2e906e94 (o último commit de código e testes da volta 3, com três docstrings de um teste; depois dele só este formulário muda).
@@ -3377,8 +3563,9 @@ o jeito final é o A, da D-820, em `e9617727`):
 Roteiro para a gerente (não rodado; D-785, item 8; o plano: "0 perguntas do Windows"; o Samuel olha a janela, não
 clica nada):
 1. Gravar a ficha do motor de hoje (com o "sim" dele, ver "Ressalvas"):
-   `.venv\Scripts\python.exe montar_motor_kraken.py --so-ficha --destino D:\programas\EditorImpressao-arquivos\ferramentas\motor-kraken`.
-2. Abrir o servidor das versões à vista: `.venv\Scripts\python.exe servidor_das_versoes.py --pasta <pasta de prova>`.
+   `D:\programas\EditorImpressao\.venv\Scripts\python.exe montar_motor_kraken.py --so-ficha --destino D:\programas\EditorImpressao-arquivos\ferramentas\motor-kraken`
+   (volta 11, observação 4 do relatório 9: o Python da pasta principal, com o caminho inteiro; a cópia não tem `.venv`).
+2. Abrir o servidor das versões à vista: `D:\programas\EditorImpressao\.venv\Scripts\python.exe servidor_das_versoes.py --pasta <pasta de prova>`.
 3. Publicar o motor 1 na pasta: `publicar_versao_kaique.py --motor --pasta <pasta de prova>`.
 4. Publicar uma versão de prova no C: sem o .msi, com a janela do servidor mostrando a versão chegar: o espaço do C:
    antes e depois (volta ao que era), o tempo, e no fim a conferência mostra que o Setup.exe não está em lugar nenhum.
@@ -3469,30 +3656,44 @@ da cópia, numa pasta com espaço no nome). Mais um olhar: depois dele, a pasta 
 **Volta 10, o que a prova à vista acrescenta (relatório 8, "O que falta para a prova à vista", e a D-820; a prova só
 depois desta volta, D-775):**
 - O item 8 está riscado (ainda esperava "não existe" no `--apagar`); vale o item 18, com as frases novas.
-19. (substitui o item 19 da Volta 8, no jeito A) **O motor achado no lugar certo, seguindo a frase ao pé da letra, da
-    cópia e da pasta principal:** da cópia de trabalho (a `passo2`), numa pasta de provas nova e vazia com espaço no
-    nome: `publicar_versao_kaique.py --pasta "C:\EditorImpressaoProva\versoes 3"` tem de parar com "publique o motor
-    antes, com: publicar_versao_kaique.py --motor --pasta "C:\EditorImpressaoProva\versoes 3"". Seguir essa frase ao pé
-    da letra, da mesma cópia: a linha "motor do Kraken 1: ..." tem de dizer
+19. (substitui o item 19 da Volta 8, no jeito A; **reescrito na volta 11**, baixo 1 do relatório 9) **O motor achado no
+    lugar certo, seguindo a frase ao pé da letra, só da cópia `passo2`:** de dentro de
+    `D:\programas\EditorImpressao\.claude\worktrees\passo2`, numa pasta de provas nova e vazia com espaço no nome:
+    `D:\programas\EditorImpressao\.venv\Scripts\python.exe publicar_versao_kaique.py --pasta "C:\EditorImpressaoProva\versoes 3"`
+    tem de parar com "publique o motor antes, com: publicar_versao_kaique.py --motor --pasta
+    "C:\EditorImpressaoProva\versoes 3"". Seguir essa frase ao pé da letra, da mesma cópia e com o mesmo Python
+    (`D:\programas\EditorImpressao\.venv\Scripts\python.exe publicar_versao_kaique.py --motor --pasta "C:\EditorImpressaoProva\versoes 3"`):
+    a linha "motor do Kraken 1: ..." tem de dizer
     `D:\programas\EditorImpressao-arquivos\ferramentas\motor-kraken (conferido pela ficha)`, e o motor chega na janela
-    do servidor. Repetir o mesmo da pasta principal (`D:\programas\EditorImpressao`), numa pasta de provas nova
-    (`"C:\EditorImpressaoProva\versoes 4"`): a mesma linha, com a mesma pasta. E nenhuma pasta nova aparece em
-    `D:\programas\EditorImpressao\.claude\worktrees` (olhar a lista dela antes e depois).
+    do servidor. E nenhuma pasta nova aparece em `D:\programas\EditorImpressao\.claude\worktrees` (olhar a lista dela
+    antes e depois). **"Da pasta principal" fica para depois:** a pasta principal está na versão oficial, que ainda não
+    tem o publicar; a gerente repete este item de lá quando o trabalho entrar na versão de teste, sem trocar o ramo da
+    pasta principal. (Feito na prova 3 de 21/11, da cópia; `prova-3-2026-11-21.md`, linhas 1 e 2.)
 20. **O pacote do Kaique sem a peça do git (D-605, D-788).** Depois da montagem do item 15, listar o que o PyInstaller pôs
-    no programa: `.venv\Scripts\pyi-archive_viewer.exe -r -b dist\EditorImpressao\EditorImpressao.exe` (lido no
+    no programa: `D:\programas\EditorImpressao\.venv\Scripts\pyi-archive_viewer.exe -r -b dist\EditorImpressao\EditorImpressao.exe` (lido no
     PyInstaller 6.21: `-r` lista também o que está dentro dos arquivos de dentro, como o PYZ, e já implica `-l`; `-b`
     só os nomes). Não pode aparecer nenhum nome começando por `regras_dos_agentes`, e tem de aparecer
     `core.pasta_das_ferramentas`. Depois, abrir uma vez o programa montado (`dist\EditorImpressao\EditorImpressao.exe`)
     até a janela aparecer, e fechar. (Não rodado por mim.)
-21. **O item 15 também da pasta principal:** no publicar montado do zero da pasta principal, a linha "Visual C++: ..." tem
-    de dizer `D:\programas\EditorImpressao-arquivos\ferramentas\downloads\vc_redist.x64.exe`, a mesma de quando roda
-    da cópia (D-605: da pasta principal, nada muda).
-22. **O motor que falta, à vista (D-820):** da cópia, `publicar_versao_kaique.py --motor --pasta
+21. (**reescrito na volta 11**, baixo 1 do relatório 9) **O item 15 da cópia `passo2`:** no publicar montado do zero
+    (`D:\programas\EditorImpressao\.venv\Scripts\python.exe publicar_versao_kaique.py --pasta "C:\EditorImpressaoProva\versoes 3"`,
+    de dentro de `D:\programas\EditorImpressao\.claude\worktrees\passo2`), a linha "Visual C++: ..." tem de dizer
+    `D:\programas\EditorImpressao-arquivos\ferramentas\downloads\vc_redist.x64.exe`. **"Da pasta principal" fica para
+    depois**, como no item 19: a gerente repete lá quando o trabalho entrar na versão de teste (D-605: da pasta principal,
+    a mesma linha). (Feito na prova 3 de 21/11, da cópia; `prova-3-2026-11-21.md`, linha 3.)
+22. **O motor que falta, à vista (D-820):** da cópia, `D:\programas\EditorImpressao\.venv\Scripts\python.exe publicar_versao_kaique.py --motor --pasta
     "C:\EditorImpressaoProva\versoes 5" --motor-kraken "C:\EditorImpressaoProva\nao existe"`: tem de parar dizendo
     que não existe essa pasta; e sem o `--motor-kraken`, se um dia o motor não estiver na pasta das ferramentas, a frase
     diz onde procurou e "para usar um motor em outra pasta, aponte-a com --motor-kraken <pasta>" (não dá para provar à
     vista sem tirar o motor da pasta do Samuel: fica provado pelos testes).
 E o olhar da volta 9 continua: a pasta errada de 19/11 com a mesma data (hoje 19/11/2026 15:44).
+
+**Volta 11, os comandos (observação 4 do relatório 9).** Todo comando deste roteiro roda de dentro da cópia
+(`D:\programas\EditorImpressao\.claude\worktrees\passo2`) com o Python da pasta principal, escrito inteiro:
+`D:\programas\EditorImpressao\.venv\Scripts\python.exe <script> ...` (a cópia não tem `.venv`). Onde um item diz só
+`publicar_versao_kaique.py ...` (as frases do próprio publicar dizem assim), é esse Python na frente. Os itens 1, 2, 19,
+20, 21 e 22 já estão escritos assim. Os itens 19 e 21 são só da cópia; "da pasta principal" fica para a gerente depois da
+junção na versão de teste (baixo 1 do relatório 9).
 
 ## Perguntas do Windows que o Samuel vê
 
