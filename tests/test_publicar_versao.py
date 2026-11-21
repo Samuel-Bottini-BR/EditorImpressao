@@ -2871,7 +2871,8 @@ def test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao():
     exceção: a frase da D-816, que ficou de fora até a resposta do Samuel, também (D-821, 21/11/2026: "ok"). Rodado em
     edd39a9f: acusa 33 junções (31 frases e as duas da D-816); em 1624a05a: acusa as duas da D-816. Volta 12 (baixo 1 do
     relatório 10): a guarda acusa qualquer uso do nome do destino fora dos lugares aceitos (`_preposicao_a_mao`), não só
-    o texto "em {…}"; as mutações G1 a G4 (e a G5, "por a pasta") do relatório são acusadas."""
+    o texto "em {…}"; as mutações G1 a G4 (e a G5, "por a pasta") do relatório são acusadas. A mudança desta guarda foi
+    autorizada pela D-822 (Samuel, 21/11/2026, à pergunta "Conserto as 3 agora?": "ok")."""
     fonte = (RAIZ / "publicar_versao_kaique.py").read_text(encoding="utf-8")
     achados = _preposicao_a_mao(fonte)
     assert achados == [], f"frases com a preposição escrita à mão (use com_preposicao): {achados}"
