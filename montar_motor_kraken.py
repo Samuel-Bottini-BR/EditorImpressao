@@ -109,7 +109,12 @@ PASTA_FONTES = RAIZ / "motor_kraken"
 ARQUIVO_TRAVADO = PASTA_FONTES / "requisitos-travados.txt"
 SERVIDOR = PASTA_FONTES / "servidor_kraken.py"
 
-PASTA_FERRAMENTAS = RAIZ.parent / "EditorImpressao-arquivos" / "ferramentas"
+# A pasta das ferramentas do Samuel, ao lado da pasta PRINCIPAL do repositorio: o lugar unico e
+# core/pasta_das_ferramentas.py (passo 2, volta 9; aqui era "a pasta de cima deste arquivo", errada
+# numa copia de trabalho). Este script nunca roda empacotado: nunca e None.
+from core import pasta_das_ferramentas as _pasta_das_ferramentas  # noqa: E402
+
+PASTA_FERRAMENTAS = _pasta_das_ferramentas.pasta_das_ferramentas(RAIZ)
 DESTINO_PADRAO = PASTA_FERRAMENTAS / "motor-kraken"
 DOWNLOADS_PADRAO = PASTA_FERRAMENTAS / "downloads"
 
@@ -628,6 +633,11 @@ def main(argumentos: list[str] | None = None) -> int:
 
     inicio = time.perf_counter()
     try:
+        # volta 9: com o padrao (a pasta das ferramentas), so se ela existe; nunca a cria no lugar errado
+        usa_o_padrao = opcoes.destino == DESTINO_PADRAO or opcoes.downloads == DOWNLOADS_PADRAO
+        problema = _pasta_das_ferramentas.problema_para_gravar(RAIZ) if usa_o_padrao else None
+        if problema and not opcoes.gerar_travado:
+            raise ErroDeMontagem(f"{problema} (ou passe --destino e --downloads)")
         if opcoes.gerar_travado:
             gerar_travado()
             dizer(f"Pronto: {ARQUIVO_TRAVADO}")

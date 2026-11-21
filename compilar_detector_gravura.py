@@ -68,7 +68,12 @@ VERSAO_BOOST = "1.78.0"
 URL_BOOST = "https://archives.boost.io/release/1.78.0/source/boost_1_78_0.7z"
 SHA256_BOOST = "090cefea470bca990fa3f3ed793d865389426915b37a2a3258524a7258f0790c"
 
-PASTA_FERRAMENTAS_PADRAO = RAIZ.parent / "EditorImpressao-arquivos" / "ferramentas"
+# A pasta das ferramentas do Samuel, ao lado da pasta PRINCIPAL do repositorio: o lugar unico e
+# core/pasta_das_ferramentas.py (passo 2, volta 9; aqui era "a pasta de cima deste arquivo", errada
+# numa copia de trabalho). Este script nunca roda empacotado: nunca e None.
+from core import pasta_das_ferramentas as _pasta_das_ferramentas  # noqa: E402
+
+PASTA_FERRAMENTAS_PADRAO = _pasta_das_ferramentas.pasta_das_ferramentas(RAIZ)
 
 CMAKE_CANDIDATOS = [
     Path(r"C:\Program Files\CMake\bin\cmake.exe"),
@@ -272,6 +277,11 @@ def main(argumentos: list[str] | None = None) -> int:
     try:
         if os.name != "nt":
             raise ErroDeCompilacao("Este script só compila no Windows.")
+        # volta 9: com o padrao, so se a pasta das ferramentas existe (nunca a cria no lugar errado)
+        problema = _pasta_das_ferramentas.problema_para_gravar(RAIZ) \
+            if opcoes.ferramentas == PASTA_FERRAMENTAS_PADRAO else None
+        if problema:
+            raise ErroDeCompilacao(f"{problema} (ou passe --ferramentas)")
         versao_pyside = versao_do_qt_do_pyside()
         if versao_pyside != VERSAO_QT:
             raise ErroDeCompilacao(

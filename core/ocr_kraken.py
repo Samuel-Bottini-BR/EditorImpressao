@@ -50,8 +50,9 @@ AINDA NÃO ESTÁ LIGADO AO PROGRAMA (29/09/2026)
 O MOTOR À PARTE (plano da parte do Windows, passo 2, 19/11/2026)
     A versão do motor (VERSAO_DO_MOTOR), a ficha (motor.json) e a conferência única "inteiro e da versão certa"
     (conferir_motor) moram aqui. A ficha é escrita pelo montar_motor_kraken.py; o publicar recusa publicar um motor
-    que não confere. Nada disso muda ainda o jeito de ACHAR o motor (achar_pasta_do_motor, lugares_do_motor): isso é
-    do passo 3.
+    que não confere. Nada disso muda ainda o jeito de ACHAR o motor no programa instalado (achar_pasta_do_motor,
+    lugares_do_motor): isso é do passo 3. (Volta 9 do passo 2: o terceiro lugar, o do código rodando pelas fontes,
+    passou a vir de core/pasta_das_ferramentas.py.)
 
 "PARA REVISAR"
     O Kraken 7.1.1, quando não consegue desenhar o contorno de uma linha,
@@ -152,15 +153,23 @@ def lugares_do_motor() -> list[Path]:
     1. Ao lado do programa instalado ({app}\\motor-kraken, quando o programa
        roda empacotado pelo PyInstaller).
     2. Na raiz do código (motor-kraken\\, para quem quiser deixar ali; fora do git).
-    3. A pasta onde montar_motor_kraken.py monta por padrão (fora do git):
-       D:\\programas\\EditorImpressao-arquivos\\ferramentas\\motor-kraken
+    3. A pasta onde montar_motor_kraken.py monta por padrão (fora do git), na pasta das ferramentas do Samuel, ao lado
+       da pasta PRINCIPAL do repositório (D:\\programas\\EditorImpressao-arquivos\\ferramentas\\motor-kraken), pelo
+       lugar único core/pasta_das_ferramentas.py. Passo 2, volta 9 (o defeito 1 da prova à vista de 20/11 e o defeito
+       antigo nº 330): era "a pasta de cima do código", que numa cópia de trabalho é .claude\\worktrees, e o motor não
+       era achado. Empacotado (o programa do Kaique) este lugar não existe e nada é perguntado ao git: a lista fica com
+       os dois primeiros, e o primeiro, o que acha o motor dele, não muda (D-788).
     """
+    from core import pasta_das_ferramentas
+
     lugares = []
     if getattr(sys, "frozen", False):
         lugares.append(Path(sys.executable).resolve().parent / NOME_DA_PASTA)
     raiz = _raiz_do_codigo()
     lugares.append(raiz / NOME_DA_PASTA)
-    lugares.append(raiz.parent / "EditorImpressao-arquivos" / "ferramentas" / NOME_DA_PASTA)
+    ferramentas = pasta_das_ferramentas.pasta_das_ferramentas(raiz)
+    if ferramentas is not None:
+        lugares.append(ferramentas / NOME_DA_PASTA)
     return lugares
 
 

@@ -147,6 +147,9 @@ CAMINHOS_DO_INNO = [
 # O PySide6 traz muita coisa que este programa nunca usa. Tirar reduz o tamanho
 # em dezenas de MB e diminui o tempo de abertura.
 EXCLUIR = [
+    # a peca do git e as regras dos agentes: so para o PC do Samuel; o programa do Kaique
+    # nunca pergunta ao git (core/pasta_das_ferramentas.py devolve None empacotado; volta 9)
+    "regras_dos_agentes",
     "PySide6.QtWebEngineCore", "PySide6.QtWebEngineWidgets", "PySide6.QtWebEngineQuick",
     "PySide6.QtQuick", "PySide6.QtQml", "PySide6.Qt3DCore", "PySide6.Qt3DRender",
     "PySide6.QtMultimedia", "PySide6.QtMultimediaWidgets", "PySide6.QtCharts",
@@ -171,12 +174,20 @@ OCULTOS = ["doxapy", "skimage.filters", "PIL._tkinter_finder",
 # ---- os detectores de texto que vao ao lado do .exe (item 1.3) ----------
 PASTA_DO_MOTOR = "motor-kraken"     # core/ocr_kraken.NOME_DA_PASTA
 PASTA_DO_TESSERACT = "tesseract"    # core/ocr_tesseract.lugares_do_tesseract
+# A pasta das ferramentas do Samuel (EditorImpressao-arquivos\ferramentas, ao lado da
+# pasta PRINCIPAL do repositorio): o lugar unico e core/pasta_das_ferramentas.py
+# (passo 2, volta 9; o defeito 1 da prova a vista de 20/11: aqui era "a pasta de
+# cima deste arquivo", que numa copia de trabalho e .claude\worktrees). O empacotar
+# nunca roda empacotado, entao ela nunca e None aqui.
+from core import pasta_das_ferramentas as _pasta_das_ferramentas  # noqa: E402
+
+FERRAMENTAS = _pasta_das_ferramentas.pasta_das_ferramentas(RAIZ)
 # Onde procurar um motor do Kraken pronto, em ordem (o primeiro VALIDO vale;
 # --motor-kraken passa outro). O de EditorImpressao-arquivos\ferramentas foi
 # montado ate 29/09 com as DLLs do Visual C++ dentro, e e recusado.
 LUGARES_DO_MOTOR = [
     RAIZ / "motor-kraken",
-    RAIZ.parent / "EditorImpressao-arquivos" / "ferramentas" / "motor-kraken",
+    FERRAMENTAS / "motor-kraken",
     RAIZ / "saida_teste" / "motor-kraken",
 ]
 # Os 27 arquivos de que o tesseract.exe 5.4.0 (UB Mannheim) precisa: ele e as
@@ -195,7 +206,7 @@ LICENCAS_DO_TESSERACT = ("LICENSE", "AUTHORS")   # da pasta doc\ da instalacao
 # O instalador oficial do Visual C++ 2015-2022 x64 (link permanente da Microsoft).
 VC_REDIST_URL = "https://aka.ms/vs/17/release/vc_redist.x64.exe"
 VC_REDIST_NOME = "vc_redist.x64.exe"
-DOWNLOADS = RAIZ.parent / "EditorImpressao-arquivos" / "ferramentas" / "downloads"
+DOWNLOADS = FERRAMENTAS / "downloads"    # na pasta das ferramentas (ver FERRAMENTAS)
 
 # Onde o PyInstaller 6 poe tudo o que nao e o .exe, na versão em pasta. E o
 # padrao dele, mas vai explicito no comando: o instalador.iss (a limpeza do
@@ -645,7 +656,12 @@ def preparar_vc_redist(baixar: bool = True) -> tuple[Path | None, str, list[str]
     if not arquivo.is_file():
         if not baixar:
             return None, "", [f"falta {arquivo}"]
-        DOWNLOADS.mkdir(parents=True, exist_ok=True)
+        # nunca cria a pasta das ferramentas (volta 9: foi assim que nasceu a pasta errada de 19/11,
+        # criada inteira onde a conta mandava); so a downloads\ dentro de uma que ja existe
+        if not DOWNLOADS.parent.is_dir():
+            return None, "", [_pasta_das_ferramentas.problema_para_gravar(RAIZ)
+                              or f"não existe a pasta {DOWNLOADS.parent}; nada foi criado"]
+        DOWNLOADS.mkdir(exist_ok=True)
         provisorio = arquivo.with_name(arquivo.name + ".baixando")
         if provisorio.exists():
             return None, "", [f"sobrou {provisorio} de um download anterior: apague à mão e rode de novo"]

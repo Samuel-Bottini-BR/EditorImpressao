@@ -26,16 +26,34 @@ class GitFalhou(RuntimeError):
     """O git não respondeu do jeito esperado. A mensagem diz, em português, o que foi pedido e o que ele disse."""
 
 
+# A bandeira do Windows "não abrir janela de console" (a mesma que a peça do Windows usa em core/windows.py); fora do
+# Windows não existe e vale 0. Passo 2, volta 9: a peça passou a ser chamada também de dentro da janela do programa
+# rodando pelas fontes (core/pasta_das_ferramentas.py), e sem ela cada git piscaria uma janela preta na tela.
+_SEM_JANELA = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+# As variáveis com que o git aponta para outro repositório (o gancho do commit as põe); quem pergunta "onde está este
+# código" (pasta_principal) não pode herdá-las.
+_VARIAVEIS_DE_OUTRO_REPOSITORIO = ("GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR", "GIT_INDEX_FILE")
+
+
 def _rodar(raiz: Path | str, *args: str, entrada: str | None = None, aceitar: tuple[int, ...] = (0,),
-           ambiente_extra: dict[str, str] | None = None) -> subprocess.CompletedProcess:
+           ambiente_extra: dict[str, str] | None = None, limite_s: float | None = None,
+           sem: tuple[str, ...] = ()) -> subprocess.CompletedProcess:
     """Roda `git <args>` na pasta `raiz` e devolve o resultado; código fora de `aceitar` vira `GitFalhou`.
 
     `GIT_OPTIONAL_LOCKS=0` evita que uma leitura (ex.: `git status`) grave no índice enquanto o gancho do commit roda.
+    Sempre sem janela de console (`_SEM_JANELA`). `limite_s`: o tempo máximo (None = sem limite, como sempre foi; o
+    `fetch` de um ramo grande pode demorar); passou dele, o git é fechado e vira `GitFalhou`. `sem`: variáveis do
+    ambiente que o git não pode herdar.
     """
     ambiente = dict(os.environ, GIT_OPTIONAL_LOCKS="0", LC_ALL="C", **(ambiente_extra or {}))
+    for nome in sem:
+        ambiente.pop(nome, None)
     try:
         r = subprocess.run(["git", "-c", "core.quotepath=false", *args], cwd=str(raiz), input=entrada,
-                           capture_output=True, text=True, encoding="utf-8", errors="replace", env=ambiente)
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", env=ambiente,
+                           timeout=limite_s, creationflags=_SEM_JANELA)
+    except subprocess.TimeoutExpired as erro:
+        raise GitFalhou(f"o git não respondeu em {limite_s:g} segundos a `git {' '.join(args)}`") from erro
     except FileNotFoundError as erro:
         raise GitFalhou("o git não está instalado ou não está no caminho do Windows") from erro
     except OSError as erro:
@@ -53,6 +71,29 @@ def _lista_z(texto: str) -> list[str]:
 def raiz_do_repositorio(pasta: Path | str) -> Path:
     """A pasta de cima da cópia (worktree) que contém `pasta`."""
     return Path(_rodar(pasta, "rev-parse", "--show-toplevel").stdout.strip())
+
+
+def pasta_principal(pasta: Path | str, limite_s: float | None = 30) -> Path | None:
+    """A pasta principal do repositório que contém `pasta` (numa cópia de trabalho, a do repositório de onde ela saiu;
+    na própria pasta principal, ela mesma). `None` quando o repositório não tem pasta principal (um repositório só de
+    git, sem arquivos, com a pasta comum que não se chama `.git`).
+
+    Lido no git (https://git-scm.com/docs/git-worktree, "DETAILS": numa cópia de trabalho, "$GIT_COMMON_DIR is set to
+    point back to the main worktree's $GIT_DIR (e.g. /path/main/.git)"; https://git-scm.com/docs/git-rev-parse,
+    `--git-common-dir` e `--path-format=absolute`, o caminho inteiro): a pasta comum, e a de cima dela. Sem as variáveis
+    que apontariam para outro repositório (`_VARIAVEIS_DE_OUTRO_REPOSITORIO`), com limite de tempo. Levanta `GitFalhou`
+    sem git, fora de um repositório ou se ele não responder. Passo 2, volta 9 (core/pasta_das_ferramentas.py)."""
+    comum = Path(_rodar(pasta, "rev-parse", "--path-format=absolute", "--git-common-dir", limite_s=limite_s,
+                        sem=_VARIAVEIS_DE_OUTRO_REPOSITORIO).stdout.strip())
+    if comum.name != ".git" or not comum.parent.is_dir():
+        return None
+    return comum.parent
+
+
+def criar_copia_de_trabalho(raiz: Path | str, pasta: Path | str, ramo: str) -> None:
+    """Cria uma cópia de trabalho (`git worktree add -b <ramo> <pasta>`) do repositório `raiz`. Só para os
+    repositórios de prova (`repositorio_de_prova.py`): nada aqui toca o repositório do projeto."""
+    _rodar(raiz, "worktree", "add", "-q", "-b", ramo, str(pasta))
 
 
 def arquivos_do_git(raiz: Path | str) -> list[str]:

@@ -70,3 +70,9 @@ class RepositorioDeProva:
     def enviar(self, ramo_no_remoto: str | None = None) -> None:
         """Envia o ramo ao remoto de prova (o "push"); com `ramo_no_remoto`, como outro ramo lá (ex.: a versão de teste)."""
         git.enviar(self.raiz, self.remoto, ramo_no_remoto)
+
+    def criar_copia_de_trabalho(self, pasta: Path | str, ramo: str) -> Path:
+        """Uma cópia de trabalho de verdade (`git worktree add`) deste repositório de prova, em `pasta`, num ramo novo.
+        Passo 2, volta 9: a prova do "código rodando de uma cópia" (tests/test_pasta_das_ferramentas.py)."""
+        git.criar_copia_de_trabalho(self.raiz, pasta, ramo)
+        return Path(pasta)
