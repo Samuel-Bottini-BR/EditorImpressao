@@ -1,0 +1,23 @@
+"""Volta 11: troca, no publicar_versao_kaique.py, toda frase "em {X.nome}" / "de {X.nome}" pela com_preposicao, menos
+na funcao que espera o Samuel (_frase_depois_do_pedido_de_liberar). Imprime cada troca. Uso: python contracao2.py <arq>"""
+import ast, re, sys
+from pathlib import Path
+
+arquivo = Path(sys.argv[1])
+dados = arquivo.read_bytes()
+texto = dados.decode("utf-8")
+fora = set()
+for no in ast.walk(ast.parse(texto)):
+    if isinstance(no, ast.FunctionDef) and no.name == "_frase_depois_do_pedido_de_liberar":
+        fora = set(range(no.lineno, no.end_lineno + 1))
+assert fora
+padrao = re.compile(r"\b(em|de) \{((?:self|destino)\.nome)\}")
+linhas = texto.split("\r\n")
+for i, linha in enumerate(linhas, 1):
+    if i in fora:
+        continue
+    nova = padrao.sub(lambda m: f"{{com_preposicao('{m.group(1)}', {m.group(2)})}}", linha)
+    if nova != linha:
+        print(f"{i}\t{linha.strip()}\n\t-> {nova.strip()}")
+        linhas[i - 1] = nova
+arquivo.write_bytes("\r\n".join(linhas).encode("utf-8"))

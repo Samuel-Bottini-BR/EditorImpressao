@@ -1,0 +1,111 @@
+"""Volta 11 do passo 2: as mutacoes (cada protecao desta volta desligada, uma por vez, numa copia a parte do codigo) e
+o teste que tem de acusar. Uso: python mutacoes.py <copia do codigo> <arquivo do resultado>.
+
+Cada mutacao troca um trecho que tem de aparecer uma vez so, roda os testes indicados (um arquivo de teste por vez, um
+Python por vez), anota quais falharam e devolve o arquivo como estava (conferido byte a byte). Nada do projeto e tocado:
+so a copia dada."""
+import subprocess
+import sys
+from pathlib import Path
+
+COPIA = Path(sys.argv[1])
+RESULTADO = Path(sys.argv[2])
+PYTHON = r"D:\programas\EditorImpressao\.venv\Scripts\python.exe"
+PASTA = "tests/test_pasta_das_ferramentas.py"
+PUB = "tests/test_publicar_versao.py"
+
+MUTACOES = [
+    ("M1 (V8 do relatorio 9): a montagem do Visual C++ olha a pasta de cima e cria a das ferramentas",
+     "empacotar.py",
+     '        problema = _pasta_das_ferramentas.problema_para_gravar()\n        if problema:\n'
+     '            return None, "", [problema]\n        DOWNLOADS.mkdir(exist_ok=True)\n',
+     '        if not DOWNLOADS.parent.parent.is_dir():\n'
+     '            return None, "", [_pasta_das_ferramentas.problema_para_gravar() or "x"]\n'
+     '        DOWNLOADS.mkdir(parents=True, exist_ok=True)\n',
+     [(PASTA, "volta11_baixo3")]),
+    ("M2: a montagem volta a decidir pela conta propria (o codigo de edd39a9f)",
+     "empacotar.py",
+     '        problema = _pasta_das_ferramentas.problema_para_gravar()\n        if problema:\n'
+     '            return None, "", [problema]\n',
+     '        if not DOWNLOADS.parent.is_dir():\n'
+     '            return None, "", [_pasta_das_ferramentas.problema_para_gravar()\n'
+     '                              or f"não existe a pasta {DOWNLOADS.parent}; nada foi criado"]\n',
+     [(PASTA, "volta11_baixo3")]),
+    ("M3 (V5): o empacotar deixa de mostrar a linha do --motor-kraken",
+     "empacotar.py",
+     '            problemas += [f"  {e}" for e in erros]\n',
+     '            problemas += [f"  {e}" for e in erros if "--motor-kraken" not in e]\n',
+     [(PASTA, "volta11_baixo4")]),
+    ("M4 (V6): o publicar --motor deixa de mostrar a linha do --motor-kraken",
+     "publicar_versao_kaique.py",
+     'raise Parou("não achei um motor pronto do jeito novo: " + "; ".join(problemas))',
+     'raise Parou("não achei um motor pronto do jeito novo: " + "; ".join(p for p in problemas '
+     'if "--motor-kraken" not in p))',
+     [(PASTA, "volta11_baixo4")]),
+    ("M5: a com_preposicao sem a contracao",
+     "publicar_versao_kaique.py",
+     'return f"{contracao} {resto}" if contracao else f"{preposicao} {nome}"',
+     'return f"{preposicao} {nome}"',
+     [(PUB, "volta11 or obs6")]),
+    ("M6: a frase do liberar (caminho principal) volta a juntar a mao",
+     "publicar_versao_kaique.py",
+     "print(f\"  {etiqueta} liberada {com_preposicao('em', destino.nome)}\")",
+     "print(f\"  {etiqueta} liberada em {destino.nome}\")",
+     [(PUB, "volta11")]),
+    ("M7: uma frase fora dos caminhos do teste (o liberar que falha) volta a juntar a mao",
+     "publicar_versao_kaique.py",
+     "raise Parou(f\"não consegui liberar {etiqueta} {com_preposicao('em', self.nome)} ({erro})\") from erro",
+     "raise Parou(f\"não consegui liberar {etiqueta} em {self.nome} ({erro})\") from erro",
+     [(PUB, "volta11")]),
+    ("M8: a frase da D-816 consertada sem tirar a excecao da guarda",
+     "publicar_versao_kaique.py",
+     'return (f"{etiqueta}: pedi para liberar em {destino.nome} e não deu para reconferir agora se ficou liberada. '
+     'Depois "\n'
+     '            "do pedido de liberar, o publicar nunca apaga nada (uma leitura atrasada poderia apagar a versão já "\n'
+     '            "liberada), e NÃO apaguei. Ela pode ter ficado de dois jeitos: se ficou liberada em "\n'
+     '            f"{destino.nome}, está inteira',
+     "return (f\"{etiqueta}: pedi para liberar {com_preposicao('em', destino.nome)} e não deu para reconferir agora "
+     'se ficou liberada. Depois "\n'
+     '            "do pedido de liberar, o publicar nunca apaga nada (uma leitura atrasada poderia apagar a versão já "\n'
+     '            "liberada), e NÃO apaguei. Ela pode ter ficado de dois jeitos: se ficou liberada "\n'
+     "            f\"{com_preposicao('em', destino.nome)}, está inteira",
+     [(PUB, "volta11_nenhuma")]),
+    ("M9 (baixo 2): a copia de prova volta a seguir calada quando nao acha a linha",
+     PASTA,
+     '        if texto.count(LINHA_DO_CAMINHO) != 1:\n',
+     '        if False:\n',
+     [(PASTA, "volta11_baixo2")]),
+]
+
+
+def rodar(teste: str, filtro: str) -> str:
+    """Roda um arquivo de teste com o filtro; devolve a ultima linha do pytest."""
+    r = subprocess.run([PYTHON, "-m", "pytest", teste, "-q", "-p", "no:cacheprovider", "-k", filtro],
+                       cwd=COPIA, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=1800)
+    linhas = [l for l in r.stdout.splitlines() if l.strip()]
+    falhas = [l for l in linhas if l.startswith(("FAILED", "ERROR"))]
+    return (linhas[-1] if linhas else r.stderr[-300:]) + "".join(f"\n      {f}" for f in falhas)
+
+
+saida = []
+for nome, arquivo, velho, novo, testes in MUTACOES:
+    caminho = COPIA / arquivo
+    original = caminho.read_bytes()
+    texto = original.decode("utf-8")
+    fim = "\r\n" if "\r\n" in texto else "\n"
+    velho_aqui, novo_aqui = velho.replace("\n", fim), novo.replace("\n", fim)
+    assert texto.count(velho_aqui) == 1, (nome, texto.count(velho_aqui))
+    caminho.write_bytes(texto.replace(velho_aqui, novo_aqui).encode("utf-8"))
+    try:
+        saida.append(nome)
+        for teste, filtro in testes:
+            saida.append(f"  {teste} -k \"{filtro}\": {rodar(teste, filtro)}")
+    finally:
+        caminho.write_bytes(original)
+    assert caminho.read_bytes() == original
+    print(saida[-len(testes) - 1:], flush=True)
+saida.append("sem mutacao (a copia como esta):")
+for teste, filtro in [(PASTA, "volta11"), (PUB, "volta11 or obs6 or volta3_achado1")]:
+    saida.append(f"  {teste} -k \"{filtro}\": {rodar(teste, filtro)}")
+RESULTADO.write_text("\n".join(saida) + "\n", encoding="utf-8")
+print("\n".join(saida))

@@ -1,0 +1,19 @@
+Volta 11, reversao: os testes novos (de 1624a05a) no codigo de edd39a9f (a partida), numa copia a parte (git archive), um arquivo por vez.
+== tests/test_pasta_das_ferramentas.py -k volta11
+PASSED tests/test_pasta_das_ferramentas.py::test_volta11_baixo2_a_copia_de_prova_para_se_nao_acha_a_linha_do_caminho
+PASSED tests/test_pasta_das_ferramentas.py::test_volta11_baixo3_editorimpressao_arquivos_sem_a_ferramentas_a_montagem_do_visual_c_para
+PASSED tests/test_pasta_das_ferramentas.py::test_volta11_baixo4_o_empacotar_sem_o_motor_mostra_onde_procurou_e_o_motor_kraken
+PASSED tests/test_pasta_das_ferramentas.py::test_volta11_baixo4_o_publicar_motor_sem_o_motor_para_com_onde_procurou_e_o_motor_kraken
+FAILED tests/test_pasta_das_ferramentas.py::test_volta11_baixo3_quem_decide_o_pode_gravar_da_montagem_do_visual_c_e_a_regra
+1 failed, 4 passed, 12 deselected in 9.80s
+== tests/test_publicar_versao.py -k volta11
+FAILED tests/test_publicar_versao.py::test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao
+FAILED tests/test_publicar_versao.py::test_volta11_as_frases_do_publicar_saem_com_a_contracao_na_pasta_e_no_github[pasta]
+FAILED tests/test_publicar_versao.py::test_volta11_as_frases_do_publicar_saem_com_a_contracao_na_pasta_e_no_github[github]
+3 failed, 122 deselected in 2.41s
+Leitura: falham no codigo de antes os testes do que estava errado nele (quem decide o "pode gravar?" da montagem; as
+frases com "em a pasta"/"em o GitHub", pela guarda e pelos caminhos principais, na pasta e no GitHub). Passam la os que
+cobram o que o codigo de antes ja fazia certo, mas sem teste que o acusasse (a montagem sem a ferramentas, o
+--motor-kraken nas duas telas): a prova deles e a mutacao (M1, M3, M4 em reversao-volta11-resultado.txt). O do baixo 2
+cobra a ajuda dos testes (que vem com o arquivo de teste novo): a prova e a mutacao M9 e a copia com a linha mudada
+(volta11-baixo2-a-linha-mudada.txt).

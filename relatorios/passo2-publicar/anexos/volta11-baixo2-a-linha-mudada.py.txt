@@ -1,0 +1,38 @@
+"""Volta 11, a prova do baixo 2 numa copia a parte (nunca no projeto): a linha do caminho em
+core/pasta_das_ferramentas.py mudada para E:\\ (o caso do relatorio 9, sonda S3). Roda o mesmo teste que so LE (os seis
+lugares, de uma copia de trabalho de prova) com a ajuda de antes (o arquivo de teste de edd39a9f) e com a nova (o de
+1624a05a). Antes: o teste roda e os seis lugares apontam para o caminho de verdade (E:\\...); agora: para na montagem.
+Nenhum script que grava roda. Uso: python baixo2_linha_mudada.py <copia> <resultado>."""
+import subprocess
+import sys
+from pathlib import Path
+
+COPIA, RESULTADO = Path(sys.argv[1]), Path(sys.argv[2])
+PYTHON = r"D:\programas\EditorImpressao\.venv\Scripts\python.exe"
+LINHA = 'PASTA_DAS_FERRAMENTAS = Path(r"D:\\programas\\EditorImpressao-arquivos\\ferramentas")'
+MUDADA = 'PASTA_DAS_FERRAMENTAS = Path(r"E:\\programas\\EditorImpressao-arquivos\\ferramentas")'
+TESTE = "test_defeito1_de_uma_copia_de_trabalho_os_seis_lugares_acham_a_pasta_certa"
+
+regra = COPIA / "core" / "pasta_das_ferramentas.py"
+original = regra.read_bytes()
+texto = original.decode("utf-8")
+assert texto.count(LINHA) == 1
+regra.write_bytes(texto.replace(LINHA, MUDADA).encode("utf-8"))
+saida = [f"A linha mudada na copia: {MUDADA}", ""]
+try:
+    for rotulo, arquivo in (("com a ajuda de ANTES (o arquivo de teste de edd39a9f)", "tests/test_pasta_da_volta10.py"),
+                            ("com a ajuda NOVA (o arquivo de teste de 1624a05a)", "tests/test_pasta_das_ferramentas.py")):
+        r = subprocess.run([PYTHON, "-m", "pytest", f"{arquivo}::{TESTE}", "-q", "-p", "no:cacheprovider", "-rA"],
+                           cwd=COPIA, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=900)
+        linhas = r.stdout.splitlines()
+        uteis = [l for l in linhas if ("procuram fora de" in l and l.lstrip().startswith("E ")) or "LINHA_DO_CAMINHO" in l
+                 or l.startswith(("PASSED", "FAILED", "ERROR")) or " passed" in l or " failed" in l or " error" in l]
+        saida.append(f"== {rotulo}")
+        saida += [l[:400] for l in uteis[:8]]
+        saida.append("")
+finally:
+    regra.write_bytes(original)
+assert regra.read_bytes() == original
+saida.append("A linha da copia voltou ao original (conferido byte a byte).")
+RESULTADO.write_text("\n".join(saida) + "\n", encoding="utf-8")
+print("\n".join(saida))

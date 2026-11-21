@@ -1,0 +1,29 @@
+"""Volta 11: quebra em duas as linhas do publicar que passaram de 120 colunas com a com_preposicao (so a forma; o
+texto da frase nao muda). Confere no fim que o Python le as mesmas frases (a arvore das constantes e igual)."""
+import ast, re, sys
+from pathlib import Path
+
+arquivo = Path(sys.argv[1])
+dados = arquivo.read_bytes()
+fim = "\r\n" if b"\r\n" in dados else "\n"
+linhas = dados.decode("utf-8").split(fim)
+chamada = re.compile(r"\{com_preposicao\('(?:em|de)', (?:self|destino)\.nome\)\}")
+saida = []
+for linha in linhas:
+    m = chamada.search(linha)
+    if not m or len(linha) <= 120:
+        saida.append(linha)
+        continue
+    inicio = linha.rfind('f"', 0, m.start())
+    resto = linha[m.end():]
+    literal = resto[:resto.index('"')]
+    primeira = linha[:m.end()] + '"'
+    segunda = " " * inicio + ("f" if "{" in literal else "") + '"' + resto
+    saida += [primeira, segunda]
+    print(len(primeira), len(segunda), segunda.strip()[:60])
+novo = fim.join(saida)
+def frases(t):
+    return ast.dump(ast.parse(t))
+assert frases(novo) == frases(dados.decode("utf-8")), "a quebra mudou o que o Python le"
+arquivo.write_bytes(novo.encode("utf-8"))
+print("ok, o Python le o mesmo")
