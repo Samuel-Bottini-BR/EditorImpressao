@@ -1,0 +1,54 @@
+"""Sonda S6: o limite de tempo da peca do git segura um git que DEMORA DE VERDADE?
+
+Sem peca de mentira: o git de verdade fica esperando de verdade (git hash-object --stdin, lendo a entrada que esta sonda
+deixa aberta; sem -w, nao grava nada). A peca roda com limite de 2 s. Mede quanto tempo ela leva para devolver, com o
+git que o Windows acha pelo caminho de sempre (C:\\Program Files\\Git\\cmd\\git.exe, o "lancador" do Git for Windows) e com
+o git direto (mingw64\\bin\\git.exe). Se passar de 15 s, a sonda fecha a entrada (o git le o fim e sai) e anota.
+
+Uso: python sonda_s6_limite.py <pasta do codigo>  (so le; a pasta do codigo e a copia de trabalho passo2)
+"""
+import json
+import os
+import subprocess
+import sys
+import time
+
+FILHO = r"""
+import sys, time
+sys.path.insert(0, sys.argv[1])
+from regras_dos_agentes import conversa_com_o_git as git
+t = time.perf_counter()
+try:
+    git._rodar(sys.argv[1], "hash-object", "--stdin", limite_s=2)
+    r = "respondeu"
+except git.GitFalhou as e:
+    r = "GitFalhou: " + str(e)
+print(round(time.perf_counter() - t, 1), r, flush=True)
+"""
+
+
+def medir(codigo, pasta_do_git):
+    env = dict(os.environ, PATH=pasta_do_git + os.pathsep + os.environ["PATH"])
+    arquivo = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "s6_saida.txt"), "w+", encoding="utf-8", errors="replace")
+    p = subprocess.Popen([sys.executable, "-I", "-X", "utf8", "-c", FILHO, codigo], stdin=subprocess.PIPE, stdout=arquivo,
+                         stderr=subprocess.STDOUT, text=True, env=env,
+                         creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+    t = time.perf_counter()
+    preso = False
+    try:
+        p.wait(timeout=15)                   # a entrada fica ABERTA (communicate() a fecharia)
+    except subprocess.TimeoutExpired:
+        preso = True
+        p.stdin.close()                      # o git le o fim da entrada e sai sozinho
+        p.wait(timeout=60)
+    arquivo.seek(0)
+    saida = arquivo.read()
+    arquivo.close()
+    return {"git": pasta_do_git, "segundos ate a peca devolver": round(time.perf_counter() - t, 1),
+            "passou de 15 s (a sonda fechou a entrada)": preso, "o que a peca disse": saida.strip()[-300:]}
+
+
+if __name__ == "__main__":
+    codigo = sys.argv[1]
+    print(json.dumps([medir(codigo, r"C:\Program Files\Git\cmd"),
+                      medir(codigo, r"C:\Program Files\Git\mingw64\bin")], ensure_ascii=True, indent=1))

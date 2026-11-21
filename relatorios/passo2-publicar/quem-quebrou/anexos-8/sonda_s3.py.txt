@@ -1,0 +1,19 @@
+"""Sonda S3: o programa do Kaique (empacotado) simulado: sys.frozen, a peca do git ausente do pacote (import bloqueado)
+e um espiao em todo processo aberto. So le."""
+import json, os, subprocess, sys
+sys.path.insert(0, os.getcwd())
+sys.frozen = True
+sys.modules["regras_dos_agentes"] = None          # como se o PyInstaller a tivesse tirado (EXCLUIR)
+abertos = []
+_popen = subprocess.Popen.__init__
+def espia(self, *a, **k):
+    abertos.append(a[0] if a else k.get("args"))
+    return _popen(self, *a, **k)
+subprocess.Popen.__init__ = espia
+from core import pasta_das_ferramentas as pf, ocr_kraken
+r = {"pasta_das_ferramentas": str(pf.pasta_das_ferramentas()), "problema": pf.problema_para_gravar(),
+     "lugares": [str(p) for p in ocr_kraken.lugares_do_motor()], "motor": str(ocr_kraken.achar_pasta_do_motor())}
+# e o pasta_principal chamado direto, empacotado (quem chama deveria conferir antes):
+r["pasta_principal direto"] = str(pf.pasta_principal())
+r["processos abertos"] = abertos
+print(json.dumps(r, ensure_ascii=False, indent=1))

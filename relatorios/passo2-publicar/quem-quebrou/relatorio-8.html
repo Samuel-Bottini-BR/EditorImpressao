@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo 2: oitava conferência de quem tentou quebrar (voltas 8 e 9)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Passo 2 do plano da parte do Windows: oitava conferência de quem tentou quebrar (voltas 8 e 9, 21/11/2026)</h1>
+<p>Sou um agente novo nesta volta (D-815). Não escrevi este código e não conferi as voltas anteriores. Não mexi no código
+do outro: as minhas mudanças foram em cópias (<code>git archive</code>), na pasta de rascunho <code>quebra9\</code>.</p>
+<p>O que <strong>não</strong> fiz:</p>
+<ul>
+<li>não rodei o publicar, o PyInstaller, o vpk nem o <code>gh release</code> de verdade (D-785, item 8: a gerente roda, à vista);</li>
+<li>não abri janela, console nem pergunta do Windows na tela do Samuel (o git e o PowerShell da peça abrem sem janela);</li>
+<li>não disparei rodada do GitHub (só consultei a 44847777899 e a 44859326833);</li>
+<li>não rodei <code>tests/test_ocr_kraken.py</code> (abre o motor de 1 GB) nem nada pesado ao mesmo tempo: um Python por vez;</li>
+<li>não mexi em <code>C:\EditorImpressaoProva</code> (só li o <code>prova6b.log</code>), na pasta errada de 19/11 (só listei; a data continua
+  19/11/2026 15:44) nem na junção <code>modelos</code>.</li>
+</ul>
+<h2>Pedido</h2>
+<ul>
+<li>Papel: quebrador</li>
+<li>Commit de partida: 82b610f9</li>
+<li>Ramo: passo2-publicar-2026-11-19</li>
+</ul>
+<h2>Arquivos que vou mexer</h2>
+<ul>
+<li><code>core/pasta_das_ferramentas.py</code></li>
+<li><code>tests/test_pasta_das_ferramentas.py</code></li>
+<li><code>regras_dos_agentes/conversa_com_o_git.py</code></li>
+<li><code>regras_dos_agentes/repositorio_de_prova.py</code></li>
+<li><code>compilar_st_ferramentas.py</code></li>
+<li><code>publicar_versao_kaique.py</code></li>
+<li><code>empacotar.py</code></li>
+<li><code>montar_motor_kraken.py</code></li>
+<li><code>compilar_detector_gravura.py</code></li>
+<li><code>core/ocr_kraken.py</code></li>
+<li><code>atualizacao.py</code></li>
+<li><code>tests/test_empacotar.py</code></li>
+<li><code>tests/test_publicar_*.py</code></li>
+<li><code>tests/test_ocr_kraken.py</code></li>
+<li><code>relatorios/passo2-publicar/</code></li>
+</ul>
+<p>(Só mexi de verdade em <code>relatorios/passo2-publicar/</code>: este relatório e <code>quem-quebrou/anexos-8/</code>. Os outros arquivos da
+lista só foram lidos, ou mudados em cópias à parte.)</p>
+<h2>Veredito</h2>
+<p><strong>NÃO ESTÁ PRONTO: o conserto do defeito 1 acha o lugar certo quando o git responde, mas, numa cópia de trabalho, se o
+git não responder, ele volta em silêncio ao lugar errado de antes, e lá ainda existe a pasta errada de 19/11 com o
+Visual C++ dentro. Provei com o git de verdade.</strong> É o mesmo defeito que a volta 9 consertou, por outro caminho, e
+nenhuma frase avisa. O outro escreveu esse caso como "não acontece"; acontece, por exemplo, quando o HD externo vai para
+outro Windows (o git recusa o repositório por ser de outro dono).</p>
+<p>Ficam também 2 baixos e 7 observações (abaixo). Nada disso muda o que o Kaique recebe hoje. Nunca "aprovado": só o
+Samuel aprova.</p>
+<p>O que está certo (provado rodando, não só lido):</p>
+<ul>
+<li><strong>Da cópia de trabalho de verdade (<code>passo2</code>), os seis lugares acham a pasta certa</strong> e o motor certo
+  (<code>D:\programas\EditorImpressao-arquivos\ferramentas\motor-kraken</code>). A pergunta ao git levou 0,125 s.</li>
+<li><strong>O programa do Kaique (simulado empacotado) nunca pergunta ao git e não quebra sem a peça do git:</strong> nenhum processo
+  aberto, o motor procurado só ao lado do programa (sonda S3). Dentro da janela do programa o git também não é chamado:
+  o Kraken está desligado no programa (<code>SEGUNDA_OPINIAO_DO_KRAKEN = False</code>), então só a linha de comando do diagnóstico
+  e os testes chegam lá.</li>
+<li><strong>O caminho escrito de outro jeito (D-813) dá o mesmo lugar:</strong> minúsculas, barras, <code>\\?\</code>, nome curto,
+  <code>\\localhost\D$</code> e <code>..</code> (sonda S5).</li>
+<li><strong>Os três scripts que gravam param com a frase e não criam nada</strong> quando a pasta das ferramentas não existe (rodei os
+  três de verdade numa cópia sem repositório).</li>
+<li><strong>A frase do apagar</strong> sai de um lugar só, nos dois destinos e para a versão e o motor; o caminho de erro antes do
+  pedido de liberar usa a mesma; depois do pedido de liberar nada se apaga (D-816, lido: as linhas não mudaram).</li>
+<li><strong>A leitura única da versão do Visual C++:</strong> o programa instalado faz o mesmo de antes em todos os casos, menos o
+  arquivo que não é UTF-8 (antes dava erro; agora lê). Esse arquivo o publicar recusa, e a assinatura do pacote impede
+  que chegue ao Kaique (sonda S7).</li>
+<li><strong>A reversão confere com a do outro:</strong> volta 8, 10 dos testes novos falham no código antigo e 111 passam; volta 9, os
+  2 testes do defeito e o do pacote falham.</li>
+<li><strong>Nenhum teste antigo mudou</strong> (de <code>21f1fc50</code> a <code>011b06d0</code> os testes só ganharam linhas). As duas rodadas do GitHub
+  passaram, sobre o código certo.</li>
+</ul>
+<h2>Decisões que esta tarefa precisa cumprir</h2>
+<p>Palavras copiadas do Livro (<code>obra-juncao</code>, <code>docs/plano/DECISOES.md</code>), e como as achei nesta entrega.</p>
+<ul>
+<li><strong>D-605</strong> "A partir de agora, nenhuma função nova, ou nova escolha dentro do programa pode alterar o que já está escolhido e testado, coisas novas não podem criar novos problemas, essa é uma nova regra que todos os agentes precisam ler"
+  Aqui: <strong>cumprida</strong>. Nenhum teste antigo mudou; da pasta principal os seis lugares dão o mesmo de antes; o programa
+  instalado faz o mesmo com o arquivo da versão (só o não-UTF-8 muda, e não chega ao Kaique). O que já funcionava em
+  volta (o porteiro, que usa a mesma peça do git) passou na rodada 44859326833.</li>
+<li><strong>D-727</strong> "pode, se tiver qualquer coisa que o kaique precise, ele tem que estar no instalador né"
+  Aqui: <strong>cumprida</strong> (não muda): o Visual C++ continua indo no pacote; a montagem só não cria mais a pasta das
+  ferramentas no lugar errado.</li>
+<li><strong>D-767</strong> "não faça mais nada escodindo ou de mentira" · "não quero fazer consertos quero que funcione" · "quero que faça as coisas certas e sem bugs ou erros, deveria ter pensado nesses erros na hora de montar a estrutura do atualizador e testes a distancias"
+  Aqui: <strong>pela metade</strong>. Os testes do defeito 1 usam o git de verdade, numa cópia de trabalho de verdade (bom). Mas o
+  "git que demora" foi provado com um limite de 1 microssegundo e um git que responde na hora; com um git que demora de
+  verdade, o limite não segura no PC do Samuel (achado 2). E o caso "sem resposta do git numa cópia" foi pensado e
+  deixado de lado como "não acontece" (achado 1).</li>
+<li><strong>D-773</strong> "A"
+  Aqui: não se aplica a estas voltas (nenhuma versão de prova foi servida nem publicada).</li>
+<li><strong>D-775</strong> "o agente vai tentar quebrar antes de fazer o teste real na tela né?" · "ok"
+  Aqui: <strong>cumprida</strong> por este relatório; achei um médio, então, pela D-775, volta ao passo 1 antes da prova à vista.</li>
+<li><strong>D-776</strong> "Sim, no C só tem que cuidar para não encher o disco C inteiro"
+  Aqui: não muda (o publicar continua montando no C:, com a reserva; não toquei).</li>
+<li><strong>D-777</strong> "mas dai vai fazer quais versões?" · "ok, fica assim"
+  Aqui: não muda.</li>
+<li><strong>D-785</strong> "ok, mais ainda existem mais casos na opção A" · "ok"
+  Aqui: <strong>cumprida</strong> por mim (nada à vista rodei; o publicar fica para a gerente).</li>
+<li><strong>D-788</strong> "1" (a primeira opção)
+  Aqui: <strong>cumprida</strong>. Empacotado, o motor é procurado primeiro ao lado do programa, como hoje, e nada é perguntado ao
+  git (sonda S3). A peça do git fica fora do pacote pela lista de exclusão (lido no PyInstaller 6.21: o nome excluído
+  vira um módulo vazio; que os submódulos também saiam é dedução; o pacote de verdade só a prova mostra).</li>
+<li><strong>D-789</strong> "mas iria demorar mais toda vez que eu fosse fazer a compilação né?" · "A"
+  Aqui: não muda.</li>
+<li><strong>D-795</strong> "porque fazer isso?" · "porque ter um instalador pequeno então?" · "não tem nenhuma documentação dizendo para o que isso serve?" · "ok"
+  Aqui: não muda (o apagar do Setup.exe não foi tocado).</li>
+<li><strong>D-815</strong> "pode conferir se não está ocorrendo alucinação por estar com contexto cheio" · "estou falando do agente que está trabalhando" · "esses agentes que você criou, sempre que vai fazer uma tarefa nova, chama outro com a mesmas instruções ou ifac rodando sempre o mesmo com memorias compactadas?" · "ok"
+  Aqui: <strong>cumprida</strong>: sou agente novo nesta volta. O escritor das voltas 8 e 9 é o mesmo (a segunda e última volta
+  dele): a próxima volta de conserto vai para um escritor novo.</li>
+<li><strong>D-816</strong> "A , mas onde estamos antes de você fazer qualquer processo"
+  Aqui: <strong>cumprida</strong>: depois do pedido de liberar, nada se apaga (as linhas de <code>publicar_arquivos</code> que decidem isso não
+  mudaram; o teste da D-816 passou na rodada).</li>
+<li><strong>D-817</strong> "pode"
+  Aqui: <strong>cumprida</strong> (não muda): o teste trocado pela D-817 continua o mesmo.</li>
+<li><strong>D-818</strong> "vai ter que reprogramar?" · "A"
+  Aqui: <strong>cumprida</strong>: a pasta já montada continua conferida pela mesma régua; a leitura do arquivo da versão passou a
+  ser a mesma do programa instalado (volta 8).</li>
+</ul>
+<h2>O que li</h2>
+<ul>
+<li>As regras do verificador (<code>.claude/agents/verificador.md</code>), o <code>CLAUDE.md</code> inteiro da cópia <code>passo2</code>, a memória
+  (<code>memoria/INDICE.md</code>; <code>memoria/geral/atualizador.md</code> da pasta principal, porque a cópia <code>passo2</code> não a tem), o catálogo
+  dos erros da <code>obra-juncao</code> (as famílias F1 a F10) e o pacote <code>anexos/pacote-quem-quebra-volta9.md</code>.</li>
+<li>No Livro da <code>obra-juncao</code>, as linhas inteiras de D-605, D-727, D-767, D-773, D-775, D-776, D-777, D-785, D-788,
+  D-789, D-795, D-813, D-815, D-816, D-817 e D-818 (o pacote diz "não achada" para D-815 a D-818; elas existem no Livro
+  da <code>obra-juncao</code>, nas linhas 1105 a 1108).</li>
+<li>O ONDE-PAREI do escritor: "Onde parei", as partes Volta 8 e Volta 9 de "A causa", "O que pode falhar", "O que li",
+  "Ressalvas", "Cada proteção" e "A prova de verdade"; os anexos de reversão e de mutação das duas voltas.</li>
+<li>O código: o diff de <code>21f1fc50</code> a <code>011b06d0</code> inteiro (13 arquivos), <code>core/pasta_das_ferramentas.py</code> inteiro, a peça
+  do git, os seis lugares, o caminho de erro de <code>publicar_arquivos</code>, o <code>instalar_visual_c_se_faltar</code> e quem o chama.</li>
+<li><strong>Peças de fora, lidas na fonte:</strong> o <code>subprocess.run</code> do Python 3.14 (<code>Lib/subprocess.py</code>, linhas 554 a 570: no
+  Windows, depois de matar o programa que passou do tempo, ele chama <code>communicate()</code> sem limite); o <code>ModuleGraph</code> do
+  PyInstaller 6.21 (<code>lib/modulegraph/modulegraph.py</code>, linhas 926 a 929: cada nome excluído vira <code>None</code> nos nós
+  preguiçosos). Do git: a mensagem de recusa por dono diferente, vista rodando (<code>fatal: detected dubious ownership</code>).</li>
+<li>O registro da prova 6b (<code>C:\EditorImpressaoProva\prova6b.log</code>, UTF-16, só lido): "não existe
+  D:\programas\EditorImpressao.claude\worktrees\EditorImpressao-arquivos\ferrame...".</li>
+</ul>
+<h2>O que conferi nas falhas, nas peças de fora e nos caminhos</h2>
+<h3>As rodadas do GitHub (consultadas, não disparadas)</h3>
+<ul>
+<li><strong>44847777899 (volta 8): success na tentativa 2</strong>, sobre o ramo em <code>5462d882</code> (o commit aparece 60 vezes no registro).</li>
+<li><strong>44859326833 (volta 9): success na tentativa 1</strong>, sobre o ramo em <code>0e36d0a4</code> (= <code>011b06d0</code> mais o formulário):
+  <code>test_pasta_das_ferramentas.py</code> 10 passaram; <code>test_empacotar.py</code> 42 passaram e 1 pulou (o do Tesseract não
+  instalado, antigo); <code>test_publicar_versao.py</code> 121 passaram; <code>test_ocr_kraken.py</code> 27 passaram e 6 pularam (lá não há
+  motor).</li>
+</ul>
+<h3>A prova de reversão (anexo <code>anexos-8/reversao-no-codigo-antigo.txt</code>)</h3>
+<p>Rodei de novo, em cópias minhas:</p>
+<ul>
+<li><strong>Volta 8:</strong> os testes de <code>011b06d0</code> no código de <code>21f1fc50</code>: <strong>10 falham, 111 passam</strong> (os 10 do apagar e da
+  leitura única), igual ao anexo do outro. Os que passam lá cobram proteções que já existiam (o outro provou com U8 a
+  U12).</li>
+<li><strong>Volta 9:</strong> os testes de <code>011b06d0</code> (com a peça do git e o repositório de prova novos por cima, só para o teste
+  rodar) no código de <code>5c22a12d</code>: <strong>2 falham</strong> (os seis lugares da cópia; a montagem que criava a pasta), <strong>1 passa</strong> (o
+  "da pasta principal, nada muda", que é de não estragar, não de reversão), <strong>7 pulam</strong> (pedem a função nova), e o teste
+  do pacote <strong>falha</strong>. Igual ao do outro. Os 7 que pulam não provam reversão, mas as mutações dele os cobrem.</li>
+</ul>
+<h3>Os casos que podem falhar, rodados com o git de verdade (anexos <code>sondas-s1-s2-s4.txt</code>, <code>sonda-s5.txt</code>, <code>sonda-s6-limite.txt</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Caso</th>
+<th>O que acontece</th>
+<th>Certo?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Da cópia <code>passo2</code>, git normal</td>
+<td>a pasta certa, o motor certo, 0,125 s</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Da cópia, <strong>sem git no caminho</strong></td>
+<td>a pasta errada de 19/11, que existe; o Visual C++ é tirado de lá; "pode gravar" diz sim</td>
+<td><strong>não</strong> (achado 1)</td>
+</tr>
+<tr>
+<td>Da cópia, <strong>o git recusa o dono</strong></td>
+<td>o mesmo do de cima</td>
+<td><strong>não</strong> (achado 1)</td>
+</tr>
+<tr>
+<td><code>GIT_DIR</code> herdado (gancho do commit)</td>
+<td>a pasta certa (teste do outro; a mutação P8 dele é acusada)</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>O caminho escrito de 7 jeitos (D-813)</td>
+<td>o mesmo lugar nos 7</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Pasta com espaço no nome</td>
+<td>certo (os testes do outro rodam numa)</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Pasta principal sem a pasta das ferramentas</td>
+<td>a frase e nada criado (teste do outro, e os três scripts rodados por mim)</td>
+<td>sim</td>
+</tr>
+<tr>
+<td><strong>Git que demora de verdade</strong></td>
+<td>limite de 2 s: devolveu só aos 14,9 s, quando eu fechei a entrada do git</td>
+<td><strong>não</strong> (achado 2)</td>
+</tr>
+<tr>
+<td>Cópia sem repositório dentro de outro repositório</td>
+<td>o git sobe as pastas e acha o outro; no PC do Samuel dá a pasta certa por acaso</td>
+<td>observação 9</td>
+</tr>
+<tr>
+<td>Empacotado</td>
+<td>nada perguntado ao git, nenhum processo aberto</td>
+<td>sim</td>
+</tr>
+</tbody>
+</table>
+<h3>As mutações minhas (anexo <code>anexos-8/mutacoes-b-resultado.txt</code>; script <code>mutacoes_b.py.txt</code>)</h3>
+<p>Diferentes das P1 a P11 e U1 a U12. Uma por vez, numa cópia de <code>011b06d0</code>, devolvida ao original byte a byte.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>O que desliguei</th>
+<th>Acusada?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B1</td>
+<td>o <code>montar_motor_kraken</code> deixa de parar quando a pasta das ferramentas não existe</td>
+<td><strong>não</strong></td>
+</tr>
+<tr>
+<td>B2</td>
+<td>o <code>compilar_detector_gravura</code> deixa de parar</td>
+<td><strong>não</strong></td>
+</tr>
+<tr>
+<td>B3</td>
+<td>o <code>compilar_st_ferramentas</code> deixa de parar</td>
+<td><strong>não</strong></td>
+</tr>
+<tr>
+<td>B4</td>
+<td>o <code>montar_motor_kraken</code> só confere quando destino <strong>e</strong> downloads são os de fábrica</td>
+<td><strong>não</strong></td>
+</tr>
+<tr>
+<td>B5</td>
+<td>"pode gravar?" olha a pasta <code>EditorImpressao-arquivos</code>, e não a <code>ferramentas</code> dentro dela</td>
+<td><strong>não</strong></td>
+</tr>
+<tr>
+<td>B6</td>
+<td>a peça do git aceita qualquer pasta comum (deixa de exigir <code>.git</code>)</td>
+<td><strong>não</strong></td>
+</tr>
+<tr>
+<td>B7</td>
+<td>a pergunta deixa de tirar só a <code>GIT_COMMON_DIR</code> do ambiente</td>
+<td><strong>não</strong></td>
+</tr>
+<tr>
+<td>B8</td>
+<td>o git que passa do tempo deixa de virar a frase da peça</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>B9</td>
+<td>o caminho de erro apaga sem o "acabou de criar"</td>
+<td>sim</td>
+</tr>
+</tbody>
+</table>
+<h3>O que já funcionava em volta (§11.8)</h3>
+<ul>
+<li>Nenhum teste antigo mudou: o diff dos testes de <code>21f1fc50</code> a <code>011b06d0</code> só tem linhas novas.</li>
+<li>A peça do git agora abre todo git sem janela (também os do porteiro). A rodada 44859326833 passou com o porteiro e as
+  conferências.</li>
+<li><code>tests/test_ocr_kraken.py</code> cobra "pelo menos dois lugares": empacotado ficam dois (antes três); continua passando.</li>
+</ul>
+<h2>Caminhos que o outro não listou</h2>
+<ol>
+<li><strong>Sem resposta do git, numa cópia de trabalho</strong> (sem git no caminho, o git que recusa o dono, o git que passa do
+   limite): o outro listou "sem git" só para a pasta principal e para a cópia sem repositório. Numa cópia de trabalho, a
+   conta de antes é justamente a conta errada, e ela é usada calada (achado 1).</li>
+<li><strong>O git do caminho do Windows é um lançador</strong> (<code>C:\Program Files\Git\cmd\git.exe</code> abre o <code>mingw64\bin\git.exe</code>): é
+   esse o git que o Python acha quando roda fora do Git Bash (PowerShell, atalho, Explorer). O limite de tempo só mata o
+   lançador (achado 2).</li>
+<li><strong>A pasta <code>EditorImpressao-arquivos</code> existe, mas sem <code>ferramentas</code> dentro:</strong> nenhum teste a usa (a mutação B5 passa).</li>
+<li><strong>O main dos três scripts que gravam</strong> (<code>montar_motor_kraken</code>, os dois compiladores): nenhum teste o chama (B1 a B4
+   passam).</li>
+</ol>
+<h2>Falhas não pensadas e resultado não conferido</h2>
+<ul>
+<li><strong>Resultado não conferido (F5):</strong> quando o git não responde numa cópia, a regra dá a pasta errada como certa e
+  ninguém fica sabendo. A frase de "não dá para gravar" chama de "pasta principal" uma pasta que é só a de cima do
+  código (o git não disse nada).</li>
+<li><strong>Proteção que não protege (F3):</strong> o limite de tempo do git, no PC do Samuel, não limita (achado 2). O teste dele usa
+  1 microssegundo e um git que responde em 0,1 s: passa porque o git é rápido, não porque o limite funciona.</li>
+<li><strong>Proteções sem teste (F3, pela terceira volta seguida neste passo):</strong> as quatro dos scripts que gravam (B1 a B4) e a
+  B5. O "Cada proteção" do outro não as lista.</li>
+</ul>
+<h2>As regras que conferi</h2>
+<ul>
+<li><strong>§11.12.1, uma peça só:</strong> a pasta das ferramentas tem agora um lugar só (grep de <code>RAIZ.parent</code>, <code>parents[</code>,
+  <code>.parents</code>, <code>.parent.parent</code> e <code>EditorImpressao-arquivos</code> fora de <code>tests/</code>: os seis lugares chamam
+  <code>core/pasta_das_ferramentas.py</code>; sobra só o <code>rodada_gravura_1_2.py</code>, que acha o <strong>acervo</strong>, já anotado pelo outro).
+  Mas a peça do git faz o próprio limite de tempo, quando a peça do Windows já tem o jeito de fechar um programa com os
+  filhos dele (o "grupo do Windows" do vpk e do gh, <code>core/windows.py</code>): achado 2.</li>
+<li><strong>§11.12.2, nada dá como feito o que não conferiu:</strong> achado 1.</li>
+<li><strong>§11.12.3, a lista das falhas:</strong> feita pelo outro, com um caso marcado como "não acontece" que acontece (achado 1).</li>
+<li><strong>§11.12.4 e D-767, peça de mentira:</strong> os testes do defeito 1 usam o git de verdade (bom); o do "git que demora" não
+  prova o que diz (achado 2); o do "empacotado" troca <code>sys.frozen</code> (ele diz que é só lógica, e é).</li>
+<li><strong>§11.12.6 e D-813, ler a peça de fora e tudo o que ela aceita:</strong> os jeitos de escrever o caminho estão cobertos
+  (sonda S5). Faltou ler o <code>subprocess.run</code> no Windows (achado 2) e o lançador do Git for Windows.</li>
+<li><strong>§11.8 e D-605:</strong> nenhum teste antigo mudou.</li>
+<li><strong>§4.7, teste de reversão:</strong> confere (refiz as duas).</li>
+<li><strong>§10.5, docstring:</strong> todo arquivo e função tocados têm. Um docstring de teste promete mais do que o teste cobra
+  (observação 4).</li>
+</ul>
+<h2>Achados</h2>
+<ol>
+<li>
+<p><strong>MÉDIO: numa cópia de trabalho, quando o git não responde, a regra volta calada à pasta errada de 19/11, e usa o
+   Visual C++ de lá.</strong>
+   - Onde: <code>core/pasta_das_ferramentas.py:62-66</code> (<code>pasta_principal</code>: <code>GitFalhou</code> → <code>return codigo</code>, a pasta do próprio
+     código) e <code>core/pasta_das_ferramentas.py:72</code> (a conta, guardada por processo).
+   - Provado rodando (anexo <code>sondas-s1-s2-s4.txt</code>), de dentro da cópia de verdade <code>passo2</code>: sem o git no caminho do
+     Windows, e com o git recusando o repositório por dono diferente (<code>GIT_TEST_ASSUME_DIFFERENT_OWNER=1</code>, que faz o
+     git de verdade dar a mesma recusa de quando o HD externo vai para outro Windows ou o Windows é reinstalado:
+     "fatal: detected dubious ownership"), a pasta das ferramentas vira
+     <code>D:\programas\EditorImpressao\.claude\worktrees\EditorImpressao-arquivos\ferramentas</code>. Ela existe; "pode gravar"
+     responde que sim; <code>empacotar.DOWNLOADS</code> aponta para lá e acha o <code>vc_redist.x64.exe</code> de 25.635.768 bytes da pasta
+     errada; o motor não é achado. É o defeito 1 inteiro, sem nenhuma frase.
+   - Lido na fonte: o publicar continua mesmo com o git falhando (o commit vira "não deu para ler", <code>empacotar.py:1704-1711</code>
+     e <code>publicar_versao_kaique.py:943-948</code>), então nada para antes.
+   - O outro escreveu esse caso nas "Ressalvas" ("sem git num computador com uma cópia de trabalho (não acontece: a
+     cópia é feita pelo git)"). A cópia é feita pelo git, mas o git pode deixar de responder depois.
+   - Por que médio: é o defeito que esta volta consertou, voltando por outro caminho, em silêncio. Não chega ao Kaique
+     (o Visual C++ de lá é o oficial, e a régua da assinatura confere), mas o <code>montar_motor_kraken</code> e os compiladores
+     gravariam na pasta errada sem avisar.
+   - O que pedir: quando a pasta do código tem um <code>.git</code> que é <strong>arquivo</strong> (é uma cópia de trabalho, e isso se vê sem
+     perguntar ao git) e o git não responde, <strong>não usar a conta de antes</strong>: a regra diz "não sei", e quem procura ou
+     grava para com a frase do porquê (ex.: "não consegui perguntar ao git onde está a pasta principal desta cópia: o
+     git disse ..."). Com o teste no repositório de prova, da cópia de trabalho, com o git de verdade recusando o dono e
+     com o git fora do caminho. E corrigir a ressalva.</p>
+</li>
+<li>
+<p><strong>BAIXO: o limite de tempo da pergunta ao git não segura no PC do Samuel.</strong>
+   - Onde: <code>regras_dos_agentes/conversa_com_o_git.py:52-56</code> (<code>_rodar</code>, <code>timeout=limite_s</code>).
+   - Lido na fonte: o <code>subprocess.run</code> do Python 3.14, no Windows, depois de matar o programa que passou do tempo, espera
+     sem limite a saída dele (<code>Lib/subprocess.py:557-565</code>). O git que o Windows acha fora do Git Bash é o lançador
+     <code>C:\Program Files\Git\cmd\git.exe</code>, que abre o git de verdade como filho: matar o lançador não mata o filho, e a
+     saída só fecha quando o filho termina.
+   - Provado rodando (anexo <code>sonda-s6-limite.txt</code>): um git de verdade esperando de verdade (lendo a entrada, que eu
+     deixei aberta), com limite de 2 s. Pelo lançador, a peça devolveu aos <strong>14,9 s</strong>, e só porque eu fechei a entrada
+     aos 15 s; sem isso, não teria fim. Pelo git direto, devolveu aos 2,0 s.
+   - O teste dele (<code>tests/test_pasta_das_ferramentas.py:222-225</code>) usa um limite de 1 microssegundo com um git que
+     responde em 0,1 s: passa porque o git é rápido.
+   - Por que baixo: o <code>rev-parse</code> quase nunca trava. Mas o limite está escrito como proteção e não protege.
+   - O que pedir: abrir o git da peça do jeito que a peça do Windows já abre o vpk e o gh (o grupo do Windows, que
+     fecha o programa com os filhos), em vez de uma conta própria de tempo; e um teste com o git do caminho do Windows
+     esperando de verdade (como a sonda S6) que cobre a volta perto do limite.</p>
+</li>
+<li>
+<p><strong>BAIXO: cinco proteções novas sem teste que as acuse (a família F3 de novo, terceira volta seguida neste passo).</strong>
+   - Onde: <code>montar_motor_kraken.py:636-640</code> (B1, B4), <code>compilar_detector_gravura.py:283-287</code> (B2),
+     <code>compilar_st_ferramentas.py:211-215</code> (B3), <code>core/pasta_das_ferramentas.py:90</code> (B5).
+   - Provado (mutações B1 a B5): passam em todos os testes. Rodei os três scripts de verdade, sem as mutações, numa
+     cópia sem a pasta das ferramentas: os três param com a frase e não criam nada. Então hoje está certo; é a proteção
+     que pode sumir calada. São justamente os lugares que criaram a pasta errada de 19/11.
+   - O que pedir: um teste que rode o <code>main</code> de cada um dos três, com o padrão, de dentro da cópia de prova sem a pasta
+     das ferramentas, e cobre a frase e nenhuma pasta nova; o caso de só o <code>--destino</code> passado (B4); e o caso de
+     <code>EditorImpressao-arquivos</code> existir sem <code>ferramentas</code> dentro (B5).</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO: o docstring do teste do pacote promete mais do que ele cobra.</strong>
+   - Onde: <code>tests/test_empacotar.py:610-614</code> diz "E a propria regra esta no pacote (o core/ocr_kraken a usa)", e o
+     teste só confere a linha de comando do PyInstaller.
+   - O pacote de verdade só a prova mostra (ver "O que falta para a prova à vista", item 1).</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO: duas mutações pequenas na peça do git sem teste</strong> (B6: aceitar qualquer pasta comum, não só <code>.git</code>;
+   B7: deixar de tirar só a <code>GIT_COMMON_DIR</code>). Hoje o código está certo; os testes só usam <code>.git</code> e só põem <code>GIT_DIR</code> e
+   <code>GIT_INDEX_FILE</code>. A lista das variáveis foi escrita à mão; o git tem a lista oficial (<code>git rev-parse
+   --local-env-vars</code>). Não peço conserto; anoto.
+   - Onde: <code>regras_dos_agentes/conversa_com_o_git.py:88</code> (B6) e <code>regras_dos_agentes/conversa_com_o_git.py:35</code> (B7).</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO: a frase do apagar sai "foi apagada de a pasta ..." e "de o GitHub (...)".</strong>
+   - Onde: <code>publicar_versao_kaique.py:641-643</code> com <code>DestinoPasta.nome</code> (<code>:312</code>) e <code>DestinoGitHub.nome</code> (<code>:452</code>).
+   - É português sem a contração ("da pasta", "do GitHub"); o roteiro (item 18) já espera assim. O sentido está certo.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO: o programa instalado lê diferente só o arquivo da versão que não é UTF-8.</strong>
+   - Provado (anexo <code>sonda-s7-visual-c.txt</code>, antes e depois, 18 casos): sem arquivo, certo, vazio e com a marca de
+     UTF-8, igual. UTF-16 e bytes estranhos: antes, erro; agora, lê, e com um Visual C++ velho instalado não reinstala e
+     dá a preparação como feita.
+   - Não chega ao Kaique: o publicar recusa esse arquivo, e a assinatura do pacote impede trocá-lo depois (D-789). O
+     outro já tinha escrito isso.
+   - Onde: <code>atualizacao.py:1219-1234</code> (a leitura única) e <code>atualizacao.py:1250-1252</code> (quem a usa no programa instalado).</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO: "está empacotado?" e "30 segundos" escritos em dois lugares.</strong> <code>core/pasta_das_ferramentas.py:49-51</code>
+   (<code>empacotado()</code>) e <code>core/ocr_kraken.py:166</code> (<code>getattr(sys, "frozen", False)</code>, que já existia); <code>LIMITE_DO_GIT_S = 30</code>
+   (<code>core/pasta_das_ferramentas.py:43</code>) e o padrão <code>limite_s=30</code> da peça do git (<code>conversa_com_o_git.py:76</code>). Hoje dão o
+   mesmo.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO: a cópia sem repositório dentro de outro repositório.</strong> O outro anotou. Conferi a conta (dedução, não
+   rodei): no PC do Samuel, um <code>git archive</code> desfeito dentro da pasta principal acha a pasta principal dela, que é a
+   certa. No Windows do GitHub, a cópia dentro do repositório baixado acharia a pasta ao lado dele, que não existe: a
+   frase e nada criado. O teste impede o git de subir, então esse caso do GitHub não é cobrado.
+   - Onde: <code>core/pasta_das_ferramentas.py:62-66</code> e <code>tests/test_pasta_das_ferramentas.py:198</code> (o <code>GIT_CEILING_DIRECTORIES</code>).</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO: a peça do git sem janela vale também para o porteiro.</strong> Com isso, um git que precisasse perguntar
+    usuário e senha no terminal não pergunta mais (falha, em vez de esperar). Dedução; o porteiro não pede senha hoje.</p>
+<ul>
+<li>Onde: <code>regras_dos_agentes/conversa_com_o_git.py:32</code> e <code>regras_dos_agentes/conversa_com_o_git.py:54</code>.</li>
+</ul>
+</li>
+</ol>
+<h2>O que falta para a prova à vista</h2>
+<p>A prova só depois de consertado o achado 1 (D-775). Para a gerente repetir com o Samuel só o que mudou, os itens 18 e 19
+bastam para o publicar, com três acréscimos:</p>
+<ol>
+<li><strong>O pacote do Kaique sem a peça do git (D-605, D-788).</strong> Depois da montagem do item 15, listar o que o PyInstaller pôs
+   no programa (<code>pyi-archive_viewer</code> no <code>dist\EditorImpressao\EditorImpressao.exe</code>): não pode ter <code>regras_dos_agentes</code>, e
+   tem de ter <code>core.pasta_das_ferramentas</code>. E abrir uma vez o programa montado (até a janela), para ver que nada
+   importava a peça tirada. Hoje isso é só conta e leitura.</li>
+<li><strong>O item 19 também da pasta principal</strong> (<code>D:\programas\EditorImpressao</code>): a linha do motor e a do Visual C++ têm de
+   dizer as mesmas pastas da cópia (D-605: "da pasta principal, nada muda").</li>
+<li><strong>O item 8 do roteiro ainda diz</strong> <code>(conferido: "não existe")</code> para o <code>--apagar</code>; vale o item 18 ("foi apagada ...").
+   Riscar o 8 para a gerente não ler as duas.</li>
+</ol>
+<p>E o olhar da volta 9 (a data da pasta errada de 19/11 continua a mesma): hoje ela está em 19/11/2026 15:44.</p>
+<h2>Para a gerente: o que ficou fora do projeto</h2>
+<p>Na pasta de rascunho desta conversa, em
+<code>C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\14e42ebb-3236-41f4-94f5-20370c33bd91\scratchpad\quebra9\</code>
+(pasta nova, criada nesta tarefa):</p>
+<ul>
+<li><code>c21f1fc50\</code>, <code>c5c22a12d\</code>, <code>c011b06d0\</code>: o código desses commits (<code>git archive</code>, sem <code>relatorios</code>, <code>docs</code> e
+  <code>memoria</code>; uns 19 MB cada). Na <code>c21f1fc50\</code> está o arquivo de testes do publicar de <code>011b06d0</code> por cima; na
+  <code>c5c22a12d\</code>, os dois arquivos de teste, a peça do git e o repositório de prova de <code>011b06d0</code> por cima. A <code>c011b06d0\</code>
+  está como saiu do git (as mutações foram desfeitas, conferido byte a byte).</li>
+<li>As sondas, o script das mutações e os resultados (os mesmos de <code>anexos-8/</code>), os dois registros das rodadas do GitHub
+  (<code>log-*.txt</code>, ~0,9 MB cada) e <code>s6_saida.txt</code> (a saída da sonda S6).</li>
+</ul>
+<p>Fora da pasta de rascunho: o pytest cria as pastas dele em <code>C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\</code> (ele
+guarda só as últimas). A sonda S6 deixou o git esperando 15 s e depois o deixou terminar sozinho (fechando a entrada);
+conferi que não sobrou nenhum <code>git.exe</code> aberto. Não apaguei nada em lugar nenhum.</p>
+<p><code>git -C D:\programas\EditorImpressao rev-parse --is-shallow-repository</code> = false. Nenhuma junção criada nem tocada; a
+pasta errada de 19/11 e a <code>dist\</code> não foram tocadas.</p>
+<h2>Fontes de fora</h2>
+<ul>
+<li>Python 3.14, <code>Lib/subprocess.py</code>, função <code>run</code>, linhas 554 a 570 (lido no PC:
+  <code>C:\Users\fotog\AppData\Local\Python\pythoncore-3.14-64\Lib\subprocess.py</code>).</li>
+<li>PyInstaller 6.21.0, <code>PyInstaller/lib/modulegraph/modulegraph.py</code>, linhas 920 a 935 (lido no <code>.venv</code>).</li>
+<li>Git for Windows 2.53.0: a recusa por dono diferente (vista rodando) e o lançador <code>cmd\git.exe</code> (o que o Windows acha
+  pelo caminho de sempre, visto com <code>Get-Command git -All</code>).</li>
+<li>git-rev-parse, <code>--git-common-dir</code>, <code>--path-format</code> e <code>--local-env-vars</code>: https://git-scm.com/docs/git-rev-parse
+  (citado pelo outro; conferi só o uso).</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 21/11/2026 às 00:04</p>
+</body>
+</html>

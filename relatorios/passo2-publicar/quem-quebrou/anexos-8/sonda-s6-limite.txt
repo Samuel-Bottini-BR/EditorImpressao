@@ -1,0 +1,14 @@
+[
+ {
+  "git": "C:\\Program Files\\Git\\cmd",
+  "segundos ate a peca devolver": 15.0,
+  "passou de 15 s (a sonda fechou a entrada)": true,
+  "o que a peca disse": "14.9 GitFalhou: o git n\u00e3o respondeu em 2 segundos a `git hash-object --stdin`"
+ },
+ {
+  "git": "C:\\Program Files\\Git\\mingw64\\bin",
+  "segundos ate a peca devolver": 2.1,
+  "passou de 15 s (a sonda fechou a entrada)": false,
+  "o que a peca disse": "2.0 GitFalhou: o git n\u00e3o respondeu em 2 segundos a `git hash-object --stdin`"
+ }
+]

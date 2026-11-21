@@ -1,0 +1,12 @@
+Sonda S3: o programa do Kaique simulado (sys.frozen, a peca do git fora do pacote, espiao em todo processo), de dentro da copia passo2, 21/11/2026.
+{
+ "pasta_das_ferramentas": "None",
+ "problema": "o programa empacotado não tem a pasta das ferramentas",
+ "lugares": [
+  "D:\\programas\\EditorImpressao\\.venv\\Scripts\\motor-kraken",
+  "D:\\programas\\EditorImpressao\\.claude\\worktrees\\passo2\\motor-kraken"
+ ],
+ "motor": "None",
+ "pasta_principal direto": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\passo2",
+ "processos abertos": []
+}

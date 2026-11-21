@@ -1,0 +1,44 @@
+Sondas S1, S2 e S4, rodadas de dentro da copia de trabalho de verdade D:\programas\EditorImpressao\.claude\worktrees\passo2 (ponta 82b610f9; o codigo igual a 011b06d0), 21/11/2026. So leem.
+
+== S1: com o git de sempre
+{
+ "PATH tem git": true,
+ "pasta_das_ferramentas": "D:\\programas\\EditorImpressao-arquivos\\ferramentas",
+ "existe": true,
+ "segundos do git": 0.109,
+ "problema_para_gravar": null,
+ "empacotar.DOWNLOADS": "D:\\programas\\EditorImpressao-arquivos\\ferramentas\\downloads",
+ "vc_redist achado ali": true,
+ "tamanho": 25635768,
+ "motor do programa": "D:\\programas\\EditorImpressao-arquivos\\ferramentas\\motor-kraken"
+}
+
+== S2: sem o git no caminho do Windows (PATH so com a pasta do Python e a do Windows)
+{
+ "PATH tem git": false,
+ "pasta_das_ferramentas": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\EditorImpressao-arquivos\\ferramentas",
+ "existe": true,
+ "segundos do git": 0.031,
+ "problema_para_gravar": null,
+ "empacotar.DOWNLOADS": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\EditorImpressao-arquivos\\ferramentas\\downloads",
+ "vc_redist achado ali": true,
+ "tamanho": 25635768,
+ "motor do programa": "None"
+}
+
+== S4: o git de verdade recusando o repositorio por dono diferente (GIT_TEST_ASSUME_DIFFERENT_OWNER=1, a mesma recusa do git quando o HD externo vai para outro Windows)
+fatal: detected dubious ownership in repository at 'D:/programas/EditorImpressao/.claude/worktrees/passo2'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory D:/programas/EditorImpressao/.claude/worktrees/passo2
+{
+ "PATH tem git": true,
+ "pasta_das_ferramentas": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\EditorImpressao-arquivos\\ferramentas",
+ "existe": true,
+ "segundos do git": 0.069,
+ "problema_para_gravar": null,
+ "empacotar.DOWNLOADS": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\EditorImpressao-arquivos\\ferramentas\\downloads",
+ "vc_redist achado ali": true,
+ "tamanho": 25635768,
+ "motor do programa": "None"
+}

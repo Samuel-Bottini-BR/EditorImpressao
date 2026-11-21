@@ -1,0 +1,25 @@
+"""Sonda S5 (D-813): a copia escrita de outros jeitos que o Windows aceita. So le."""
+import ctypes, json, os, sys
+sys.path.insert(0, os.getcwd())
+from core import pasta_das_ferramentas as pf
+from regras_dos_agentes import conversa_com_o_git as git
+real = os.getcwd()
+buf = ctypes.create_unicode_buffer(1024)
+ctypes.windll.kernel32.GetShortPathNameW(real, buf, 1024)
+formas = {"normal": real, "minusculas": real.lower(), "barras": real.replace("\\", "/"),
+          "prefixo longo": "\\\\?\\" + real, "nome curto": buf.value,
+          "localhost": "\\\\localhost\\D$" + real[2:], "com ..": real + "\\core\\.."}
+saida = {}
+for nome, forma in formas.items():
+    pf._pasta_das_ferramentas_de.cache_clear()
+    linha = {"forma": forma}
+    try:
+        linha["ferramentas"] = str(pf.pasta_das_ferramentas(forma))
+    except Exception as e:
+        linha["ferramentas"] = f"ERRO {type(e).__name__}: {e}"
+    try:
+        linha["git"] = str(git.pasta_principal(forma))
+    except git.GitFalhou as e:
+        linha["git"] = "GitFalhou: " + str(e)[:160]
+    saida[nome] = linha
+print(json.dumps(saida, ensure_ascii=True, indent=1))
