@@ -2125,7 +2125,7 @@ abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" 
   dois que cobram o que já existia (o empacotado e o git sem janela). O da frase do apagar
   (`tests/test_publicar_versao.py::test_obs6_...`) também falha lá.
 - **Volta 10, mutações:** ver "Cada proteção", Volta 10.
-- **Volta 10, no GitHub:** RODADA_AQUI.
+- **Volta 10, no GitHub:** rodada 44869743074 do GitHub, sobre `3529cf9c` (o código de `09b30933`; depois só o formulário): **success**. Lá: `test_pasta_das_ferramentas.py` 12 passaram; `test_publicar_versao.py` 122; `test_empacotar.py` 42 e 1 pulou (o do Tesseract não instalado, antigo); `test_windows_peca.py` 71; `test_conferencias_juiz.py` 9; o juiz do porteiro e os botões e prints da janela real: success.
 
 ## Caminho e função
 
