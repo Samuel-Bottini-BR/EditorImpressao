@@ -3464,9 +3464,11 @@ saíram, por ordem da gerente.)
   você roda pela linha de comando. Ela escreve frases como "não há publicação v1.2.0 em a pasta ..." e "liberada em o
   GitHub". Você pediu o português certo ("na pasta", "no GitHub"). Consertei todas as frases menos uma.
 - **A frase que ficou.** É a que aparece quando a internet cai logo depois de pedir para liberar a versão (a da sua
-  escolha de 20/11: "depois de pedir para liberar, o programa nunca apaga nada"). Ela diz hoje: "... Ela pode ter ficado
-  de dois jeitos: se ficou liberada em a pasta C:\EditorImpressaoProva\versoes 3, está inteira ...". Com o conserto,
-  ficaria "... se ficou liberada na pasta C:\EditorImpressaoProva\versoes 3, está inteira ...".
+  escolha de 20/11: "depois de pedir para liberar, o programa nunca apaga nada"). Ela diz hoje: "v1.1.0: pedi para
+  liberar em a pasta C:\EditorImpressaoProva\versoes 3 e não deu para reconferir agora ... se ficou liberada em a
+  pasta C:\EditorImpressaoProva\versoes 3, está inteira ...". Com o conserto, ficaria "pedi para liberar na pasta ...
+  se ficou liberada na pasta ..." (no GitHub: "no GitHub"). Só essas duas palavras mudam. A frase inteira, como sai
+  hoje e como sairia, tirada do próprio programa, nos dois lugares: `anexos/volta11-a-frase-da-d816.txt`.
 - **Por que parei.** Um teste automático feito em 20/11 confere que essa frase tem o pedaço "ficou liberada em". Com o
   conserto, o pedaço vira "ficou liberada na" e o teste falha. A regra é nunca mudar um teste antigo para ele passar sem
   você deixar.
