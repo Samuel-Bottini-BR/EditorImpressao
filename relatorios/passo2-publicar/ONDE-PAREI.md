@@ -165,6 +165,13 @@ seções das voltas anteriores estão nos pacotes delas, em `anexos/`, e no `git
   conferida antes de cada rodada no PC (4,8 GB na primeira), um arquivo de teste por vez, nada abre janela. Rascunho
   fora do projeto: a pasta de rascunho desta sessão, `v11\`. O plano (D-709) está em "A causa, a regra e todos os
   caminhos", Volta 11, escrito antes de mexer.
+- 21/11, volta 11 feita: plano `b3e187d5`; testes e código `1624a05a` (os testes escritos antes do conserto de cada
+  baixo e rodados no código de antes: falham lá; `anexos/reversao-volta11-codigo-antigo.txt`); mutações M1 a M9 em
+  `anexos/reversao-volta11-resultado.txt`; a prova do baixo 2 numa cópia em `anexos/volta11-baixo2-a-linha-mudada.txt`.
+  **Parei numa frase:** a da D-816 (um teste da volta 3 cobra "ficou liberada em"): pergunta em "Perguntas para o
+  Samuel", Volta 11. `--is-shallow-repository` = false antes e depois; nenhuma junção criada; a pasta errada de 19/11,
+  a junção `modelos` e `C:\EditorImpressaoProva` não foram tocadas. **Próximo:** a gerente decide a pergunta; um agente
+  novo tenta quebrar (D-815).
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -1278,7 +1285,7 @@ lugares saiu junto com a pergunta ao git.
   a frase. Só testes que leem; nenhum script que grava roda com o caminho de verdade.
 
 *Baixo 3 (a montagem do Visual C++ decide "pode gravar?" por conta própria).*
-- **Por que:** `empacotar.preparar_vc_redist` decide com `DOWNLOADS.parent.is_dir()` e só pede as palavras à regra
+- **Por que:** `empacotar.preparar_vc_redist` decide por conta própria (se a pasta de cima de `DOWNLOADS` existe) e só pede as palavras à regra
   (com uma segunda frase para quando as duas discordam). Hoje dão o mesmo, mas são duas contas da mesma regra: a
   mutação V8 (olhar a pasta de cima e criar a das ferramentas) passa em todos os testes.
 - **O mais simples (o escolhido, e o pedido):** `problema = problema_para_gravar(); if problema: return None, "",
@@ -1811,25 +1818,89 @@ programa instalado faz com a versão: `atualizacao.py:1230` (lê o vc_redist.ver
     - **Observações:** a frase do apagar com a contração; "está empacotado?" do Kraken pela regra; o "30 s" saiu.
     - **O roteiro:** o item 8 riscado, o item 18 com as frases novas, os itens 19 a 22.
 
+18. **Volta 11 (os 4 baixos do relatório 9, a observação 4 e as frases sem contração):**
+    - **Baixo 1 e observação 4 (o roteiro):** os itens 19 e 21 de "A prova de verdade" agora são só da cópia `passo2`
+      ("da pasta principal" fica para a gerente depois da junção na versão de teste); os comandos dos itens 1, 2, 19,
+      20, 21 e 22 com o Python da pasta principal escrito inteiro, e uma nota para os outros.
+    - **Baixo 2:** a cópia de prova dos testes da pasta das ferramentas (`_copiar_o_codigo`) para na hora
+      (`pytest.fail`) quando não acha a linha do caminho, antes de qualquer script rodar.
+    - **Baixo 3:** `empacotar.preparar_vc_redist` pergunta "pode gravar?" só à regra (`problema_para_gravar`), sem a
+      conta própria nem a segunda frase.
+    - **Baixo 4:** um teste pelo que o empacotar imprime e um pelo `Parou` do `publicar --motor`, sem o motor.
+    - **As frases sem contração:** 31 frases do `publicar_versao_kaique.py` passam pela `com_preposicao`; a guarda que lê o
+      código e o teste pelos caminhos principais (pasta e GitHub). **Ficou de fora, esperando o Samuel:** a frase da
+      D-816 (`_frase_depois_do_pedido_de_liberar`), com dois "em" à mão.
+    - A lista das frases (a linha é a do código de partida, `edd39a9f`; o destino é "a pasta X" ou "o GitHub (...)"):
+
+      | Linha | Onde | Antes | Agora |
+      |---|---|---|---|
+      | 337 | `DestinoPasta._onde` | não há publicação v… em a pasta … | … na pasta … |
+      | 360 | `DestinoPasta.criar_rascunho` | não consegui criar o rascunho v… em a pasta … | … na pasta … |
+      | 381 | `DestinoPasta.soma` | … não está na publicação v… em a pasta … | … na pasta … |
+      | 399 | `DestinoPasta.baixar_vigiado` | não consegui ler … de a pasta … | … da pasta … |
+      | 407 | `DestinoPasta.liberar` | não consegui liberar v… em a pasta … | … na pasta … |
+      | 525 | `DestinoGitHub._assets` | não há publicação v… em o GitHub (…) | … no GitHub (…) |
+      | 551 | `DestinoGitHub.soma` | … não está na publicação v… em o GitHub (…) | … no GitHub (…) |
+      | 592 | `DestinoGitHub.apagar_rascunho` | v… está liberada em o GitHub (…): só o rascunho … | … no GitHub (…) … |
+      | 693 | `apagar_e_conferir` | não consegui ler v… em … antes de apagar | … na pasta / no GitHub … |
+      | 697 | `apagar_e_conferir` | não achei o rascunho v… em … para apagar | … na / no … |
+      | 702 | `apagar_e_conferir` | v… está liberada em …: só o rascunho … | … na / no … |
+      | 709 | `apagar_e_conferir` | pedi para apagar v… em … e não deu para conferir | … na / no … |
+      | 712 | `apagar_e_conferir` | não apaguei v… em …: … | … na / no … |
+      | 716 | `apagar_e_conferir` | pedi para apagar v… em … e não deu para conferir | … na / no … |
+      | 719 | `apagar_e_conferir` | pedi para apagar o rascunho v… em …, e ele está liberado | … na / no … |
+      | 722 | `apagar_e_conferir` | pedi para apagar v… em …, e ela continua lá | … na / no … |
+      | 766 | `publicar_arquivos` | v… já está publicada em … | … na / no … |
+      | 769 | `publicar_arquivos` | sobrou um rascunho de v… em … | … na / no … |
+      | 783 | `publicar_arquivos` | … chegou diferente em … | … na / no … |
+      | 785 | `publicar_arquivos` | lido de volta de …: … conferidas | lido de volta da pasta / do GitHub … |
+      | 794 | `publicar_arquivos` | pedi para liberar v… em …, e ela não ficou liberada | … na / no … |
+      | 813 | `publicar_arquivos` | v… liberada em … | v… liberada na pasta / no GitHub … |
+      | 829 | `obter_motor_publicado` | … não está publicado em …: publique o motor antes | … na / no … |
+      | 833 | `obter_motor_publicado` | a publicação v… em … não tem … | … na / no … |
+      | 839 | `obter_motor_publicado` | o motor publicado em … não confere | … na / no … |
+      | 871 | `_conferir_versao_lida.conferir` | a assinatura lida de … não confere | … da pasta / do GitHub … |
+      | 877 | `_conferir_versao_lida.conferir` | o índice … lido de … está estragado | … da / do … |
+      | 880 | `_conferir_versao_lida.conferir` | o índice … lido de … não aponta para o pacote | … da / do … |
+      | 987 | `publicar` | a versão … já existe em … | … na / no … |
+      | 1084 | `guardar_o_instalador` | … FOI publicada e está liberada em …; o instalador … | … na / no … |
+      | 1116 | `publicar_motor` | o motor … já existe em … | … na / no … |
+      | 731 e 733-734 | `_frase_depois_do_pedido_de_liberar` (D-816) | pedi para liberar em … · se ficou liberada em … | **sem mudar** (a pergunta) |
+
+      Ficam como estão, porque já estão certas: "não consegui enviar … para a pasta …" (`DestinoPasta.enviar`, "para" não
+      se contrai), "a pasta …: rascunho v…" e "a pasta …, v…: …" (o nome no começo). Fora do publicar não há frase com
+      destino ("e a {saida.nome}" no empacotar é o nome da saída, não de destino).
+
 ## Arquivos criados ou alterados
 
-Desde a partida desta volta (`6fa766c4`, o pacote da volta 10); o que as voltas 1 a 9 mexeram está nos itens
+Desde a partida desta volta (`edd39a9f`, o pacote da volta 11); o que as voltas 1 a 10 mexeram está nos itens
 abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" e "Caminho e função".
 
-- `core/pasta_das_ferramentas.py` (o caminho escrito num lugar só; saíram a pergunta ao git e o limite)
-- `regras_dos_agentes/conversa_com_o_git.py` (saíram `pasta_principal`, o limite de tempo e a lista de variáveis a não
-  herdar; fica o git sem janela)
-- `core/ocr_kraken.py` (`lugares_do_motor` pela regra, e "está empacotado?" pela regra)
-- `empacotar.py` (a pasta pela regra; a frase do motor que falta diz como apontar outro)
-- `montar_motor_kraken.py` (a pasta pela regra; o "pode gravar?" sem argumento)
-- `compilar_detector_gravura.py` (idem)
-- `compilar_st_ferramentas.py` (o "pode gravar?" sem argumento; o texto)
-- `publicar_versao_kaique.py` (`com_preposicao` e `Apagado.frase`)
-- `tests/test_pasta_das_ferramentas.py` (refeito para o jeito A: 12 testes; os do jeito do git saíram, lista em "O que
-  já está escolhido e testado aqui", Volta 10)
-- `tests/test_publicar_versao.py` (1 teste novo)
-- `tests/test_empacotar.py` (o texto de explicação de um teste da volta 9)
-- `relatorios/passo2-publicar/` (este formulário, o pacote da volta 10 e os anexos `reversao-volta10-*` e `volta10-*`)
+- `empacotar.py` (o "pode gravar?" da montagem do Visual C++ pela regra, sem conta própria; o texto)
+- `publicar_versao_kaique.py` (31 frases pela `com_preposicao`, sem mudar o que dizem; os textos da
+  `com_preposicao` e da frase da D-816)
+- `tests/test_pasta_das_ferramentas.py` (a ajuda `_copiar_o_codigo` para quando não acha a linha; 5 testes novos;
+  nenhum antigo mudou)
+- `tests/test_publicar_versao.py` (2 testes novos, 3 casos; nenhum antigo mudou)
+- `relatorios/servidor-das-versoes/registro-2026-11-21-111014.txt` (o registro do servidor das versões da prova 3,
+  escrito pela gerente em 21/11 às 11h10; posto no git sem mudar, num commit só dele, porque o conferidor o
+  acusava fora de commit)
+- `relatorios/passo2-publicar/` (este formulário, o roteiro, o pacote da volta 11 e os anexos `reversao-volta11-*`
+  e `volta11-*`)
+
+`core/pasta_das_ferramentas.py` não mudou nesta volta.
+
+- **Volta 10** (desde `6fa766c4`, o pacote da volta 10): `core/pasta_das_ferramentas.py` (o caminho escrito num lugar
+  só; saíram a pergunta ao git e o limite); `regras_dos_agentes/conversa_com_o_git.py` (saíram `pasta_principal`, o
+  limite de tempo e a lista de variáveis a não herdar; fica o git sem janela); `core/ocr_kraken.py` (`lugares_do_motor`
+  pela regra, e "está empacotado?" pela regra); `empacotar.py` (a pasta pela regra; a frase do motor que falta diz como
+  apontar outro); `montar_motor_kraken.py` (a pasta pela regra; o "pode gravar?" sem argumento);
+  `compilar_detector_gravura.py` (idem); `compilar_st_ferramentas.py` (o "pode gravar?" sem argumento; o texto);
+  `publicar_versao_kaique.py` (`com_preposicao` e `Apagado.frase`); `tests/test_pasta_das_ferramentas.py` (refeito para
+  o jeito A: 12 testes; os do jeito do git saíram, lista em "O que já está escolhido e testado aqui", Volta 10);
+  `tests/test_publicar_versao.py` (1 teste novo); `tests/test_empacotar.py` (o texto de explicação de um teste da volta
+  9); `relatorios/passo2-publicar/` (este formulário, o pacote da volta 10 e os anexos `reversao-volta10-*` e
+  `volta10-*`).
 
 - **Volta 9** (desde `5c22a12d`, o pacote da volta 9): o `core/pasta_das_ferramentas.py` e o
   `tests/test_pasta_das_ferramentas.py` (novos), a peça do git (a pergunta da pasta principal, a cópia de
@@ -1866,6 +1937,7 @@ abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" 
   está escolhido e testado aqui", Volta 7; 5 testes novos, 13 casos), `tests/test_empacotar.py` (1 teste novo; nenhum
   antigo mudou) e, em `relatorios/passo2-publicar/`, este formulário, o pacote da volta 7 e os anexos `reversao-volta7-*`.
   `core/windows.py` e `tests/test_windows_peca.py` não mudaram.
+
 
 ## Como cumpri cada uma
 
@@ -2084,6 +2156,28 @@ abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" 
     `test_achado1_sem_git_ou_com_o_git_recusando_...`, `test_d820_sem_o_motor_a_frase_diz_onde_procurou_e_como_apontar_outro`,
     `test_falha_sem_a_pasta_das_ferramentas_a_montagem_para_e_nao_cria_nada`, `test_d788_...`.
 
+- **Volta 11:**
+  - D-605: nenhum teste de antes desta volta mudou (só a ajuda `_copiar_o_codigo`, que não é teste, e os testes novos).
+    Rodados no PC, um arquivo por vez, todos passam (em "Testes", Volta 11). O teste da volta 3 que cobra "ficou
+    liberada em" não mudou: a frase dele ficou como está, e a pergunta vai ao Samuel.
+  - D-767: os testes novos dos baixos 3 e 4 rodam o código de verdade de uma cópia de trabalho de verdade (o repositório
+    de prova com `git worktree add`), com a internet trancada no processo; a única peça trocada é a da lógica de quem
+    decide (a regra dizendo "não", no `test_volta11_baixo3_quem_decide_...`), escrita como tal no texto do teste.
+  - D-816: a frase de depois do pedido de liberar não mudou (nem as palavras); o que o publicar faz depois do pedido
+    também não (os `test_d816_*` passam).
+  - D-817: o teste que saiu na volta 4 continua fora; o `test_d816_o_liberar_que_falha_e_fica_rascunho_nao_apaga_e_diz_o_comando` passa.
+  - D-818: a régua do Visual C++ e a conferência da pasta já montada não mudaram (`test_d818_*` passam); a montagem só
+    pergunta "pode gravar?" à regra.
+  - D-819: o jeito mais simples e o escolhido de cada conserto, com o porquê, em "A causa, a regra e todos os caminhos",
+    Volta 11. Nos cinco, o escolhido é o mais simples; nenhum muda o trabalho, o risco ou o que o Samuel vê de um jeito
+    que pedisse pergunta. A única parada é a da regra D-605 (o teste da volta 3).
+  - D-820: a pasta das ferramentas continua escrita num lugar só (`core/pasta_das_ferramentas.py` não mudou); a montagem
+    do Visual C++ pergunta à regra (`test_volta11_baixo3_*`); sem o motor, o empacotar e o `publicar --motor` dizem
+    onde procuraram e "--motor-kraken" (`test_volta11_baixo4_*`).
+  - D-815: escritor novo; comecei por este formulário.
+  - D-807: no PC, um arquivo por vez; o conjunto inteiro na rodada do GitHub (em "Testes", Volta 11).
+  - D-785: nada à vista rodado por mim; o roteiro mudou (itens 1, 2, 19 a 22).
+
 ## Testes
 
 - **No PC, um arquivo por vez** (19/11, com `QT_QPA_PLATFORM=offscreen`):
@@ -2290,6 +2384,24 @@ abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" 
 - **Volta 10, mutações:** ver "Cada proteção", Volta 10.
 - **Volta 10, no GitHub:** rodada 44869743074 do GitHub, sobre `3529cf9c` (o código de `09b30933`; depois só o formulário): **success**. Lá: `test_pasta_das_ferramentas.py` 12 passaram; `test_publicar_versao.py` 122; `test_empacotar.py` 42 e 1 pulou (o do Tesseract não instalado, antigo); `test_windows_peca.py` 71; `test_conferencias_juiz.py` 9; o juiz do porteiro e os botões e prints da janela real: success.
 
+- **Volta 11, no PC, um arquivo por vez** (21/11, um Python por vez, memória livre entre 3,5 e 4,8 GB com o jogo
+  aberto): `tests/test_pasta_das_ferramentas.py` 17 passaram (12 antigos e 5 novos); `tests/test_publicar_versao.py` 125
+  (122 antigos e 3 casos novos); `tests/test_empacotar.py` 43; `tests/test_publicar_motor.py` 12;
+  `tests/test_publicar_servidor.py` 14; `tests/test_decisoes_atualizacao.py` 38; `tests/test_decisoes.py` 27; as
+  conferências do porteiro, uma por uma: `antes_do_commit` 12, `codigo` 77, `copia_inteira` 2, `excecoes` 14,
+  `formulario` 34, `juiz` 9, `mudancas` 21, `pacote` 20, `protecao` 11; o porteiro no repositório inteiro: "nada novo (4912 arquivos lidos; a lista deixa 175 lugares)".
+- **Volta 11, reversão** (`anexos/reversao-volta11-codigo-antigo.txt`; os arquivos de teste novos sobre o código de
+  `edd39a9f`, numa cópia à parte): **falham lá os 4 testes do que estava errado** (a montagem do Visual C++ decidindo por conta própria:
+  `test_volta11_baixo3_quem_decide_...`; as frases com "em a pasta"/"em o GitHub": a guarda e os 2 casos pelos
+  caminhos principais). Passam lá os 4 que cobram o que o código de antes já fazia certo, mas sem teste que o acusasse
+  (a montagem sem a `ferramentas`, o "--motor-kraken" nas duas telas) e o da ajuda dos testes (que vem com o próprio
+  arquivo de teste novo): a prova deles são as mutações M1, M3, M4 e M9 e a cópia com a linha mudada
+  (`anexos/volta11-baixo2-a-linha-mudada.txt`: com a ajuda de antes, o teste da cópia de trabalho roda e os seis
+  lugares procuram em `E:\programas\...`, o caminho de verdade; com a nova, para na montagem com a frase). Sem mutação,
+  os testes da volta 11 passam na cópia (`anexos/reversao-volta11-resultado.txt`, fim).
+- **Volta 11, mutações:** ver "Cada proteção", Volta 11.
+- **Volta 11, no GitHub:** rodada 44926684833 do GitHub, sobre `0a3b54a9` (o código de `1624a05a`; depois só a pasta do relatório e o registro do servidor da prova 3): **esperando o resultado** (atualizado no fim desta volta).
+
 ## Caminho e função
 
 - O publicar da versão, com ou sem pasta pronta, com ou sem instalador → `empacotar.construir_pacote_do_velopack` →
@@ -2472,6 +2584,27 @@ abaixo desta lista, no `git log` deste arquivo e nas seções "O que foi feito" 
   da principal, com e sem git).
 - **Volta 10, a frase do apagar** → `publicar_versao_kaique.Apagado.frase` → `com_preposicao`: o `--apagar`, o caminho de
   erro do publicar e o `apagar_publicacao` usam o `Apagado`. Prova: `test_obs6_a_frase_do_apagar_sai_com_a_contracao`.
+
+- **Volta 11:**
+  - "pode gravar na pasta das ferramentas?" → `core/pasta_das_ferramentas.problema_para_gravar`: a montagem do Visual
+    C++ (`empacotar.preparar_vc_redist`, chamada pelo empacotar e pelo publicar montado do zero; agora sem conta
+    própria), `montar_motor_kraken.main`, `compilar_detector_gravura.main` e `compilar_st_ferramentas.main` (como na
+    volta 10). Prova: `test_volta11_baixo3_quem_decide_o_pode_gravar_da_montagem_do_visual_c_e_a_regra` (a regra
+    trocada decide), `test_volta11_baixo3_editorimpressao_arquivos_sem_a_ferramentas_a_montagem_do_visual_c_para`,
+    `test_falha_sem_a_pasta_das_ferramentas_a_montagem_para_e_nao_cria_nada` e `test_b1_b3_...` (os três scripts).
+  - "onde procurei o motor e como apontar outro" → `empacotar.achar_motor_kraken`: o empacotar (`juntar_pecas` →
+    `_avisar_pecas_faltando`, que o `main` e a montagem chamam) e o `publicar --motor` (`publicar_motor` → `Parou`).
+    Prova do mesmo resultado nos dois: `test_volta11_baixo4_o_empacotar_sem_o_motor_mostra_onde_procurou_e_o_motor_kraken`
+    e `test_volta11_baixo4_o_publicar_motor_sem_o_motor_para_com_onde_procurou_e_o_motor_kraken` (as duas frases com
+    "não existe <a pasta do motor>" e "aponte-a com --motor-kraken").
+  - "de"/"em" + o nome do destino → `publicar_versao_kaique.com_preposicao`: as 31 frases da lista em "O que foi
+    feito", Volta 11, e o `Apagado.frase` (volta 10); a exceção é a frase da D-816, esperando o Samuel. Prova:
+    `test_volta11_nenhuma_frase_do_publicar_junta_em_ou_de_com_o_destino_a_mao` (todas as frases do arquivo, pela
+    árvore do Python) e `test_volta11_as_frases_do_publicar_saem_com_a_contracao_na_pasta_e_no_github` (o mesmo
+    resultado na pasta e no GitHub, pelos caminhos principais).
+  - "a cópia de prova dos testes troca o caminho" → `tests/test_pasta_das_ferramentas._copiar_o_codigo` (o lugar único
+    da troca nos testes; todos os testes do arquivo que usam a cópia passam por ele). Prova:
+    `test_volta11_baixo2_a_copia_de_prova_para_se_nao_acha_a_linha_do_caminho`.
 
 ## Cada proteção e o teste que falha sem ela
 
@@ -2709,6 +2842,22 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   Nas mutações dos scripts que gravam a internet ficou trancada no processo (um proxy que não existe): nada foi baixado.
   (As T1 a T17 do primeiro jeito, o do git, estão no commit `f7d3b8a8`; saíram com ele.)
 
+- **Volta 11** (`anexos/reversao-volta11-resultado.txt`; script `anexos/reversao-volta11-mutacoes.py.txt`), numa cópia
+  à parte de `1624a05a`, uma por vez, cada arquivo devolvido como estava (conferido byte a byte):
+- M1 (a V8 do relatório 9: a montagem olha a pasta de cima e cria a das ferramentas) → acusada por
+    `test_volta11_baixo3_editorimpressao_arquivos_sem_a_ferramentas_a_montagem_do_visual_c_para` e
+    `test_volta11_baixo3_quem_decide_...`.
+  - M2 (a montagem volta à conta própria, o código de `edd39a9f`) → acusada por `test_volta11_baixo3_quem_decide_...`.
+  - M3 (a V5: o empacotar sem a linha do "--motor-kraken") → acusada só por `test_volta11_baixo4_o_empacotar_...`.
+  - M4 (a V6: o `publicar --motor` sem a linha) → acusada só por `test_volta11_baixo4_o_publicar_motor_...`.
+  - M5 (a `com_preposicao` sem a contração) → acusada pelos 2 casos de `test_volta11_as_frases_...` e pelo `test_obs6`.
+  - M6 (a frase "liberada na pasta", caminho principal, volta a juntar à mão) → acusada pela guarda e pelos 2 casos.
+  - M7 (uma frase fora dos caminhos do teste, o liberar que falha, volta a juntar à mão) → acusada pela guarda.
+  - M8 (a frase da D-816 consertada sem tirar a exceção da guarda) → acusada pela guarda ("a exceção não é mais
+    precisa").
+  - M9 (o baixo 2: a cópia de prova volta a seguir calada) → acusada por `test_volta11_baixo2_...`.
+  **9 de 9 acusadas**; cada teste do baixo 4 falha só com a frase tirada do lugar dele.
+
 ## De onde vem cada dado da conferência
 
 - **Se a versão ou o motor já existem no destino:** lido do destino (a pasta; ou o GitHub pelo gh), nunca de uma
@@ -2810,6 +2959,8 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
 
 - **Volta 10:** máquina, tudo (os testes com os scripts e o git de verdade, a reversão, as mutações S1 a S18). Olho:
   nada. À vista (a gerente): os itens 19 a 22 do roteiro.
+- **Volta 11:** máquina, tudo (os testes novos, a reversão, as mutações M1 a M9, a prova do baixo 2). Olho: nada (as
+  frases mudam só a contração; quem lê é o Samuel, na próxima prova à vista).
 
 ## Ressalvas
 
@@ -3060,6 +3211,23 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   o publicar, o PyInstaller, o vpk e o gh de verdade (a gerente roda, à vista).
 - **Volta 10, a ressalva da volta 9** "sem git num computador com uma cópia de trabalho (não acontece ...)" estava
   errada; com o jeito A, o git não entra mais na conta.
+- **Volta 11, uma frase ficou sem a contração, de propósito:** a da D-816 ("se ficou liberada em a pasta ..."), porque
+  um teste da volta 3 cobra "ficou liberada em" (a regra do pedido: não mudar teste antigo; pergunta em "Perguntas para
+  o Samuel", Volta 11). A guarda das frases tem essa função como exceção escrita, e acusa se a exceção sobrar.
+- **Volta 11, a guarda das frases lê só o `publicar_versao_kaique.py`** e só o jeito `{... .nome}` / `{... .onde}`
+  logo depois de "em "/"de ". Uma frase nova que guarde o nome do destino numa variável com outro nome e escreva "em
+  {lugar}" não é vista pela guarda (o teste pelos caminhos principais pega as frases que ele percorre).
+- **Volta 11, a reversão do baixo 2 no código da volta 9** (`6fa766c4`, onde o arquivo da regra existe sem a linha):
+  agora os testes da pasta das ferramentas param na montagem da cópia. A prova de reversão da volta 10 sobre esse
+  código já foi feita e guardada.
+- **Volta 11, o teste do `publicar --motor`** chama `publicar_motor` direto (o que o `main` chama), com a chave de prova
+  e a chave pública de prova pelo parâmetro dos testes; o `main` só acrescenta "PAREI: " na frente (testado nos outros
+  testes do publicar). O do empacotar chama `_avisar_pecas_faltando` (o que o `main` e a montagem chamam): o `main`
+  pararia antes, na conferência dos modelos, que a cópia de prova não tem.
+- **Volta 11, a frase do Visual C++ sem a pasta das ferramentas** continua sem "como apontar outro lugar" (observação 3
+  do relatório 9): criar a opção seria coisa nova; não fiz.
+- **Volta 11, não rodei** o `tests/test_ocr_kraken.py` (não mexi no Kraken) nem o publicar de verdade (é da prova à
+  vista da gerente).
 
 ## Velocidade
 
@@ -3088,6 +3256,10 @@ passos"). O tempo de publicar é medido na prova à vista.
 
 - Volta 10: não se aplica ao caminho do livro (nenhuma página passa por aqui; só onde se procuram as ferramentas e a
   frase do apagar). A regra deixou de perguntar ao git (uma pergunta a menos por processo, que levava uns 0,1 s).
+
+- Volta 11: não se aplica ao caminho do livro (nenhum arquivo de `core/` mudou; só frases do publicar, o "pode gravar?"
+  da montagem do Visual C++, que agora é uma chamada à regra em vez de uma conta, e testes). Nenhum filtro de
+  velocidade pedido nesta volta (a gerente decide).
 
 ## Ideias e bugs
 
@@ -3211,6 +3383,12 @@ passos"). O tempo de publicar é medido na prova à vista.
 - **Volta 10, observação:** com o jeito A, a regra da pasta das ferramentas não importa mais a peça do git; a frase do
   pacote das regras "o pacote não importa nada do programa, e nada do programa importa daqui"
   (`regras_dos_agentes/__init__.py`) volta a ser verdade.
+- **Volta 11, para a Lista de bugs (21/11/2026, não impede; não mexi):** o `pacote` da ferramenta das regras, rodado
+  nesta cópia, diz "NÃO ACHADA NO LIVRO" para D-816 a D-820: o Livro desta cópia (`docs/plano/DECISOES.md` do ramo)
+  é anterior a elas. Os pacotes montados de uma cópia de ramo antigo saem sem as decisões novas (a gerente copia as
+  palavras à mão, como nesta volta).
+- **Volta 11, observação:** o registro do servidor das versões da prova 3 (`relatorios/servidor-das-versoes/registro-2026-11-21-111014.txt`,
+  da gerente, 11h10) estava fora do git e o conferidor do formulário o acusava (K18). Pus no git, num commit só dele (`0a3b54a9`), sem mudar o arquivo: é o registro da prova, e o conferidor o pedia. Se a gerente preferir fora do git, é só tirar esse commit.
 
 ## Perguntas para o Samuel
 
@@ -3323,6 +3501,9 @@ GitHub; o último commit de código e testes da volta 9 é 011b06d0 (depois dele
 
 Volta 10: 09b30933 (o último commit de código e testes da volta 10, no jeito A, depois de `e9617727` e de dois commits só de texto dos testes; o primeiro jeito, o do git, ficou em
 `c1ba406d` e foi trocado; depois de `09b30933` só a pasta deste relatório muda).
+
+Volta 11: o último commit de código e testes é `1624a05a`; depois dele vieram os anexos (`d4cb42df`) e o registro do
+servidor da prova 3, da gerente, posto no git sem mudar: 0a3b54a9 (depois dele só a pasta deste relatório muda).
 
 ## O que o agente que tentou quebrar achou
 
@@ -3558,6 +3739,28 @@ o jeito final é o A, da D-820, em `e9617727`):
 "O que falta para a prova à vista": os três acréscimos estão em "A prova de verdade", Volta 10 (itens 20 e 21, e o item
 8 riscado), com o item 19 refeito para o jeito A.
 
+**Volta 10** (`quem-quebrou/relatorio-9.md`, sobre a volta 10; "PRONTO PARA CONFERIR" com 4 baixos e 6 observações).
+Destino de cada achado (volta 11, escritor novo):
+1. **Baixo, os itens 19 e 21 do roteiro pedem a pasta principal:** reescritos (só da cópia `passo2`; "da pasta
+   principal" fica para a gerente depois da junção). Em "A prova de verdade", itens 19 e 21.
+2. **Baixo, a cópia de prova dos testes cai calada no caminho de verdade:** consertado (`_copiar_o_codigo` para com
+   `pytest.fail`). Teste: `tests/test_pasta_das_ferramentas.py::test_volta11_baixo2_a_copia_de_prova_para_se_nao_acha_a_linha_do_caminho`;
+   a prova numa cópia com a linha mudada em `anexos/volta11-baixo2-a-linha-mudada.txt`.
+3. **Baixo, a montagem do Visual C++ decide "pode gravar?" por conta própria:** consertado (só a regra). Testes:
+   `tests/test_pasta_das_ferramentas.py::test_volta11_baixo3_editorimpressao_arquivos_sem_a_ferramentas_a_montagem_do_visual_c_para`
+   (a V8) e `tests/test_pasta_das_ferramentas.py::test_volta11_baixo3_quem_decide_o_pode_gravar_da_montagem_do_visual_c_e_a_regra`.
+4. **Baixo, a frase "--motor-kraken" sem teste por quem a mostra:** testes novos,
+   `tests/test_pasta_das_ferramentas.py::test_volta11_baixo4_o_empacotar_sem_o_motor_mostra_onde_procurou_e_o_motor_kraken`
+   (V5) e `tests/test_pasta_das_ferramentas.py::test_volta11_baixo4_o_publicar_motor_sem_o_motor_para_com_onde_procurou_e_o_motor_kraken` (V6).
+5. **Observação 1 (sobras):** a segunda frase do empacotar saiu com o baixo 3; as outras ficam (não pedidas).
+6. **Observação 2 ("é o de fábrica?" pelo texto):** não pedida; fica como anotada.
+7. **Observação 3 (sem opção para o Visual C++):** não pedida (seria coisa nova); em "Ressalvas", Volta 11.
+8. **Observação 4 (os comandos do roteiro com `.venv\Scripts\`):** consertado (o caminho inteiro do Python da pasta
+   principal nos itens 1, 2, 19 a 22 e uma nota para os outros).
+9. **Observação 5 (a pergunta do limite de tempo com palavras de dentro):** é a da volta 10, para a gerente; não mexi.
+10. **Observação 6 (o git sem janela para o porteiro):** fica, como na volta 10.
+E, fora do relatório, **as frases sem contração** (Lista de bugs de 21/11): 31 consertadas; a da D-816 parada na pergunta.
+
 ## A prova de verdade
 
 Roteiro para a gerente (não rodado; D-785, item 8; o plano: "0 perguntas do Windows"; o Samuel olha a janela, não
@@ -3713,12 +3916,16 @@ junção na versão de teste (baixo 1 do relatório 9).
 
 - Volta 10: 0 (a regra é só um caminho escrito; nada pede licença nem abre janela).
 
+- Volta 11: 0 (só frases, uma regra que já existia e testes; nada pede licença nem abre janela).
+
 ## O print que prova
 
 Não se aplica: nenhuma tela do programa muda neste passo (volta 9: só onde o código procura a pasta das ferramentas; a etiqueta de tela veio do arquivo novo em core/, que ainda não tem linha na tabela).
 
 Volta 10: não se aplica (nenhuma tela do programa muda; só onde os scripts procuram as ferramentas e a frase do
 apagar).
+
+Volta 11: não se aplica (nenhuma tela do programa muda; só frases da linha de comando do publicar e testes).
 
 ## Páginas em que foi conferido
 
@@ -3728,3 +3935,5 @@ de nenhuma página.
 
 Volta 10: não se aplica, 0 páginas (só onde se procuram as ferramentas e a frase do apagar; `core/ocr_kraken.py` mudou
 só em onde o motor é procurado, que não toca a imagem de nenhuma página).
+
+Volta 11: não se aplica, 0 páginas (nenhum arquivo que toca imagem de página mudou).
