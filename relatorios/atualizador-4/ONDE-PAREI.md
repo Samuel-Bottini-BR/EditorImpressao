@@ -653,7 +653,7 @@ Não se aplica: nenhuma pergunta aberta (a pergunta 1 foi respondida, D-825).
 - GitHub: rodada 44975834257 (ramo `atualizador-4-consertos-2026-11-21`; testou o commit `70ceaf61`, o mesmo código de `dd06e85f`): success na 2ª tentativa. A 1ª caiu na parte 1: `test_promessas.py` saiu com 3221225477 (o Qt quebrando, "cannot get C stack"), sem nenhum teste falhado antes; na repetição, as 5 partes, os botões e o porteiro passaram. No PC, `test_promessas.py` inteiro deu 269 passados e 1 falhado (`test_p082_filtros_em_tela_cheia`, a tela cheia dos filtros), que passou sozinho em seguida (2 de 2): instável com o PC carregado, sem ligação com estes consertos.
 
 - Volta 2: médio 1 `f5d73572`, médio 2 `ebc4891e`, médio 3 `9979419d`, item 4 `6efa58d7`, item 5 `f523ec2e` (último do código e dos testes).
-- GitHub da volta 2: rodada 44982726269 (commit `f523ec2e`): RESULTADO_VOLTA2.
+- GitHub da volta 2: rodada 44982726269 (commit `f523ec2e`): success na 2ª tentativa (testou `f523ec2e`, conferido no registro da rodada). A 1ª caiu na parte 2: `test_decisoes_gravura_a_mao.py::test_d659_g_outros_filtros_a_mao_nada_e_procurado_e_sai_igual_ao_de_antes[original]` ("procurou: [0]", o detector de gravura), que não usa nada destes consertos; no PC, o arquivo inteiro passou (15 de 15).
 
 ## O que o agente que tentou quebrar achou
 
