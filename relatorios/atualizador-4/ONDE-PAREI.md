@@ -416,7 +416,7 @@ Conserto 4 (o motor):
 - **`DETACHED_PROCESS` com `CREATE_NO_WINDOW`:** "CREATE_NO_WINDOW... This flag is ignored if the application is not a
   console application, or if it is used with either CREATE_NEW_CONSOLE or DETACHED_PROCESS"
   (https://learn.microsoft.com/en-us/windows/win32/procthread/process-creation-flags); provado na etapa 5
-  (saida_teste/etapa5/registros/variantes-lancar-escondido.txt).
+  (o registro das variantes do lançar, na pasta saida_teste da etapa 5, fora do git).
 - **Velopack 1.2.161, a troca** (https://github.com/velopack/velopack/blob/1.2.161/src/bins/src/commands/apply_windows_impl.rs e https://github.com/velopack/velopack/blob/1.2.161/src/bins/src/shared/util_windows.rs, lidos em 21/11): extrai
   a versão nova numa pasta temporária, fecha à força tudo o que roda dentro da raiz (`force_stop_package(root)`, que
   pula só ele mesmo), renomeia `current` para a temporária velha (10 tentativas de 1 s) e a nova para `current` (30
@@ -529,7 +529,7 @@ pergunta só).
 - Reversão: os 16 testes mudados e os novos de cada conserto falham no código de antes daquele conserto
   (`anexos/reversao-conserto1-codigo-antigo.txt` a `anexos/reversao-conserto4-codigo-antigo.txt`; o conserto 1 rodado contra `4a775ba8`: 36 falham). Só
   `test_conserto2_o_pedido_de_verdade_entrega_a_janela_a_peca` passa no código do conserto 1 (ver acima).
-- GitHub: rodada 44975331433 (o resultado em "Commit").
+- GitHub: rodada 44975834257 (a 44975331433 foi cancelada: testava o commit antes das docstrings); o resultado em "Commit".
 
 ## Caminho e função
 
@@ -648,7 +648,8 @@ Não se aplica: nenhuma pergunta aberta (a pergunta 1 foi respondida, D-825).
 ## Commit
 
 - Plano: `bcc57104`. Conserto 1: `85590fe4`. Conserto 2: `f32eab48`. Conserto 3: `77a05d2e`. Conserto 4: `75cfa928`.
-- GitHub: rodada 44975331433 (ramo `atualizador-4-consertos-2026-11-21`, commit `75cfa928`): RESULTADO_DA_RODADA.
+- Último commit do código e dos testes: `dd06e85f` (as docstrings dos testes e este formulário).
+- GitHub: rodada 44975834257 (ramo `atualizador-4-consertos-2026-11-21`, commit `dd06e85f`): RESULTADO_DA_RODADA.
 
 ## O que o agente que tentou quebrar achou
 
