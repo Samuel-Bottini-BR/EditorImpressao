@@ -491,45 +491,6 @@
    "motivo": "o desinstalar limpo tira o número de decisão do registro"
   },
   {
-   "arquivo": "atualizacao.py",
-   "conferencia": "K04",
-   "funcao": "passo_de_preparar_o_computador",
-   "texto": "\"antiga (D-733)\",",
-   "quantas": 1,
-   "linhas_quando_gerada": [
-    1432
-   ],
-   "data": "2026-11-19",
-   "passo": "3",
-   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
-  },
-  {
-   "arquivo": "atualizacao.py",
-   "conferencia": "K04",
-   "funcao": "preparar_na_primeira_abertura",
-   "texto": "\"atualização não foi criado; a pergunta volta na próxima abertura (D-741)\")",
-   "quantas": 1,
-   "linhas_quando_gerada": [
-    1501
-   ],
-   "data": "2026-11-19",
-   "passo": "3",
-   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
-  },
-  {
-   "arquivo": "atualizacao.py",
-   "conferencia": "K04",
-   "funcao": "preparar_na_primeira_abertura",
-   "texto": "\"bem; conta como não feita e a pergunta volta na próxima abertura (D-749)\")",
-   "quantas": 1,
-   "linhas_quando_gerada": [
-    1509
-   ],
-   "data": "2026-11-19",
-   "passo": "3",
-   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
-  },
-  {
    "arquivo": "avaliar.py",
    "conferencia": "K01",
    "funcao": "achar_acervo",

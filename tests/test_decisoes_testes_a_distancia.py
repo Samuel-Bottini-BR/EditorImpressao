@@ -74,22 +74,28 @@ def test_d712_instalador_nao_pergunta_nada():
 
 # --- D-721: a janela da senha na primeira abertura, sem senha nada liga -----------------------
 
-def test_d721_primeira_vez_pede_a_senha_e_liga(dados, fake, monkeypatch):
-    """D-721: na primeira abertura, a janela da senha aparece; com a senha, liga.
-    Na segunda vez, não aparece sozinha."""
+def test_d721_primeira_vez_pede_a_senha_e_liga(dados, fake, monkeypatch, tmp_path):
+    """D-721: na primeira abertura, a janela da senha aparece; na segunda vez, nao aparece sozinha.
+    Ajustada pela D-825 (Samuel, 21/11/2026, opcao B: "ok"): nesta entrega a senha digitada NAO liga os testes a
+    distancia (a peca dos testes nem e chamada); a pergunta do Windows e uma so, com so o preparo da atualizacao.
+    Antes (4a775ba8): a senha ligava os testes pelo pedido antigo."""
     pytest.importorskip("PySide6")
     import ui.testes_a_distancia_ui as tdui
+    from tests.test_atualizador_4 import WindowsDeMentira
 
+    monkeypatch.setenv("PROGRAMDATA", str(tmp_path / "ProgramData"))
+    windows = WindowsDeMentira().instalar(monkeypatch, tmp_path)
     vezes = []
     monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: (vezes.append(1), "segredo")[1])
     assert not td.senha_ja_perguntada()
 
-    tdui.primeira_vez_se_preciso(None, instalado=lambda: True)  # D-728: so no programa instalado
+    tdui.primeira_vez_se_preciso(None, instalado=lambda: True,  # D-728: so no programa instalado
+                                 por_tras=lambda trabalho: trabalho())
     assert vezes == [1], "a janela da senha apareceu uma vez"
-    assert td.senha_ja_perguntada() and td.esta_pronto()
-    assert len(fake.chamadas) == 1
+    assert td.senha_ja_perguntada() and not td.esta_pronto(), "D-825: a senha não liga os testes nesta entrega"
+    assert fake.chamadas == [] and len(windows.pedidos) == 1
 
-    tdui.primeira_vez_se_preciso(None, instalado=lambda: True)
+    tdui.primeira_vez_se_preciso(None, instalado=lambda: True, por_tras=lambda trabalho: trabalho())
     assert vezes == [1], "na segunda abertura a janela não aparece sozinha"
 
 
@@ -227,20 +233,25 @@ def test_d728_pelo_codigo_nenhuma_janela_e_nada_marcado(dados, fake, monkeypatch
     assert td.esta_pronto() is False
 
 
-def test_d728_instalado_primeira_vez_pede_a_senha(dados, fake, monkeypatch):
+def test_d728_instalado_primeira_vez_pede_a_senha(dados, fake, monkeypatch, tmp_path):
     """D-728 (16/11/2026): no programa instalado pelo instalador, na primeira vez, a janela da
-    senha aparece (D-721). A janela é trocada por uma de mentira: nada abre na tela."""
+    senha aparece (D-721). A janela e trocada por uma de mentira: nada abre na tela.
+    Ajustada pela D-825 (21/11/2026, opcao B): a senha digitada nao liga os testes a distancia nesta entrega; a
+    pergunta do Windows (de mentira) e uma so, com o preparo. Antes (4a775ba8): a senha ligava os testes."""
     pytest.importorskip("PySide6")
     import ui.testes_a_distancia_ui as tdui
+    from tests.test_atualizador_4 import WindowsDeMentira
 
+    monkeypatch.setenv("PROGRAMDATA", str(tmp_path / "ProgramData"))
+    windows = WindowsDeMentira().instalar(monkeypatch, tmp_path)
     vezes = []
     monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: (vezes.append(1), "segredo")[1])
     assert not td.senha_ja_perguntada()
 
-    tdui.primeira_vez_se_preciso(None, instalado=lambda: True)
+    tdui.primeira_vez_se_preciso(None, instalado=lambda: True, por_tras=lambda trabalho: trabalho())
     assert vezes == [1], "instalado, primeira vez: a janela da senha apareceu uma vez"
-    assert td.senha_ja_perguntada() and td.esta_pronto()
-    assert len(fake.chamadas) == 1
+    assert td.senha_ja_perguntada() and not td.esta_pronto()
+    assert fake.chamadas == [] and len(windows.pedidos) == 1
 
-    tdui.primeira_vez_se_preciso(None, instalado=lambda: True)
+    tdui.primeira_vez_se_preciso(None, instalado=lambda: True, por_tras=lambda trabalho: trabalho())
     assert vezes == [1], "na segunda abertura a janela não aparece sozinha"

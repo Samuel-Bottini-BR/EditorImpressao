@@ -77,14 +77,11 @@ PADROES: dict[str, Any] = {
     "testes_a_distancia_ligado": True,
     "testes_a_distancia_pronto": False,
     "testes_a_distancia_senha_perguntada": False,
-    # D-741 (Samuel, 17/11/2026: "Sim"): a pergunta do Windows da primeira
-    # abertura (D-733/D-735) ja teve o "Sim"? Enquanto False, ela volta a cada
-    # abertura do programa instalado (depois de um "Nao"); depois do "Sim",
-    # True, e nunca mais aparece. Lido e gravado so por
-    # atualizacao.falta_a_pergunta_do_windows / preparar_na_primeira_abertura.
-    # Seguro mudar: nada. Arriscado: de fabrica True (o ajudante da
-    # atualizacao e a tarefa desfazer nunca nasceriam).
-    "atualizacao_computador_preparado": False,
+    # (21/11/2026, 4 consertos do atualizador, D-825: saiu daqui a marca
+    # "atualizacao_computador_preparado". Se a pergunta do Windows da primeira
+    # abertura ja teve o "Sim" passou a ser lido no Windows,
+    # atualizacao.o_que_falta_no_computador. Um configuracoes.json antigo com a
+    # chave continua abrindo: ela so deixa de ser lida.)
 }
 
 

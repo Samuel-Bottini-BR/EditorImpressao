@@ -25,16 +25,17 @@ gancho de instalar: nasce na pergunta do Windows da primeira abertura.
 
 COMO FUNCIONA, DO COMECO AO FIM
 1. Instalacao: o gancho (ao_instalar) so anota. Nada que pede administrador.
-2. Primeira abertura (preparar_na_primeira_abertura, chamada pela janela da
-   senha, ui/testes_a_distancia_ui.py): UMA pergunta do Windows ("Deseja
-   permitir...?"), pela mesma peca dos testes a distancia
-   (core.testes_a_distancia.Executor). Dentro dela roda este .exe com
+2. Primeira abertura (preparar_ao_abrir -> preparar_na_primeira_abertura,
+   rodados POR TRAS pela janela da senha, ui/testes_a_distancia_ui.py): UMA
+   pergunta do Windows ("Deseja permitir...?"), pela peca unica do Windows
+   (core.windows.pedir_licenca; 4 consertos, 21/11/2026). Dentro dela roda este .exe com
    --preparar-o-computador (preparar_como_administrador): cria o ajudante
    (criar_tarefa, xml_da_tarefa) e a tarefa "desfazer" que o apaga ao
    desinstalar (criar_as_tarefas; D-731, 17/11/2026), instala o Visual C++ de dentro do pacote se
-   faltar e tira a instalacao antiga do Inno (preparar_o_computador). Se o
-   Kaique digitou a senha, os passos dos testes a distancia vao na MESMA
-   pergunta (core.testes_a_distancia.ligar, sem mudanca).
+   faltar e tira a instalacao antiga do Inno (preparar_o_computador). Nesta
+   entrega a senha digitada nao liga os testes a distancia (D-825, opcao B).
+   "Preparado" e o que o Windows mostra, lido de volta
+   (o_que_falta_no_computador), nunca uma marca do programa.
 3. Toda abertura do programa do Kaique (procurar_ao_abrir, chamado por
    ui/aviso_de_atualizacao.ligar_na_janela): manda o ajudante rodar
    (schtasks /Run, sem pergunta: a tarefa deixa a conta comum mandar rodar).
@@ -91,7 +92,8 @@ assinatura.conferir_versao; "o programa esta aberto" e marcar_programa_aberto
 (a janela) / ha_programa_aberto (o ajudante); "chamar o ajudante" e sempre
 comando_de_rodar_a_tarefa; "trocar e reabrir" e sempre trocar_e_reabrir; "e a
 conta de testes" e sempre e_a_conta_de_testes; a pergunta do Windows e sempre
-a peca dos testes a distancia (core.testes_a_distancia.Executor). A unica
+pedir_licenca_ao_windows (a peca unica, core.windows); "o computador esta
+preparado" e sempre o_que_falta_no_computador (lido no Windows). A unica
 entrada pela linha de comando e atender_linha_de_comando (main.py chama uma vez).
 
 Nada aqui importa Qt nem ui/. O velopack so e importado quando o programa foi
@@ -978,7 +980,7 @@ def trocar_e_reabrir(lancar: Callable[[str], None] = _lancar_escondido, exe: Pat
     script espera este processo sair.
     Devolve False se nao deu para comecar (o programa segue na versao de hoje).
     """
-    exe = exe or (pasta_do_programa() / Path(sys.executable).name)
+    exe = exe or exe_do_programa()
     try:
         lancar(script_de_trocar_e_reabrir(exe, pid or os.getpid(), pasta_do_estado() / "estado.json",
                                           janelinha=janelinha))
@@ -1158,7 +1160,7 @@ def criar_tarefa(exe: Path | None = None, rodar: Callable[[list[str]], tuple[int
     depois de uma troca (conferir_e_refazer_o_ajudante)."""
     import tempfile
 
-    exe = exe or (pasta_do_programa() / Path(sys.executable).name)
+    exe = exe or exe_do_programa()
     with tempfile.TemporaryDirectory() as pasta:
         arquivo = Path(pasta) / "tarefa.xml"
         arquivo.write_text(xml_da_tarefa(exe), encoding="utf-16")
@@ -1234,24 +1236,37 @@ def versao_do_visual_c_do_pacote(pasta: Path) -> str | None:
     return arquivo.read_text(encoding="utf-8", errors="replace").strip()
 
 
+def visual_c_que_falta(pasta: Path, ler: Callable[[], tuple | None] = _ler_versao_do_visual_c) -> str | None:
+    """A versao do Visual C++ do pacote que falta instalar neste computador, ou None (nada falta).
+
+    A REGRA UNICA de "o Visual C++ falta?" (4 consertos, 21/11/2026): quem instala (instalar_visual_c_se_faltar) e
+    quem confere depois da pergunta do Windows (o_que_falta_no_computador) usam esta, para nunca decidirem diferente.
+    Sem o instalador no pacote, nada falta (nao ha o que instalar). A versao do pacote vem da leitura unica
+    (versao_do_visual_c_do_pacote, a mesma do publicar); sem o arquivo da versao, "0.0.0" (so falta se nao ha Visual
+    C++ nenhum), como antes. `ler` le o registro do Windows na hora (nunca uma anotacao).
+    Arriscado: decidir "falta" de outro jeito so num dos dois lugares (a pergunta voltaria sempre, ou nunca).
+    """
+    if not (pasta / PASTA_DO_QUE_SE_INSTALA / VC_REDIST_NOME).is_file():
+        return None
+    lida = versao_do_visual_c_do_pacote(pasta)
+    do_pacote = "0.0.0" if lida is None else lida
+    return do_pacote if precisa_do_visual_c(ler(), do_pacote) else None
+
+
 def instalar_visual_c_se_faltar(pasta: Path, ler: Callable[[], tuple | None] = _ler_versao_do_visual_c,
                                 rodar: Callable[[list[str], int], tuple[int, str]] = _rodar) -> bool:
     """O Visual C++ oficial que vai dentro do pacote (D-727), em silencio, so se faltar.
 
     Devolve False so quando tentou instalar e deu erro (D-749: a preparacao
     conta como nao feita); sem o instalador no pacote ou sem precisar, True.
-    A versao do pacote vem da leitura unica (versao_do_visual_c_do_pacote, a mesma do publicar); sem o arquivo da
-    versao, "0.0.0" (so instala se nao ha Visual C++ nenhum), como antes.
+    "Falta?" e a regra unica visual_c_que_falta (a mesma que a conferencia depois da pergunta usa).
     """
     exe = pasta / PASTA_DO_QUE_SE_INSTALA / VC_REDIST_NOME
     if not exe.is_file():
         registrar(f"Visual C++: o pacote não tem {exe} (não instalei)")
         return True
-    # a leitura unica, a mesma da conferencia do publicar (volta 8, achado 6 do relatorio 7); sem o arquivo, "0.0.0"
-    lida = versao_do_visual_c_do_pacote(pasta)
-    do_pacote = "0.0.0" if lida is None else lida
-    instalada = ler()
-    if not precisa_do_visual_c(instalada, do_pacote):
+    do_pacote = visual_c_que_falta(pasta, ler)
+    if do_pacote is None:
         return True
     codigo, _saida = rodar([str(exe), "/install", "/quiet", "/norestart"], 600)
     # 0 = instalou; 1638 = ja havia uma mais nova; 3010 = instalou e pede reiniciar
@@ -1331,6 +1346,20 @@ def tirar_instalacao_antiga(pasta_nova: Path, achar: Callable[[], dict | None] =
     return codigo == 0
 
 
+def inno_que_falta_tirar(pasta_nova: Path, achar: Callable[[], dict | None] = achar_instalacao_do_inno) -> dict | None:
+    """A instalacao antiga do Inno que ainda falta tirar, ou None (nada falta).
+
+    A REGRA UNICA de "o Inno ainda tem de sair?" (4 consertos, 21/11/2026), lida no registro do Windows na hora: a
+    instalacao existe E o programa a tiraria (comando_para_tirar_o_inno). A que o programa recusa tirar de proposito
+    (caminho que nao parece seguro) NAO falta: perguntar de novo nao mudaria nada (D-749, como tirar_instalacao_antiga).
+    Usada pela conferencia depois da pergunta do Windows (o_que_falta_no_computador).
+    """
+    antiga = achar()
+    if antiga is None or comando_para_tirar_o_inno(antiga, pasta_nova) is None:
+        return None
+    return antiga
+
+
 def e_portatil(gerente=None) -> bool:
     """O programa e um pacote PORTATIL do Velopack (uma pasta solta, sem instalar)?
 
@@ -1381,8 +1410,9 @@ def preparar_como_administrador(gerente=None, criar: Callable[[], bool] | None =
     D-749 (Samuel, 17/11/2026: "Sim"): devolve 0 SO se tudo deu certo. Se uma
     parte deu erro no meio (uma tarefa nao foi criada, o Visual C++ ou o
     desinstalador do Inno falhou, ou um erro inesperado), devolve 1: o passo
-    da pergunta anota esse codigo e a primeira abertura conta a preparacao
-    como nao feita (a pergunta volta, preparo_deu_certo). `preparar` que
+    da pergunta (passo_de_preparar_o_computador) transforma esse codigo em
+    erro, a peca devolve "falhou" e a leitura do Windows diz o que falta (a
+    pergunta volta, o_que_falta_no_computador). `preparar` que
     devolve None (nada a dizer) conta como certo.
     """
     try:
@@ -1423,136 +1453,196 @@ def criar_as_tarefas() -> bool:
     return certo and desfazer.ok
 
 
-def arquivo_do_preparo() -> Path:
-    """D-749: onde o passo da pergunta anota como o --preparar-o-computador terminou."""
-    return pasta_do_estado() / "preparo.txt"
+# O pedido de licenca e quanto ele pode demorar: a preparacao pode instalar o Visual C++ (ate 10 min) e tirar o Inno
+# (ate 15 min). Passou disso, a peca devolve "falhou" e a proxima abertura le o Windows como estiver.
+LIMITE_DA_PREPARACAO_S = 3600
 
 
-def passo_de_preparar_o_computador(exe: Path | None = None, marca: str = ""):
-    """O passo da pergunta da primeira abertura: roda este .exe com
-    --preparar-o-computador, escondido, e espera ele terminar.
+def exe_do_programa() -> Path:
+    """O .exe deste programa (o que o ajudante roda e o que a pergunta do Windows abre). Lugar unico."""
+    return pasta_do_programa() / Path(sys.executable).name
 
-    E um Passo da peca dos testes a distancia (core.testes_a_distancia.Passo),
-    para ir na MESMA pergunta do Windows que o ligar usa (uma regra so para
-    "pedir licenca", CLAUDE.md §11.12). Nao para a pergunta se der errado:
-    quem anota o que deu certo e o proprio --preparar-o-computador, no
-    registro da atualizacao; os passos dos testes a distancia, se houver
-    senha, continuam.
 
-    D-749 (17/11/2026): o passo anota em arquivo_do_preparo() "<marca>
-    comecou" antes de rodar e "<marca> <codigo de saida>" depois. A `marca`
-    (nova a cada pergunta) separa esta vez de uma anotacao velha. Quem le e
-    preparo_deu_certo: so "<marca> 0" e preparacao feita.
+def passo_de_preparar_o_computador(exe: Path | None = None):
+    """O UNICO passo da pergunta do Windows da primeira abertura (D-733, D-735): roda este .exe com
+    --preparar-o-computador, escondido, espera ele terminar e FALHA se ele terminar com erro.
+
+    E um passo de script da peca unica do Windows (core.windows.passo_script), feito dentro do programa aberto com a
+    licenca (4 consertos, 21/11/2026; antes ia pela peca dos testes a distancia, que lia o "Nao" como "Sim"). O
+    --preparar-o-computador (preparar_como_administrador) so termina com 0 se tudo deu certo (D-749); o script
+    transforma qualquer outro codigo em erro, e a peca devolve "falhou" para quem pediu. Nada e anotado num arquivo:
+    quem decide se o computador ficou preparado e a leitura do Windows (o_que_falta_no_computador).
+    Arriscado: engolir o erro do script (try/catch sem lancar de novo): um preparo pela metade daria "deu certo".
     """
-    from core.testes_a_distancia import Passo
+    from core import windows
 
-    exe = exe or (pasta_do_programa() / Path(sys.executable).name)
-    arquivo = arquivo_do_preparo()
-    anotar = f"Set-Content -LiteralPath {_aspas_do_powershell(str(arquivo))} -Encoding ASCII -Value"
-    return Passo("Preparar o computador: o ajudante da atualização, o Visual C++ e tirar a instalação "
-                 "antiga (D-733)",
-                 f"try {{ New-Item -ItemType Directory -Force -Path {_aspas_do_powershell(str(arquivo.parent))}"
-                 f" | Out-Null; {anotar} {_aspas_do_powershell(marca + ' comecou')};"
-                 f" $p = Start-Process -FilePath {_aspas_do_powershell(str(exe))}"
-                 f" -ArgumentList {_aspas_do_powershell(ARG_PREPARAR)} -WindowStyle Hidden -Wait -PassThru;"
-                 f" {anotar} ({_aspas_do_powershell(marca + ' ')} + $p.ExitCode) }}"
-                 " catch { }")
+    exe = exe or exe_do_programa()
+    texto = ("$p = $null\n"
+             f" $p = Start-Process -FilePath {_aspas_do_powershell(str(exe))}"
+             f" -ArgumentList {_aspas_do_powershell(ARG_PREPARAR)} -WindowStyle Hidden -Wait -PassThru\n"
+             "if ($null -eq $p) { throw 'a preparação do computador não começou' }\n"
+             "if ($p.ExitCode -ne 0) { throw ('a preparação do computador terminou com o código ' + $p.ExitCode) }\n")
+    return windows.passo_script("preparar o computador: o ajudante da atualização, o Visual C++ e tirar a "
+                                "instalação antiga", texto, limite_s=LIMITE_DA_PREPARACAO_S)
 
 
-def preparo_deu_certo(marca: str, resultado) -> bool:
-    """D-749 (Samuel, 17/11/2026: "Sim"): o "Sim" da pergunta do Windows terminou com a preparacao feita?
+def pedir_licenca_ao_windows(passos: list, janela: int | None = None):
+    """A pergunta do Windows ("Deseja permitir...?") do atualizador: SEMPRE a peca unica, core.windows.pedir_licenca.
 
-    A UNICA regra de "o computador esta preparado". Le o que o passo anotou
-    nesta vez (a `marca` desta pergunta):
-    - "<marca> 0": o --preparar-o-computador terminou sem erro -> feito;
-    - "<marca> comecou" (parou no meio) ou outro codigo -> NAO feito;
-    - nada desta vez (o Windows nem chegou ao passo, ou a peca de mentira dos
-      testes, que nao roda nada): vale o resultado da pergunta inteira.
+    `janela`: o numero da janela do programa no Windows (a dona da pergunta, trazida para a frente antes). Devolve a
+    Resposta da peca (DEU_CERTO, DISSE_NAO ou FALHOU). Sob o pytest NAO pergunta nada ao Windows (devolve "falhou"):
+    os testes trocam esta funcao por uma de mentira (nenhuma pergunta na tela de quem roda os testes).
+    Arriscado: chamar no fio da tela (a pergunta segura a chamada ate a resposta; quem chama e o fio de tras da
+    primeira abertura, ui/testes_a_distancia_ui.primeira_vez_se_preciso).
+    """
+    from core import windows
+
+    if "PYTEST_CURRENT_TEST" in os.environ:
+        return windows.Resposta(windows.FALHOU, "sob os testes automáticos o programa não pergunta nada ao Windows")
+    return windows.pedir_licenca(passos, janela=janela, limite_s=LIMITE_DA_PREPARACAO_S + 300)
+
+
+def ler_tarefa_no_windows(nome: str):
+    """Le uma tarefa do Agendador pela peca unica (core.windows.ler_tarefa), sem licenca. Lugar unico de leitura das
+    tarefas do atualizador (os testes trocam esta funcao)."""
+    from core import windows
+
+    return windows.ler_tarefa(nome)
+
+
+def _mesmo_caminho(a: str, b: str) -> bool:
+    """Os dois textos sao o mesmo arquivo para o Windows (sem diferenca de maiusculas, barras e aspas)?"""
+    def normal(texto: str) -> str:
+        """O caminho como o Windows o compara (vazio fica vazio)."""
+        limpo = str(texto).strip().strip('"')
+        return os.path.normcase(os.path.normpath(limpo)) if limpo else ""
+    return bool(normal(a)) and normal(a) == normal(b)
+
+
+def o_que_falta_no_computador(exe: Path | None = None,
+                              ler_tarefa: Callable[[str], object] | None = None,
+                              ler_visual_c: Callable[[], tuple | None] | None = None,
+                              achar_inno: Callable[[], dict | None] | None = None,
+                              portatil: Callable[[], bool] | None = None) -> list[str]:
+    """O que ainda falta preparar neste computador, LIDO NO WINDOWS agora (vazio = preparado).
+
+    A REGRA UNICA de "o computador esta preparado" (4 consertos, 21/11/2026; D-741, D-749). Antes era uma marca nas
+    Configuracoes e um arquivo preparo.txt (anotacoes do proprio programa): o "Nao" do Windows virava "preparado", e
+    a marca sobrevivia a desinstalar e reinstalar. Agora confere o que o --preparar-o-computador faz, lido de volta:
+    1. o ajudante da atualizacao existe e aponta para este programa (o comando e o .exe desta instalacao, os
+       argumentos sao os do ajudante, roda como o sistema), lido pela peca unica (ler_tarefa_no_windows);
+    2. a tarefa "desfazer" existe (D-731; criada na mesma pergunta);
+    3. o Visual C++ do pacote esta instalado (visual_c_que_falta, a mesma regra de quem instala);
+    4. a instalacao antiga do Inno nao esta mais (inno_que_falta_tirar, a mesma regra de quem tira).
+    "Nao deu para saber" conta como falta (melhor perguntar de novo que dar como preparado sem saber). No pacote
+    portatil do ensaio nada falta (o portatil nunca mexe no Windows, e_portatil).
+    Quem usa: preparar_na_primeira_abertura (depois da resposta) e preparar_ao_abrir (antes de perguntar de novo).
+    Arriscado: tirar um dos quatro (a pergunta deixaria de voltar com a preparacao pela metade, contra a D-749).
+    """
+    from core import testes_a_distancia, windows
+
+    if (portatil or e_portatil)():
+        return []
+    ler = ler_tarefa or ler_tarefa_no_windows
+    exe = exe or exe_do_programa()
+    falta: list[str] = []
+    ajudante = ler(NOME_DA_TAREFA)
+    if ajudante.existe is None:
+        falta.append(f"não deu para ler o ajudante da atualização no Windows ({ajudante.motivo})")
+    elif ajudante.existe is False:
+        falta.append("o ajudante da atualização não existe no Windows")
+    elif not ajudante.lida:
+        falta.append(f"o ajudante da atualização existe, mas não deu para ler ({ajudante.motivo})")
+    else:
+        esperado = windows.ler_xml_da_tarefa(xml_da_tarefa(exe))
+        if not _mesmo_caminho(ajudante.comando, esperado["comando"]):
+            falta.append(f"o ajudante da atualização aponta para {ajudante.comando!r}, e não para "
+                         f"{esperado['comando']!r}")
+        if ajudante.argumentos != esperado["argumentos"] or ajudante.usuario != esperado["usuario"]:
+            falta.append(f"o ajudante da atualização não é o deste programa (argumentos {ajudante.argumentos!r}, "
+                         f"conta {ajudante.usuario!r})")
+    desfazer = ler(testes_a_distancia.nome_da_tarefa_do_desfazer())
+    if desfazer.existe is not True:
+        falta.append("a tarefa que desfaz tudo ao desinstalar não existe no Windows"
+                     + (f" ({desfazer.motivo})" if desfazer.motivo else ""))
+    try:
+        visual_c = visual_c_que_falta(pasta_do_programa(), ler_visual_c or _ler_versao_do_visual_c)
+    except OSError as erro:
+        visual_c = f"? ({erro})"
+    if visual_c is not None:
+        falta.append(f"o Visual C++ {visual_c} não está instalado")
+    try:
+        antiga = inno_que_falta_tirar(pasta_do_programa().parent, achar_inno or achar_instalacao_do_inno)
+    except OSError as erro:
+        antiga = {"pasta": f"? ({erro})"}
+    if antiga is not None:
+        falta.append(f"a instalação antiga do programa continua em {antiga['pasta']}")
+    return falta
+
+
+def preparar_na_primeira_abertura(janela: int | None = None) -> list[str]:
+    """A pergunta do Windows da primeira abertura (D-733, D-735), pela peca unica. Devolve o que ainda falta no
+    computador depois dela, lido no Windows (vazio = preparado).
+
+    UMA pergunta so, sempre, com ou sem a senha dos testes (D-825, opcao B: nesta entrega a senha nao liga os
+    testes a distancia, entao a pergunta leva so a preparacao). "Nao" (ou ninguem responde): nada muda, anotado no
+    registro; a pergunta volta na proxima abertura (D-741), porque a leitura do Windows diz que falta. "Sim" com a
+    preparacao parada no meio: a peca devolve "falhou" e a leitura diz o que falta; volta tambem (D-749). "Sim" so
+    conta como feito quando o Windows mostra tudo no lugar (o_que_falta_no_computador). Nada e gravado como marca.
+    `janela`: a janela do programa, dona da pergunta (para ela vir no meio da tela, D-806).
+    Quem chama: preparar_ao_abrir, no fio de tras da primeira abertura (nunca no fio da tela).
+    """
+    from core import windows
+
+    resposta = pedir_licenca_ao_windows([passo_de_preparar_o_computador()], janela)
+    if resposta.desfecho == windows.DISSE_NAO:
+        registrar("primeira abertura: o Kaique disse \"Não\" à pergunta do Windows; o ajudante da atualização "
+                  "não foi criado; a pergunta volta na próxima abertura")
+    elif not resposta.deu_certo:
+        registrar(f"primeira abertura: a pergunta do Windows não deu certo ({resposta.motivo}) {resposta.detalhe}")
+    falta = o_que_falta_no_computador()
+    if falta:
+        registrar("primeira abertura: o computador não ficou preparado (lido no Windows: " + "; ".join(falta)
+                  + "); a pergunta volta na próxima abertura")
+    else:
+        registrar("primeira abertura: o computador está preparado (lido no Windows)")
+    return falta
+
+
+def preparar_ao_abrir(janela: int | None = None, primeira_vez: bool = False) -> list[str]:
+    """O trabalho da primeira abertura (e das seguintes, ate o "Sim"), POR TRAS: o que a tela manda rodar num fio
+    que nao e o da tela (ui/testes_a_distancia_ui.primeira_vez_se_preciso). Devolve o que ainda falta.
+
+    - primeira_vez (nesta conta a janela da senha acabou de aparecer): pergunta ja, logo depois do clique (D-806);
+    - senao: le o Windows; se nada falta, nao pergunta nada; se falta (o "Nao" de antes, a preparacao pela metade, o
+      ajudante que sumiu ao reinstalar), pergunta de novo (D-741, D-749).
+    Se a pergunta deixou o computador preparado, manda o ajudante rodar uma vez (ele acabou de nascer; a chamada da
+    abertura, ui/aviso_de_atualizacao.ligar_na_janela, veio antes e nao o achou). Nunca levanta: um erro vai para o
+    registro e conta como "falta".
     """
     try:
-        conteudo = arquivo_do_preparo().read_text(encoding="utf-8-sig", errors="replace").strip()
-    except OSError:
-        conteudo = ""
-    if marca and conteudo.startswith(marca + " "):
-        return conteudo[len(marca) + 1:].strip() == "0"
-    return bool(getattr(resultado, "ok", False))
-
-
-def preparar_na_primeira_abertura(senha: str):
-    """A pergunta do Windows da primeira abertura (D-733, D-735). Devolve o
-    Resultado da peca dos testes a distancia (core.testes_a_distancia.Resultado).
-
-    Aparece SEMPRE, com ou sem a senha (D-735):
-    - com a senha: chama core.testes_a_distancia.ligar (a porta unica, sem
-      mudanca) com a peca que fala com o Windows "acrescida" do passo de
-      preparar o computador. Assim o preparo e os passos dos testes vao numa
-      pergunta so, e ligar continua guardando o estado e escolhendo o aviso;
-    - sem a senha ("Agora não", ou a opcao desligada): so o passo de preparar,
-      na mesma peca (executor_atual), numa pergunta so.
-    Se o Kaique disser "Nao", fica anotado no registro e a pergunta volta na
-    proxima abertura (D-741, falta_a_pergunta_do_windows); com o "Sim" E a
-    preparacao feita (preparo_deu_certo, D-749), a marca fica gravada e ela
-    nunca mais aparece. "Sim" com a preparacao parada no meio: volta tambem.
-    Quem chama: ui/testes_a_distancia_ui.primeira_vez_se_preciso.
-    """
-    import uuid
-
-    from core import testes_a_distancia as td
-
-    marca = uuid.uuid4().hex                          # D-749: esta pergunta
-    preparo = [passo_de_preparar_o_computador(marca=marca)]
-    base = td.executor_atual()
-
-    class _ComOPreparo(td.Executor):
-        """A mesma peca de hoje, com o preparo antes dos passos que ela receber."""
-
-        def aplicar(self, passos, senha_dos_testes):
-            return base.aplicar([*preparo, *passos], senha_dos_testes)
-
-    if senha:
-        td.definir_executor(_ComOPreparo())
-        try:
-            resultado = td.ligar(senha)
-        finally:
-            td.definir_executor(base)
-    else:
-        resultado = base.aplicar(preparo, "")
-    if resultado.cancelado:
-        registrar("primeira abertura: o Kaique disse \"Não\" à pergunta do Windows; o ajudante da "
-                  "atualização não foi criado; a pergunta volta na próxima abertura (D-741)")
-        return resultado
-    if not resultado.ok:
-        registrar(f"primeira abertura: a pergunta do Windows não deu certo ({resultado.mensagem})")
-    # D-741: com o "Sim" e a preparacao feita, nunca mais pergunta. D-749 (17/11/2026): se a
-    # preparacao deu erro no meio, conta como nao feita e a pergunta volta, como depois do "Nao".
-    if not preparo_deu_certo(marca, resultado):
-        registrar("primeira abertura: o Kaique disse \"Sim\", mas a preparação do computador não terminou "
-                  "bem; conta como não feita e a pergunta volta na próxima abertura (D-749)")
-        return resultado
-    import configuracoes
-
-    configuracoes.escrever(CHAVE_PERGUNTA_DO_WINDOWS_RESPONDIDA, True)
-    return resultado
-
-
-# D-741: a marca de "a pergunta do Windows da primeira abertura ja teve o Sim"
-# (configuracoes.PADROES; por conta do Windows, como a marca da senha).
-CHAVE_PERGUNTA_DO_WINDOWS_RESPONDIDA = "atualizacao_computador_preparado"
+        if not primeira_vez:
+            falta = o_que_falta_no_computador()
+            if not falta:
+                return []
+            registrar("abrir o programa: falta preparar o computador (" + "; ".join(falta)
+                      + "); a pergunta do Windows aparece de novo")
+        falta = preparar_na_primeira_abertura(janela)
+        if not falta:
+            procurar_ao_abrir()
+        return falta
+    except Exception as erro:  # noqa: BLE001 - o fio de tras nunca derruba o programa
+        registrar(f"primeira abertura: erro inesperado ({type(erro).__name__}: {erro}); a pergunta volta")
+        return [f"erro inesperado: {erro}"]
 
 
 def falta_a_pergunta_do_windows() -> bool:
-    """D-741 (Samuel, 17/11/2026: "Sim"): a pergunta do Windows da primeira abertura ainda nao teve o "Sim"?
+    """D-741 (Samuel, 17/11/2026: "Sim"): a pergunta do Windows da primeira abertura ainda tem de aparecer?
 
-    A UNICA regra de "ela aparece de novo nesta abertura". Depois de um "Nao",
-    volta a cada abertura do programa instalado, ate o "Sim"; depois do "Sim",
-    nunca mais. D-749: um "Sim" cuja preparacao deu erro no meio conta como
-    nao feito (a marca nao e gravada). Quem marca e preparar_na_primeira_abertura; quem pergunta e
-    ui/testes_a_distancia_ui.primeira_vez_se_preciso (que ja deixa de fora o
-    codigo, D-728, e a conta de testes, D-736).
+    Desde os 4 consertos (21/11/2026) e a leitura do Windows (o_que_falta_no_computador), nunca uma marca: depois
+    de um "Nao", de uma preparacao pela metade (D-749) ou de o ajudante sumir, volta; com tudo no lugar, nao.
     """
-    import configuracoes
-
-    return not configuracoes.ler(CHAVE_PERGUNTA_DO_WINDOWS_RESPONDIDA)
+    return bool(o_que_falta_no_computador())
 
 
 # ---------------------------------------------------------------------------

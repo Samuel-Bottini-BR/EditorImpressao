@@ -37,51 +37,44 @@ def _pastas_de_mentira(tmp_path, monkeypatch):
     yield
 
 
-class WindowsQuePrepara(td.Executor):
-    """A pergunta do Windows de mentira: o Kaique diz "Sim", e o passo de preparar anota no arquivo o que o
-    --preparar-o-computador de verdade anotaria (`saidas`, uma por abertura: "0", "1" ou "comecou" = parou no
-    meio). Nada do Windows e tocado."""
+# Desde os 4 consertos do atualizador (D-825, Samuel 21/11/2026: "ok"), os tres testes abaixo cobram a MESMA D-749
+# pelo caminho novo: a pergunta pela peca unica do Windows e o "preparado" lido do Windows (o ajudante, a tarefa
+# desfazer, o Visual C++, a instalacao antiga), sem o arquivo preparo.txt. O Windows de mentira e o de
+# tests/test_atualizador_4.py.
 
-    def __init__(self, saidas: list[str]) -> None:
-        self.saidas = list(saidas)
-        self.chamadas = 0
-
-    def aplicar(self, passos, senha):
-        self.chamadas += 1
-        saida = self.saidas.pop(0)
-        preparo = [p for p in passos if atualizacao.ARG_PREPARAR in p.comando][0]
-        achada = re.search(r"'([0-9a-f]{32}) comecou'", preparo.comando)
-        if achada:
-            arquivo = atualizacao.pasta_do_estado() / "preparo.txt"
-            arquivo.parent.mkdir(parents=True, exist_ok=True)
-            arquivo.write_text(f"{achada.group(1)} {saida}", encoding="ascii")
-        return td.Resultado(True, passos=passos)
+import configuracoes  # noqa: E402
+from tests.test_atualizador_4 import WindowsDeMentira  # noqa: E402
 
 
-@pytest.mark.parametrize("como_parou", ["comecou", "1"])
-def test_d749_sim_com_a_preparacao_parada_no_meio_a_pergunta_volta(monkeypatch, como_parou):
+@pytest.fixture
+def windows_de_mentira(tmp_path, monkeypatch):
+    """O Windows de mentira do atualizador (cada pergunta: "sim", salvo `respostas`)."""
+    return WindowsDeMentira().instalar(monkeypatch, tmp_path)
+
+
+@pytest.mark.parametrize("como_parou", ["meio", "falhou"])
+def test_d749_sim_com_a_preparacao_parada_no_meio_a_pergunta_volta(windows_de_mentira, como_parou):
     """D-749: "Sim" + preparacao que parou no meio (ou deu erro) -> a pergunta volta na proxima abertura;
-    "Sim" + preparacao que deu certo -> nunca mais. Falha no codigo de antes: o primeiro "Sim" ja gravava."""
-    windows = WindowsQuePrepara([como_parou, "0"])
-    monkeypatch.setattr(td, "_executor", windows)
-    atualizacao.preparar_na_primeira_abertura("")
-    assert atualizacao.falta_a_pergunta_do_windows(), "a preparação parou no meio e o programa achou que estava pronto"
-    assert "D-749" in atualizacao.caminho_do_registro().read_text(encoding="utf-8")
-    atualizacao.preparar_na_primeira_abertura("")      # a proxima abertura: pergunta de novo, agora da certo
+    "Sim" + preparacao que deu certo -> nunca mais. Antes (4a775ba8): o pedido antigo dava "Sim" e o preparo.txt
+    decidia; com o "Nao" lido como 0, a anotacao de fora valia como feito."""
+    windows_de_mentira.respostas = [como_parou, "sim"]
+    assert atualizacao.preparar_ao_abrir(None, primeira_vez=True), "parou no meio e o programa achou que estava pronto"
+    assert atualizacao.falta_a_pergunta_do_windows()
+    assert "não ficou preparado" in atualizacao.caminho_do_registro().read_text(encoding="utf-8")
+    assert atualizacao.preparar_ao_abrir(None, primeira_vez=False) == []   # a proxima abertura: pergunta, da certo
     assert not atualizacao.falta_a_pergunta_do_windows()
-    assert windows.chamadas == 2
+    assert len(windows_de_mentira.pedidos) == 2
 
 
-def test_d749_uma_anotacao_velha_nao_conta():
-    """D-749: so vale o que o passo anotou NESTA pergunta (a marca dela); um "0" de outra vez nao conta."""
-    arquivo = atualizacao.arquivo_do_preparo()
+def test_d749_uma_anotacao_velha_nao_conta(windows_de_mentira):
+    """D-749: so vale o que o Windows mostra agora. Uma anotacao velha de "preparado" (o preparo.txt com "0" e a marca
+    antiga nas Configuracoes, de uma versao de antes) nao conta: sem o ajudante no Windows, falta."""
+    arquivo = atualizacao.pasta_do_estado() / "preparo.txt"
     arquivo.parent.mkdir(parents=True, exist_ok=True)
     arquivo.write_text("aaaa 0", encoding="ascii")
-    assert not atualizacao.preparo_deu_certo("bbbb", td.Resultado(False))
-    arquivo.write_text("bbbb comecou", encoding="ascii")
-    assert not atualizacao.preparo_deu_certo("bbbb", td.Resultado(True)), "parou no meio: não feito"
-    arquivo.write_text("bbbb 0", encoding="ascii")
-    assert atualizacao.preparo_deu_certo("bbbb", td.Resultado(True))
+    configuracoes.escrever("atualizacao_computador_preparado", True)
+    assert atualizacao.falta_a_pergunta_do_windows()
+    assert any("ajudante" in f for f in atualizacao.o_que_falta_no_computador())
 
 
 class _Gerente:
@@ -127,23 +120,27 @@ def test_d749_visual_c_ou_inno_que_falham_contam_como_erro(tmp_path, monkeypatch
 
 
 @pytest.mark.skipif(sys.platform != "win32" or not POWERSHELL, reason="o passo e PowerShell")
-@pytest.mark.parametrize("fim, esperado", [("[pscustomobject]@{ ExitCode = 0 }", "0"),
-                                           ("[pscustomobject]@{ ExitCode = 1 }", "1"),
-                                           ("throw 'o exe sumiu'", "comecou")])
+@pytest.mark.parametrize("fim, esperado", [("[pscustomobject]@{ ExitCode = 0 }", "certo"),
+                                           ("[pscustomobject]@{ ExitCode = 1 }", "falhou"),
+                                           ("throw 'o exe sumiu'", "falhou"),
+                                           ("$null", "falhou")])
 def test_d749_o_passo_anota_como_o_preparo_terminou(tmp_path, fim, esperado):
-    """D-749: o passo de verdade (PowerShell), com o Start-Process trocado por um de mentira, anota "<marca>
-    comecou" antes e "<marca> <codigo>" depois; se o preparo nem terminou, fica o "comecou" (= nao feito).
-    E continua sem parar a pergunta (try/catch), como na D-733."""
+    """D-749: o passo de verdade (o script do PowerShell, com o Start-Process trocado por um de mentira) termina bem
+    SO quando o --preparar-o-computador terminou com 0; codigo 1, o .exe que nao abre ou nada devolvido fazem o passo
+    falhar, e a peca unica devolve "falhou" (a preparacao conta como nao feita). Desde a D-825 nada e anotado num
+    arquivo: quem le o desfecho e a peca. Antes (4a775ba8) o passo engolia o erro (try/catch) e anotava no preparo.txt."""
     exe = Path(r"D:\nao-existe\EditorImpressao.exe")
-    passo = atualizacao.passo_de_preparar_o_computador(exe, marca="abc123")
-    assert "C:\\" not in passo.comando, "tudo na pasta de mentira"
+    passo = atualizacao.passo_de_preparar_o_computador(exe)
+    texto = passo.dados["texto"]
+    assert "C:\\" not in texto, "tudo na pasta de mentira"
     script = tmp_path / "passo.ps1"
     script.write_text("\n".join(["$ErrorActionPreference = 'Stop'",
                                  "function Start-Process { " + fim + " }",
-                                 passo.comando, "Write-Output 'SEGUIU'"]), encoding="utf-8-sig")
+                                 texto, "Write-Output 'SEGUIU'"]), encoding="utf-8-sig")
     feito = subprocess.run([POWERSHELL, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
                             str(script)], capture_output=True, text=True, timeout=120)
-    assert "SEGUIU" in feito.stdout, feito.stderr
-    anotado = atualizacao.arquivo_do_preparo().read_text(encoding="utf-8-sig").strip()
-    assert anotado == f"abc123 {esperado}"
-    assert atualizacao.preparo_deu_certo("abc123", td.Resultado(True)) is (esperado == "0")
+    if esperado == "certo":
+        assert feito.returncode == 0 and "SEGUIU" in feito.stdout, feito.stderr
+    else:
+        assert feito.returncode != 0 and "SEGUIU" not in feito.stdout, "o preparo falhou e o passo seguiu"
+    assert not (atualizacao.pasta_do_estado() / "preparo.txt").exists(), "nada anotado num arquivo"

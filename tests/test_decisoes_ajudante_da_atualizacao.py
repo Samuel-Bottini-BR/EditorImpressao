@@ -158,77 +158,107 @@ def test_d733_depois_de_trocar_o_ajudante_e_refeito_como_o_sistema():
 # D-733 / D-735: a pergunta do Windows da primeira abertura
 # ---------------------------------------------------------------------------
 
+# Desde os 4 consertos do atualizador (D-825, Samuel 21/11/2026: "ok"), estes testes cobram o MESMO comportamento das
+# D-733/D-735/D-741 pelo caminho novo: a pergunta pela peca unica do Windows (atualizacao.pedir_licenca_ao_windows) e o
+# "preparado" lido do Windows (atualizacao.o_que_falta_no_computador), sem a marca nas Configuracoes. O Windows de
+# mentira e o de tests/test_atualizador_4.py (nada do Windows de verdade e tocado).
+
+from tests.test_atualizador_4 import WindowsDeMentira  # noqa: E402
+
+
+@pytest.fixture
+def windows_de_mentira(tmp_path, monkeypatch):
+    """O Windows de mentira do atualizador (cada pergunta: "sim", salvo `respostas`)."""
+    return WindowsDeMentira().instalar(monkeypatch, tmp_path)
+
+
 def _passo_de_preparo(passos):
-    return [p for p in passos if atualizacao.ARG_PREPARAR in p.comando]
+    return [p for p in passos if atualizacao.ARG_PREPARAR in p.dados.get("texto", "")]
 
 
-def test_d733_com_a_senha_preparo_e_testes_numa_pergunta_so(fake):
-    """D-733 (17/11/2026): o ajudante, o Visual C++, o Inno e a senha dos testes, numa pergunta so."""
-    resultado = atualizacao.preparar_na_primeira_abertura("segredo")
-    assert resultado.ok and len(fake.chamadas) == 1, "uma pergunta do Windows só"
-    passos, senha = fake.chamadas[0]
-    assert senha == "segredo"
-    assert len(_passo_de_preparo(passos)) == 1 and passos[0] is _passo_de_preparo(passos)[0]
-    # os passos dos testes sao EXATAMENTE os de core.testes_a_distancia (a funcao de sempre, sem mudanca)
-    assert [p.comando for p in passos[1:]] == [p.comando for p in td.plano_de_ligar()]
-    assert td.esta_pronto() and td.esta_ligado()
-    assert td.executor_atual() is fake, "a peça de sempre volta para o lugar"
+def _abrir_ja(tdui, conta_de_testes=False):
+    """Uma abertura do programa instalado, com o trabalho de tras rodando na hora (para o teste ver o resultado)."""
+    tdui.primeira_vez_se_preciso(None, instalado=lambda: True, conta_de_testes=lambda: conta_de_testes,
+                                 por_tras=lambda trabalho: trabalho())
 
 
-def test_d735_sem_a_senha_a_pergunta_do_windows_aparece_assim_mesmo(fake):
-    """D-735 (17/11/2026): sem a senha, so o preparo; a pergunta do Windows aparece."""
-    resultado = atualizacao.preparar_na_primeira_abertura("")
-    assert resultado.ok and len(fake.chamadas) == 1
-    passos, senha = fake.chamadas[0]
-    assert senha == "" and passos == _passo_de_preparo(passos) and len(passos) == 1
+def test_d733_com_a_senha_preparo_e_testes_numa_pergunta_so(windows_de_mentira, fake, monkeypatch):
+    """D-733 (17/11/2026), ajustada pela D-825 (21/11/2026, opcao B): o ajudante, o Visual C++ e o Inno numa pergunta
+    so; nesta entrega a senha digitada NAO liga os testes a distancia (nenhum passo deles vai a pergunta).
+    Antes (4a775ba8): a senha ligava os testes na mesma pergunta, pelo pedido antigo que lia o "Nao" como "Sim"."""
+    pytest.importorskip("PySide6")
+    import ui.testes_a_distancia_ui as tdui
+
+    monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: "segredo")
+    _abrir_ja(tdui)
+    assert len(windows_de_mentira.pedidos) == 1, "uma pergunta do Windows só"
+    passos, _ = windows_de_mentira.pedidos[0]
+    assert len(passos) == 1 and _passo_de_preparo(passos) == passos
+    assert fake.chamadas == [], "a peça dos testes à distância não foi chamada"
+    assert not td.esta_pronto() and atualizacao.o_que_falta_no_computador() == []
+
+
+def test_d735_sem_a_senha_a_pergunta_do_windows_aparece_assim_mesmo(windows_de_mentira):
+    """D-735 (17/11/2026): sem a senha, so o preparo; a pergunta do Windows aparece, e com o "Sim" o Windows fica
+    preparado (lido nele)."""
+    assert atualizacao.preparar_na_primeira_abertura() == []
+    assert len(windows_de_mentira.pedidos) == 1
+    passos, _ = windows_de_mentira.pedidos[0]
+    assert passos == _passo_de_preparo(passos) and len(passos) == 1
     assert not td.esta_pronto(), "sem senha, os testes à distância não ligam (D-721)"
 
 
-def test_d735_agora_nao_na_senha_nao_pula_a_pergunta_do_windows(fake, monkeypatch):
-    """D-735 (17/11/2026): "Agora não" na janela da senha -> a pergunta do Windows aparece,
-    e o aviso "Sem a senha..." de sempre tambem. Falha no codigo de 16/11 (nada era perguntado)."""
+def test_d735_agora_nao_na_senha_nao_pula_a_pergunta_do_windows(windows_de_mentira, monkeypatch):
+    """D-735 (17/11/2026): "Agora não" na janela da senha -> a pergunta do Windows aparece, e o aviso "Sem a senha..."
+    de sempre tambem. Na segunda abertura, ja preparado, nada e perguntado."""
     pytest.importorskip("PySide6")
     import ui.testes_a_distancia_ui as tdui
 
     avisos = []
     monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: "")
     monkeypatch.setattr(tdui.perguntas, "avisar", lambda pai, titulo, texto, **k: avisos.append(texto))
-    tdui.primeira_vez_se_preciso(None, instalado=lambda: True, conta_de_testes=lambda: False)
-    assert len(fake.chamadas) == 1 and _passo_de_preparo(fake.chamadas[0][0])
+    _abrir_ja(tdui)
+    assert len(windows_de_mentira.pedidos) == 1 and _passo_de_preparo(windows_de_mentira.pedidos[0][0])
     assert avisos and "Sem a senha" in avisos[0]
     assert td.senha_ja_perguntada() and not td.esta_pronto()
-    tdui.primeira_vez_se_preciso(None, instalado=lambda: True, conta_de_testes=lambda: False)
-    assert len(fake.chamadas) == 1, "na segunda abertura não pergunta de novo"
+    _abrir_ja(tdui)
+    assert len(windows_de_mentira.pedidos) == 1, "na segunda abertura não pergunta de novo"
 
 
-def test_d735_com_a_opcao_desligada_a_pergunta_do_windows_aparece(fake, monkeypatch):
-    """D-735 (17/11/2026): "aparece sempre": opcao dos testes desligada -> sem janela da senha,
-    mas com a pergunta do Windows (o ajudante da atualizacao nasce)."""
+def test_d735_com_a_opcao_desligada_a_pergunta_do_windows_aparece(windows_de_mentira, monkeypatch):
+    """D-735 (17/11/2026): "aparece sempre": opcao dos testes desligada -> sem janela da senha, mas com a pergunta do
+    Windows (o ajudante da atualizacao nasce)."""
     pytest.importorskip("PySide6")
     import ui.testes_a_distancia_ui as tdui
 
     configuracoes.escrever(td.CHAVE_LIGADO, False)
     monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: pytest.fail("pediu a senha"))
     monkeypatch.setattr(tdui.perguntas, "avisar", lambda *a, **k: pytest.fail("avisou"))
-    tdui.primeira_vez_se_preciso(None, instalado=lambda: True, conta_de_testes=lambda: False)
-    assert len(fake.chamadas) == 1 and _passo_de_preparo(fake.chamadas[0][0])
+    _abrir_ja(tdui)
+    assert len(windows_de_mentira.pedidos) == 1 and _passo_de_preparo(windows_de_mentira.pedidos[0][0])
+    assert atualizacao.o_que_falta_no_computador() == []
 
 
-def test_d733_disse_nao_fica_anotado_e_nada_quebra(monkeypatch):
-    """D-733 (17/11/2026): "Nao" na pergunta do Windows -> anotado no registro; nada quebra."""
-    monkeypatch.setattr(td, "_executor", FakeExecutor(cancelado=True))
-    resultado = atualizacao.preparar_na_primeira_abertura("")
-    assert resultado.cancelado
+def test_d733_disse_nao_fica_anotado_e_nada_quebra(windows_de_mentira):
+    """D-733 (17/11/2026): "Nao" na pergunta do Windows -> anotado no registro; nada quebra; o computador continua
+    sem preparar (lido no Windows). Antes (4a775ba8), o "Nao" lido como 0 dava "preparado"."""
+    windows_de_mentira.respostas = ["nao"]
+    falta = atualizacao.preparar_na_primeira_abertura()
+    assert falta
     assert "disse \"Não\"" in atualizacao.caminho_do_registro().read_text(encoding="utf-8")
 
 
 def test_d733_o_passo_de_preparar_roda_este_exe_escondido_e_nao_para_a_pergunta():
-    """D-733 (17/11/2026): o passo roda <exe> --preparar-o-computador e espera; nunca a senha."""
+    """D-733 (17/11/2026): o passo roda <exe> --preparar-o-computador, escondido, e espera; nunca a senha. Desde os 4
+    consertos (D-825) o passo e da peca unica e NAO engole o erro: o preparo que falha faz a pergunta dar "falhou"
+    (D-749). Antes (4a775ba8) o passo terminava em "catch { }"."""
     passo = atualizacao.passo_de_preparar_o_computador(EXE)
-    assert f"'{EXE}'" in passo.comando and f"'{atualizacao.ARG_PREPARAR}'" in passo.comando
-    assert "-Wait" in passo.comando and "-WindowStyle Hidden" in passo.comando
-    assert passo.comando.startswith("try {") and passo.comando.endswith("catch { }")
-    assert not passo.precisa_senha and td.VARIAVEL_DA_SENHA not in passo.comando
+    texto = passo.dados["texto"]
+    assert passo.tipo == "script" and passo.dados["com_segredo"] is False
+    assert f"'{EXE}'" in texto and f"'{atualizacao.ARG_PREPARAR}'" in texto
+    assert "-Wait" in texto and "-WindowStyle Hidden" in texto and "-PassThru" in texto
+    assert "catch" not in texto and "throw" in texto and "ExitCode" in texto
+    assert td.VARIAVEL_DA_SENHA not in texto and "D-7" not in passo.descricao
 
 
 def test_d733_o_modo_preparar_cria_o_ajudante_e_prepara_o_computador():
@@ -474,93 +504,79 @@ def test_etapa5_pela_fonte_de_teste_a_assinatura_e_conferida_igual(tmp_path):
 # D-741 (Samuel, 17/11/2026: "Sim"): depois de um "Nao", a pergunta do Windows volta a cada abertura
 # ---------------------------------------------------------------------------
 
-class ExecutorQueResponde(FakeExecutor):
-    """A pergunta do Windows de mentira, respondida em sequencia (True = "Sim", False = "Nao")."""
-
-    def __init__(self, respostas: list[bool]) -> None:
-        super().__init__()
-        self.respostas = list(respostas)
-
-    def aplicar(self, passos, senha):
-        self.chamadas.append((list(passos), senha))
-        if self.respostas.pop(0):
-            return td.Resultado(True, passos=passos)
-        return td.Resultado(False, cancelado=True, passos=passos)
-
-
-def _abrir(tdui, conta_de_testes=False):
-    tdui.primeira_vez_se_preciso(None, instalado=lambda: True, conta_de_testes=lambda: conta_de_testes)
-
-
-def test_d741_nao_a_pergunta_volta_na_proxima_abertura_e_sim_ela_nao_volta_mais(monkeypatch):
+def test_d741_nao_a_pergunta_volta_na_proxima_abertura_e_sim_ela_nao_volta_mais(windows_de_mentira, monkeypatch):
     """D-741 (Samuel, 17/11/2026: "Sim"): "Nao" a pergunta do Windows da primeira abertura -> abrir de novo -> a
     pergunta volta (so ela: a janela da senha nao, D-721); "Nao" de novo -> volta de novo; "Sim" -> nunca mais.
-    Teste de reversao: no codigo de antes (relatorio da D-732, pergunta aberta 1) ela nao voltava: depois do
-    "Nao", o ajudante da atualizacao nunca nascia e a versao nova nunca entrava."""
+    Desde a D-825 quem decide e a leitura do Windows. Antes (4a775ba8) o "Nao" lido como 0 gravava a marca e a pergunta
+    nao voltava."""
     pytest.importorskip("PySide6")
     import ui.testes_a_distancia_ui as tdui
 
-    windows = ExecutorQueResponde([False, False, True])
-    monkeypatch.setattr(td, "_executor", windows)
+    windows_de_mentira.respostas = ["nao", "nao", "sim"]
     senhas = []
     monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: senhas.append(1) or "")
     monkeypatch.setattr(tdui.perguntas, "avisar", lambda *a, **k: None)
 
-    _abrir(tdui)                                    # 1a abertura: a senha ("Agora não") e a pergunta: "Não"
-    assert len(windows.chamadas) == 1 and senhas == [1]
-    _abrir(tdui)                                    # 2a abertura: a pergunta volta, sem a janela da senha
-    assert len(windows.chamadas) == 2, "D-741: depois do \"Não\", a pergunta do Windows volta ao abrir de novo"
+    _abrir_ja(tdui)                                 # 1a abertura: a senha ("Agora não") e a pergunta: "Não"
+    assert len(windows_de_mentira.pedidos) == 1 and senhas == [1]
+    _abrir_ja(tdui)                                 # 2a abertura: a pergunta volta, sem a janela da senha
+    assert len(windows_de_mentira.pedidos) == 2, "D-741: depois do \"Não\", a pergunta do Windows volta ao abrir de novo"
     assert senhas == [1], "a janela da senha não volta (D-721: a senha vai nas Configurações)"
-    assert _passo_de_preparo(windows.chamadas[1][0]) and windows.chamadas[1][1] == ""
-    _abrir(tdui)                                    # 3a abertura: volta de novo; agora "Sim"
-    assert len(windows.chamadas) == 3
-    _abrir(tdui)                                    # depois do "Sim": nunca mais
-    _abrir(tdui)
-    assert len(windows.chamadas) == 3, "D-741: depois do \"Sim\", a pergunta nunca mais aparece"
+    assert _passo_de_preparo(windows_de_mentira.pedidos[1][0])
+    _abrir_ja(tdui)                                 # 3a abertura: volta de novo; agora "Sim"
+    assert len(windows_de_mentira.pedidos) == 3
+    _abrir_ja(tdui)                                 # depois do "Sim": nunca mais
+    _abrir_ja(tdui)
+    assert len(windows_de_mentira.pedidos) == 3, "D-741: depois do \"Sim\", a pergunta nunca mais aparece"
     assert not atualizacao.falta_a_pergunta_do_windows()
 
 
-def test_d741_sim_na_primeira_abertura_nao_volta_mais(fake, monkeypatch):
-    """D-741 (17/11/2026): "Sim" ja na primeira abertura -> a pergunta nunca mais aparece."""
+def test_d741_sim_na_primeira_abertura_nao_volta_mais(windows_de_mentira, monkeypatch):
+    """D-741 (17/11/2026): "Sim" ja na primeira abertura -> a pergunta nunca mais aparece (o Windows mostra tudo no
+    lugar). A senha digitada nao liga os testes nesta entrega (D-825)."""
     pytest.importorskip("PySide6")
     import ui.testes_a_distancia_ui as tdui
 
     monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: "segredo")
     monkeypatch.setattr(tdui.perguntas, "avisar", lambda *a, **k: None)
-    _abrir(tdui)
-    assert len(fake.chamadas) == 1
-    _abrir(tdui)
-    assert len(fake.chamadas) == 1
+    _abrir_ja(tdui)
+    assert len(windows_de_mentira.pedidos) == 1
+    _abrir_ja(tdui)
+    assert len(windows_de_mentira.pedidos) == 1
     assert not atualizacao.falta_a_pergunta_do_windows()
 
 
-def test_d741_na_conta_de_testes_nada_pergunta_mesmo_depois_de_um_nao(monkeypatch):
-    """D-741 e D-736 (17/11/2026): na conta de testes, nada pergunta, nem a pergunta que ficou do "Nao"."""
+def test_d741_na_conta_de_testes_nada_pergunta_mesmo_depois_de_um_nao(windows_de_mentira, monkeypatch):
+    """D-741 e D-736 (17/11/2026): na conta de testes, nada pergunta, nem a pergunta que ficou do "Nao"; pelo codigo,
+    nada tambem."""
     pytest.importorskip("PySide6")
     import ui.testes_a_distancia_ui as tdui
 
-    windows = ExecutorQueResponde([False])
-    monkeypatch.setattr(td, "_executor", windows)
+    windows_de_mentira.respostas = ["nao"]
     monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: "")
     monkeypatch.setattr(tdui.perguntas, "avisar", lambda *a, **k: None)
-    _abrir(tdui)
+    _abrir_ja(tdui)
     assert atualizacao.falta_a_pergunta_do_windows()
-    monkeypatch.setattr(atualizacao, "preparar_na_primeira_abertura", _proibido)
-    _abrir(tdui, conta_de_testes=True)
-    tdui.primeira_vez_se_preciso(None, instalado=lambda: False, conta_de_testes=lambda: False)  # pelo código
-    assert len(windows.chamadas) == 1
+    monkeypatch.setattr(atualizacao, "preparar_ao_abrir", _proibido)
+    _abrir_ja(tdui, conta_de_testes=True)
+    tdui.primeira_vez_se_preciso(None, instalado=lambda: False, conta_de_testes=lambda: False,
+                                 por_tras=lambda trabalho: trabalho())  # pelo código
+    assert len(windows_de_mentira.pedidos) == 1
 
 
-def test_d741_a_marca_e_de_fabrica_falsa_e_gravada_so_pelo_sim(monkeypatch):
-    """D-741 (17/11/2026): a regra unica (falta_a_pergunta_do_windows) nasce "falta"; "Nao" nao a muda."""
-    assert configuracoes.PADROES[atualizacao.CHAVE_PERGUNTA_DO_WINDOWS_RESPONDIDA] is False
-    monkeypatch.setattr(td, "_executor", FakeExecutor(cancelado=True))
-    atualizacao.preparar_na_primeira_abertura("")
+def test_d741_a_marca_e_de_fabrica_falsa_e_gravada_so_pelo_sim(windows_de_mentira):
+    """D-741 (17/11/2026), pela D-774 e pela D-825: a regra unica (falta_a_pergunta_do_windows) nasce "falta" e e LIDA
+    NO WINDOWS: "Nao" nao a muda; "Sim" com o Windows preparado a desliga; nada e gravado nas Configuracoes.
+    Antes (4a775ba8) era a marca "atualizacao_computador_preparado" nas Configuracoes."""
+    assert "atualizacao_computador_preparado" not in configuracoes.PADROES, "a marca saiu das Configurações"
+    assert atualizacao.falta_a_pergunta_do_windows()
+    windows_de_mentira.respostas = ["nao"]
+    atualizacao.preparar_na_primeira_abertura()
     assert atualizacao.falta_a_pergunta_do_windows()
     assert "volta na próxima abertura" in atualizacao.caminho_do_registro().read_text(encoding="utf-8")
-    monkeypatch.setattr(td, "_executor", FakeExecutor())
-    atualizacao.preparar_na_primeira_abertura("")
+    atualizacao.preparar_na_primeira_abertura()
     assert not atualizacao.falta_a_pergunta_do_windows()
+    assert configuracoes.carregar().get("atualizacao_computador_preparado") is None, "nada gravado como marca"
 
 
 # ---------------------------------------------------------------------------
