@@ -95,6 +95,13 @@ conta de testes" e sempre e_a_conta_de_testes; a pergunta do Windows e sempre
 pedir_licenca_ao_windows (a peca unica, core.windows); "o computador esta
 preparado" e sempre o_que_falta_no_computador (lido no Windows). A unica
 entrada pela linha de comando e atender_linha_de_comando (main.py chama uma vez).
+Volta 4 (22/11/2026, D-828): "o programa ainda roda?" antes de trocar e sempre
+ha_programa_aberto (a marca da janela e a lista de processos do Windows); o
+pedido de troca ao Velopack e sempre GerenteComAMarcaDaTroca (criar_gerente),
+que so troca com a MARCA_DA_TROCA segura (segurar_a_marca_da_troca: o script
+da troca ou o vigia); "ha uma troca acontecendo?" e sempre troca_em_andamento;
+"o programa abre sozinho no fim" e sempre o script da troca (ou o so de
+reabrir, abrir_quando_a_troca_acabar).
 
 Nada aqui importa Qt nem ui/. O velopack so e importado quando o programa foi
 instalado por ele (instalado_pelo_velopack) ou num dos modos escondidos: pelo
@@ -178,6 +185,25 @@ MARCA_DE_ABERTO = "Global\\EditorImpressao-programa-aberto"
 # janelinha sumir, e so aparece quando esta marca sumiu: os dois nunca ficam
 # juntos na tela.
 MARCA_DA_JANELINHA = "Local\\EditorImpressao-janelinha"
+# Volta 4 (22/11/2026, D-828: "abrir o programa pelo atalho no meio da troca nao estraga a troca"): a MARCA DA TROCA.
+# Existe enquanto uma troca de versao esta acontecendo, segurada por quem acompanha a troca do comeco ao fim: o
+# script da troca na conta do Kaique ("Reiniciar agora", "Depois"; script_de_trocar_e_reabrir) ou, na troca que o
+# ajudante faz sem o script (o Kaique fechou o programa durante o download; o atualizar de longe), o vigia que o
+# ajudante lanca (script_do_vigia_da_troca). "Global" porque o vigia roda como o sistema, noutra sessao. Some sozinha
+# quando quem a segura termina, ate se ele cair (o Windows apaga o mutex com o ultimo processo que o segura). Quem le:
+# a abertura comum do programa (troca_em_andamento) e o ajudante antes de lancar o vigia (segurar_a_marca_da_troca).
+# Arriscado: mudar o nome (os scripts ja lancados de uma versao seguram o nome antigo) ou tirar o "Global\\".
+MARCA_DA_TROCA = "Global\\EditorImpressao-trocando"
+# "Alguem vai reabrir o programa no fim da troca", na sessao do Kaique: o script da troca a segura do comeco ao fim
+# (ele reabre); um clique no atalho no meio de uma troca SEM script lanca o script so de reabrir, que a pega uma vez
+# so (o segundo clique ve a marca e nao lanca outro; dois ao mesmo tempo: so o que a criou reabre).
+MARCA_DE_REABRIR = "Local\\EditorImpressao-vai-reabrir"
+# As fases do estado.json em que a marca da troca pode existir: os dois que a seguram so comecam depois de o estado
+# estar numa delas ("pendente": o script da troca so e lancado com a versao esperando; "aplicando": o ajudante grava
+# antes de lancar o vigia e de pedir a troca; "falhou": a volta para a anterior, D-718, ainda acompanhada). So serve
+# para nao carregar a peca do Windows (core.windows, ~30 ms) em toda abertura comum; quem decide e a marca, lida no
+# Windows. Arriscado: tirar uma fase daqui (o clique no meio dessa fase deixaria de ser segurado).
+FASES_EM_QUE_HA_TROCA = ("pendente", "aplicando", "falhou")
 
 # Os textos da tela (portugues, sem jargao, sem emoji; CLAUDE.md §3).
 TITULO_DA_VERSAO_NOVA = "Versão nova do programa"
@@ -507,12 +533,44 @@ def instalado_pelo_velopack() -> bool:
     return bool(getattr(sys, "frozen", False)) and update_exe().is_file()
 
 
+class TrocaSemAMarca(RuntimeError):
+    """A troca nao pode comecar: ninguem segura a MARCA_DA_TROCA (volta 4). procurar_e_preparar a trata."""
+
+
+class GerenteComAMarcaDaTroca:
+    """O UpdateManager do Velopack com a nossa protecao em volta da troca (volta 4, 22/11/2026; D-779: "o que fazemos
+    para ele nao dar defeito"; D-828).
+
+    Tudo passa direto para o Velopack, menos o pedido de troca (`wait_exit_then_apply_updates`, que so
+    procurar_e_preparar faz): antes, a MARCA_DA_TROCA tem de estar segura (segurar_a_marca_da_troca: o script da
+    troca ja a segura, ou o vigia e lancado agora). Sem ela, levanta TrocaSemAMarca e o Velopack nem e chamado. E o
+    unico jeito de o programa pedir uma troca ao Velopack (criar_gerente sempre devolve este), entao toda troca, com
+    ou sem o script, tem a marca: uma regra so (CLAUDE.md §11.12). `segurar` so muda nos testes.
+    Arriscado: chamar o Velopack direto para trocar (a troca ficaria sem a marca e um clique no atalho a estragaria).
+    """
+
+    def __init__(self, gerente, segurar: Callable[[], bool] | None = None) -> None:
+        """Guarda o UpdateManager de verdade."""
+        self._gerente = gerente
+        self._segurar = segurar
+
+    def __getattr__(self, nome: str):
+        """O resto e o do Velopack, sem mudar nada."""
+        return getattr(self._gerente, nome)
+
+    def wait_exit_then_apply_updates(self, alvo, *args, **kwargs):
+        """Pede a troca ao Velopack so com a marca da troca segura; senao, TrocaSemAMarca."""
+        if not (self._segurar or segurar_a_marca_da_troca)():
+            raise TrocaSemAMarca("não deu para segurar a marca da troca")
+        return self._gerente.wait_exit_then_apply_updates(alvo, *args, **kwargs)
+
+
 def criar_gerente(fonte: Fonte, permitir_voltar: bool = False):
-    """O UpdateManager do Velopack para esta fonte."""
+    """O UpdateManager do Velopack para esta fonte, com a protecao da troca (GerenteComAMarcaDaTroca)."""
     import velopack
 
     opcoes = velopack.UpdateOptions(AllowVersionDowngrade=permitir_voltar, MaximumDeltasBeforeFallback=10)
-    return velopack.UpdateManager(fonte.para_o_velopack(), opcoes)
+    return GerenteComAMarcaDaTroca(velopack.UpdateManager(fonte.para_o_velopack(), opcoes))
 
 
 def versao_que_roda() -> str:
@@ -568,6 +626,9 @@ def procurar_e_preparar(gerente, fonte: Fonte, programa_aberto: Callable[[], boo
     6. Programa fechado: anota "aplicando" e pede ao Velopack para trocar
        assim que este processo sair, reabrindo escondido em
        --conferir-a-versao-nova (o teste rapido). Quem chamou tem de sair logo.
+       Volta 4: "fechado" e conferido no Windows (ha_programa_aberto) e o pedido
+       so sai com a marca da troca segura (GerenteComAMarcaDaTroca); sem ela
+       (TrocaSemAMarca) volta a "pendente" e entra na proxima abertura.
 
     gerente: o UpdateManager do Velopack (nos testes, um falso com os mesmos
     metodos). Erros de rede sobem para quem chamou (rodar_ao_ligar), que os
@@ -607,8 +668,15 @@ def procurar_e_preparar(gerente, fonte: Fonte, programa_aberto: Callable[[], boo
         return "pendente"
     gravar_estado({"fase": "aplicando", **base})
     registrar(f"versão {alvo.Version} baixada; trocando (o programa está fechado)")
-    gerente.wait_exit_then_apply_updates(alvo, silent=True, restart=True,
-                                         restart_args=[ARG_CONFERIR_NOVA, *(argumentos_da_volta or [])])
+    try:
+        gerente.wait_exit_then_apply_updates(alvo, silent=True, restart=True,
+                                             restart_args=[ARG_CONFERIR_NOVA, *(argumentos_da_volta or [])])
+    except TrocaSemAMarca as erro:
+        # Volta 4: sem a marca da troca segura, a troca nao comeca (um clique no atalho no meio a estragaria). A
+        # versao continua esperando; a proxima abertura a troca pelo script, que segura a marca (D-734).
+        gravar_estado({"fase": "pendente", **base})
+        registrar(f"versão {alvo.Version}: não troco agora ({erro}); entra na próxima vez que o programa abrir")
+        return "pendente"
     return "aplicando"
 
 
@@ -976,7 +1044,64 @@ def _linhas_da_janelinha() -> tuple[list[str], list[str]]:
     return inicio, fim
 
 
-def script_de_trocar_e_reabrir(exe: Path, pid: int, arquivo_do_estado: Path, janelinha: bool = False) -> str:
+def _linha_de_ler_a_fase(estado: str) -> str:
+    """O pedaco de PowerShell que le a fase e o tipo do estado.json (`estado` ja entre aspas do PowerShell). Lugar
+    unico: o script da troca e o vigia da troca leem o estado assim. Deixa $lido = $true so se leu."""
+    return (f"try {{ $e = Get-Content -Raw -LiteralPath {estado} | ConvertFrom-Json; $fase = $e.fase;"
+            " $tipo = $e.tipo; $lido = $true } catch { }")
+
+
+def _linha_da_espera_da_volta() -> str:
+    """O pedaco de PowerShell que espera a volta para a anterior (D-718) quando a versao nova nao passou no teste
+    rapido. Lugar unico: o script da troca e o vigia da troca."""
+    return f"if ($fase -eq 'falhou' -and $tipo -eq 'teste') {{ Start-Sleep -Seconds {ESPERA_DA_VOLTA_S} }}"
+
+
+def _linhas_da_marca_existe() -> list[str]:
+    """A funcao de PowerShell `MarcaExiste <nome>`: a marca (mutex) existe agora? "Sem licenca para abrir" quer dizer
+    que EXISTE (o vigia roda como o sistema e o Windows nao deixa a conta comum abrir a marca dele): a mesma regra de
+    core.windows.marca_existe. Outro erro tambem conta como "existe" (espera ate o limite; nunca reabre no meio)."""
+    return [
+        "function MarcaExiste([string]$nome) {",
+        "  $m = $null",
+        "  try { if ([System.Threading.Mutex]::TryOpenExisting($nome, [ref]$m)) { $m.Dispose(); return $true }"
+        " ; return $false } catch { return $true }",
+        "}",
+    ]
+
+
+def script_do_vigia_da_troca(arquivo_do_estado: Path) -> str:
+    """O vigia da troca que o AJUDANTE faz sem o script da troca (volta 4, 22/11/2026; D-828 e o pedido da gerente:
+    "a troca feita pelo ajudante sem o script tambem tem de usar a mesma marca").
+
+    Quando: o ajudante (como o sistema) achou a versao nova com o programa fechado e nenhum script da troca rodando
+    (o Kaique fechou o programa durante o download; o atualizar de longe, D-736). Ele lanca este PowerShell solto pela
+    peca (na pasta do sistema; nunca de `current`) ANTES de pedir a troca ao Velopack. O vigia segura a MARCA_DA_TROCA
+    enquanto o estado for "aplicando" (o Velopack trocando e o teste rapido da versao nova), ate LIMITE_DA_TROCA_S; se a
+    versao nova nao passou no teste rapido, mais ESPERA_DA_VOLTA_S (a volta, D-718). So para quando LEU o estado com
+    outra fase (um estado que nao deu para ler nao solta a marca antes da hora). Nao reabre nada: o sistema nao abre
+    janela na tela do Kaique; quem reabre depois de um clique no atalho e o script so de reabrir
+    (abrir_quando_a_troca_acabar). Nenhuma pergunta do Windows. Arriscado: soltar a marca antes de a troca acabar.
+    """
+    estado = _aspas_do_powershell(str(arquivo_do_estado))
+    return "\n".join([
+        "$ErrorActionPreference = 'SilentlyContinue'",
+        f"$marcaDaTroca = [System.Threading.Mutex]::new($false, {_aspas_do_powershell(MARCA_DA_TROCA)})",
+        f"$fim = (Get-Date).AddSeconds({LIMITE_DA_TROCA_S})",
+        "$fase = 'aplicando'; $tipo = ''",
+        "while ((Get-Date) -lt $fim) {",
+        "  $lido = $false",
+        "  " + _linha_de_ler_a_fase(estado),
+        "  if ($lido -and $fase -ne 'aplicando') { break }",
+        "  Start-Sleep -Seconds 2",
+        "}",
+        _linha_da_espera_da_volta(),
+        "$marcaDaTroca.Dispose()",
+    ])
+
+
+def script_de_trocar_e_reabrir(exe: Path, pid: int, arquivo_do_estado: Path, janelinha: bool = False,
+                               so_reabrir: bool = False) -> str:
     """O PowerShell que troca a versao e reabre o programa NA CONTA DO KAIQUE.
 
     Por que um PowerShell a parte, e nao este programa: a troca mexe nos
@@ -999,12 +1124,43 @@ def script_de_trocar_e_reabrir(exe: Path, pid: int, arquivo_do_estado: Path, jan
     fica como era): antes do passo 1 abre a janelinha (script_da_janelinha)
     e, depois do passo 4, espera ela sumir. Os passos 1 a 4 ficam iguais,
     letra por letra.
+
+    Volta 4 (22/11/2026, D-828): (a) a primeira linha pega a MARCA_DA_TROCA e a MARCA_DE_REABRIR e as segura ate o fim
+    (este script acompanha a troca e reabre o programa): o clique no atalho nesse tempo sai em silencio
+    (troca_em_andamento) e nao estraga a troca; as duas nascem antes de a peca ver o sinal de vida, entao ja existem
+    quando o programa que pediu a troca sai. (b) Reabre o programa na pasta dele (Set-Location), porque a peca lanca
+    este PowerShell na pasta do sistema. (c) `so_reabrir` (o clique no atalho no meio de uma troca SEM script, a do
+    vigia): nao espera processo nem chama o ajudante; pega so a MARCA_DE_REABRIR (se outro ja a pegou, nao faz nada),
+    espera a MARCA_DA_TROCA sumir (ate LIMITE_DA_TROCA_S + ESPERA_DA_VOLTA_S) e reabre o programa, pelas mesmas linhas.
     """
     pasta, nome = NOME_DA_TAREFA.rsplit("\\", 1)
     rodar = " ".join(_aspas_do_powershell(p) for p in comando_de_rodar_a_tarefa()[1:])
     estado = _aspas_do_powershell(str(arquivo_do_estado))
+    reabrir = _aspas_do_powershell(MARCA_DE_REABRIR)
+    # Reabrir o programa: as mesmas linhas nos dois jeitos. Este PowerShell nasce na pasta do sistema (a peca lanca
+    # todo solto la, para nao prender `current`, volta 4); o Start-Process abre o programa na "localizacao" do
+    # PowerShell, entao ela vira a pasta do programa, como o Velopack o abre (o Set-Location nao prende a pasta:
+    # volta4-exp4). So reabre com $reabrir (o script so de reabrir que nao pegou a marca nao reabre: outro reabre).
+    reabrir_o_programa = [
+        f"Set-Location -LiteralPath {_aspas_do_powershell(str(Path(exe).parent))}",
+        "if ($reabrir) { "
+        f"Start-Process -FilePath {_aspas_do_powershell(str(exe))}"
+        f" -ArgumentList {_aspas_do_powershell(ARG_DEPOIS_DA_TROCA)} }}",
+    ]
+    if so_reabrir:
+        return "\n".join([
+            "$ErrorActionPreference = 'SilentlyContinue'; $criada = $false; $reabrir = $false;"
+            f" $marcaDeReabrir = [System.Threading.Mutex]::new($false, {reabrir}, [ref]$criada); $reabrir = $criada",
+            *_linhas_da_marca_existe(),
+            f"$fim = (Get-Date).AddSeconds({LIMITE_DA_TROCA_S + ESPERA_DA_VOLTA_S})",
+            f"while ($reabrir -and (Get-Date) -lt $fim -and (MarcaExiste {_aspas_do_powershell(MARCA_DA_TROCA)}))"
+            " { Start-Sleep -Seconds 2 }",
+            *reabrir_o_programa,
+        ])
     linhas = [
-        "$ErrorActionPreference = 'SilentlyContinue'",
+        "$ErrorActionPreference = 'SilentlyContinue'; $reabrir = $true;"
+        f" $marcaDaTroca = [System.Threading.Mutex]::new($false, {_aspas_do_powershell(MARCA_DA_TROCA)});"
+        f" $marcaDeReabrir = [System.Threading.Mutex]::new($false, {reabrir})",
         f"Wait-Process -Id {int(pid)} -Timeout 120",
         f"& schtasks {rodar} | Out-Null",
         "$rodou = ($LASTEXITCODE -eq 0)",
@@ -1014,8 +1170,7 @@ def script_de_trocar_e_reabrir(exe: Path, pid: int, arquivo_do_estado: Path, jan
         "  Start-Sleep -Seconds 3",
         "  while ((Get-Date) -lt $fim) {",
         "    $fase = ''; $tipo = ''",
-        f"    try {{ $e = Get-Content -Raw -LiteralPath {estado} | ConvertFrom-Json; $fase = $e.fase;"
-        " $tipo = $e.tipo } catch { }",
+        "    " + _linha_de_ler_a_fase(estado),
         f"    $tarefa = (Get-ScheduledTask -TaskPath {_aspas_do_powershell(chr(92) + pasta + chr(92))}"
         f" -TaskName {_aspas_do_powershell(nome)}).State",
         # o ajudante terminou sem trocar (sem internet, assinatura recusada...):
@@ -1025,14 +1180,9 @@ def script_de_trocar_e_reabrir(exe: Path, pid: int, arquivo_do_estado: Path, jan
         "    Start-Sleep -Seconds 2",
         "  }",
         # so a versao que nao passou no teste rapido volta para a anterior (D-718)
-        f"  if ($fase -eq 'falhou' -and $tipo -eq 'teste') {{ Start-Sleep -Seconds {ESPERA_DA_VOLTA_S} }}",
+        "  " + _linha_da_espera_da_volta(),
         "}",
-        # volta 4 (22/11/2026): este PowerShell nasce na pasta do sistema (a peca lanca todo solto la, para nao
-        # prender `current`); o Start-Process abre o programa na "localizacao" do PowerShell, entao ela vira a pasta
-        # do programa, como o Velopack o abre. O Set-Location nao prende a pasta (provado: volta4-exp4).
-        f"Set-Location -LiteralPath {_aspas_do_powershell(str(Path(exe).parent))}",
-        f"Start-Process -FilePath {_aspas_do_powershell(str(exe))}"
-        f" -ArgumentList {_aspas_do_powershell(ARG_DEPOIS_DA_TROCA)}",
+        *reabrir_o_programa,
     ]
     if janelinha:
         inicio, fim = _linhas_da_janelinha()
@@ -1128,6 +1278,90 @@ def trocar_antes_de_abrir(argumentos: list[str], instalado: Callable[[], bool] |
     registrar(f"abrindo o programa: a versão {detalhe} estava esperando (\"Depois\"); trocando antes da janela")
     # D-742: so nesta abertura aparece a janelinha "Atualizando o programa...".
     return (trocar or (lambda: trocar_e_reabrir(janelinha=True)))()
+
+
+# ---------------------------------------------------------------------------
+# A marca da troca (volta 4, 22/11/2026; D-828): abrir no meio da troca nao a estraga
+# ---------------------------------------------------------------------------
+
+ESPERA_PELA_MARCA_S = 10
+
+
+def segurar_a_marca_da_troca(marca_existe: Callable[[str], bool | None] | None = None,
+                             lancar: Callable[[str], None] | None = None,
+                             dormir: Callable[[float], None] = time.sleep) -> bool:
+    """Antes de o ajudante pedir a troca ao Velopack: a MARCA_DA_TROCA fica segura ate a troca acabar? True = pode
+    trocar. Chamada so por GerenteComAMarcaDaTroca (o unico pedido de troca).
+
+    - O script da troca ("Reiniciar agora", "Depois") ja a segura desde a primeira linha: nada a fazer.
+    - Senao (a troca sem o script: o Kaique fechou o programa durante o download, o atualizar de longe), lanca o vigia
+      (script_do_vigia_da_troca) solto pela peca unica (core.windows, na pasta do sistema) e CONFERE no Windows que a
+      marca apareceu (ate ESPERA_PELA_MARCA_S). Sem a marca conferida: False (a troca nao comeca; a versao continua
+      esperando e entra na proxima abertura, pelo script). Nunca da como segura o que nao leu.
+    `marca_existe`, `lancar` e `dormir` so mudam nos testes. Le a marca pela peca (core.windows.marca_existe), que
+    entende "sem licenca para abrir" como "existe".
+    """
+    if marca_existe is None:
+        from core import windows
+
+        marca_existe = windows.marca_existe
+    if marca_existe(MARCA_DA_TROCA) is True:
+        registrar("trocar: a marca da troca já está segura pelo script da troca")
+        return True
+    try:
+        (lancar or _lancar_pela_peca)(script_do_vigia_da_troca(pasta_do_estado() / "estado.json"))
+    except Exception as erro:  # noqa: BLE001 - sem o vigia, a troca so nao comeca agora
+        registrar(f"trocar: não consegui lançar o vigia da troca ({type(erro).__name__}: {erro})")
+        return False
+    fim = time.monotonic() + ESPERA_PELA_MARCA_S
+    while True:
+        if marca_existe(MARCA_DA_TROCA) is True:
+            registrar("trocar: o vigia segura a marca da troca até a troca acabar")
+            return True
+        if time.monotonic() >= fim:
+            registrar("trocar: o vigia foi lançado, mas a marca da troca não apareceu no Windows")
+            return False
+        dormir(0.2)
+
+
+def troca_em_andamento(ler: Callable[[], dict] | None = None,
+                       marca_existe: Callable[[str], bool | None] | None = None) -> bool:
+    """Uma troca de versao esta acontecendo agora? (a MARCA_DA_TROCA existe no Windows). A UNICA regra; quem pergunta:
+    a abertura comum do programa (atender_linha_de_comando), que entao sai em silencio.
+
+    Pula a leitura do Windows quando o estado.json nao esta numa das FASES_EM_QUE_HA_TROCA (ninguem segura a marca
+    fora delas). "Nao deu para saber" (None) conta como NAO: o programa abre, como antes, e nunca fica sem abrir por
+    uma leitura que falhou. `ler` e `marca_existe` so mudam nos testes.
+    """
+    if (ler or ler_estado)().get("fase") not in FASES_EM_QUE_HA_TROCA:
+        return False
+    if marca_existe is None:
+        from core import windows
+
+        marca_existe = windows.marca_existe
+    return marca_existe(MARCA_DA_TROCA) is True
+
+
+def abrir_quando_a_troca_acabar(lancar: Callable[[str], None] | None = None,
+                                ha_quem_reabra: Callable[[], bool] | None = None) -> bool:
+    """O Kaique abriu o programa pelo atalho no meio da troca: o programa abre sozinho quando a troca acabar.
+
+    Se alguem ja vai reabrir (MARCA_DE_REABRIR: o script da troca, ou um clique anterior), nada a fazer. Senao (a troca
+    do vigia, sem script), lanca o script so de reabrir (script_de_trocar_e_reabrir(so_reabrir=True)) pela peca.
+    Devolve True se ha quem reabra. Nunca levanta. `lancar` e `ha_quem_reabra` so mudam nos testes.
+    """
+    if (ha_quem_reabra or (lambda: _marca_existe(MARCA_DE_REABRIR)))():
+        registrar("abrir o programa no meio da troca: não abro agora; o programa abre sozinho quando a troca acabar")
+        return True
+    try:
+        (lancar or _lancar_pela_peca)(script_de_trocar_e_reabrir(exe_do_programa(), os.getpid(),
+                                                                 pasta_do_estado() / "estado.json", so_reabrir=True))
+    except Exception as erro:  # noqa: BLE001 - nunca derruba; o Kaique pode abrir de novo depois
+        registrar(f"abrir o programa no meio da troca: não abro agora, e não consegui deixar a reabertura pronta "
+                  f"({type(erro).__name__}: {erro})")
+        return False
+    registrar("abrir o programa no meio da troca: não abro agora; o programa abre sozinho quando a troca acabar")
+    return True
 
 
 # ---------------------------------------------------------------------------
@@ -1967,9 +2201,20 @@ def atender_linha_de_comando(argv: list[str]) -> int | None:
     if primeiro == ARG_TESTE_RAPIDO:
         return teste_rapido()
     nossos = (ARG_PROCURAR, ARG_CONFERIR_NOVA, ARG_PREPARAR)
-    if primeiro not in nossos and not instalado_pelo_velopack() \
-            and not any(a.startswith("--veloapp") for a in argumentos):
+    ganchos = any(a.startswith("--veloapp") for a in argumentos)
+    if primeiro not in nossos and not instalado_pelo_velopack() and not ganchos:
         return None
+    # Volta 4 (D-828): a abertura comum do programa instalado, no meio de uma troca de versao, sai em silencio, antes
+    # do brasao e da janela (um processo de `current` aberto agora estragaria a troca), e o programa abre sozinho no
+    # fim (abrir_quando_a_troca_acabar). Nunca nos modos escondidos, nos ganchos do Velopack nem no programa que o
+    # proprio script da troca reabre (ARG_DEPOIS_DA_TROCA).
+    if primeiro not in nossos and not ganchos and ARG_DEPOIS_DA_TROCA not in argumentos:
+        try:
+            if troca_em_andamento():
+                abrir_quando_a_troca_acabar()
+                return 0
+        except Exception as erro:  # noqa: BLE001 - o programa abre mesmo assim, como antes
+            registrar(f"abrir o programa: não consegui olhar se há uma troca acontecendo: {type(erro).__name__}: {erro}")
     try:
         _rodar_o_velopack()
     except Exception as erro:  # noqa: BLE001 - o programa abre mesmo assim

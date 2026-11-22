@@ -1,0 +1,8 @@
+E       AssertionError: abriu no meio da troca
+E       assert None == 0
+E       AttributeError: module 'atualizacao' has no attribute 'script_do_vigia_da_troca'
+E                                                                                TypeError: script_de_trocar_e_reabrir() got an unexpected keyword argument 'so_reabrir'
+FAILED tests/test_atualizador_volta4.py::test_conserto1_abrir_pelo_atalho_no_meio_da_troca_sai_em_silencio_e_abre_no_fim
+FAILED tests/test_atualizador_volta4.py::test_conserto1_o_vigia_de_verdade_segura_a_marca_ate_a_troca_acabar
+FAILED tests/test_atualizador_volta4.py::test_conserto1_o_script_so_de_reabrir_de_verdade_espera_a_troca_acabar
+3 failed, 23 deselected in 0.45s

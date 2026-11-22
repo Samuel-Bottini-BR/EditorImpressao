@@ -93,7 +93,7 @@ def test_conserto1_o_programa_reaberto_pela_troca_nasce_na_pasta_dele():
     for janelinha in (False, True):
         script = atualizacao.script_de_trocar_e_reabrir(exe, 4321, Path("C:/x/estado.json"), janelinha=janelinha)
         linhas = script.split("\n")
-        reabrir = next(i for i, linha in enumerate(linhas) if linha.startswith("Start-Process"))
+        reabrir = next(i for i, linha in enumerate(linhas) if "Start-Process -FilePath" in linha)
         assert linhas[reabrir - 1] == f"Set-Location -LiteralPath '{exe.parent}'"
 
 
@@ -194,3 +194,241 @@ def test_conserto1_o_proprio_ajudante_nao_conta(instalado_de_mentira):
     """O ajudante roda de `current` (e ele que pede a troca e sai): ele mesmo nao entra na conta."""
     assert atualizacao.o_que_roda_do_programa(lambda pasta: [(os.getpid(), str(pasta / "EditorImpressao.exe"))]) == []
     assert atualizacao.o_que_roda_do_programa(lambda pasta: None) is None
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Conserto 1, parte c: a marca da troca (abrir pelo atalho no meio da troca nao a estraga)
+# ---------------------------------------------------------------------------------------------------------------------
+
+class _Marca:
+    """Uma marca (mutex com nome) de verdade, segurada por este processo do teste enquanto existe este objeto."""
+
+    def __init__(self, nome: str) -> None:
+        """Cria a marca no Windows."""
+        import ctypes
+
+        self._k = ctypes.WinDLL("kernel32", use_last_error=True)
+        self._k.CreateMutexW.restype = ctypes.c_void_p
+        self._k.CloseHandle.argtypes = [ctypes.c_void_p]
+        self.alca = self._k.CreateMutexW(None, False, nome)
+        assert self.alca, "o Windows nao criou a marca do teste"
+
+    def soltar(self) -> None:
+        """Solta a marca (ela some do Windows)."""
+        if self.alca:
+            self._k.CloseHandle(self.alca)
+            self.alca = None
+
+
+@pytest.fixture
+def marcas_do_teste(monkeypatch):
+    """Nomes de marca so deste teste (nunca as do programa de verdade, que podem existir neste computador)."""
+    sufixo = f"{os.getpid()}-{time.monotonic_ns()}"
+    monkeypatch.setattr(atualizacao, "MARCA_DA_TROCA", f"Global\\EditorImpressaoTeste-trocando-{sufixo}",
+                        raising=False)
+    monkeypatch.setattr(atualizacao, "MARCA_DE_REABRIR", f"Local\\EditorImpressaoTeste-reabrir-{sufixo}",
+                        raising=False)
+    return atualizacao
+
+
+def _esperar(condicao, limite: float = 15.0) -> bool:
+    """Espera `condicao()` ficar verdadeira (ate `limite` segundos)."""
+    fim = time.monotonic() + limite
+    while time.monotonic() < fim:
+        if condicao():
+            return True
+        time.sleep(0.2)
+    return condicao()
+
+
+def _abrir_o_programa(monkeypatch, *argumentos: str):
+    """A abertura comum do programa instalado (atender_linha_de_comando), com o Velopack e a troca do "Depois" de
+    mentira: devolve (o codigo, o que foi lancado pela peca)."""
+    lancados: list[str] = []
+    monkeypatch.setattr(atualizacao, "instalado_pelo_velopack", lambda: True)
+    monkeypatch.setattr(atualizacao, "_rodar_o_velopack", lambda: None)
+    monkeypatch.setattr(atualizacao, "trocar_antes_de_abrir", lambda argumentos: False)
+    monkeypatch.setattr(atualizacao, "_lancar_pela_peca", lancados.append)
+    return atualizacao.atender_linha_de_comando(["EditorImpressao.exe", *argumentos]), lancados
+
+
+@so_no_windows
+def test_conserto1_abrir_pelo_atalho_no_meio_da_troca_sai_em_silencio_e_abre_no_fim(marcas_do_teste, monkeypatch):
+    """Defeito da prova de 22/11 (o Samuel abriu o programa pelo atalho as 14:34:58, no meio da troca): o programa
+    abria de `current` e a troca nao conseguia renomear a pasta. Agora, com a marca da troca de pe (aqui, uma marca de
+    verdade no Windows), a abertura comum sai antes do brasao e da janela (codigo 0) e deixa a reabertura pronta (o
+    script so de reabrir). No codigo de antes: abria (None)."""
+    atualizacao.gravar_estado({"fase": "aplicando", "nova": "1.1.1", "anterior": "1.1.0"})
+    marca = _Marca(atualizacao.MARCA_DA_TROCA)
+    try:
+        codigo, lancados = _abrir_o_programa(monkeypatch)
+    finally:
+        marca.soltar()
+    assert codigo == 0, "abriu no meio da troca"
+    assert len(lancados) == 1 and "MarcaExiste" in lancados[0] and "Wait-Process" not in lancados[0]
+    assert "o programa abre sozinho quando a troca acabar" in _registro()
+
+
+@so_no_windows
+@pytest.mark.parametrize("fase", ["pendente", "aplicando", "falhou", "ok"])
+def test_conserto1_sem_a_marca_abre_normal_e_fora_das_fases_nem_le(marcas_do_teste, monkeypatch, fase):
+    """Sem a marca (nenhuma troca acontecendo), o programa abre como sempre, em qualquer fase."""
+    atualizacao.gravar_estado({"fase": fase, "nova": "1.1.1", "anterior": "1.1.0"})
+    codigo, lancados = _abrir_o_programa(monkeypatch)
+    assert codigo is None and lancados == []
+
+
+@so_no_windows
+@pytest.mark.parametrize("argumento", ["--depois-da-troca", "--veloapp-obsolete", "--procurar-atualizacao"])
+def test_conserto1_o_reaberto_pela_troca_os_ganchos_e_os_modos_escondidos_nao_saem(marcas_do_teste, monkeypatch,
+                                                                                   argumento):
+    """O programa que o proprio script reabre, os ganchos do Velopack (que rodam DENTRO da troca) e os modos
+    escondidos nunca saem pela marca."""
+    atualizacao.gravar_estado({"fase": "aplicando", "nova": "1.1.1", "anterior": "1.1.0"})
+    monkeypatch.setattr(atualizacao, "rodar_ao_ligar", lambda fonte: 7)
+    marca = _Marca(atualizacao.MARCA_DA_TROCA)
+    try:
+        codigo, lancados = _abrir_o_programa(monkeypatch, argumento)
+    finally:
+        marca.soltar()
+    assert lancados == [] and codigo != 0
+
+
+def test_conserto1_quem_ja_vai_reabrir_nao_ganha_outro(monkeypatch):
+    """Dois cliques no atalho no meio da troca: o segundo ve a marca de reabrir e nao lanca outro script."""
+    lancados: list[str] = []
+    assert atualizacao.abrir_quando_a_troca_acabar(lancar=lancados.append, ha_quem_reabra=lambda: True) is True
+    assert lancados == []
+    assert atualizacao.abrir_quando_a_troca_acabar(lancar=lancados.append, ha_quem_reabra=lambda: False) is True
+    assert len(lancados) == 1
+
+
+@pytest.mark.parametrize("lida", [False, None])
+def test_conserto1_a_marca_que_nao_existe_ou_nao_deu_para_ler_nao_segura_a_abertura(lida):
+    """A marca que nao existe, ou que o Windows nao deixou ler, nunca impede o programa de abrir (conta como NAO)."""
+    assert atualizacao.troca_em_andamento(ler=lambda: {"fase": "aplicando"}, marca_existe=lambda nome: lida) is False
+    assert atualizacao.troca_em_andamento(ler=lambda: {"fase": "aplicando"}, marca_existe=lambda nome: True) is True
+    assert atualizacao.troca_em_andamento(ler=lambda: {"fase": "ok"},
+                                          marca_existe=lambda nome: pytest.fail("leu fora das fases")) is False
+
+
+def test_conserto1_o_script_da_troca_segura_as_duas_marcas_desde_a_primeira_linha():
+    """O script da troca ("Reiniciar agora" e "Depois") pega a marca da troca e a de reabrir na PRIMEIRA linha (antes
+    da janelinha e de esperar o programa sair), e reabre so com $reabrir verdadeiro."""
+    for janelinha in (False, True):
+        script = atualizacao.script_de_trocar_e_reabrir(Path(r"C:\p\current\E.exe"), 1, Path("C:/x/e.json"),
+                                                        janelinha=janelinha)
+        primeira = script.split("\n")[0]
+        assert f"Mutex]::new($false, '{atualizacao.MARCA_DA_TROCA}')" in primeira
+        assert f"Mutex]::new($false, '{atualizacao.MARCA_DE_REABRIR}')" in primeira
+        assert "$reabrir = $true" in primeira
+        assert "if ($reabrir) { Start-Process" in script
+
+
+@so_no_windows
+def test_conserto1_o_vigia_de_verdade_segura_a_marca_ate_a_troca_acabar(marcas_do_teste, tmp_path):
+    """A troca que o ajudante faz sem o script (o Kaique fechou o programa durante o download): o vigia, lancado de
+    verdade pela peca, segura a marca da troca enquanto o estado diz "aplicando", e a solta quando a troca acaba. No
+    codigo de antes nao havia vigia: essa troca ficava sem nada que segurasse o clique no atalho."""
+    from core import windows as peca
+
+    atualizacao.gravar_estado({"fase": "aplicando", "nova": "1.1.1", "anterior": "1.1.0"})
+    atualizacao._lancar_pela_peca(atualizacao.script_do_vigia_da_troca(atualizacao.pasta_do_estado() / "estado.json"))
+    try:
+        assert _esperar(lambda: peca.marca_existe(atualizacao.MARCA_DA_TROCA) is True), "o vigia nao pegou a marca"
+        time.sleep(3)
+        assert peca.marca_existe(atualizacao.MARCA_DA_TROCA) is True, "soltou a marca no meio da troca"
+    finally:
+        atualizacao.gravar_estado({"fase": "ok", "nova": "1.1.1", "anterior": "1.1.0"})
+    assert _esperar(lambda: peca.marca_existe(atualizacao.MARCA_DA_TROCA) is False), "nao soltou a marca no fim"
+
+
+@so_no_windows
+def test_conserto1_o_script_so_de_reabrir_de_verdade_espera_a_troca_acabar(marcas_do_teste, tmp_path):
+    """O script so de reabrir (o clique no atalho no meio da troca do vigia), de verdade: pega a marca de reabrir,
+    espera enquanto a marca da troca existe e so depois reabre e termina (a marca de reabrir some). O programa que ele
+    "reabre" aqui e o pythonw sem nada para fazer (nenhuma janela)."""
+    exe = Path(sys.executable).with_name("pythonw.exe")
+    if not exe.is_file():
+        pytest.skip("sem o pythonw.exe")
+    marca = _Marca(atualizacao.MARCA_DA_TROCA)
+    try:
+        atualizacao._lancar_pela_peca(atualizacao.script_de_trocar_e_reabrir(exe, os.getpid(), tmp_path / "e.json",
+                                                                             so_reabrir=True))
+        assert _esperar(lambda: atualizacao._marca_existe(atualizacao.MARCA_DE_REABRIR)), "nao pegou a marca"
+        time.sleep(3)
+        assert atualizacao._marca_existe(atualizacao.MARCA_DE_REABRIR), "reabriu no meio da troca"
+    finally:
+        marca.soltar()
+    assert _esperar(lambda: not atualizacao._marca_existe(atualizacao.MARCA_DE_REABRIR)), "nao terminou no fim"
+
+
+class _VelopackDeMentira:
+    """O UpdateManager do Velopack, de mentira: so anota o pedido de troca e responde a versao."""
+
+    def __init__(self) -> None:
+        """Nada pedido ainda."""
+        self.trocas: list = []
+
+    def get_current_version(self) -> str:
+        """A versao instalada."""
+        return "1.1.0"
+
+    def wait_exit_then_apply_updates(self, alvo, *args, **kwargs) -> None:
+        """Anota o pedido de troca."""
+        self.trocas.append(alvo)
+
+
+def test_conserto1_sem_a_marca_segura_o_velopack_nem_e_chamado_e_a_versao_continua_esperando(tmp_path):
+    """A regra num lugar so: o unico pedido de troca (GerenteComAMarcaDaTroca) so chama o Velopack com a marca da
+    troca segura. Sem ela, a troca nao comeca e a versao fica "pendente" (entra na proxima abertura, pelo script)."""
+    from tests.test_decisoes_atualizacao import PUBLICA, GerenteFalso, _servidor
+
+    falso = GerenteFalso()
+    fonte = _servidor(tmp_path, falso.alvo)
+    gerente = atualizacao.GerenteComAMarcaDaTroca(falso, segurar=lambda: False)
+    assert atualizacao.procurar_e_preparar(gerente, fonte, lambda: False, chave_publica=PUBLICA,
+                                           motor_no_lugar=lambda: True) == "pendente"
+    assert falso.trocou == [] and atualizacao.ler_estado()["fase"] == "pendente"
+    assert "não troco agora (não deu para segurar a marca da troca)" in _registro()
+    gerente = atualizacao.GerenteComAMarcaDaTroca(falso, segurar=lambda: True)
+    assert gerente.get_current_version() == falso.get_current_version(), "o resto passa direto"
+    atualizacao.gravar_estado({})
+    assert atualizacao.procurar_e_preparar(gerente, fonte, lambda: False, chave_publica=PUBLICA,
+                                           motor_no_lugar=lambda: True) == "aplicando"
+    assert len(falso.trocou) == 1
+
+
+def test_conserto1_o_gerente_do_programa_e_sempre_o_que_segura_a_marca(monkeypatch):
+    """criar_gerente (o unico jeito de o programa ter o Velopack) devolve sempre o gerente com a protecao da troca."""
+    import types
+
+    falso = types.SimpleNamespace(UpdateOptions=lambda **k: k, GithubSource=lambda endereco: endereco,
+                                  UpdateManager=lambda fonte, opcoes: _VelopackDeMentira())
+    monkeypatch.setitem(sys.modules, "velopack", falso)
+    gerente = atualizacao.criar_gerente(atualizacao.Fonte.padrao())
+    assert isinstance(gerente, atualizacao.GerenteComAMarcaDaTroca)
+
+
+def test_conserto1_segurar_a_marca_usa_a_do_script_ou_lanca_o_vigia_e_confere(tmp_path):
+    """Com o script da troca rodando (a marca ja existe), nao lanca vigia. Sem ele, lanca o vigia e so diz "segura"
+    depois de ler a marca no Windows; vigia que nao lanca, ou marca que nao aparece: False."""
+    lancados: list[str] = []
+    assert atualizacao.segurar_a_marca_da_troca(marca_existe=lambda n: True, lancar=lancados.append) is True
+    assert lancados == []
+    vezes = iter([False, False, True])
+    assert atualizacao.segurar_a_marca_da_troca(marca_existe=lambda n: next(vezes), lancar=lancados.append,
+                                                dormir=lambda s: None) is True
+    assert len(lancados) == 1 and "Mutex" in lancados[0]
+
+    def nao_lanca(script):
+        raise OSError("o processo lançado não deu sinal de vida")
+
+    assert atualizacao.segurar_a_marca_da_troca(marca_existe=lambda n: False, lancar=nao_lanca) is False
+    atualizacao.ESPERA_PELA_MARCA_S, antes = 0.3, atualizacao.ESPERA_PELA_MARCA_S
+    try:
+        assert atualizacao.segurar_a_marca_da_troca(marca_existe=lambda n: None, lancar=lambda s: None,
+                                                    dormir=lambda s: time.sleep(0.05)) is False
+    finally:
+        atualizacao.ESPERA_PELA_MARCA_S = antes
+    assert "a marca da troca não apareceu no Windows" in _registro()
