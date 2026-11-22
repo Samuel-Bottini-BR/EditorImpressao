@@ -768,6 +768,24 @@ def test_volta3_item2_o_que_nao_deu_para_conferir_fica_dito_e_nada_e_dado_como_p
     assert windows_de_mentira.ajudante_rodou == rodou, "chamou um ajudante que o Windows não mostrou"
 
 
+@pytest.mark.parametrize("campo, errado", [("comando", r"C:\Outro\Programa.exe"), ("argumentos", "--outra-coisa"),
+                                           ("usuario", "S-1-5-21-1-2-3-1001")])
+def test_volta3_item3_com_a_licenca_ilegivel_o_resto_do_ajudante_ainda_e_conferido(windows_de_mentira, campo, errado):
+    """Volta 3, item 3 (D-826; baixo 2 do relatorio 2 de quem tentou quebrar, 22/11/2026: "um passo para tras da volta
+    1"): quando a licenca do ajudante nao vinha, o programa nao conferia mais nada da tarefa; uma tarefa com o mesmo
+    nome que rodasse C:\\Outro\\Programa.exe (ou outros argumentos, ou como outra conta) passava como "preparado". Agora
+    so a licenca fica de fora: o programa, os argumentos e a conta sao conferidos pela mesma peca (D-827: a conferencia
+    nova cobre tudo o que a da volta 1 cobria)."""
+    windows_de_mentira.pedir([])
+    nome = atualizacao.NOME_DA_TAREFA
+    certo = dict(comando=str(windows_de_mentira.exe), argumentos=atualizacao.ARG_PROCURAR, usuario=windows.SID_SISTEMA)
+    windows_de_mentira.tarefas[nome] = windows.Tarefa(nome, True, True, licenca="", **certo)
+    assert atualizacao.o_que_falta_no_computador() == [], "a tarefa certa, só sem a licença lida, não falta"
+    windows_de_mentira.tarefas[nome] = windows.Tarefa(nome, True, True, licenca="", **{**certo, campo: errado})
+    falta = atualizacao.o_que_falta_no_computador()
+    assert any(campo in f for f in falta), f"um ajudante com outro {campo} passou como preparado"
+
+
 def test_volta2_medio3_depois_do_nao_a_pergunta_continua_voltando(windows_de_mentira):
     """D-741 continua: depois de um "Nao" (as tarefas nao existem), a pergunta volta na abertura seguinte."""
     windows_de_mentira.respostas = ["nao", "sim"]

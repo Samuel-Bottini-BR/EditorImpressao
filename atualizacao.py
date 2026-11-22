@@ -1149,9 +1149,15 @@ def comando_de_longe_para_ler_o_registro(endereco: str) -> str:
 # O ajudante: a tarefa do Windows (D-714, D-733), criada na primeira abertura
 # ---------------------------------------------------------------------------
 
-def xml_da_tarefa(exe: Path) -> str:
+def xml_da_tarefa(exe: Path, quem_pode: str = QUEM_PODE_MANDAR_RODAR) -> str:
     """O XML do ajudante: como o proprio sistema (SYSTEM, S-1-5-18), em
     prioridade baixa (7), sem janela, roda <exe> --procurar-atualizacao.
+
+    `quem_pode`: a licenca "quem pode mandar rodar" que vai no desenho. Quem cria a tarefa usa sempre a de fabrica
+    (QUEM_PODE_MANDAR_RODAR). Vazia so na conferencia de um ajudante cuja licenca o Windows nao deixou ler
+    (o_que_falta_no_computador, volta 3, item 3): a peca (core.windows.problemas_da_tarefa_criada) so confere a licenca
+    quando o desenho pedido tem uma, e confere o resto (o comando, os argumentos, a conta) do mesmo jeito.
+    Arriscado: criar uma tarefa com `quem_pode` vazio (a conta do Kaique nao conseguiria manda-la rodar).
 
     Mudou em 17/11 (D-732, D-733): SEM hora para rodar (nada de "ao ligar o
     computador"); so quando alguem manda (comando_de_rodar_a_tarefa). E com o
@@ -1166,7 +1172,7 @@ def xml_da_tarefa(exe: Path) -> str:
 <Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
     <Description>Editor de Impressão: procura e instala a versão nova quando o programa pede.</Description>
-    <SecurityDescriptor>{QUEM_PODE_MANDAR_RODAR}</SecurityDescriptor>
+    <SecurityDescriptor>{escape(quem_pode)}</SecurityDescriptor>
   </RegistrationInfo>
   <Principals>
     <Principal id="Sistema">
@@ -1689,13 +1695,20 @@ def ler_o_computador(exe: Path | None = None,
     elif not ajudante.lida:
         sem_conferir.append("o ajudante da atualização existe, mas não deu para ler o que ele faz "
                             f"({ajudante.motivo})")
-    elif not ajudante.licenca:
-        sem_conferir.append("não deu para ler a licença do ajudante da atualização (quem pode mandá-lo rodar)")
     else:
         # A conferencia da peca unica (volta 2, item 4): a mesma de quando a tarefa e criada (o comando, os argumentos,
         # quem roda e quem pode mandar rodar). Um ajudante que a conta do Kaique nao pode chamar conta como falta.
+        # Com a licenca ilegivel (volta 3, item 3, D-826), a mesma peca com o desenho sem a licenca: o comando, os
+        # argumentos e a conta continuam conferidos (antes nada era), e so a licenca fica dita como nao conferida.
+        # O que a conferencia cobria antes de cada troca (D-827): volta 1, a conta propria (comando, argumentos, conta);
+        # volta 2, a peca (os tres e a licenca; com a licenca ilegivel, nada); agora, os tres sempre e a licenca quando
+        # da para ler.
+        pedido = xml_da_tarefa(exe)
+        if not ajudante.licenca:
+            sem_conferir.append("não deu para ler a licença do ajudante da atualização (quem pode mandá-lo rodar)")
+            pedido = xml_da_tarefa(exe, quem_pode="")
         falta += [f"o ajudante da atualização não é o deste programa: {p}"
-                  for p in windows.problemas_da_tarefa_criada(xml_da_tarefa(exe), ajudante)]
+                  for p in windows.problemas_da_tarefa_criada(pedido, ajudante)]
     desfazer = ler(testes_a_distancia.nome_da_tarefa_do_desfazer())
     if desfazer.existe is None:
         falta.append(f"não deu para ler a tarefa do desfazer no Windows ({desfazer.motivo})")

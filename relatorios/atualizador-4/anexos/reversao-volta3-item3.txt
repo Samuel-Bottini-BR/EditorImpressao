@@ -1,0 +1,10 @@
+Volta 3, item 3: o teste novo rodado no codigo de antes do conserto (atualizacao.py de ebd4197e, depois do item 2). Os 3 casos falham por comportamento (o ajudante errado passa como preparado).
+D:\programas\EditorImpressao\.claude\worktrees\atualizador-4\tests\test_atualizador_4.py:786: AssertionError: um ajudante com outro comando passou como preparado
+D:\programas\EditorImpressao\.claude\worktrees\atualizador-4\tests\test_atualizador_4.py:786: AssertionError: um ajudante com outro argumentos passou como preparado
+D:\programas\EditorImpressao\.claude\worktrees\atualizador-4\tests\test_atualizador_4.py:786: AssertionError: um ajudante com outro usuario passou como preparado
+FAILED tests/test_atualizador_4.py::test_volta3_item3_com_a_licenca_ilegivel_o_resto_do_ajudante_ainda_e_conferido[comando-C:\\Outro\\Programa.exe]
+FAILED tests/test_atualizador_4.py::test_volta3_item3_com_a_licenca_ilegivel_o_resto_do_ajudante_ainda_e_conferido[argumentos---outra-coisa]
+FAILED tests/test_atualizador_4.py::test_volta3_item3_com_a_licenca_ilegivel_o_resto_do_ajudante_ainda_e_conferido[usuario-S-1-5-21-1-2-3-1001]
+3 failed, 47 deselected in 0.38s
+
+No codigo novo: tests/test_atualizador_4.py 50 passed.
