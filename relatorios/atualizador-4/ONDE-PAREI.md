@@ -39,7 +39,7 @@ ser usada, e só se o teste antigo dela for autorizado.)
   os testes nesta entrega).
 - Conserto 1 `85590fe4`; conserto 2 `f32eab48`; conserto 3 `77a05d2e`; conserto 4 (commit em "Commit"). Cada um com
   commit e push, e com o teste de reversão rodado no código de antes dele (anexos/reversao-conserto*-codigo-antigo.txt).
-- Próximo: a rodada do GitHub do ramo; depois a gerente manda a um agente novo que tenta quebrar.
+- Rodada do GitHub 44975834257: success (2ª tentativa). Próximo: a gerente manda a um agente novo que tenta quebrar.
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -649,7 +649,7 @@ Não se aplica: nenhuma pergunta aberta (a pergunta 1 foi respondida, D-825).
 
 - Plano: `bcc57104`. Conserto 1: `85590fe4`. Conserto 2: `f32eab48`. Conserto 3: `77a05d2e`. Conserto 4: `75cfa928`.
 - Último commit do código e dos testes: `dd06e85f` (as docstrings dos testes e este formulário).
-- GitHub: rodada 44975834257 (ramo `atualizador-4-consertos-2026-11-21`, commit `dd06e85f`): RESULTADO_DA_RODADA.
+- GitHub: rodada 44975834257 (ramo `atualizador-4-consertos-2026-11-21`, commit `dd06e85f`): success na 2ª tentativa. A 1ª caiu na parte 1: `test_promessas.py` saiu com 3221225477 (o Qt quebrando, "cannot get C stack"), sem nenhum teste falhado antes; na repetição, as 5 partes, os botões e o porteiro passaram. No PC, `test_promessas.py` inteiro deu 269 passados e 1 falhado (`test_p082_filtros_em_tela_cheia`, a tela cheia dos filtros), que passou sozinho em seguida (2 de 2): instável com o PC carregado, sem ligação com estes consertos.
 
 ## O que o agente que tentou quebrar achou
 
