@@ -745,7 +745,10 @@ def rodar_ao_ligar(fonte: Fonte, gerente=None, preparar: Callable[[object], None
         gerente = gerente or criar_gerente(fonte)
         (preparar or preparar_o_computador)(gerente)
         if not e_portatil(gerente):
-            (motor or garantir_o_motor)()
+            try:
+                (motor or garantir_o_motor)()
+            except Exception as erro:  # noqa: BLE001 - o motor nunca impede a procura (volta 2, medio 1)
+                registrar(f"motor do Kraken: erro inesperado ({type(erro).__name__}: {erro})")
         atual = gerente.get_current_version()
         estado = ler_estado()
         o_que, detalhe = situacao(estado, atual)
@@ -1474,7 +1477,8 @@ def garantir_o_motor(raiz: Path | None = None, pacote: Path | None = None,
     4. Abre em <raiz>\\motor-kraken\\.chegando-<v> (o zipfile tira unidade, barras do comeco e ".." dos nomes; um
        arquivo com a soma interna errada da erro), confere com conferir_motor, e so entao da o nome final (um
        renomear no mesmo disco). Um motor estragado que estava no nome final e posto de lado e apagado antes.
-    Qualquer erro: apaga o .chegando, registra e devolve False; o nome final nunca fica pela metade. `livre` (os
+    Qualquer erro (do disco, do zip estragado de qualquer jeito, inesperado): apaga o .chegando, registra e devolve
+    False; nunca levanta; o nome final nunca fica pela metade (volta 2, medio 1 do relatorio 1). `livre` (os
     bytes livres do disco de um caminho) so muda nos testes.
     Nesta entrega nao baixa motor da internet (D-790 fica para depois): todas as versoes pedem o motor 1.
     Arriscado: abrir direto no nome final (um motor pela metade passaria pelo "esta no lugar"); apagar fora de
@@ -1517,7 +1521,8 @@ def garantir_o_motor(raiz: Path | None = None, pacote: Path | None = None,
             os.rename(destino, estragado)
             _apagar_pasta_do_motor(estragado)
         os.rename(chegando, destino)
-    except (OSError, zipfile.BadZipFile, ValueError) as erro:
+    except Exception as erro:  # noqa: BLE001 - QUALQUER erro (volta 2, medio 1: zlib.error, EOFError do arquivo
+        # estragado escapavam e deixavam o provisorio pela metade, sem registro): apaga, registra, devolve False
         sobrou = not _apagar_pasta_do_motor(chegando)
         registrar(f"motor do Kraken: não deu para pôr no lugar ({type(erro).__name__}: {erro})"
                   + ("; sobrou a pasta provisória" if sobrou else ""))

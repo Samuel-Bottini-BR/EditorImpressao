@@ -574,3 +574,63 @@ def test_conserto4_o_programa_instalado_procura_o_motor_so_no_lugar_dele(tmp_pat
     atualizacao.caminho_do_registro().unlink()
     atualizacao.teste_rapido()
     assert "motor do Kraken" not in _registro()
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Volta 2 (relatorio 1 de quem tentou quebrar)
+# ---------------------------------------------------------------------------------------------------------------------
+
+@pytest.mark.parametrize("estrago", ["fluxo invalido", "cortado"])
+def test_volta2_medio1_arquivo_do_motor_estragado_de_qualquer_jeito_e_apagado_e_registrado(tmp_path, estrago):
+    """Medio 1 do relatorio 1 (21/11/2026): com o pedaco comprimido de um arquivo invalido (zlib.error) ou o arquivo do
+    motor cortado no meio, o erro escapava de garantir_o_motor: sobrava o motor-kraken\.chegando-1 pela metade, o
+    registro nao dizia nada e o ajudante desistia antes de procurar a versao nova. A promessa ("qualquer erro: apaga o
+    provisorio, registra e devolve False") tem de valer para todo erro."""
+    import zipfile
+
+    import versao
+    from core import ocr_kraken
+
+    raiz, current = _instalacao_com_o_motor_no_instalador(tmp_path)
+    arquivo = current / atualizacao.PASTA_DO_QUE_SE_INSTALA / versao.arquivo_do_motor(ocr_kraken.VERSAO_DO_MOTOR)
+    with zipfile.ZipFile(arquivo) as z:
+        conteudo = {n: z.read(n) for n in z.namelist()}
+    with zipfile.ZipFile(arquivo, "w", zipfile.ZIP_DEFLATED) as z:
+        for nome, dados in conteudo.items():
+            z.writestr(nome, dados)
+    with zipfile.ZipFile(arquivo) as z:
+        info = max(z.infolist(), key=lambda i: i.compress_size)
+    dados = bytearray(arquivo.read_bytes())
+    comeco = info.header_offset + 30 + len(info.filename.encode("utf-8")) + len(info.extra)
+    if estrago == "fluxo invalido":
+        dados[comeco] = 0xFF                  # bloco do deflate de tipo invalido: zlib.error ao abrir
+    else:
+        dados[comeco + 1:comeco + info.compress_size] = b"\x00" * (info.compress_size - 1)
+    arquivo.write_bytes(bytes(dados))
+    assert atualizacao.garantir_o_motor(raiz, current) is False
+    assert not (raiz / "motor-kraken" / ".chegando-1").exists(), "sobrou o provisório pela metade"
+    assert not (raiz / "motor-kraken" / "1").exists()
+    assert "motor do Kraken: não deu para pôr no lugar" in _registro()
+
+
+def test_volta2_medio1_um_erro_no_motor_nao_impede_o_ajudante_de_procurar():
+    """Medio 1: um erro inesperado ao por o motor no lugar nao faz o ajudante desistir de procurar a versao nova."""
+    procurou = []
+
+    class Gerente:
+        def get_is_portable(self):
+            return False
+
+        def get_current_version(self):
+            return "1.1.0"
+
+        def check_for_updates(self):
+            procurou.append(1)
+            return None
+
+    def quebra():
+        raise RuntimeError("erro que ninguém esperava")
+
+    assert atualizacao.rodar_ao_ligar(atualizacao.Fonte("C:/nao-existe"), gerente=Gerente(),
+                                      preparar=lambda g: True, motor=quebra) == 0
+    assert procurou == [1]

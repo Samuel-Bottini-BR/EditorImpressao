@@ -1,0 +1,6 @@
+Volta 2, medio 1: os 3 testes novos rodados no codigo da volta 1 (2d5d912b, antes do conserto):
+FAILED test_volta2_medio1_arquivo_do_motor_estragado_de_qualquer_jeito_e_apagado_e_registrado[fluxo invalido]
+FAILED test_volta2_medio1_arquivo_do_motor_estragado_de_qualquer_jeito_e_apagado_e_registrado[cortado]
+FAILED test_volta2_medio1_um_erro_no_motor_nao_impede_o_ajudante_de_procurar
+3 failed (o erro escapava; sobrava o provisorio; o ajudante nao procurava)
+Depois do conserto: 37 passed.
