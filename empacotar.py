@@ -269,7 +269,9 @@ SAIDAS = (PORTATIL, ATUALIZACAO, INSTALADOR)
 
 # O arquivo que diz que motor a versao pede (dentro do pacote, na raiz da pasta do
 # programa: current\motor-exigido.json no instalado). Coberto pela assinatura do
-# programa, porque vai dentro do .nupkg assinado. Quem le e o ajudante (passo 3).
+# programa, porque vai dentro do .nupkg assinado. Hoje ninguem o le no notebook: os 4
+# consertos do atualizador (21/11/2026) poem o motor no lugar sem ele (fica para o
+# motor novo pela internet, D-790).
 NOME_DO_MOTOR_EXIGIDO = "motor-exigido.json"
 # A ficha da versao (que versao e de que commit a pasta saiu; plano v1, peca 8,
 # "um numero de versao so"): o publicar recusa uma pasta pronta de outra versao.

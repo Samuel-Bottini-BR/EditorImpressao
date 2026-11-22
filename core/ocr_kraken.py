@@ -243,8 +243,10 @@ def conferir_motor(pasta: Path | str, versao_do_motor: int = VERSAO_DO_MOTOR) ->
     Lê a ficha (motor.json, escrita pelo montar_motor_kraken.py quando o motor passou no teste) e confere: a forma
     (problemas_da_forma); a versão do motor da ficha é a pedida; a versão de protocolo da ficha é a deste programa;
     cada arquivo da ficha está na pasta com o tamanho escrito nela. Arquivo a mais na pasta não conta (a ficha diz o
-    que o motor precisa). Não soma o conteúdo dos 34 mil arquivos (passou de 5 minutos no HD, estudo do Kraken §3): a
-    conferência forte é na chegada do motor (a soma assinada do arquivo do motor e a do zip de cada arquivo).
+    que o motor precisa). Não soma o conteúdo dos 34 mil arquivos (passou de 5 minutos no HD, estudo do Kraken §3).
+    Na chegada ao notebook (atualizacao.garantir_o_motor) a conferência a mais é a soma interna de cada arquivo do zip,
+    que o Python confere ao abrir; a soma assinada do arquivo do motor é conferida só na montagem do instalador
+    (empacotar.preparar_saida), não no notebook (4 consertos do atualizador, 21/11/2026).
 
     Quem usa hoje (passo 2): o empacotador (o motor que vai para a pasta portátil e o que vai ser publicado) e o
     publicar. No passo 3: o motor, o teste rápido, o --conferir-ocr e o ajudante. Arriscado mudar: aceitar motor sem

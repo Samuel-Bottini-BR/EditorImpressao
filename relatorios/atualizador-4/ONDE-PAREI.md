@@ -187,9 +187,9 @@ tela); a atualização não o apaga; o programa o acha ali. A versão nova só e
   desinstalar e reinstalar (defeito 7 da revisão de 18/11: reinstalado, nunca mais pergunta e nunca mais atualiza) e o
   pedido diz "nunca de uma anotação".
 - **Onde roda (regra "a janela nunca congela", CLAUDE.md §3, no pacote):** a leitura do Windows, a pergunta e a
-  preparação rodam num fio por trás, iniciado por `primeira_vez_se_preciso`; a janela continua usável. O fim (o aviso
-  da senha, quando houver, e mandar o ajudante rodar uma vez, como hoje acontece logo depois da pergunta) volta ao fio
-  da tela por um sinal do Qt. O fio é "daemon": se o Kaique fechar o programa no meio, ele morre junto, e o trabalho
+  preparação rodam num fio por trás, iniciado por `primeira_vez_se_preciso`; a janela continua usável. (Como ficou no
+  código: o aviso "Sem a senha..." aparece antes, no fio da tela, e o ajudante é chamado do próprio fio de trás; nada
+  volta ao fio da tela, nem por sinal do Qt.) O fio é "daemon": se o Kaique fechar o programa no meio, ele morre junto, e o trabalho
   com licença (outro processo) termina sozinho; a próxima abertura lê o Windows. O mais simples (deixar no fio da tela,
   como hoje) congela a janela por minutos (Visual C++, Inno) e atrasaria cada abertura em 0,5 a 7 s (medido aqui: a
   leitura da tarefa levou 6,7 s a frio e 0,5 s depois), contra as regras do §3 e de não ficar mais lento.
@@ -649,7 +649,7 @@ Não se aplica: nenhuma pergunta aberta (a pergunta 1 foi respondida, D-825).
 
 - Plano: `bcc57104`. Conserto 1: `85590fe4`. Conserto 2: `f32eab48`. Conserto 3: `77a05d2e`. Conserto 4: `75cfa928`.
 - Último commit do código e dos testes: `dd06e85f` (as docstrings dos testes e este formulário).
-- GitHub: rodada 44975834257 (ramo `atualizador-4-consertos-2026-11-21`, commit `dd06e85f`): success na 2ª tentativa. A 1ª caiu na parte 1: `test_promessas.py` saiu com 3221225477 (o Qt quebrando, "cannot get C stack"), sem nenhum teste falhado antes; na repetição, as 5 partes, os botões e o porteiro passaram. No PC, `test_promessas.py` inteiro deu 269 passados e 1 falhado (`test_p082_filtros_em_tela_cheia`, a tela cheia dos filtros), que passou sozinho em seguida (2 de 2): instável com o PC carregado, sem ligação com estes consertos.
+- GitHub: rodada 44975834257 (ramo `atualizador-4-consertos-2026-11-21`; testou o commit `70ceaf61`, o mesmo código de `dd06e85f`): success na 2ª tentativa. A 1ª caiu na parte 1: `test_promessas.py` saiu com 3221225477 (o Qt quebrando, "cannot get C stack"), sem nenhum teste falhado antes; na repetição, as 5 partes, os botões e o porteiro passaram. No PC, `test_promessas.py` inteiro deu 269 passados e 1 falhado (`test_p082_filtros_em_tela_cheia`, a tela cheia dos filtros), que passou sozinho em seguida (2 de 2): instável com o PC carregado, sem ligação com estes consertos.
 
 ## O que o agente que tentou quebrar achou
 
