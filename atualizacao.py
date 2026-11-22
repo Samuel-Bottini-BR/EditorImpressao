@@ -283,12 +283,24 @@ def ler_estado() -> dict:
 
 
 def gravar_estado(estado: dict) -> None:
-    """Grava o estado.json inteiro de uma vez (arquivo provisorio + troca)."""
+    """Grava o estado.json inteiro de uma vez (arquivo provisorio + troca).
+
+    Volta 4 (22/11/2026): a troca do nome tenta de novo por ate ~3 s se o Windows disser que o arquivo esta em uso
+    ou sem acesso naquele instante (um leitor que o segura aberto: um antivirus, ou um script de versao de antes, que
+    le com o Get-Content; os nossos leem deixando trocar, _linha_de_ler_a_fase). Depois disso, o erro sobe como antes.
+    """
     pasta = pasta_do_estado()
     pasta.mkdir(parents=True, exist_ok=True)
     provisorio = pasta / "estado.json.gravando"
     provisorio.write_text(json.dumps(estado, ensure_ascii=False, indent=1), encoding="utf-8")
-    provisorio.replace(pasta / "estado.json")
+    for tentativa in range(30):
+        try:
+            provisorio.replace(pasta / "estado.json")
+            return
+        except PermissionError:
+            if tentativa == 29:
+                raise
+            time.sleep(0.1)
 
 
 def registrar_falha(tipo: str, versao_atual: str, versao_nova: str, motivo: str) -> None:
@@ -1046,9 +1058,15 @@ def _linhas_da_janelinha() -> tuple[list[str], list[str]]:
 
 def _linha_de_ler_a_fase(estado: str) -> str:
     """O pedaco de PowerShell que le a fase e o tipo do estado.json (`estado` ja entre aspas do PowerShell). Lugar
-    unico: o script da troca e o vigia da troca leem o estado assim. Deixa $lido = $true so se leu."""
-    return (f"try {{ $e = Get-Content -Raw -LiteralPath {estado} | ConvertFrom-Json; $fase = $e.fase;"
-            " $tipo = $e.tipo; $lido = $true } catch { }")
+    unico: o script da troca e o vigia da troca leem o estado assim. Deixa $lido = $true so se leu.
+    Enquanto le (milissegundos, a cada 2 s), o arquivo nao pode ser trocado pelo nome (o Windows diz "acesso negado"
+    a quem grava, mesmo deixando apagar: provado na volta 4); por isso gravar_estado tenta de novo por um instante.
+    `-ErrorAction Stop`: o arquivo que nao existe (ou nao abre) vai para o catch e $lido fica falso; sem isso, com o
+    'SilentlyContinue' dos scripts, o erro passava calado e "lido" valia para uma fase vazia (achado por um teste de
+    verdade do vigia). Arriscado: tirar o Stop (o vigia soltaria a marca no meio da troca)."""
+    return (f"try {{ $e = Get-Content -Raw -LiteralPath {estado} -ErrorAction Stop"
+            " | ConvertFrom-Json -ErrorAction Stop;"
+            " $fase = $e.fase; $tipo = $e.tipo; $lido = $true } catch { }")
 
 
 def _linha_da_espera_da_volta() -> str:

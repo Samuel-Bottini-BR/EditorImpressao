@@ -1,0 +1,142 @@
+"""Volta 4 do atualizador (D-811, D-827): desliga cada protecao nova, uma por vez, e confere que algum teste acusa.
+
+Roda na copia de trabalho (cada arquivo e restaurado logo depois, mesmo se der erro): python mutar4.py <raiz>
+Cada mutacao: (nome, arquivo, texto de hoje, texto desligado, arquivo de teste, filtro -k). A mutacao so vale se o
+texto de hoje aparece UMA vez. Saida: anexos/mutacoes-volta4.txt.
+"""
+import subprocess
+import sys
+from pathlib import Path
+
+RAIZ = Path(sys.argv[1])
+PY = sys.argv[2] if len(sys.argv) > 2 else sys.executable
+V4 = "tests/test_atualizador_volta4.py"
+MUTACOES = [
+    ("Q01 o lancado solto na pasta do sistema", "core/windows.py",
+     "close_fds=True, creationflags=bandeiras, env=ambiente,\n                                    cwd=pasta_de_trabalho)",
+     "close_fds=True, creationflags=bandeiras, env=ambiente)", V4, "nao_prende_a_pasta"),
+    ("Q02 o programa reaberto na pasta dele", "atualizacao.py",
+     '        f"Set-Location -LiteralPath {_aspas_do_powershell(str(Path(exe).parent))}",\n', "", V4,
+     "reaberto_pela_troca_nasce"),
+    ("Q03 a lista de processos antes de trocar", "atualizacao.py",
+     "    ler = roda or o_que_roda_do_programa\n", "    ler = lambda: []\n", V4, "ainda_rodando_de_current"),
+    ("Q04 a lista que nao deu para ler conta como aberto", "atualizacao.py",
+     "        if agora == []:\n", "        if not agora:\n", V4, "lista_que_nao_deu"),
+    ("Q05 a espera do que ainda fecha", "atualizacao.py",
+     "        if agora == []:\n            if esperou:", "        if agora == [] or True:\n            if esperou:", V4,
+     "termina_dentro_da_espera or lista_que_nao_deu or ainda_rodando"),
+    ("Q06 o proprio ajudante nao conta", "atualizacao.py",
+     "for pid, caminho in lista if pid != os.getpid()]", "for pid, caminho in lista]", V4, "proprio_ajudante"),
+    ("Q07 o processo sem caminho conta pelo nome", "core/windows.py",
+     "                elif nome.lower() in nomes:", "                elif False:", V4, "nao_deixa_ler_o_caminho"),
+    ("Q08 a lista cortada e nao sei", "core/windows.py",
+     "                if _ler_erro() != 18:", "                if False:", V4, "nao_deu_inteira"),
+    ("Q09 o script da troca segura a marca da troca", "atualizacao.py",
+     '        f" $marcaDaTroca = [System.Threading.Mutex]::new($false, {_aspas_do_powershell(MARCA_DA_TROCA)});"\n',
+     "", V4, "segura_as_duas_marcas"),
+    ("Q10 a abertura no meio da troca sai", "atualizacao.py",
+     "            if troca_em_andamento():\n", "            if False:\n", V4, "abrir_pelo_atalho_no_meio"),
+    ("Q11 o reaberto pela troca nao sai", "atualizacao.py",
+     "if primeiro not in nossos and not ganchos and ARG_DEPOIS_DA_TROCA not in argumentos:",
+     "if primeiro not in nossos and not ganchos:", V4, "reaberto_pela_troca_os_ganchos"),
+    ("Q12 os ganchos do Velopack nao saem", "atualizacao.py",
+     "if primeiro not in nossos and not ganchos and ARG_DEPOIS_DA_TROCA not in argumentos:",
+     "if primeiro not in nossos and ARG_DEPOIS_DA_TROCA not in argumentos:", V4, "reaberto_pela_troca_os_ganchos"),
+    ("Q13 a marca que nao deu para ler nao segura a abertura", "atualizacao.py",
+     "    return marca_existe(MARCA_DA_TROCA) is True\n", "    return marca_existe(MARCA_DA_TROCA) is not False\n", V4,
+     "nao_deu_para_ler_nao_segura"),
+    ("Q14 a fase 'falhou' le a marca", "atualizacao.py",
+     'FASES_EM_QUE_HA_TROCA = ("pendente", "aplicando", "falhou")',
+     'FASES_EM_QUE_HA_TROCA = ("pendente", "aplicando")', V4, "cada_fase_da_troca"),
+    ("Q15 quem ja vai reabrir nao ganha outro", "atualizacao.py",
+     "    if (ha_quem_reabra or (lambda: _marca_existe(MARCA_DE_REABRIR)))():\n", "    if False:\n", V4,
+     "quem_ja_vai_reabrir"),
+    ("Q16 o so de reabrir espera a troca", "atualizacao.py",
+     "and (MarcaExiste {_aspas_do_powershell(MARCA_DA_TROCA)}))", "and $false)", V4,
+     "so_de_reabrir_de_verdade or dois_cliques"),
+    ("Q17 dois cliques: so um reabre", "atualizacao.py",
+     "[ref]$criada); $reabrir = $criada", "[ref]$criada); $reabrir = $true", V4, "dois_cliques"),
+    ("Q18 o vigia so solta lendo outra fase", "atualizacao.py",
+     "\"  if ($lido -and $fase -ne 'aplicando') { break }\"", "\"  if ($fase -ne 'aplicando') { break }\"", V4,
+     "estado_que_nao_deu"),
+    ("Q19 a leitura do estado para no erro", "atualizacao.py",
+     "{estado} -ErrorAction Stop\"", "{estado}\"", V4, "estado_que_nao_deu"),
+    ("Q20 o vigia espera a volta", "atualizacao.py",
+     "        _linha_da_espera_da_volta(),\n        \"$marcaDaTroca.Dispose()\",",
+     "        \"$marcaDaTroca.Dispose()\",", V4, "durante_a_volta"),
+    ("Q21 o vigia segura a marca", "atualizacao.py",
+     '        f"$marcaDaTroca = [System.Threading.Mutex]::new($false, {_aspas_do_powershell(MARCA_DA_TROCA)})",\n',
+     "", V4, "vigia_de_verdade"),
+    ("Q22 o pedido de troca so com a marca", "atualizacao.py",
+     "        if not (self._segurar or segurar_a_marca_da_troca)():\n", "        if False:\n", V4,
+     "sem_a_marca_segura"),
+    ("Q23 o gerente do programa e o que segura a marca", "atualizacao.py",
+     "    return GerenteComAMarcaDaTroca(velopack.UpdateManager(fonte.para_o_velopack(), opcoes))",
+     "    return velopack.UpdateManager(fonte.para_o_velopack(), opcoes)", V4, "gerente_do_programa"),
+    ("Q24 segurar confere a marca no Windows", "atualizacao.py",
+     "        if marca_existe(MARCA_DA_TROCA) is True:\n            registrar(\"trocar: o vigia segura",
+     "        if True:\n            registrar(\"trocar: o vigia segura", V4, "segurar_a_marca"),
+    ("Q25 segurar usa a marca do script sem vigia", "atualizacao.py",
+     "    if marca_existe(MARCA_DA_TROCA) is True:\n        registrar(\"trocar: a marca da troca já está segura",
+     "    if False:\n        registrar(\"trocar: a marca da troca já está segura", V4, "segurar_a_marca"),
+    ("Q26 a pergunta espera a janela na frente", "atualizacao.py",
+     "        dona = esperar_a_janela_na_frente(janela)\n", "        dona = janela\n", V4,
+     "so_sai_depois or fechou_antes"),
+    ("Q27 nao traz a janela minimizada", "atualizacao.py",
+     "    if existe(janela) and not minimizada(janela):", "    if existe(janela):", V4, "minimizada"),
+    ("Q28 a janela que fechou nao recebe pergunta", "atualizacao.py",
+     "        if not existe(janela):\n", "        if False:\n", V4, "fechou_antes"),
+    ("Q29 a leitura da frente: minimizada nunca", "core/windows.py",
+     "    if not u.IsWindow(janela) or u.IsIconic(janela):", "    if not u.IsWindow(janela):", V4,
+     "aviso_do_programa_e_a_janela_minimizada"),
+    ("Q30 a leitura da frente: o aviso do programa", "core/windows.py",
+     "    if frente == janela or u.GetAncestor(frente, 3) == janela:", "    if frente == janela:", V4,
+     "aviso_do_programa_e_a_janela_minimizada"),
+    ("Q31 a preparacao confere a pasta", "core/testes_a_distancia.py",
+     "        if not conferida.ok:\n            return Resultado(False, mensagem=conferida.mensagem",
+     "        if False:\n            return Resultado(False, mensagem=conferida.mensagem", V4,
+     "so_da_certo_com_a_pasta_conferida"),
+    ("Q32 o executor confere que e a pasta segura", "core/testes_a_distancia.py",
+     "        if os.path.normcase(conferida.dados.get(\"caminho\", \"\")) != os.path.normcase(pasta_dos_testes()):",
+     "        if False:", V4, "executor_de_verdade_le_a_pasta"),
+    ("Q33 o executor ve a pasta que nao confere", "core/testes_a_distancia.py",
+     "        conferida = windows.conferir_pasta_segura()\n        if not conferida.deu_certo:",
+     "        conferida = windows.conferir_pasta_segura()\n        if False:", V4, "executor_de_verdade_le_a_pasta"),
+    ("Q34 sem a tranca a mao: a pasta segura", "core/testes_a_distancia.py",
+     "    if PASTA_DOS_TESTES:\n        return PASTA_DOS_TESTES\n",
+     "    if PASTA_DOS_TESTES:\n        return PASTA_DOS_TESTES\n    return r\"C:\\ProgramData\\EditorImpressao\\testes-a-distancia\"\n",
+     V4, "nenhum_comando_de_licenca"),
+    ("Q35 a gravacao do estado tenta de novo", "atualizacao.py",
+     "        except PermissionError:\n            if tentativa == 29:", "        except ZeroDivisionError:\n            if tentativa == 29:",
+     V4, "gravacao"),
+]
+
+
+def rodar(teste: str, filtro: str) -> tuple[bool, str]:
+    """Roda o arquivo de teste com o filtro; True se algum teste falhou (a mutacao foi acusada)."""
+    feito = subprocess.run([PY, "-m", "pytest", teste, "-q", "-p", "no:cacheprovider", "-k", filtro], cwd=RAIZ,
+                           capture_output=True, text=True, timeout=600)
+    ultima = (feito.stdout.strip().splitlines() or ["?"])[-1]
+    return feito.returncode != 0 and "failed" in ultima, ultima
+
+
+linhas = []
+acusadas = 0
+for nome, arquivo, hoje, desligado, teste, filtro in MUTACOES:
+    caminho = RAIZ / arquivo
+    original = caminho.read_bytes()
+    texto = original.decode("utf-8")
+    if texto.count(hoje) != 1:
+        linhas.append(f"{nome}: TEXTO NAO ACHADO UMA VEZ ({texto.count(hoje)})")
+        continue
+    try:
+        caminho.write_text(texto.replace(hoje, desligado), encoding="utf-8", newline="")
+        acusada, ultima = rodar(teste, filtro)
+    finally:
+        caminho.write_bytes(original)
+    acusadas += acusada
+    linhas.append(f"{nome}: {'ACUSADA' if acusada else 'NAO ACUSADA'} ({teste} -k \"{filtro}\": {ultima})")
+    print(linhas[-1], flush=True)
+linhas.append(f"{acusadas} de {len(MUTACOES)} acusadas")
+(RAIZ / "relatorios/atualizador-4/anexos/mutacoes-volta4.txt").write_text("\n".join(linhas) + "\n", encoding="utf-8")
+print(linhas[-1])

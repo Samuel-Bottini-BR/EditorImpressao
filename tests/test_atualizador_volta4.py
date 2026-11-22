@@ -682,3 +682,257 @@ def test_conserto3_as_licencas_de_fabrica_de_arquivos_de_programas_passam_na_reg
     """De verdade, so lendo: as licencas de Arquivos de Programas, que a pasta segura herda, passam na regra unica da
     pasta segura (so o sistema, os administradores e o instalador do Windows gravam; as contas comuns leem)."""
     assert windows.problemas_da_pasta_segura(windows.ler_licencas(windows.pasta_de_programas())) == []
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# D-827: as protecoes novas que os testes acima ainda nao acusavam sozinhas
+# ---------------------------------------------------------------------------------------------------------------------
+
+class _Kernel32DeMentira:
+    """A lista de processos do Windows, de mentira, para a logica de core.windows.programas_rodando_de: cada processo
+    e (numero, nome, caminho ou None se o Windows nao deixa abrir). `erro_no_fim`: o erro que o Windows da quando a
+    lista acaba (18 = acabou de verdade; outro = a lista foi cortada)."""
+
+    def __init__(self, processos, erro_no_fim: int = 18, sem_lista: bool = False) -> None:
+        """Guarda os processos e como a lista termina."""
+        self.processos = list(processos)
+        self.erro_no_fim = erro_no_fim
+        self.sem_lista = sem_lista
+        self.i = 0
+        self.ultimo_erro = 0
+
+    def CreateToolhelp32Snapshot(self, tipo, pid):  # noqa: N802 - o nome do Windows
+        """A lista (ou nada, se o Windows nao der)."""
+        return None if self.sem_lista else 1234
+
+    def _preencher(self, linha) -> bool:
+        """Poe o processo atual na linha do Windows; False quando acabou."""
+        if self.i >= len(self.processos):
+            self.ultimo_erro = self.erro_no_fim
+            return False
+        pid, nome, _ = self.processos[self.i]
+        linha._obj.th32ProcessID = pid
+        linha._obj.szExeFile = nome
+        return True
+
+    def Process32FirstW(self, lista, linha):  # noqa: N802
+        """O primeiro processo."""
+        self.i = 0
+        return self._preencher(linha)
+
+    def Process32NextW(self, lista, linha):  # noqa: N802
+        """O proximo processo."""
+        self.i += 1
+        return self._preencher(linha)
+
+    def OpenProcess(self, direitos, herdar, pid):  # noqa: N802
+        """Abre so os processos com caminho (os outros: "sem licenca")."""
+        caminho = next(c for p, _, c in self.processos if p == pid)
+        return pid if caminho else None
+
+    def QueryFullProcessImageNameW(self, alca, bandeiras, buffer, tamanho):  # noqa: N802
+        """O caminho do programa do processo."""
+        buffer.value = next(c for p, _, c in self.processos if p == alca)
+        return True
+
+    def CloseHandle(self, alca):  # noqa: N802
+        """Fecha (nada a fazer)."""
+        return True
+
+
+@pytest.fixture
+def lista_de_mentira(monkeypatch, tmp_path):
+    """Liga a lista de processos de mentira na peca; `pasta` tem o EditorImpressao.exe, como `current`."""
+    import types
+
+    pasta = tmp_path / "current"
+    pasta.mkdir()
+    (pasta / "EditorImpressao.exe").write_bytes(b"MZ")
+
+    def ligar(processos, **k):
+        k32 = _Kernel32DeMentira(processos, **k)
+        monkeypatch.setattr(windows, "_win", lambda: types.SimpleNamespace(kernel32=k32))
+        monkeypatch.setattr(windows, "_ler_erro", lambda: k32.ultimo_erro)
+        return pasta
+
+    return ligar
+
+
+def test_d827_o_processo_que_nao_deixa_ler_o_caminho_conta_se_o_nome_e_o_do_programa(lista_de_mentira):
+    """O processo que o Windows nao deixa abrir conta como "rodando de current" se o nome e o de um programa da pasta
+    (nunca se da como fechado o que nao deu para conferir); com outro nome, nao conta; o de fora da pasta, nao conta."""
+    pasta = lista_de_mentira([(10, "EditorImpressao.exe", None), (11, "notepad.exe", None),
+                              (12, "EditorImpressao.exe", r"C:\Outro\EditorImpressao.exe")])
+    achados = windows.programas_rodando_de(pasta)
+    assert [pid for pid, _ in achados] == [10]
+
+
+@pytest.mark.parametrize("como", ["sem lista", "cortada"])
+def test_d827_a_lista_que_o_windows_nao_deu_inteira_e_nao_sei(lista_de_mentira, como):
+    """Sem a lista, ou com a lista cortada no meio (o Windows parou com outro erro): None ("nao deu para saber"), que
+    o ajudante conta como "aberto"; nunca uma lista pela metade dada como inteira."""
+    pasta = lista_de_mentira([(10, "x.exe", r"C:\x.exe")], sem_lista=(como == "sem lista"),
+                             erro_no_fim=(18 if como == "sem lista" else 5))
+    assert windows.programas_rodando_de(pasta) is None
+
+
+@pytest.mark.parametrize("fase", atualizacao.FASES_EM_QUE_HA_TROCA)
+def test_d827_cada_fase_da_troca_le_a_marca(fase):
+    """Em cada fase em que ha troca (pendente, aplicando, falhou), a abertura le a marca no Windows."""
+    lidas = []
+    assert atualizacao.troca_em_andamento(ler=lambda: {"fase": fase},
+                                          marca_existe=lambda nome: lidas.append(nome) or True) is True
+    assert lidas == [atualizacao.MARCA_DA_TROCA]
+    assert set(atualizacao.FASES_EM_QUE_HA_TROCA) == {"pendente", "aplicando", "falhou"}
+
+
+class _User32DeMentira:
+    """A tela do Windows de mentira para core.windows.janela_do_programa_na_frente."""
+
+    def __init__(self, frente: int, minimizada: bool = False, dona: int | None = None) -> None:
+        """A janela da frente, se a do programa esta minimizada e de quem e a janela da frente."""
+        self.frente, self.minimizada, self.dona = frente, minimizada, dona
+
+    def IsWindow(self, janela):  # noqa: N802
+        """Toda janela existe aqui."""
+        return True
+
+    def IsIconic(self, janela):  # noqa: N802
+        """A janela do programa minimizada?"""
+        return self.minimizada
+
+    def GetForegroundWindow(self):  # noqa: N802
+        """A janela da frente."""
+        return self.frente
+
+    def GetAncestor(self, janela, tipo):  # noqa: N802
+        """A janela dona da da frente."""
+        return self.dona if self.dona is not None else janela
+
+
+@pytest.mark.parametrize("frente, minimizada, dona, esperado", [
+    (0x77, False, None, 0x77),     # a janela do programa na frente
+    (0x88, False, 0x77, 0x88),     # um aviso do programa na frente: conta, e e ele a dona da pergunta
+    (0x99, False, 0x11, None),     # outro programa na frente
+    (0x77, True, None, None),      # a do programa minimizada: nunca "na frente"
+])
+def test_d827_a_leitura_da_frente_reconhece_o_aviso_do_programa_e_a_janela_minimizada(monkeypatch, frente, minimizada,
+                                                                                      dona, esperado):
+    """A regra da peca: a da frente conta se for a janela do programa ou um aviso dela, e nunca com a do programa
+    minimizada."""
+    import types
+
+    monkeypatch.setattr(windows, "_win", lambda: types.SimpleNamespace(user32=_User32DeMentira(frente, minimizada,
+                                                                                                dona)))
+    assert windows.janela_do_programa_na_frente(0x77) == esperado
+
+
+def _vivo(pid: int) -> bool:
+    """O processo `pid` ainda roda? (lido no Windows)."""
+    import ctypes
+    from ctypes import wintypes
+
+    k = ctypes.WinDLL("kernel32", use_last_error=True)
+    k.OpenProcess.restype = ctypes.c_void_p
+    k.GetExitCodeProcess.argtypes = [ctypes.c_void_p, ctypes.POINTER(wintypes.DWORD)]
+    k.CloseHandle.argtypes = [ctypes.c_void_p]
+    alca = k.OpenProcess(0x1000, False, pid)
+    if not alca:
+        return False
+    try:
+        codigo = wintypes.DWORD()
+        return bool(k.GetExitCodeProcess(alca, ctypes.byref(codigo))) and codigo.value == 259   # STILL_ACTIVE
+    finally:
+        k.CloseHandle(alca)
+
+
+@so_no_windows
+def test_d827_dois_cliques_no_meio_da_troca_so_um_reabre(marcas_do_teste, tmp_path):
+    """Dois scripts so de reabrir ao mesmo tempo (dois cliques quase juntos): o primeiro pega a marca de reabrir e
+    espera; o segundo ve que ela ja existe e termina logo, sem reabrir (um programa so no fim)."""
+    exe = Path(sys.executable).with_name("pythonw.exe")
+    if not exe.is_file():
+        pytest.skip("sem o pythonw.exe")
+    marca = _Marca(atualizacao.MARCA_DA_TROCA)
+    try:
+        texto = atualizacao.script_de_trocar_e_reabrir(exe, os.getpid(), tmp_path / "e.json", so_reabrir=True)
+        primeiro = windows.lancar_powershell_solto(texto)
+        assert primeiro.deu_certo and _esperar(lambda: atualizacao._marca_existe(atualizacao.MARCA_DE_REABRIR))
+        segundo = windows.lancar_powershell_solto(texto)
+        assert segundo.deu_certo
+        assert _esperar(lambda: not _vivo(segundo.dados["pid"]), 10), "o segundo ficou esperando para reabrir"
+        assert _vivo(primeiro.dados["pid"]), "o primeiro nao esperou a troca"
+    finally:
+        marca.soltar()
+    assert _esperar(lambda: not _vivo(primeiro.dados["pid"]))
+
+
+@so_no_windows
+def test_d827_o_vigia_nao_solta_a_marca_por_um_estado_que_nao_deu_para_ler(marcas_do_teste):
+    """O estado que nao deu para ler (o arquivo trocado no instante da leitura, ou sumido) nunca solta a marca antes da
+    hora: o vigia so para quando LE outra fase."""
+    from core import windows as peca
+
+    estado = atualizacao.pasta_do_estado() / "estado.json"
+    atualizacao._lancar_pela_peca(atualizacao.script_do_vigia_da_troca(estado))      # o estado ainda nao existe
+    try:
+        assert _esperar(lambda: peca.marca_existe(atualizacao.MARCA_DA_TROCA) is True)
+        time.sleep(3)
+        assert peca.marca_existe(atualizacao.MARCA_DA_TROCA) is True, "soltou a marca sem ter lido o estado"
+    finally:
+        atualizacao.gravar_estado({"fase": "ok"})
+    assert _esperar(lambda: peca.marca_existe(atualizacao.MARCA_DA_TROCA) is False)
+
+
+@so_no_windows
+def test_d827_o_vigia_segura_a_marca_durante_a_volta_para_a_anterior(marcas_do_teste, monkeypatch):
+    """A versao nova nao passou no teste rapido: o vigia segura a marca mais um pouco (a volta para a anterior,
+    D-718, e outra troca), e depois solta."""
+    from core import windows as peca
+
+    monkeypatch.setattr(atualizacao, "ESPERA_DA_VOLTA_S", 5)
+    atualizacao.gravar_estado({"fase": "aplicando"})
+    atualizacao._lancar_pela_peca(atualizacao.script_do_vigia_da_troca(atualizacao.pasta_do_estado() / "estado.json"))
+    assert _esperar(lambda: peca.marca_existe(atualizacao.MARCA_DA_TROCA) is True)
+    atualizacao.gravar_estado({"fase": "falhou", "tipo": "teste"})
+    time.sleep(3.5)
+    assert peca.marca_existe(atualizacao.MARCA_DA_TROCA) is True, "soltou a marca antes da volta"
+    assert _esperar(lambda: peca.marca_existe(atualizacao.MARCA_DA_TROCA) is False, 15)
+
+
+@so_no_windows
+def test_d827_a_gravacao_do_estado_espera_quem_o_segura_aberto_um_instante():
+    """Achado da volta 4 (por um teste de verdade): um leitor que segura o estado.json aberto sem deixar trocar faz a
+    troca do nome dar "acesso negado". A gravacao tenta de novo por um instante e grava."""
+    import threading
+
+    atualizacao.gravar_estado({"fase": "pendente"})
+    arquivo = atualizacao.pasta_do_estado() / "estado.json"
+    aberto = open(arquivo, "rb")          # o open do Python nao deixa trocar o arquivo pelo nome
+    threading.Timer(0.6, aberto.close).start()
+    atualizacao.gravar_estado({"fase": "ok"})
+    assert atualizacao.ler_estado() == {"fase": "ok"}
+
+
+@so_no_windows
+def test_d827_a_leitura_do_estado_pelos_scripts_nunca_faz_a_gravacao_falhar():
+    """Os scripts (o da troca e o vigia) leem o estado a cada 2 s; enquanto leem, o Windows nao deixa trocar o arquivo
+    pelo nome. De verdade: um PowerShell lendo sem parar, pela mesma linha dos scripts, e 60 gravacoes do estado: todas
+    dao certo (a gravacao tenta de novo por um instante). Sem a nova tentativa, a maioria da "acesso negado"."""
+    atualizacao.gravar_estado({"fase": "aplicando"})
+    arquivo = atualizacao.pasta_do_estado() / "estado.json"
+    script = arquivo.parent / "ler.ps1"
+    script.write_text("$fim = (Get-Date).AddSeconds(30)\n"
+                      "while ((Get-Date) -lt $fim) { "
+                      + atualizacao._linha_de_ler_a_fase(atualizacao._aspas_do_powershell(str(arquivo))) + " }\n",
+                      encoding="utf-8-sig")
+    leitor = subprocess.Popen([POWERSHELL, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
+                               str(script)], creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+    try:
+        time.sleep(1.5)
+        for i in range(60):
+            atualizacao.gravar_estado({"fase": "aplicando", "i": i})
+    finally:
+        leitor.kill()
+        leitor.wait(10)
+    assert atualizacao.ler_estado() == {"fase": "aplicando", "i": 59}
