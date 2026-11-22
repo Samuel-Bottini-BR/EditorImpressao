@@ -1,0 +1,5 @@
+Volta 2, medio 3: os testes novos rodados no codigo do medio 2 (ebc4891e, antes do conserto):
+FAILED test_volta2_medio3_visual_c_mais_novo_numa_versao_nova_nao_traz_a_pergunta_de_volta
+FAILED test_volta2_medio3_windows_que_nao_deixa_ler_nao_traz_a_pergunta_de_volta
+2 failed, 1 passed (test_volta2_medio3_depois_do_nao_a_pergunta_continua_voltando: guarda da D-741, passa nos dois)
+Depois do conserto: test_atualizador_4.py 42 passed; test_decisoes_ajudante_da_atualizacao.py 37; test_decisoes_preparo_d749.py 9; test_decisoes_testes_a_distancia.py 13.

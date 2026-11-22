@@ -177,11 +177,14 @@ def test_conserto1_o_mesmo_caminho_escrito_diferente_e_o_mesmo_ajudante(windows_
 
 @pytest.mark.parametrize("existe, lida", [(None, False), (True, False)])
 def test_conserto1_nao_deu_para_ler_o_ajudante_conta_como_falta(windows_de_mentira, existe, lida):
-    """Melhor perguntar de novo que dar como preparado sem saber."""
+    """Volta 2 (medio 3 do relatorio 1, D-741): "nao deu para saber" e "existe, mas esta conta nao le" NAO trazem a
+    pergunta de volta (o nome do teste ficou da volta 1, quando contavam como falta); o registro diz por que."""
     windows_de_mentira.pedir([])
     nome = atualizacao.NOME_DA_TAREFA
     windows_de_mentira.tarefas[nome] = windows.Tarefa(nome, existe, lida, motivo="o Windows não respondeu")
-    assert any("ajudante" in f for f in atualizacao.o_que_falta_no_computador())
+    assert atualizacao.o_que_falta_no_computador() == []
+    if existe is None:
+        assert "não deu para ler o ajudante" in _registro()
 
 
 def test_conserto1_reinstalado_sem_o_ajudante_a_pergunta_volta(windows_de_mentira):
@@ -203,7 +206,8 @@ def test_conserto1_preparado_nao_pergunta_e_depois_do_sim_o_ajudante_roda(window
 
 
 def test_conserto1_visual_c_e_inno_sao_a_mesma_regra_de_quem_instala_e_tira(windows_de_mentira):
-    """§11.12: "falta o Visual C++?" e "falta tirar o Inno?" sao as mesmas funcoes para quem faz e para quem confere."""
+    """§11.12: "falta o Visual C++?" e uma regra so (visual_c_que_falta), a que quem instala usa. (Desde a volta 2 a
+    pergunta do Windows nao a le mais: o ajudante completa o Visual C++ sozinho.)"""
     pasta = atualizacao.pasta_do_programa()
     assert atualizacao.visual_c_que_falta(pasta, lambda: None) == "14.44.1"
     assert atualizacao.visual_c_que_falta(pasta, lambda: (14, 44, 1)) is None
@@ -211,8 +215,6 @@ def test_conserto1_visual_c_e_inno_sao_a_mesma_regra_de_quem_instala_e_tira(wind
     assert atualizacao.instalar_visual_c_se_faltar(pasta, ler=lambda: (14, 44, 1),
                                                    rodar=lambda c, t: rodados.append(c) or (0, "")) is True
     assert rodados == [], "quando a regra diz que nada falta, nada é instalado"
-    assert atualizacao.inno_que_falta_tirar(pasta.parent, lambda: windows_de_mentira.inno) is not None
-    assert atualizacao.inno_que_falta_tirar(pasta.parent, lambda: None) is None
 
 
 def test_conserto1_a_instalacao_antiga_que_o_programa_nao_tira_de_proposito_nao_falta(windows_de_mentira, monkeypatch):
@@ -661,3 +663,35 @@ def test_volta2_medio2_sem_o_motor_a_versao_nao_e_anunciada_nem_trocada(tmp_path
     # com o motor no lugar, tudo volta ao normal
     assert atualizacao.procurar_e_preparar(gerente, fonte, lambda: aberto, chave_publica=PUBLICA,
                                            motor_no_lugar=lambda: True) == ("pendente" if aberto else "aplicando")
+
+
+def test_volta2_medio3_visual_c_mais_novo_numa_versao_nova_nao_traz_a_pergunta_de_volta(windows_de_mentira):
+    """Medio 3 do relatorio 1 (21/11/2026), contra a D-741 ("Depois do 'Sim', nunca mais aparece") e a D-735 ("Nas
+    atualizacoes seguintes, nenhuma pergunta"): depois do "Sim", uma versao nova com um Visual C++ mais novo fazia a
+    leitura ver "falta o Visual C++" antes de o ajudante instala-lo, e a pergunta do Windows voltava. Agora a abertura so
+    pergunta de novo pelo que so a pergunta faz (as tarefas do ajudante e do desfazer); o Visual C++ e a instalacao
+    antiga o proprio ajudante completa, como o sistema, sem perguntar (preparar_o_computador, a cada vez que roda)."""
+    assert atualizacao.preparar_ao_abrir(None, primeira_vez=True) == []
+    windows_de_mentira.visual_c = None                      # a versao nova trouxe um Visual C++ mais novo
+    windows_de_mentira.inno = {"pasta": Path("C:/Antiga"), "desinstalador": Path("C:/Antiga/unins000.exe")}
+    assert atualizacao.preparar_ao_abrir(None, primeira_vez=False) == []
+    assert len(windows_de_mentira.pedidos) == 1, "a pergunta do Windows voltou depois do \"Sim\""
+
+
+def test_volta2_medio3_windows_que_nao_deixa_ler_nao_traz_a_pergunta_de_volta(windows_de_mentira, monkeypatch):
+    """Medio 3: quando o Windows nao deixa ler as tarefas ("nao deu para saber"), a pergunta voltava toda vez, e o
+    "Sim" nao resolvia. Agora nao pergunta (nao da para saber que falta) e o registro diz por que."""
+    assert atualizacao.preparar_ao_abrir(None, primeira_vez=True) == []
+    monkeypatch.setattr(atualizacao, "ler_tarefa_no_windows",
+                        lambda nome: windows.Tarefa(nome, None, motivo="o PowerShell não respondeu"))
+    assert atualizacao.preparar_ao_abrir(None, primeira_vez=False) == []
+    assert len(windows_de_mentira.pedidos) == 1, "a pergunta do Windows voltou sem saber se faltava"
+    assert "não deu para ler" in _registro()
+
+
+def test_volta2_medio3_depois_do_nao_a_pergunta_continua_voltando(windows_de_mentira):
+    """D-741 continua: depois de um "Nao" (as tarefas nao existem), a pergunta volta na abertura seguinte."""
+    windows_de_mentira.respostas = ["nao", "sim"]
+    assert atualizacao.preparar_ao_abrir(None, primeira_vez=True)
+    assert atualizacao.preparar_ao_abrir(None, primeira_vez=False) == []
+    assert len(windows_de_mentira.pedidos) == 2

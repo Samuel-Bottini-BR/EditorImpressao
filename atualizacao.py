@@ -1279,8 +1279,8 @@ def versao_do_visual_c_do_pacote(pasta: Path) -> str | None:
 def visual_c_que_falta(pasta: Path, ler: Callable[[], tuple | None] = _ler_versao_do_visual_c) -> str | None:
     """A versao do Visual C++ do pacote que falta instalar neste computador, ou None (nada falta).
 
-    A REGRA UNICA de "o Visual C++ falta?" (4 consertos, 21/11/2026): quem instala (instalar_visual_c_se_faltar) e
-    quem confere depois da pergunta do Windows (o_que_falta_no_computador) usam esta, para nunca decidirem diferente.
+    A REGRA UNICA de "o Visual C++ falta?" (4 consertos, 21/11/2026): quem instala (instalar_visual_c_se_faltar) a
+    usa. (Desde a volta 2, medio 3, a pergunta do Windows nao a le: o ajudante completa o Visual C++ sozinho.)
     Sem o instalador no pacote, nada falta (nao ha o que instalar). A versao do pacote vem da leitura unica
     (versao_do_visual_c_do_pacote, a mesma do publicar); sem o arquivo da versao, "0.0.0" (so falta se nao ha Visual
     C++ nenhum), como antes. `ler` le o registro do Windows na hora (nunca uma anotacao).
@@ -1299,7 +1299,7 @@ def instalar_visual_c_se_faltar(pasta: Path, ler: Callable[[], tuple | None] = _
 
     Devolve False so quando tentou instalar e deu erro (D-749: a preparacao
     conta como nao feita); sem o instalador no pacote ou sem precisar, True.
-    "Falta?" e a regra unica visual_c_que_falta (a mesma que a conferencia depois da pergunta usa).
+    "Falta?" e a regra unica visual_c_que_falta.
     """
     exe = pasta / PASTA_DO_QUE_SE_INSTALA / VC_REDIST_NOME
     if not exe.is_file():
@@ -1384,20 +1384,6 @@ def tirar_instalacao_antiga(pasta_nova: Path, achar: Callable[[], dict | None] =
     registrar(f"instalação antiga em {antiga['pasta']}: {'tirada' if codigo == 0 else 'NÃO tirada'} "
               f"(código {codigo}) {saida}")
     return codigo == 0
-
-
-def inno_que_falta_tirar(pasta_nova: Path, achar: Callable[[], dict | None] = achar_instalacao_do_inno) -> dict | None:
-    """A instalacao antiga do Inno que ainda falta tirar, ou None (nada falta).
-
-    A REGRA UNICA de "o Inno ainda tem de sair?" (4 consertos, 21/11/2026), lida no registro do Windows na hora: a
-    instalacao existe E o programa a tiraria (comando_para_tirar_o_inno). A que o programa recusa tirar de proposito
-    (caminho que nao parece seguro) NAO falta: perguntar de novo nao mudaria nada (D-749, como tirar_instalacao_antiga).
-    Usada pela conferencia depois da pergunta do Windows (o_que_falta_no_computador).
-    """
-    antiga = achar()
-    if antiga is None or comando_para_tirar_o_inno(antiga, pasta_nova) is None:
-        return None
-    return antiga
 
 
 def e_portatil(gerente=None) -> bool:
@@ -1664,23 +1650,26 @@ def _mesmo_caminho(a: str, b: str) -> bool:
 
 def o_que_falta_no_computador(exe: Path | None = None,
                               ler_tarefa: Callable[[str], object] | None = None,
-                              ler_visual_c: Callable[[], tuple | None] | None = None,
-                              achar_inno: Callable[[], dict | None] | None = None,
                               portatil: Callable[[], bool] | None = None) -> list[str]:
-    """O que ainda falta preparar neste computador, LIDO NO WINDOWS agora (vazio = preparado).
+    """O que ainda falta neste computador que SO a pergunta do Windows faz, LIDO NO WINDOWS agora (vazio = nada falta).
 
-    A REGRA UNICA de "o computador esta preparado" (4 consertos, 21/11/2026; D-741, D-749). Antes era uma marca nas
-    Configuracoes e um arquivo preparo.txt (anotacoes do proprio programa): o "Nao" do Windows virava "preparado", e
-    a marca sobrevivia a desinstalar e reinstalar. Agora confere o que o --preparar-o-computador faz, lido de volta:
-    1. o ajudante da atualizacao existe e aponta para este programa (o comando e o .exe desta instalacao, os
-       argumentos sao os do ajudante, roda como o sistema), lido pela peca unica (ler_tarefa_no_windows);
-    2. a tarefa "desfazer" existe (D-731; criada na mesma pergunta);
-    3. o Visual C++ do pacote esta instalado (visual_c_que_falta, a mesma regra de quem instala);
-    4. a instalacao antiga do Inno nao esta mais (inno_que_falta_tirar, a mesma regra de quem tira).
-    "Nao deu para saber" conta como falta (melhor perguntar de novo que dar como preparado sem saber). No pacote
-    portatil do ensaio nada falta (o portatil nunca mexe no Windows, e_portatil).
+    A REGRA UNICA de "a pergunta do Windows tem de voltar?" (4 consertos, 21/11/2026; D-735, D-741, D-749). Antes era uma
+    marca nas Configuracoes e um arquivo preparo.txt (anotacoes do proprio programa): o "Nao" do Windows virava
+    "preparado", e a marca sobrevivia a desinstalar e reinstalar. Agora le no Agendador, pela peca unica
+    (ler_tarefa_no_windows), as duas tarefas que so a pergunta cria (pedem administrador):
+    1. o ajudante da atualizacao existe e aponta para este programa (o comando e o .exe desta instalacao, os argumentos
+       sao os do ajudante, roda como o sistema);
+    2. a tarefa "desfazer" existe (D-731).
+    O Visual C++ e a instalacao antiga do Inno NAO entram aqui (volta 2, medio 3 do relatorio 1): quem os completa e o
+    proprio ajudante, como o sistema, sem perguntar nada, toda vez que roda (rodar_ao_ligar -> preparar_o_computador).
+    Se entrassem, uma versao nova com um Visual C++ mais novo traria a pergunta de volta depois do "Sim" (contra a D-741:
+    "Depois do 'Sim', nunca mais aparece"), antes de o ajudante instala-lo.
+    "Nao deu para saber" (o Windows nao respondeu) NAO conta como falta: anota no registro e nao pergunta (volta 2,
+    medio 3: a pergunta voltava toda vez e o "Sim" nao resolvia). "Existe, mas esta conta nao le" conta como existe
+    (a tarefa so nasce na pasta do programa do Agendador, que a peca confere ao criar). No pacote portatil do ensaio
+    nada falta (o portatil nunca mexe no Windows, e_portatil).
     Quem usa: preparar_na_primeira_abertura (depois da resposta) e preparar_ao_abrir (antes de perguntar de novo).
-    Arriscado: tirar um dos quatro (a pergunta deixaria de voltar com a preparacao pela metade, contra a D-749).
+    Arriscado: voltar a contar o Visual C++ ou o "nao deu para saber" como falta (a pergunta volta depois do "Sim").
     """
     from core import testes_a_distancia, windows
 
@@ -1691,12 +1680,11 @@ def o_que_falta_no_computador(exe: Path | None = None,
     falta: list[str] = []
     ajudante = ler(NOME_DA_TAREFA)
     if ajudante.existe is None:
-        falta.append(f"não deu para ler o ajudante da atualização no Windows ({ajudante.motivo})")
+        registrar(f"não deu para ler o ajudante da atualização no Windows ({ajudante.motivo}); não pergunto de novo "
+                  "por isso")
     elif ajudante.existe is False:
         falta.append("o ajudante da atualização não existe no Windows")
-    elif not ajudante.lida:
-        falta.append(f"o ajudante da atualização existe, mas não deu para ler ({ajudante.motivo})")
-    else:
+    elif ajudante.lida:
         esperado = windows.ler_xml_da_tarefa(xml_da_tarefa(exe))
         if not _mesmo_caminho(ajudante.comando, esperado["comando"]):
             falta.append(f"o ajudante da atualização aponta para {ajudante.comando!r}, e não para "
@@ -1705,33 +1693,23 @@ def o_que_falta_no_computador(exe: Path | None = None,
             falta.append(f"o ajudante da atualização não é o deste programa (argumentos {ajudante.argumentos!r}, "
                          f"conta {ajudante.usuario!r})")
     desfazer = ler(testes_a_distancia.nome_da_tarefa_do_desfazer())
-    if desfazer.existe is not True:
-        falta.append("a tarefa que desfaz tudo ao desinstalar não existe no Windows"
-                     + (f" ({desfazer.motivo})" if desfazer.motivo else ""))
-    try:
-        visual_c = visual_c_que_falta(pasta_do_programa(), ler_visual_c or _ler_versao_do_visual_c)
-    except OSError as erro:
-        visual_c = f"? ({erro})"
-    if visual_c is not None:
-        falta.append(f"o Visual C++ {visual_c} não está instalado")
-    try:
-        antiga = inno_que_falta_tirar(pasta_do_programa().parent, achar_inno or achar_instalacao_do_inno)
-    except OSError as erro:
-        antiga = {"pasta": f"? ({erro})"}
-    if antiga is not None:
-        falta.append(f"a instalação antiga do programa continua em {antiga['pasta']}")
+    if desfazer.existe is None:
+        registrar(f"não deu para ler a tarefa do desfazer no Windows ({desfazer.motivo}); não pergunto de novo por isso")
+    elif desfazer.existe is False:
+        falta.append("a tarefa que desfaz tudo ao desinstalar não existe no Windows")
     return falta
 
 
 def preparar_na_primeira_abertura(janela: int | None = None) -> list[str]:
     """A pergunta do Windows da primeira abertura (D-733, D-735), pela peca unica. Devolve o que ainda falta no
-    computador depois dela, lido no Windows (vazio = preparado).
+    computador depois dela, lido no Windows (vazio = o que so a pergunta faz esta feito).
 
     UMA pergunta so, sempre, com ou sem a senha dos testes (D-825, opcao B: nesta entrega a senha nao liga os
     testes a distancia, entao a pergunta leva so a preparacao). "Nao" (ou ninguem responde): nada muda, anotado no
-    registro; a pergunta volta na proxima abertura (D-741), porque a leitura do Windows diz que falta. "Sim" com a
-    preparacao parada no meio: a peca devolve "falhou" e a leitura diz o que falta; volta tambem (D-749). "Sim" so
-    conta como feito quando o Windows mostra tudo no lugar (o_que_falta_no_computador). Nada e gravado como marca.
+    registro; a pergunta volta na proxima abertura (D-741), porque a leitura do Windows diz que as tarefas faltam. "Sim"
+    com a preparacao parada no meio (D-749): a peca devolve "falhou" e fica no registro; se uma das tarefas nao nasceu, a
+    leitura diz que falta e a pergunta volta; se as tarefas nasceram e o que falhou foi o Visual C++ ou o Inno, o
+    ajudante os completa sozinho, como o sistema, na vez seguinte que rodar (volta 2, medio 3). Nada e gravado como marca.
     `janela`: a janela do programa, dona da pergunta (para ela vir no meio da tela, D-806).
     Quem chama: preparar_ao_abrir, no fio de tras da primeira abertura (nunca no fio da tela).
     """
@@ -1746,13 +1724,17 @@ def preparar_na_primeira_abertura(janela: int | None = None) -> list[str]:
         registrar("primeira abertura: o Kaique disse \"Não\" à pergunta do Windows; o ajudante da atualização "
                   "não foi criado; a pergunta volta na próxima abertura")
     elif not resposta.deu_certo:
-        registrar(f"primeira abertura: a pergunta do Windows não deu certo ({resposta.motivo}) {resposta.detalhe}")
+        registrar(f"primeira abertura: a preparação do computador não terminou bem ({resposta.motivo}) "
+                  f"{resposta.detalhe}")
     falta = o_que_falta_no_computador()
     if falta:
         registrar("primeira abertura: o computador não ficou preparado (lido no Windows: " + "; ".join(falta)
                   + "); a pergunta volta na próxima abertura")
-    else:
+    elif resposta.deu_certo:
         registrar("primeira abertura: o computador está preparado (lido no Windows)")
+    else:
+        registrar("primeira abertura: as tarefas do programa estão no Windows; o que faltou da preparação (o Visual "
+                  "C++ ou a instalação antiga) o ajudante completa sozinho na próxima vez que rodar")
     return falta
 
 
@@ -1761,8 +1743,8 @@ def preparar_ao_abrir(janela: int | None = None, primeira_vez: bool = False) -> 
     que nao e o da tela (ui/testes_a_distancia_ui.primeira_vez_se_preciso). Devolve o que ainda falta.
 
     - primeira_vez (nesta conta a janela da senha acabou de aparecer): pergunta ja, logo depois do clique (D-806);
-    - senao: le o Windows; se nada falta, nao pergunta nada; se falta (o "Nao" de antes, a preparacao pela metade, o
-      ajudante que sumiu ao reinstalar), pergunta de novo (D-741, D-749).
+    - senao: le o Windows; se nada falta, nao pergunta nada; se falta uma das tarefas (o "Nao" de antes, a preparacao
+      parada antes de cria-las, o ajudante que sumiu ao reinstalar), pergunta de novo (D-741, D-749).
     Se a pergunta deixou o computador preparado, manda o ajudante rodar uma vez (ele acabou de nascer; a chamada da
     abertura, ui/aviso_de_atualizacao.ligar_na_janela, veio antes e nao o achou). Nunca levanta: um erro vai para o
     registro e conta como "falta".
