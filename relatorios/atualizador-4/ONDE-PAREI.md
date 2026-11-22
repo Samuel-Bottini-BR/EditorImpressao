@@ -768,6 +768,9 @@ um) e a D-827 (toda proteção sem teste ganha teste agora, provado por mutaçã
   decisões D-733, D-735, D-741, D-749, D-767, D-811, D-824 a D-827 do Livro da versão de teste; o código de hoje:
   `o_que_falta_no_computador`, `preparar_na_primeira_abertura`, `preparar_ao_abrir`, `rodar_ao_ligar`,
   `preparar_o_computador`, `teste_rapido`, e na peça `ler_tarefa` e `problemas_da_tarefa_criada`). Plano abaixo.
+- Plano `1e8518cf`. Item 1 `ce728693`; item 2 `ebd4197e`; item 3 `f15863b8` (cada um com commit e push e o teste
+  rodado no código de antes dele: `anexos/reversao-volta3-item1.txt` a `-item3.txt`). Próximo: item 4 (as proteções
+  sem teste, mutações numa cópia `git worktree add --detach` no meu rascunho).
 
 ### Decisões que esta tarefa precisa cumprir (volta 3)
 
