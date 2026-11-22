@@ -141,6 +141,20 @@ def _rodar_por_tras(trabalho: Callable[[], object]) -> threading.Thread:
     return fio
 
 
+def numero_da_janela(parent) -> int | None:
+    """O numero da janela do programa no Windows (a dona da pergunta do Windows, D-806), lido no fio da tela.
+
+    None sem janela (os testes chamam com None) ou se o Qt nao der o numero: a pergunta sai sem dona, e a peca do
+    Windows diz no registro que a janela nao estava na frente.
+    """
+    if parent is None:
+        return None
+    try:
+        return int(parent.winId()) or None
+    except (AttributeError, RuntimeError, TypeError, ValueError):
+        return None
+
+
 def primeira_vez_se_preciso(parent=None,
                             instalado: Callable[[], bool] = atualizacao.instalado_pelo_velopack,
                             conta_de_testes: Callable[[], bool] | None = None,
@@ -172,7 +186,9 @@ def primeira_vez_se_preciso(parent=None,
     if (conta_de_testes or atualizacao.e_a_conta_de_testes)():
         return
     rodar = por_tras or _rodar_por_tras
-    janela = None
+    # D-806 (conserto 2): a janela do programa vai como dona da pergunta, para ela vir no meio da tela; a peca do
+    # Windows a traz para a frente antes de perguntar. O numero e lido aqui, no fio da tela.
+    janela = numero_da_janela(parent)
     if td.senha_ja_perguntada():
         # D-741: a janela da senha nao volta (D-721: a senha vai nas Configuracoes), mas a pergunta do Windows volta
         # ate o "Sim" (quem decide e a leitura do Windows, por tras).

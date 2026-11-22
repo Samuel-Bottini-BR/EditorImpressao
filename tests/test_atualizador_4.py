@@ -286,3 +286,69 @@ def test_d825_a_senha_digitada_nao_liga_nenhum_passo_dos_testes(windows_de_menti
     passos, _ = windows_de_mentira.pedidos[0]
     assert len(passos) == 1 and "segredo-de-prova" not in repr(passos)
     assert not td.esta_pronto()
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Conserto 2: a pergunta vem no meio da tela (a janela do programa e a dona e vem para a frente antes)
+# ---------------------------------------------------------------------------------------------------------------------
+
+class _JanelaDeMentira:
+    """Uma janela que so sabe dizer o numero dela no Windows (como QWidget.winId)."""
+
+    def __init__(self, numero: int) -> None:
+        self.numero = numero
+
+    def winId(self) -> int:  # noqa: N802 - o nome do Qt
+        return self.numero
+
+
+@pytest.mark.parametrize("ja_perguntada", [False, True])
+def test_conserto2_a_janela_do_programa_vai_como_dona_da_pergunta(windows_de_mentira, monkeypatch, ja_perguntada):
+    """Defeito de 18/11 (Lista de bugs: "a pergunta de administrador do Windows nao aparece quando o programa pede com
+    as janelas fora da frente") e D-806 (19/11: "o programa pede a licenca do Windows no mesmo instante do clique [...]
+    enquanto a janela do programa ainda esta na frente"): o pedido antigo ia sem a janela do programa. Agora a janela
+    principal (o numero dela no Windows) vai ao pedido, na primeira abertura e nas seguintes."""
+    pytest.importorskip("PySide6")
+    import ui.testes_a_distancia_ui as tdui
+
+    if ja_perguntada:
+        td.marcar_senha_perguntada()
+    monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: "")
+    monkeypatch.setattr(tdui.perguntas, "avisar", lambda *a, **k: None)
+    tdui.primeira_vez_se_preciso(_JanelaDeMentira(0x1234), instalado=lambda: True, conta_de_testes=lambda: False,
+                                 por_tras=lambda trabalho: trabalho())
+    assert [janela for _passos, janela in windows_de_mentira.pedidos] == [0x1234]
+
+
+def test_conserto2_sem_janela_a_pergunta_sai_sem_dona():
+    """Sem janela (ou o Qt sem o numero), a pergunta sai sem dona, sem quebrar."""
+    pytest.importorskip("PySide6")
+    import ui.testes_a_distancia_ui as tdui
+
+    assert tdui.numero_da_janela(None) is None
+    assert tdui.numero_da_janela(object()) is None
+    assert tdui.numero_da_janela(_JanelaDeMentira(0)) is None
+
+
+def test_conserto2_a_janela_que_nao_veio_para_a_frente_fica_anotada(windows_de_mentira, monkeypatch):
+    """Quando o Windows nao deixa a janela vir para a frente (o Kaique estava noutra), a peca diz e o registro anota."""
+    original = windows_de_mentira.pedir
+
+    def pedir_sem_frente(passos, janela=None):
+        r = original(passos, janela)
+        return windows.Resposta(r.desfecho, r.motivo, r.detalhe, {**r.dados, "janela_na_frente": False})
+
+    monkeypatch.setattr(atualizacao, "pedir_licenca_ao_windows", pedir_sem_frente)
+    atualizacao.preparar_na_primeira_abertura(0x99)
+    assert "não estava na frente" in _registro()
+
+
+def test_conserto2_o_pedido_de_verdade_entrega_a_janela_a_peca(monkeypatch):
+    """O pedido do atualizador passa a janela a core.windows.pedir_licenca (a peca a traz para a frente e a poe como
+    dona do pedido)."""
+    recebidos = {}
+    monkeypatch.delenv("PYTEST_CURRENT_TEST")
+    monkeypatch.setattr(windows, "pedir_licenca", lambda passos, **k: recebidos.update(k) or windows.Resposta(
+        windows.DEU_CERTO))
+    atualizacao.pedir_licenca_ao_windows([], 0x55)
+    assert recebidos["janela"] == 0x55

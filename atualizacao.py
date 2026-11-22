@@ -1595,6 +1595,10 @@ def preparar_na_primeira_abertura(janela: int | None = None) -> list[str]:
     from core import windows
 
     resposta = pedir_licenca_ao_windows([passo_de_preparar_o_computador()], janela)
+    if resposta.dados.get("janela_na_frente") is False:
+        # D-806: o Windows nao deixou a janela vir para a frente (o Kaique estava noutra janela): a pergunta pode ter
+        # so piscado na barra de tarefas. Fica anotado; se ninguem respondeu, conta como "Nao" e volta.
+        registrar("primeira abertura: a janela do programa não estava na frente quando o Windows perguntou")
     if resposta.desfecho == windows.DISSE_NAO:
         registrar("primeira abertura: o Kaique disse \"Não\" à pergunta do Windows; o ajudante da atualização "
                   "não foi criado; a pergunta volta na próxima abertura")

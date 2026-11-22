@@ -1,0 +1,5 @@
+FAILED tests/test_atualizador_4.py::test_conserto2_a_janela_do_programa_vai_como_dona_da_pergunta[False]
+FAILED tests/test_atualizador_4.py::test_conserto2_a_janela_do_programa_vai_como_dona_da_pergunta[True]
+FAILED tests/test_atualizador_4.py::test_conserto2_sem_janela_a_pergunta_sai_sem_dona
+FAILED tests/test_atualizador_4.py::test_conserto2_a_janela_que_nao_veio_para_a_frente_fica_anotada
+4 failed, 1 passed, 17 deselected in 1.42s
