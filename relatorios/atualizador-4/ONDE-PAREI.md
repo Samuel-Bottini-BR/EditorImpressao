@@ -558,7 +558,11 @@ pergunta só).
 - `tests/test_decisoes_testes_a_distancia.py` (só os da D-825)
 - `tests/conferencias_excecoes.json` (a lista do porteiro diminuiu: 175 → 168)
 - `relatorios/atualizador-4/` (este formulário, o pacote e as provas de reversão)
-- Volta 4: `core/windows.py`, `atualizacao.py`, `core/testes_a_distancia.py`, `tests/test_atualizador_volta4.py` (novo), `tests/test_decisoes_desinstalar.py` (só os 3 da D-774), `tests/conferencias_excecoes.json` (168 → 164); ver "Arquivos criados ou alterados (volta 4)".
+- `core/windows.py` (volta 4: o lançado solto na pasta do sistema; a lista de processos; a janela da frente)
+- `core/testes_a_distancia.py` (volta 4: a pasta segura, sem a tranca à mão)
+- `tests/test_atualizador_volta4.py` (volta 4, novo)
+- `tests/test_decisoes_desinstalar.py` (volta 4: só os 3 testes que a D-774 nomeou, e o texto do começo)
+- `atualizacao.py` e `tests/conferencias_excecoes.json` também na volta 4 (168 → 164); detalhe em "Arquivos criados ou alterados (volta 4)".
 
 ## Como cumpri cada uma
 
@@ -731,7 +735,7 @@ Não se aplica: nenhuma pergunta aberta (a pergunta 1 foi respondida, D-825).
 - GitHub da volta 2: rodada 44982726269 (commit `f523ec2e`): success na 2ª tentativa (testou `f523ec2e`, conferido no registro da rodada). A 1ª caiu na parte 2: `test_decisoes_gravura_a_mao.py::test_d659_g_outros_filtros_a_mao_nada_e_procurado_e_sai_igual_ao_de_antes[original]` ("procurou: [0]", o detector de gravura), que não usa nada destes consertos; no PC, o arquivo inteiro passou (15 de 15).
 
 - Volta 3: plano `1e8518cf`; item 1 `ce728693`; item 2 `ebd4197e`; item 3 `f15863b8`; item 4 `126f01d0`; as docstrings das peças de mentira dos testes novos `b897efb7` (último do código e dos testes). GitHub da volta 3: rodada 44992797990: success na 1ª tentativa (a 44991980992 foi cancelada por mim: testava o commit antes das docstrings dos testes).
-- Volta 4: ver "Commit (volta 4)" (último commit do código e dos testes: ULTIMO_COMMIT).
+- Volta 4: ver "Commit (volta 4)" (último commit do código e dos testes: `528afac0`).
 
 ## O que o agente que tentou quebrar achou
 
