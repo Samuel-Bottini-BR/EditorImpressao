@@ -718,6 +718,56 @@ def test_volta3_item1_depois_do_nao_com_o_windows_que_nunca_deixa_ler_a_pergunta
     assert windows_de_mentira.ajudante_rodou == 0, "chamou um ajudante que o Windows não mostrou"
 
 
+@pytest.mark.parametrize("resposta", ["nao", "falhou"])
+def test_volta3_item2_sem_sim_o_registro_diz_o_que_a_leitura_mostrou(windows_de_mentira, resposta):
+    """Volta 3, item 2 (D-826; baixo 1 do relatorio 2 de quem tentou quebrar, 22/11/2026): o registro dizia o que nao
+    era. Ex.: um "Nao" (ou a pergunta que nem abriu) com as tarefas ja no Windows (a segunda conta do Windows no mesmo
+    notebook) gravava "o ajudante da atualizacao nao foi criado; a pergunta volta na proxima abertura" e "o que faltou
+    da preparacao (o Visual C++ ou a instalacao antiga) o ajudante completa", e nada disso era verdade (a pergunta nao
+    volta, e a preparacao nem rodou). Causa: as frases do desfecho vinham da resposta e de "nada falta?", nao do que a
+    leitura do Windows conferiu. Agora: a resposta e anotada so como fato, e o desfecho vem da leitura."""
+    windows_de_mentira.pedir([])                     # o "Sim" de outra conta: as tarefas ja estao no Windows
+    windows_de_mentira.respostas = [resposta]
+    assert atualizacao.preparar_na_primeira_abertura() == []
+    registro = _registro()
+    if resposta == "nao":
+        assert "disse \"Não\"" in registro
+    for mentira in ("não foi criado", "a pergunta volta", "o que faltou da preparação", "está preparado"):
+        assert mentira not in registro, f"o registro diz {mentira!r} e a leitura do Windows não mostrou isso"
+    assert "já estão no Windows (lidas agora)" in registro and "a pergunta não volta" in registro
+
+
+def test_volta3_item2_o_que_nao_deu_para_conferir_fica_dito_e_nada_e_dado_como_preparado(windows_de_mentira,
+                                                                                         monkeypatch):
+    """Volta 3, item 2 (D-826): com o "Sim", mas com uma parte do ajudante que o Windows nao deixou conferir (o
+    conteudo ou a licenca), o registro nao diz "o computador esta preparado (lido no Windows)"; diz o que nao deu para
+    conferir. E com a leitura falhando depois de um "Nao" (o caso do baixo 1), nada diz que as tarefas estao no Windows
+    e o ajudante (que nao existe) nao e chamado."""
+    original = windows_de_mentira._criar_ajudante
+    nome = atualizacao.NOME_DA_TAREFA
+
+    def criar_sem_licenca_legivel(comando=None):
+        original(comando)
+        lido = windows_de_mentira.tarefas[nome]
+        windows_de_mentira.tarefas[nome] = windows.Tarefa(nome, True, True, comando=lido.comando,
+                                                          argumentos=lido.argumentos, usuario=lido.usuario, licenca="")
+
+    monkeypatch.setattr(windows_de_mentira, "_criar_ajudante", criar_sem_licenca_legivel)
+    assert atualizacao.preparar_ao_abrir(None, primeira_vez=True) == []
+    assert "está preparado" not in _registro() and "não deu para conferir" in _registro()
+    assert "licença" in _registro()
+
+    atualizacao.caminho_do_registro().unlink()
+    windows_de_mentira.tarefas.clear()
+    windows_de_mentira.respostas = ["nao"]
+    rodou = windows_de_mentira.ajudante_rodou
+    monkeypatch.setattr(atualizacao, "ler_tarefa_no_windows",
+                        lambda nome: windows.Tarefa(nome, None, motivo="o PowerShell não respondeu"))
+    assert atualizacao.preparar_ao_abrir(None, primeira_vez=True)
+    assert "estão no Windows" not in _registro()
+    assert windows_de_mentira.ajudante_rodou == rodou, "chamou um ajudante que o Windows não mostrou"
+
+
 def test_volta2_medio3_depois_do_nao_a_pergunta_continua_voltando(windows_de_mentira):
     """D-741 continua: depois de um "Nao" (as tarefas nao existem), a pergunta volta na abertura seguinte."""
     windows_de_mentira.respostas = ["nao", "sim"]

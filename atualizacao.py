@@ -1639,13 +1639,19 @@ def ler_tarefa_no_windows(nome: str):
     return windows.ler_tarefa(nome)
 
 
-def o_que_falta_no_computador(exe: Path | None = None,
-                              ler_tarefa: Callable[[str], object] | None = None,
-                              portatil: Callable[[], bool] | None = None) -> list[str]:
-    """O que ainda falta neste computador que SO a pergunta do Windows faz, LIDO NO WINDOWS agora (vazio = nada falta).
+def ler_o_computador(exe: Path | None = None,
+                     ler_tarefa: Callable[[str], object] | None = None,
+                     portatil: Callable[[], bool] | None = None) -> tuple[list[str], list[str]]:
+    """A LEITURA UNICA do que a pergunta do Windows deixa no computador, LIDA NO WINDOWS agora. Devolve duas listas:
+    (o que falta, o que existe mas nao deu para conferir). A primeira vazia = nada falta. Nao grava nada.
 
-    A REGRA UNICA de "a pergunta do Windows tem de voltar?" (4 consertos, 21/11/2026; D-735, D-741, D-749). Antes era uma
-    marca nas Configuracoes e um arquivo preparo.txt (anotacoes do proprio programa): o "Nao" do Windows virava
+    A segunda lista (volta 3, item 2, D-826) existe para quem escreve o registro dizer so o que foi conferido de
+    verdade: "existe, mas esta conta nao le" e a licenca que nao veio nao trazem a pergunta de volta, mas tambem nao
+    podem virar "o computador esta preparado". Quem usa: o_que_falta_no_computador (a regra "a pergunta volta?") e
+    preparar_na_primeira_abertura (a frase de desfecho do registro).
+
+    O que e lido e a regra de "a pergunta do Windows tem de voltar?" (4 consertos, 21/11/2026; D-735, D-741, D-749).
+    Antes era uma marca nas Configuracoes e um arquivo preparo.txt (anotacoes do proprio programa): o "Nao" do Windows virava
     "preparado", e a marca sobrevivia a desinstalar e reinstalar. Agora le no Agendador, pela peca unica
     (ler_tarefa_no_windows), as duas tarefas que so a pergunta cria (pedem administrador):
     1. o ajudante da atualizacao existe e e o deste programa: a conferencia da peca unica,
@@ -1663,26 +1669,29 @@ def o_que_falta_no_computador(exe: Path | None = None,
     conta nao le" conta como existe (a tarefa so nasce na pasta do programa do Agendador, com a licenca de
     administrador, que a peca confere ao criar). No pacote portatil do ensaio nada falta (o portatil nunca mexe no
     Windows, e_portatil).
-    Quem usa: preparar_na_primeira_abertura (depois da resposta) e preparar_ao_abrir (antes de perguntar de novo).
-    Arriscado: voltar a contar o Visual C++ como falta (a pergunta voltaria depois do "Sim" a cada versao com um Visual
-    C++ novo); deixar de contar o "nao deu para saber" (o "Nao" deixa de voltar, D-826).
+    Arriscado: escrever no registro um desfecho que nao venha desta leitura (volta 3, item 2); voltar a contar o
+    Visual C++ como falta (a pergunta voltaria depois do "Sim" a cada versao com um Visual C++ novo); deixar de contar
+    o "nao deu para saber" (o "Nao" deixa de voltar, D-826).
     """
     from core import testes_a_distancia, windows
 
     if (portatil or e_portatil)():
-        return []
+        return [], []
     ler = ler_tarefa or ler_tarefa_no_windows
     exe = exe or exe_do_programa()
     falta: list[str] = []
+    sem_conferir: list[str] = []
     ajudante = ler(NOME_DA_TAREFA)
     if ajudante.existe is None:
         falta.append(f"não deu para ler o ajudante da atualização no Windows ({ajudante.motivo})")
     elif ajudante.existe is False:
         falta.append("o ajudante da atualização não existe no Windows")
-    elif ajudante.lida and not ajudante.licenca:
-        registrar("não deu para ler a licença do ajudante da atualização (quem pode mandá-lo rodar); não pergunto de "
-                  "novo por isso")
-    elif ajudante.lida:
+    elif not ajudante.lida:
+        sem_conferir.append("o ajudante da atualização existe, mas não deu para ler o que ele faz "
+                            f"({ajudante.motivo})")
+    elif not ajudante.licenca:
+        sem_conferir.append("não deu para ler a licença do ajudante da atualização (quem pode mandá-lo rodar)")
+    else:
         # A conferencia da peca unica (volta 2, item 4): a mesma de quando a tarefa e criada (o comando, os argumentos,
         # quem roda e quem pode mandar rodar). Um ajudante que a conta do Kaique nao pode chamar conta como falta.
         falta += [f"o ajudante da atualização não é o deste programa: {p}"
@@ -1692,6 +1701,20 @@ def o_que_falta_no_computador(exe: Path | None = None,
         falta.append(f"não deu para ler a tarefa do desfazer no Windows ({desfazer.motivo})")
     elif desfazer.existe is False:
         falta.append("a tarefa que desfaz tudo ao desinstalar não existe no Windows")
+    return falta, sem_conferir
+
+
+def o_que_falta_no_computador(exe: Path | None = None,
+                              ler_tarefa: Callable[[str], object] | None = None,
+                              portatil: Callable[[], bool] | None = None) -> list[str]:
+    """A REGRA UNICA de "a pergunta do Windows tem de voltar?": o que ainda falta neste computador que SO a pergunta faz,
+    lido no Windows agora (vazio = nada falta). E a primeira lista da leitura unica (ler_o_computador); o que existe mas
+    nao deu para conferir vai para o registro (nao traz a pergunta de volta). Quem usa: preparar_ao_abrir (antes de
+    perguntar de novo) e falta_a_pergunta_do_windows.
+    """
+    falta, sem_conferir = ler_o_computador(exe, ler_tarefa, portatil)
+    for nota in sem_conferir:
+        registrar(f"{nota}; não pergunto de novo por isso")
     return falta
 
 
@@ -1704,7 +1727,9 @@ def preparar_na_primeira_abertura(janela: int | None = None) -> list[str]:
     registro; a pergunta volta na proxima abertura (D-741), porque a leitura do Windows diz que as tarefas faltam. "Sim"
     com a preparacao parada no meio (D-749): a peca devolve "falhou" e fica no registro; se uma das tarefas nao nasceu, a
     leitura diz que falta e a pergunta volta; se as tarefas nasceram e o que falhou foi o Visual C++ ou o Inno, o
-    ajudante os completa sozinho, como o sistema, na vez seguinte que rodar (volta 2, medio 3). Nada e gravado como marca.
+    ajudante os completa sozinho, como o sistema, na vez seguinte que rodar (volta 2, medio 3; D-826). Nada e gravado
+    como marca. O registro: a resposta entra so como fato; a frase do desfecho (preparado, nao preparado, ja estava,
+    nao deu para conferir) vem da leitura unica (ler_o_computador), nunca da resposta (volta 3, item 2).
     `janela`: a janela do programa, dona da pergunta (para ela vir no meio da tela, D-806).
     Quem chama: preparar_ao_abrir, no fio de tras da primeira abertura (nunca no fio da tela).
     """
@@ -1715,21 +1740,29 @@ def preparar_na_primeira_abertura(janela: int | None = None) -> list[str]:
         # D-806: o Windows nao deixou a janela vir para a frente (o Kaique estava noutra janela): a pergunta pode ter
         # so piscado na barra de tarefas. Fica anotado; se ninguem respondeu, conta como "Nao" e volta.
         registrar("primeira abertura: a janela do programa não estava na frente quando o Windows perguntou")
+    # A resposta vai ao registro so como FATO (o que o Windows devolveu). O que ela causou (a pergunta volta ou nao, o
+    # computador preparado ou nao) so a leitura do Windows, logo abaixo, diz (volta 3, item 2, D-826: antes estas linhas
+    # diziam "o ajudante nao foi criado; a pergunta volta" e "o que faltou o ajudante completa" sem ter lido nada).
     if resposta.desfecho == windows.DISSE_NAO:
-        registrar("primeira abertura: o Kaique disse \"Não\" à pergunta do Windows; o ajudante da atualização "
-                  "não foi criado; a pergunta volta na próxima abertura")
+        registrar("primeira abertura: o Kaique disse \"Não\" à pergunta do Windows (nada foi feito com a licença)")
     elif not resposta.deu_certo:
         registrar(f"primeira abertura: a preparação do computador não terminou bem ({resposta.motivo}) "
                   f"{resposta.detalhe}")
-    falta = o_que_falta_no_computador()
+    falta, sem_conferir = ler_o_computador()
     if falta:
         registrar("primeira abertura: o computador não ficou preparado (lido no Windows: " + "; ".join(falta)
                   + "); a pergunta volta na próxima abertura")
+    elif sem_conferir:
+        registrar("primeira abertura: as tarefas do programa existem no Windows, mas não deu para conferir tudo ("
+                  + "; ".join(sem_conferir) + "); a pergunta não volta por isso")
     elif resposta.deu_certo:
         registrar("primeira abertura: o computador está preparado (lido no Windows)")
     else:
-        registrar("primeira abertura: as tarefas do programa estão no Windows; o que faltou da preparação (o Visual "
-                  "C++ ou a instalação antiga) o ajudante completa sozinho na próxima vez que rodar")
+        # Nada falta sem o "Sim" desta vez: as tarefas ja estavam no Windows (outra conta, um "Sim" de antes) ou
+        # nasceram e o que falhou foi outra parte. O ajudante confere e completa o Visual C++ e a instalacao antiga
+        # toda vez que roda (preparar_o_computador; D-826), entao isto e verdade em todos os casos.
+        registrar("primeira abertura: as tarefas do programa já estão no Windows (lidas agora); a pergunta não volta; "
+                  "o Visual C++ e a instalação antiga o ajudante confere e completa sozinho toda vez que roda")
     return falta
 
 

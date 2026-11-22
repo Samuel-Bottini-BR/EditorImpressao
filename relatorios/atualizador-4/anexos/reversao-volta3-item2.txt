@@ -1,0 +1,10 @@
+Volta 3, item 2: os testes novos rodados no codigo de antes do conserto (atualizacao.py de ce728693, depois do item 1). Os 3 falham por comportamento (o registro diz o que a leitura nao mostrou).
+D:\programas\EditorImpressao\.claude\worktrees\atualizador-4\tests\test_atualizador_4.py:736: AssertionError: o registro diz 'não foi criado' e a leitura do Windows não mostrou isso
+D:\programas\EditorImpressao\.claude\worktrees\atualizador-4\tests\test_atualizador_4.py:736: AssertionError: o registro diz 'o que faltou da preparação' e a leitura do Windows não mostrou isso
+D:\programas\EditorImpressao\.claude\worktrees\atualizador-4\tests\test_atualizador_4.py:757: AssertionError: assert ('está preparado' not in '2026-11-22T...o Windows)\n'
+FAILED tests/test_atualizador_4.py::test_volta3_item2_sem_sim_o_registro_diz_o_que_a_leitura_mostrou[nao]
+FAILED tests/test_atualizador_4.py::test_volta3_item2_sem_sim_o_registro_diz_o_que_a_leitura_mostrou[falhou]
+FAILED tests/test_atualizador_4.py::test_volta3_item2_o_que_nao_deu_para_conferir_fica_dito_e_nada_e_dado_como_preparado
+3 failed, 44 deselected in 0.36s
+
+No codigo novo: tests/test_atualizador_4.py 47 passed.
