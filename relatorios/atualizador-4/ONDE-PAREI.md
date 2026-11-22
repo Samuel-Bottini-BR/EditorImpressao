@@ -40,7 +40,9 @@ ser usada, e só se o teste antigo dela for autorizado.)
 - Conserto 1 `85590fe4`; conserto 2 `f32eab48`; conserto 3 `77a05d2e`; conserto 4 (commit em "Commit"). Cada um com
   commit e push, e com o teste de reversão rodado no código de antes dele (anexos/reversao-conserto*-codigo-antigo.txt).
 - Rodada do GitHub 44975834257: success (2ª tentativa). 
-- Volta 2 (relatório 1: 3 médios; o que mudou nas seções de cima está em "O que o agente que tentou quebrar achou", que vale sobre elas): médio 1 `f5d73572`, médio 2 `ebc4891e`, médio 3 `9979419d`, item 4 `6efa58d7`, item 5 `f523ec2e`. Rodada do GitHub 44982726269. Próximo: a gerente manda a um agente novo que tenta quebrar.
+- Volta 2 (relatório 1: 3 médios; o que mudou nas seções de cima está em "O que o agente que tentou quebrar achou", que vale sobre elas): médio 1 `f5d73572`, médio 2 `ebc4891e`, médio 3 `9979419d`, item 4 `6efa58d7`, item 5 `f523ec2e`. Rodada do GitHub 44982726269.
+- **Volta 3 (22/11, escritor novo pela D-815; D-826 e D-827):** ver a seção "Volta 3" no fim deste arquivo, que vale
+  sobre as de cima onde diferir. Situação: ver "Volta 3 > Onde parei".
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -753,3 +755,152 @@ máquina estão em `anexos/reversao-conserto1-codigo-antigo.txt` a `anexos/rever
 ## Páginas em que foi conferido
 
 Não se aplica: nenhuma página de livro passa por estes consertos (0 páginas; nenhum mexe em imagem nem no PDF).
+
+## Volta 3 (22/11/2026, escritor novo; D-826 e D-827)
+
+Escritor novo da volta 3 (D-815). Pedido da gerente: os 3 consertos da D-826 (um de cada vez, commit e push em cada
+um) e a D-827 (toda proteção sem teste ganha teste agora, provado por mutação numa cópia).
+
+### Onde parei (volta 3)
+
+- 22/11: leitura feita (o meu arquivo de agente, CLAUDE.md §11.8/§11.12/§11.13, memória: índice e
+  `geral/atualizador.md` do `fase-1`; este ONDE-PAREI inteiro; os relatórios 1 e 2 de quem tentou quebrar; as
+  decisões D-733, D-735, D-741, D-749, D-767, D-811, D-824 a D-827 do Livro da versão de teste; o código de hoje:
+  `o_que_falta_no_computador`, `preparar_na_primeira_abertura`, `preparar_ao_abrir`, `rodar_ao_ligar`,
+  `preparar_o_computador`, `teste_rapido`, e na peça `ler_tarefa` e `problemas_da_tarefa_criada`). Plano abaixo.
+
+### Decisões que esta tarefa precisa cumprir (volta 3)
+
+- **D-826** "porque a regra não funcionou?" · "2 - mas isso não estpa nas regras?" · "Sim, mas dai para arrumar esses 6
+  problemas novos? vai ter que fazer novos remendos ou refazer tudo?". Aqui: (1) "Sim" com as tarefas prontas e só o
+  Visual C++ ou a instalação antiga falhando: a pergunta não volta, o ajudante completa (fica como a volta 2 fez); as
+  tarefas não prontas: a pergunta volta (D-749). **No caso raro em que o Windows não deixa ler as tarefas, a pergunta
+  volta a cada abertura (D-741), não pula.** (2) Consertar os 2 problemas de código da volta 2 (o registro que diz o
+  que não é; a conferência da tarefa que pula o resto quando a licença não é lida) e dar teste às proteções sem teste.
+- **D-827** (regra de trabalho): "proteção sem teste nunca é 'baixo'"; "quando uma conferência é trocada por outra,
+  antes se lista o que a antiga cobria, e só se troca quando a nova cobre tudo, com teste".
+- **D-741** "Sim": depois do "Não", a pergunta volta a cada abertura, até o "Sim"; depois do "Sim", nunca mais.
+- **D-749** "Sim": preparação com erro no meio conta como não feita (ajustada pela D-826 no caso do Visual C++ e da
+  instalação antiga).
+- **D-733** "1- sim / VAI CONSEGUIR FAZER OS TESTS A DISTANCIA NÉ?" e **D-735** "Sim": uma pergunta do Windows na
+  primeira abertura, sempre, que cria o ajudante; nas atualizações seguintes, nenhuma pergunta.
+- **D-767** "não faça mais nada escodindo ou de mentira": os testes daqui provam só a lógica em volta (Windows de
+  mentira); a prova que vale é a sessão à vista.
+- **D-811** "ok": a lista "cada proteção → o teste que falha quando ela é desligada, provado numa cópia".
+- **D-824** "vamos fazer com um só, uma coisa de cade vez.": um conserto por commit, nesta ordem.
+- **D-825** "ok": só os 16 testes antigos da lista podem mudar (e só nos casos do item 1, se precisar); a senha não
+  liga os testes.
+- **D-815** "ok": sou o escritor da volta 3 (agente novo).
+
+### O que já está escolhido e testado aqui (volta 3)
+
+- Os arquivos que vou tocar: `atualizacao.py` (só `o_que_falta_no_computador`, `preparar_na_primeira_abertura` e,
+  para o item 3, `xml_da_tarefa`) e `tests/test_atualizador_4.py`. Testes que já existem para eles:
+  `tests/test_atualizador_4.py` (43), `tests/test_decisoes_ajudante_da_atualizacao.py` (37),
+  `tests/test_decisoes_preparo_d749.py` (9), `tests/test_decisoes_atualizacao.py` (38),
+  `tests/test_decisoes_testes_a_distancia.py` (13), `tests/test_windows_peca.py` (71), `tests/test_conferencias_*.py`.
+- O que não muda: a D-826 (1), o Visual C++ e a instalação antiga fora da pergunta (o ajudante completa); "existe, mas
+  esta conta não lê" conta como existe (a mutação V13 do relatório 2 é acusada e continua); o "Sim" com tudo no lugar
+  grava "o computador está preparado (lido no Windows)" (a prova à vista procura essa frase); "disse \"Não\"" e "não
+  ficou preparado" no registro (testes antigos procuram); `core/windows.py` não muda; nenhuma frase nova na tela.
+- Dos meus testes, mudam só os que cobram o contrário da D-826: `test_volta2_medio3_windows_que_nao_deixa_ler_nao_traz_a_pergunta_de_volta`
+  e o caso `[None-False]` de `test_conserto1_nao_deu_para_ler_o_ajudante_conta_como_falta` (são deste trabalho, item 1
+  do pedido). Nenhum dos 16 antigos precisa mudar (conferido por busca: nenhum usa "não deu para saber").
+
+### Como fica para quem usa e no livro (volta 3)
+
+O livro (o PDF) não muda: nada aqui mexe nas páginas. Nenhuma frase nova na tela.
+- **Caso raro: o Windows não deixa ler as tarefas** (ex.: um antivírus que barra o PowerShell). Hoje: depois de um
+  "Não", a pergunta do Windows não volta naquela abertura; se a leitura falha sempre, nunca mais volta, e nenhuma
+  versão chega. Depois: a pergunta volta a cada abertura, como depois de qualquer "Não". Também depois de um "Sim"
+  (o programa não tem como saber, sem ler, que o "Sim" já foi dado; nunca uma anotação): o Kaique vê a pergunta a
+  cada abertura, enquanto o Windows não deixar ler. As versões novas continuam chegando nesse caso, porque a abertura
+  chama o ajudante de qualquer jeito (`ui/aviso_de_atualizacao.ligar_na_janela` → `procurar_ao_abrir`).
+- **O registro da atualização** (`C:\ProgramData\EditorImpressao\atualizacao\`), que só o Samuel lê: passa a dizer o
+  que o programa leu no Windows, e não o que ele supôs pela resposta. Ex.: um "Não" com as tarefas já no Windows (a
+  segunda conta do Windows no mesmo notebook) hoje grava "o ajudante não foi criado; a pergunta volta" e "o que faltou
+  o ajudante completa"; depois, grava que ele disse "Não", que as tarefas já estavam no Windows e que a pergunta não
+  volta.
+- **Licença do ajudante ilegível** (raro): hoje uma tarefa com o mesmo nome que rode outro programa passaria como
+  "preparado" (a pergunta não voltaria e o programa chamaria outro programa). Depois: o programa, os argumentos e a
+  conta são conferidos; tarefa errada → a pergunta volta e, no "Sim", a preparação refaz a tarefa certa.
+- Testes novos (item 4): nada muda para quem usa.
+
+### A causa, a regra e todos os caminhos (volta 3)
+
+**Item 1. O Windows que não deixa ler.**
+- Causa: na volta 2, o "não deu para saber" passou a não contar como falta para a pergunta não voltar depois do "Sim"
+  (médio 3). Mas, sem uma anotação, "depois do Sim" e "depois do Não" têm a mesma leitura; então o "Não" com a leitura
+  falhando também deixou de voltar.
+- A regra, num lugar só: `o_que_falta_no_computador` (a leitura única). "Não deu para saber" (`existe is None`) volta a
+  contar como falta, nas duas tarefas (ajudante e desfazer). "Existe, mas esta conta não lê" continua contando como
+  existe.
+- Caminhos (grep por `o_que_falta_no_computador`, `falta_a_pergunta_do_windows`, `preparar_na_primeira_abertura`,
+  `preparar_ao_abrir`): a primeira abertura (`ui.primeira_vez_se_preciso` → `preparar_ao_abrir(primeira_vez=True)` →
+  `preparar_na_primeira_abertura` → a leitura); as aberturas seguintes (`preparar_ao_abrir(primeira_vez=False)` → a
+  leitura e, se falta, a pergunta); `falta_a_pergunta_do_windows` (chama a mesma leitura). Todos passam pela mesma
+  função; nenhum tem conta própria.
+
+**Item 2. O registro que diz o que não é.**
+- Causa: as frases do registro sobre a consequência ("o ajudante não foi criado; a pergunta volta", "as tarefas estão
+  no Windows; o que faltou o ajudante completa") são escolhidas pela resposta da pergunta ou por "nada falta?", antes ou
+  sem olhar o que a leitura conferiu de verdade.
+- A regra, num lugar só: a leitura única passa a devolver também o que ela não conseguiu conferir
+  (`ler_o_computador` → o que falta e o que existe sem dar para conferir; `o_que_falta_no_computador` devolve só a
+  primeira parte, como hoje). `preparar_na_primeira_abertura` anota a resposta só como fato ("disse Não", "não terminou
+  bem") e escreve UMA frase de desfecho, tirada da leitura: falta → "não ficou preparado... a pergunta volta"; nada
+  falta e tudo conferido com "Sim" → "o computador está preparado (lido no Windows)"; nada falta sem "Sim" → as tarefas
+  já estavam no Windows (lidas agora) e a pergunta não volta; o que não deu para conferir fica dito. O ajudante só é
+  chamado quando a leitura mostra que ele existe (já é assim com o item 1: "nada falta" só com o ajudante lido).
+- Caminhos: só `preparar_na_primeira_abertura` escreve essas frases (grep por "primeira abertura:"); `preparar_ao_abrir`
+  escreve a sua ("abrir o programa: falta preparar o computador") a partir da mesma leitura.
+
+**Item 3. A licença ilegível pulava o resto.**
+- Causa: o item 4 da volta 2 trocou a conferência própria pela da peça (`problemas_da_tarefa_criada`), que, sem a
+  licença lida, acusaria "não deu para ler a licença"; para isso não trazer a pergunta de volta, o ramo da licença
+  ilegível passou a não chamar a peça, e com isso também deixou de conferir o programa, os argumentos e a conta.
+- **O que a conferência antiga cobria (D-827), antes de trocar:** volta 1 (conta própria): existe e foi lida; o
+  comando (caminho normalizado); os argumentos; a conta (o sistema). Volta 2 (a peça): o mesmo (o comando pelo texto)
+  e mais a licença "quem pode mandar rodar"; mas, com a licença ilegível, nada. **Volta 3:** com a licença lida, a peça
+  inteira (como a volta 2); com a licença ilegível, a mesma peça confere o comando, os argumentos e a conta, e só a
+  licença fica de fora (anotada). Cobre tudo o que a volta 1 cobria, em todos os casos.
+- A regra, num lugar só: continua a peça, `core.windows.problemas_da_tarefa_criada`, sem mudar `core/windows.py`. Ela
+  só confere a licença quando o desenho pedido tem uma (`if esperado["quem_pode"]`); com a licença ilegível, o
+  programa lhe dá o desenho do ajudante sem a licença (o mesmo `xml_da_tarefa`, com a licença vazia). Nada de conta
+  copiada nem de filtrar o texto do problema.
+- Jeito mais simples (D-819) e por que este: um parâmetro "não confira a licença" na peça seria mais claro de ler, mas
+  muda `core/windows.py` (a gerente pediu para parar antes); filtrar a frase "não deu para ler a licença" da lista da
+  peça seria mais curto, mas depende do texto da frase (quebra calado se o texto mudar). O desenho sem a licença usa a
+  regra que a peça já tem e não muda nada fora de `atualizacao.py`.
+- Caminhos: só `o_que_falta_no_computador` (a leitura única) confere o ajudante lido; a criação (`criar_tarefa` e
+  `core.windows.criar_tarefa`) não muda e continua pedindo a licença.
+
+**Item 4. As proteções sem teste.** A lista do relatório 1 (M05 argumentos e conta do ajudante; M06 a tarefa desfazer;
+M07 o Visual C++; M08 a instalação antiga; M27 o motor no teste rápido) e as que o relatório 2 diz que continuam sem
+teste (M05, M27). Desde a volta 2, o Visual C++ e a instalação antiga não são lidos pela pergunta: a proteção que ficou
+é "o ajudante completa os dois toda vez que roda" (`rodar_ao_ligar` → `preparar_o_computador`). Para cada uma: um teste
+em que só ela falta, e a prova por mutação numa cópia minha (`git worktree add --detach`), com todas as mutações dos
+relatórios 1 e 2 refeitas no código de agora (lista completa em "Cada proteção e o teste que a acusa (volta 3)").
+
+### O que pode falhar e o que o programa faz (volta 3)
+
+- O Windows não responde à leitura (PowerShell barrado, tempo esgotado): falta → a pergunta volta (D-826); o registro
+  diz "não deu para ler ... no Windows (motivo)". Nunca "preparado" sem ler.
+- O Windows responde "existe, mas esta conta não lê": conta como existe (a tarefa só nasce com licença de
+  administrador); o registro diz que não deu para conferir o conteúdo.
+- A licença do ajudante não vem: o programa, os argumentos e a conta são conferidos; o registro diz que a licença não
+  foi conferida.
+- A pergunta é respondida com "Não", "falhou" ou "Sim": a frase de desfecho vem da leitura feita depois; nunca uma
+  consequência que a leitura não confirmou.
+- Um erro inesperado na leitura ou na pergunta: como hoje, `preparar_ao_abrir` anota e conta como falta (a pergunta
+  volta).
+- Sem internet, sem licença, disco cheio, desligar no meio: nada disso é novo aqui (a leitura não usa a rede nem
+  grava nada além do registro).
+
+### O que li da peça de fora e onde (volta 3)
+
+- Nenhuma peça de fora nova. Uso a peça única de sempre: `core.windows.ler_tarefa` (core/windows.py:1966: não existe
+  → `existe=False`; acesso negado → `existe=True, lida=False`; qualquer outra resposta ou o PowerShell que não
+  responde → `existe=None`) e `core.windows.problemas_da_tarefa_criada` (core/windows.py:2000: sem `existe`/`lida` →
+  um problema; compara comando, argumentos e conta pelo texto; a licença só se o pedido tiver uma, e então "não deu
+  para ler a licença" vira problema).
