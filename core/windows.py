@@ -327,6 +327,16 @@ class _THREADENTRY32(ctypes.Structure):
                 ("dwFlags", wintypes.DWORD)]
 
 
+class _PROCESSENTRY32W(ctypes.Structure):
+    """PROCESSENTRY32W (Toolhelp32): um processo da lista do Windows, com o número e o nome do programa (sem o
+    caminho), lidos sem abrir o processo (`programas_rodando_de`)."""
+
+    _fields_ = [("dwSize", wintypes.DWORD), ("cntUsage", wintypes.DWORD), ("th32ProcessID", wintypes.DWORD),
+                ("th32DefaultHeapID", ctypes.c_size_t), ("th32ModuleID", wintypes.DWORD),
+                ("cntThreads", wintypes.DWORD), ("th32ParentProcessID", wintypes.DWORD),
+                ("pcPriClassBase", wintypes.LONG), ("dwFlags", wintypes.DWORD), ("szExeFile", wintypes.WCHAR * 260)]
+
+
 class _Bibliotecas:
     """As funções do Windows que a peça usa, com os tipos certos e `use_last_error=True` (o erro de cada chamada
     fica guardado e é lido por `_ler_erro`, nunca um erro velho de outra chamada)."""
@@ -361,6 +371,10 @@ class _Bibliotecas:
             (k.CreateToolhelp32Snapshot, [wintypes.DWORD, wintypes.DWORD], wintypes.HANDLE),
             (k.Thread32First, [wintypes.HANDLE, ctypes.POINTER(_THREADENTRY32)], wintypes.BOOL),
             (k.Thread32Next, [wintypes.HANDLE, ctypes.POINTER(_THREADENTRY32)], wintypes.BOOL),
+            (k.Process32FirstW, [wintypes.HANDLE, ctypes.POINTER(_PROCESSENTRY32W)], wintypes.BOOL),
+            (k.Process32NextW, [wintypes.HANDLE, ctypes.POINTER(_PROCESSENTRY32W)], wintypes.BOOL),
+            (k.QueryFullProcessImageNameW, [wintypes.HANDLE, wintypes.DWORD, wintypes.LPWSTR,
+                                            ctypes.POINTER(wintypes.DWORD)], wintypes.BOOL),
             (a.GetNamedSecurityInfoW, [wintypes.LPCWSTR, ctypes.c_int, wintypes.DWORD, ctypes.POINTER(P),
                                        ctypes.POINTER(P), ctypes.POINTER(P), ctypes.POINTER(P), ctypes.POINTER(P)],
              wintypes.DWORD),
@@ -1821,6 +1835,77 @@ def marca_existe(nome: str) -> bool | None:
     if erro == ERRO_ARQUIVO_NAO_ACHADO:
         return False
     return None
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Os programas que rodam de dentro de uma pasta: só ler (volta 4 do atualizador, 22/11/2026)
+# ---------------------------------------------------------------------------------------------------------------------
+
+_TODOS_OS_PROCESSOS = 0x00000002                # TH32CS_SNAPPROCESS
+_SO_PERGUNTAR_O_CAMINHO = 0x1000                # PROCESS_QUERY_LIMITED_INFORMATION
+
+
+def _dentro_de(caminho: str, pastas: tuple[str, ...]) -> bool:
+    """O arquivo `caminho` está dentro de uma das `pastas` (já normalizadas por `os.path.normcase(normpath)`)?"""
+    c = os.path.normcase(os.path.normpath(caminho))
+    return any(c.startswith(p + os.sep) for p in pastas)
+
+
+def programas_rodando_de(pasta: Path | str) -> list[tuple[int, str]] | None:
+    """Os processos cujo programa está dentro de `pasta` (em qualquer conta), lidos agora no Windows: [(número,
+    caminho)], [] se nenhum, None se o Windows não deu a lista.
+
+    É a mesma pergunta que o Velopack faz antes de fechar à força o que roda na pasta dele (util_windows.rs,
+    `get_processes_running_in_directory`: o caminho de cada processo pelo `QueryFullProcessImageNameW`), feita ANTES,
+    para o atualizador não pedir a troca com o programa ainda aberto ou fechando (D-828: "o nosso programa garante que
+    o programa terminou de fechar antes de a troca começar"). Como: a lista do Windows (`CreateToolhelp32Snapshot`)
+    dá o número e o nome de cada processo sem abri-lo; o caminho vem de `OpenProcess` só para perguntar
+    (`PROCESS_QUERY_LIMITED_INFORMATION`) e `QueryFullProcessImageNameW`. Um processo cujo caminho não deu para ler
+    (outra conta sem licença, um processo protegido do Windows) conta como de dentro se o NOME dele é o de um
+    programa (.exe) que está na pasta: nunca se dá como fechado o que não deu para conferir. Só lê; não fecha nada.
+    Seguro mexer: as frases. Arriscado: comparar só pelo nome (outro programa com o mesmo nome contaria) ou só pelo
+    caminho (o processo que não deixa ler o caminho sumiria da conta)."""
+    w = _win()
+    pastas = tuple({os.path.normcase(os.path.normpath(str(pasta))),
+                    os.path.normcase(os.path.normpath(os.path.realpath(str(pasta))))})
+    try:
+        nomes = {p.name.lower() for p in Path(pasta).rglob("*.exe")}
+    except OSError:
+        nomes = set()
+    lista = w.kernel32.CreateToolhelp32Snapshot(_TODOS_OS_PROCESSOS, 0)
+    if not lista or lista == ctypes.c_void_p(-1).value:
+        return None
+    achados: list[tuple[int, str]] = []
+    try:
+        linha = _PROCESSENTRY32W()
+        linha.dwSize = ctypes.sizeof(linha)
+        if not w.kernel32.Process32FirstW(lista, ctypes.byref(linha)):
+            return None
+        while True:
+            pid, nome = int(linha.th32ProcessID), str(linha.szExeFile)
+            if pid:
+                caminho = None
+                alca = w.kernel32.OpenProcess(_SO_PERGUNTAR_O_CAMINHO, False, pid)
+                if alca:
+                    try:
+                        buffer = ctypes.create_unicode_buffer(32768)
+                        tamanho = wintypes.DWORD(len(buffer))
+                        if w.kernel32.QueryFullProcessImageNameW(alca, 0, buffer, ctypes.byref(tamanho)):
+                            caminho = buffer.value
+                    finally:
+                        w.kernel32.CloseHandle(alca)
+                if caminho is not None:
+                    if _dentro_de(caminho, pastas):
+                        achados.append((pid, caminho))
+                elif nome.lower() in nomes:
+                    achados.append((pid, f"{nome} (o caminho não deu para ler)"))
+            if not w.kernel32.Process32NextW(lista, ctypes.byref(linha)):
+                if _ler_erro() != 18:                   # ERROR_NO_MORE_FILES: a lista acabou; outro erro: lista cortada
+                    return None
+                break
+    finally:
+        w.kernel32.CloseHandle(lista)
+    return achados
 
 
 # ---------------------------------------------------------------------------------------------------------------------

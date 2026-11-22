@@ -1,0 +1,15 @@
+E           AttributeError: module 'core.windows' has no attribute 'programas_rodando_de'
+E       AssertionError: assert ('aplicando' == 'pendente'
+E       TypeError: ha_programa_aberto() got an unexpected keyword argument 'roda'
+E       TypeError: ha_programa_aberto() got an unexpected keyword argument 'roda'
+E       TypeError: ha_programa_aberto() got an unexpected keyword argument 'roda'
+E       TypeError: ha_programa_aberto() got an unexpected keyword argument 'roda'
+E       AttributeError: module 'atualizacao' has no attribute 'o_que_roda_do_programa'
+FAILED tests/test_atualizador_volta4.py::test_conserto1_a_peca_le_no_windows_o_que_roda_de_uma_pasta
+FAILED tests/test_atualizador_volta4.py::test_conserto1_com_o_programa_ainda_rodando_de_current_o_ajudante_nao_troca
+FAILED tests/test_atualizador_volta4.py::test_conserto1_o_que_termina_dentro_da_espera_deixa_trocar
+FAILED tests/test_atualizador_volta4.py::test_conserto1_lista_que_nao_deu_para_ler_ou_programa_que_nao_fecha_nao_troca[None]
+FAILED tests/test_atualizador_volta4.py::test_conserto1_lista_que_nao_deu_para_ler_ou_programa_que_nao_fecha_nao_troca[lido1]
+FAILED tests/test_atualizador_volta4.py::test_conserto1_com_a_marca_da_janela_nao_espera_e_pelo_codigo_so_a_marca
+FAILED tests/test_atualizador_volta4.py::test_conserto1_o_proprio_ajudante_nao_conta
+7 failed, 2 passed in 3.72s

@@ -115,6 +115,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 from typing import Callable
@@ -804,13 +805,62 @@ def _marca_existe(nome: str) -> bool:
     return False
 
 
-def ha_programa_aberto() -> bool:
-    """Alguma janela do programa esta aberta (em qualquer conta)?
+def o_que_roda_do_programa(ler: Callable[[Path], list | None] | None = None) -> list[str] | None:
+    """Os programas que rodam agora de dentro da pasta do programa (<raiz>\\current), fora este processo, lidos no
+    Windows pela peca unica (core.windows.programas_rodando_de): ["EditorImpressao.exe (5648)", ...], [] se nenhum,
+    None se o Windows nao deu a lista. `ler` so muda nos testes."""
+    if ler is None:
+        from core import windows
 
-    Desde 17/11/2026 (D-748), o brasao girando tambem conta: enquanto ele gira,
-    o programa esta abrindo, e o ajudante nao troca os arquivos por baixo dele.
+        ler = windows.programas_rodando_de
+    lista = ler(pasta_do_programa())
+    if lista is None:
+        return None
+    return [f"{Path(caminho).name} ({pid})" for pid, caminho in lista if pid != os.getpid()]
+
+
+# Volta 4 (22/11/2026): quanto o ajudante espera o que ainda roda de `current` terminar (o programa fechando, um clique
+# no atalho que sai sozinho) antes de desistir de trocar desta vez. Seguro mudar: o numero (limiar, CLAUDE.md §6).
+ESPERA_O_PROGRAMA_FECHAR_S = 30
+
+
+def ha_programa_aberto(roda: Callable[[], list | None] | None = None, dormir: Callable[[float], None] = time.sleep,
+                       instalado: Callable[[], bool] | None = None) -> bool:
+    """O programa esta aberto, ou ainda rodando? A UNICA pergunta que o ajudante faz antes de pedir a troca.
+
+    1. A marca da janela (MARCA_DE_ABERTO; desde 17/11/2026, D-748, o brasao girando tambem a poe): aberto.
+    2. Volta 4 (D-828, 22/11/2026: "o nosso programa garante que o programa terminou de fechar antes de a troca
+       comecar"): no programa instalado, a lista de processos do Windows (o_que_roda_do_programa). A marca some
+       quando a janela fecha, mas o processo ainda pode estar gravando; e um clique no atalho no meio da troca abre um
+       processo de `current` por um instante. Sem a marca e com algo ainda rodando, espera ate
+       ESPERA_O_PROGRAMA_FECHAR_S; se continuar, conta como aberto (nao troca desta vez; o registro diz o que roda).
+       A lista que nao deu para ler conta como aberto: nunca se troca sem ter conferido.
+    Pelo codigo (nao instalado) so a marca, como antes. `roda`, `dormir` e `instalado` so mudam nos testes.
+    Arriscado: trocar sem a lista (o Velopack fecharia a forca o programa que ainda grava).
     """
-    return _marca_existe(MARCA_DE_ABERTO)
+    if _marca_existe(MARCA_DE_ABERTO):
+        return True
+    if not (instalado or instalado_pelo_velopack)():
+        return False
+    ler = roda or o_que_roda_do_programa
+    fim = time.monotonic() + ESPERA_O_PROGRAMA_FECHAR_S
+    esperou = False
+    while True:
+        agora = ler()
+        if agora == []:
+            if esperou:
+                registrar("antes de trocar: o que rodava do programa terminou; pode trocar")
+            return False
+        if time.monotonic() >= fim:
+            o_que = ", ".join(agora) if agora else "não deu para ler a lista de programas do Windows"
+            registrar(f"antes de trocar: ainda roda do programa ({o_que}); não troco agora")
+            return True
+        if not esperou:
+            o_que = ", ".join(agora) if agora else "não deu para ler a lista de programas do Windows"
+            registrar(f"antes de trocar: ainda roda do programa ({o_que}); espero até "
+                      f"{ESPERA_O_PROGRAMA_FECHAR_S} s")
+            esperou = True
+        dormir(1)
 
 
 def ha_janelinha() -> bool:
