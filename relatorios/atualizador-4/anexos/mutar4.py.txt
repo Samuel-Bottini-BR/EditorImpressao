@@ -123,6 +123,8 @@ for nome, arquivo, hoje, desligado, teste, filtro in MUTACOES:
     caminho = RAIZ / arquivo
     original = caminho.read_bytes()
     texto = original.decode("utf-8")
+    if "\r\n" in texto:                       # a copia de trabalho no Windows pode estar com CRLF (core.autocrlf)
+        hoje, desligado = hoje.replace("\n", "\r\n"), desligado.replace("\n", "\r\n")
     if texto.count(hoje) != 1:
         linhas.append(f"{nome}: TEXTO NAO ACHADO UMA VEZ ({texto.count(hoje)})")
         continue
