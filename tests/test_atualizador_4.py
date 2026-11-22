@@ -747,6 +747,7 @@ def test_volta3_item2_o_que_nao_deu_para_conferir_fica_dito_e_nada_e_dado_como_p
     nome = atualizacao.NOME_DA_TAREFA
 
     def criar_sem_licenca_legivel(comando=None):
+        """O ajudante que a pergunta cria, mas com a licenca que o Windows nao deixa ler (licenca vazia)."""
         original(comando)
         lido = windows_de_mentira.tarefas[nome]
         windows_de_mentira.tarefas[nome] = windows.Tarefa(nome, True, True, comando=lido.comando,
@@ -851,13 +852,18 @@ def test_volta3_m07_m08_o_ajudante_completa_o_visual_c_e_a_instalacao_antiga_tod
     feito = []
 
     class Gerente:
+        """O Velopack de mentira: instalado (nao portatil), na 1.1.0, sem versao nova; anota quando procura."""
+
         def get_is_portable(self):
+            """Instalado de verdade (o ajudante prepara o computador)."""
             return False
 
         def get_current_version(self):
+            """A versao que roda."""
             return "1.1.0"
 
         def check_for_updates(self):
+            """Procurar a versao nova: anota a hora em que foi chamado e diz que nao ha."""
             feito.append("procurar")
             return None
 
