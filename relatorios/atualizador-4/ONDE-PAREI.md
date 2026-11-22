@@ -1148,7 +1148,9 @@ num lugar só, um de cada vez, com commit e push em cada um. Antes do código, e
 - Plano abaixo (`00506da4`). A gerente conferiu e mandou seguir (respostas em "Para a gerente decidir", no fim:
   1 sim, 2 sim, 3 saída B, 4 a troca sem o script também com a marca).
 - Conserto 1: 1a `b756ddc2` (a pasta de trabalho do lançado solto), 1b `3adea01f` (o que roda de `current`), 1c
-  `586b483f` (a marca da troca, o vigia, o só de reabrir). Próximo: conserto 2 (a pergunta espera a janela).
+  `586b483f` (a marca da troca, o vigia, o só de reabrir). Conserto 2 `1e5ea67d`. Conserto 3 `929195b4`. D-827
+  `5a1aa6b2`, `7ca2c55f`; mutações `b3f6d99f` (34 de 34). GitHub: ver "Testes (volta 4)".
+- **Esperando a gerente:** os 3 testes da volta 1 do conserto 2 em `tests/test_atualizador_4.py` (ver "Perguntas").
 
 ### Decisões que esta tarefa precisa cumprir (volta 4)
 
@@ -1412,7 +1414,246 @@ Item 3 (saída B):
    de longe) fica sem a proteção do clique no atalho. Fica como ressalva nesta entrega? (Fechar também pediria um
    vigia do lado do sistema, ou trocar só pelo script, o que mexe no atualizar de longe da D-736.)
 
+### Respostas da gerente (volta 4)
+
+1. `core/windows.py`: sim, só os três pedaços (a pasta de trabalho do lançado solto, ler os processos de uma pasta,
+   ler a janela da frente). 2. A pergunta espera a janela vir para a frente: sim; registrar quando esperou e quanto;
+   conferir "não saiu da janela" (vem logo) e "minimizada" (espera, nada trava). 3. Saída B; os 3 testes da D-774 podem
+   mudar; os 4 itens do icacls saem do porteiro; a pasta antiga do ProgramData não pode atrapalhar. 4. A troca sem o
+   script também com a mesma marca, e o programa abre no fim; o atualizar de longe não muda de comportamento.
+
+### O que foi feito (volta 4)
+
+1. **Conserto 1a** (`b756ddc2`): a peça lança todo processo solto com a pasta de trabalho na pasta do sistema (a causa
+   da troca que desistia); o script da troca reabre o programa na pasta dele (`Set-Location`).
+2. **Conserto 1b** (`3adea01f`): antes de pedir a troca, o ajudante lê no Windows o que roda de `current`
+   (`core.windows.programas_rodando_de`, a lista de processos e o caminho de cada um); sem a marca da janela e com algo
+   ainda rodando, espera até 30 s; se continuar (ou a lista não vier), não troca e diz o que roda.
+3. **Conserto 1c** (`586b483f`): a marca da troca. O script da troca a pega na primeira linha; a troca que o ajudante
+   faz sem o script lança o vigia (`script_do_vigia_da_troca`), que a segura enquanto o estado diz "aplicando" (e
+   durante a volta para a anterior). O único pedido de troca ao Velopack (`GerenteComAMarcaDaTroca`, que
+   `criar_gerente` sempre devolve) só troca com a marca conferida no Windows; sem ela, a versão continua esperando e
+   entra na próxima abertura. A abertura comum no meio da troca sai em silêncio antes do brasão; o programa abre sozinho
+   no fim (o script da troca, ou o script só de reabrir, que um clique deixa pronto; dois cliques, um só reabre).
+4. **Conserto 2** (`1e5ea67d`): a pergunta do Windows só sai com a janela do programa (ou um aviso dela) na frente.
+   Na frente já: na hora. Fora da frente: uma tentativa de trazer (nunca a minimizada), e espera em silêncio, no fio de
+   trás, até ela vir; fechou antes: não pergunta. O registro diz quando esperou e quanto.
+5. **Conserto 3** (`929195b4`): a pasta dos testes à distância (o caderninho, o script e o registro do desfazer) é a
+   pasta segura da peça, em Arquivos de Programas, com as licenças de fábrica; saiu o `icacls` com `/T`. Depois de
+   preparar, o executor lê as licenças de verdade (`core.windows.conferir_pasta_segura`); pasta que não confere: "não
+   deu certo". Os 3 testes antigos da D-774 mudaram; a lista do porteiro desceu de 168 para 164.
+6. **D-827** (`5a1aa6b2`): testes para cada proteção nova; e dois defeitos achados pelos testes de verdade, consertados
+   no mesmo commit: o vigia soltava a marca com o estado que não existe (o `Get-Content` em `SilentlyContinue` não ia
+   para o `catch`); e a gravação do estado levava "acesso negado" quando um script o lia no mesmo instante (risco que já
+   existia com o script da troca): `gravar_estado` tenta de novo por até 3 s.
+
+### Arquivos criados ou alterados (volta 4)
+
+- `core/windows.py` (o lançado solto na pasta do sistema; `programas_rodando_de`; `janela_existe`,
+  `janela_minimizada`, `janela_do_programa_na_frente`)
+- `atualizacao.py` (`ha_programa_aberto`, `o_que_roda_do_programa`, as marcas, `script_do_vigia_da_troca`,
+  `script_de_trocar_e_reabrir(so_reabrir=...)`, `GerenteComAMarcaDaTroca`, `segurar_a_marca_da_troca`,
+  `troca_em_andamento`, `abrir_quando_a_troca_acabar`, a saída em `atender_linha_de_comando`,
+  `esperar_a_janela_na_frente`, `preparar_na_primeira_abertura`, `gravar_estado`)
+- `core/testes_a_distancia.py` (a pasta segura: `pasta_dos_testes`, `_comando_criar_a_pasta`, o fim de
+  `_comando_anotar_o_antes`, `Executor.conferir_a_pasta_dos_testes`, `preparar_o_desfazer`)
+- `tests/test_atualizador_volta4.py` (novo)
+- `tests/test_decisoes_desinstalar.py` (só os 3 testes que a D-774 nomeou)
+- `tests/conferencias_excecoes.json` (`excecoes --diminuir`: saíram os 4 itens do `icacls`)
+- `relatorios/atualizador-4/` (este formulário, os experimentos, as reversões, as mutações)
+- `main.py` não mudou (a saída no meio da troca ficou em `atualizacao.atender_linha_de_comando`, que o `main.py` já
+  chama antes do brasão).
+
+### Caminho e função (volta 4)
+
+- **Lançar um processo solto** (o script da troca do "Reiniciar agora" e do "Depois" → `_lancar_pela_peca`; o vigia
+  da troca → `_lancar_pela_peca`; o script só de reabrir → `_lancar_pela_peca`; a janela de prova →
+  `windows.lancar_powershell_solto`) → `core.windows.lancar_powershell_solto` → `_lancar_solto` (a única que chama o
+  `Popen` solto; a pasta de trabalho é sempre a do sistema). Nenhum lugar lança por conta própria (o porteiro: "nada
+  novo").
+- **"O programa ainda roda?" antes de trocar** (o ajudante chamado pela abertura, pelo script da troca ou de longe) →
+  `rodar_ao_ligar` → `procurar_e_preparar(..., ha_programa_aberto)` → a marca da janela + `o_que_roda_do_programa` →
+  `core.windows.programas_rodando_de`.
+- **Pedir a troca ao Velopack** (todos os caminhos: com o script e sem ele) → `procurar_e_preparar` →
+  `GerenteComAMarcaDaTroca.wait_exit_then_apply_updates` (`criar_gerente` sempre o devolve) →
+  `segurar_a_marca_da_troca` (a marca do script, ou o vigia, conferida por `core.windows.marca_existe`).
+- **"Há uma troca acontecendo?"** (a abertura comum pelo atalho, com ou sem um PDF) → `atender_linha_de_comando` →
+  `troca_em_andamento` → `core.windows.marca_existe`; e então `abrir_quando_a_troca_acabar`.
+- **Reabrir o programa no fim** (o script da troca e o só de reabrir) → as mesmas linhas de `script_de_trocar_e_reabrir`
+  (`Set-Location` + o `Start-Process` de sempre, com `$reabrir`).
+- **Ler o estado nos scripts** (o da troca e o vigia) → `_linha_de_ler_a_fase`; a espera da volta → `_linha_da_espera_da_volta`.
+- **A pergunta do Windows da primeira abertura e das seguintes** (a janela da senha com "Agora não", a opção
+  desligada, as aberturas depois do "Não") → `ui.primeira_vez_se_preciso` → `preparar_ao_abrir` →
+  `preparar_na_primeira_abertura` → `esperar_a_janela_na_frente` (→ `core.windows.janela_do_programa_na_frente`,
+  `janela_existe`, `janela_minimizada`, `trazer_para_a_frente`) → `pedir_licenca_ao_windows` → `core.windows.pedir_licenca`.
+- **Onde fica a pasta do desfazer** (o caderninho, o script, o registro; a preparação da primeira abertura, o ligar
+  das Configurações, o desfazer ao desinstalar, a tarefa desfazer) → `pasta_dos_testes` → `core.windows.pasta_segura`.
+  **Criar a pasta**: `_comando_criar_a_pasta` (a preparação) e o mesmo `New-Item` no 1o passo do ligar. **Conferir a
+  pasta**: `preparar_o_desfazer` → `Executor.conferir_a_pasta_dos_testes` → `core.windows.conferir_pasta_segura`.
+
+### Como fica para quem usa e no livro: conferido (volta 4)
+
+Não cliquei no programa instalado nem abri janela na tela do Samuel (o pedido proíbe). O que foi conferido de verdade
+no Windows, sem janela e sem licença: o lançado solto não prende mais a pasta (exp1b e o teste); a lista de processos
+acha um programa de verdade que roda da pasta; a marca da troca, o vigia e o script só de reabrir de verdade (seguram,
+esperam e soltam); dois cliques: um só reabre; a preparação refeita duas vezes regrava o `desfazer.ps1`; as licenças de
+fábrica de Arquivos de Programas passam na regra da pasta segura; a gravação do estado não falha com um script lendo.
+O resto (a pergunta no meio da tela, a troca inteira com o Velopack, a pasta segura criada como administrador) é da
+sessão à vista. O PDF do livro não muda. Problema novo que eu tenha visto: nenhum além das ressalvas abaixo.
+
+### Ressalvas (volta 4)
+
+- **3 testes da volta 1 falham com o conserto 2** (`tests/test_atualizador_4.py`:
+  `test_conserto2_a_janela_do_programa_vai_como_dona_da_pergunta[False/True]` e
+  `test_conserto2_a_janela_que_nao_veio_para_a_frente_fica_anotada`). Eles dão à pergunta janelas de mentira (0x1234,
+  0x99) que o Windows não conhece e esperam a pergunta; pela regra nova, janela que não existe não recebe pergunta.
+  Tentei pôr a janela "na frente" no Windows de mentira desse arquivo (só a peça de mentira, sem mudar nenhuma
+  conferência) e a mudança foi barrada; não mexi. **A gerente decide** (ver "Perguntas", no fim).
+- O "acesso negado" do WaitPid continua no registro do Velopack (é dele, lido no código e provado no exp2; não atrapalha).
+- Outro programa de fora segurando `current` (um antivírus, o Explorador aberto na pasta) não dá para conferir antes: o
+  Velopack tenta 10 vezes e, se não der, a troca falha como hoje (D-718).
+- No meio da troca, o clique no atalho não mostra nada (a janelinha é a D-770, para depois) e o programa abre no fim;
+  se a troca demorar até o limite (~15 min), o clique fica esse tempo sem resposta. Aberto por um PDF (dois cliques no
+  arquivo) no meio da troca: o programa abre no fim sem o PDF.
+- Se o vigia não puder ser lançado do ajudante (o Agendador do Windows não deixar soltar o processo, a peça diz
+  "falhou"), a troca sem o script não acontece naquela hora: a versão fica esperando e entra na próxima abertura (com a
+  janelinha do "Depois"). No atualizar de longe, só nesse caso de falha, a versão entraria na próxima abertura em vez
+  de na hora. Não provado: o vigia como o sistema só roda na sessão à vista.
+- A marca "Global" criada pela conta comum (o script da troca): o Windows deixa (a marca da janela, também Global, já
+  funciona assim); não provado com a conta do Kaique.
+- A pergunta que espera a janela não tem limite: se o Kaique nunca voltar ao programa, nada é perguntado naquela
+  abertura (a próxima pergunta de novo, D-741).
+- A conferência da pasta segura depois de preparar só roda no `--preparar-o-computador` (a primeira abertura); o
+  ligar das Configurações (testes à distância, fora desta entrega) cria a mesma pasta, mas não a confere.
+- No PC do Samuel, que ligou os testes pela versão de antes (etapa 5), o caderninho velho fica no ProgramData e o
+  desfazer novo não o vê. A pasta velha fica onde está (nada a lê, nada a muda; a limpeza é do passo 5).
+- Uma pasta de teste ficou trancada fora do projeto, criada pelo teste de reversão do conserto 3 rodado no código de
+  antes (o icacls de verdade numa pasta temporária do pytest):
+  `C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-5342\test_conserto3_refazer_a_prepa0\pasta-segura`. Não
+  apaguei (fora do projeto); o pytest limpa as pastas velhas dele sozinho, e se não conseguir, ela só ocupa um arquivo.
+- No PC, `tests/test_decisoes_desinstalar.py` dá 25 falhas também no código de antes, porque a pasta temporária do
+  pytest fica no C: e o Windows de mentira desse arquivo recusa comando que cite o C:; rodei com a pasta temporária no
+  D: (`--basetemp`, numa pasta minha, já apagada): 46 de 46.
+
+### Ideias e bugs (volta 4)
+
+- **Bug (22/11, não impede; já existia):** `atualizacao._marca_existe` repete `core.windows.marca_existe`, mas lê o
+  erro do jeito antigo (sem `use_last_error`) e entende "sem licença" como "não existe". Hoje só lê marcas da própria
+  conta; a marca da troca é lida pela peça.
+- **Ideia:** o brasão girando tomar a frente quando aparece e passá-la à janela principal
+  (`AllowSetForegroundWindow`), para a janela vir na frente sozinha mais vezes (mexe em `ui/`).
+- **Ideia:** a janelinha "Atualizando" (D-770) também na saída no meio da troca: hoje o clique não mostra nada.
+
+### Como cumpri cada uma (volta 4)
+
+- **D-828 (1), a troca troca de verdade:** a causa (o script da troca prendendo `current`) saiu na peça
+  (`test_conserto1_o_lancado_solto_nao_prende_a_pasta_de_trabalho_de_quem_lancou`, de verdade no Windows; no código
+  de antes "PRESA 32", `anexos/reversao-volta4-item1a.txt`). "O programa terminou de fechar", conferido de verdade:
+  `test_conserto1_com_o_programa_ainda_rodando_de_current_o_ajudante_nao_troca` (um processo de verdade rodando da
+  pasta; no código de antes "aplicando", `reversao-volta4-item1b.txt`) e `test_conserto1_a_peca_le_no_windows_o_que_roda_de_uma_pasta`.
+- **D-828 (1), abrir pelo atalho no meio não estraga:** `test_conserto1_abrir_pelo_atalho_no_meio_da_troca_sai_em_silencio_e_abre_no_fim`
+  (marca de verdade; no código de antes abria, `reversao-volta4-item1c.txt`), o vigia de verdade
+  (`test_conserto1_o_vigia_de_verdade_segura_a_marca_ate_a_troca_acabar`), o só de reabrir de verdade
+  (`test_conserto1_o_script_so_de_reabrir_de_verdade_espera_a_troca_acabar`), dois cliques um só reabre
+  (`test_d827_dois_cliques_no_meio_da_troca_so_um_reabre`).
+- **Pedido da gerente, ponto 8 (a troca sem o script com a mesma marca):** `GerenteComAMarcaDaTroca` é o único pedido
+  de troca (`test_conserto1_o_gerente_do_programa_e_sempre_o_que_segura_a_marca`,
+  `test_conserto1_sem_a_marca_segura_o_velopack_nem_e_chamado_e_a_versao_continua_esperando`,
+  `test_conserto1_segurar_a_marca_usa_a_do_script_ou_lanca_o_vigia_e_confere`). O atualizar de longe passa pelo mesmo
+  caminho e não muda de comportamento (só se o vigia não puder ser lançado: ressalva).
+- **D-828 (2) e D-806, a pergunta no meio da tela:** `test_conserto2_a_pergunta_so_sai_depois_que_a_janela_vem_para_a_frente`
+  (no código de antes perguntava na primeira leitura, `reversao-volta4-item2.txt`); os dois casos da gerente:
+  `test_conserto2_o_kaique_nao_saiu_da_janela_a_pergunta_vem_logo` (sem espera, sem registro de espera) e
+  `test_conserto2_a_janela_minimizada_a_pergunta_espera_ela_voltar_sem_a_desminimizar` (espera, no fio de trás, sem
+  desminimizar; o registro diz quanto). Nada trava: a espera roda no fio de trás de sempre
+  (`tests/test_atualizador_4.py::test_conserto1_a_tela_roda_a_pergunta_por_tras_e_nao_no_fio_da_tela`, que passa).
+- **D-828 (3), refazer a preparação dá certo:** `test_conserto3_refazer_a_preparacao_regrava_o_desfazer` (de verdade
+  no Windows; no código de antes "acesso negado" no desfazer.ps1, o mesmo erro da prova, `reversao-volta4-item3.txt`);
+  a pasta protegida: `test_conserto3_as_licencas_de_fabrica_de_arquivos_de_programas_passam_na_regra_da_pasta_segura`
+  (lido de verdade) e `test_conserto3_a_preparacao_so_da_certo_com_a_pasta_conferida`; a pasta antiga do ProgramData não
+  entra: `test_conserto3_nenhum_comando_de_licenca_a_mao_e_a_pasta_antiga_nao_entra`.
+- **D-774:** só os 3 testes nomeados mudaram, cada um falhando no código de antes (`reversao-volta4-item3.txt`).
+- **D-770:** nenhuma janelinha nem frase nova: a saída no meio da troca é silenciosa; os textos novos vão só ao registro.
+- **D-733, D-735, D-741, D-749 (D-826):** as provas de antes passam (`tests/test_decisoes_ajudante_da_atualizacao.py` 37,
+  `tests/test_decisoes_preparo_d749.py` 9); a janela fechada antes da pergunta não pergunta e a próxima abertura
+  pergunta (`test_conserto2_a_janela_fechou_antes_nada_e_perguntado`).
+- **D-731:** a tarefa desfazer continua nascendo sempre e apontando para o script (agora na pasta segura):
+  `tests/test_decisoes_desinstalar.py` 46 de 46.
+- **D-718, D-719:** a volta e a frase não mudaram; o vigia segura a marca também durante a volta
+  (`test_d827_o_vigia_segura_a_marca_durante_a_volta_para_a_anterior`).
+- **D-767:** o que deu para provar no Windows de verdade, sem licença e sem janela, foi provado (listado acima); o
+  resto é da sessão à vista. Nada perguntou "Deseja permitir...?" e nada abriu janela.
+- **D-779:** o Velopack 1.2.161 fica; a proteção em volta dele é `GerenteComAMarcaDaTroca`.
+- **D-811, D-827:** a lista "proteção → teste" abaixo, provada por mutação na minha cópia (`anexos/mutacoes-volta4.txt`).
+- **D-819:** o jeito mais simples de cada item e por que não está no plano ("A causa, a regra e todos os caminhos
+  (volta 4)").
+- **D-824:** um conserto por commit, com push (ver "Commit (volta 4)").
+- **D-605:** os testes dos arquivos tocados e as provas das decisões passam, menos os 3 da volta 1 do conserto 2
+  (ressalva e pergunta).
+
+### Cada proteção e o teste que a acusa (volta 4)
+
+Cada uma desligada sozinha na minha cópia de trabalho (o arquivo volta ao que era logo depois), e o arquivo de teste
+rodado com o filtro: o script é `anexos/mutar4.py.txt`; o resultado, `anexos/mutacoes-volta4.txt` (34 de 34 acusadas).
+Os testes estão todos em `tests/test_atualizador_volta4.py`.
+
+- Q01 o lançado solto nasce na pasta do sistema → `test_conserto1_o_lancado_solto_nao_prende_a_pasta_de_trabalho_de_quem_lancou`
+- Q02 o programa reaberto nasce na pasta dele → `test_conserto1_o_programa_reaberto_pela_troca_nasce_na_pasta_dele`
+- Q03 a lista de processos antes de trocar → `test_conserto1_com_o_programa_ainda_rodando_de_current_o_ajudante_nao_troca`
+- Q04 a lista que não deu para ler conta como aberto → `test_conserto1_lista_que_nao_deu_para_ler_ou_programa_que_nao_fecha_nao_troca`
+- Q05 a espera do que ainda está fechando → `test_conserto1_o_que_termina_dentro_da_espera_deixa_trocar` (e os de cima)
+- Q06 o próprio ajudante não conta → `test_conserto1_o_proprio_ajudante_nao_conta`
+- Q07 o processo sem caminho conta pelo nome → `test_d827_o_processo_que_nao_deixa_ler_o_caminho_conta_se_o_nome_e_o_do_programa`
+- Q08 a lista cortada é "não sei" → `test_d827_a_lista_que_o_windows_nao_deu_inteira_e_nao_sei`
+- Q09 o script da troca segura a marca → `test_conserto1_o_script_da_troca_segura_as_duas_marcas_desde_a_primeira_linha`
+- Q10 a abertura no meio da troca sai → `test_conserto1_abrir_pelo_atalho_no_meio_da_troca_sai_em_silencio_e_abre_no_fim`
+- Q11 e Q12 o reaberto pela troca e os ganchos do Velopack não saem → `test_conserto1_o_reaberto_pela_troca_os_ganchos_e_os_modos_escondidos_nao_saem`
+- Q13 a marca que não deu para ler não segura a abertura → `test_conserto1_a_marca_que_nao_existe_ou_nao_deu_para_ler_nao_segura_a_abertura`
+- Q14 cada fase da troca lê a marca → `test_d827_cada_fase_da_troca_le_a_marca`
+- Q15 quem já vai reabrir não ganha outro → `test_conserto1_quem_ja_vai_reabrir_nao_ganha_outro`
+- Q16 o só de reabrir espera a troca → `test_conserto1_o_script_so_de_reabrir_de_verdade_espera_a_troca_acabar`
+- Q17 dois cliques, um só reabre → `test_d827_dois_cliques_no_meio_da_troca_so_um_reabre`
+- Q19 a leitura do estado para no erro (o vigia não solta a marca sem ler) → `test_d827_o_vigia_nao_solta_a_marca_por_um_estado_que_nao_deu_para_ler`
+- Q20 o vigia espera a volta → `test_d827_o_vigia_segura_a_marca_durante_a_volta_para_a_anterior`
+- Q21 o vigia segura a marca → `test_conserto1_o_vigia_de_verdade_segura_a_marca_ate_a_troca_acabar`
+- Q22 o pedido de troca só com a marca → `test_conserto1_sem_a_marca_segura_o_velopack_nem_e_chamado_e_a_versao_continua_esperando`
+- Q23 o gerente do programa é o que segura a marca → `test_conserto1_o_gerente_do_programa_e_sempre_o_que_segura_a_marca`
+- Q24 e Q25 segurar a marca confere no Windows e usa a do script → `test_conserto1_segurar_a_marca_usa_a_do_script_ou_lanca_o_vigia_e_confere`
+- Q26 a pergunta espera a janela na frente → `test_conserto2_a_pergunta_so_sai_depois_que_a_janela_vem_para_a_frente`
+- Q27 não traz a janela minimizada → `test_conserto2_a_janela_minimizada_a_pergunta_espera_ela_voltar_sem_a_desminimizar`
+- Q28 a janela que fechou não recebe pergunta → `test_conserto2_a_janela_fechou_antes_nada_e_perguntado`
+- Q29 e Q30 a leitura da frente (minimizada nunca; o aviso do programa conta) → `test_d827_a_leitura_da_frente_reconhece_o_aviso_do_programa_e_a_janela_minimizada`
+- Q31 a preparação confere a pasta → `test_conserto3_a_preparacao_so_da_certo_com_a_pasta_conferida`
+- Q32 e Q33 o executor confere a pasta segura → `test_conserto3_o_executor_de_verdade_le_a_pasta_segura`
+- Q34 a pasta é a pasta segura → `test_conserto3_nenhum_comando_de_licenca_a_mao_e_a_pasta_antiga_nao_entra`
+- Q35 a gravação do estado tenta de novo → `test_d827_a_gravacao_do_estado_espera_quem_o_segura_aberto_um_instante`,
+  `test_d827_a_leitura_do_estado_pelos_scripts_nunca_faz_a_gravacao_falhar`
+- A tranca à mão que saiu (o defeito): `test_conserto3_refazer_a_preparacao_regrava_o_desfazer` e os 3 testes da D-774
+  em `tests/test_decisoes_desinstalar.py` (falham com o `icacls` de volta: `reversao-volta4-item3.txt`).
+
+### Testes (volta 4)
+
+- No PC, um arquivo por vez: `tests/test_atualizador_volta4.py` 55; `tests/test_decisoes_ajudante_da_atualizacao.py` 37;
+  `tests/test_decisoes_atualizacao.py` 38; `tests/test_decisoes_preparo_d749.py` 9; `tests/test_decisoes_testes_a_distancia.py`
+  13; `tests/test_decisoes_desinstalar.py` 46 (com a pasta temporária no D:; ver ressalvas) e `_pasta.py` 6;
+  `tests/test_decisoes_brasao.py` 22; `tests/test_windows_peca.py` 68 (3 pulados pelo ambiente); `tests/test_nome_do_pacote.py`
+  5; `tests/test_conferencias_codigo.py` 122; `tests/test_conferencias_excecoes.py` 14; `test_promessas.py::test_p215` 1.
+  **`tests/test_atualizador_4.py`: 54 passam, 3 falham** (os do conserto 2 da volta 1: ressalvas e pergunta).
+- Porteiro: "nada novo", 164 lugares (era 168). Tabela: 0 arquivos sem linha.
+- Reversão (cada teste novo no código de antes do seu conserto): `anexos/reversao-volta4-item1a.txt`, `-item1b.txt`,
+  `-item1c.txt`, `-item2.txt`, `-item3.txt`.
+- GitHub: RODADA_GITHUB.
+
 ### Perguntas para o Samuel (volta 4)
 
-Nenhuma por enquanto: os 4 pontos acima são da gerente (o ponto 3, se for a saída A, precisa do "sim" dele para o
-porteiro).
+Nenhuma para ele. **Uma para a gerente:** os 3 testes da volta 1 em `tests/test_atualizador_4.py` (do conserto 2)
+dão à pergunta uma janela que não existe no Windows e esperam a pergunta. Com a regra nova (D-806: só com a janela do
+programa na frente), janela que não existe não recebe pergunta. Sugestão: o Windows de mentira desse arquivo passa a
+dizer que a janela dada está na frente (duas linhas no `instalar`, nenhuma conferência muda); a outra saída é a regra
+nova perguntar mesmo com uma janela que o Windows não conhece (seria perguntar para piscar). Tentei a primeira e a
+mudança foi barrada; espero a decisão.
+
+### Commit (volta 4)
+
+- Plano `00506da4`. Conserto 1: 1a `b756ddc2`, 1b `3adea01f`, 1c `586b483f`. Conserto 2 `1e5ea67d`. Conserto 3
+  `929195b4`. D-827 `5a1aa6b2` e `7ca2c55f`. Formulário: COMMIT_FORMULARIO.
