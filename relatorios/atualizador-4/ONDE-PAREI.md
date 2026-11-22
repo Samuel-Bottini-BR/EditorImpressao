@@ -353,7 +353,7 @@ Conserto 4 (o motor):
 ## Cada proteção e o teste que falha sem ela
 
 (Cada teste falha no código de antes do seu conserto: `anexos/reversao-conserto1-codigo-antigo.txt` a
-`anexos/reversao-conserto4-codigo-antigo.txt`.)
+`anexos/reversao-conserto4-codigo-antigo.txt`. Os itens P01 a P71 no fim são a volta 3 (D-827): a lista inteira refeita no código de agora, cada proteção desligada sozinha numa cópia, `anexos/mutacoes-volta3.txt`, com o script `anexos/mutar3.py.txt`: 60 de 60 acusadas.)
 - O "Não" da peça não vira preparado: `tests/test_atualizador_4.py::test_conserto1_o_nao_do_windows_nao_vira_preparado`, `tests/test_decisoes_ajudante_da_atualizacao.py::test_d733_disse_nao_fica_anotado_e_nada_quebra`.
 - "Sim" só conta com o Windows mostrando o ajudante: `tests/test_atualizador_4.py::test_conserto1_sim_so_conta_com_o_windows_mostrando_o_ajudante`.
 - O ajudante de outro programa conta como falta: `tests/test_atualizador_4.py::test_conserto1_ajudante_de_outro_programa_conta_como_falta`.
@@ -386,6 +386,67 @@ Conserto 4 (o motor):
 - A mesma conferência do motor: `tests/test_atualizador_4.py::test_conserto4_o_motor_no_lugar_e_a_mesma_conferencia`.
 - O ajudante põe o motor antes de procurar, nunca no portátil: `tests/test_atualizador_4.py::test_conserto4_o_ajudante_poe_o_motor_antes_de_procurar_e_nunca_no_portatil`.
 - O instalado procura o motor só no lugar dele, e o teste rápido usa a mesma busca: `tests/test_atualizador_4.py::test_conserto4_o_programa_instalado_procura_o_motor_so_no_lugar_dele`.
+
+- P01 o ajudante que nao existe deixa de faltar (V07) → `tests/test_atualizador_4.py::test_conserto1_o_nao_do_windows_nao_vira_preparado`, `tests/test_atualizador_4.py::test_conserto1_sim_so_conta_com_o_windows_mostrando_o_ajudante`
+- P02 'nao deu para saber' do ajudante deixa de faltar (volta 3, item 1) → `tests/test_atualizador_4.py::test_conserto1_nao_deu_para_ler_o_ajudante_conta_como_falta`, `tests/test_atualizador_4.py::test_volta3_item1_depois_do_sim_com_o_windows_que_nao_deixa_ler_a_pergunta_volta`
+- P03 'nao deu para saber' do desfazer deixa de faltar (volta 3, item 1) → `tests/test_atualizador_4.py::test_volta3_item1_depois_do_sim_com_o_windows_que_nao_deixa_ler_a_pergunta_volta`
+- P04 o desfazer que nao existe deixa de faltar (M06, V11) → `tests/test_decisoes_preparo_d749.py::test_d749_sim_com_a_preparacao_parada_no_meio_a_pergunta_volta`
+- P05 'existe mas nao le' vira falta (V13) → `tests/test_atualizador_4.py::test_conserto1_nao_deu_para_ler_o_ajudante_conta_como_falta`
+- P06 sem a conferencia da peca (V09) → `tests/test_atualizador_4.py::test_conserto1_ajudante_de_outro_programa_conta_como_falta`, `tests/test_atualizador_4.py::test_conserto1_o_mesmo_caminho_escrito_diferente_e_o_mesmo_ajudante`
+- P07 a licenca ilegivel vira falta (V08) → `tests/test_atualizador_4.py::test_volta3_item2_o_que_nao_deu_para_conferir_fica_dito_e_nada_e_dado_como_preparado`, `tests/test_atualizador_4.py::test_volta3_item3_com_a_licenca_ilegivel_o_resto_do_ajudante_ainda_e_conferido`
+- P08 a licenca ilegivel pula o resto (volta 3, item 3) → `tests/test_atualizador_4.py::test_volta3_item3_com_a_licenca_ilegivel_o_resto_do_ajudante_ainda_e_conferido`
+- P09 a licenca lida nao e conferida → `tests/test_atualizador_4.py::test_volta2_item4_a_conferencia_do_ajudante_e_a_da_peca_com_a_licenca`
+- P10 os argumentos do ajudante nao sao comparados (M05) → `tests/test_atualizador_4.py::test_volta3_item3_com_a_licenca_ilegivel_o_resto_do_ajudante_ainda_e_conferido`, `tests/test_atualizador_4.py::test_volta3_m05_o_ajudante_com_outros_argumentos_ou_outra_conta_falta`
+- P11 a conta do ajudante nao e comparada (M05) → `tests/test_atualizador_4.py::test_volta3_item3_com_a_licenca_ilegivel_o_resto_do_ajudante_ainda_e_conferido`, `tests/test_atualizador_4.py::test_volta3_m05_o_ajudante_com_outros_argumentos_ou_outra_conta_falta`
+- P12 o comando do ajudante nao e comparado → `tests/test_atualizador_4.py::test_conserto1_ajudante_de_outro_programa_conta_como_falta`, `tests/test_atualizador_4.py::test_conserto1_o_mesmo_caminho_escrito_diferente_e_o_mesmo_ajudante`
+- P13 o 'deu certo' da peca basta (M09) → `tests/test_atualizador_4.py::test_conserto1_sim_so_conta_com_o_windows_mostrando_o_ajudante`, `tests/test_atualizador_4.py::test_volta3_item2_o_que_nao_deu_para_conferir_fica_dito_e_nada_e_dado_como_preparado`
+- P14 o passo engole o codigo de saida (M10) → `tests/test_decisoes_preparo_d749.py::test_d749_o_passo_anota_como_o_preparo_terminou`
+- P15 a abertura seguinte nao le o Windows (M11) → `tests/test_atualizador_4.py::test_conserto1_reinstalado_sem_o_ajudante_a_pergunta_volta`, `tests/test_atualizador_4.py::test_conserto2_a_janela_do_programa_vai_como_dona_da_pergunta`
+- P16 o ajudante nao roda depois do Sim (M12) → `tests/test_atualizador_4.py::test_conserto1_preparado_nao_pergunta_e_depois_do_sim_o_ajudante_roda`
+- P17 o ajudante roda mesmo faltando (volta 3, item 2) → `tests/test_atualizador_4.py::test_volta3_item1_depois_do_nao_com_o_windows_que_nunca_deixa_ler_a_pergunta_volta_a_cada_abertura`, `tests/test_atualizador_4.py::test_volta3_item2_o_que_nao_deu_para_conferir_fica_dito_e_nada_e_dado_como_preparado`
+- P18 o 'Nao' volta a dizer a consequencia sem ler (volta 3, item 2) → `tests/test_atualizador_4.py::test_volta3_item2_sem_sim_o_registro_diz_o_que_a_leitura_mostrou`
+- P19 o que nao deu para conferir vira 'preparado' (volta 3, item 2) → `tests/test_atualizador_4.py::test_volta3_item2_o_que_nao_deu_para_conferir_fica_dito_e_nada_e_dado_como_preparado`
+- P20 o desfecho sem o Sim volta a supor o que faltou (volta 3, item 2) → `tests/test_atualizador_4.py::test_volta3_item2_sem_sim_o_registro_diz_o_que_a_leitura_mostrou`
+- P21 a janela fora da frente nao fica anotada → `tests/test_atualizador_4.py::test_conserto2_a_janela_que_nao_veio_para_a_frente_fica_anotada`
+- P22 o passo de preparar nao roda o --preparar-o-computador → `tests/test_atualizador_4.py::test_conserto1_a_pergunta_vai_pela_peca_unica_com_um_passo_so`, `tests/test_decisoes_ajudante_da_atualizacao.py::test_d733_com_a_senha_preparo_e_testes_numa_pergunta_so`
+- P23 a senha liga os testes (M13) → `tests/test_atualizador_4.py::test_d825_a_senha_digitada_nao_liga_nenhum_passo_dos_testes`, `tests/test_decisoes_ajudante_da_atualizacao.py::test_d733_com_a_senha_preparo_e_testes_numa_pergunta_so`
+- P24 sem a janela dona (M14) → `tests/test_atualizador_4.py::test_conserto2_a_janela_do_programa_vai_como_dona_da_pergunta`
+- P25 a pergunta no fio da tela (M15) → `tests/test_atualizador_4.py::test_conserto1_a_tela_roda_a_pergunta_por_tras_e_nao_no_fio_da_tela`
+- P26 o fio de tras nao e solto (M16) → `tests/test_atualizador_4.py::test_conserto1_o_fio_de_tras_e_solto`
+- P27 as aberturas seguintes nao perguntam de novo → `tests/test_atualizador_4.py::test_conserto2_a_janela_do_programa_vai_como_dona_da_pergunta`, `tests/test_decisoes_ajudante_da_atualizacao.py::test_d741_nao_a_pergunta_volta_na_proxima_abertura_e_sim_ela_nao_volta_mais`
+- P30 lancar sem conferir o sinal de vida (M17) → `tests/test_atualizador_4.py::test_conserto3_depois_com_a_troca_que_nao_comeca_o_programa_abre`, `tests/test_decisoes_ajudante_da_atualizacao.py::test_d733_o_script_escondido_vai_codificado_e_solto`
+- P31 o limite da troca volta a 300 s (M18) → `tests/test_atualizador_4.py::test_conserto3_o_limite_da_troca_chega_ao_script_e_a_janelinha`
+- P32 a troca que nao comecou devolve True → `tests/test_atualizador_4.py::test_conserto3_depois_com_a_troca_que_nao_comeca_o_programa_abre`, `tests/test_decisoes_ajudante_da_atualizacao.py::test_d733_o_script_escondido_vai_codificado_e_solto`
+- P33 o 'Depois' sem a janelinha → `tests/test_atualizador_4.py::test_conserto3_depois_com_a_troca_que_nao_comeca_o_programa_abre`, `tests/test_decisoes_ajudante_da_atualizacao.py::test_d742_quem_pede_a_janelinha`
+- P40 o motor aberto nao e conferido (M19) → `tests/test_atualizador_4.py::test_conserto4_motor_estragado_no_arquivo_nunca_fica_com_o_nome_final`
+- P41 o espaco nao e conferido (M20) → `tests/test_atualizador_4.py::test_conserto4_sem_espaco_nao_comeca`
+- P42 o motor aberto direto no nome final (M21) → `tests/test_atualizador_4.py::test_conserto4_o_ajudante_poe_o_motor_do_instalador_no_lugar_dele`, `tests/test_atualizador_4.py::test_conserto4_motor_estragado_no_lugar_e_trocado_pelo_do_instalador`
+- P43 o erro nao apaga o provisorio (M22) → `tests/test_atualizador_4.py::test_conserto4_motor_estragado_no_arquivo_nunca_fica_com_o_nome_final`, `tests/test_atualizador_4.py::test_volta2_medio1_arquivo_do_motor_estragado_de_qualquer_jeito_e_apagado_e_registrado`
+- P44 a troca sem o motor no lugar (M23, V03) → `tests/test_atualizador_4.py::test_conserto4_a_troca_nao_acontece_sem_o_motor_no_lugar`, `tests/test_atualizador_4.py::test_volta2_medio2_sem_o_motor_a_versao_nao_e_anunciada_nem_trocada`
+- P45 o ajudante nao poe o motor (M24) → `tests/test_atualizador_4.py::test_conserto4_o_ajudante_poe_o_motor_antes_de_procurar_e_nunca_no_portatil`
+- P46 o motor tambem no portatil (M25) → `tests/test_atualizador_4.py::test_conserto4_o_ajudante_poe_o_motor_antes_de_procurar_e_nunca_no_portatil`
+- P47 o instalado procura no lugar antigo (M26) → `tests/test_atualizador_4.py::test_conserto4_o_programa_instalado_procura_o_motor_so_no_lugar_dele`
+- P48 o teste rapido nao confere o motor (M27) → `tests/test_atualizador_4.py::test_volta3_m27_o_teste_rapido_recusa_o_motor_estragado`
+- P49 o motor ja no lugar nao e conferido (M28) → `tests/test_atualizador_4.py::test_conserto4_motor_estragado_no_lugar_e_trocado_pelo_do_instalador`
+- P50 o estragado nao e posto de lado (M29) → `tests/test_atualizador_4.py::test_conserto4_motor_estragado_no_lugar_e_trocado_pelo_do_instalador`
+- P51 garantir_o_motor volta a pegar so alguns erros (V01) → `tests/test_atualizador_4.py::test_volta2_medio1_arquivo_do_motor_estragado_de_qualquer_jeito_e_apagado_e_registrado`
+- P52 o ajudante sem o try do motor (V02) → `tests/test_atualizador_4.py::test_volta2_medio1_um_erro_no_motor_nao_impede_o_ajudante_de_procurar`
+- P53 o 'pendente' de antes nao vira 'esperando-o-motor' (V04) → `tests/test_atualizador_4.py::test_volta2_medio2_sem_o_motor_a_versao_nao_e_anunciada_nem_trocada`
+- P54 a tela le 'esperando-o-motor' como versao nova (V05) → `tests/test_atualizador_4.py::test_volta2_medio2_sem_o_motor_a_versao_nao_e_anunciada_nem_trocada`
+- P55 baixa antes de conferir o motor (V14) → `tests/test_atualizador_4.py::test_volta2_medio2_sem_o_motor_a_versao_nao_e_anunciada_nem_trocada`
+- P56 'o motor esta no lugar' sem conferir → `tests/test_atualizador_4.py::test_conserto4_o_motor_no_lugar_e_a_mesma_conferencia`
+- P60 o ajudante nao completa o Visual C++ e a instalacao antiga (M07, M08) → `tests/test_atualizador_4.py::test_volta3_m07_m08_o_ajudante_completa_o_visual_c_e_a_instalacao_antiga_toda_vez_que_roda`
+- P61 a preparacao nao instala o Visual C++ (M07) → `tests/test_decisoes_preparo_d749.py::test_d749_visual_c_ou_inno_que_falham_contam_como_erro`, `tests/test_decisoes_atualizacao.py::test_d723_instalacao_de_verdade_prepara_o_computador`
+- P62 a preparacao nao tira a instalacao antiga (M08) → `tests/test_decisoes_atualizacao.py::test_d723_instalacao_de_verdade_prepara_o_computador`
+- P63 o Visual C++ que falhou conta como certo → `tests/test_decisoes_preparo_d749.py::test_d749_visual_c_ou_inno_que_falham_contam_como_erro`
+- P64 a instalacao antiga que nao saiu conta como certa → `tests/test_decisoes_preparo_d749.py::test_d749_visual_c_ou_inno_que_falham_contam_como_erro`
+- P65 o Visual C++ instalado sem faltar → `tests/test_atualizador_4.py::test_conserto1_visual_c_e_inno_sao_a_mesma_regra_de_quem_instala_e_tira`, `tests/test_decisoes_atualizacao.py::test_d727_o_visual_c_so_roda_se_faltar`
+- P66 a preparacao com erro devolve 0 (D-749) → `tests/test_decisoes_preparo_d749.py::test_d749_o_modo_preparar_devolve_erro_quando_algo_falha_no_meio`
+- P67 a tarefa desfazer que nao nasceu conta como certa (M06, na criacao) → `tests/test_atualizador_4.py::test_volta3_m06_a_preparacao_so_da_certo_com_as_duas_tarefas_criadas`
+- P68 a preparacao com o Visual C++ falhando devolve certo → `tests/test_decisoes_preparo_d749.py::test_d749_visual_c_ou_inno_que_falham_contam_como_erro`
+- P69 o Inno tirado sem conferir o caminho → `tests/test_decisoes_atualizacao.py::test_d723_o_comando_que_tira_o_inno`
+- P70 o Visual C++ volta para a pergunta (V12; contra a D-826 (1)) → `tests/test_atualizador_4.py::test_volta2_medio3_visual_c_mais_novo_numa_versao_nova_nao_traz_a_pergunta_de_volta`
+- P71 a instalacao antiga volta para a pergunta (contra a D-826 (1)) → `tests/test_atualizador_4.py::test_conserto1_a_instalacao_antiga_que_o_programa_nao_tira_de_proposito_nao_falta`, `tests/test_atualizador_4.py::test_volta2_medio3_visual_c_mais_novo_numa_versao_nova_nao_traz_a_pergunta_de_volta`
 
 ## De onde vem cada dado que a conferência usa
 
@@ -480,12 +541,15 @@ distância (o botão das Configurações) não mudaram. Prova: `test_d825_a_senh
 (a peça dos testes à distância e o `ligar` fazem o teste falhar se forem chamados; a senha não aparece no pedido; uma
 pergunta só).
 
+5. **Volta 3** (D-826, D-827): ver "Volta 3 > O que foi feito (volta 3)" no fim.
+
 ## Arquivos criados ou alterados
 
 - `atualizacao.py` (os 4 consertos)
 - `core/ocr_kraken.py` (conserto 4: `pasta_do_motor_instalado`, `lugares_do_motor`)
 - `ui/testes_a_distancia_ui.py` (consertos 1 e 2: `primeira_vez_se_preciso`, `_rodar_por_tras`, `numero_da_janela`)
 - `configuracoes.py` (saiu a marca `atualizacao_computador_preparado`)
+- `empacotar.py` (volta 2, item 5: só o comentário de `NOME_DO_MOTOR_EXIGIDO`, a pedido da gerente)
 - `tests/test_atualizador_4.py` (novo)
 - `tests/test_decisoes_ajudante_da_atualizacao.py` (só os da D-825/D-774)
 - `tests/test_decisoes_preparo_d749.py` (só os da D-825)
@@ -521,6 +585,7 @@ pergunta só).
 - D-824: os 4, um commit cada, nesta ordem.
 - D-825: os 16 testes mudaram, cada um falha no código de antes e passa no novo (anexos de reversão); a senha não liga
   nada (prova acima).
+- D-826 e D-827 (volta 3): ver "Volta 3 > Como cumpri cada uma (volta 3)".
 
 ## Testes
 
@@ -533,6 +598,8 @@ pergunta só).
   (`anexos/reversao-conserto1-codigo-antigo.txt` a `anexos/reversao-conserto4-codigo-antigo.txt`; o conserto 1 rodado contra `4a775ba8`: 36 falham). Só
   `test_conserto2_o_pedido_de_verdade_entrega_a_janela_a_peca` passa no código do conserto 1 (ver acima).
 - GitHub: rodada 44975834257 (a 44975331433 foi cancelada: testava o commit antes das docstrings); o resultado em "Commit".
+
+**Volta 3:** ver "Volta 3 > Testes (volta 3)"; GitHub: rodada 44992797990 (RESULTADO; a 44991980992 foi cancelada por mim: testava o commit antes das docstrings dos testes).
 
 ## Caminho e função
 
@@ -559,6 +626,7 @@ pergunta só).
   `tests/test_atualizador_4.py::test_conserto4_o_programa_instalado_procura_o_motor_so_no_lugar_dele`).
 - Fora (de propósito): a volta para a anterior (`_aplicar_pacote_quando_sair`, o Update.exe) e o botão dos testes à
   distância nas Configurações (`pedir_senha_e_ligar`, peça antiga, passo 4).
+- Volta 3: ver "Volta 3 > Caminho e função (volta 3)".
 
 ## Máquina ou olho
 
@@ -625,6 +693,7 @@ código de antes e passa no novo (conferido: `anexos/reversao-conserto1-codigo-a
 - Com a senha digitada nesta entrega, nada avisa o Kaique que ela não ligou os testes (o mínimo da D-825; nenhum texto
   novo).
 - O pacote portátil do ensaio nunca é dado como "falta preparar" (e_portatil), como antes.
+- Volta 3: ver "Volta 3 > Ressalvas (volta 3)".
 
 ## Velocidade
 
@@ -639,6 +708,7 @@ abertura da janela não ganha espera: as leituras novas rodam por trás. O camin
 - **Ideia:** se a janela não está na frente, esperar o Kaique voltar a ela para pedir a licença (em vez de piscar).
 - **Ideia:** `atualizacao.xml_da_tarefa` e `core.windows.xml_da_tarefa_do_sistema` desenham o mesmo XML (o passo 3
   inteiro junta); e `atualizacao._aspas_do_powershell` repete `core.windows.aspas_do_powershell`.
+- Volta 3: ver "Volta 3 > Ideias e bugs (volta 3)".
 
 ## Perguntas para o Samuel
 
@@ -656,6 +726,8 @@ Não se aplica: nenhuma pergunta aberta (a pergunta 1 foi respondida, D-825).
 
 - Volta 2: médio 1 `f5d73572`, médio 2 `ebc4891e`, médio 3 `9979419d`, item 4 `6efa58d7`, item 5 `f523ec2e` (último do código e dos testes).
 - GitHub da volta 2: rodada 44982726269 (commit `f523ec2e`): success na 2ª tentativa (testou `f523ec2e`, conferido no registro da rodada). A 1ª caiu na parte 2: `test_decisoes_gravura_a_mao.py::test_d659_g_outros_filtros_a_mao_nada_e_procurado_e_sai_igual_ao_de_antes[original]` ("procurou: [0]", o detector de gravura), que não usa nada destes consertos; no PC, o arquivo inteiro passou (15 de 15).
+
+- Volta 3: plano `1e8518cf`; item 1 `ce728693`; item 2 `ebd4197e`; item 3 `f15863b8`; item 4 `126f01d0`; as docstrings das peças de mentira dos testes novos `b897efb7` (último do código e dos testes). GitHub da volta 3: rodada 44992797990 (RESULTADO; a 44991980992 foi cancelada por mim: testava o commit antes das docstrings dos testes).
 
 ## O que o agente que tentou quebrar achou
 
@@ -732,6 +804,8 @@ Porteiro: "nada novo", 168 lugares. Nenhum dos 16 testes antigos mudou de novo; 
 10. A volta para a anterior (`_aplicar_pacote_quando_sair`) também dá como feita sem conferir.
 11. O botão das Configurações (e a frase "pode pôr depois, em Configurações") ainda liga os testes pelo pedido antigo.
 
+**Relatório 2** (`quem-quebrou/relatorio-2.md`, commit `9e2497b5`): os 3 médios consertados; 6 baixos e uma pergunta. A gerente levou ao Samuel (D-826, D-827, 22/11): o caso raro volta a perguntar a cada abertura; os baixos 1 e 2 consertados agora; toda proteção sem teste ganha teste. **Volta 3** (escritor novo): ver a seção "Volta 3" no fim. Os baixos 3 a 6 do relatório 2 e os baixos do relatório 1 que não são proteção sem teste continuam na lista do depois ("Baixos para a lista do depois", acima); o item 1 dessa lista (as proteções sem teste) foi feito na volta 3.
+
 ## A prova de verdade
 
 (é da gerente, numa sessão com o Samuel, depois de quem tenta quebrar) Roteiro sugerido, com o programa instalado pelo
@@ -771,6 +845,7 @@ um) e a D-827 (toda proteção sem teste ganha teste agora, provado por mutaçã
 - Plano `1e8518cf`. Item 1 `ce728693`; item 2 `ebd4197e`; item 3 `f15863b8` (cada um com commit e push e o teste
   rodado no código de antes dele: `anexos/reversao-volta3-item1.txt` a `-item3.txt`). Próximo: item 4 (as proteções
   sem teste, mutações numa cópia `git worktree add --detach` no meu rascunho).
+- Item 4 `126f01d0` (60 de 60 proteções acusadas; a cópia foi tirada). GitHub: rodada 44992797990 (RESULTADO; a 44991980992 foi cancelada por mim: testava o commit antes das docstrings dos testes). Entregue à gerente.
 
 ### Decisões que esta tarefa precisa cumprir (volta 3)
 
@@ -907,3 +982,151 @@ relatórios 1 e 2 refeitas no código de agora (lista completa em "Cada proteç�
   responde → `existe=None`) e `core.windows.problemas_da_tarefa_criada` (core/windows.py:2000: sem `existe`/`lida` →
   um problema; compara comando, argumentos e conta pelo texto; a licença só se o pedido tiver uma, e então "não deu
   para ler a licença" vira problema).
+
+### O que foi feito (volta 3)
+
+1. **Item 1** (`ce728693`): na leitura única (`o_que_falta_no_computador`), "não deu para saber" (o Windows não
+   respondeu) volta a contar como falta, nas duas tarefas. Depois de um "Não", com a leitura falhando, a pergunta volta
+   a cada abertura (D-826, D-741). "Existe, mas esta conta não lê" continua contando como existe.
+2. **Item 2** (`ebd4197e`): a leitura única virou `ler_o_computador` (devolve o que falta e o que existe sem dar para
+   conferir); `o_que_falta_no_computador` é a mesma regra de sempre em cima dela. `preparar_na_primeira_abertura`
+   anota a resposta só como fato e escreve uma frase de desfecho tirada da leitura: "não ficou preparado... a pergunta
+   volta" · "as tarefas existem, mas não deu para conferir tudo (...)" · "o computador está preparado (lido no
+   Windows)" · "as tarefas já estão no Windows (lidas agora); a pergunta não volta". O ajudante só é chamado quando a
+   leitura o mostra.
+3. **Item 3** (`f15863b8`): com a licença do ajudante ilegível, a mesma peça (`problemas_da_tarefa_criada`) confere o
+   comando, os argumentos e a conta, com o desenho do ajudante sem a licença (`xml_da_tarefa(exe, quem_pode="")`); só a
+   licença fica dita como não conferida. `core/windows.py` não mudou.
+4. **Item 4** (`126f01d0`): testes novos para as proteções que nenhum teste acusava; todas as mutações dos relatórios 1 e
+   2 refeitas no código de agora, numa cópia minha (lista abaixo e `anexos/mutacoes-volta3.txt`).
+
+### Arquivos criados ou alterados (volta 3)
+
+- `atualizacao.py` (itens 1 a 3: `ler_o_computador`, `o_que_falta_no_computador`, `preparar_na_primeira_abertura`,
+  `preparar_ao_abrir` (só a docstring), `xml_da_tarefa`)
+- `tests/test_atualizador_4.py` (os testes dos itens 1 a 4; dois testes meus da volta 2 mudaram, item 1)
+- `relatorios/atualizador-4/ONDE-PAREI.md` e `relatorios/atualizador-4/anexos/` (as provas)
+- Nenhum outro: `core/windows.py`, `core/ocr_kraken.py`, `ui/testes_a_distancia_ui.py`, `configuracoes.py` e os 16
+  testes antigos não mudaram.
+
+### Como cumpri cada uma (volta 3)
+
+- **D-826 (1), o caso raro:** com o Windows sem deixar ler as tarefas, a pergunta volta a cada abertura, depois do
+  "Não" e depois do "Sim" (`tests/test_atualizador_4.py::test_volta3_item1_depois_do_nao_com_o_windows_que_nunca_deixa_ler_a_pergunta_volta_a_cada_abertura`,
+  `tests/test_atualizador_4.py::test_volta3_item1_depois_do_sim_com_o_windows_que_nao_deixa_ler_a_pergunta_volta`).
+  Falham no código de antes (`anexos/reversao-volta3-item1.txt`).
+- **D-826 (1), o Visual C++ e a instalação antiga:** não mudou: a pergunta não volta por eles
+  (`tests/test_atualizador_4.py::test_volta2_medio3_visual_c_mais_novo_numa_versao_nova_nao_traz_a_pergunta_de_volta`)
+  e o ajudante os completa toda vez que roda, antes de procurar
+  (`tests/test_atualizador_4.py::test_volta3_m07_m08_o_ajudante_completa_o_visual_c_e_a_instalacao_antiga_toda_vez_que_roda`).
+  As tarefas não prontas trazem a pergunta (D-749:
+  `tests/test_decisoes_preparo_d749.py::test_d749_sim_com_a_preparacao_parada_no_meio_a_pergunta_volta`).
+- **D-826 (2), o registro:** `tests/test_atualizador_4.py::test_volta3_item2_sem_sim_o_registro_diz_o_que_a_leitura_mostrou`,
+  `tests/test_atualizador_4.py::test_volta3_item2_o_que_nao_deu_para_conferir_fica_dito_e_nada_e_dado_como_preparado`
+  (falham no código de antes: `anexos/reversao-volta3-item2.txt`).
+- **D-826 (2), a licença ilegível:** `tests/test_atualizador_4.py::test_volta3_item3_com_a_licenca_ilegivel_o_resto_do_ajudante_ainda_e_conferido`
+  (o programa, os argumentos e a conta; falha no código de antes: `anexos/reversao-volta3-item3.txt`).
+- **D-826 (2) e D-827, as proteções sem teste:** 60 proteções desligadas numa cópia, 60 acusadas (lista abaixo;
+  `anexos/mutacoes-volta3.txt`). Antes dos testes novos, 3 não eram acusadas (M27, M07/M08, M06 do lado de quem cria).
+- **D-827, a troca de conferência:** a única troca é a do item 3, e a lista do que a antiga cobria está escrita antes
+  dela (em "A causa, a regra e todos os caminhos (volta 3)", item 3, e no comentário do código). A nova cobre tudo o
+  que a da volta 1 cobria, com teste.
+- **D-741:** "Não" → a pergunta volta (`tests/test_atualizador_4.py::test_volta2_medio3_depois_do_nao_a_pergunta_continua_voltando`);
+  "Sim" → não volta (`tests/test_decisoes_ajudante_da_atualizacao.py::test_d741_nao_a_pergunta_volta_na_proxima_abertura_e_sim_ela_nao_volta_mais`).
+- **D-733/D-735:** uma pergunta só, pela peça única (`tests/test_atualizador_4.py::test_conserto1_a_pergunta_vai_pela_peca_unica_com_um_passo_so`).
+- **D-767:** só o Windows de mentira nos testes; nada pediu licença, nada abriu janela na tela do Samuel; nenhuma
+  mutação tirou a recusa de perguntar sob o pytest.
+- **D-811:** a lista "proteção → teste" abaixo, provada por mutação numa cópia (`git worktree add --detach` no meu
+  rascunho, tirada no fim; nada mais foi apagado).
+- **D-824:** um commit por item, com push (`ce728693`, `ebd4197e`, `f15863b8`, `126f01d0`).
+- **D-825:** nenhum dos 16 testes antigos mudou nesta volta (o `git diff` da volta 3 mexe só em `atualizacao.py`,
+  `tests/test_atualizador_4.py` e no relatório); dos meus testes, só os dois do item 1 (são deste trabalho).
+- **D-815:** sou o escritor da volta 3, agente novo.
+- **Nenhuma frase nova na tela:** os textos novos vão só para o registro da atualização.
+
+### Cada proteção e o teste que a acusa (volta 3)
+
+Cada uma desligada numa cópia minha, sozinha; os arquivos de teste rodados um por vez (o script:
+`anexos/mutar3.py.txt`; os resultados: `anexos/mutacoes-volta3.txt`). Os nomes M.. e V.. são os dos relatórios 1 e 2
+de quem tentou quebrar.
+
+Está na seção "Cada proteção e o teste que falha sem ela", acima (os itens P01 a P71, 60 de 60 acusadas). Antes dos testes novos desta volta, 55 de 58 (as 3 que faltavam: P48 = M27, P60 = M07/M08, P67 = M06 do lado de quem cria); P70 e P71 foram acrescentadas depois e são acusadas.
+
+### Caminho e função (volta 3)
+
+- "A pergunta volta?" em todos os caminhos (primeira abertura, aberturas seguintes, `falta_a_pergunta_do_windows`) →
+  `o_que_falta_no_computador` → `ler_o_computador` (a leitura única) → `core.windows.ler_tarefa` e
+  `core.windows.problemas_da_tarefa_criada`.
+- A frase de desfecho do registro na pergunta → `preparar_na_primeira_abertura` → `ler_o_computador` (a mesma leitura).
+- O ajudante lido com a licença ilegível → `ler_o_computador` → a mesma peça, com `xml_da_tarefa(exe, quem_pode="")`.
+- Criar o ajudante (dentro da pergunta) → `criar_tarefa` → `xml_da_tarefa(exe)` (a licença de fábrica; não mudou).
+- As provas que cobram o mesmo resultado pelos caminhos: a leitura que falha traz a pergunta pela primeira abertura e
+  pelas seguintes (`tests/test_atualizador_4.py::test_volta3_item1_depois_do_nao_com_o_windows_que_nunca_deixa_ler_a_pergunta_volta_a_cada_abertura`)
+  e pela regra direta (`tests/test_atualizador_4.py::test_conserto1_nao_deu_para_ler_o_ajudante_conta_como_falta`).
+
+### Testes (volta 3)
+
+- No PC, um arquivo por vez: `tests/test_atualizador_4.py` 57 passaram; `tests/test_decisoes_ajudante_da_atualizacao.py`
+  37; `tests/test_decisoes_preparo_d749.py` 9; `tests/test_decisoes_atualizacao.py` 38;
+  `tests/test_decisoes_testes_a_distancia.py` 13; `tests/test_windows_peca.py` 69 (2 pulados, como antes, pelo ambiente).
+  Porteiro: "nada novo", 168 lugares; tabela: 0 arquivos sem linha.
+- Reversão: os testes de cada item falham no código de antes dele, por comportamento
+  (`anexos/reversao-volta3-item1.txt` a `-item3.txt`).
+- Mutações: 60 de 60 acusadas (acima).
+- GitHub: rodada 44992797990 (RESULTADO; a 44991980992 foi cancelada por mim: testava o commit antes das docstrings dos testes).
+
+### Ressalvas (volta 3)
+
+- **O "Sim" com a leitura falhando sempre** (D-826 aceitou): a pergunta volta a cada abertura, mesmo depois do "Sim".
+  Logo depois desse "Sim" o ajudante não é chamado na hora (a leitura não o mostra); as versões chegam assim mesmo,
+  porque cada abertura chama o ajudante (`ui/aviso_de_atualizacao.ligar_na_janela`).
+- **"Existe, mas esta conta não lê" (acesso negado) continua contando como existe**, sem conferir o conteúdo: uma
+  tarefa com o mesmo nome, na pasta do programa no Agendador, que rodasse outra coisa passaria. Só o administrador cria
+  tarefas ali, e a peça confere essa pasta ao criar. Fica dito no registro ("existe, mas não deu para ler o que ele
+  faz"). Não mudei porque o pedido manteve esse caso e a D-826 fala só do "não deixa ler".
+- **O item 3 depende de uma regra da peça:** ela só confere a licença quando o desenho pedido tem uma. Se essa regra
+  mudar em `core/windows.py`, a licença ilegível voltaria a trazer a pergunta; os testes do item 3 e do item 4 da volta
+  2 acusariam (o primeiro caso do teste do item 3 cobra "a tarefa certa sem a licença lida não falta").
+- **O registro ganha uma linha** a cada abertura em que algo existe sem dar para conferir ("...; não pergunto de novo
+  por isso"); já era assim com a licença ilegível.
+- Os testes são de lógica, com o Windows de mentira (D-767). A prova que vale é a sessão à vista; o roteiro do
+  relatório 2 continua valendo, e o passo 2 dele ("Não pode aparecer 'não deu para ler o ajudante' nem 'não deu para
+  ler a licença'") ganhou uma terceira frase a procurar: "existe, mas não deu para ler o que ele faz".
+- No PC rodei só os arquivos ligados a este trabalho, um por vez (pouca memória); as provas de todas as decisões
+  (`tests/test_decisoes*.py`) e o resto rodam no GitHub.
+- O formulário do programa ainda acusa "O print que prova" sem .png: nenhuma tela mudou e eu não abro janela na tela do
+  Samuel (como na volta 1).
+
+### Ideias e bugs (volta 3)
+
+- **Bug (22/11, não impede):** `tests/test_atualizador_4.py` tem 4 docstrings com barra invertida de caminho do
+  Windows (`\c`, `\m`, `\.`; linhas 429, 452, 565 e 597 de hoje, escritas nas voltas 1 e 2) que o Python 3.14 avisa
+  como "SyntaxWarning: invalid escape sequence" (aparece ao rodar o porteiro); numa versão futura do Python vira erro e o
+  arquivo não carrega. Conserto: docstrings com `r"""`. Sem print (é aviso de texto).
+- **Ideia:** um parâmetro "conferir a licença" em `core.windows.problemas_da_tarefa_criada` diria a intenção do item 3
+  com mais clareza que o desenho sem a licença (muda `core/windows.py`; a gerente decide).
+- **Ideia:** o script de mutações (`anexos/mutar3.py.txt`) como ferramenta fixa do pacote de regras, para quem escreve
+  rodar antes de entregar (D-811, D-827).
+
+### Perguntas para o Samuel (volta 3)
+
+Nenhuma. A D-826 e a D-827 responderam o que esta volta precisava.
+
+### Commit (volta 3)
+
+- Plano `1e8518cf`; item 1 `ce728693`; item 2 `ebd4197e`; item 3 `f15863b8`; item 4 `126f01d0`; docstrings das peças de mentira
+  dos testes novos `b897efb7` (último do código e dos testes; K12 do formulário). Depois só o ONDE-PAREI.
+- GitHub: 44992797990 (RESULTADO; a 44991980992 foi cancelada por mim: testava o commit antes das docstrings dos testes).
+
+### Resumo (volta 3)
+
+1. O caso raro voltou ao que o Samuel decidiu: se o Windows não deixa ler as tarefas, a pergunta volta a cada abertura.
+2. O registro diz o que o programa leu no Windows, não o que supôs pela resposta; o ajudante só é chamado se o Windows o
+   mostra.
+3. Com a licença do ajudante ilegível, o programa, os argumentos e a conta da tarefa continuam conferidos (só a licença
+   fica de fora).
+4. 60 proteções desligadas uma a uma numa cópia: 60 acusadas por algum teste (3 só depois dos testes novos desta volta).
+5. Tudo em `atualizacao.py` e `tests/test_atualizador_4.py`; `core/windows.py`, a tela e os 16 testes antigos não mudaram.
+6. Nenhuma frase nova na tela; nada pediu licença nem abriu janela.
+7. Ressalvas principais: o "Sim" com a leitura falhando sempre faz a pergunta voltar a cada abertura (aceito na D-826);
+   "existe, mas não lê" continua contando como existe, sem conferir o conteúdo.
