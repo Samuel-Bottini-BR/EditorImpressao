@@ -1,0 +1,224 @@
+"""Mutacoes da volta 3 (D-827): desliga cada protecao do atualizador numa COPIA (git worktree --detach) e roda os
+arquivos de teste, um por vez. Mexe so na copia; devolve o arquivo ao original depois de cada mutacao.
+
+Uso: python mutar3.py <pasta da copia> [saida.txt] [P01 P02 ...]
+Nenhuma mutacao tira a recusa de pedir licenca sob o pytest (pedir_licenca_ao_windows): isso abriria a pergunta do
+Windows na tela de quem roda.
+"""
+import subprocess
+import sys
+from pathlib import Path
+
+COPIA = Path(sys.argv[1])
+SAIDA = Path(sys.argv[2]) if len(sys.argv) > 2 else None
+SO = sys.argv[3:]
+PY = r"D:\programas\EditorImpressao\.venv\Scripts\python.exe"
+TESTES = ["test_atualizador_4.py", "test_decisoes_ajudante_da_atualizacao.py", "test_decisoes_preparo_d749.py",
+          "test_decisoes_atualizacao.py", "test_decisoes_testes_a_distancia.py"]
+A = "atualizacao.py"
+W = "core/windows.py"
+K = "core/ocr_kraken.py"
+U = "ui/testes_a_distancia_ui.py"
+
+M = [
+    # --- a leitura do Windows (conserto 1, voltas 2 e 3) ---
+    ("P01 o ajudante que nao existe deixa de faltar (V07)", A,
+     '        falta.append("o ajudante da atualização não existe no Windows")', "        pass"),
+    ("P02 'nao deu para saber' do ajudante deixa de faltar (volta 3, item 1)", A,
+     '        falta.append(f"não deu para ler o ajudante da atualização no Windows ({ajudante.motivo})")', "        pass"),
+    ("P03 'nao deu para saber' do desfazer deixa de faltar (volta 3, item 1)", A,
+     '        falta.append(f"não deu para ler a tarefa do desfazer no Windows ({desfazer.motivo})")', "        pass"),
+    ("P04 o desfazer que nao existe deixa de faltar (M06, V11)", A,
+     '        falta.append("a tarefa que desfaz tudo ao desinstalar não existe no Windows")', "        pass"),
+    ("P05 'existe mas nao le' vira falta (V13)", A,
+     "    elif not ajudante.lida:\n        sem_conferir.append(",
+     "    elif not ajudante.lida:\n        falta.append('nao le'); sem_conferir.append("),
+    ("P06 sem a conferencia da peca (V09)", A,
+     "        falta += [f\"o ajudante da atualização não é o deste programa: {p}\"\n"
+     "                  for p in windows.problemas_da_tarefa_criada(pedido, ajudante)]",
+     "        pass"),
+    ("P07 a licenca ilegivel vira falta (V08)", A,
+     '            pedido = xml_da_tarefa(exe, quem_pode="")', "            pass"),
+    ("P08 a licenca ilegivel pula o resto (volta 3, item 3)", A,
+     "                  for p in windows.problemas_da_tarefa_criada(pedido, ajudante)]",
+     "                  for p in (windows.problemas_da_tarefa_criada(pedido, ajudante) if ajudante.licenca else [])]"),
+    ("P09 a licenca lida nao e conferida", A,
+     "        pedido = xml_da_tarefa(exe)\n", '        pedido = xml_da_tarefa(exe, quem_pode="")\n'),
+    ("P10 os argumentos do ajudante nao sao comparados (M05)", W,
+     'for campo in ("comando", "argumentos", "usuario") if getattr(lida, campo) != esperado[campo]]',
+     'for campo in ("comando", "usuario") if getattr(lida, campo) != esperado[campo]]'),
+    ("P11 a conta do ajudante nao e comparada (M05)", W,
+     'for campo in ("comando", "argumentos", "usuario") if getattr(lida, campo) != esperado[campo]]',
+     'for campo in ("comando", "argumentos") if getattr(lida, campo) != esperado[campo]]'),
+    ("P12 o comando do ajudante nao e comparado", W,
+     'for campo in ("comando", "argumentos", "usuario") if getattr(lida, campo) != esperado[campo]]',
+     'for campo in ("argumentos", "usuario") if getattr(lida, campo) != esperado[campo]]'),
+    # --- a pergunta e o registro (conserto 1, volta 3 item 2) ---
+    ("P13 o 'deu certo' da peca basta (M09)", A,
+     "    falta, sem_conferir = ler_o_computador()\n    if falta:",
+     "    falta, sem_conferir = ([], []) if resposta.deu_certo else ler_o_computador()\n    if falta:"),
+    ("P14 o passo engole o codigo de saida (M10)", A,
+     "if ($p.ExitCode -ne 0) { throw", "if ($false) { throw"),
+    ("P15 a abertura seguinte nao le o Windows (M11)", A,
+     "        if not primeira_vez:\n            falta = o_que_falta_no_computador()",
+     "        if not primeira_vez:\n            falta = []"),
+    ("P16 o ajudante nao roda depois do Sim (M12)", A,
+     "        if not falta:\n            procurar_ao_abrir()", "        if not falta:\n            pass"),
+    ("P17 o ajudante roda mesmo faltando (volta 3, item 2)", A,
+     "        if not falta:\n            procurar_ao_abrir()", "        if True:\n            procurar_ao_abrir()"),
+    ("P18 o 'Nao' volta a dizer a consequencia sem ler (volta 3, item 2)", A,
+     '(nada foi feito com a licença)")',
+     '; o ajudante da atualização não foi criado; a pergunta volta na próxima abertura")'),
+    ("P19 o que nao deu para conferir vira 'preparado' (volta 3, item 2)", A,
+     '    elif sem_conferir:\n        registrar("primeira abertura: as tarefas',
+     '    elif False:\n        registrar("primeira abertura: as tarefas'),
+    ("P20 o desfecho sem o Sim volta a supor o que faltou (volta 3, item 2)", A,
+     '"primeira abertura: as tarefas do programa já estão no Windows (lidas agora); a pergunta não volta; "',
+     '"primeira abertura: as tarefas do programa estão no Windows; o que faltou da preparação; "'),
+    ("P21 a janela fora da frente nao fica anotada", A,
+     '    if resposta.dados.get("janela_na_frente") is False:', "    if False:"),
+    ("P22 o passo de preparar nao roda o --preparar-o-computador", A,
+     "f\" -ArgumentList {_aspas_do_powershell(ARG_PREPARAR)}", "f\" -ArgumentList {_aspas_do_powershell('--outra')}"),
+    ("P23 a senha liga os testes (M13)", U,
+     "    if senha:\n        atualizacao.registrar(", "    if senha:\n        td.ligar(senha); atualizacao.registrar("),
+    ("P24 sem a janela dona (M14)", U, "    janela = numero_da_janela(parent)", "    janela = None"),
+    ("P25 a pergunta no fio da tela (M15)", U, "    rodar = por_tras or _rodar_por_tras", "    rodar = lambda f: f()"),
+    ("P26 o fio de tras nao e solto (M16)", U, 'daemon=True', 'daemon=False'),
+    ("P27 as aberturas seguintes nao perguntam de novo", U,
+     "        rodar(lambda: atualizacao.preparar_ao_abrir(janela, primeira_vez=False))\n        return",
+     "        return"),
+    # --- "Reiniciar agora" e "Depois" (conserto 3) ---
+    ("P30 lancar sem conferir o sinal de vida (M17)", A,
+     '    if not resposta.deu_certo:\n        raise OSError(f"{resposta.motivo} {resposta.detalhe}".strip())', "    pass"),
+    ("P31 o limite da troca volta a 300 s (M18)", A, "LIMITE_DA_TROCA_S = 900", "LIMITE_DA_TROCA_S = 300"),
+    ("P32 a troca que nao comecou devolve True", A,
+     "        return False\n\n\ndef aplicar_agora_e_reabrir", "        return True\n\n\ndef aplicar_agora_e_reabrir"),
+    ("P33 o 'Depois' sem a janelinha", A, "trocar_e_reabrir(janelinha=True)", "trocar_e_reabrir(janelinha=False)"),
+    # --- o motor do Kraken (conserto 4, volta 2) ---
+    ("P40 o motor aberto nao e conferido (M19)", A,
+     "        problemas = ocr_kraken.conferir_motor(chegando)\n        if problemas:",
+     "        problemas = []\n        if problemas:"),
+    ("P41 o espaco nao e conferido (M20)", A, "            if tem < precisa:", "            if False:"),
+    ("P42 o motor aberto direto no nome final (M21)", A,
+     '    chegando = destino.parent / f".chegando-{versao_do_motor}"', "    chegando = destino"),
+    ("P43 o erro nao apaga o provisorio (M22)", A,
+     "        sobrou = not _apagar_pasta_do_motor(chegando)", "        sobrou = False"),
+    ("P44 a troca sem o motor no lugar (M23, V03)", A,
+     "    if not (motor_no_lugar or motor_esta_no_lugar)():", "    if False:"),
+    ("P45 o ajudante nao poe o motor (M24)", A,
+     "        if not e_portatil(gerente):\n            try:", "        if False:\n            try:"),
+    ("P46 o motor tambem no portatil (M25)", A,
+     "        if not e_portatil(gerente):\n            try:", "        if True:\n            try:"),
+    ("P47 o instalado procura no lugar antigo (M26)", K,
+     "        if atualizacao.instalado_pelo_velopack():\n            return", "        if False:\n            return"),
+    ("P48 o teste rapido nao confere o motor (M27)", A,
+     "            else:\n                problemas += ocr_kraken.conferir_motor(motor)",
+     "            else:\n                pass"),
+    ("P49 o motor ja no lugar nao e conferido (M28)", A,
+     "    if not ocr_kraken.conferir_motor(destino):\n        return True",
+     "    if destino.exists():\n        return True"),
+    ("P50 o estragado nao e posto de lado (M29)", A,
+     "        if destino.exists():\n            estragado", "        if False:\n            estragado"),
+    ("P51 garantir_o_motor volta a pegar so alguns erros (V01)", A,
+     "    except Exception as erro:  # noqa: BLE001 - QUALQUER erro (volta 2",
+     "    except (OSError, zipfile.BadZipFile, ValueError) as erro:  # (volta 2"),
+    ("P52 o ajudante sem o try do motor (V02)", A,
+     "            try:\n                (motor or garantir_o_motor)()\n"
+     "            except Exception as erro:  # noqa: BLE001 - o motor nunca impede a procura (volta 2, medio 1)\n"
+     "                registrar(f\"motor do Kraken: erro inesperado ({type(erro).__name__}: {erro})\")",
+     "            (motor or garantir_o_motor)()"),
+    ("P53 o 'pendente' de antes nao vira 'esperando-o-motor' (V04)", A,
+     '            gravar_estado({**estado, "fase": "esperando-o-motor"',
+     '            pass; _x = ({**estado, "fase": "esperando-o-motor"'),
+    ("P54 a tela le 'esperando-o-motor' como versao nova (V05)", A,
+     '    if fase in ("pendente", "aplicando") and nova:',
+     '    if fase in ("pendente", "aplicando", "esperando-o-motor") and nova:'),
+    ("P55 baixa antes de conferir o motor (V14)", A, "<V14>", "<V14>"),
+    ("P56 'o motor esta no lugar' sem conferir", A,
+     "    return not ocr_kraken.conferir_motor(ocr_kraken.pasta_do_motor_instalado(raiz))", "    return True"),
+    # --- o Visual C++ e a instalacao antiga (M07, M08: desde a volta 2, o ajudante completa) ---
+    ("P60 o ajudante nao completa o Visual C++ e a instalacao antiga (M07, M08)", A,
+     "        (preparar or preparar_o_computador)(gerente)\n        if not e_portatil(gerente):",
+     "        if not e_portatil(gerente):"),
+    ("P61 a preparacao nao instala o Visual C++ (M07)", A,
+     "    visual_c = instalar_visual_c_se_faltar(pasta)", "    visual_c = True"),
+    ("P62 a preparacao nao tira a instalacao antiga (M08)", A,
+     "    inno = tirar_instalacao_antiga(pasta.parent)", "    inno = True"),
+    ("P63 o Visual C++ que falhou conta como certo", A,
+     "    certo = codigo in (0, 1638, 3010)", "    certo = True"),
+    ("P64 a instalacao antiga que nao saiu conta como certa", A,
+     '(código {codigo}) {saida}")\n    return codigo == 0', '(código {codigo}) {saida}")\n    return True'),
+    ("P65 o Visual C++ instalado sem faltar", A,
+     "    if do_pacote is None:\n        return True\n    codigo, _saida", "    if False:\n        return True\n    codigo, _saida"),
+    ("P66 a preparacao com erro devolve 0 (D-749)", A,
+     "    return 0 if certo and preparado is not False else 1", "    return 0 if certo else 1"),
+    ("P67 a tarefa desfazer que nao nasceu conta como certa (M06, na criacao)", A,
+     "    return certo and desfazer.ok", "    return certo"),
+    ("P68 a preparacao com o Visual C++ falhando devolve certo", A,
+     "    return visual_c is not False and inno is not False", "    return True"),
+    ("P70 o Visual C++ volta para a pergunta (V12; contra a D-826 (1))", A,
+     "    desfazer = ler(testes_a_distancia.nome_da_tarefa_do_desfazer())\n",
+     "    desfazer = ler(testes_a_distancia.nome_da_tarefa_do_desfazer())\n"
+     "    if visual_c_que_falta(pasta_do_programa(), lambda: _ler_versao_do_visual_c()) is not None:\n"
+     "        falta.append('vc')\n"),
+    ("P71 a instalacao antiga volta para a pergunta (contra a D-826 (1))", A,
+     "    desfazer = ler(testes_a_distancia.nome_da_tarefa_do_desfazer())\n",
+     "    desfazer = ler(testes_a_distancia.nome_da_tarefa_do_desfazer())\n"
+     "    if achar_instalacao_do_inno() is not None:\n        falta.append('inno')\n"),
+    ("P69 o Inno tirado sem conferir o caminho", A,
+     "    if nova == pasta or pasta in nova.parents:\n        return None", "    if False:\n        return None"),
+]
+
+
+def v14(texto: str) -> str:
+    """V14: recoloca o baixar antes da conferencia do motor."""
+    t = texto.replace('    registrar(f"versão {alvo.Version} publicada e assinada pelo Samuel: baixando")\n'
+                      "    gerente.download_updates(info)\n",
+                      '    registrar(f"versão {alvo.Version} publicada e assinada pelo Samuel: baixando")\n', 1)
+    return t.replace("    if not (motor_no_lugar or motor_esta_no_lugar)():\n",
+                     "    gerente.download_updates(info)\n    if not (motor_no_lugar or motor_esta_no_lugar)():\n", 1)
+
+
+linhas = []
+
+
+def dizer(texto: str) -> None:
+    """Escreve na tela e no arquivo de saida."""
+    print(texto, flush=True)
+    linhas.append(texto)
+    if SAIDA:
+        SAIDA.write_text("\n".join(linhas) + "\n", encoding="utf-8")
+
+
+for nome, arq, velho, novo in M:
+    if SO and nome.split()[0] not in SO:
+        continue
+    p = COPIA / arq
+    orig = p.read_text(encoding="utf-8")
+    if velho == "<V14>":
+        mutado = v14(orig)
+        if mutado.count("gerente.download_updates(info)") != 1 or mutado == orig:
+            dizer(f"{nome}: TEXTO NAO ACHADO")
+            continue
+    else:
+        if orig.count(velho) != 1:
+            dizer(f"{nome}: TEXTO NAO ACHADO ({orig.count(velho)})")
+            continue
+        mutado = orig.replace(velho, novo)
+    p.write_text(mutado, encoding="utf-8")
+    pegos = []
+    testes = TESTES + (["test_windows_peca.py"] if arq == W else []) + (["test_ocr_kraken.py"] if arq == K else [])
+    try:
+        for t in testes:
+            r = subprocess.run([PY, "-m", "pytest", f"tests/{t}", "-q", "-p", "no:cacheprovider", "-W", "ignore",
+                                "--tb=no", "-rf"], cwd=COPIA, capture_output=True, text=True, encoding="utf-8",
+                               errors="replace", timeout=900)
+            if r.returncode != 0:
+                falhou = [l.split(" - ")[0] for l in r.stdout.splitlines() if l.startswith("FAILED")]
+                ultima = (r.stdout.strip().splitlines() or ["?"])[-1]
+                pegos.append(f"{t}: {ultima} {falhou[:3]}")
+    finally:
+        p.write_text(orig, encoding="utf-8")
+    dizer(f"{nome}: {'ACUSADA' if pegos else 'NAO ACUSADA'}")
+    for x in pegos:
+        dizer("    " + x[:400])

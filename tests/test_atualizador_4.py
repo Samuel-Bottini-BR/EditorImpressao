@@ -817,3 +817,90 @@ def test_volta2_item4_a_conferencia_do_ajudante_e_a_da_peca_com_a_licenca(window
     assert atualizacao.o_que_falta_no_computador() == []
     assert "licença" in _registro()
     assert "_mesmo_caminho" not in Path(atualizacao.__file__).read_text(encoding="utf-8"), "a conta própria saiu"
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Volta 3, item 4 (D-827, Samuel 22/11/2026): toda protecao sem teste ganha um teste em que so ela falta. Cada um
+# foi provado por mutacao numa copia (a protecao desligada faz o teste falhar):
+# relatorios/atualizador-4/anexos/mutacoes-volta3.txt.
+# ---------------------------------------------------------------------------------------------------------------------
+
+@pytest.mark.parametrize("campo, errado", [("argumentos", "--outra-coisa"), ("usuario", "S-1-5-21-1-2-3-1001")])
+def test_volta3_m05_o_ajudante_com_outros_argumentos_ou_outra_conta_falta(windows_de_mentira, campo, errado):
+    """M05 do relatorio 1 de quem tentou quebrar (21/11/2026), "nao comparar os argumentos e a conta do ajudante": um
+    ajudante com o nome certo, o .exe certo e a licenca certa, mas outros argumentos (nao procura a versao nova) ou
+    outra conta (nao roda como o sistema, nao consegue trocar o programa em Arquivos de Programas) passava por
+    "preparado" sem nenhum teste reclamar. Agora so esse campo errado faz faltar, e a pergunta volta."""
+    windows_de_mentira.pedir([])
+    assert atualizacao.o_que_falta_no_computador() == []
+    import dataclasses
+
+    nome = atualizacao.NOME_DA_TAREFA
+    lido = windows_de_mentira.tarefas[nome]
+    assert lido.licenca, "a licença foi lida (o caso da licença ilegível é o do item 3)"
+    windows_de_mentira.tarefas[nome] = dataclasses.replace(lido, **{campo: errado})
+    falta = atualizacao.o_que_falta_no_computador()
+    assert any(campo in f for f in falta), f"um ajudante com outro {campo} passou como preparado"
+
+
+def test_volta3_m07_m08_o_ajudante_completa_o_visual_c_e_a_instalacao_antiga_toda_vez_que_roda(monkeypatch):
+    """M07 e M08 do relatorio 1 (o Visual C++ e a instalacao antiga sem teste) e D-826 (1) (Samuel 22/11/2026): desde a
+    volta 2 a pergunta do Windows nao os le; quem os completa e o ajudante, como o sistema, toda vez que roda, ANTES de
+    procurar a versao nova. Se o ajudante deixasse de chamar a preparacao, o Visual C++ que falhou na primeira abertura
+    nunca seria instalado, e nenhum teste reclamava (todos passavam a preparacao de mentira)."""
+    feito = []
+
+    class Gerente:
+        def get_is_portable(self):
+            return False
+
+        def get_current_version(self):
+            return "1.1.0"
+
+        def check_for_updates(self):
+            feito.append("procurar")
+            return None
+
+    monkeypatch.setattr(atualizacao, "pasta_do_programa", lambda: Path("C:/EditorImpressaoPrograma/current"))
+    monkeypatch.setattr(atualizacao, "instalar_visual_c_se_faltar", lambda pasta: feito.append("vc") or True)
+    monkeypatch.setattr(atualizacao, "tirar_instalacao_antiga", lambda pasta: feito.append("inno") or True)
+    assert atualizacao.rodar_ao_ligar(atualizacao.Fonte("C:/nao-existe"), gerente=Gerente(),
+                                      motor=lambda: True) == 0
+    assert feito == ["vc", "inno", "procurar"]
+
+
+@pytest.mark.parametrize("ajudante, desfazer, esperado", [(True, True, True), (True, False, False),
+                                                          (False, True, False)])
+def test_volta3_m06_a_preparacao_so_da_certo_com_as_duas_tarefas_criadas(monkeypatch, ajudante, desfazer, esperado):
+    """M06 do relatorio 1 (a tarefa "desfazer" sem teste), do lado de quem cria: dentro da pergunta do Windows, a
+    preparacao so conta como certa (D-749) se o ajudante E a tarefa "desfazer" (D-731: e ela quem apaga o ajudante ao
+    desinstalar) nasceram. Se o desfazer nao nascesse e mesmo assim desse "certo", nenhum teste reclamava."""
+    monkeypatch.setattr(atualizacao, "criar_tarefa", lambda *a, **k: ajudante)
+    monkeypatch.setattr(td, "preparar_o_desfazer", lambda: td.Resultado(desfazer, mensagem="de mentira"))
+    assert atualizacao.criar_as_tarefas() is esperado
+
+
+def test_volta3_m27_o_teste_rapido_recusa_o_motor_estragado(tmp_path, monkeypatch):
+    """M27 do relatorio 1 ("o teste rapido nao conferir o motor, so ver se ele tem a forma"): depois da troca, uma
+    versao com o motor no lugar mas estragado (um arquivo cortado) tem de falhar no teste rapido (e voltar para a
+    anterior, D-718). Se o teste rapido so procurasse a pasta, ela passaria."""
+    import sys
+
+    from core import ocr_kraken, pasta_das_ferramentas
+
+    raiz, current = _instalacao_com_o_motor_no_instalador(tmp_path)
+    monkeypatch.setattr(pasta_das_ferramentas, "empacotado", lambda: True)
+    monkeypatch.setattr(atualizacao, "instalado_pelo_velopack", lambda: True)
+    monkeypatch.setattr(atualizacao, "pasta_do_programa", lambda: current)
+    (current / "tesseract").mkdir()
+    (current / "tesseract" / "tesseract.exe").write_bytes(b"MZ")
+    monkeypatch.setattr(sys, "frozen", True, raising=False)
+    assert atualizacao.garantir_o_motor(raiz, current)
+    destino = ocr_kraken.pasta_do_motor_instalado(raiz)
+    (destino / "python" / "python.exe").write_bytes(b"x")             # cortado depois de posto no lugar
+    assert ocr_kraken.achar_pasta_do_motor() == destino, "o motor estragado ainda tem a forma de motor"
+    if atualizacao.caminho_do_registro().exists():
+        atualizacao.caminho_do_registro().unlink()
+    assert atualizacao.teste_rapido() == 1
+    # O motor tem de ser o motivo (os modelos e as DLLs podem faltar numa copia do codigo e dar 1 por outro motivo).
+    assert f"o motor de {destino}" in _registro(), "o teste rápido não acusou o motor estragado"

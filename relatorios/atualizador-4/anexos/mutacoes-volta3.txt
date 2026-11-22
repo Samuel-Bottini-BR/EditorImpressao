@@ -1,0 +1,153 @@
+Volta 3, item 4 (D-827): as protecoes do atualizador desligadas uma por uma numa copia minha (git worktree add --detach, no rascunho; commit f15863b8).
+Cada mutacao roda, um arquivo por vez: test_atualizador_4, test_decisoes_ajudante_da_atualizacao, test_decisoes_preparo_d749, test_decisoes_atualizacao, test_decisoes_testes_a_distancia (+ test_windows_peca nas de core/windows.py, + test_ocr_kraken nas de core/ocr_kraken.py).
+O script: anexos/mutar3.py.txt (rodar como .py). Nenhuma mutacao tira a recusa de pedir licenca sob o pytest (abriria a pergunta do Windows na tela).
+
+== 1. Com os testes de ate o item 3 (antes dos testes novos do item 4): 55 de 58 acusadas ==
+P01 o ajudante que nao existe deixa de faltar (V07): ACUSADA
+    test_atualizador_4.py: 2 failed, 48 passed in 31.28s ['FAILED tests/test_atualizador_4.py::test_conserto1_o_nao_do_windows_nao_vira_preparado', 'FAILED tests/test_atualizador_4.py::test_conserto1_sim_so_conta_com_o_windows_mostrando_o_ajudante']
+    test_decisoes_preparo_d749.py: 1 failed, 8 passed in 1.66s ['FAILED tests/test_decisoes_preparo_d749.py::test_d749_uma_anotacao_velha_nao_conta']
+P02 'nao deu para saber' do ajudante deixa de faltar (volta 3, item 1): ACUSADA
+    test_atualizador_4.py: 2 failed, 48 passed in 1.42s ['FAILED tests/test_atualizador_4.py::test_conserto1_nao_deu_para_ler_o_ajudante_conta_como_falta[None-False]', 'FAILED tests/test_atualizador_4.py::test_volta3_item1_depois_do_sim_com_o_windows_que_nao_deixa_ler_a_pergunta_volta']
+P03 'nao deu para saber' do desfazer deixa de faltar (volta 3, item 1): ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.41s ['FAILED tests/test_atualizador_4.py::test_volta3_item1_depois_do_sim_com_o_windows_que_nao_deixa_ler_a_pergunta_volta']
+P04 o desfazer que nao existe deixa de faltar (M06, V11): ACUSADA
+    test_decisoes_preparo_d749.py: 1 failed, 8 passed in 1.53s ['FAILED tests/test_decisoes_preparo_d749.py::test_d749_sim_com_a_preparacao_parada_no_meio_a_pergunta_volta[meio]']
+P05 'existe mas nao le' vira falta (V13): ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.35s ['FAILED tests/test_atualizador_4.py::test_conserto1_nao_deu_para_ler_o_ajudante_conta_como_falta[True-False]']
+P06 sem a conferencia da peca (V09): ACUSADA
+    test_atualizador_4.py: 6 failed, 44 passed in 1.20s ['FAILED tests/test_atualizador_4.py::test_conserto1_ajudante_de_outro_programa_conta_como_falta', 'FAILED tests/test_atualizador_4.py::test_conserto1_o_mesmo_caminho_escrito_diferente_e_o_mesmo_ajudante', 'FAILED tests/test_atualizador_4.py::test_volta3_item3_com_a_licenca_ilegivel_o_resto_do_ajudante_ainda_e_conferido[comando-C:\\\\Outro\\\\Pro
+P07 a licenca ilegivel vira falta (V08): ACUSADA
+    test_atualizador_4.py: 5 failed, 45 passed in 1.22s ['FAILED tests/test_atualizador_4.py::test_volta3_item2_o_que_nao_deu_para_conferir_fica_dito_e_nada_e_dado_como_preparado', 'FAILED tests/test_atualizador_4.py::test_volta3_item3_com_a_licenca_ilegivel_o_resto_do_ajudante_ainda_e_conferido[comando-C:\\\\Outro\\\\Programa.exe]', 'FAILED tests/test_atualizador_4.py::test_volta3_item3_com_a_licenca
+P08 a licenca ilegivel pula o resto (volta 3, item 3): ACUSADA
+    test_atualizador_4.py: 3 failed, 47 passed in 1.24s ['FAILED tests/test_atualizador_4.py::test_volta3_item3_com_a_licenca_ilegivel_o_resto_do_ajudante_ainda_e_conferido[comando-C:\\\\Outro\\\\Programa.exe]', 'FAILED tests/test_atualizador_4.py::test_volta3_item3_com_a_licenca_ilegivel_o_resto_do_ajudante_ainda_e_conferido[argumentos---outra-coisa]', 'FAILED tests/test_atualizador_4.py::test_volta3
+P09 a licenca lida nao e conferida: ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.22s ['FAILED tests/test_atualizador_4.py::test_volta2_item4_a_conferencia_do_ajudante_e_a_da_peca_com_a_licenca']
+P10 os argumentos do ajudante nao sao comparados (M05): ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.36s ['FAILED tests/test_atualizador_4.py::test_volta3_item3_com_a_licenca_ilegivel_o_resto_do_ajudante_ainda_e_conferido[argumentos---outra-coisa]']
+P11 a conta do ajudante nao e comparada (M05): ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.38s ['FAILED tests/test_atualizador_4.py::test_volta3_item3_com_a_licenca_ilegivel_o_resto_do_ajudante_ainda_e_conferido[usuario-S-1-5-21-1-2-3-1001]']
+P12 o comando do ajudante nao e comparado: ACUSADA
+    test_atualizador_4.py: 3 failed, 47 passed in 1.26s ['FAILED tests/test_atualizador_4.py::test_conserto1_ajudante_de_outro_programa_conta_como_falta', 'FAILED tests/test_atualizador_4.py::test_conserto1_o_mesmo_caminho_escrito_diferente_e_o_mesmo_ajudante', 'FAILED tests/test_atualizador_4.py::test_volta3_item3_com_a_licenca_ilegivel_o_resto_do_ajudante_ainda_e_conferido[comando-C:\\\\Outro\\\\Pro
+P13 o 'deu certo' da peca basta (M09): ACUSADA
+    test_atualizador_4.py: 2 failed, 48 passed in 1.30s ['FAILED tests/test_atualizador_4.py::test_conserto1_sim_so_conta_com_o_windows_mostrando_o_ajudante', 'FAILED tests/test_atualizador_4.py::test_volta3_item2_o_que_nao_deu_para_conferir_fica_dito_e_nada_e_dado_como_preparado']
+P14 o passo engole o codigo de saida (M10): ACUSADA
+    test_decisoes_preparo_d749.py: 1 failed, 8 passed in 1.49s ['FAILED tests/test_decisoes_preparo_d749.py::test_d749_o_passo_anota_como_o_preparo_terminou[[pscustomobject]@{ ExitCode = 1 }-falhou]']
+P15 a abertura seguinte nao le o Windows (M11): ACUSADA
+    test_atualizador_4.py: 5 failed, 45 passed in 1.22s ['FAILED tests/test_atualizador_4.py::test_conserto1_reinstalado_sem_o_ajudante_a_pergunta_volta', 'FAILED tests/test_atualizador_4.py::test_conserto2_a_janela_do_programa_vai_como_dona_da_pergunta[True]', 'FAILED tests/test_atualizador_4.py::test_volta3_item1_depois_do_sim_com_o_windows_que_nao_deixa_ler_a_pergunta_volta']
+    test_decisoes_ajudante_da_atualizacao.py: 1 failed, 36 passed in 7.24s ['FAILED tests/test_decisoes_ajudante_da_atualizacao.py::test_d741_nao_a_pergunta_volta_na_proxima_abertura_e_sim_ela_nao_volta_mais']
+    test_decisoes_preparo_d749.py: 2 failed, 7 passed in 1.41s ['FAILED tests/test_decisoes_preparo_d749.py::test_d749_sim_com_a_preparacao_parada_no_meio_a_pergunta_volta[meio]', 'FAILED tests/test_decisoes_preparo_d749.py::test_d749_sim_com_a_preparacao_parada_no_meio_a_pergunta_volta[falhou]']
+P16 o ajudante nao roda depois do Sim (M12): ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.28s ['FAILED tests/test_atualizador_4.py::test_conserto1_preparado_nao_pergunta_e_depois_do_sim_o_ajudante_roda']
+P17 o ajudante roda mesmo faltando (volta 3, item 2): ACUSADA
+    test_atualizador_4.py: 2 failed, 48 passed in 1.29s ['FAILED tests/test_atualizador_4.py::test_volta3_item1_depois_do_nao_com_o_windows_que_nunca_deixa_ler_a_pergunta_volta_a_cada_abertura', 'FAILED tests/test_atualizador_4.py::test_volta3_item2_o_que_nao_deu_para_conferir_fica_dito_e_nada_e_dado_como_preparado']
+P18 o 'Nao' volta a dizer a consequencia sem ler (volta 3, item 2): ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.27s ['FAILED tests/test_atualizador_4.py::test_volta3_item2_sem_sim_o_registro_diz_o_que_a_leitura_mostrou[nao]']
+P19 o que nao deu para conferir vira 'preparado' (volta 3, item 2): ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.26s ['FAILED tests/test_atualizador_4.py::test_volta3_item2_o_que_nao_deu_para_conferir_fica_dito_e_nada_e_dado_como_preparado']
+P20 o desfecho sem o Sim volta a supor o que faltou (volta 3, item 2): ACUSADA
+    test_atualizador_4.py: 2 failed, 48 passed in 1.31s ['FAILED tests/test_atualizador_4.py::test_volta3_item2_sem_sim_o_registro_diz_o_que_a_leitura_mostrou[nao]', 'FAILED tests/test_atualizador_4.py::test_volta3_item2_sem_sim_o_registro_diz_o_que_a_leitura_mostrou[falhou]']
+P21 a janela fora da frente nao fica anotada: ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.28s ['FAILED tests/test_atualizador_4.py::test_conserto2_a_janela_que_nao_veio_para_a_frente_fica_anotada']
+P22 o passo de preparar nao roda o --preparar-o-computador: ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.30s ['FAILED tests/test_atualizador_4.py::test_conserto1_a_pergunta_vai_pela_peca_unica_com_um_passo_so']
+    test_decisoes_ajudante_da_atualizacao.py: 6 failed, 31 passed in 7.34s ['FAILED tests/test_decisoes_ajudante_da_atualizacao.py::test_d733_com_a_senha_preparo_e_testes_numa_pergunta_so', 'FAILED tests/test_decisoes_ajudante_da_atualizacao.py::test_d735_sem_a_senha_a_pergunta_do_windows_aparece_assim_mesmo', 'FAILED tests/test_decisoes_ajudante_da_atualizacao.py::test_d735_agora_nao_na_senha_nao_pul
+P23 a senha liga os testes (M13): ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.29s ['FAILED tests/test_atualizador_4.py::test_d825_a_senha_digitada_nao_liga_nenhum_passo_dos_testes']
+    test_decisoes_ajudante_da_atualizacao.py: 2 failed, 35 passed in 7.29s ['FAILED tests/test_decisoes_ajudante_da_atualizacao.py::test_d733_com_a_senha_preparo_e_testes_numa_pergunta_so', 'FAILED tests/test_decisoes_ajudante_da_atualizacao.py::test_d741_sim_na_primeira_abertura_nao_volta_mais']
+    test_decisoes_testes_a_distancia.py: 2 failed, 11 passed in 0.44s ['FAILED tests/test_decisoes_testes_a_distancia.py::test_d721_primeira_vez_pede_a_senha_e_liga', 'FAILED tests/test_decisoes_testes_a_distancia.py::test_d728_instalado_primeira_vez_pede_a_senha']
+P24 sem a janela dona (M14): ACUSADA
+    test_atualizador_4.py: 2 failed, 48 passed in 1.25s ['FAILED tests/test_atualizador_4.py::test_conserto2_a_janela_do_programa_vai_como_dona_da_pergunta[False]', 'FAILED tests/test_atualizador_4.py::test_conserto2_a_janela_do_programa_vai_como_dona_da_pergunta[True]']
+P25 a pergunta no fio da tela (M15): ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.31s ['FAILED tests/test_atualizador_4.py::test_conserto1_a_tela_roda_a_pergunta_por_tras_e_nao_no_fio_da_tela']
+P26 o fio de tras nao e solto (M16): ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.23s ['FAILED tests/test_atualizador_4.py::test_conserto1_o_fio_de_tras_e_solto']
+P27 as aberturas seguintes nao perguntam de novo: ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.26s ['FAILED tests/test_atualizador_4.py::test_conserto2_a_janela_do_programa_vai_como_dona_da_pergunta[True]']
+    test_decisoes_ajudante_da_atualizacao.py: 1 failed, 36 passed in 7.26s ['FAILED tests/test_decisoes_ajudante_da_atualizacao.py::test_d741_nao_a_pergunta_volta_na_proxima_abertura_e_sim_ela_nao_volta_mais']
+P30 lancar sem conferir o sinal de vida (M17): ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.28s ['FAILED tests/test_atualizador_4.py::test_conserto3_depois_com_a_troca_que_nao_comeca_o_programa_abre']
+    test_decisoes_ajudante_da_atualizacao.py: 1 failed, 36 passed in 7.22s ['FAILED tests/test_decisoes_ajudante_da_atualizacao.py::test_d733_o_script_escondido_vai_codificado_e_solto']
+P31 o limite da troca volta a 300 s (M18): ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.30s ['FAILED tests/test_atualizador_4.py::test_conserto3_o_limite_da_troca_chega_ao_script_e_a_janelinha']
+P32 a troca que nao comecou devolve True: ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.28s ['FAILED tests/test_atualizador_4.py::test_conserto3_depois_com_a_troca_que_nao_comeca_o_programa_abre']
+    test_decisoes_ajudante_da_atualizacao.py: 1 failed, 36 passed in 7.34s ['FAILED tests/test_decisoes_ajudante_da_atualizacao.py::test_d733_o_script_escondido_vai_codificado_e_solto']
+P33 o 'Depois' sem a janelinha: ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.30s ['FAILED tests/test_atualizador_4.py::test_conserto3_depois_com_a_troca_que_nao_comeca_o_programa_abre']
+    test_decisoes_ajudante_da_atualizacao.py: 1 failed, 36 passed in 7.24s ['FAILED tests/test_decisoes_ajudante_da_atualizacao.py::test_d742_quem_pede_a_janelinha']
+P40 o motor aberto nao e conferido (M19): ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.27s ['FAILED tests/test_atualizador_4.py::test_conserto4_motor_estragado_no_arquivo_nunca_fica_com_o_nome_final']
+P41 o espaco nao e conferido (M20): ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.29s ['FAILED tests/test_atualizador_4.py::test_conserto4_sem_espaco_nao_comeca']
+P42 o motor aberto direto no nome final (M21): ACUSADA
+    test_atualizador_4.py: 4 failed, 46 passed in 1.23s ['FAILED tests/test_atualizador_4.py::test_conserto4_o_ajudante_poe_o_motor_do_instalador_no_lugar_dele', 'FAILED tests/test_atualizador_4.py::test_conserto4_motor_estragado_no_lugar_e_trocado_pelo_do_instalador', 'FAILED tests/test_atualizador_4.py::test_conserto4_o_motor_no_lugar_e_a_mesma_conferencia']
+P43 o erro nao apaga o provisorio (M22): ACUSADA
+    test_atualizador_4.py: 3 failed, 47 passed in 1.25s ['FAILED tests/test_atualizador_4.py::test_conserto4_motor_estragado_no_arquivo_nunca_fica_com_o_nome_final', 'FAILED tests/test_atualizador_4.py::test_volta2_medio1_arquivo_do_motor_estragado_de_qualquer_jeito_e_apagado_e_registrado[fluxo invalido]', 'FAILED tests/test_atualizador_4.py::test_volta2_medio1_arquivo_do_motor_estragado_de_qualquer_j
+P44 a troca sem o motor no lugar (M23, V03): ACUSADA
+    test_atualizador_4.py: 3 failed, 47 passed in 1.26s ['FAILED tests/test_atualizador_4.py::test_conserto4_a_troca_nao_acontece_sem_o_motor_no_lugar', 'FAILED tests/test_atualizador_4.py::test_volta2_medio2_sem_o_motor_a_versao_nao_e_anunciada_nem_trocada[True]', 'FAILED tests/test_atualizador_4.py::test_volta2_medio2_sem_o_motor_a_versao_nao_e_anunciada_nem_trocada[False]']
+P45 o ajudante nao poe o motor (M24): ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.26s ['FAILED tests/test_atualizador_4.py::test_conserto4_o_ajudante_poe_o_motor_antes_de_procurar_e_nunca_no_portatil']
+P46 o motor tambem no portatil (M25): ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.32s ['FAILED tests/test_atualizador_4.py::test_conserto4_o_ajudante_poe_o_motor_antes_de_procurar_e_nunca_no_portatil']
+P47 o instalado procura no lugar antigo (M26): ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.04s ['FAILED tests/test_atualizador_4.py::test_conserto4_o_programa_instalado_procura_o_motor_so_no_lugar_dele']
+P48 o teste rapido nao confere o motor (M27): NAO ACUSADA
+P49 o motor ja no lugar nao e conferido (M28): ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.25s ['FAILED tests/test_atualizador_4.py::test_conserto4_motor_estragado_no_lugar_e_trocado_pelo_do_instalador']
+P50 o estragado nao e posto de lado (M29): ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.26s ['FAILED tests/test_atualizador_4.py::test_conserto4_motor_estragado_no_lugar_e_trocado_pelo_do_instalador']
+P51 garantir_o_motor volta a pegar so alguns erros (V01): ACUSADA
+    test_atualizador_4.py: 2 failed, 48 passed in 1.24s ['FAILED tests/test_atualizador_4.py::test_volta2_medio1_arquivo_do_motor_estragado_de_qualquer_jeito_e_apagado_e_registrado[fluxo invalido]', 'FAILED tests/test_atualizador_4.py::test_volta2_medio1_arquivo_do_motor_estragado_de_qualquer_jeito_e_apagado_e_registrado[cortado]']
+P52 o ajudante sem o try do motor (V02): ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.25s ['FAILED tests/test_atualizador_4.py::test_volta2_medio1_um_erro_no_motor_nao_impede_o_ajudante_de_procurar']
+P53 o 'pendente' de antes nao vira 'esperando-o-motor' (V04): ACUSADA
+    test_atualizador_4.py: 2 failed, 48 passed in 1.23s ['FAILED tests/test_atualizador_4.py::test_volta2_medio2_sem_o_motor_a_versao_nao_e_anunciada_nem_trocada[True]', 'FAILED tests/test_atualizador_4.py::test_volta2_medio2_sem_o_motor_a_versao_nao_e_anunciada_nem_trocada[False]']
+P54 a tela le 'esperando-o-motor' como versao nova (V05): ACUSADA
+    test_atualizador_4.py: 2 failed, 48 passed in 1.29s ['FAILED tests/test_atualizador_4.py::test_volta2_medio2_sem_o_motor_a_versao_nao_e_anunciada_nem_trocada[True]', 'FAILED tests/test_atualizador_4.py::test_volta2_medio2_sem_o_motor_a_versao_nao_e_anunciada_nem_trocada[False]']
+P55 baixa antes de conferir o motor (V14): ACUSADA
+    test_atualizador_4.py: 2 failed, 48 passed in 1.29s ['FAILED tests/test_atualizador_4.py::test_volta2_medio2_sem_o_motor_a_versao_nao_e_anunciada_nem_trocada[True]', 'FAILED tests/test_atualizador_4.py::test_volta2_medio2_sem_o_motor_a_versao_nao_e_anunciada_nem_trocada[False]']
+P56 'o motor esta no lugar' sem conferir: ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.26s ['FAILED tests/test_atualizador_4.py::test_conserto4_o_motor_no_lugar_e_a_mesma_conferencia']
+P60 o ajudante nao completa o Visual C++ e a instalacao antiga (M07, M08): NAO ACUSADA
+P61 a preparacao nao instala o Visual C++ (M07): ACUSADA
+    test_decisoes_preparo_d749.py: 1 failed, 8 passed in 1.46s ['FAILED tests/test_decisoes_preparo_d749.py::test_d749_visual_c_ou_inno_que_falham_contam_como_erro']
+    test_decisoes_atualizacao.py: 1 failed, 37 passed in 0.88s ['FAILED tests/test_decisoes_atualizacao.py::test_d723_instalacao_de_verdade_prepara_o_computador']
+P62 a preparacao nao tira a instalacao antiga (M08): ACUSADA
+    test_decisoes_atualizacao.py: 1 failed, 37 passed in 0.85s ['FAILED tests/test_decisoes_atualizacao.py::test_d723_instalacao_de_verdade_prepara_o_computador']
+P63 o Visual C++ que falhou conta como certo: ACUSADA
+    test_decisoes_preparo_d749.py: 1 failed, 8 passed in 1.43s ['FAILED tests/test_decisoes_preparo_d749.py::test_d749_visual_c_ou_inno_que_falham_contam_como_erro']
+P64 a instalacao antiga que nao saiu conta como certa: ACUSADA
+    test_decisoes_preparo_d749.py: 1 failed, 8 passed in 1.41s ['FAILED tests/test_decisoes_preparo_d749.py::test_d749_visual_c_ou_inno_que_falham_contam_como_erro']
+P65 o Visual C++ instalado sem faltar: ACUSADA
+    test_atualizador_4.py: 1 failed, 49 passed in 1.29s ['FAILED tests/test_atualizador_4.py::test_conserto1_visual_c_e_inno_sao_a_mesma_regra_de_quem_instala_e_tira']
+    test_decisoes_atualizacao.py: 1 failed, 37 passed in 0.87s ['FAILED tests/test_decisoes_atualizacao.py::test_d727_o_visual_c_so_roda_se_faltar']
+P66 a preparacao com erro devolve 0 (D-749): ACUSADA
+    test_decisoes_preparo_d749.py: 1 failed, 8 passed in 1.43s ['FAILED tests/test_decisoes_preparo_d749.py::test_d749_o_modo_preparar_devolve_erro_quando_algo_falha_no_meio']
+P67 a tarefa desfazer que nao nasceu conta como certa (M06, na criacao): NAO ACUSADA
+P68 a preparacao com o Visual C++ falhando devolve certo: ACUSADA
+    test_decisoes_preparo_d749.py: 1 failed, 8 passed in 1.44s ['FAILED tests/test_decisoes_preparo_d749.py::test_d749_visual_c_ou_inno_que_falham_contam_como_erro']
+P69 o Inno tirado sem conferir o caminho: ACUSADA
+    test_decisoes_atualizacao.py: 1 failed, 37 passed in 0.84s ['FAILED tests/test_decisoes_atualizacao.py::test_d723_o_comando_que_tira_o_inno']
+
+== 2. Com os testes novos do item 4 (so as que nao eram acusadas, e as do M05) ==
+P10 os argumentos do ajudante nao sao comparados (M05): ACUSADA
+    test_atualizador_4.py: 2 failed, 55 passed in 1.46s ['FAILED tests/test_atualizador_4.py::test_volta3_item3_com_a_licenca_ilegivel_o_resto_do_ajudante_ainda_e_conferido[argumentos---outra-coisa]', 'FAILED tests/test_atualizador_4.py::test_volta3_m05_o_ajudante_com_outros_argumentos_ou_outra_conta_falta[argumentos---outra-coisa]']
+P11 a conta do ajudante nao e comparada (M05): ACUSADA
+    test_atualizador_4.py: 2 failed, 55 passed in 1.33s ['FAILED tests/test_atualizador_4.py::test_volta3_item3_com_a_licenca_ilegivel_o_resto_do_ajudante_ainda_e_conferido[usuario-S-1-5-21-1-2-3-1001]', 'FAILED tests/test_atualizador_4.py::test_volta3_m05_o_ajudante_com_outros_argumentos_ou_outra_conta_falta[usuario-S-1-5-21-1-2-3-1001]']
+P48 o teste rapido nao confere o motor (M27): NAO ACUSADA
+P60 o ajudante nao completa o Visual C++ e a instalacao antiga (M07, M08): ACUSADA
+    test_atualizador_4.py: 1 failed, 56 passed in 1.28s ['FAILED tests/test_atualizador_4.py::test_volta3_m07_m08_o_ajudante_completa_o_visual_c_e_a_instalacao_antiga_toda_vez_que_roda']
+P67 a tarefa desfazer que nao nasceu conta como certa (M06, na criacao): ACUSADA
+    test_atualizador_4.py: 1 failed, 56 passed in 1.31s ['FAILED tests/test_atualizador_4.py::test_volta3_m06_a_preparacao_so_da_certo_com_as_duas_tarefas_criadas[True-False-False]']
+
+(o teste do M27 foi reforcado depois desta rodada: numa copia sem os modelos o teste rapido dava 1 por outro motivo; agora cobra o motor como o motivo)
+P48 o teste rapido nao confere o motor (M27): ACUSADA
+    test_atualizador_4.py: 1 failed, 56 passed in 1.44s ['FAILED tests/test_atualizador_4.py::test_volta3_m27_o_teste_rapido_recusa_o_motor_estragado']
+
+== 3. Duas a mais (o Visual C++ e a instalacao antiga de volta na pergunta, contra a D-826 (1)) ==
+P70 o Visual C++ volta para a pergunta (V12; contra a D-826 (1)): ACUSADA
+    test_atualizador_4.py: 1 failed, 56 passed in 1.39s ['FAILED tests/test_atualizador_4.py::test_volta2_medio3_visual_c_mais_novo_numa_versao_nova_nao_traz_a_pergunta_de_volta']
+P71 a instalacao antiga volta para a pergunta (contra a D-826 (1)): ACUSADA
+    test_atualizador_4.py: 2 failed, 55 passed in 1.31s ['FAILED tests/test_atualizador_4.py::test_conserto1_a_instalacao_antiga_que_o_programa_nao_tira_de_proposito_nao_falta', 'FAILED tests/test_atualizador_4.py::test_volta2_medio3_visual_c_mais_novo_numa_versao_nova_nao_traz_a_pergunta_de_volta']
+
+Resultado: 60 de 60 acusadas.
