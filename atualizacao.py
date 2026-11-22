@@ -1639,15 +1639,6 @@ def ler_tarefa_no_windows(nome: str):
     return windows.ler_tarefa(nome)
 
 
-def _mesmo_caminho(a: str, b: str) -> bool:
-    """Os dois textos sao o mesmo arquivo para o Windows (sem diferenca de maiusculas, barras e aspas)?"""
-    def normal(texto: str) -> str:
-        """O caminho como o Windows o compara (vazio fica vazio)."""
-        limpo = str(texto).strip().strip('"')
-        return os.path.normcase(os.path.normpath(limpo)) if limpo else ""
-    return bool(normal(a)) and normal(a) == normal(b)
-
-
 def o_que_falta_no_computador(exe: Path | None = None,
                               ler_tarefa: Callable[[str], object] | None = None,
                               portatil: Callable[[], bool] | None = None) -> list[str]:
@@ -1657,8 +1648,9 @@ def o_que_falta_no_computador(exe: Path | None = None,
     marca nas Configuracoes e um arquivo preparo.txt (anotacoes do proprio programa): o "Nao" do Windows virava
     "preparado", e a marca sobrevivia a desinstalar e reinstalar. Agora le no Agendador, pela peca unica
     (ler_tarefa_no_windows), as duas tarefas que so a pergunta cria (pedem administrador):
-    1. o ajudante da atualizacao existe e aponta para este programa (o comando e o .exe desta instalacao, os argumentos
-       sao os do ajudante, roda como o sistema);
+    1. o ajudante da atualizacao existe e e o deste programa: a conferencia da peca unica,
+       core.windows.problemas_da_tarefa_criada (o comando e o .exe desta instalacao, os argumentos sao os do ajudante,
+       roda como o sistema, e as contas comuns podem manda-lo rodar);
     2. a tarefa "desfazer" existe (D-731).
     O Visual C++ e a instalacao antiga do Inno NAO entram aqui (volta 2, medio 3 do relatorio 1): quem os completa e o
     proprio ajudante, como o sistema, sem perguntar nada, toda vez que roda (rodar_ao_ligar -> preparar_o_computador).
@@ -1684,14 +1676,14 @@ def o_que_falta_no_computador(exe: Path | None = None,
                   "por isso")
     elif ajudante.existe is False:
         falta.append("o ajudante da atualização não existe no Windows")
+    elif ajudante.lida and not ajudante.licenca:
+        registrar("não deu para ler a licença do ajudante da atualização (quem pode mandá-lo rodar); não pergunto de "
+                  "novo por isso")
     elif ajudante.lida:
-        esperado = windows.ler_xml_da_tarefa(xml_da_tarefa(exe))
-        if not _mesmo_caminho(ajudante.comando, esperado["comando"]):
-            falta.append(f"o ajudante da atualização aponta para {ajudante.comando!r}, e não para "
-                         f"{esperado['comando']!r}")
-        if ajudante.argumentos != esperado["argumentos"] or ajudante.usuario != esperado["usuario"]:
-            falta.append(f"o ajudante da atualização não é o deste programa (argumentos {ajudante.argumentos!r}, "
-                         f"conta {ajudante.usuario!r})")
+        # A conferencia da peca unica (volta 2, item 4): a mesma de quando a tarefa e criada (o comando, os argumentos,
+        # quem roda e quem pode mandar rodar). Um ajudante que a conta do Kaique nao pode chamar conta como falta.
+        falta += [f"o ajudante da atualização não é o deste programa: {p}"
+                  for p in windows.problemas_da_tarefa_criada(xml_da_tarefa(exe), ajudante)]
     desfazer = ler(testes_a_distancia.nome_da_tarefa_do_desfazer())
     if desfazer.existe is None:
         registrar(f"não deu para ler a tarefa do desfazer no Windows ({desfazer.motivo}); não pergunto de novo por isso")

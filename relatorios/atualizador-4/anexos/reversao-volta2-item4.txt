@@ -1,0 +1,5 @@
+Volta 2, item 4: os testes rodados no codigo do medio 3 (9979419d, antes do conserto):
+FAILED test_conserto1_o_mesmo_caminho_escrito_diferente_e_o_mesmo_ajudante (reescrito: cobra a conferencia da peca)
+FAILED test_volta2_item4_a_conferencia_do_ajudante_e_a_da_peca_com_a_licenca (a peca nao era chamada; o ajudante sem a licenca das contas comuns passava)
+2 failed
+Depois do conserto: test_atualizador_4.py 43 passed.

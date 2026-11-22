@@ -82,7 +82,8 @@ class WindowsDeMentira:
         """O que a preparacao de verdade deixa no Agendador: o ajudante, rodando como o sistema."""
         nome = atualizacao.NOME_DA_TAREFA
         self.tarefas[nome] = windows.Tarefa(nome, True, True, comando=comando or str(self.exe),
-                                            argumentos=atualizacao.ARG_PROCURAR, usuario=windows.SID_SISTEMA)
+                                            argumentos=atualizacao.ARG_PROCURAR, usuario=windows.SID_SISTEMA,
+                                            licenca=atualizacao.QUEM_PODE_MANDAR_RODAR)
 
     def _criar_desfazer(self) -> None:
         """A tarefa "desfazer" que a preparacao cria (D-731)."""
@@ -165,14 +166,17 @@ def test_conserto1_ajudante_de_outro_programa_conta_como_falta(windows_de_mentir
     """O ajudante existe, mas aponta para outro .exe (outra instalacao): falta (a pergunta refaz)."""
     windows_de_mentira.pedir([])
     windows_de_mentira._criar_ajudante(r"C:\Outro\EditorImpressao.exe")
-    assert any("aponta para" in f for f in atualizacao.o_que_falta_no_computador())
+    assert any("comando" in f for f in atualizacao.o_que_falta_no_computador())
 
 
 def test_conserto1_o_mesmo_caminho_escrito_diferente_e_o_mesmo_ajudante(windows_de_mentira):
-    """D-813: a comparacao e do arquivo de verdade (maiusculas, barras, aspas), nao do texto."""
+    """Volta 2 (item 4 da gerente, baixo 3 do relatorio 1): a conferencia "a tarefa lida e a do programa?" e a da peca
+    unica (core.windows.problemas_da_tarefa_criada), a mesma da criacao: o texto que o programa gravou volta igual do
+    Agendador. (O nome ficou da volta 1, quando havia uma conta propria que normalizava o caminho.)"""
     windows_de_mentira.pedir([])
-    windows_de_mentira._criar_ajudante('"' + str(windows_de_mentira.exe).upper().replace("\\", "/") + '"')
     assert atualizacao.o_que_falta_no_computador() == []
+    windows_de_mentira._criar_ajudante(str(windows_de_mentira.exe).replace("EditorImpressao.exe", "Outro.exe"))
+    assert any("comando" in f for f in atualizacao.o_que_falta_no_computador())
 
 
 @pytest.mark.parametrize("existe, lida", [(None, False), (True, False)])
@@ -695,3 +699,28 @@ def test_volta2_medio3_depois_do_nao_a_pergunta_continua_voltando(windows_de_men
     assert atualizacao.preparar_ao_abrir(None, primeira_vez=True)
     assert atualizacao.preparar_ao_abrir(None, primeira_vez=False) == []
     assert len(windows_de_mentira.pedidos) == 2
+
+
+
+def test_volta2_item4_a_conferencia_do_ajudante_e_a_da_peca_com_a_licenca(windows_de_mentira, monkeypatch):
+    """Item 4 da volta 2 (baixo 3 do relatorio 1; CLAUDE.md §11.12, uma peca so): "o ajudante e o deste programa?" usa
+    a conferencia da peca unica (core.windows.problemas_da_tarefa_criada), que confere tambem quem pode mandar rodar.
+    Um ajudante sem a licenca das contas comuns (o programa do Kaique nao conseguiria chama-lo) conta como falta; a
+    licenca que nao deu para ler nao traz a pergunta de volta (medio 3)."""
+    windows_de_mentira.pedir([])
+    chamadas = []
+    original = windows.problemas_da_tarefa_criada
+    monkeypatch.setattr(windows, "problemas_da_tarefa_criada", lambda xml, lida: chamadas.append(1) or original(xml, lida))
+    assert atualizacao.o_que_falta_no_computador() == [] and chamadas == [1]
+    nome = atualizacao.NOME_DA_TAREFA
+    sem_as_contas_comuns = "D:(A;;FA;;;BA)(A;;FA;;;SY)"
+    windows_de_mentira.tarefas[nome] = windows.Tarefa(nome, True, True, comando=str(windows_de_mentira.exe),
+                                                      argumentos=atualizacao.ARG_PROCURAR,
+                                                      usuario=windows.SID_SISTEMA, licenca=sem_as_contas_comuns)
+    assert atualizacao.o_que_falta_no_computador(), "o ajudante que a conta do Kaique não chama passou"
+    windows_de_mentira.tarefas[nome] = windows.Tarefa(nome, True, True, comando=str(windows_de_mentira.exe),
+                                                      argumentos=atualizacao.ARG_PROCURAR,
+                                                      usuario=windows.SID_SISTEMA, licenca="")
+    assert atualizacao.o_que_falta_no_computador() == []
+    assert "licença" in _registro()
+    assert "_mesmo_caminho" not in Path(atualizacao.__file__).read_text(encoding="utf-8"), "a conta própria saiu"
