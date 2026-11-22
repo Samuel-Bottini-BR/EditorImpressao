@@ -1648,7 +1648,10 @@ Os testes estão todos em `tests/test_atualizador_volta4.py`.
 - Porteiro: "nada novo", 164 lugares (era 168). Tabela: 0 arquivos sem linha.
 - Reversão (cada teste novo no código de antes do seu conserto): `anexos/reversao-volta4-item1a.txt`, `-item1b.txt`,
   `-item1c.txt`, `-item2.txt`, `-item3.txt`.
-- GitHub: RODADA_GITHUB.
+- GitHub: rodada 45065432536 (testou `b3f6d99f`): **failure**, e só pelos 3 testes da volta 1 do conserto 2
+  (`tests/test_atualizador_4.py`, na parte 3: `assert [] == [4660]` duas vezes e "não estava na frente"); as
+  partes 1, 2, 4 e 5, os botões e prints da janela real e o porteiro passaram. Depois dela só mudaram textos de
+  explicação (`528afac0`: as docstrings de dois testes) e o formulário.
 
 ### Perguntas para o Samuel (volta 4)
 
@@ -1662,4 +1665,22 @@ mudança foi barrada; espero a decisão.
 ### Commit (volta 4)
 
 - Plano `00506da4`. Conserto 1: 1a `b756ddc2`, 1b `3adea01f`, 1c `586b483f`. Conserto 2 `1e5ea67d`. Conserto 3
-  `929195b4`. D-827 `5a1aa6b2` e `7ca2c55f`. Formulário: COMMIT_FORMULARIO.
+  `929195b4`. D-827 `5a1aa6b2` e `7ca2c55f`. Mutações `b3f6d99f`. Explicações dos testes `528afac0` (último
+  do código e dos testes). Formulário `97b9c009`, `78fed68a` e este.
+
+### Resumo (volta 4)
+
+1. A troca do "Reiniciar agora" desistia porque o script da troca prendia a pasta do programa (a pasta de trabalho);
+   a peça agora lança todo processo solto na pasta do Windows. Provado no PC (erro 32 antes, renomeia depois).
+2. Antes de trocar, o ajudante confere no Windows que nada do programa roda mais; se algo ainda roda, espera até 30 s
+   e, se continuar, não troca (a versão fica esperando).
+3. Toda troca tem a marca da troca (o script, ou o vigia na troca sem o script); o clique no atalho no meio sai em
+   silêncio e o programa abre sozinho no fim; dois cliques, uma janela só.
+4. A pergunta do Windows só sai com a janela do programa na frente; se não estiver, espera em silêncio e o registro
+   diz quanto esperou.
+5. A pasta dos testes à distância virou a pasta segura em Arquivos de Programas, sem comando de licença à mão:
+   refazer a preparação regrava o desfazer (provado no PC). Os 3 testes da D-774 mudaram; o porteiro desceu para 164.
+6. Os testes de verdade acharam e eu consertei dois defeitos novos (o vigia soltando a marca cedo; a gravação do
+   estado com "acesso negado").
+7. 34 de 34 proteções novas acusadas por algum teste, uma por vez.
+8. Pendente: 3 testes da volta 1 (conserto 2) falham com a regra nova; a gerente decide.
