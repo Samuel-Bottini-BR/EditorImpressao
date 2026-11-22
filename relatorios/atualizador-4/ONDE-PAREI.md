@@ -1145,8 +1145,10 @@ num lugar só, um de cada vez, com commit e push em cada um. Antes do código, e
   decisões D-718, D-719, D-731, D-733, D-735, D-741, D-749, D-767, D-770, D-774, D-779, D-806, D-811, D-819, D-824 a
   D-828; a Lista de bugs de 22/11; os três registros da prova; o código do Velopack 1.2.161 que usamos).
 - Experimentos no PC, sem licença e sem janela (`anexos/volta4-experimentos.txt` e os scripts `anexos/volta4-exp*.py.txt`).
-- Plano abaixo. **Parado, esperando a gerente** (ela confere e manda seguir). Há 4 pontos para ela decidir
-  (em "Para a gerente decidir (volta 4)").
+- Plano abaixo (`00506da4`). A gerente conferiu e mandou seguir (respostas em "Para a gerente decidir", no fim:
+  1 sim, 2 sim, 3 saída B, 4 a troca sem o script também com a marca).
+- Conserto 1: 1a `b756ddc2` (a pasta de trabalho do lançado solto), 1b `3adea01f` (o que roda de `current`), 1c
+  `586b483f` (a marca da troca, o vigia, o só de reabrir). Próximo: conserto 2 (a pergunta espera a janela).
 
 ### Decisões que esta tarefa precisa cumprir (volta 4)
 
