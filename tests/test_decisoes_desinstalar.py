@@ -284,9 +284,18 @@ def test_d731_a_conta_comum_manda_rodar_e_a_conta_de_testes_nao(dados):
 
 
 def test_d731_o_caderninho_fica_onde_o_plano_diz(dados):
-    """D-731 (17/11/2026): o caderninho do antes fica na pasta do ProgramData que só o administrador grava."""
-    assert td.caminho_do_antes() == r"C:\ProgramData\EditorImpressao\testes-a-distancia\antes.json"
-    assert td.caminho_do_script_do_desfazer().startswith(r"C:\ProgramData\EditorImpressao\testes-a-distancia")
+    """D-731 (17/11/2026): o caderninho do antes fica numa pasta que só o administrador grava.
+    Mudado pela D-774 (Samuel, 18/11/2026: "ok"; "o do lugar da pasta C:\\ProgramData\\EditorImpressao\\testes-a-distancia")
+    na volta 4 do atualizador (22/11/2026, D-828): a pasta é a pasta segura da peça (Arquivos de Programas, licenças de
+    fábrica; plano da parte do Windows, peça 2), não mais o ProgramData, trancado à mão por um icacls que deixava os
+    arquivos de dentro sem licença (a segunda preparação falhava). Falha no código de antes (o ProgramData)."""
+    from core import windows
+
+    segura = str(windows.pasta_segura())
+    assert td.caminho_do_antes() == segura + r"\antes.json"
+    assert td.caminho_do_script_do_desfazer() == segura + r"\desfazer.ps1"
+    assert td.caminho_do_registro_do_desfazer().startswith(segura + "\\")
+    assert "ProgramData" not in td.caminho_do_antes() + td.caminho_do_script_do_desfazer()
 
 
 @precisa_do_powershell
@@ -320,8 +329,12 @@ def test_d731_ligar_anota_o_antes_primeiro_e_so_na_primeira_vez(maquina):
     assert antes["sshd_inicio"] == "Manual" and antes["sshd_rodando"] is True
     assert antes["regra_larga_existia"] is True and antes["regra_larga_ligada"] is True
     assert antes["conta_de_outro_existia"] is False
-    icacls = " ".join(chamou(linhas, "icacls"))
-    assert "/inheritance:r" in icacls and "/setowner" in icacls, "a pasta fica só de leitura para os comuns"
+    # D-774 (Samuel, 18/11/2026: "ok"; "os dois da tranca da pasta /inheritance:r, /setowner"), volta 4 (22/11/2026):
+    # a pasta é a pasta segura, que já nasce só de leitura para os comuns; nenhum comando de licença à mão (o icacls
+    # com /T trancava os arquivos de dentro e a segunda preparação falhava). Falha no código de antes (o icacls).
+    assert chamou(linhas, "icacls") == [], "comando de licença à mão: a tranca que estragava a segunda preparação"
+    for proibido in ("icacls", "/inheritance", "/setowner", "Set-Acl"):
+        assert proibido not in primeiro.comando
 
     # ligar de novo (o OpenSSH agora é o nosso, instalado): o caderninho não muda
     codigo, _, erro = rodar("NotPresent")
@@ -824,15 +837,21 @@ def test_d731a_a_primeira_abertura_nao_troca_o_desfazer_inteiro_pelo_curto(maqui
 @precisa_do_powershell
 def test_d731a_a_pasta_do_desfazer_fica_protegida(maquina):
     """D-731, pergunta (a) (17/11/2026): o script do desfazer roda como o sistema; a pasta dele é criada pela
-    primeira abertura com dono "administradores" e só de leitura para as contas comuns (o mesmo icacls do ligar)."""
+    primeira abertura e é só de leitura para as contas comuns.
+    Mudado pela D-774 (Samuel, 18/11/2026: "ok"; "os dois da tranca da pasta /inheritance:r, /setowner") na volta 4
+    do atualizador (22/11/2026, D-828): a proteção vem do lugar (a pasta segura, em Arquivos de Programas, com as
+    licenças de fábrica), nunca de um comando de licença à mão: o icacls com /T deixava os arquivos que já estavam na
+    pasta sem licença nenhuma, e a segunda preparação falhava. O 1o passo só cria a pasta; quem confere as licenças
+    de verdade é o executor depois dos passos (tests/test_atualizador_volta4.py). Falha no código de antes (o icacls)."""
     (maquina / "testes-a-distancia").rmdir()  # a pasta vazia que a fixture criou: a primeira abertura a cria
     passo = td.plano_de_preparar_o_desfazer()[0]
     codigo, linhas, erro = rodar_no_windows_de_mentira(passo.comando, maquina, anotar=("icacls",))
     assert codigo == 0, erro
     assert (maquina / "testes-a-distancia").is_dir()
-    icacls = " ".join(chamou(linhas, "icacls"))
-    assert "/setowner" in icacls and "/inheritance:r" in icacls and f"*{td.SID_USUARIOS}:(OI)(CI)RX" in icacls
-    assert td.plano_de_ligar()[0].comando.endswith(td._comando_proteger_a_pasta()), "o mesmo icacls do ligar"
+    assert chamou(linhas, "icacls") == []
+    for comando in (passo.comando, td.plano_de_ligar()[0].comando):
+        for proibido in ("icacls", "/inheritance", "/setowner", "Set-Acl"):
+            assert proibido not in comando, f"comando de licença à mão: {proibido}"
 
 
 def test_d731a_a_licenca_nega_a_conta_de_testes_so_quando_ela_existe(dados):

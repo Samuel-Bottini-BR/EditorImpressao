@@ -572,3 +572,113 @@ def test_conserto2_a_leitura_da_janela_da_frente_de_verdade():
     if not frente or windows.janela_minimizada(frente):
         pytest.skip("sem janela na frente neste Windows (o do GitHub roda sem tela)")
     assert windows.janela_do_programa_na_frente(frente) == frente
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Conserto 3: refazer a preparacao da certo (a pasta segura, sem comando de licenca a mao)
+# ---------------------------------------------------------------------------------------------------------------------
+
+POWERSHELL = str(Path(os.environ.get("SystemRoot", r"C:\Windows")) / "System32" / "WindowsPowerShell" / "v1.0"
+                 / "powershell.exe")
+
+
+def _rodar_no_powershell(texto: str, pasta: Path) -> subprocess.CompletedProcess:
+    """Roda `texto` num PowerShell de verdade, escondido, com os erros parando o script (como o executor)."""
+    script = pasta / "passo.ps1"
+    script.write_text("$ErrorActionPreference = 'Stop'\n" + texto, encoding="utf-8-sig")
+    return subprocess.run([POWERSHELL, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
+                           str(script)], capture_output=True, text=True, timeout=120,
+                          creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+
+
+@so_no_windows
+def test_conserto3_refazer_a_preparacao_regrava_o_desfazer(tmp_path, monkeypatch):
+    """Defeito da prova de 22/11 ("a segunda preparacao do computador falha porque a pasta [...] ficou trancada pela
+    primeira": "O acesso ao caminho ...\\desfazer.ps1 foi negado"). De verdade no Windows, numa pasta do teste: o 1o
+    passo da preparacao, gravar o desfazer.ps1, o 1o passo de novo (refazer a preparacao, reinstalar por cima) e
+    gravar de novo: as duas vezes dao certo. No codigo de antes: o icacls do 1o passo tranca a pasta e o arquivo, e a
+    gravacao da "acesso negado"."""
+    from core import testes_a_distancia as td
+
+    pasta = tmp_path / "pasta-segura"
+    monkeypatch.setattr(td, "PASTA_DOS_TESTES", str(pasta))
+    primeiro = td.plano_de_preparar_o_desfazer()[0].comando
+    gravar = f"[IO.File]::WriteAllText('{td.caminho_do_script_do_desfazer()}', 'Write-Output desfazer')"
+    for vez in (1, 2):
+        feito = _rodar_no_powershell(primeiro + "\n" + gravar, tmp_path)
+        assert feito.returncode == 0, f"vez {vez}: {feito.stderr}"
+    assert Path(td.caminho_do_script_do_desfazer()).read_text(encoding="utf-8") == "Write-Output desfazer"
+
+
+def test_conserto3_nenhum_comando_de_licenca_a_mao_e_a_pasta_antiga_nao_entra(monkeypatch):
+    """A pasta e a pasta segura da peca; nenhum passo (preparar, ligar, desfazer) muda licenca a mao, e nenhum cita a
+    pasta antiga do ProgramData (se ela existir de uma versao de antes, nada daqui a le nem a muda)."""
+    from core import testes_a_distancia as td
+
+    monkeypatch.setattr(td, "PASTA_DOS_TESTES", None)
+    assert td.pasta_dos_testes() == str(windows.pasta_segura())
+    comandos = [p.comando for p in td.plano_de_preparar_o_desfazer() + td.plano_de_ligar() + td.plano_de_desfazer()]
+    comandos.append(td.xml_da_tarefa_do_desfazer())
+    for comando in comandos:
+        for proibido in ("icacls", "/inheritance", "/setowner", "Set-Acl", r"ProgramData\EditorImpressao"):
+            assert proibido not in comando, proibido
+
+
+class _ExecutorQueConfere:
+    """Uma peca de mentira do executor: os passos dao certo; a leitura da pasta responde o que se pedir."""
+
+    def __init__(self, confere: bool) -> None:
+        """Guarda a resposta da leitura da pasta."""
+        self.confere = confere
+        self.aplicados: list = []
+
+    def aplicar_ja_como_administrador(self, passos):
+        """Os passos (anotados) dao certo."""
+        from core import testes_a_distancia as td
+
+        self.aplicados.append(passos)
+        return td.Resultado(True, passos=[p.nome for p in passos])
+
+    def conferir_a_pasta_dos_testes(self):
+        """A leitura da pasta: confere ou nao."""
+        from core import testes_a_distancia as td
+
+        return td.Resultado(self.confere, mensagem="" if self.confere else "a pasta do desfazer não confere: x")
+
+
+@pytest.mark.parametrize("confere", [True, False])
+def test_conserto3_a_preparacao_so_da_certo_com_a_pasta_conferida(monkeypatch, confere):
+    """"Nada da como feito o que nao conferiu" (CLAUDE.md §11.12): depois dos passos, as licencas da pasta sao lidas; a
+    pasta que nao confere faz a preparacao dar "nao deu certo" (D-749)."""
+    from core import testes_a_distancia as td
+
+    executor = _ExecutorQueConfere(confere)
+    monkeypatch.setattr(td, "_executor", executor)
+    resultado = td.preparar_o_desfazer()
+    assert len(executor.aplicados) == 1
+    assert resultado.ok is confere
+    if not confere:
+        assert "não confere" in resultado.mensagem
+
+
+@pytest.mark.parametrize("resposta, caminho, certo", [("certo", None, True), ("falhou", None, False),
+                                                      ("certo", r"C:\Outra\Pasta", False)])
+def test_conserto3_o_executor_de_verdade_le_a_pasta_segura(monkeypatch, resposta, caminho, certo):
+    """O executor de verdade le a pasta pela conferencia unica da pasta segura (core.windows.conferir_pasta_segura) e
+    confere que ela e a pasta dos testes. Aqui a conferencia e de mentira (sob o pytest o executor se recusa)."""
+    from core import testes_a_distancia as td
+
+    monkeypatch.setattr(td, "PASTA_DOS_TESTES", None)
+    monkeypatch.delenv("PYTEST_CURRENT_TEST")
+    dados = {"caminho": caminho or str(windows.pasta_segura())}
+    monkeypatch.setattr(windows, "conferir_pasta_segura", lambda nome=windows.NOME_DA_PASTA_SEGURA: windows.Resposta(
+        windows.DEU_CERTO if resposta == "certo" else windows.FALHOU, "" if resposta == "certo" else "é um atalho",
+        "", dados))
+    assert td.ExecutorWindows().conferir_a_pasta_dos_testes().ok is certo
+
+
+@so_no_windows
+def test_conserto3_as_licencas_de_fabrica_de_arquivos_de_programas_passam_na_regra_da_pasta_segura():
+    """De verdade, so lendo: as licencas de Arquivos de Programas, que a pasta segura herda, passam na regra unica da
+    pasta segura (so o sistema, os administradores e o instalador do Windows gravam; as contas comuns leem)."""
+    assert windows.problemas_da_pasta_segura(windows.ler_licencas(windows.pasta_de_programas())) == []

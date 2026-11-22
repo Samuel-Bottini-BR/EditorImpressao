@@ -818,32 +818,6 @@
   {
    "arquivo": "core/testes_a_distancia.py",
    "conferencia": "K01",
-   "funcao": "_comando_proteger_a_pasta",
-   "texto": "f\" icacls $pasta /inheritance:r /grant:r '*{SID_SISTEMA}:(OI)(CI)F' '*{SID_ADMINISTRADORES}:(OI)(CI)F'\"",
-   "quantas": 1,
-   "linhas_quando_gerada": [
-    369
-   ],
-   "data": "2026-11-19",
-   "passo": "4",
-   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
-  },
-  {
-   "arquivo": "core/testes_a_distancia.py",
-   "conferencia": "K01",
-   "funcao": "_comando_proteger_a_pasta",
-   "texto": "f\" icacls $pasta /setowner '*{SID_ADMINISTRADORES}' /T /C /Q | Out-Null;\"",
-   "quantas": 1,
-   "linhas_quando_gerada": [
-    368
-   ],
-   "data": "2026-11-19",
-   "passo": "4",
-   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
-  },
-  {
-   "arquivo": "core/testes_a_distancia.py",
-   "conferencia": "K01",
    "funcao": "_conta_e_nossa",
    "texto": "return (f\"((Get-LocalUser -Name {NOME_DA_CONTA} -ErrorAction SilentlyContinue).Description\"",
    "quantas": 1,
@@ -1269,32 +1243,6 @@
    "data": "2026-11-19",
    "passo": "5",
    "motivo": "o desinstalar limpo troca a tarefa do desfazer"
-  },
-  {
-   "arquivo": "core/testes_a_distancia.py",
-   "conferencia": "K03",
-   "funcao": "_comando_proteger_a_pasta",
-   "texto": "f\" icacls $pasta /inheritance:r /grant:r '*{SID_SISTEMA}:(OI)(CI)F' '*{SID_ADMINISTRADORES}:(OI)(CI)F'\"",
-   "quantas": 1,
-   "linhas_quando_gerada": [
-    369
-   ],
-   "data": "2026-11-19",
-   "passo": "4",
-   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
-  },
-  {
-   "arquivo": "core/testes_a_distancia.py",
-   "conferencia": "K03",
-   "funcao": "_comando_proteger_a_pasta",
-   "texto": "f\" icacls $pasta /setowner '*{SID_ADMINISTRADORES}' /T /C /Q | Out-Null;\"",
-   "quantas": 1,
-   "linhas_quando_gerada": [
-    368
-   ],
-   "data": "2026-11-19",
-   "passo": "4",
-   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
   },
   {
    "arquivo": "core/testes_a_distancia.py",

@@ -30,11 +30,13 @@ docs/plano/DECISOES.md):
          mesmo: o gancho de desinstalar nao consegue (roda sem administrador).
 
 O CADERNINHO DO ANTES (D-731, 17/11/2026). O primeiro passo do `ligar`, ja
-como administrador, anota em C:\\ProgramData\\EditorImpressao\\testes-a-distancia
-\\antes.json o que o computador ja tinha (o OpenSSH, o servico, a regra larga,
-uma conta com o nosso nome, a pasta ssh). So na primeira vez: um desligar e
-ligar de novo nao faz o programa achar que o OpenSSH "ja estava la". A pasta
-fica so de leitura para as contas comuns. Desligar e desfazer leem o
+como administrador, anota em <a pasta segura>\\antes.json (desde a volta 4 do
+atualizador, 22/11/2026: C:\\Program Files\\EditorImpressaoAjudante; antes,
+C:\\ProgramData\\EditorImpressao\\testes-a-distancia) o que o computador ja tinha
+(o OpenSSH, o servico, a regra larga, uma conta com o nosso nome, a pasta ssh).
+So na primeira vez: um desligar e ligar de novo nao faz o programa achar que o
+OpenSSH "ja estava la". A pasta e so de leitura para as contas comuns (as
+licencas de fabrica de Arquivos de Programas; nenhum comando de licenca a mao). Desligar e desfazer leem o
 caderninho para tirar SO o que foi nosso; sem caderninho, o OpenSSH nunca e
 tirado.
 
@@ -97,11 +99,16 @@ SID_SISTEMA = "S-1-5-18"
 SID_ADMINISTRADORES = "S-1-5-32-544"
 
 # --- D-731 (17/11/2026): o caderninho do antes e a tarefa "desfazer" ----------
-# Tudo numa pasta do ProgramData que so o sistema e os administradores gravam
-# (o `ligar` protege a pasta). Os testes trocam estes caminhos por pastas
-# temporarias; as funcoes abaixo os leem na hora.
+# Volta 4 do atualizador (22/11/2026, D-828; a saida B, como manda o plano da parte do Windows, peca 2, e a D-774):
+# tudo na PASTA SEGURA da peca (core.windows.pasta_segura(): C:\Program Files\EditorImpressaoAjudante), que herda as
+# licencas de fabrica de Arquivos de Programas (o sistema e os administradores gravam; as contas comuns so leem).
+# Antes era C:\ProgramData\EditorImpressao\testes-a-distancia, trancada a mao por um icacls com /T, que deixava os
+# arquivos que ja estavam la sem licenca nenhuma: a segunda preparacao falhava com "acesso negado" no desfazer.ps1
+# (prova a vista de 22/11; causa provada em 18/11). Nenhum comando de licenca a mao: nada mais tranca nada.
+# PASTA_DOS_TESTES None = a pasta segura, lida na hora (pasta_dos_testes); os testes a trocam por uma pasta deles.
+# A pasta antiga do ProgramData, se existir de uma versao de antes, nao e lida nem mudada por nada daqui.
 PASTA_SSH = r"C:\ProgramData\ssh"
-PASTA_DOS_TESTES = r"C:\ProgramData\EditorImpressao\testes-a-distancia"
+PASTA_DOS_TESTES: str | None = None
 PASTA_DAS_TAREFAS = "EditorImpressao"     # a mesma pasta da tarefa da atualizacao
 NOME_DA_TAREFA_DO_DESFAZER = "Desfazer testes a distancia"
 # As linhas que o ligar poe no sshd_config ficam entre estas duas marcas: o
@@ -116,19 +123,30 @@ LINHAS_DO_SSHD = (f"AllowUsers {NOME_DA_CONTA}", "PasswordAuthentication yes", "
 TEMPO_MAXIMO_NO_GANCHO = 20
 
 
+def pasta_dos_testes() -> str:
+    """A pasta dos testes a distancia (o caderninho, o script e o registro do desfazer): a pasta segura da peca
+    (core.windows.pasta_segura), ou a que um teste pos em PASTA_DOS_TESTES. Lida na hora, e so quando um comando a
+    usa: importar a peca do Windows aqui em cima atrasaria toda abertura do programa (este arquivo e importado nela)."""
+    if PASTA_DOS_TESTES:
+        return PASTA_DOS_TESTES
+    from core import windows
+
+    return str(windows.pasta_segura())
+
+
 def caminho_do_antes() -> str:
     """O caderninho do antes (D-731): o que o computador ja tinha antes do 1o ligar."""
-    return PASTA_DOS_TESTES + r"\antes.json"
+    return pasta_dos_testes() + r"\antes.json"
 
 
 def caminho_do_script_do_desfazer() -> str:
     """O script que a tarefa "desfazer" roda (gravado pelo ligar)."""
-    return PASTA_DOS_TESTES + r"\desfazer.ps1"
+    return pasta_dos_testes() + r"\desfazer.ps1"
 
 
 def caminho_do_registro_do_desfazer() -> str:
     """A lista do que o desfazer fez, passo a passo (a gerente le pelo comando de longe; D-722)."""
-    return PASTA_DOS_TESTES + r"\o-que-foi-desfeito.txt"
+    return pasta_dos_testes() + r"\o-que-foi-desfeito.txt"
 
 
 def nome_da_tarefa_do_desfazer() -> str:
@@ -251,10 +269,10 @@ def _comando_anotar_o_antes() -> str:
     """O 1o passo do ligar (D-731): grava o caderninho, SO se ainda nao ha um valido, e protege a pasta.
 
     Um caderninho cujo dono nao e o sistema nem os administradores foi posto
-    por uma conta comum: nao vale e e gravado de novo. Depois, a pasta fica com
-    dono "administradores" e so de leitura para os usuarios comuns.
+    por uma conta comum: nao vale e e gravado de novo. A pasta e a pasta segura (volta 4): ja nasce so de leitura
+    para os usuarios comuns, sem comando de licenca (antes, o icacls do fim deste comando a trancava).
     """
-    pasta = PASTA_DOS_TESTES
+    pasta = pasta_dos_testes()
     arquivo = caminho_do_antes()
     campos = "; ".join([
         "openssh_ja_existia = (([string]$cap.State -eq 'Installed') -or [bool]$svc)",
@@ -282,8 +300,7 @@ def _comando_anotar_o_antes() -> str:
             f" $itens = @(); if (Test-Path -LiteralPath '{PASTA_SSH}')"
             f" {{ $itens = @(Get-ChildItem -LiteralPath '{PASTA_SSH}' -Recurse -Force -Name) }};"
             f" $novo = [ordered]@{{ {campos} }};"
-            f" $novo | ConvertTo-Json | Set-Content -LiteralPath $arq -Encoding UTF8 }};"
-            f" {_comando_proteger_a_pasta()}")
+            f" $novo | ConvertTo-Json | Set-Content -LiteralPath $arq -Encoding UTF8 }}")
 
 
 def xml_da_tarefa_do_desfazer() -> str:
@@ -350,25 +367,16 @@ def _comando_preparar_o_desfazer(testes_ligados: bool = True) -> str:
             f".SetSecurityDescriptor($licenca, 0)")
 
 
-def _comando_criar_e_proteger_a_pasta() -> str:
-    """Cria a pasta dos testes a distancia (se falta) e a deixa com dono "administradores", so de leitura
-    para as contas comuns. Usado pelo 1o passo do ligar (`_comando_anotar_o_antes`) e pela primeira
-    abertura (`plano_de_preparar_o_desfazer`): o script do desfazer, que roda como o sistema, mora nela,
-    e uma conta comum nunca pode troca-lo. Arriscado: afrouxar a licenca (uma conta comum que grava ali
-    roda o que quiser como o sistema)."""
-    return (f"$pasta = '{PASTA_DOS_TESTES}';"
-            f" if (-not (Test-Path -LiteralPath $pasta)) {{ New-Item -ItemType Directory -Path $pasta -Force | Out-Null }};"
-            f" {_comando_proteger_a_pasta()}")
-
-
-def _comando_proteger_a_pasta() -> str:
-    """O pedaco do icacls (a pasta ja esta em `$pasta`): dono "administradores"; sistema e administradores
-    tudo; o grupo Usuarios so le."""
-    return (f"$global:LASTEXITCODE = 0;"
-            f" icacls $pasta /setowner '*{SID_ADMINISTRADORES}' /T /C /Q | Out-Null;"
-            f" icacls $pasta /inheritance:r /grant:r '*{SID_SISTEMA}:(OI)(CI)F' '*{SID_ADMINISTRADORES}:(OI)(CI)F'"
-            f" '*{SID_USUARIOS}:(OI)(CI)RX' /T /C /Q | Out-Null;"
-            f" if ($LASTEXITCODE) {{ throw 'nao consegui proteger a pasta dos testes a distancia' }}")
+def _comando_criar_a_pasta() -> str:
+    """Cria a pasta dos testes a distancia, se falta, e nada mais (volta 4, 22/11/2026). Ela e a pasta segura, em
+    Arquivos de Programas: herda as licencas de fabrica (o sistema e os administradores gravam; as contas comuns so
+    leem), entao o script do desfazer, que roda como o sistema, nunca pode ser trocado por uma conta comum. Antes ela
+    era trancada a mao (icacls com /T), e a tranca deixava os arquivos que ja estavam dentro sem licenca nenhuma: a
+    segunda preparacao falhava. Usado pela primeira abertura (`plano_de_preparar_o_desfazer`); o 1o passo do ligar
+    (`_comando_anotar_o_antes`) cria a mesma pasta do mesmo jeito. Quem confere as licencas de verdade e
+    `preparar_o_desfazer` (core.windows.conferir_pasta_segura). Arriscado: voltar a mexer na licenca a mao."""
+    return (f"$pasta = '{pasta_dos_testes()}';"
+            f" if (-not (Test-Path -LiteralPath $pasta)) {{ New-Item -ItemType Directory -Path $pasta -Force | Out-Null }}")
 
 
 def plano_de_preparar_o_desfazer() -> list[Passo]:
@@ -385,7 +393,7 @@ def plano_de_preparar_o_desfazer() -> list[Passo]:
     --preparar-o-computador, ja como administrador).
     """
     return [
-        Passo("Criar e proteger a pasta do desfazer", _comando_criar_e_proteger_a_pasta()),
+        Passo("Criar a pasta do desfazer", _comando_criar_a_pasta()),
         Passo("Preparar o desfazer para quando o programa for desinstalado (as tarefas do programa)",
               f"if (Test-Path -LiteralPath '{caminho_do_antes()}')"
               f" {{ Anotar 'FICA | os testes a distancia ja foram ligados: o desfazer inteiro ja esta pronto' }}"
@@ -681,6 +689,12 @@ class Executor:
         pergunta do Windows da D-733). Espera terminar. Sem senha."""
         raise NotImplementedError
 
+    def conferir_a_pasta_dos_testes(self) -> Resultado:
+        """Le as licencas de verdade da pasta dos testes a distancia (a pasta segura) depois de prepara-la (volta 4,
+        22/11/2026). As pecas de mentira dos testes herdam este "confere" sem ler nada (D-767: elas provam so a
+        logica em volta); a de verdade, ExecutorWindows, le o Windows."""
+        return Resultado(True)
+
 
 class ExecutorWindows(Executor):
     """A de verdade: uma pergunta de administrador so para todos os passos.
@@ -723,6 +737,22 @@ class ExecutorWindows(Executor):
         from core._testes_a_distancia_windows import aplicar_ja_como_administrador_no_windows
 
         return aplicar_ja_como_administrador_no_windows(passos)
+
+    def conferir_a_pasta_dos_testes(self) -> Resultado:
+        """A pasta dos testes e a pasta segura e confere no Windows: dono, quem grava (so o sistema e os
+        administradores), quem le (as contas comuns), nao e um atalho (core.windows.conferir_pasta_segura, a
+        conferencia unica da pasta segura). So le; nunca muda licenca."""
+        if "PYTEST_CURRENT_TEST" in os.environ:
+            raise RuntimeError(
+                "ExecutorWindows nao roda sob o pytest: troque por um de mentira.")
+        from core import windows
+
+        conferida = windows.conferir_pasta_segura()
+        if not conferida.deu_certo:
+            return Resultado(False, mensagem=f"a pasta do desfazer não confere: {conferida.motivo}")
+        if os.path.normcase(conferida.dados.get("caminho", "")) != os.path.normcase(pasta_dos_testes()):
+            return Resultado(False, mensagem="a pasta do desfazer não é a pasta segura: " + pasta_dos_testes())
+        return Resultado(True)
 
 
 # O executor de hoje. Troca-se com `definir_executor` (os testes poem um de
@@ -830,8 +860,18 @@ def preparar_o_desfazer() -> Resultado:
     que ja roda como administrador dentro da pergunta do Windows da primeira
     abertura (D-733/D-735): por isso nenhuma pergunta a mais. Os passos sao
     `plano_de_preparar_o_desfazer` (um lugar so). Nunca levanta.
+    Volta 4 (22/11/2026, D-828: "refazer a preparacao [...] da certo"): a pasta e a pasta segura da peca (criada pelo
+    1o passo, sem comando de licenca); depois dos passos, as licencas dela sao lidas de verdade pelo executor
+    (conferir_a_pasta_dos_testes). Pasta que nao confere: "nao deu certo" (D-749), e nada e dado como pronto.
     """
     try:
-        return executor_atual().aplicar_ja_como_administrador(plano_de_preparar_o_desfazer())
+        executor = executor_atual()
+        resultado = executor.aplicar_ja_como_administrador(plano_de_preparar_o_desfazer())
+        if not resultado.ok:
+            return resultado
+        conferida = executor.conferir_a_pasta_dos_testes()
+        if not conferida.ok:
+            return Resultado(False, mensagem=conferida.mensagem, passos=resultado.passos)
+        return resultado
     except Exception as erro:  # noqa: BLE001 - o preparo do computador continua
         return Resultado(False, mensagem=f"{type(erro).__name__}: {erro}")

@@ -1,0 +1,20 @@
+E       AssertionError: assert 'C:\\ProgramD...a\\antes.json' == 'C:\\Program ...e\\antes.json'
+E       AssertionError: comando de licença à mão: a tranca que estragava a segunda preparação
+E       assert ['CHAMOU icac...)RX /T /C /Q'] == []
+E       AssertionError: assert ['CHAMOU icac...)RX /T /C /Q'] == []
+FAILED tests/test_decisoes_desinstalar.py::test_d731_o_caderninho_fica_onde_o_plano_diz
+FAILED tests/test_decisoes_desinstalar.py::test_d731_ligar_anota_o_antes_primeiro_e_so_na_primeira_vez
+FAILED tests/test_decisoes_desinstalar.py::test_d731a_a_pasta_do_desfazer_fica_protegida
+3 failed, 43 deselected in 1.31s
+E           AssertionError: vez 1: C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-5342\test_conserto3_refazer_a_prepa0\pasta-segura: NÆo ‚ poss¡vel atribuir esta identifica‡Æo de seguran‡a como propriet rio do objeto.
+E             f-fotog\pytest-5342\test_conserto3_refazer_a_prepa0\pasta-segura\desfazer.ps1' foi negado."
+E                 + CategoryInfo          : NotSpecified: (:) [], ParentContainsErrorRecordException
+E                 + FullyQualifiedErrorId : UnauthorizedAccessException
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe', '-NoProfile', '-NonInteractiv...Specified: (:) [], ParentContainsErrorRecordException\n    + FullyQualifiedErrorId : UnauthorizedAccessException\n \n').returncode
+E       AttributeError: module 'core.testes_a_distancia' has no attribute 'pasta_dos_testes'
+E       AssertionError: assert True is False
+E       AttributeError: 'ExecutorWindows' object has no attribute 'conferir_a_pasta_dos_testes'
+E       AttributeError: 'ExecutorWindows' object has no attribute 'conferir_a_pasta_dos_testes'
+E       AttributeError: 'ExecutorWindows' object has no attribute 'conferir_a_pasta_dos_testes'
+FAILED tests/test_atualizador_volta4.py::test_conserto3_refazer_a_preparacao_regrava_o_desfazer
