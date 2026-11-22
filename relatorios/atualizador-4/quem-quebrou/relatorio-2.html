@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quem tentou quebrar: relatorio 2</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Quem tentou quebrar: os 4 consertos do atualizador (relatório 2, a última conferência)</h1>
+<p>Verificador, 22/11/2026. Trabalho conferido: ramo <code>atualizador-4-consertos-2026-11-21</code>, ponta <code>80be0770</code> (o código é o de
+<code>f523ec2e</code>; depois dele só o formulário mudou). A volta 2 do escritor: <code>f5d73572</code>, <code>ebc4891e</code>, <code>9979419d</code>, <code>6efa58d7</code>,
+<code>f523ec2e</code>. Não abri janela na tela do Samuel, não pedi licença ao Windows, não mudei o código do programa. As provas foram
+feitas numa cópia minha no rascunho (tirada no fim).</p>
+<h2>Veredito</h2>
+<p><strong>PRONTO PARA CONFERIR.</strong> Os três médios do relatório 1 foram consertados pela causa, cada um num lugar só, e cada
+proteção nova tem um teste que acusa quando ela é desligada (15 de 15). O que já estava certo continua certo. Não achei
+nada grave nem médio criado pela volta 2. Achei 6 baixos e uma pergunta que precisa ir ao Samuel antes da entrega: em dois
+casos raros a atualização para de chegar <strong>sem nada avisar</strong> (sem o motor do Kraken no lugar; e depois de um "Não", se o
+Windows não deixar ler as tarefas). O código faz o que foi decidido; avisar exigiria uma frase nova na tela, e isso só o
+Samuel decide.</p>
+<p>Máquina ou olho: tudo aqui é <strong>máquina</strong> (leitura do código, testes, cópia com proteções desligadas, uma leitura sem
+licença no Windows deste PC). A pergunta do Windows, a troca e o motor de verdade ficam para a prova à vista (D-767).</p>
+<h2>Os 3 médios do relatório 1: consertados</h2>
+<table>
+<thead>
+<tr>
+<th>Médio</th>
+<th>Como ficou</th>
+<th>Teste que acusa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Arquivo do motor estragado escapava sem registro</td>
+<td><code>garantir_o_motor</code> pega qualquer erro, apaga o provisório, registra; <code>rodar_ao_ligar</code> não deixa um erro do motor impedir a procura</td>
+<td>desligar cada uma das duas proteções é acusado (V01, V02)</td>
+</tr>
+<tr>
+<td>2. Sem o motor no lugar, "Chegou uma versão nova" sem fim</td>
+<td>A conferência do motor vem <strong>antes</strong> de baixar, num lugar só (<code>procurar_e_preparar</code>); sem motor, não baixa nem anuncia; um "pendente" de antes vira "esperando-o-motor", que a tela, a abertura e o script da troca leem como "nada"</td>
+<td>V03, V04, V05 e V14 (baixar antes de conferir) acusados</td>
+</tr>
+<tr>
+<td>3. A pergunta do Windows voltava depois do "Sim"</td>
+<td>A regra única (<code>o_que_falta_no_computador</code>) lê só as duas tarefas que só a pergunta cria; o Visual C++ e a instalação antiga ficam com o ajudante; "não deu para saber" não traz a pergunta</td>
+<td>V06, V10, V12 (Visual C++ de volta na pergunta), V13 acusados</td>
+</tr>
+</tbody>
+</table>
+<p>Item 4 (a conta duplicada): saiu a conferência própria (<code>_mesmo_caminho</code>); a pergunta "o ajudante é o deste programa?" usa a
+da peça única (<code>core.windows.problemas_da_tarefa_criada</code>), que confere também quem pode mandar rodar. V08 e V09 acusados.
+Item 5 (comentários): <code>core/ocr_kraken.conferir_motor</code> e <code>empacotar.NOME_DO_MOTOR_EXIGIDO</code> agora dizem a verdade.</p>
+<p>Procurei de propósito leitores do estado da atualização em outros arquivos: só o <code>atualizacao.py</code> lê a "fase" (a tela usa
+<code>situacao</code>; o script da troca para assim que a fase não é "pendente" nem "aplicando", então "esperando-o-motor" reabre o
+programa na mesma versão, sem aviso). Nenhum desvio para um caso; nenhuma conta nova duplicada.</p>
+<h2>Testes de reversão e mutações</h2>
+<ul>
+<li><strong>Os testes novos no código da volta 1</strong> (<code>2d5d912b</code>, numa cópia minha): 13 falham, 30 passam. Falham justamente os da
+  volta 2 (médio 1 dos dois jeitos de estrago, médio 2 com o programa aberto e fechado, médio 3, item 4) e os 4 da volta 1
+  que mudaram junto. Aqui as falhas são por comportamento (o erro escapa, a versão é anunciada, a pergunta volta), não por
+  função que não existe.</li>
+<li><strong>Mutações</strong> (cada proteção nova desligada, os 5 arquivos rodados um por vez): 15 de 15 acusadas.
+  V01 except estreito · V02 sem o try do motor no ajudante · V03 sem conferir o motor · V04 o "pendente" não vira
+  "esperando-o-motor" · V05 a tela lê "esperando-o-motor" como versão nova · V06 "não deu para saber" vira falta · V07 o
+  ajudante que não existe deixa de contar · V08 licença ilegível vira falta · V09 sem a conferência da peça · V10 o
+  desfazer ilegível vira falta · V11 o desfazer que não existe deixa de contar (o M06 do relatório 1 agora é acusado) ·
+  V12 o Visual C++ volta para a pergunta · V13 "existe mas não lê" vira falta · V14 baixar antes de conferir o motor.
+  (Na primeira tentativa a V12 passou por um erro meu: eu chamei a leitura do Visual C++ de um jeito que o Windows de
+  mentira do teste não troca. Refeita do jeito certo, foi acusada.)</li>
+</ul>
+<h2>Nada do que a primeira conferência deu como certo quebrou</h2>
+<ul>
+<li>Os 4 consertos originais: os arquivos deles passam no PC (um por vez) e no GitHub: <code>test_atualizador_4.py</code> 43,
+  <code>test_decisoes_ajudante_da_atualizacao.py</code> 37, <code>test_decisoes_preparo_d749.py</code> 9, <code>test_decisoes_atualizacao.py</code> 38,
+  <code>test_decisoes_testes_a_distancia.py</code> 13, <code>test_windows_peca.py</code> 71, <code>test_conferencias_excecoes.py</code> 14. O "Reiniciar
+  agora", o "Depois" e a pergunta no meio da tela não foram tocados pela volta 2.</li>
+<li>A senha (opção B): <code>ui/testes_a_distancia_ui.py</code> e <code>main.py</code> não mudaram na volta 2.</li>
+<li>A lista de exceções do porteiro: não mudou na volta 2; contra a base, 91 linhas saíram e nenhuma entrou. O porteiro do
+  GitHub passou.</li>
+<li>O <code>empacotar.py</code>: só o comentário de <code>NOME_DO_MOTOR_EXIGIDO</code> (1 linha de comentário trocada por 3). Nada mais.</li>
+<li>Frase nova na tela: nenhuma. Todo texto novo da volta 2 vai para o registro da atualização.</li>
+</ul>
+<h2>As duas mudanças de comportamento que vão ao Samuel</h2>
+<p><strong>(a) "Sim" com o Visual C++ ou a instalação antiga falhando: a pergunta não volta; o ajudante completa.</strong> Confere com o
+código. A preparação cria as duas tarefas primeiro e só depois instala o Visual C++ e tira a instalação antiga. Se um dos
+dois falha, a pergunta termina como "não deu certo", mas a leitura acha as duas tarefas: a pergunta não volta, e o programa
+chama o ajudante na mesma hora. O ajudante roda como o sistema (tem licença sem perguntar) e, toda vez que roda, tenta de
+novo o Visual C++ e a instalação antiga.
+- <strong>Se o ajudante também falhar:</strong> a falha vai para o registro ("Visual C++ ...: NÃO instalado") e ele segue: põe o motor,
+  procura e troca de versão normalmente. Isso se repete a cada abertura, em silêncio, sem pergunta nem aviso. Se a versão
+  nova não abrir por isso, o teste rápido pega e ela volta para a anterior com o aviso que o Samuel já escolheu.
+- Risco escondido, pequeno: uma instalação do Visual C++ que trava segura o ajudante até 10 minutos a cada abertura. Isso
+  atrasa a procura e pode estourar o tempo do "Reiniciar agora". Já era assim antes desta volta.
+- O teste da D-749 com a preparação "no meio" continua passando, mas o Windows de mentira dele cria o ajudante e não cria o
+  desfazer. A preparação de verdade cria os dois antes do Visual C++. Então esse teste não mostra o caso (a); quem mostra é
+  o teste novo do Visual C++.</p>
+<p><strong>(b) Depois de um "Não", se o Windows não deixar ler as tarefas, a pergunta não aparece naquela abertura.</strong> Confere com o
+código, e provei numa cópia: com a leitura falhando sempre, depois de um "Não", três aberturas seguidas não perguntaram
+nada. <strong>Risco escondido:</strong> se a leitura falhar sempre (um antivírus que barra o PowerShell, por exemplo), a pergunta nunca
+mais volta, o computador nunca fica preparado e nenhuma versão chega. O registro anota "não pergunto de novo por isso",
+mas ninguém o lê de longe nesta entrega (com a opção B, os testes à distância ficam desligados). Quando o Windows não
+responde de vez em quando, a pergunta volta na abertura seguinte.
+- Para comparar: antes da volta 2 era o contrário. Com a leitura falhando sempre, a pergunta voltava em toda abertura, e o
+  "Sim" não resolvia. Os dois casos são raros; a escolha entre eles é do Samuel.</p>
+<p><strong>Pergunta que sobra para o Samuel, do mesmo tipo:</strong> sem o motor do Kraken no lugar (o notebook com menos de uns 1,7 GB
+livres na primeira vez, ou o arquivo do motor estragado), a versão nova agora não é anunciada nem trocada. Isso é o certo,
+e o aviso falso saiu. Mas nada avisa ninguém: a atualização simplesmente não chega até o motor entrar. Se o espaço for
+liberado, ela chega sozinha. Se o arquivo do motor estiver estragado, ela não chega nunca, e a cada abertura o ajudante
+abre o arquivo de novo (minutos de disco). Avisar exigiria uma frase nova na tela.</p>
+<h2>Achados novos (todos baixos)</h2>
+<ol>
+<li><strong>O registro diz o que não é depois de um "Não" com a leitura falhando.</strong> Provado numa cópia. O registro fica com "o
+   Kaique disse Não... a pergunta volta" e logo depois "as tarefas do programa estão no Windows; o que faltou (o Visual C++
+   ou a instalação antiga) o ajudante completa sozinho". As tarefas não estão lá. O programa também manda rodar um ajudante
+   que não existe (não faz mal). Onde: <code>atualizacao.py</code>, <code>preparar_na_primeira_abertura</code>, o último <code>else</code>, que só pergunta
+   "nada falta?" e não "eu consegui ler?". A tela não mostra nada disso.</li>
+<li><strong>Licença do ajudante que não dá para ler: o resto da conferência também pula.</strong> Quando a licença não vem, o programa
+   não confere mais nada da tarefa: nem o programa que ela roda, nem os argumentos, nem a conta. Provado numa cópia: uma
+   tarefa que roda <code>C:\Outro\Programa.exe</code> passa como "preparado". Na volta 1 isso era conferido. É raro: neste PC, sem
+   licença de administrador, li a licença de três tarefas do Windows sem problema. Onde: <code>o_que_falta_no_computador</code>, o
+   ramo <code>elif ajudante.lida and not ajudante.licenca</code>. O jeito simples: comparar o resto e pular só a licença.</li>
+<li><strong>O formulário ainda diz que o caminho da tarefa é comparado pela "coisa de verdade, caminho normalizado" (D-813).</strong>
+   Desde o item 4 a comparação é do texto (a da peça). Esse erro só pode fazer a pergunta voltar sem precisar, nunca deixar
+   passar uma tarefa errada. E o caminho vem da mesma função dos dois lados, já normalizado. Onde: ONDE-PAREI, a linha
+   da D-813.</li>
+<li><strong>A docstring de <code>garantir_o_motor</code> diz "nunca levanta".</strong> Mas a primeira conferência do motor e o "o arquivo existe?"
+   ficam fora da proteção. Se derem erro de disco, o erro sobe, e quem segura é o <code>rodar_ao_ligar</code> (a procura continua).
+   O comentário está um pouco além da verdade; o efeito está certo.</li>
+<li><strong>Uma conferência inteira do motor a mais.</strong> Quando há versão nova, o motor (34 mil arquivos) é conferido antes de
+   baixar, agora também com o programa aberto. Some ao baixo 2 do relatório 1 (10 a 53 s de disco por vez, por trás).</li>
+<li><strong>O teste da D-749 "no meio"</strong> não mostra a preparação de verdade (ver (a) acima). Ele continua cobrando o que
+   cobrava; só não cobre o caso novo.</li>
+</ol>
+<p>Os 11 baixos do relatório 1 que ficaram para depois estão no formulário do escritor e não mudaram. O M05 e o M27
+continuam sem teste próprio; o M06 agora é acusado (V11).</p>
+<h2>A rodada do GitHub 44982726269</h2>
+<ul>
+<li>Testou este ramo. Na 2ª tentativa, as partes 1, 3, 4 e 5, o porteiro e os botões são da 1ª, no commit <code>f523ec2e</code>. A
+  parte 2 foi refeita no commit <code>02602e30</code> (todas dizem "codigo trocado pelo de atualizador-4-consertos-2026-11-21").
+  Esses dois commits têm o mesmo código da ponta <code>80be0770</code>: entre eles só muda o ONDE-PAREI. Resultado: sucesso.</li>
+<li>A queda da 1ª tentativa (parte 2): <code>test_decisoes_gravura_a_mao.py::test_d659_g_..._de_antes[original]</code>, "procurou:
+  [0]". O detector de gravura de mentira foi chamado uma vez na página 0, quando devia ficar quieto: a prévia de outro fio
+  correu na hora errada. <strong>Não tem relação com estes consertos.</strong> Esse teste não usa <code>atualizacao.py</code>, o motor nem o
+  <code>empacotar.py</code>. A volta 2 não mexeu em nada de <code>ui/</code> nem do processamento (no <code>core/ocr_kraken.py</code>, só um comentário).
+  Na 2ª tentativa ele passou. Parece um teste que falha de vez em quando por causa do tempo; vale anotar na Lista de bugs.</li>
+</ul>
+<h2>O que a prova à vista precisa conferir</h2>
+<ol>
+<li>Instalar pelo .msi novo. Primeira abertura, "Agora não": a pergunta do Windows vem logo, no meio da tela, com
+   "EditorImpressao.exe". Dizer "Não". Fechar e abrir: a pergunta volta.</li>
+<li>Dizer "Sim". No registro (<code>C:\ProgramData\EditorImpressao\atualizacao\</code>): "o computador está preparado (lido no
+   Windows)". <strong>Não pode aparecer</strong> "não deu para ler o ajudante" nem "não deu para ler a licença": se aparecer, a conta
+   do Kaique não está lendo as tarefas, e o caso (b) e o baixo 2 deixam de ser raros.</li>
+<li>Fechar e abrir duas vezes: nenhuma pergunta.</li>
+<li>Ver nascer <code>C:\Program Files\EditorImpressaoPrograma\motor-kraken\1</code>, sem sobrar <code>.chegando-1</code>. Anotar o tempo e o
+   espaço livre do disco.</li>
+<li>Publicar uma versão nova. "Reiniciar agora": o programa volta sozinho na versão nova. <code>--conferir-ocr</code> acha o motor.</li>
+<li>Outra versão, "Depois", fechar e abrir: a janelinha "Atualizando o programa, espere um pouco..." aparece e o programa
+   abre na versão nova.</li>
+<li>Depois de cada troca, abrir o programa: nenhuma pergunta do Windows.</li>
+<li>Se der tempo (é o caso do médio 2): renomear <code>motor-kraken\1</code> como administrador e publicar outra versão. Não pode
+   aparecer "Chegou uma versão nova". O registro diz "não baixo nem anuncio esta versão". Pôr o nome de volta: na
+   abertura seguinte, a versão chega.</li>
+</ol>
+<h2>Caminhos</h2>
+<ul>
+<li>Este relatório: <code>relatorios/atualizador-4/quem-quebrou/relatorio-2.html</code> (também <code>.md</code> e <code>.pdf</code>).</li>
+<li>Os scripts que usei (fora do git, no rascunho do verificador): <code>scripts/mutar2.py</code>; o teste temporário dos casos (a),
+  (b) e dos baixos 1 e 2 foi apagado junto com a cópia.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 22/11/2026 às 00:41</p>
+</body>
+</html>
