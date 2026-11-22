@@ -1,0 +1,5 @@
+FAILED tests/test_atualizador_4.py::test_conserto3_reiniciar_agora_lanca_a_troca_pela_peca
+FAILED tests/test_atualizador_4.py::test_conserto3_depois_com_a_troca_que_nao_comeca_o_programa_abre
+FAILED tests/test_atualizador_4.py::test_conserto3_o_limite_da_troca_chega_ao_script_e_a_janelinha
+FAILED tests/test_decisoes_ajudante_da_atualizacao.py::test_d733_o_script_escondido_vai_codificado_e_solto
+4 failed, 1 passed, 57 deselected, 1 warning in 1.24s

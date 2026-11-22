@@ -103,45 +103,6 @@
   {
    "arquivo": "atualizacao.py",
    "conferencia": "K01",
-   "funcao": "_lancar_escondido",
-   "texto": "creationflags=getattr(subprocess, \"CREATE_NO_WINDOW\", 0)",
-   "quantas": 1,
-   "linhas_quando_gerada": [
-    967
-   ],
-   "data": "2026-11-19",
-   "passo": "3",
-   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
-  },
-  {
-   "arquivo": "atualizacao.py",
-   "conferencia": "K01",
-   "funcao": "_lancar_escondido",
-   "texto": "subprocess.Popen([\"powershell.exe\", \"-NoProfile\", \"-NonInteractive\", \"-ExecutionPolicy\", \"Bypass\",",
-   "quantas": 1,
-   "linhas_quando_gerada": [
-    965
-   ],
-   "data": "2026-11-19",
-   "passo": "3",
-   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
-  },
-  {
-   "arquivo": "atualizacao.py",
-   "conferencia": "K01",
-   "funcao": "_lancar_escondido",
-   "texto": "| getattr(subprocess, \"DETACHED_PROCESS\", 0))",
-   "quantas": 1,
-   "linhas_quando_gerada": [
-    968
-   ],
-   "data": "2026-11-19",
-   "passo": "3",
-   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
-  },
-  {
-   "arquivo": "atualizacao.py",
-   "conferencia": "K01",
    "funcao": "_ler_chave_do_inno",
    "texto": "for vista in (winreg.KEY_WOW64_64KEY, winreg.KEY_WOW64_32KEY):",
    "quantas": 1,
@@ -446,19 +407,6 @@
    "quantas": 1,
    "linhas_quando_gerada": [
     674
-   ],
-   "data": "2026-11-19",
-   "passo": "3",
-   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
-  },
-  {
-   "arquivo": "atualizacao.py",
-   "conferencia": "K02",
-   "funcao": "_lancar_escondido",
-   "texto": "| getattr(subprocess, \"DETACHED_PROCESS\", 0))",
-   "quantas": 1,
-   "linhas_quando_gerada": [
-    968
    ],
    "data": "2026-11-19",
    "passo": "3",

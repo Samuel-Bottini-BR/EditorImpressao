@@ -159,7 +159,13 @@ QUEM_PODE_MANDAR_RODAR = "D:(A;;FA;;;BA)(A;;FA;;;SY)(A;;GRGX;;;AU)"
 # PowerShell escondido espera a troca antes de reabrir o programa de qualquer
 # jeito (na versao que estiver), e quanto espera a mais quando a versao nova
 # falhou e o Velopack esta voltando para a anterior (D-718).
-LIMITE_DA_TROCA_S = 300
+# 4 consertos (21/11/2026): de 300 para 900 s. Com 300 s, uma troca mais demorada
+# (a etapa 5 mediu de 7 a 23 min, com o motor do Kraken dentro) fazia o script
+# reabrir o programa no meio; o Velopack o fechava a forca e a troca era anotada
+# como falha (defeitos 3 e 4 da revisao de 18/11). Sem o motor, a conta do estudo
+# da 2 a 3 min mais o teste rapido; 900 s da folga para o notebook do Kaique. O
+# script para antes, assim que a troca termina. Seguro mudar: o numero (limiar).
+LIMITE_DA_TROCA_S = 900
 ESPERA_DA_VOLTA_S = 60
 
 # A marca de "o programa esta aberto" (um mutex com nome, do Windows). A
@@ -955,22 +961,24 @@ def _aspas_do_powershell(texto: str) -> str:
     return "'" + str(texto).replace("'", "''") + "'"
 
 
-def _lancar_escondido(script: str) -> None:
-    """Roda o script num PowerShell escondido e solto (nao espera; sobrevive a este processo).
+def _lancar_pela_peca(script: str) -> None:
+    """Lanca o script da troca solto (sobrevive a este processo) pela peca unica do Windows, e so volta quando ele
+    deu sinal de vida. Levanta OSError com o motivo se ele nao comecou.
 
-    O script vai em -EncodedCommand (UTF-16 em base64): nada de arquivo
-    provisorio para apagar depois.
+    4 consertos (21/11/2026): antes era um PowerShell aberto aqui com DETACHED_PROCESS, que sai sem rodar nada
+    (defeito 1 da etapa 5: o "Reiniciar agora" nao voltava, e com uma versao esperando o programa nao abria). Agora:
+    core.windows.lancar_powershell_solto (o script num arquivo com a marca de UTF-8, sem a bandeira proibida, num
+    grupo novo; ele grava "comecei" na primeira linha e a peca espera esse sinal; sem sinal, fecha o lancado e diz
+    "falhou"). Arriscado: voltar a lancar aqui por conta propria (duas pecas para a mesma conversa com o Windows).
     """
-    import base64
+    from core import windows
 
-    codificado = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
-    subprocess.Popen(["powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
-                      "-WindowStyle", "Hidden", "-EncodedCommand", codificado],
-                     creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0)
-                     | getattr(subprocess, "DETACHED_PROCESS", 0))
+    resposta = windows.lancar_powershell_solto(script)
+    if not resposta.deu_certo:
+        raise OSError(f"{resposta.motivo} {resposta.detalhe}".strip())
 
 
-def trocar_e_reabrir(lancar: Callable[[str], None] = _lancar_escondido, exe: Path | None = None,
+def trocar_e_reabrir(lancar: Callable[[str], None] = _lancar_pela_peca, exe: Path | None = None,
                      pid: int | None = None, janelinha: bool = False) -> bool:
     """A UNICA forma de trocar para a versao ja baixada e reabrir o programa.
 
@@ -979,6 +987,8 @@ def trocar_e_reabrir(lancar: Callable[[str], None] = _lancar_escondido, exe: Pat
     abriu; so esta com a janelinha da D-742). Quem chama tem de sair logo: o
     script espera este processo sair.
     Devolve False se nao deu para comecar (o programa segue na versao de hoje).
+    `lancar` so da como comecado o que conferiu (o padrao, _lancar_pela_peca, espera o sinal de vida do script e
+    levanta se ele nao veio): nunca True so porque o processo nasceu.
     """
     exe = exe or exe_do_programa()
     try:

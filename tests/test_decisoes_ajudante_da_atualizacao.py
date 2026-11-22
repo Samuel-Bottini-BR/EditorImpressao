@@ -309,15 +309,25 @@ def test_d733_reiniciar_agora_chama_o_ajudante_e_nao_pede_licenca():
 
 
 def test_d733_o_script_escondido_vai_codificado_e_solto(monkeypatch):
-    """D-733 (17/11/2026): o PowerShell vai escondido, solto (sobrevive ao programa), sem arquivo."""
-    abertos = []
-    monkeypatch.setattr(atualizacao.subprocess, "Popen", lambda comando, **k: abertos.append((comando, k)))
-    atualizacao._lancar_escondido("Start-Sleep 1")
-    comando, k = abertos[0]
-    assert comando[:1] == ["powershell.exe"] and "-WindowStyle" in comando and "Hidden" in comando
-    texto = base64.b64decode(comando[comando.index("-EncodedCommand") + 1]).decode("utf-16-le")
-    assert texto == "Start-Sleep 1"
-    assert k["creationflags"] & getattr(atualizacao.subprocess, "DETACHED_PROCESS", 0x8)
+    """D-733 (17/11/2026), pela D-774 (Samuel 18/11: "ok", o teste que cobrava o jeito errado muda para o certo): o
+    script da troca vai solto (sobrevive ao programa), PELA PECA UNICA DO WINDOWS (core.windows.lancar_powershell_solto:
+    arquivo com a marca de UTF-8, sem a bandeira de processo sem console, com o sinal de vida), e so conta como
+    comecado com o sinal de vida. Defeito 1 da etapa 5 (18/11): o PowerShell aberto com DETACHED_PROCESS saia sem
+    rodar e o "Reiniciar agora" nao voltava. Antes (4a775ba8) este teste EXIGIA o DETACHED_PROCESS."""
+    from core import windows
+
+    lancados = []
+    monkeypatch.setattr(windows, "lancar_powershell_solto",
+                        lambda texto, espera_s=30: lancados.append(texto) or windows.Resposta(windows.DEU_CERTO))
+    assert atualizacao.trocar_e_reabrir(exe=EXE, pid=4321) is True
+    assert len(lancados) == 1 and "Wait-Process -Id 4321" in lancados[0]
+    monkeypatch.setattr(windows, "lancar_powershell_solto",
+                        lambda texto, espera_s=30: windows.Resposta(windows.FALHOU, "não deu sinal de vida"))
+    assert atualizacao.trocar_e_reabrir(exe=EXE, pid=4321) is False, "sem sinal de vida, a troca não começou"
+    assert "não deu sinal de vida" in atualizacao.caminho_do_registro().read_text(encoding="utf-8")
+    codigo = Path(atualizacao.__file__).read_text(encoding="utf-8")
+    assert "EncodedCommand" not in codigo and "_lancar_escondido" not in codigo
+    assert codigo.count('getattr(subprocess, "DETACHED_PROCESS", 0)') == 1, "só a volta do Update.exe (ressalva)"
 
 
 def _pendente():

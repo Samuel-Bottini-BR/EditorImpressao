@@ -352,3 +352,53 @@ def test_conserto2_o_pedido_de_verdade_entrega_a_janela_a_peca(monkeypatch):
         windows.DEU_CERTO))
     atualizacao.pedir_licenca_ao_windows([], 0x55)
     assert recebidos["janela"] == 0x55
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Conserto 3: "Reiniciar agora" volta, e com "Depois" o programa abre
+# ---------------------------------------------------------------------------------------------------------------------
+
+EXE_DE_MENTIRA = Path(r"C:\Program Files\EditorImpressaoPrograma\current\EditorImpressao.exe")
+
+
+@pytest.fixture
+def lancamentos(monkeypatch):
+    """O lancar solto da peca, de mentira: anota o script e responde como `lancamentos.resposta` (padrao: comecou)."""
+    class Lancamentos(list):
+        resposta = windows.Resposta(windows.DEU_CERTO)
+
+    lancados = Lancamentos()
+    monkeypatch.setattr(windows, "lancar_powershell_solto",
+                        lambda texto, espera_s=30: lancados.append(texto) or lancados.resposta)
+    return lancados
+
+
+def test_conserto3_reiniciar_agora_lanca_a_troca_pela_peca(lancamentos, monkeypatch):
+    """Defeito de 18/11 (Lista de bugs: "'Reiniciar agora' fecha o programa e a versao nova nao entra: o programa nao
+    volta", DETACHED_PROCESS): o botao (aplicar_agora_e_reabrir, o caminho do aviso) lanca o script pela peca unica,
+    que so da como comecado com o sinal de vida."""
+    monkeypatch.setattr(atualizacao, "exe_do_programa", lambda: EXE_DE_MENTIRA)
+    assert atualizacao.aplicar_agora_e_reabrir() is True
+    assert len(lancamentos) == 1 and atualizacao.ARG_DEPOIS_DA_TROCA in lancamentos[0]
+
+
+def test_conserto3_depois_com_a_troca_que_nao_comeca_o_programa_abre(lancamentos, monkeypatch):
+    """Defeito de 18/11: com uma versao esperando ("Depois"), o programa saia sem janela toda vez (o script nao
+    rodava, e o programa achava que sim). Agora, sem o sinal de vida, a abertura segue na versao de hoje."""
+    lancamentos.resposta = windows.Resposta(windows.FALHOU, "o processo lançado não deu sinal de vida")
+    monkeypatch.setattr(atualizacao, "exe_do_programa", lambda: EXE_DE_MENTIRA)
+    comum = dict(instalado=lambda: True, conta_de_testes=lambda: False, portatil=lambda: False,
+                 ler=lambda: {"fase": "pendente", "nova": "1.2.0", "anterior": "1.1.0"}, versao_atual=lambda: "1.1.0")
+    assert atualizacao.trocar_antes_de_abrir([], **comum) is False, "a janela abre"
+    assert len(lancamentos) == 1 and "Atualizando o programa" in lancamentos[0], "com a janelinha (D-742)"
+    lancamentos.resposta = windows.Resposta(windows.DEU_CERTO)
+    assert atualizacao.trocar_antes_de_abrir([], **comum) is True
+
+
+def test_conserto3_o_limite_da_troca_chega_ao_script_e_a_janelinha():
+    """Defeitos 3 e 4 da revisao de 18/11: com 300 s o script reabria o programa no meio da troca. O limite (900 s)
+    vai ao script e a janelinha espera tambem por ele."""
+    assert atualizacao.LIMITE_DA_TROCA_S == 900
+    script = atualizacao.script_de_trocar_e_reabrir(EXE_DE_MENTIRA, 1, Path("C:/x/estado.json"), janelinha=True)
+    assert "AddSeconds(900)" in script
+    assert f"AddSeconds({900 + atualizacao.ESPERA_DA_VOLTA_S + 120})" in atualizacao.script_da_janelinha()
