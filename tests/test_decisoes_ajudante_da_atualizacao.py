@@ -173,6 +173,7 @@ def windows_de_mentira(tmp_path, monkeypatch):
 
 
 def _passo_de_preparo(passos):
+    """Os passos da pergunta que rodam o --preparar-o-computador (o passo de script da peca unica)."""
     return [p for p in passos if atualizacao.ARG_PREPARAR in p.dados.get("texto", "")]
 
 

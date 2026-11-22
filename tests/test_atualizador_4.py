@@ -44,6 +44,7 @@ class WindowsDeMentira:
     """
 
     def __init__(self, respostas: list[str] | None = None) -> None:
+        """O Windows de mentira comeca sem o ajudante, sem o Visual C++ e com a instalacao antiga para tirar."""
         self.respostas = list(respostas or [])
         self.pedidos: list[tuple[list, int | None]] = []
         self.tarefas: dict[str, windows.Tarefa] = {}
@@ -73,15 +74,18 @@ class WindowsDeMentira:
         return self
 
     def _rodar_o_ajudante(self, *a, **k) -> bool:
+        """No lugar de atualizacao.procurar_ao_abrir: so conta quantas vezes o ajudante foi chamado."""
         self.ajudante_rodou += 1
         return True
 
     def _criar_ajudante(self, comando: str | None = None) -> None:
+        """O que a preparacao de verdade deixa no Agendador: o ajudante, rodando como o sistema."""
         nome = atualizacao.NOME_DA_TAREFA
         self.tarefas[nome] = windows.Tarefa(nome, True, True, comando=comando or str(self.exe),
                                             argumentos=atualizacao.ARG_PROCURAR, usuario=windows.SID_SISTEMA)
 
     def _criar_desfazer(self) -> None:
+        """A tarefa "desfazer" que a preparacao cria (D-731)."""
         nome = td.nome_da_tarefa_do_desfazer()
         self.tarefas[nome] = windows.Tarefa(nome, True, True, comando="powershell.exe", usuario=windows.SID_SISTEMA)
 
@@ -114,6 +118,7 @@ def windows_de_mentira(tmp_path, monkeypatch):
 
 
 def _registro() -> str:
+    """O registro da atualizacao (o de mentira, no ProgramData de mentira), ou "" se ainda nao existe."""
     caminho = atualizacao.caminho_do_registro()
     return caminho.read_text(encoding="utf-8") if caminho.exists() else ""
 
@@ -296,9 +301,11 @@ class _JanelaDeMentira:
     """Uma janela que so sabe dizer o numero dela no Windows (como QWidget.winId)."""
 
     def __init__(self, numero: int) -> None:
+        """Guarda o numero da janela no Windows."""
         self.numero = numero
 
     def winId(self) -> int:  # noqa: N802 - o nome do Qt
+        """O numero da janela, como o QWidget.winId do Qt."""
         return self.numero
 
 
