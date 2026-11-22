@@ -453,6 +453,7 @@ class _TelaDeMentira:
     def na_frente(self, janela: int):
         """A janela da frente, se for a do programa (como core.windows.janela_do_programa_na_frente)."""
         self.leituras += 1
+        assert self.leituras < 500, "a pergunta esperou para sempre (nunca parou de ler a tela)"
         return self.frentes.pop(0) if len(self.frentes) > 1 else self.frentes[0]
 
     def existe(self, janela: int) -> bool:
