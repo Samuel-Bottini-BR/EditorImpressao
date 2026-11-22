@@ -1646,10 +1646,20 @@ def lancar_solto(comando: list, sinal: Path, espera_s: float = 30) -> Resposta:
 
 def _lancar_solto(comando: list, sinal: Path, espera_s: float, ambiente: dict[str, str] | None = None) -> Resposta:
     """O lançar solto sem filtro, só de dentro da peça (`lancar_powershell_solto` usa este). `ambiente`: como em
-    `_rodar`."""
+    `_rodar`.
+
+    A PASTA DE TRABALHO do lançado é SEMPRE a pasta do sistema (System32), nunca a de quem lança (volta 4 do
+    atualizador, 22/11/2026, D-828). Por quê: o processo solto continua vivo depois de quem lançou, e uma pasta que é a
+    pasta de trabalho de um processo não pode ser renomeada (erro 32, "O arquivo já está sendo usado por outro
+    processo"). O programa aberto pelo Velopack tem `current` como pasta de trabalho; o script da troca, lançado daqui
+    sem pasta, herdava `current` e impedia o Velopack de renomeá-la: a troca do "Reiniciar agora" desistia (prova à
+    vista de 22/11; provado no PC, relatorios/atualizador-4/anexos/volta4-experimentos.txt). O Windows: "If this
+    parameter is NULL, the new process will have the same current drive and directory as the calling process"
+    (CreateProcessW, lpCurrentDirectory). Arriscado: voltar a lançar sem `cwd` (a troca volta a desistir)."""
     comando = [str(c) for c in comando]
     try:
         grupo = _situacao_do_grupo()
+        pasta_de_trabalho = str(pasta_do_sistema())
     except OSError as erro:
         return _falhou("não deu para lançar o processo", repr(erro))
     if grupo == "morre_junto":
@@ -1660,7 +1670,8 @@ def _lancar_solto(comando: list, sinal: Path, espera_s: float, ambiente: dict[st
         bandeiras |= CREATE_BREAKAWAY_FROM_JOB
     try:
         processo = subprocess.Popen(comando, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                                    stderr=subprocess.DEVNULL, close_fds=True, creationflags=bandeiras, env=ambiente)
+                                    stderr=subprocess.DEVNULL, close_fds=True, creationflags=bandeiras, env=ambiente,
+                                    cwd=pasta_de_trabalho)
     except OSError as erro:
         return _falhou("o Windows não deixou lançar o processo", f"{comando[0]}: {erro!r} (grupo: {grupo})",
                        grupo=grupo)

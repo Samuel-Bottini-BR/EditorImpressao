@@ -977,6 +977,10 @@ def script_de_trocar_e_reabrir(exe: Path, pid: int, arquivo_do_estado: Path, jan
         # so a versao que nao passou no teste rapido volta para a anterior (D-718)
         f"  if ($fase -eq 'falhou' -and $tipo -eq 'teste') {{ Start-Sleep -Seconds {ESPERA_DA_VOLTA_S} }}",
         "}",
+        # volta 4 (22/11/2026): este PowerShell nasce na pasta do sistema (a peca lanca todo solto la, para nao
+        # prender `current`); o Start-Process abre o programa na "localizacao" do PowerShell, entao ela vira a pasta
+        # do programa, como o Velopack o abre. O Set-Location nao prende a pasta (provado: volta4-exp4).
+        f"Set-Location -LiteralPath {_aspas_do_powershell(str(Path(exe).parent))}",
         f"Start-Process -FilePath {_aspas_do_powershell(str(exe))}"
         f" -ArgumentList {_aspas_do_powershell(ARG_DEPOIS_DA_TROCA)}",
     ]

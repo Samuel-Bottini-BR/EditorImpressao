@@ -1,0 +1,4 @@
+E       AssertionError: ('PRESA 32
+E         ', '')
+E       assert 'PRESA 32' == 'RENOMEOU'
+E         
