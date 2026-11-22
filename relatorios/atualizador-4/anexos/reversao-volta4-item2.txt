@@ -1,0 +1,6 @@
+E       assert ([119] == []
+E       AssertionError: perguntou antes de a janela vir para a frente
+E       assert 0 == 3
+FAILED tests/test_atualizador_volta4.py::test_conserto2_a_janela_fechou_antes_nada_e_perguntado
+FAILED tests/test_atualizador_volta4.py::test_conserto2_a_pergunta_so_sai_depois_que_a_janela_vem_para_a_frente
+2 failed, 30 deselected in 0.86s

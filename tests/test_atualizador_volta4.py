@@ -432,3 +432,143 @@ def test_conserto1_segurar_a_marca_usa_a_do_script_ou_lanca_o_vigia_e_confere(tm
     finally:
         atualizacao.ESPERA_PELA_MARCA_S = antes
     assert "a marca da troca não apareceu no Windows" in _registro()
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Conserto 2: a pergunta do Windows so sai com a janela do programa na frente
+# ---------------------------------------------------------------------------------------------------------------------
+
+class _TelaDeMentira:
+    """A tela do Windows, de mentira, vista pela pergunta: qual janela esta na frente a cada leitura, se a janela do
+    programa existe e se esta minimizada. `frentes`: a resposta de cada leitura, em ordem (a ultima se repete)."""
+
+    def __init__(self, frentes: list, minimizada: bool = False, fecha_depois: int | None = None) -> None:
+        """Comeca com as respostas dadas; nada trazido para a frente ainda."""
+        self.frentes = list(frentes)
+        self.minimizada = minimizada
+        self.fecha_depois = fecha_depois
+        self.leituras = 0
+        self.trazidas: list[int] = []
+
+    def na_frente(self, janela: int):
+        """A janela da frente, se for a do programa (como core.windows.janela_do_programa_na_frente)."""
+        self.leituras += 1
+        return self.frentes.pop(0) if len(self.frentes) > 1 else self.frentes[0]
+
+    def existe(self, janela: int) -> bool:
+        """A janela do programa ainda existe?"""
+        return self.fecha_depois is None or self.leituras < self.fecha_depois
+
+    def trazer(self, janela: int) -> bool:
+        """A tentativa de trazer a janela para a frente (anotada)."""
+        self.trazidas.append(janela)
+        return False
+
+
+def test_conserto2_o_kaique_nao_saiu_da_janela_a_pergunta_vem_logo():
+    """Caso 1 pedido pela gerente: o Kaique abre e nao sai da janela; a janela ja esta na frente na primeira leitura:
+    a pergunta sai na hora, sem esperar e sem registrar espera, com a janela da frente como dona."""
+    tela = _TelaDeMentira([0x77])
+    dormiu: list[float] = []
+    assert atualizacao.esperar_a_janela_na_frente(0x77, na_frente=tela.na_frente, existe=tela.existe,
+                                                  trazer=tela.trazer, minimizada=lambda j: False,
+                                                  dormir=dormiu.append) == 0x77
+    assert dormiu == [] and tela.trazidas == [] and tela.leituras == 1
+    assert "espera" not in _registro()
+
+
+def test_conserto2_a_janela_minimizada_a_pergunta_espera_ela_voltar_sem_a_desminimizar():
+    """Caso 2 pedido pela gerente: a janela do programa minimizada. A pergunta espera (le de tempos em tempos, nada
+    trava: roda no fio de tras) ate a janela voltar; nao tenta trazer a janela minimizada (nao desfaz o que o Kaique
+    fez); o registro diz que esperou e quanto. No codigo de antes: perguntava na hora (e a pergunta so piscava)."""
+    tela = _TelaDeMentira([None, None, None, None, 0x77])
+    dormiu: list[float] = []
+    assert atualizacao.esperar_a_janela_na_frente(0x77, na_frente=tela.na_frente, existe=tela.existe,
+                                                  trazer=tela.trazer, minimizada=lambda j: True,
+                                                  dormir=dormiu.append) == 0x77
+    assert len(dormiu) == 3 and tela.trazidas == []
+    assert "espera ela voltar" in _registro() and "a pergunta esperou" in _registro()
+
+
+def test_conserto2_noutra_janela_tenta_trazer_uma_vez_e_espera_o_kaique_voltar():
+    """O Kaique estava noutra janela: uma tentativa de trazer a do programa (o Windows pode recusar) e a pergunta espera
+    em silencio; quando ele volta (um aviso do programa na frente conta), a dona da pergunta e a janela da frente."""
+    tela = _TelaDeMentira([None, None, 0x88])
+    assert atualizacao.esperar_a_janela_na_frente(0x77, na_frente=tela.na_frente, existe=tela.existe,
+                                                  trazer=tela.trazer, minimizada=lambda j: False,
+                                                  dormir=lambda s: None) == 0x88
+    assert tela.trazidas == [0x77]
+
+
+def test_conserto2_a_janela_fechou_antes_nada_e_perguntado(windows_volta4):
+    """A janela do programa fechou antes de vir para a frente: nada e perguntado (nunca uma pergunta para piscar); a
+    leitura do Windows diz o que falta e a pergunta volta na proxima abertura (D-741)."""
+    tela = _TelaDeMentira([None], fecha_depois=3)
+    windows_volta4.tela(tela)
+    falta = atualizacao.preparar_na_primeira_abertura(0x77)
+    assert windows_volta4.pedidos == [] and falta
+    assert "fechou antes de vir para a frente" in _registro()
+
+
+def test_conserto2_a_pergunta_so_sai_depois_que_a_janela_vem_para_a_frente(windows_volta4):
+    """Defeito da prova de 22/11 ("a pergunta do Windows da primeira abertura ainda pisca na barra de tarefas"): o
+    pedido saia com a janela do programa fora da frente. Agora ele so sai depois que a janela esta na frente, e a dona
+    e a janela da frente. No codigo de antes: o pedido saia na primeira leitura, com a janela fora da frente."""
+    tela = _TelaDeMentira([None, None, 0x77])
+    windows_volta4.tela(tela)
+    atualizacao.preparar_na_primeira_abertura(0x77)
+    assert windows_volta4.pedidos == [0x77]
+    assert windows_volta4.leituras_antes_do_pedido == 3, "perguntou antes de a janela vir para a frente"
+
+
+@pytest.fixture
+def windows_volta4(monkeypatch):
+    """A pergunta e a leitura do Windows de mentira, so para o conserto 2: anota as perguntas e quantas leituras da
+    tela houve antes de cada uma; a leitura das tarefas diz que nada foi criado."""
+
+    class _Windows:
+        """O Windows de mentira do conserto 2."""
+
+        def __init__(self) -> None:
+            """Nada perguntado."""
+            self.pedidos: list[int | None] = []
+            self.leituras_antes_do_pedido = None
+            self._tela = None
+
+        def tela(self, tela: _TelaDeMentira) -> None:
+            """Liga a tela de mentira na peca."""
+            self._tela = tela
+            monkeypatch.setattr(windows, "janela_do_programa_na_frente", tela.na_frente, raising=False)
+            monkeypatch.setattr(windows, "janela_existe", tela.existe, raising=False)
+            monkeypatch.setattr(windows, "janela_minimizada", lambda j: False, raising=False)
+            monkeypatch.setattr(windows, "trazer_para_a_frente", tela.trazer)
+
+        def pedir(self, passos, janela=None):
+            """A pergunta de mentira: o Kaique diz "Nao"."""
+            self.pedidos.append(janela)
+            self.leituras_antes_do_pedido = self._tela.leituras
+            return windows.Resposta(windows.DISSE_NAO, "você disse Não; nada mudou")
+
+    w = _Windows()
+    monkeypatch.setattr(atualizacao, "pedir_licenca_ao_windows", w.pedir)
+    monkeypatch.setattr(atualizacao, "ler_tarefa_no_windows", lambda nome: windows.Tarefa(nome, False))
+    monkeypatch.setattr(atualizacao, "INTERVALO_DA_JANELA_S", 0.0, raising=False)
+    monkeypatch.setattr(atualizacao, "e_portatil", lambda gerente=None: False)
+    return w
+
+
+@so_no_windows
+def test_conserto2_a_leitura_da_janela_da_frente_de_verdade():
+    """A leitura da peca, de verdade, so lendo (nenhuma janela e aberta): uma janela que nao existe nunca esta "na
+    frente" nem existe; a janela que esta na frente agora (a que o Windows disser) e reconhecida como a da frente."""
+    import ctypes
+
+    assert windows.janela_do_programa_na_frente(None) is None
+    assert windows.janela_do_programa_na_frente(0x7FFFFFF0) is None
+    assert windows.janela_existe(0x7FFFFFF0) is False and windows.janela_minimizada(0x7FFFFFF0) is False
+    user32 = ctypes.WinDLL("user32")
+    user32.GetForegroundWindow.restype = ctypes.c_void_p
+    frente = user32.GetForegroundWindow()
+    if not frente or windows.janela_minimizada(frente):
+        pytest.skip("sem janela na frente neste Windows (o do GitHub roda sem tela)")
+    assert windows.janela_do_programa_na_frente(frente) == frente

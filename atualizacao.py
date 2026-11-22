@@ -2019,6 +2019,55 @@ def o_que_falta_no_computador(exe: Path | None = None,
     return falta
 
 
+INTERVALO_DA_JANELA_S = 0.3
+
+
+def esperar_a_janela_na_frente(janela: int, na_frente: Callable[[int], int | None] | None = None,
+                               existe: Callable[[int], bool] | None = None,
+                               trazer: Callable[[int], bool] | None = None,
+                               minimizada: Callable[[int], bool] | None = None,
+                               dormir: Callable[[float], None] = time.sleep) -> int | None:
+    """Espera a janela do programa estar na frente para pedir a licenca (volta 4, 22/11/2026; D-806: "pede a licenca
+    do Windows [...] enquanto a janela do programa ainda esta na frente, para a pergunta vir no meio da tela"; D-828).
+    Devolve a janela que esta na frente (a do programa ou um aviso dela), que vira a dona da pergunta; None se a janela
+    do programa fechou antes (nao pergunta; a proxima abertura le o Windows e pergunta de novo, D-741).
+
+    Por que esperar: na abertura que segue um "Nao", o pedido sai uns 17 a 20 s depois do clique no atalho (o programa
+    carrega e monta a janela antes), e o Windows tira do programa o direito de vir para a frente se a pessoa mexeu
+    noutra janela nesse tempo (AllowSetForegroundWindow); a pergunta entao so pisca na barra (prova de 22/11).
+    Como: na frente ja (o Kaique abriu e nao saiu da janela): pergunta na hora, sem esperar. Senao, UMA tentativa de
+    trazer a janela (nunca com ela minimizada: nao se desfaz o que o Kaique fez) e depois so le, a cada
+    INTERVALO_DA_JANELA_S, ate ela vir para a frente (o clique dele de volta no programa ou no botao da barra). Sem
+    limite de tempo e sem frase na tela: roda no fio de tras, solto, que morre com o programa; a tela nao trava.
+    O registro diz quando esperou e quanto. `na_frente`, `existe`, `trazer`, `minimizada` e `dormir` so mudam
+    nos testes.
+    Arriscado: perguntar sem esperar (volta a piscar); trazer a janela minimizada para a frente.
+    """
+    from core import windows
+
+    na_frente = na_frente or windows.janela_do_programa_na_frente
+    existe = existe or windows.janela_existe
+    minimizada = minimizada or windows.janela_minimizada
+    dona = na_frente(janela)
+    if dona:
+        return dona
+    comeco = time.monotonic()
+    registrar("primeira abertura: a janela do programa não está na frente; a pergunta do Windows espera ela voltar")
+    if existe(janela) and not minimizada(janela):
+        (trazer or windows.trazer_para_a_frente)(janela)
+    while True:
+        dona = na_frente(janela)
+        if dona:
+            registrar(f"primeira abertura: a janela do programa veio para a frente; a pergunta esperou "
+                      f"{time.monotonic() - comeco:.0f} s")
+            return dona
+        if not existe(janela):
+            registrar(f"primeira abertura: a janela do programa fechou antes de vir para a frente (esperou "
+                      f"{time.monotonic() - comeco:.0f} s); nada foi perguntado; a pergunta volta na próxima abertura")
+            return None
+        dormir(INTERVALO_DA_JANELA_S)
+
+
 def preparar_na_primeira_abertura(janela: int | None = None) -> list[str]:
     """A pergunta do Windows da primeira abertura (D-733, D-735), pela peca unica. Devolve o que ainda falta no
     computador depois dela, lido no Windows (vazio = o que so a pergunta faz esta feito).
@@ -2036,6 +2085,13 @@ def preparar_na_primeira_abertura(janela: int | None = None) -> list[str]:
     """
     from core import windows
 
+    if janela:
+        # Volta 4 (D-806, D-828): so pergunta com a janela do programa na frente (senao a pergunta so pisca na barra).
+        dona = esperar_a_janela_na_frente(janela)
+        if dona is None:
+            falta, _ = ler_o_computador()
+            return falta
+        janela = dona
     resposta = pedir_licenca_ao_windows([passo_de_preparar_o_computador()], janela)
     if resposta.dados.get("janela_na_frente") is False:
         # D-806: o Windows nao deixou a janela vir para a frente (o Kaique estava noutra janela): a pergunta pode ter

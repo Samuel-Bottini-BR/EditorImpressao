@@ -404,6 +404,7 @@ class _Bibliotecas:
             (u.ShowWindow, [wintypes.HWND, ctypes.c_int], wintypes.BOOL),
             (u.SetForegroundWindow, [wintypes.HWND], wintypes.BOOL),
             (u.GetForegroundWindow, [], wintypes.HWND),
+            (u.GetAncestor, [wintypes.HWND, wintypes.UINT], wintypes.HWND),
             (o.CoInitializeEx, [P, wintypes.DWORD], ctypes.c_long),
             (o.CoUninitialize, [], None),
             (o.CoTaskMemFree, [P], None),
@@ -1926,6 +1927,38 @@ def trazer_para_a_frente(janela: int | None) -> bool:
         u.ShowWindow(janela, 9)                                        # SW_RESTORE
     u.SetForegroundWindow(janela)
     return u.GetForegroundWindow() == janela
+
+
+def janela_existe(janela: int | None) -> bool:
+    """A janela ainda existe no Windows (não foi fechada)? Só lê."""
+    return bool(janela) and bool(_win().user32.IsWindow(janela))
+
+
+def janela_minimizada(janela: int | None) -> bool:
+    """A janela está minimizada (só o botão na barra de tarefas)? Só lê."""
+    return bool(janela) and bool(_win().user32.IsWindow(janela)) and bool(_win().user32.IsIconic(janela))
+
+
+def janela_do_programa_na_frente(janela: int | None) -> int | None:
+    """A janela que está na frente agora, se for `janela` ou uma janela dela (um aviso que ela abriu), e `janela` não
+    está minimizada; senão None (a frente é de outro programa, a janela está minimizada, ou não deu para saber). Só
+    lê; nunca tenta trazer nada para a frente.
+
+    Para quê (volta 4 do atualizador, D-806: a licença é pedida "enquanto a janela do programa ainda está na frente"):
+    quem pede a licença espera esta resposta antes de perguntar, para a pergunta do Windows vir no meio da tela e nunca
+    só piscar na barra. O Windows: GetForegroundWindow (a janela da frente) e GetAncestor(GA_ROOTOWNER) (a janela dona
+    de um aviso). Seguro mexer: nada aqui muda o Windows."""
+    if not janela:
+        return None
+    u = _win().user32
+    if not u.IsWindow(janela) or u.IsIconic(janela):
+        return None
+    frente = u.GetForegroundWindow()
+    if not frente:
+        return None
+    if frente == janela or u.GetAncestor(frente, 3) == janela:                 # GA_ROOTOWNER
+        return int(frente)
+    return None
 
 
 # ---------------------------------------------------------------------------------------------------------------------
