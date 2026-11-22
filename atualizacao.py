@@ -303,7 +303,9 @@ def situacao(estado: dict, versao_atual: str) -> tuple[str, str | None]:
     - ("conferir", versao)    a versao nova ja esta no lugar, mas ainda nao
                               passou no teste rapido;
     - ("versao-nova", versao) baixada e conferida, esperando o programa fechar;
-    - ("nada", None).
+    - ("nada", None)          tambem "esperando-o-motor" (volta 2, medio 2): a versao
+                              existe, mas nao pode entrar sem o motor do Kraken; nada
+                              e anunciado e nada e trocado.
     Usada pela tarefa (rodar_ao_ligar) e pela tela (o_que_avisar): as duas
     decidem pela mesma conta.
     """
@@ -547,19 +549,21 @@ def procurar_e_preparar(gerente, fonte: Fonte, programa_aberto: Callable[[], boo
                         motor_no_lugar: Callable[[], bool] | None = None) -> str:
     """Procura a versao nova e deixa tudo pronto. Devolve o que aconteceu:
 
-    "nada-novo" | "ja-falhou" | "recusada" | "pendente" | "aplicando".
+    "nada-novo" | "ja-falhou" | "recusada" | "sem-motor" | "pendente" | "aplicando".
 
     1. Pergunta ao Velopack se ha versao nova (check_for_updates).
     2. Se essa versao ja falhou antes (registrar_falha), nao tenta de novo.
     3. Confere a ASSINATURA antes de baixar (D-724). Se nao confere, recusa:
        nada e baixado, registra a falha, a tela avisa uma vez.
+    3b. Sem o motor do Kraken no lugar dele (motor_esta_no_lugar): NAO baixa nem anuncia a versao (volta 2, medio 2
+       do relatorio 1, 21/11/2026). Ela nao pode entrar (a troca apagaria o unico arquivo do motor que veio no
+       instalador), entao nao pode aparecer como pronta: um "pendente" anterior vira "esperando-o-motor", que a tela e a
+       abertura leem como "nada" (situacao). Registra; o ajudante tenta de novo da proxima vez. Nenhum texto novo na tela.
     4. Baixa so o que mudou (download_updates; o Velopack confere a soma).
     5. Programa aberto: fica "pendente" (a tela mostra "Reiniciar agora" /
        "Depois", D-715/D-720); com "Depois", na proxima vez que o Kaique abrir
        o programa (D-734), trocar_e_reabrir chama o ajudante de novo com o
        programa fechado, e ele chega aqui e troca.
-    5b. Programa fechado, mas o motor do Kraken nao esta no lugar dele (motor_esta_no_lugar): fica "pendente" e
-       nao troca (4 consertos, 21/11/2026; a troca apagaria o unico arquivo do motor que veio no instalador).
     6. Programa fechado: anota "aplicando" e pede ao Velopack para trocar
        assim que este processo sair, reabrindo escondido em
        --conferir-a-versao-nova (o teste rapido). Quem chamou tem de sair logo.
@@ -585,6 +589,12 @@ def procurar_e_preparar(gerente, fonte: Fonte, programa_aberto: Callable[[], boo
     if motivo is not None:
         registrar_falha("recusada", versao_atual, alvo.Version, f"assinatura recusada: {motivo}")
         return "recusada"
+    if not (motor_no_lugar or motor_esta_no_lugar)():
+        if estado.get("fase") == "pendente":
+            gravar_estado({**estado, "fase": "esperando-o-motor", "quando": datetime.now().isoformat(timespec="seconds")})
+        registrar(f"versão {alvo.Version} publicada e assinada, mas o motor do Kraken ainda não está no lugar dele: "
+                  "não baixo nem anuncio esta versão (tento de novo da próxima vez)")
+        return "sem-motor"
     registrar(f"versão {alvo.Version} publicada e assinada pelo Samuel: baixando")
     gerente.download_updates(info)
     base = {"nova": alvo.Version, "anterior": versao_atual, "nao_tentar": estado.get("nao_tentar", []),
@@ -593,13 +603,6 @@ def procurar_e_preparar(gerente, fonte: Fonte, programa_aberto: Callable[[], boo
         gravar_estado({"fase": "pendente", **base})
         registrar(f"versão {alvo.Version} baixada; o programa está aberto: entra no \"Reiniciar agora\" "
                   "ou na próxima vez que o programa abrir")
-        return "pendente"
-    if not (motor_no_lugar or motor_esta_no_lugar)():
-        # D-788/D-790 (4 consertos, 21/11/2026): a troca leva o current\instalar embora, e com ele o unico arquivo do
-        # motor que veio no instalador. Sem o motor no lugar dele, nao troca: fica esperando, e tenta na proxima vez.
-        gravar_estado({"fase": "pendente", **base})
-        registrar(f"versão {alvo.Version} baixada; o motor do Kraken ainda não está no lugar dele: não troco agora "
-                  "(fica para a próxima vez)")
         return "pendente"
     gravar_estado({"fase": "aplicando", **base})
     registrar(f"versão {alvo.Version} baixada; trocando (o programa está fechado)")

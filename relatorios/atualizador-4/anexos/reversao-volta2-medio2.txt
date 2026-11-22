@@ -1,0 +1,5 @@
+Volta 2, medio 2: o teste novo rodado no codigo do medio 1 (f5d73572, antes do conserto):
+FAILED test_volta2_medio2_sem_o_motor_a_versao_nao_e_anunciada_nem_trocada[True]
+FAILED test_volta2_medio2_sem_o_motor_a_versao_nao_e_anunciada_nem_trocada[False]
+2 failed (devolvia "pendente"; a tela anunciava a versao nova; a abertura tentava trocar)
+Depois do conserto: test_atualizador_4.py 39 passed; test_decisoes_atualizacao.py 38; test_decisoes_ajudante_da_atualizacao.py 37.

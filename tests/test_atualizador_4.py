@@ -504,15 +504,16 @@ def test_conserto4_sem_o_arquivo_e_sem_o_motor_diz_e_nao_finge(tmp_path):
 
 def test_conserto4_a_troca_nao_acontece_sem_o_motor_no_lugar(tmp_path):
     """D-788/D-790: com o programa fechado e o motor fora do lugar, a versao nova nao troca (a troca apagaria o unico
-    arquivo do motor que veio no instalador); fica "pendente". Com o motor no lugar, troca."""
+    arquivo do motor que veio no instalador). Volta 2 (medio 2): nem e anunciada ("sem-motor", nada de "pendente").
+    Com o motor no lugar, troca."""
     from tests.test_decisoes_atualizacao import PUBLICA, GerenteFalso, _servidor
 
     gerente = GerenteFalso()
     fonte = _servidor(tmp_path, gerente.alvo)
     assert atualizacao.procurar_e_preparar(gerente, fonte, lambda: False, chave_publica=PUBLICA,
-                                           motor_no_lugar=lambda: False) == "pendente"
-    assert gerente.trocou == [] and atualizacao.ler_estado()["fase"] == "pendente"
-    assert "não troco agora" in _registro()
+                                           motor_no_lugar=lambda: False) == "sem-motor"
+    assert gerente.trocou == [] and atualizacao.ler_estado().get("fase") != "pendente"
+    assert "não baixo nem anuncio" in _registro()
     assert atualizacao.procurar_e_preparar(gerente, fonte, lambda: False, chave_publica=PUBLICA,
                                            motor_no_lugar=lambda: True) == "aplicando"
     assert len(gerente.trocou) == 1
@@ -634,3 +635,29 @@ def test_volta2_medio1_um_erro_no_motor_nao_impede_o_ajudante_de_procurar():
     assert atualizacao.rodar_ao_ligar(atualizacao.Fonte("C:/nao-existe"), gerente=Gerente(),
                                       preparar=lambda g: True, motor=quebra) == 0
     assert procurou == [1]
+
+
+@pytest.mark.parametrize("aberto", [True, False])
+def test_volta2_medio2_sem_o_motor_a_versao_nao_e_anunciada_nem_trocada(tmp_path, aberto):
+    """Medio 2 do relatorio 1 (21/11/2026): sem o motor no lugar (ex.: falta de espaco), ficava gravado "pendente", e a
+    tela mostrava "Chegou uma versao nova" para sempre; "Reiniciar agora" voltava na mesma versao; com "Depois", toda
+    abertura mostrava a janelinha e nao trocava. Agora, sem o motor no lugar, a versao nao e baixada nem anunciada (nada
+    na tela, nenhum texto novo); a abertura nao tenta trocar; o ajudante tenta de novo da proxima vez."""
+    from tests.test_decisoes_atualizacao import PUBLICA, GerenteFalso, _servidor
+
+    gerente = GerenteFalso()
+    fonte = _servidor(tmp_path, gerente.alvo)
+    atualizacao.gravar_estado({"fase": "pendente", "nova": "1.2.0", "anterior": "1.1.0"})   # o aviso de antes
+    resultado = atualizacao.procurar_e_preparar(gerente, fonte, lambda: aberto, chave_publica=PUBLICA,
+                                                motor_no_lugar=lambda: False)
+    assert resultado == "sem-motor"
+    assert not gerente.baixou and gerente.trocou == []
+    estado = atualizacao.ler_estado()
+    assert atualizacao.o_que_avisar(estado, "1.1.0", set()) is None, "a tela anunciou uma versão que não entra"
+    comum = dict(instalado=lambda: True, conta_de_testes=lambda: False, portatil=lambda: False,
+                 ler=atualizacao.ler_estado, versao_atual=lambda: "1.1.0")
+    assert atualizacao.trocar_antes_de_abrir([], trocar=lambda: pytest.fail("tentou trocar"), **comum) is False
+    assert "motor do Kraken" in _registro()
+    # com o motor no lugar, tudo volta ao normal
+    assert atualizacao.procurar_e_preparar(gerente, fonte, lambda: aberto, chave_publica=PUBLICA,
+                                           motor_no_lugar=lambda: True) == ("pendente" if aberto else "aplicando")
