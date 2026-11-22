@@ -751,6 +751,7 @@ def lista_de_mentira(monkeypatch, tmp_path):
     (pasta / "EditorImpressao.exe").write_bytes(b"MZ")
 
     def ligar(processos, **k):
+        """Poe estes processos na lista de mentira e devolve a pasta do programa."""
         k32 = _Kernel32DeMentira(processos, **k)
         monkeypatch.setattr(windows, "_win", lambda: types.SimpleNamespace(kernel32=k32))
         monkeypatch.setattr(windows, "_ler_erro", lambda: k32.ultimo_erro)

@@ -22,6 +22,13 @@ COMO SE PROVA SEM TOCAR O WINDOWS. Dois jeitos:
 
 Cada prova de defeito falha no código de antes (commit 997a3085); ver o relatório em
 relatorios/frente-kaique-2026-11-16/d731-construcao/.
+
+Volta 4 do atualizador (22/11/2026, D-828), pela D-774 (Samuel, 18/11/2026: "ok"): a pasta dos testes à distância
+passou a ser a pasta segura (licenças de fábrica, sem icacls). Mudaram só os três testes que a D-774 nomeou ("o do
+lugar da pasta" e "os dois da tranca da pasta"): test_d731_o_caderninho_fica_onde_o_plano_diz,
+test_d731_ligar_anota_o_antes_primeiro_e_so_na_primeira_vez (a linha do icacls) e
+test_d731a_a_pasta_do_desfazer_fica_protegida. Cada um falha no código de antes
+(relatorios/atualizador-4/anexos/reversao-volta4-item3.txt).
 """
 
 from __future__ import annotations
