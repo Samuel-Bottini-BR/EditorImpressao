@@ -1,0 +1,22 @@
+"""Experimento 4: o Set-Location do PowerShell 5.1 prende a pasta (muda a pasta de trabalho do processo)?
+E o Start-Process depois dele abre o programa com qual pasta de trabalho?"""
+import os, subprocess, time, shutil, sys
+from pathlib import Path
+base = Path(sys.argv[1]); x = base / "x4"
+for p in (x, base / "x4-velha"):
+    if p.exists(): shutil.rmtree(p)
+x.mkdir()
+pw = r"D:\programas\EditorImpressao\.venv\Scripts\pythonw.exe"
+saida = base / "cwd4.txt"
+script = (f"Set-Location -LiteralPath '{x}'; "
+          f"Start-Process -FilePath '{pw}' -ArgumentList '-c', '\"import os; open(r''{saida}'',''w'').write(os.getcwd())\"' -Wait; "
+          "Start-Sleep -Seconds 6")
+p = subprocess.Popen([r"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe", "-NoProfile", "-Command", script],
+                     cwd=r"C:\Windows\System32", creationflags=0x08000000)
+time.sleep(4)
+print("filho abriu com a pasta:", saida.read_text() if saida.exists() else "(nada)")
+try:
+    os.rename(x, base / "x4-velha"); print("Set-Location NAO prende a pasta: renomeou")
+except OSError as e:
+    print("Set-Location prende a pasta:", e.winerror)
+p.wait()

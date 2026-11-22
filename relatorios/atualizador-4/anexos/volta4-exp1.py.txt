@@ -1,0 +1,26 @@
+"""Experimento 1: um PowerShell com a pasta de trabalho dentro de 'current' impede renomear 'current'?"""
+import os, subprocess, time, shutil, sys
+from pathlib import Path
+base = Path(sys.argv[1]); 
+for nome in ("current", "current-velha", "current2", "current2-velha"):
+    p = base / nome
+    if p.exists(): shutil.rmtree(p)
+(base/"current").mkdir(); (base/"current"/"a.txt").write_text("x")
+ps = r"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
+p = subprocess.Popen([ps, "-NoProfile", "-Command", "Start-Sleep -Seconds 8"], cwd=str(base/"current"),
+                     creationflags=0x08000000)
+time.sleep(3)
+try:
+    os.rename(base/"current", base/"current-velha"); print("A (pasta de trabalho dentro): renomeou")
+except OSError as e:
+    print("A (pasta de trabalho dentro): NAO renomeou:", e.winerror, e.strerror)
+p.wait()
+(base/"current2").mkdir()
+p = subprocess.Popen([ps, "-NoProfile", "-Command", "Start-Sleep -Seconds 8"], cwd=r"C:\Windows\System32",
+                     creationflags=0x08000000)
+time.sleep(3)
+try:
+    os.rename(base/"current2", base/"current2-velha"); print("B (pasta de trabalho no System32): renomeou")
+except OSError as e:
+    print("B: NAO renomeou:", e.winerror, e.strerror)
+p.wait()

@@ -1,0 +1,12 @@
+"""Experimento 2: o jeito do Velopack esperar um processo (OpenProcess so com SYNCHRONIZE, depois GetExitCodeProcess)."""
+import ctypes, subprocess, sys
+from ctypes import wintypes
+k = ctypes.WinDLL("kernel32", use_last_error=True)
+k.OpenProcess.restype = wintypes.HANDLE
+p = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(1)"], creationflags=0x08000000)
+h = k.OpenProcess(0x00100000, False, p.pid)          # PROCESS_SYNCHRONIZE, como wait_for_pid_to_exit
+print("abriu:", bool(h))
+print("WaitForSingleObject:", k.WaitForSingleObject(h, 60000), "(0 = o processo terminou)")
+codigo = wintypes.DWORD()
+ok = k.GetExitCodeProcess(h, ctypes.byref(codigo))
+print("GetExitCodeProcess:", bool(ok), "erro", ctypes.get_last_error(), "(5 = acesso negado)")

@@ -1,0 +1,22 @@
+Volta 4, 22/11/2026: experimentos no PC (conta comum, sem licença, sem janela; CREATE_NO_WINDOW e pythonw).
+Os scripts: volta4-exp1.py.txt, volta4-exp1b.py.txt, volta4-exp2.py.txt, volta4-exp4.py.txt.
+
+exp1 (um PowerShell com a pasta de trabalho dentro de 'current' impede renomear 'current'?):
+A (pasta de trabalho dentro): NAO renomeou: 32 O arquivo já está sendo usado por outro processo
+B (pasta de trabalho no System32): renomeou
+
+exp1b (o lançar solto da peça, core.windows.lancar_powershell_solto, herda a pasta de trabalho de quem chama):
+lancou: True
+NAO renomeou: 32 O arquivo já está sendo usado por outro processo
+
+exp2 (o jeito do Velopack esperar um processo: OpenProcess só com SYNCHRONIZE, depois GetExitCodeProcess):
+abriu: True
+WaitForSingleObject: 0 (0 = o processo terminou)
+GetExitCodeProcess: False erro 5 (5 = acesso negado)
+
+exp3 (PowerShell 5.1 com a pasta de trabalho no System32; Start-Process sem -WorkingDirectory):
+o programa aberto nasce com a pasta de trabalho C:\Windows\System32 (a "localização" do PowerShell).
+
+exp4 (Set-Location do PowerShell 5.1 prende a pasta? e o Start-Process depois dele?):
+filho abriu com a pasta: ...\scratchpad\exp\x4   (a localização dada pelo Set-Location)
+Set-Location NAO prende a pasta: renomeou

@@ -1,0 +1,19 @@
+"""Experimento 1b: o lancar solto da peca (core.windows.lancar_powershell_solto) herda a pasta de trabalho de quem chama."""
+import os, sys, time, shutil
+from pathlib import Path
+sys.path.insert(0, r"D:\programas\EditorImpressao\.claude\worktrees\atualizador-4")
+base = Path(sys.argv[1])
+cur = base / "current3"
+if cur.exists(): shutil.rmtree(cur)
+cur.mkdir()
+os.chdir(cur)                      # como o programa aberto pelo Velopack: a pasta de trabalho e 'current'
+from core import windows
+r = windows.lancar_powershell_solto("Start-Sleep -Seconds 8")
+print("lancou:", r.deu_certo, r.motivo)
+os.chdir(base)                     # quem chamou sai da pasta (como o programa que fecha)
+time.sleep(1)
+try:
+    os.rename(cur, base / "current3-velha"); print("renomeou")
+except OSError as e:
+    print("NAO renomeou:", e.winerror, e.strerror)
+time.sleep(9)

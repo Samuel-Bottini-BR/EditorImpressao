@@ -43,6 +43,8 @@ ser usada, e só se o teste antigo dela for autorizado.)
 - Volta 2 (relatório 1: 3 médios; o que mudou nas seções de cima está em "O que o agente que tentou quebrar achou", que vale sobre elas): médio 1 `f5d73572`, médio 2 `ebc4891e`, médio 3 `9979419d`, item 4 `6efa58d7`, item 5 `f523ec2e`. Rodada do GitHub 44982726269.
 - **Volta 3 (22/11, escritor novo pela D-815; D-826 e D-827):** ver a seção "Volta 3" no fim deste arquivo, que vale
   sobre as de cima onde diferir. Situação: ver "Volta 3 > Onde parei".
+- **Volta 4 (22/11, escritor novo pela D-815; D-828, depois da prova à vista):** ver a seção "Volta 4" no fim deste
+  arquivo, que vale sobre as de cima onde diferir. Situação: ver "Volta 4 > Onde parei".
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -1130,3 +1132,285 @@ Nenhuma. A D-826 e a D-827 responderam o que esta volta precisava.
 6. Nenhuma frase nova na tela; nada pediu licença nem abriu janela.
 7. Ressalvas principais: o "Sim" com a leitura falhando sempre faz a pergunta voltar a cada abertura (aceito na D-826);
    "existe, mas não lê" continua contando como existe, sem conferir o conteúdo.
+
+## Volta 4 (22/11/2026, escritor novo; D-828)
+
+Escritor novo da volta 4 (D-815). Pedido da gerente: os 3 defeitos da prova à vista de 22/11 (D-828), pela causa,
+num lugar só, um de cada vez, com commit e push em cada um. Antes do código, este plano; paro e devolvo à gerente.
+
+### Onde parei (volta 4)
+
+- 22/11, tarde: leitura feita (o meu arquivo de agente; CLAUDE.md §11.8, §11.12 com os 6 pontos, §11.13; memória:
+  índice e `geral/atualizador.md` do `fase-1`; este ONDE-PAREI inteiro; os relatórios 1 e 2 de quem tentou quebrar; as
+  decisões D-718, D-719, D-731, D-733, D-735, D-741, D-749, D-767, D-770, D-774, D-779, D-806, D-811, D-819, D-824 a
+  D-828; a Lista de bugs de 22/11; os três registros da prova; o código do Velopack 1.2.161 que usamos).
+- Experimentos no PC, sem licença e sem janela (`anexos/volta4-experimentos.txt` e os scripts `anexos/volta4-exp*.py.txt`).
+- Plano abaixo. **Parado, esperando a gerente** (ela confere e manda seguir). Há 4 pontos para ela decidir
+  (em "Para a gerente decidir (volta 4)").
+
+### Decisões que esta tarefa precisa cumprir (volta 4)
+
+- **D-828** "foi eu, pode consertar essas coisas": (1) o "Reiniciar agora" troca de verdade; o programa garante que
+  terminou de fechar antes de a troca começar; abrir pelo atalho no meio da troca não estraga a troca; (2) a pergunta
+  do Windows da primeira abertura vem no meio da tela; (3) refazer a preparação (depois de uma que falhou, ou ao
+  reinstalar) dá certo. Nenhuma frase nova na tela sem o "sim" dele.
+- **D-806** "então pode ser opção A": a licença é pedida com a janela do programa na frente, para vir no meio da tela;
+  nada de aviso novo ("clique no escudo piscando" não foi escolhido).
+- **D-770** "a": a janelinha em toda troca fica para depois (o pedido: nada de frase nova agora).
+- **D-733** "1- sim / VAI CONSEGUIR FAZER OS TESTS A DISTANCIA NÉ?", **D-735** "Sim", **D-741** "Sim": uma pergunta
+  do Windows na primeira abertura; depois do "Não", volta a cada abertura; depois do "Sim", nunca mais.
+- **D-749** "Sim" (ajustada pela **D-826**): a preparação que falha no meio conta como não feita.
+- **D-731** "ok": a tarefa "desfazer" existe sempre e desfaz o que o programa pôs; os projetos do Kaique nunca.
+- **D-718** "Sim, e tem que avisar a gente de alguma maneira", **D-719** "1": a volta e a frase da falha não mudam.
+- **D-767** "não faça mais nada escodindo ou de mentira": os testes daqui provam só a lógica; o que eu puder provar no
+  Windows de verdade sem licença e sem janela, provo (os experimentos); a prova que vale é a sessão à vista.
+- **D-774** "ok": os testes antigos que cobram o jeito errado mudam para o certo (entre eles "o do lugar da pasta
+  `C:\ProgramData\EditorImpressao\testes-a-distancia`" e "os dois da tranca da pasta `/inheritance:r`, `/setowner`").
+- **D-779** "ta vamos continuar com ele, mas o que fazemos para ele não dar defeito...": o Velopack 1.2.161 fica.
+- **D-811** "ok" e **D-827**: cada proteção nova com o teste que a acusa desligada; toda conferência trocada, antes a
+  lista do que a antiga cobria.
+- **D-819** "nova regra, sempre se deve se ver se é a coisa mais simples, ou melhor de se fazer": cada item abaixo diz
+  o jeito mais simples e por que foi escolhido (ou não).
+- **D-824** "vamos fazer com um só, uma coisa de cade vez.": um conserto por commit, nesta ordem.
+- **D-825** "ok": dos testes antigos, só os 16 da lista (e os da D-774) podem mudar.
+- **D-605** (CLAUDE.md §11.8): o novo não estraga o que já está escolhido e testado.
+
+### O que já está escolhido e testado aqui (volta 4)
+
+- Testes que já existem para o que vou tocar: `tests/test_atualizador_4.py` (57), `tests/test_decisoes_ajudante_da_atualizacao.py`
+  (37; entre eles a janelinha D-742 "letra por letra", o texto do script da troca e a ordem Wait-Process < schtasks <
+  Start-Process), `tests/test_decisoes_atualizacao.py` (38), `tests/test_decisoes_preparo_d749.py` (9),
+  `tests/test_decisoes_testes_a_distancia.py` (13), `tests/test_decisoes_desinstalar.py` e `_pasta.py` (a tarefa
+  desfazer, o caderninho, a tranca), `tests/test_decisoes_brasao.py` (D-748: o brasão e a janelinha nunca juntos),
+  `tests/test_windows_peca.py` (o lançar solto, trazer para a frente, a pasta segura), `tests/test_conferencias_*.py`
+  (o porteiro e a lista de exceções: só diminui; item novo só com o "sim" do Samuel).
+- O que não muda: o texto e a ordem do script da troca (só ganha a marca no começo e o lugar de onde reabre, ver o
+  item 1); a janelinha D-742 e a regra D-748; a frase da falha; a assinatura antes de baixar; nenhuma pergunta do
+  Windows por atualização; o "Não"/"Sim" lidos como estão (provados à vista em 22/11); o motor no lugar dele.
+
+### Como fica para quem usa e no livro (volta 4)
+
+O livro (o PDF) não muda: nada aqui mexe nas páginas. Nenhuma frase nova na tela.
+- **"Reiniciar agora"** (hoje: o programa fecha, a troca desiste e o programa volta na versão velha com o aviso "A
+  atualização não deu certo"). Depois: o programa fecha, a troca acontece por trás (alguns minutos, sem nada na tela,
+  como hoje), e o programa volta sozinho na versão nova.
+- **O Kaique clica no atalho no meio da troca** (hoje: o programa abre na versão velha e estraga a troca). Depois:
+  o clique não abre nada naquele momento (o programa sai sozinho, em silêncio, antes do brasão); quando a troca
+  termina, o programa abre sozinho, como no "Reiniciar agora". Ele pode clicar quantas vezes quiser: nada estraga.
+  (Sem frase na tela: a janelinha "Atualizando" é a D-770, para depois.)
+- **"Depois" e abrir de novo**: igual ao de cima, com a janelinha D-742 que já existe.
+- **A pergunta do Windows** (hoje: pisca na barra de tarefas quando a janela do programa não está na frente). Depois:
+  ela só é feita quando a janela do programa está na frente; se o Kaique estiver noutra janela, ela espera, sem aviso,
+  e aparece no meio da tela no instante em que ele volta ao programa (um clique na janela ou no botão da barra).
+- **Refazer a preparação** (hoje: a segunda vez falha com "acesso negado" e a pergunta volta em toda abertura).
+  Depois: dá certo quantas vezes for refeita; as contas comuns continuam só lendo a pasta.
+
+### A causa, a regra e todos os caminhos (volta 4)
+
+**Item 1. A troca do "Reiniciar agora".**
+- **Causa, lida nos registros e provada num experimento.** O que o Velopack fez (registro do sistema): esperou o
+  ajudante (pid 5648) sair; extraiu a versão nova (9 s); rodou o gancho `--veloapp-obsolete` (0,6 s, esperou ele
+  terminar); fechou à força tudo o que roda de dentro da raiz (às 14:34:56 achou só ele mesmo); tentou renomear
+  `current` 10 vezes, de 14:34:56 a 14:35:05, com o erro 32 ("O arquivo já está sendo usado por outro processo"), e
+  desistiu. Às 14:34:56 nenhum programa nosso rodava de dentro da raiz, e o Samuel só clicou às 14:34:58. Quem
+  segurava a pasta era **o PowerShell da troca** (lançado às 14:34:19 pelo "Reiniciar agora", vivo até reabrir o
+  programa): ele mora no System32 (o Velopack não o fecha), mas nasceu com a **pasta de trabalho** do programa, que é
+  `current` (o Velopack abre o programa com `current` como pasta de trabalho; a peça lança o solto sem dizer a pasta,
+  e o Windows dá ao filho a pasta de quem lançou). Uma pasta que é a pasta de trabalho de um processo não pode ser
+  renomeada: no PC, um PowerShell com a pasta de trabalho dentro dela dá exatamente o erro 32; com o System32, renomeia
+  (`anexos/volta4-experimentos.txt`, exp1; com a peça de verdade, exp1b). O clique do Samuel às 14:34:58 abriu o
+  programa de `current` no meio das tentativas: segurava também, mas não foi o primeiro.
+- **O "Acesso negado" do WaitPid não é a causa.** O Velopack abre o processo só com a licença de esperar, espera, e
+  depois pede o código de saída, que essa licença não dá: "acesso negado" DEPOIS de o processo ter saído (exp2 no PC
+  dá o mesmo: a espera volta 0, o código de saída dá erro 5). A espera funcionou (1 s, o ajudante saindo).
+- **A regra, num lugar só:**
+  1. **Na peça** (`core/windows._lancar_solto`, o único lançar solto): todo processo lançado solto nasce com a pasta
+     de trabalho na pasta do Windows (`pasta_do_sistema()`), nunca na de quem lançou. Motivo: ele continua depois de
+     quem chamou, e não pode prender a pasta dele. O script da troca, antes de reabrir o programa, faz
+     `Set-Location` para a pasta do programa: o programa reaberto nasce com a mesma pasta de trabalho de quando o
+     Velopack o abre (o `Set-Location` não prende a pasta: exp4). Nenhuma linha que o porteiro conhece muda de texto.
+  2. **"O programa está aberto?" passa a ser conferido de verdade** (`atualizacao.ha_programa_aberto`, o lugar único
+     que o ajudante usa antes de trocar): além da marca da janela, a peça lê no Windows os processos cujo programa está
+     dentro de `current` (função nova na peça, `programas_rodando_de(pasta)`: a lista de processos do Windows e o
+     caminho de cada um). Sem a marca mas com algo ainda rodando de `current` (o programa terminando de fechar, um
+     clique no atalho), o ajudante espera até 30 s; se continuar, não troca (fica "pendente", o registro diz o que
+     roda) e o script reabre o programa como hoje. "Não deu para ler a lista" conta como "aberto" (não troca).
+  3. **Abrir no meio da troca**: o script da troca segura, do começo ao fim, uma marca nova
+     (`Local\EditorImpressao-trocando`, um "mutex" do Windows, que some sozinho quando o script termina, até se ele
+     cair). Na abertura comum (`atender_linha_de_comando`, antes do brasão e da janela; nunca nos modos escondidos, nos
+     ganchos do Velopack nem no `--depois-da-troca`), se a marca existe, o programa sai em silêncio: o script o reabre
+     quando a troca acaba. A marca nasce na primeira linha do script, antes de a peça ver o sinal de vida, então
+     existe antes de o programa que pediu a troca sair.
+- **Todos os caminhos** (grep por `lancar_powershell_solto`, `_lancar_solto`, `ha_programa_aberto`,
+  `programa_aberto`, `trocar_e_reabrir`, `atender_linha_de_comando`): o lançar solto: o script da troca
+  (`_lancar_pela_peca`, "Reiniciar agora" e "Depois") e a janela de prova (`janela_de_prova.prova_lancar_solto`): os
+  dois passam a lançar com a pasta do Windows. "Está aberto?": só o ajudante (`rodar_ao_ligar` →
+  `procurar_e_preparar(..., ha_programa_aberto)`), chamado pela abertura, pelo script da troca e de longe; todos pela
+  mesma função. "Troca em andamento?": uma função nova, `troca_em_andamento()`, usada só pela abertura comum.
+- **Jeito mais simples (D-819) e por que não.** (a) Uma linha no começo do script mudando a pasta de trabalho dele
+  (`SetCurrentDirectory`): resolve só este script e deixa a peça prendendo a pasta de quem lança em todo outro uso
+  (é o "consertar só onde apareceu" do §11.12); escolhido o da peça. (b) Usar a tranca do próprio Velopack
+  (`packages\.velopack_lock`) como sinal de "trocando": lido no código, o Velopack a segura também enquanto BAIXA
+  (`manager.rs`, `download_updates`): o clique no atalho seria engolido durante todo o download (minutos). Descartado.
+  (c) Não conferir os processos e deixar o Velopack fechar à força o que achar: fecharia o programa do Kaique no meio
+  de gravar; o pedido manda conferir de verdade.
+- **O que fica de fora, e é ressalva:** a troca que o ajudante faz SEM o script (o Kaique abre e fecha o programa
+  enquanto a versão nova baixa; ou o Samuel manda de longe): não há script segurando a marca; se o Kaique abrir o
+  programa nos ~20 s críticos dessa troca, o Velopack o fecha à força ou a troca falha, como hoje. Ver "Para a gerente
+  decidir", ponto 4.
+
+**Item 2. A pergunta do Windows piscando.**
+- **Causa (lida no código e nos registros; o Windows não deixa provar sem abrir janela, fica para a sessão à vista).**
+  Nas duas vezes era uma abertura seguinte (depois do "Não"): o clique no atalho foi às 14:02:33 e 14:24:56, e o
+  pedido saiu 17 a 20 s depois (14:02:50 e 14:25:16): o programa primeiro carrega tudo e monta a janela, depois lê o
+  Windows e pergunta. A regra do Windows: o programa aberto por um clique ganha o direito de vir para a frente (o
+  atalho do Velopack passa esse direito adiante: `stub.rs` e `start_windows_impl.rs`, `AllowSetForegroundWindow`), mas
+  perde esse direito "na próxima vez que a pessoa mexer em outra coisa" (documentação de `AllowSetForegroundWindow`).
+  Nesses 17 a 20 s nada nosso fica na frente (o brasão aparece de propósito sem tomar a frente,
+  `WA_ShowWithoutActivating`), então qualquer clique ou tecla noutra janela tira o direito; a janela aparece sem vir
+  para a frente, a peça tenta trazê-la, o Windows recusa (o registro diz "não estava na frente") e a pergunta vai para
+  a barra. Na primeira abertura com a janela da senha isso não acontece: o "Agora não" é um clique na nossa janela.
+- **A regra, num lugar só:** a pergunta da primeira abertura (`atualizacao.preparar_na_primeira_abertura`, o único
+  pedido de licença do atualizador) só sai com uma janela do programa na frente. Antes de perguntar: uma tentativa de
+  trazer a janela (como hoje); se o Windows não deixar, espera em silêncio, lendo a cada 0,3 s qual janela está na
+  frente (leitura nova na peça, `janela_do_programa_na_frente(janela)`: a da frente, se for a janela do programa ou um
+  aviso dela), e pergunta no instante em que ela vier para a frente (o clique do Kaique de volta no programa), com a
+  janela da frente como dona. Se a janela fechar antes, não pergunta (a próxima abertura lê o Windows e pergunta de
+  novo, D-741). Sem limite de tempo: o fio de trás é solto e morre com o programa.
+- **Caminhos:** a primeira abertura com a senha ou "Agora não" e as aberturas seguintes passam todas por
+  `preparar_ao_abrir` → `preparar_na_primeira_abertura` (grep por `pedir_licenca_ao_windows`: não há outro). O pedido
+  dos testes à distância (Configurações) não passa por aqui (passo 4).
+- **Jeito mais simples (D-819):** perguntar logo no começo, antes de carregar (o clique ainda vale): a pergunta
+  sairia sem janela nossa na frente (o brasão não toma a frente) e antes de saber se precisa (a leitura leva 0,5 a 7 s);
+  ou fazer o brasão tomar a frente e passá-la à janela: mexe em `ui/` (fora do pedido) e ainda falha se o Kaique
+  clicar noutra janela durante o carregamento. Forçar a janela para a frente com truques do Windows: é contra a regra
+  do Windows e seria gambiarra. Escolhido esperar a janela vir para a frente: é o que a D-806 pede ("enquanto a janela
+  do programa ainda está na frente") sem aviso novo. Ver "Para a gerente decidir", ponto 2.
+
+**Item 3. A pasta trancada na segunda preparação.**
+- **Causa (provada em 18/11, Lista de bugs "Causa provada da tranca"; o registro de 22/11 mostra o mesmo):** o
+  `icacls ... /inheritance:r /grant:r ...(OI)(CI)... /T` passa também nos arquivos que já estão na pasta e os deixa
+  com a lista de licenças vazia. Na primeira preparação a pasta estava vazia; na segunda, o `desfazer.ps1` da primeira
+  ficou sem licença nenhuma e o `WriteAllText` deu "acesso negado".
+- **O porteiro:** o `icacls`, o `/inheritance` e o `/setowner` são barrados em todo arquivo do programa, até na peça
+  (K01 e K03: "comando de licença de pasta à mão"); as duas linhas de hoje só passam por estarem na lista de exceções,
+  pelo texto exato, com o motivo "os testes à distância passam a usar a peça única e a pasta segura". Mudar o texto
+  delas (ou pôr outra) é item novo na lista, e item novo só com o "sim" do Samuel.
+- **Duas saídas (ver "Para a gerente decidir", ponto 3):**
+  - **A (a mais simples no código, mesma pasta do ProgramData):** o `/grant` só na pasta (sem `/T`; os arquivos
+    passam a herdar dela), um `/reset` nos arquivos que já estão dentro (conserta os que a versão de antes trancou),
+    cada `icacls` com o código conferido (hoje só o último), e depois a leitura das licenças pela peça. Precisa de 2 a 3
+    itens novos na lista do porteiro (o "sim" do Samuel) e continua sendo licença à mão, que o plano tira.
+  - **B (a sugerida; a do plano, peça 2, e a que a D-774 previu):** a pasta dos testes à distância passa a ser a pasta
+    segura da peça (`C:\Program Files\EditorImpressaoAjudante`, `core.windows.pasta_segura()`), que herda as licenças
+    de fábrica de Arquivos de Programas (lidas no PC: o sistema e os administradores gravam; os Usuários só leem e
+    executam). Nenhum comando de licença: nada mais tranca nada, então refazer a preparação (ou reinstalar) sempre
+    regrava o `desfazer.ps1`. As 2 linhas do `icacls` e os 4 itens delas saem da lista do porteiro (a lista diminui).
+    Depois de preparar, o programa lê as licenças de verdade (`core.windows.conferir_pasta_segura`, a conferência que
+    já existe: dono, quem grava, quem lê, não é atalho); se não conferir, a preparação dá "falhou" (D-749). O que muda
+    em `core/testes_a_distancia.py`: `PASTA_DOS_TESTES` vira a pasta segura (lida na hora, para não carregar a peça em
+    toda abertura do programa); `_comando_proteger_a_pasta` sai; `_comando_criar_e_proteger_a_pasta` vira só "criar
+    a pasta, se falta"; o `_comando_anotar_o_antes` do ligar perde o pedaço do `icacls` (a mesma regra, D-667); o
+    `preparar_o_desfazer` confere a pasta depois. O XML da tarefa desfazer passa a apontar para o script na pasta
+    nova. Os 3 testes antigos que a D-774 nomeou mudam: `test_d731_o_caderninho_fica_onde_o_plano_diz` (o lugar),
+    a linha do `icacls` em `test_d731_ligar_anota_o_antes_primeiro_e_so_na_primeira_vez` e
+    `test_d731a_a_pasta_do_desfazer_fica_protegida` (a tranca). Nenhum outro.
+- **O que B deixa de lado (ressalva):** no computador que já ligou os testes pela versão de antes (só o PC do Samuel,
+  na etapa 5), o caderninho velho fica no ProgramData e o desfazer novo não o vê (o OpenSSH daquela vez não seria
+  tirado ao desinstalar). No notebook do Kaique nunca houve. A pasta velha do ProgramData fica (a limpeza é do passo 5).
+
+### O que pode falhar e o que o programa faz (volta 4)
+
+Item 1:
+- A pasta do Windows não é achada (a peça não sabe onde fica): o lançar solto diz "falhou" (como hoje com o disco
+  cheio); "Reiniciar agora" fecha gravado e a versão entra na próxima abertura (D-734).
+- A lista de processos não é lida (o Windows nega, erro inesperado): conta como "aberto"; não troca; registro.
+- Um processo nosso não deixa ler o caminho: conta como nosso se o nome do programa é o de um programa de `current`.
+- Ainda roda algo de `current` depois de 30 s (um processo preso): não troca; o registro diz qual; o script reabre o
+  programa na versão de hoje; o aviso de versão nova volta.
+- Outro programa de fora segura a pasta (antivírus, o Explorador aberto em `current`): o Velopack tenta 10 vezes; se
+  não der, a troca falha como hoje (D-718). Não dá para conferir antes (o Windows não diz quem segura uma pasta).
+- O script cai no meio: a marca some sozinha (o Windows a apaga com o processo); a próxima abertura abre normal.
+- A marca não é lida (erro do Windows): a abertura segue normal (como hoje), nunca fica sem abrir.
+- O script passa do limite (até ~20 min, os limites de hoje): o clique no atalho fica sem abrir nada até lá (sem
+  frase na tela, D-770 para depois). Ressalva.
+- Sem internet, sem licença, disco cheio: nada novo (a troca usa o pacote já baixado; nada aqui pede licença).
+
+Item 2:
+- A janela nunca volta para a frente: nada é perguntado nesta abertura; a próxima pergunta de novo (D-741). Registro.
+- A janela fecha antes: não pergunta; registro.
+- O Kaique está num aviso nosso (uma caixa do programa): conta como "na frente"; a dona da pergunta é o aviso.
+- A leitura da janela da frente falha: conta como "não está na frente" e espera (nunca pergunta para piscar).
+- "Não", "Sim", ninguém responde: como hoje (provados à vista em 22/11).
+
+Item 3 (saída B):
+- A pasta segura não existe e não dá para criar (sem licença, disco cheio): o passo falha; "falhou"; a pergunta volta.
+- A pasta segura existe mas não confere (alguém mudou as licenças, é um atalho): a preparação dá "falhou" e o
+  registro diz o que não confere; não grava nada nela.
+- O `desfazer.ps1` preso por outro programa: o passo falha; "falhou"; a pergunta volta (as tarefas, D-826).
+- Desinstalar: a tarefa desfazer roda o script da pasta nova (igual a hoje, no lugar novo).
+
+### O que li da peça de fora e onde (volta 4)
+
+- **Velopack 1.2.161, a troca** (https://github.com/velopack/velopack/blob/1.2.161/src/bins/src/commands/apply_windows_impl.rs):
+  extrai, roda o gancho `--veloapp-obsolete` (espera até 15 s), `force_stop_package(root)`, depois
+  `retry_io_ex(|| fs::rename(&current_dir, &temp_path_old), 1000, 10)` com a mensagem "Unable to start the update,
+  because one or more running processes prevented it"; com `restart`, reabre a versão de antes se falhar (`apply.rs`).
+- **Velopack, o fechar à força** (`src/bins/src/shared/util_windows.rs`, `get_processes_running_in_directory`): só os
+  processos cujo programa está dentro da raiz, abertos com `PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_TERMINATE`;
+  os que não abrem são pulados; ele mesmo é pulado. O PowerShell (System32) nunca é fechado.
+- **Velopack, a espera do WaitPid** (`src/lib-rust/src/process_win.rs`, `wait_for_pid_to_exit`): `OpenProcess(PROCESS_SYNCHRONIZE)`,
+  `WaitForSingleObject`, depois `GetExitCodeProcess`, que precisa de outra licença: "acesso negado" depois da espera
+  (exp2). `operation_wait` só avisa e segue (`src/bins/src/shared/util_common.rs`).
+- **Velopack, a tranca dele** (`src/lib-rust/src/locator.rs`, `try_get_exclusive_lock`; `lockfile.rs`, `share_mode(0)`):
+  `packages\.velopack_lock`, segurada na troca E no `download_updates` (`manager.rs:406`). Por isso não serve de sinal.
+- **Velopack, o atalho** (`src/bins/src/stub.rs:39-41`; `start_windows_impl.rs`, `start_regular`): abre o Update.exe e
+  o programa com `AllowSetForegroundWindow` e com `current` como pasta de trabalho (`cmd.current_dir(&current)`).
+- **Windows, a pasta de trabalho do filho:** "If this parameter is NULL, the new process will have the same current
+  drive and directory as the calling process" (CreateProcessW, `lpCurrentDirectory`,
+  https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessw); o
+  `subprocess.Popen(cwd=...)` do Python é esse parâmetro (https://docs.python.org/3/library/subprocess.html#popen-constructor).
+  Que a pasta de trabalho impede renomear: provado no PC (exp1, exp1b), erro 32.
+- **PowerShell 5.1:** `Start-Process` sem `-WorkingDirectory` abre o programa na localização atual do PowerShell
+  (exp3); `Set-Location` muda só essa localização, não prende a pasta (exp4)
+  (https://learn.microsoft.com/powershell/module/microsoft.powershell.management/start-process?view=powershell-5.1).
+- **Windows, a marca com nome (mutex):** "The system closes the handle automatically when the process terminates. The
+  mutex object is destroyed when its last handle has been closed" (CreateMutexW,
+  https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-createmutexw); `Local\` é a sessão do
+  usuário (https://learn.microsoft.com/en-us/windows/win32/termserv/kernel-object-namespaces). O .NET
+  `System.Threading.Mutex(bool, string)` cria ou abre a de mesmo nome (o script da janelinha já usa).
+- **Windows, a lista de processos:** `CreateToolhelp32Snapshot` + `Process32FirstW/NextW` dão o número e o nome de
+  todos os processos sem abrir nenhum; `OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION)` + `QueryFullProcessImageNameW`
+  dão o caminho (https://learn.microsoft.com/en-us/windows/win32/api/tlhelp32/nf-tlhelp32-createtoolhelp32snapshot,
+  https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-queryfullprocessimagenamew). Como o sistema
+  (o ajudante), abre os processos da conta do Kaique.
+- **Windows, a frente:** `AllowSetForegroundWindow`: "the process specified by dwProcessId loses the ability to set
+  the foreground window the next time the user generates input, unless the input is directed at that process"
+  (https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-allowsetforegroundwindow);
+  `SetForegroundWindow`: as condições e "An application cannot force a window to the foreground while the user is
+  working with another window" (.../nf-winuser-setforegroundwindow); `GetForegroundWindow` e `GetAncestor(GA_ROOTOWNER)`
+  (.../nf-winuser-getancestor); o UAC usa a janela dona para decidir se pergunta na frente ou na barra
+  (https://learn.microsoft.com/en-us/previous-versions/bb756922(v=msdn.10)).
+- **Arquivos de Programas, as licenças de fábrica** (lidas no PC com `icacls "C:\Program Files"`, só leitura): o
+  sistema e os Administradores com tudo para o que nasce dentro; Usuários "(OI)(CI)(IO)(GR,GE)"; Proprietário Criador
+  tudo; TrustedInstaller. A peça já cria e confere a pasta segura assim (`core/windows.py`, `criar_pasta_segura`,
+  `conferir_pasta_segura`, `problemas_da_pasta_segura`).
+
+### Para a gerente decidir (volta 4)
+
+1. **`core/windows.py` precisa mudar** (três pedaços pequenos, todos conversa com o Windows, que só a peça pode ter):
+   a pasta de trabalho do lançar solto (item 1, a causa); ler os processos que rodam de uma pasta (item 1, "conferido
+   de verdade"); ler qual janela está na frente (item 2). Posso?
+2. **A pergunta espera a janela do programa vir para a frente** (sem limite, sem aviso), em vez de perguntar e piscar.
+   É a leitura que faço da D-806. Posso?
+3. **A pasta trancada: saída B** (a pasta segura em Arquivos de Programas, sem comando de licença; 3 testes antigos que
+   a D-774 nomeou mudam) ou **A** (mesma pasta, `icacls` consertado; precisa do "sim" do Samuel para itens novos no
+   porteiro). Sugiro B.
+4. **A troca sem o script** (o ajudante troca porque o Kaique fechou o programa durante o download, ou o Samuel mandou
+   de longe) fica sem a proteção do clique no atalho. Fica como ressalva nesta entrega? (Fechar também pediria um
+   vigia do lado do sistema, ou trocar só pelo script, o que mexe no atualizar de longe da D-736.)
+
+### Perguntas para o Samuel (volta 4)
+
+Nenhuma por enquanto: os 4 pontos acima são da gerente (o ponto 3, se for a saída A, precisa do "sim" dele para o
+porteiro).
