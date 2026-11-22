@@ -599,7 +599,7 @@ pergunta só).
   `test_conserto2_o_pedido_de_verdade_entrega_a_janela_a_peca` passa no código do conserto 1 (ver acima).
 - GitHub: rodada 44975834257 (a 44975331433 foi cancelada: testava o commit antes das docstrings); o resultado em "Commit".
 
-**Volta 3:** ver "Volta 3 > Testes (volta 3)"; GitHub: rodada 44992797990 (RESULTADO; a 44991980992 foi cancelada por mim: testava o commit antes das docstrings dos testes).
+**Volta 3:** ver "Volta 3 > Testes (volta 3)"; GitHub: rodada 44992797990: success na 1ª tentativa (a 44991980992 foi cancelada por mim: testava o commit antes das docstrings dos testes).
 
 ## Caminho e função
 
@@ -727,7 +727,7 @@ Não se aplica: nenhuma pergunta aberta (a pergunta 1 foi respondida, D-825).
 - Volta 2: médio 1 `f5d73572`, médio 2 `ebc4891e`, médio 3 `9979419d`, item 4 `6efa58d7`, item 5 `f523ec2e` (último do código e dos testes).
 - GitHub da volta 2: rodada 44982726269 (commit `f523ec2e`): success na 2ª tentativa (testou `f523ec2e`, conferido no registro da rodada). A 1ª caiu na parte 2: `test_decisoes_gravura_a_mao.py::test_d659_g_outros_filtros_a_mao_nada_e_procurado_e_sai_igual_ao_de_antes[original]` ("procurou: [0]", o detector de gravura), que não usa nada destes consertos; no PC, o arquivo inteiro passou (15 de 15).
 
-- Volta 3: plano `1e8518cf`; item 1 `ce728693`; item 2 `ebd4197e`; item 3 `f15863b8`; item 4 `126f01d0`; as docstrings das peças de mentira dos testes novos `b897efb7` (último do código e dos testes). GitHub da volta 3: rodada 44992797990 (RESULTADO; a 44991980992 foi cancelada por mim: testava o commit antes das docstrings dos testes).
+- Volta 3: plano `1e8518cf`; item 1 `ce728693`; item 2 `ebd4197e`; item 3 `f15863b8`; item 4 `126f01d0`; as docstrings das peças de mentira dos testes novos `b897efb7` (último do código e dos testes). GitHub da volta 3: rodada 44992797990: success na 1ª tentativa (a 44991980992 foi cancelada por mim: testava o commit antes das docstrings dos testes).
 
 ## O que o agente que tentou quebrar achou
 
@@ -845,7 +845,7 @@ um) e a D-827 (toda proteção sem teste ganha teste agora, provado por mutaçã
 - Plano `1e8518cf`. Item 1 `ce728693`; item 2 `ebd4197e`; item 3 `f15863b8` (cada um com commit e push e o teste
   rodado no código de antes dele: `anexos/reversao-volta3-item1.txt` a `-item3.txt`). Próximo: item 4 (as proteções
   sem teste, mutações numa cópia `git worktree add --detach` no meu rascunho).
-- Item 4 `126f01d0` (60 de 60 proteções acusadas; a cópia foi tirada). GitHub: rodada 44992797990 (RESULTADO; a 44991980992 foi cancelada por mim: testava o commit antes das docstrings dos testes). Entregue à gerente.
+- Item 4 `126f01d0` (60 de 60 proteções acusadas; a cópia foi tirada). GitHub: rodada 44992797990: success na 1ª tentativa (a 44991980992 foi cancelada por mim: testava o commit antes das docstrings dos testes). Entregue à gerente.
 
 ### Decisões que esta tarefa precisa cumprir (volta 3)
 
@@ -1073,7 +1073,7 @@ Está na seção "Cada proteção e o teste que falha sem ela", acima (os itens 
 - Reversão: os testes de cada item falham no código de antes dele, por comportamento
   (`anexos/reversao-volta3-item1.txt` a `-item3.txt`).
 - Mutações: 60 de 60 acusadas (acima).
-- GitHub: rodada 44992797990 (RESULTADO; a 44991980992 foi cancelada por mim: testava o commit antes das docstrings dos testes).
+- GitHub: rodada 44992797990: success na 1ª tentativa (a 44991980992 foi cancelada por mim: testava o commit antes das docstrings dos testes).
 
 ### Ressalvas (volta 3)
 
@@ -1116,7 +1116,7 @@ Nenhuma. A D-826 e a D-827 responderam o que esta volta precisava.
 
 - Plano `1e8518cf`; item 1 `ce728693`; item 2 `ebd4197e`; item 3 `f15863b8`; item 4 `126f01d0`; docstrings das peças de mentira
   dos testes novos `b897efb7` (último do código e dos testes; K12 do formulário). Depois só o ONDE-PAREI.
-- GitHub: 44992797990 (RESULTADO; a 44991980992 foi cancelada por mim: testava o commit antes das docstrings dos testes).
+- GitHub: 44992797990: success na 1ª tentativa (a 44991980992 foi cancelada por mim: testava o commit antes das docstrings dos testes).
 
 ### Resumo (volta 3)
 
