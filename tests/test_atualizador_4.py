@@ -181,14 +181,18 @@ def test_conserto1_o_mesmo_caminho_escrito_diferente_e_o_mesmo_ajudante(windows_
 
 @pytest.mark.parametrize("existe, lida", [(None, False), (True, False)])
 def test_conserto1_nao_deu_para_ler_o_ajudante_conta_como_falta(windows_de_mentira, existe, lida):
-    """Volta 2 (medio 3 do relatorio 1, D-741): "nao deu para saber" e "existe, mas esta conta nao le" NAO trazem a
-    pergunta de volta (o nome do teste ficou da volta 1, quando contavam como falta); o registro diz por que."""
+    """Volta 3 (D-826, Samuel 22/11/2026: "no caso raro a pergunta volta sempre"): "nao deu para saber" (o Windows nao
+    respondeu) conta como FALTA, e a pergunta volta (D-741). "Existe, mas esta conta nao le" continua contando como
+    existe (a tarefa so nasce com a licenca de administrador). Historia: na volta 1 os dois contavam como falta; na
+    volta 2 (medio 3) nenhum contava, e o "Nao" com a leitura falhando nunca mais trazia a pergunta (relatorio 2, (b))."""
     windows_de_mentira.pedir([])
     nome = atualizacao.NOME_DA_TAREFA
     windows_de_mentira.tarefas[nome] = windows.Tarefa(nome, existe, lida, motivo="o Windows não respondeu")
-    assert atualizacao.o_que_falta_no_computador() == []
+    falta = atualizacao.o_que_falta_no_computador()
     if existe is None:
-        assert "não deu para ler o ajudante" in _registro()
+        assert falta and any("não deu para ler o ajudante" in f for f in falta)
+    else:
+        assert falta == []
 
 
 def test_conserto1_reinstalado_sem_o_ajudante_a_pergunta_volta(windows_de_mentira):
@@ -682,15 +686,36 @@ def test_volta2_medio3_visual_c_mais_novo_numa_versao_nova_nao_traz_a_pergunta_d
     assert len(windows_de_mentira.pedidos) == 1, "a pergunta do Windows voltou depois do \"Sim\""
 
 
-def test_volta2_medio3_windows_que_nao_deixa_ler_nao_traz_a_pergunta_de_volta(windows_de_mentira, monkeypatch):
-    """Medio 3: quando o Windows nao deixa ler as tarefas ("nao deu para saber"), a pergunta voltava toda vez, e o
-    "Sim" nao resolvia. Agora nao pergunta (nao da para saber que falta) e o registro diz por que."""
+def test_volta3_item1_depois_do_sim_com_o_windows_que_nao_deixa_ler_a_pergunta_volta(windows_de_mentira, monkeypatch):
+    """Volta 3, item 1 (D-826, Samuel 22/11/2026: "no caso raro a pergunta volta sempre"; era
+    test_volta2_medio3_windows_que_nao_deixa_ler_nao_traz_a_pergunta_de_volta, que cobrava o contrario): quando o Windows
+    nao deixa ler as tarefas ("nao deu para saber"), a pergunta volta, mesmo depois de um "Sim" (sem uma anotacao, o
+    programa nao sabe que o "Sim" ja foi dado); o registro diz o que nao deu para ler. Nas duas tarefas."""
     assert atualizacao.preparar_ao_abrir(None, primeira_vez=True) == []
+    for tarefa in (atualizacao.NOME_DA_TAREFA, td.nome_da_tarefa_do_desfazer()):
+        lida = windows_de_mentira.tarefas[tarefa]
+        windows_de_mentira.tarefas[tarefa] = windows.Tarefa(tarefa, None, motivo="o PowerShell não respondeu")
+        antes = len(windows_de_mentira.pedidos)
+        atualizacao.preparar_ao_abrir(None, primeira_vez=False)
+        assert len(windows_de_mentira.pedidos) == antes + 1, f"{tarefa}: não deu para ler e a pergunta não voltou"
+        windows_de_mentira.tarefas[tarefa] = lida
+    assert "não deu para ler o ajudante" in _registro() and "não deu para ler a tarefa do desfazer" in _registro()
+
+
+def test_volta3_item1_depois_do_nao_com_o_windows_que_nunca_deixa_ler_a_pergunta_volta_a_cada_abertura(
+        windows_de_mentira, monkeypatch):
+    """Volta 3, item 1 (D-826; D-741: depois do "Nao", a pergunta volta a cada abertura). Defeito do relatorio 2 de quem
+    tentou quebrar, (b): depois de um "Nao", com a leitura das tarefas falhando sempre (ex.: um antivirus que barra o
+    PowerShell), tres aberturas seguidas nao perguntavam nada: a pergunta nunca mais voltava e nenhuma versao chegava.
+    Agora volta em cada abertura; e o ajudante (que nao existe) nao e chamado."""
+    windows_de_mentira.respostas = ["nao"] * 4
+    assert atualizacao.preparar_ao_abrir(None, primeira_vez=True)
     monkeypatch.setattr(atualizacao, "ler_tarefa_no_windows",
                         lambda nome: windows.Tarefa(nome, None, motivo="o PowerShell não respondeu"))
-    assert atualizacao.preparar_ao_abrir(None, primeira_vez=False) == []
-    assert len(windows_de_mentira.pedidos) == 1, "a pergunta do Windows voltou sem saber se faltava"
-    assert "não deu para ler" in _registro()
+    for _abertura in range(3):
+        assert atualizacao.preparar_ao_abrir(None, primeira_vez=False)
+    assert len(windows_de_mentira.pedidos) == 4, "depois do \"Não\", a pergunta não voltou em cada abertura"
+    assert windows_de_mentira.ajudante_rodou == 0, "chamou um ajudante que o Windows não mostrou"
 
 
 def test_volta2_medio3_depois_do_nao_a_pergunta_continua_voltando(windows_de_mentira):

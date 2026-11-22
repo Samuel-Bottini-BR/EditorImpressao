@@ -1,0 +1,11 @@
+Volta 3, item 1: os testes novos (versao final) rodados no codigo de antes do conserto (atualizacao.py de 1e8518cf = f523ec2e). Os 3 falham por comportamento (a pergunta nao volta; nada falta).
+     +  where [] = <function preparar_ao_abrir at 0x0000020465630E00>(None, primeira_vez=False)
+     +    where <function preparar_ao_abrir at 0x0000020465630E00> = atualizacao.preparar_ao_abrir
+D:\programas\EditorImpressao\.claude\worktrees\atualizador-4\tests\test_atualizador_4.py:716: assert []
+=========================== short test summary info ===========================
+FAILED tests/test_atualizador_4.py::test_conserto1_nao_deu_para_ler_o_ajudante_conta_como_falta[None-False]
+FAILED tests/test_atualizador_4.py::test_volta3_item1_depois_do_sim_com_o_windows_que_nao_deixa_ler_a_pergunta_volta
+FAILED tests/test_atualizador_4.py::test_volta3_item1_depois_do_nao_com_o_windows_que_nunca_deixa_ler_a_pergunta_volta_a_cada_abertura
+3 failed, 1 passed, 40 deselected in 0.85s
+
+No codigo novo: tests/test_atualizador_4.py 44 passed.

@@ -1656,12 +1656,16 @@ def o_que_falta_no_computador(exe: Path | None = None,
     proprio ajudante, como o sistema, sem perguntar nada, toda vez que roda (rodar_ao_ligar -> preparar_o_computador).
     Se entrassem, uma versao nova com um Visual C++ mais novo traria a pergunta de volta depois do "Sim" (contra a D-741:
     "Depois do 'Sim', nunca mais aparece"), antes de o ajudante instala-lo.
-    "Nao deu para saber" (o Windows nao respondeu) NAO conta como falta: anota no registro e nao pergunta (volta 2,
-    medio 3: a pergunta voltava toda vez e o "Sim" nao resolvia). "Existe, mas esta conta nao le" conta como existe
-    (a tarefa so nasce na pasta do programa do Agendador, que a peca confere ao criar). No pacote portatil do ensaio
-    nada falta (o portatil nunca mexe no Windows, e_portatil).
+    "Nao deu para saber" (o Windows nao respondeu a leitura) CONTA COMO FALTA, nas duas tarefas: a pergunta volta a cada
+    abertura enquanto o Windows nao deixar ler (D-826, Samuel 22/11/2026: "no caso raro a pergunta volta sempre"; D-741).
+    Sem uma anotacao, "depois do Sim" e "depois do Nao" tem a mesma leitura; na volta 2 isto nao contava, e um "Nao" com
+    a leitura falhando sempre nunca mais trazia a pergunta (relatorio 2 de quem tentou quebrar, (b)). "Existe, mas esta
+    conta nao le" conta como existe (a tarefa so nasce na pasta do programa do Agendador, com a licenca de
+    administrador, que a peca confere ao criar). No pacote portatil do ensaio nada falta (o portatil nunca mexe no
+    Windows, e_portatil).
     Quem usa: preparar_na_primeira_abertura (depois da resposta) e preparar_ao_abrir (antes de perguntar de novo).
-    Arriscado: voltar a contar o Visual C++ ou o "nao deu para saber" como falta (a pergunta volta depois do "Sim").
+    Arriscado: voltar a contar o Visual C++ como falta (a pergunta voltaria depois do "Sim" a cada versao com um Visual
+    C++ novo); deixar de contar o "nao deu para saber" (o "Nao" deixa de voltar, D-826).
     """
     from core import testes_a_distancia, windows
 
@@ -1672,8 +1676,7 @@ def o_que_falta_no_computador(exe: Path | None = None,
     falta: list[str] = []
     ajudante = ler(NOME_DA_TAREFA)
     if ajudante.existe is None:
-        registrar(f"não deu para ler o ajudante da atualização no Windows ({ajudante.motivo}); não pergunto de novo "
-                  "por isso")
+        falta.append(f"não deu para ler o ajudante da atualização no Windows ({ajudante.motivo})")
     elif ajudante.existe is False:
         falta.append("o ajudante da atualização não existe no Windows")
     elif ajudante.lida and not ajudante.licenca:
@@ -1686,7 +1689,7 @@ def o_que_falta_no_computador(exe: Path | None = None,
                   for p in windows.problemas_da_tarefa_criada(xml_da_tarefa(exe), ajudante)]
     desfazer = ler(testes_a_distancia.nome_da_tarefa_do_desfazer())
     if desfazer.existe is None:
-        registrar(f"não deu para ler a tarefa do desfazer no Windows ({desfazer.motivo}); não pergunto de novo por isso")
+        falta.append(f"não deu para ler a tarefa do desfazer no Windows ({desfazer.motivo})")
     elif desfazer.existe is False:
         falta.append("a tarefa que desfaz tudo ao desinstalar não existe no Windows")
     return falta
@@ -1736,7 +1739,8 @@ def preparar_ao_abrir(janela: int | None = None, primeira_vez: bool = False) -> 
 
     - primeira_vez (nesta conta a janela da senha acabou de aparecer): pergunta ja, logo depois do clique (D-806);
     - senao: le o Windows; se nada falta, nao pergunta nada; se falta uma das tarefas (o "Nao" de antes, a preparacao
-      parada antes de cria-las, o ajudante que sumiu ao reinstalar), pergunta de novo (D-741, D-749).
+      parada antes de cria-las, o ajudante que sumiu ao reinstalar, o Windows que nao deixou ler, D-826), pergunta de
+      novo (D-741, D-749).
     Se a pergunta deixou o computador preparado, manda o ajudante rodar uma vez (ele acabou de nascer; a chamada da
     abertura, ui/aviso_de_atualizacao.ligar_na_janela, veio antes e nao o achou). Nunca levanta: um erro vai para o
     registro e conta como "falta".
