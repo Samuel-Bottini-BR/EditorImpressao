@@ -50,9 +50,12 @@ AINDA NÃO ESTÁ LIGADO AO PROGRAMA (29/09/2026)
 O MOTOR À PARTE (plano da parte do Windows, passo 2, 19/11/2026)
     A versão do motor (VERSAO_DO_MOTOR), a ficha (motor.json) e a conferência única "inteiro e da versão certa"
     (conferir_motor) moram aqui. A ficha é escrita pelo montar_motor_kraken.py; o publicar recusa publicar um motor
-    que não confere. Nada disso muda ainda o jeito de ACHAR o motor no programa instalado (achar_pasta_do_motor,
-    lugares_do_motor): isso é do passo 3. (Volta 9 do passo 2: o terceiro lugar, o do código rodando pelas fontes,
-    passou a vir de core/pasta_das_ferramentas.py.)
+    que não confere. (Volta 9 do passo 2: o terceiro lugar, o do código rodando pelas fontes, passou a vir de
+    core/pasta_das_ferramentas.py.)
+    Desde os 4 consertos do atualizador (21/11/2026, D-788, D-824): no programa instalado pelo Velopack o motor mora
+    numa pasta própria ao lado da parte que a atualização troca, <raiz da instalação>\motor-kraken\<VERSAO_DO_MOTOR>
+    (pasta_do_motor_instalado, o lugar único); quem o põe lá é o ajudante da atualização (atualizacao.garantir_o_motor),
+    a partir do arquivo do motor que vem no instalador.
 
 "PARA REVISAR"
     O Kraken 7.1.1, quando não consegue desenhar o contorno de uma linha,
@@ -144,6 +147,15 @@ def _raiz_do_codigo() -> Path:
     return Path(__file__).resolve().parent.parent
 
 
+def pasta_do_motor_instalado(raiz: Path | str, versao_do_motor: int = VERSAO_DO_MOTOR) -> Path:
+    """Onde o motor mora no programa instalado pelo Velopack (D-788): <raiz>\\motor-kraken\\<versão do motor>, ao lado
+    de current\\ (a pasta que a atualização troca; o Velopack só renomeia current, o resto da raiz fica). O LUGAR ÚNICO:
+    quem procura (lugares_do_motor), quem põe (atualizacao.garantir_o_motor) e quem confere antes de trocar
+    (atualizacao.motor_esta_no_lugar) usam esta. Arriscado mudar depois da primeira entrega: o motor já posto no
+    notebook do Kaique não seria mais achado."""
+    return Path(raiz) / NOME_DA_PASTA / str(int(versao_do_motor))
+
+
 def lugares_do_motor() -> list[Path]:
     """Onde O PROGRAMA procura o motor para usar, em ordem. (Não confundir com empacotar.LUGARES_DO_MOTOR, que é onde
     o EMPACOTADOR acha um motor pronto para pôr na pasta portátil ou publicar; os dois nomes ficaram como estavam
@@ -162,11 +174,20 @@ def lugares_do_motor() -> list[Path]:
 
     Volta 10 (relatório 8 de quem tentou quebrar, observação 8): "está empacotado?" é a pergunta da regra
     (`pasta_das_ferramentas.empacotado`, a mesma que decide se o lugar 3 existe; antes era escrita aqui também).
+
+    4 consertos do atualizador (21/11/2026): no programa INSTALADO PELO VELOPACK (a regra única de "instalado",
+    atualizacao.instalado_pelo_velopack) o único lugar é pasta_do_motor_instalado(<raiz>): a atualização não leva o
+    motor (D-768), e o current\\motor-kraken de antes nunca existe lá. A pasta portátil (o Inno) continua com o motor ao
+    lado do .exe.
     """
     from core import pasta_das_ferramentas
 
     lugares = []
     if pasta_das_ferramentas.empacotado():
+        import atualizacao
+
+        if atualizacao.instalado_pelo_velopack():
+            return [pasta_do_motor_instalado(atualizacao.pasta_do_programa().parent)]
         lugares.append(Path(sys.executable).resolve().parent / NOME_DA_PASTA)
     raiz = _raiz_do_codigo()
     lugares.append(raiz / NOME_DA_PASTA)

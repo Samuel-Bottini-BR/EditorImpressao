@@ -402,3 +402,168 @@ def test_conserto3_o_limite_da_troca_chega_ao_script_e_a_janelinha():
     script = atualizacao.script_de_trocar_e_reabrir(EXE_DE_MENTIRA, 1, Path("C:/x/estado.json"), janelinha=True)
     assert "AddSeconds(900)" in script
     assert f"AddSeconds({900 + atualizacao.ESPERA_DA_VOLTA_S + 120})" in atualizacao.script_da_janelinha()
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Conserto 4: o motor do Kraken continua funcionando depois da atualizacao
+# ---------------------------------------------------------------------------------------------------------------------
+
+def _instalacao_com_o_motor_no_instalador(tmp_path: Path) -> tuple[Path, Path]:
+    """Uma instalacao de mentira como o .msi deixa: <raiz>\current\instalar\motor-kraken-<v>.zip (o motor de
+    mentira, com a ficha gravada pela funcao de verdade). Devolve (raiz, current)."""
+    import zipfile
+
+    import versao
+    from core import ocr_kraken
+    from tests.test_publicar_motor import _motor
+
+    motor = _motor(tmp_path / "motor-montado")
+    raiz = tmp_path / "EditorImpressaoPrograma"
+    current = raiz / "current"
+    instalar = current / atualizacao.PASTA_DO_QUE_SE_INSTALA
+    instalar.mkdir(parents=True)
+    with zipfile.ZipFile(instalar / versao.arquivo_do_motor(ocr_kraken.VERSAO_DO_MOTOR), "w") as z:
+        for arquivo in motor.rglob("*"):
+            if arquivo.is_file():
+                z.write(arquivo, arquivo.relative_to(motor).as_posix())
+    return raiz, current
+
+
+def test_conserto4_o_ajudante_poe_o_motor_do_instalador_no_lugar_dele(tmp_path):
+    """Defeito de 21/11 (D-824: "o publicar novo manda a atualizacao sem o motor do Kraken e o atualizador antigo
+    espera o motor dentro dela"): ninguem tirava o motor do arquivo do instalador. Agora garantir_o_motor o poe em
+    <raiz>\motor-kraken\1, conferido; a segunda vez nao refaz nada."""
+    from core import ocr_kraken
+
+    raiz, current = _instalacao_com_o_motor_no_instalador(tmp_path)
+    assert atualizacao.garantir_o_motor(raiz, current) is True
+    destino = ocr_kraken.pasta_do_motor_instalado(raiz)
+    assert destino == raiz / "motor-kraken" / "1"
+    assert ocr_kraken.conferir_motor(destino) == []
+    assert not (raiz / "motor-kraken" / ".chegando-1").exists()
+    antes = (destino / ocr_kraken.NOME_DA_FICHA).stat().st_mtime_ns
+    assert atualizacao.garantir_o_motor(raiz, current) is True
+    assert (destino / ocr_kraken.NOME_DA_FICHA).stat().st_mtime_ns == antes, "já no lugar: nada é refeito"
+
+
+def test_conserto4_sem_espaco_nao_comeca(tmp_path):
+    """Sem o espaco do motor aberto mais a folga, nao comeca, e nada fica."""
+    raiz, current = _instalacao_com_o_motor_no_instalador(tmp_path)
+    assert atualizacao.garantir_o_motor(raiz, current, livre=lambda p: 10) is False
+    assert not (raiz / "motor-kraken" / "1").exists() and not (raiz / "motor-kraken" / ".chegando-1").exists()
+    assert "falta espaço" in _registro()
+
+
+def test_conserto4_motor_estragado_no_arquivo_nunca_fica_com_o_nome_final(tmp_path):
+    """Um arquivo do motor que nao confere (um arquivo da ficha faltando) e recusado: o nome final nunca aparece pela
+    metade e a pasta provisoria some."""
+    import zipfile
+
+    import versao
+    from core import ocr_kraken
+
+    raiz, current = _instalacao_com_o_motor_no_instalador(tmp_path)
+    arquivo = current / atualizacao.PASTA_DO_QUE_SE_INSTALA / versao.arquivo_do_motor(ocr_kraken.VERSAO_DO_MOTOR)
+    with zipfile.ZipFile(arquivo) as z:
+        conteudo = {n: z.read(n) for n in z.namelist() if not n.endswith("outro.py")}
+    with zipfile.ZipFile(arquivo, "w") as z:
+        for nome, dados in conteudo.items():
+            z.writestr(nome, dados)
+    assert atualizacao.garantir_o_motor(raiz, current) is False
+    assert not (raiz / "motor-kraken" / "1").exists() and not (raiz / "motor-kraken" / ".chegando-1").exists()
+
+
+def test_conserto4_motor_estragado_no_lugar_e_trocado_pelo_do_instalador(tmp_path):
+    """Um motor no nome final que nao confere (um arquivo cortado) e posto de lado e o do instalador entra."""
+    from core import ocr_kraken
+
+    raiz, current = _instalacao_com_o_motor_no_instalador(tmp_path)
+    assert atualizacao.garantir_o_motor(raiz, current)
+    destino = ocr_kraken.pasta_do_motor_instalado(raiz)
+    (destino / "python" / "python.exe").write_bytes(b"x")
+    assert ocr_kraken.conferir_motor(destino)
+    assert atualizacao.garantir_o_motor(raiz, current) is True
+    assert ocr_kraken.conferir_motor(destino) == []
+    assert [p.name for p in (raiz / "motor-kraken").iterdir()] == ["1"], "o estragado posto de lado foi apagado"
+
+
+def test_conserto4_sem_o_arquivo_e_sem_o_motor_diz_e_nao_finge(tmp_path):
+    """Sem o motor no lugar e sem o arquivo do instalador: False e registro (nunca "deu certo")."""
+    raiz = tmp_path / "EditorImpressaoPrograma"
+    (raiz / "current").mkdir(parents=True)
+    assert atualizacao.garantir_o_motor(raiz, raiz / "current") is False
+    assert "motor do Kraken: não está" in _registro()
+
+
+def test_conserto4_a_troca_nao_acontece_sem_o_motor_no_lugar(tmp_path):
+    """D-788/D-790: com o programa fechado e o motor fora do lugar, a versao nova nao troca (a troca apagaria o unico
+    arquivo do motor que veio no instalador); fica "pendente". Com o motor no lugar, troca."""
+    from tests.test_decisoes_atualizacao import PUBLICA, GerenteFalso, _servidor
+
+    gerente = GerenteFalso()
+    fonte = _servidor(tmp_path, gerente.alvo)
+    assert atualizacao.procurar_e_preparar(gerente, fonte, lambda: False, chave_publica=PUBLICA,
+                                           motor_no_lugar=lambda: False) == "pendente"
+    assert gerente.trocou == [] and atualizacao.ler_estado()["fase"] == "pendente"
+    assert "não troco agora" in _registro()
+    assert atualizacao.procurar_e_preparar(gerente, fonte, lambda: False, chave_publica=PUBLICA,
+                                           motor_no_lugar=lambda: True) == "aplicando"
+    assert len(gerente.trocou) == 1
+
+
+def test_conserto4_o_motor_no_lugar_e_a_mesma_conferencia(tmp_path, monkeypatch):
+    """motor_esta_no_lugar (o que procurar_e_preparar pergunta) le a pasta unica e a conferencia unica do motor; pelo
+    codigo (fora de uma instalacao do Velopack) e sempre True (nada e trocado ali)."""
+    raiz, current = _instalacao_com_o_motor_no_instalador(tmp_path)
+    assert atualizacao.motor_esta_no_lugar(raiz) is False
+    atualizacao.garantir_o_motor(raiz, current)
+    assert atualizacao.motor_esta_no_lugar(raiz) is True
+    assert atualizacao.motor_esta_no_lugar() is True, "pelo código"
+
+
+def test_conserto4_o_ajudante_poe_o_motor_antes_de_procurar_e_nunca_no_portatil():
+    """rodar_ao_ligar (o ajudante) poe o motor no lugar antes de procurar a versao nova; no portatil, nunca."""
+    class Gerente:
+        def __init__(self, portatil):
+            self.portatil = portatil
+
+        def get_is_portable(self):
+            return self.portatil
+
+        def get_current_version(self):
+            return "1.1.0"
+
+        def check_for_updates(self):
+            return None
+
+    for portatil, esperado in ((False, 1), (True, 0)):
+        chamadas = []
+        atualizacao.rodar_ao_ligar(atualizacao.Fonte("C:/nao-existe"), gerente=Gerente(portatil),
+                                   preparar=lambda g: True, motor=lambda: chamadas.append(1) or True)
+        assert len(chamadas) == esperado
+
+
+def test_conserto4_o_programa_instalado_procura_o_motor_so_no_lugar_dele(tmp_path, monkeypatch):
+    """O programa instalado pelo Velopack procura o motor em <raiz>\motor-kraken\<versao> (e nao mais em
+    current\motor-kraken, que a atualizacao sem o motor nunca tem); o teste rapido depois da troca usa a mesma busca
+    e a mesma conferencia."""
+    import sys
+
+    from core import ocr_kraken, pasta_das_ferramentas
+
+    raiz, current = _instalacao_com_o_motor_no_instalador(tmp_path)
+    monkeypatch.setattr(pasta_das_ferramentas, "empacotado", lambda: True)
+    monkeypatch.setattr(atualizacao, "instalado_pelo_velopack", lambda: True)
+    monkeypatch.setattr(atualizacao, "pasta_do_programa", lambda: current)
+    assert ocr_kraken.lugares_do_motor() == [raiz / "motor-kraken" / "1"]
+    assert ocr_kraken.achar_pasta_do_motor() is None
+    (current / "tesseract").mkdir()
+    (current / "tesseract" / "tesseract.exe").write_bytes(b"MZ")
+    monkeypatch.setattr(sys, "frozen", True, raising=False)
+    atualizacao.teste_rapido()
+    assert "falta o motor do Kraken" in _registro()
+    atualizacao.garantir_o_motor(raiz, current)
+    assert ocr_kraken.achar_pasta_do_motor() == raiz / "motor-kraken" / "1"
+    atualizacao.caminho_do_registro().unlink()
+    atualizacao.teste_rapido()
+    assert "motor do Kraken" not in _registro()

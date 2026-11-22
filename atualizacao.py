@@ -543,7 +543,8 @@ def conferir_assinatura_do(fonte: Fonte, alvo, chave_publica: str | None = None)
 
 def procurar_e_preparar(gerente, fonte: Fonte, programa_aberto: Callable[[], bool],
                         chave_publica: str | None = None,
-                        argumentos_da_volta: list[str] | None = None) -> str:
+                        argumentos_da_volta: list[str] | None = None,
+                        motor_no_lugar: Callable[[], bool] | None = None) -> str:
     """Procura a versao nova e deixa tudo pronto. Devolve o que aconteceu:
 
     "nada-novo" | "ja-falhou" | "recusada" | "pendente" | "aplicando".
@@ -557,6 +558,8 @@ def procurar_e_preparar(gerente, fonte: Fonte, programa_aberto: Callable[[], boo
        "Depois", D-715/D-720); com "Depois", na proxima vez que o Kaique abrir
        o programa (D-734), trocar_e_reabrir chama o ajudante de novo com o
        programa fechado, e ele chega aqui e troca.
+    5b. Programa fechado, mas o motor do Kraken nao esta no lugar dele (motor_esta_no_lugar): fica "pendente" e
+       nao troca (4 consertos, 21/11/2026; a troca apagaria o unico arquivo do motor que veio no instalador).
     6. Programa fechado: anota "aplicando" e pede ao Velopack para trocar
        assim que este processo sair, reabrindo escondido em
        --conferir-a-versao-nova (o teste rapido). Quem chamou tem de sair logo.
@@ -591,6 +594,13 @@ def procurar_e_preparar(gerente, fonte: Fonte, programa_aberto: Callable[[], boo
         registrar(f"versão {alvo.Version} baixada; o programa está aberto: entra no \"Reiniciar agora\" "
                   "ou na próxima vez que o programa abrir")
         return "pendente"
+    if not (motor_no_lugar or motor_esta_no_lugar)():
+        # D-788/D-790 (4 consertos, 21/11/2026): a troca leva o current\instalar embora, e com ele o unico arquivo do
+        # motor que veio no instalador. Sem o motor no lugar dele, nao troca: fica esperando, e tenta na proxima vez.
+        gravar_estado({"fase": "pendente", **base})
+        registrar(f"versão {alvo.Version} baixada; o motor do Kraken ainda não está no lugar dele: não troco agora "
+                  "(fica para a próxima vez)")
+        return "pendente"
     gravar_estado({"fase": "aplicando", **base})
     registrar(f"versão {alvo.Version} baixada; trocando (o programa está fechado)")
     gerente.wait_exit_then_apply_updates(alvo, silent=True, restart=True,
@@ -609,7 +619,8 @@ def teste_rapido() -> int:
     confere que as pecas que vao dentro do pacote estao no lugar: os modelos e
     as DLLs (nos caminhos que o proprio codigo procura, como o empacotar.py), e
     no programa empacotado o motor do Kraken e o Tesseract ao lado do .exe.
-    O que faltar vai para o registro.
+    O que faltar vai para o registro. O motor do Kraken: achado e conferido pelas funcoes unicas de core/ocr_kraken
+    (no programa instalado, em <raiz>\\motor-kraken\\<versao>; a ficha e o tamanho de cada arquivo).
     """
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     problemas: list[str] = []
@@ -622,10 +633,17 @@ def teste_rapido() -> int:
             if not Path(arquivo).is_file():
                 problemas.append(f"falta {arquivo}")
         if getattr(sys, "frozen", False):
-            pasta = pasta_do_programa()
-            for relativo in ("motor-kraken/python/python.exe", "tesseract/tesseract.exe"):
-                if not (pasta / relativo).is_file():
-                    problemas.append(f"falta {relativo}")
+            if not (pasta_do_programa() / "tesseract" / "tesseract.exe").is_file():
+                problemas.append("falta tesseract/tesseract.exe")
+            # o motor do Kraken: a busca e a conferencia unicas de core/ocr_kraken (4 consertos, 21/11/2026; antes um
+            # caminho escrito aqui, current\motor-kraken, que a atualizacao sem o motor nunca tem)
+            from core import ocr_kraken
+
+            motor = ocr_kraken.achar_pasta_do_motor()
+            if motor is None:
+                problemas.append("falta o motor do Kraken em " + ", ".join(map(str, ocr_kraken.lugares_do_motor())))
+            else:
+                problemas += ocr_kraken.conferir_motor(motor)
     except Exception as erro:  # noqa: BLE001 - qualquer erro aqui e "nao abre"
         problemas.append(f"erro ao abrir: {type(erro).__name__}: {erro}")
     if problemas:
@@ -710,8 +728,12 @@ def conferir_versao_nova(fonte: Fonte, versao_atual: str,
 
 def rodar_ao_ligar(fonte: Fonte, gerente=None, preparar: Callable[[object], None] | None = None,
                    programa_aberto: Callable[[], bool] | None = None,
-                   conferir: Callable[[Fonte, str], int] | None = None) -> int:
+                   conferir: Callable[[Fonte, str], int] | None = None,
+                   motor: Callable[[], bool] | None = None) -> int:
     """--procurar-atualizacao: o que o ajudante faz. Devolve o codigo de saida (0 = sem erro).
+
+    Antes de procurar: prepara o computador (Visual C++, Inno) e poe o motor do Kraken no lugar dele, se ainda nao
+    estiver (garantir_o_motor; 4 consertos, 21/11/2026; nunca no portatil).
 
     O nome ficou da etapa 3 (os testes antigos chamam por ele). Desde 17/11
     (D-732) o ajudante NAO roda ao ligar o computador: roda quando o programa
@@ -722,6 +744,8 @@ def rodar_ao_ligar(fonte: Fonte, gerente=None, preparar: Callable[[object], None
     try:
         gerente = gerente or criar_gerente(fonte)
         (preparar or preparar_o_computador)(gerente)
+        if not e_portatil(gerente):
+            (motor or garantir_o_motor)()
         atual = gerente.get_current_version()
         estado = ler_estado()
         o_que, detalhe = situacao(estado, atual)
@@ -1399,6 +1423,107 @@ def preparar_o_computador(gerente) -> bool:
     visual_c = instalar_visual_c_se_faltar(pasta)
     inno = tirar_instalacao_antiga(pasta.parent)
     return visual_c is not False and inno is not False
+
+
+# ---------------------------------------------------------------------------
+# O motor do Kraken no lugar dele (D-788; 4 consertos, 21/11/2026)
+# ---------------------------------------------------------------------------
+
+# Folga de espaco alem do tamanho aberto do motor (o disco nunca fica cheio por causa dele).
+FOLGA_DO_MOTOR_BYTES = 500 * 1024 * 1024
+
+
+def motor_esta_no_lugar(raiz: Path | None = None) -> bool:
+    """O motor do Kraken que este programa pede esta inteiro no lugar dele (core/ocr_kraken.pasta_do_motor_instalado)?
+
+    A regra unica de "pode trocar de versao sem perder o motor" (procurar_e_preparar a pergunta antes de trocar). Pelo
+    codigo, no portatil ou fora de uma instalacao do Velopack: True (o motor ali nao e o da instalacao, e nada e
+    trocado). A conferencia e a unica do motor (core/ocr_kraken.conferir_motor: a ficha e o tamanho de cada arquivo).
+    """
+    from core import ocr_kraken
+
+    if raiz is None:
+        if not instalado_pelo_velopack() or e_portatil():
+            return True
+        raiz = pasta_do_programa().parent
+    return not ocr_kraken.conferir_motor(ocr_kraken.pasta_do_motor_instalado(raiz))
+
+
+def _apagar_pasta_do_motor(pasta: Path) -> bool:
+    """Apaga uma pasta de motor que ESTA funcao criou (a .chegando ou a estragada posta de lado). True se sumiu.
+
+    shutil.rmtree no Windows nao entra em atalho de pasta (juncao): desde o Python 3.8 tira so o atalho
+    (documentacao do shutil). So se chama com caminhos dentro de <raiz>\\motor-kraken\\."""
+    import shutil
+
+    shutil.rmtree(pasta, ignore_errors=True)
+    return not pasta.exists()
+
+
+def garantir_o_motor(raiz: Path | None = None, pacote: Path | None = None,
+                     livre: Callable[[Path], int] | None = None) -> bool:
+    """Poe o motor do Kraken no lugar dele, se ainda nao estiver (D-788, D-727). True = o motor esta no lugar.
+
+    O UNICO lugar que mexe em <raiz>\\motor-kraken\\. Roda no ajudante (como o sistema, por tras; rodar_ao_ligar),
+    nunca na janela do Kaique (sem licenca para gravar em Arquivos de Programas) e nunca no portatil.
+    1. Se o motor ja confere (core/ocr_kraken.conferir_motor), nada.
+    2. Senao, pega o arquivo do motor que veio no instalador: <current>\\instalar\\motor-kraken-<v>.zip
+       (versao.arquivo_do_motor, o nome unico). Sem ele: registra e devolve False (a troca nao acontece,
+       procurar_e_preparar).
+    3. Confere o espaco livre (o tamanho aberto mais FOLGA_DO_MOTOR_BYTES) antes de comecar.
+    4. Abre em <raiz>\\motor-kraken\\.chegando-<v> (o zipfile tira unidade, barras do comeco e ".." dos nomes; um
+       arquivo com a soma interna errada da erro), confere com conferir_motor, e so entao da o nome final (um
+       renomear no mesmo disco). Um motor estragado que estava no nome final e posto de lado e apagado antes.
+    Qualquer erro: apaga o .chegando, registra e devolve False; o nome final nunca fica pela metade. `livre` (os
+    bytes livres do disco de um caminho) so muda nos testes.
+    Nesta entrega nao baixa motor da internet (D-790 fica para depois): todas as versoes pedem o motor 1.
+    Arriscado: abrir direto no nome final (um motor pela metade passaria pelo "esta no lugar"); apagar fora de
+    <raiz>\\motor-kraken\\.
+    """
+    import shutil
+    import uuid
+    import zipfile
+
+    from core import ocr_kraken
+
+    pacote = Path(pacote) if pacote is not None else pasta_do_programa()
+    raiz = Path(raiz) if raiz is not None else pacote.parent
+    versao_do_motor = ocr_kraken.VERSAO_DO_MOTOR
+    destino = ocr_kraken.pasta_do_motor_instalado(raiz, versao_do_motor)
+    if not ocr_kraken.conferir_motor(destino):
+        return True
+    arquivo = pacote / PASTA_DO_QUE_SE_INSTALA / versao.arquivo_do_motor(versao_do_motor)
+    if not arquivo.is_file():
+        registrar(f"motor do Kraken: não está em {destino} e o arquivo dele não está em {arquivo.parent}")
+        return False
+    chegando = destino.parent / f".chegando-{versao_do_motor}"
+    try:
+        _apagar_pasta_do_motor(chegando)
+        with zipfile.ZipFile(arquivo) as z:
+            precisa = sum(i.file_size for i in z.infolist()) + FOLGA_DO_MOTOR_BYTES
+            destino.parent.mkdir(parents=True, exist_ok=True)
+            tem = (livre or (lambda p: shutil.disk_usage(p).free))(destino.parent)
+            if tem < precisa:
+                registrar(f"motor do Kraken: falta espaço em {destino.parent} (precisa de {precisa // 2**20} MB, "
+                          f"tem {tem // 2**20} MB); tento de novo depois")
+                return False
+            chegando.mkdir()
+            z.extractall(chegando)
+        problemas = ocr_kraken.conferir_motor(chegando)
+        if problemas:
+            raise OSError("o motor aberto não confere: " + "; ".join(problemas))
+        if destino.exists():
+            estragado = destino.parent / f".estragado-{versao_do_motor}-{uuid.uuid4().hex[:8]}"
+            os.rename(destino, estragado)
+            _apagar_pasta_do_motor(estragado)
+        os.rename(chegando, destino)
+    except (OSError, zipfile.BadZipFile, ValueError) as erro:
+        sobrou = not _apagar_pasta_do_motor(chegando)
+        registrar(f"motor do Kraken: não deu para pôr no lugar ({type(erro).__name__}: {erro})"
+                  + ("; sobrou a pasta provisória" if sobrou else ""))
+        return False
+    registrar(f"motor do Kraken {versao_do_motor} posto em {destino}")
+    return True
 
 
 # ---------------------------------------------------------------------------
