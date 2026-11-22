@@ -39,7 +39,8 @@ ser usada, e só se o teste antigo dela for autorizado.)
   os testes nesta entrega).
 - Conserto 1 `85590fe4`; conserto 2 `f32eab48`; conserto 3 `77a05d2e`; conserto 4 (commit em "Commit"). Cada um com
   commit e push, e com o teste de reversão rodado no código de antes dele (anexos/reversao-conserto*-codigo-antigo.txt).
-- Rodada do GitHub 44975834257: success (2ª tentativa). Próximo: a gerente manda a um agente novo que tenta quebrar.
+- Rodada do GitHub 44975834257: success (2ª tentativa). 
+- Volta 2 (relatório 1: 3 médios; o que mudou nas seções de cima está em "O que o agente que tentou quebrar achou", que vale sobre elas): médio 1 `f5d73572`, médio 2 `ebc4891e`, médio 3 `9979419d`, item 4 `6efa58d7`, item 5 `f523ec2e`. Rodada do GitHub 44982726269. Próximo: a gerente manda a um agente novo que tenta quebrar.
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -651,9 +652,83 @@ Não se aplica: nenhuma pergunta aberta (a pergunta 1 foi respondida, D-825).
 - Último commit do código e dos testes: `dd06e85f` (as docstrings dos testes e este formulário).
 - GitHub: rodada 44975834257 (ramo `atualizador-4-consertos-2026-11-21`; testou o commit `70ceaf61`, o mesmo código de `dd06e85f`): success na 2ª tentativa. A 1ª caiu na parte 1: `test_promessas.py` saiu com 3221225477 (o Qt quebrando, "cannot get C stack"), sem nenhum teste falhado antes; na repetição, as 5 partes, os botões e o porteiro passaram. No PC, `test_promessas.py` inteiro deu 269 passados e 1 falhado (`test_p082_filtros_em_tela_cheia`, a tela cheia dos filtros), que passou sozinho em seguida (2 de 2): instável com o PC carregado, sem ligação com estes consertos.
 
+- Volta 2: médio 1 `f5d73572`, médio 2 `ebc4891e`, médio 3 `9979419d`, item 4 `6efa58d7`, item 5 `f523ec2e` (último do código e dos testes).
+- GitHub da volta 2: rodada 44982726269 (commit `f523ec2e`): RESULTADO_VOLTA2.
+
 ## O que o agente que tentou quebrar achou
 
-(ainda não: a gerente manda a um agente novo)
+**Relatório 1** (`quem-quebrou/relatorio-1.md`, commit `6b7eeddd`): NÃO ESTÁ PRONTO, 3 médios, nenhum grave. Volta 2
+(o mesmo escritor, a segunda e última volta dele, D-815). Cada conserto com commit e push, e com teste que falha no
+código de antes dele, por comportamento (`anexos/reversao-volta2-medio1.txt`, `anexos/reversao-volta2-medio2.txt`,
+`anexos/reversao-volta2-medio3.txt`, `anexos/reversao-volta2-item4.txt`).
+
+- **Médio 1, o arquivo do motor estragado** (`f5d73572`): `garantir_o_motor` pega qualquer erro (o `zlib.error` do
+  pedaço comprimido inválido, o `EOFError` do arquivo cortado, um erro inesperado): apaga o provisório, registra
+  "motor do Kraken: não deu para pôr no lugar" e devolve False, como a docstring promete. `rodar_ao_ligar` nunca deixa um
+  erro do motor impedir a procura da versão nova. Testes: `tests/test_atualizador_4.py::test_volta2_medio1_arquivo_do_motor_estragado_de_qualquer_jeito_e_apagado_e_registrado`
+  (com o zip estragado de verdade, dos dois jeitos) e `tests/test_atualizador_4.py::test_volta2_medio1_um_erro_no_motor_nao_impede_o_ajudante_de_procurar`.
+- **Médio 2, sem o motor no lugar** (`ebc4891e`): a regra única (`procurar_e_preparar`) confere o motor ANTES de baixar.
+  Sem ele, não baixa nem anuncia: devolve "sem-motor"; um "pendente" de antes vira "esperando-o-motor", que `situacao`
+  lê como "nada" (a tela não mostra "Chegou uma versão nova", a abertura não tenta trocar, o "Reiniciar agora" de um
+  aviso que já estava na tela reabre logo na mesma versão e o aviso não volta). Registra; o ajudante tenta de novo da
+  próxima vez. **Nenhum texto novo na tela.** Teste: `tests/test_atualizador_4.py::test_volta2_medio2_sem_o_motor_a_versao_nao_e_anunciada_nem_trocada`
+  (com o programa aberto e fechado). O meu teste da volta 1 `test_conserto4_a_troca_nao_acontece_sem_o_motor_no_lugar`,
+  que cobrava o "pendente", passa a cobrar o "sem-motor" (é deste trabalho, não dos 16 antigos).
+- **Médio 3, a pergunta que voltava depois do "Sim"** (`9979419d`). Como ficou cada caso:
+  - *Versão nova com um Visual C++ mais novo:* a pergunta não volta. A regra única (`o_que_falta_no_computador`) lê só o
+    que só a pergunta faz: as tarefas do ajudante e do desfazer. O Visual C++ e a instalação antiga o próprio ajudante
+    completa, como o sistema, sem perguntar, toda vez que roda (`preparar_o_computador`, como antes). Teste:
+    `tests/test_atualizador_4.py::test_volta2_medio3_visual_c_mais_novo_numa_versao_nova_nao_traz_a_pergunta_de_volta`.
+  - *O Windows não deixa ler as tarefas:* "não deu para saber" não traz a pergunta de volta; o registro diz "não deu para
+    ler ...; não pergunto de novo por isso". "Existe, mas esta conta não lê" conta como existe. Teste:
+    `tests/test_atualizador_4.py::test_volta2_medio3_windows_que_nao_deixa_ler_nao_traz_a_pergunta_de_volta`.
+  - Depois de um "Não" (as tarefas não existem), a pergunta continua voltando (D-741):
+    `tests/test_atualizador_4.py::test_volta2_medio3_depois_do_nao_a_pergunta_continua_voltando`.
+  - **O que isto muda na D-749 (para a gerente ver):** "Sim" com a preparação parada ANTES de criar as tarefas continua
+    trazendo a pergunta de volta (o teste da D-749 continua passando). Mas se as tarefas nasceram e o que falhou foi o
+    Visual C++ ou a instalação antiga, a pergunta não volta: o ajudante completa sozinho, sem perguntar, e o registro diz
+    isso. É o único jeito de cumprir a D-741/D-735 no caso do Visual C++ novo sem uma anotação do programa (os dois
+    casos têm a mesma leitura no Windows). Se a gerente ou o Samuel quiserem a pergunta de volta nesse caso, é preciso
+    escolher entre as duas decisões.
+  - Também ao contrário do que era: depois de um "Não", se o Windows não deixar ler, a pergunta não aparece naquela
+    abertura (só numa em que der para ler). Saiu a `inno_que_falta_tirar` (ninguém mais a usava). Dois testes meus da
+    volta 1 mudaram junto (`test_conserto1_nao_deu_para_ler_o_ajudante_conta_como_falta`, cujo nome ficou, e
+    `test_conserto1_visual_c_e_inno_sao_a_mesma_regra_de_quem_instala_e_tira`).
+- **Item 4, a conta duplicada** (`6efa58d7`): "o ajudante é o deste programa?" usa a conferência da peça única,
+  `core.windows.problemas_da_tarefa_criada` (a mesma da criação: o comando, os argumentos, quem roda e quem pode mandar
+  rodar). Saiu `_mesmo_caminho`. Um ajudante que a conta do Kaique não pode chamar agora conta como falta. A licença que
+  não deu para ler segue a regra do médio 3 (não pergunta; registra). `core/windows.py` não mudou. Teste:
+  `tests/test_atualizador_4.py::test_volta2_item4_a_conferencia_do_ajudante_e_a_da_peca_com_a_licenca`.
+- **Item 5, texto** (`f523ec2e`): os comentários de `core/ocr_kraken.conferir_motor` e de `empacotar.NOME_DO_MOTOR_EXIGIDO`
+  dizem a verdade (a soma assinada é conferida na montagem, não no notebook). `empacotar.py` não estava na lista do
+  pedido: só o comentário, a pedido da gerente. No formulário: a rodada testou `70ceaf61`; e "nada volta ao fio da tela
+  por sinal do Qt". Sem teste (só texto).
+
+**Testes nesta volta (no PC, um arquivo por vez):** `test_atualizador_4.py` 43; `test_decisoes_ajudante_da_atualizacao.py`
+37; `test_decisoes_preparo_d749.py` 9; `test_decisoes_testes_a_distancia.py` 13; `test_decisoes_atualizacao.py` 38.
+Porteiro: "nada novo", 168 lugares. Nenhum dos 16 testes antigos mudou de novo; nenhum outro teste antigo mudou.
+**GitHub:** rodada 44982726269 (ver "Commit").
+
+### Baixos para a lista do depois
+
+(Do relatório 1; não consertados nesta volta, pela regra da D-824.)
+1. Proteções sem teste que acuse quando são desligadas: M05 (não comparar os argumentos e a conta do ajudante; hoje é a
+   peça, mas sem teste em que só isso muda), M06 (não conferir a tarefa desfazer), M27 (o teste rápido conferir só a
+   forma do motor). (M07 e M08, Visual C++ e Inno, deixaram de existir na volta 2.) Cada item precisa de um teste em que só
+   ele falta.
+2. O motor é conferido inteiro (34 mil arquivos) a cada vez que o ajudante roda, e de novo antes de trocar e no teste
+   rápido: 53 s na primeira vez e 10 s depois, no PC (medido por quem quebrou). Bastaria a leve a cada abertura e a
+   inteira só antes de trocar.
+3. No pacote portátil do Velopack o programa procuraria o motor num lugar que ninguém enche (as regras de "instalado" e
+   "portátil" deviam ser uma). Hoje o publicar não faz o portátil.
+4. O motor não é gravado no disco antes do nome final (o `zipar_motor` usa `windows.gravar_no_disco`; aqui não).
+5. Uma pasta `.estragado-...` que não sai inteira (arquivo preso) fica para sempre.
+6. Com "Agora não", o aviso "Sem a senha..." vem antes da pergunta do Windows (antes vinha depois).
+7. "Na dúvida, é portátil" vira "nada falta" sem ler o Windows (`e_portatil`).
+8. Na segunda conta do Windows no mesmo notebook, a pergunta vem sem ler o Windows antes.
+9. A janelinha do "Depois" pode ficar até 18 min na tela se o ajudante travar (o limite de 900 s; antes eram 8 min).
+10. A volta para a anterior (`_aplicar_pacote_quando_sair`) também dá como feita sem conferir.
+11. O botão das Configurações (e a frase "pode pôr depois, em Configurações") ainda liga os testes pelo pedido antigo.
 
 ## A prova de verdade
 
