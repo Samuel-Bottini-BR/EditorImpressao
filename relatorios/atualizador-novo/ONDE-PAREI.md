@@ -1,4 +1,192 @@
-# ONDE-PAREI — a primeira trava do atualizador novo (23/11/2026; segunda volta no mesmo dia)
+# ONDE-PAREI — a trava dos donos, terceira volta (23/11/2026)
+
+Implementador. Ramo `atualizador-novo-2026-11-23`, worktree `.claude/worktrees/atualizador-novo`, a partir de
+`d792ebfc`. Pedido da gerente de 23/11/2026, com a revisão do Fable aos 5 pontos que não fechavam na segunda volta.
+
+**Situação: a terceira volta está feita e esperando a gerente.** A trava passa hoje, pela catraca: 46 lugares
+congelados, `TETO = 46`. Rodei `D:\programas\EditorImpressao\.venv\Scripts\python.exe -m pytest tests\test_trava_windows.py -q`:
+**40 passed, 3 skipped** (as três pendências paradas). Só mudaram `tests/test_trava_windows.py` e este arquivo. As voltas
+anteriores ficam abaixo, como estavam.
+
+## Decisões que esta tarefa precisa cumprir
+
+- **D-830 (23/11/2026):** "refazer", e a trava do Fable: cada capacidade só no seu dono, "binário, sem lista de
+  exceções". Nesta volta: a catraca no lugar do `xfail`, o mapa final, os nomes proibidos ao dono das DLLs e as raízes.
+- **D-765:** nenhuma linha do programa muda. Não mudou: só o teste e o ONDE-PAREI.
+- **§11.8 / D-605:** nenhum teste antigo muda. Nenhum teste de fora deste arquivo foi tocado (ver a ressalva 6 sobre as
+  provas da segunda volta, que são deste mesmo arquivo novo).
+- **D-809:** nada de comando que mude o `.git` inteiro. Só `git ls-files` pela peça do git, e `git add`/`commit`/`push`.
+- **D-793 / §11.11:** não abri outro agente. Não abri janela nem rodei o programa.
+- **Do pedido:** nada no porteiro e nada no `empacotar.py`.
+
+## Como cumpri cada uma
+
+- D-830: a trava é binária para lugar novo (falha na hora) e sem lista de exceções que cresça (a lista congelada só
+  diminui, com teto). Provas na seção "As provas".
+- D-765, porteiro, `empacotar.py`: `git diff --stat` mostra só `tests/test_trava_windows.py` e este arquivo.
+- §11.8: nenhum arquivo de teste além deste foi aberto para escrita.
+- D-809 / D-793: só os comandos acima; nenhum agente aberto.
+
+## O que já está escolhido e testado aqui
+
+- A primeira e a segunda volta deste mesmo teste (só neste ramo). O desenho dos donos da segunda volta continua; o mapa
+  mudou pelo pedido (o `subprocess` agora tem dois donos).
+- O porteiro e a lista de exceções (`regras_dos_agentes/`): não mexi. O porteiro (`conferir_codigo`) rodado no arquivo
+  novo dá 0 achados.
+
+## Como fica para quem usa e no livro
+
+Nada muda para o Kaique nem no PDF: nenhuma linha do programa mudou. O que muda é a rodada do GitHub: a trava agora
+passa (sem `xfail`) e fica vermelha na hora em que alguém usar uma capacidade num lugar novo fora do dono, ou quando
+um lugar da lista for consertado sem tirar a linha.
+
+## O que mudou no teste
+
+1. **Catraca no lugar do `xfail`.** A marca saiu. `LISTA_CONGELADA` tem os 46 lugares de hoje, um por linha, separados
+   em grupos com comentário. `conferir_a_catraca` cobra:
+   - **lugar novo:** chave acusada que não está na lista falha na hora ("LUGAR NOVO ...", com a linha onde está);
+   - **lugar perdoado à toa:** chave da lista que não é mais acusada falha com "tire esta linha da lista e abaixe o
+     teto";
+   - **o teto:** `assert len(LISTA_CONGELADA) <= TETO`, `TETO = 46`; e linha repetida na lista também falha.
+   - Falha de leitura (raiz que falta, `OCULTOS` ilegível, arquivo que não abre) nunca entra na catraca: sempre falha.
+2. **A chave do lugar:** `"arquivo | função onde mora | capacidade | o que foi achado"`, sem o número da linha. Ex.:
+   `atualizacao.py | _marca_existe | Windows pelo ctypes | usa ...windll`. A função vem da peça de leitura do porteiro
+   (`leitura.funcao_em_volta`, com a classe na frente: `BibliotecaScanTailor._carregar`); fora de função, `(fora de
+   função)`. **Por quê:** escrever código acima não muda nenhuma das quatro partes (tem prova: dez linhas novas acima,
+   mesma chave, linha diferente). Quando o lugar muda de verdade (outra função, outro jeito de importar, outra
+   capacidade), a chave muda, e a catraca acusa um novo e um que sumiu, que é o certo. O mesmo jeito repetido na mesma
+   função é um lugar só (os doze `wintypes.DWORD` do corpo de `core/_testes_a_distancia_windows.py` são uma linha).
+3. **Mapa final dos donos:** `core/windows.py` → `ctypes` (com "Windows pelo ctypes"), `winreg`, `os.startfile`,
+   `subprocess`; `core/nativo_dll.py` → `ctypes` e carregar DLL; `core/processos.py` → `subprocess`. O
+   `core/windows.py:91` (`import subprocess`) saiu da lista. O `explorer /select` do `historico.py` continua acusado.
+4. **`os.system/popen/spawn*/exec*`:** continuam proibidos em todo lugar, inclusive nos donos. Nada mudou
+   (`test_rodar_programa_pelo_os_nao_tem_dono`).
+5. **Os nomes do Windows no dono das DLLs:** `windll`, `WinDLL`, `oledll`, `OleDLL`, `wintypes`, `get_last_error`,
+   `FormatError`, `GetLastError` viraram a capacidade "Windows pelo ctypes", cujo único dono é `core/windows.py`. São
+   acusados como atributo (pelo nome, venha de onde vier: `ctypes.windll`, `kernel32.GetLastError`), como nome importado
+   (`from ctypes import windll` e o uso dele), no `import ctypes.wintypes`, no `from ctypes.wintypes import ...` e no
+   `getattr(ctypes, "windll")`. Ver o ponto 2 de "O que não fechou": isso vale em todo arquivo, não só no dono das DLLs.
+6. **Raízes do fechamento** (`raizes_do_programa`): `main.py`; `motor_kraken/servidor_kraken.py`, procurando os módulos
+   na pasta dele (roda com `python -I servidor_kraken.py`, então a pasta do script é onde o Python procura); e os módulos
+   nossos da `OCULTOS` do `empacotar.py`.
+   - **A `OCULTOS` dá para ler sem rodar:** é `OCULTOS = [...]` no corpo do `empacotar.py` (linha 165), uma lista de
+     textos fixos, usada só em `for modulo in OCULTOS: comando += ["--hidden-import", modulo]` (linhas 883-884). Lida
+     com `ast.literal_eval`. Se um dia ela for montada por função, ganhar `append`/`+=`, outra atribuição, um
+     `--hidden-import` fora do laço, ou aparecer `--collect-submodules`/`--collect-all`/`--hiddenimport`, a leitura
+     falha e diz a linha. Módulo que parece nosso (`core.x`) e não tem arquivo também falha. O `empacotar.py` não mudou.
+   - Os 8 módulos nossos da `OCULTOS` (`core.gravura_scantailor`, `core.st_ferramentas`, `core.ocr_comum`,
+     `core.ocr_doctr`, `core.ocr_tesseract`, `core.ocr_kraken`, `core.ocr_comparar`, `core.ocr_diagnostico`) já estavam
+     no fechamento do `main.py`. Os de fora (`doxapy`, `skimage.filters`, `PIL._tkinter_finder`, `onnxtr...`) ficam fora.
+   - O fechamento passou de 121 para 122 arquivos: entrou só o `motor_kraken/servidor_kraken.py`.
+   - **O motor do Kraken não usa nenhuma das capacidades** (nenhum lugar acusado nele). Ele só importa a biblioteca do
+     Python, o numpy, o PIL, o kraken, o torch e o psutil. Não inventei dono.
+7. **As duas pendências do `subprocess`**, paradas enquanto `core/processos.py` não existir (como a do `CDLL`):
+   `test_pendencia_a_peca_do_windows_so_lanca_programa_da_pasta_do_windows` e
+   `test_pendencia_a_peca_dos_processos_recusa_programa_da_pasta_do_windows`. Ver o ponto 1 de "O que não fechou".
+
+## A contagem nova: 46 lugares, TETO = 46
+
+- **(a1) Atualizador e testes à distância: 20.** `atualizacao.py` 12 (o `import subprocess`; `_dono_do_arquivo` 5;
+  `marcar_programa_aberto` 2; `_marca_existe` 2; `_ler_versao_do_visual_c` e `_ler_chave_do_inno`, o `winreg`);
+  `core/_testes_a_distancia_windows.py` 8 (5 no corpo do arquivo, 3 em `_rodar_elevado`, entre eles o `get_last_error`).
+- **(a2) Windows de verdade em outras partes: 9.** `core/nucleos.py` 2, `core/ocr_comum.py` (`abrir_processo`) 2,
+  `historico.py` 3 (o `explorer /select` e os dois `os.startfile`), `ui/brasao_girando.py` 2.
+- **(b) As nossas DLLs: 12.** Os 10 `import ctypes` e os 2 `CDLL`.
+- **(b) Os nossos processos: 5.** `core/ocr_comum.py`, `core/ocr_kraken.py`, `core/ocr_tesseract.py`,
+  `core/paginas_em_outro_processo.py`, `ui/tela_de_carregamento.py`.
+- Diferença para a segunda volta (34): sai o `core/windows.py:91` (−1); a contagem agora é por chave, e não por linha
+  (não muda nada nos 33 que ficam: nenhuma chave deles se repete); e entram 13 chaves de "Windows pelo ctypes" (5 em
+  `atualizacao.py`, 5 nos testes à distância, 1 em cada um de `core/nucleos.py`, `core/ocr_comum.py` e
+  `ui/brasao_girando.py`). 34 − 1 + 13 = 46. Por linha seriam 61 (os `wintypes` repetidos).
+
+## As provas (40 passam, 3 paradas)
+
+- **Lugar novo falha:** `test_catraca_lugar_novo_falha_na_hora` (sozinho, e ao lado de um da lista). Conferido também no
+  repositório de verdade, fora do teste: tirando a primeira linha da lista, a catraca diz "LUGAR NOVO ...
+  atualizacao.py | (fora de função) | subprocess | import subprocess [atualizacao.py:114 ...]".
+- **Lugar consertado falha pedindo para tirar da lista:** `test_catraca_lugar_consertado_pede_para_tirar_da_lista`.
+  No repositório de verdade, com uma linha inventada a mais: "este lugar não é mais acusado: tire esta linha da lista e
+  abaixe o teto: ...".
+- **O teto:** `test_catraca_a_lista_nunca_passa_do_teto`. No de verdade, com `TETO` 45: "a lista congelada tem 46
+  linhas e o TETO é 45: a lista só pode diminuir".
+- **A chave não muda com código acima:** `test_catraca_a_chave_nao_muda_quando_se_escreve_codigo_acima`; e
+  `test_catraca_o_mesmo_jeito_na_mesma_funcao_e_um_lugar_e_linha_repetida_na_lista_falha`.
+- **Nomes proibidos no dono das DLLs:** `test_o_dono_das_dlls_nao_pode_o_windows_pelo_ctypes` (8 casos, um por nome:
+  atributo, nome importado e atributo de variável; o mesmo texto em `core/windows.py` dá zero) e
+  `test_o_dono_das_dlls_nao_pode_importar_o_wintypes_nem_pegar_por_getattr`.
+- **Cada raiz entra no fechamento:** `test_raiz_do_hidden_import_entra_no_fechamento` (um módulo que só a `OCULTOS` põe
+  é acusado; sem a raiz, escaparia), `test_raiz_do_motor_do_kraken_procura_na_pasta_dele`,
+  `test_a_lista_dos_ocultos_montada_de_outro_jeito_e_falha` (7 jeitos) e `test_cada_raiz_de_verdade_entra_no_fechamento`
+  (no repositório de verdade: as raízes lidas sem falha, e cada uma no fechamento).
+- As provas da segunda volta continuam, três delas ajustadas ao mapa novo (ressalva 6).
+
+## Caminho → função (§11.12)
+
+| Caminho | O que usa |
+|---|---|
+| a trava (repositório) | `lugares_do_repositorio` → `raizes_do_programa` + `lugares_da_trava` → `conferir_a_catraca` |
+| as provas com arquivos de exemplo | `lugares_da_trava` / `falhas_da_trava` (a mesma conta, sem ler o disco) |
+| as raízes | `raizes_do_programa` → `ocultos_do_empacotar` (árvore do `empacotar.py`) |
+| o fechamento | `fechamento` → `_indice` (por pasta de busca) → `modulos_pedidos` |
+| as capacidades | `_usos_na_arvore` (uma só; `capacidades_usadas` é ela a partir do texto) |
+| a função onde mora | `leitura.funcao_em_volta`, a do porteiro |
+| ler o código / a lista do git | `leitura.arvore` / `git.arquivos_do_git`, as do porteiro |
+
+## A peça de fora usada (§11.12.6)
+
+- `ast.literal_eval` (https://docs.python.org/3/library/ast.html#ast.literal_eval): avalia só literais (textos, listas,
+  tuplas...); com qualquer outra coisa (uma chamada de função, um nome) levanta `ValueError`. É o que transforma
+  "lista montada de outro jeito" em falha. Recebe o nó, não o texto.
+- `ast.For.iter` e `ast.Name.ctx` (`Load`, `Store`, `Del`): o laço do `--hidden-import` e as escritas na `OCULTOS`.
+- O resto do `ast`, como na primeira volta.
+
+## O que não fechou (não ajeitei; para a gerente decidir)
+
+1. **A pendência "a peça do Windows só lança programa da pasta do Windows" não é o que a peça faz hoje.**
+   `_caminho_do_programa` (`core/windows.py`, linha 1078) só deixa o caminho como o Windows o completa, para comparar.
+   A regra do rodar genérico, `_por_que_recusa` (linha 1195), faz o contrário: recusa o programa da pasta do Windows
+   (linha 1245) e deixa rodar os de fora. Hoje quem usa esse caminho para programa de fora: o `vpk`
+   (`empacotar.py:1559`) e o `gh` (`publicar_versao_kaique.py:476`), pelo `rodar_em_grupo`; e o `janela_de_prova.py:209`,
+   que roda o próprio Python. Os três são scripts, fora do fechamento do programa. **Escolhi parar as duas pendências
+   até `core/processos.py` existir**, porque só então os de fora têm para onde ir. Se a gerente quiser outro momento,
+   é uma linha em cada pendência. Também fica para decidir se o `vpk` e o `gh` vão para a peça dos processos ("os
+   nossos processos" hoje são OCR, Kraken, servidor de páginas e brasão).
+2. **"Windows pelo ctypes" vale em todo arquivo, não só no dono das DLLs.** O pedido diz "dentro de
+   `core/nativo_dll.py`". Fiz como capacidade com um dono (`core/windows.py`), que é uma regra num lugar só. Por isso
+   ela também acusa fora do dono, onde o `import ctypes` já era acusado: são 13 das 46 chaves. Ela separa sozinha o
+   ctypes do Windows (vai para `core/windows.py`) do ctypes das DLLs (vai para `core/nativo_dll.py`). Acusar só dentro
+   do `core/nativo_dll.py` daria 33 chaves, mas seria uma regra só para um arquivo.
+3. **A catraca não impede a troca de uma linha por outra.** Quem conserta um lugar e, na mesma mudança, põe um lugar
+   novo na lista no lugar dele, mantém o tamanho e passa no `<= TETO`. Só a revisão da mudança pega. Com `<=`, também
+   não é obrigatório abaixar o teto ao tirar linha (a mensagem pede, mas passa sem). Pôr `==` obrigaria a abaixar e
+   fecharia essa folga; não pus porque o pedido diz `<=`.
+
+## Ressalvas
+
+1. O mesmo jeito repetido na mesma função é um lugar só. Um segundo `windll` dentro de uma função que já tem um não é
+   lugar novo. Um `windll` numa função nova é.
+2. Renomear uma função muda a chave dos lugares dela: a catraca acusa um novo e um que sumiu, e a lista precisa ser
+   trocada (é a troca do ponto 3 acima, por motivo bom).
+3. Atributo com nome do Windows é acusado venha de onde vier (`x.GetLastError`). Hoje não dá alarme falso no programa.
+   Se um dia der, aparece como lugar novo, nunca calado.
+4. O motor do Kraken é lido procurando na pasta dele. Se um dia ele importar `core.x`, a trava não segue (no motor o
+   `core` não vai junto, e o import quebraria lá).
+5. O que a trava não pega continua escrito na docstring do teste.
+6. **Três provas da segunda volta, deste mesmo arquivo, mudaram** porque o mapa mudou:
+   `test_cada_dono_usa_a_sua_capacidade_e_nao_a_dos_outros` (o Windows agora pode `subprocess`),
+   `test_o_mapa_dos_donos_so_usa_capacidades_que_existem` (dois donos do `subprocess`; a capacidade nova) e
+   `test_acusa_cada_jeito_de_importar_e_de_usar` (dois achados a mais de "Windows pelo ctypes"). São do arquivo novo
+   deste ramo, que ainda não entrou em lugar nenhum; nenhum teste de fora dele mudou.
+7. Não disparei a rodada do GitHub (`[skip ci]`; o pedido manda rodar só este arquivo).
+
+## Ideias para a Lista de espera
+
+- Proteger a `LISTA_CONGELADA` e o `TETO` como os arquivos que só a gerente muda (a K17 do porteiro), para a troca de
+  uma linha por outra (ponto 3 de "O que não fechou") não passar sem ela ver; e trocar o `<=` por `==`.
+
+---
+
+# Segunda volta — cabeçalho original (23/11/2026)
 
 Implementador. Ramo `atualizador-novo-2026-11-23` (saiu de `obra-2026-10-26` em `c8531595`), worktree
 `.claude/worktrees/atualizador-novo`. Pedido da gerente de 23/11/2026.
