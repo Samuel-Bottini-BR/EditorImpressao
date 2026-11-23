@@ -1,10 +1,141 @@
-# ONDE-PAREI — a primeira trava do atualizador novo (23/11/2026)
+# ONDE-PAREI — a primeira trava do atualizador novo (23/11/2026; segunda volta no mesmo dia)
 
 Implementador. Ramo `atualizador-novo-2026-11-23` (saiu de `obra-2026-10-26` em `c8531595`), worktree
 `.claude/worktrees/atualizador-novo`. Pedido da gerente de 23/11/2026.
 
-**Situação: feito, esperando a gerente.** O teste está em `tests/test_trava_windows.py`. A trava falha hoje de
-propósito, com 62 lugares. As 11 provas de que ela funciona passam.
+**Situação: a segunda volta (a última, D-815) está feita e esperando a gerente.** O teste continua em
+`tests/test_trava_windows.py`, agora com o desenho dos donos do Fable. A trava acusa **34 lugares** e está marcada
+`xfail(strict=True)`. As 14 provas passam, e a pendência do `CDLL` fica parada. A primeira volta, mais abaixo, fica como
+histórico.
+
+# Segunda volta (D-815, recado da gerente com a resposta do Fable aos 7 pontos)
+
+## O que mudou no teste
+
+- **A pergunta é outra.** Antes era "este import é permitido?". Agora é "quem é o dono desta capacidade?". O mapa está
+  escrito uma vez, em `DONOS`, e as capacidades em `CAPACIDADES`.
+  - `core/windows.py` pode `ctypes`, `winreg` e `os.startfile`.
+  - `core/nativo_dll.py` pode `ctypes` e é o único que pode carregar DLL (`CDLL`, `cdll`, `PyDLL`, `pydll`).
+  - `core/processos.py` pode `subprocess`.
+  - "Rodar programa pelo `os`" (`os.system`, `os.popen`, `os.spawn*`, `os.exec*`) não tem dono.
+  - O dono é acusado pelas capacidades que não são dele.
+- **O que é programa:** o fechamento das importações a partir do `main.py` (`fechamento`). Não é lista nem a
+  definição do porteiro. Hoje dá 121 arquivos, e nenhum deixou de ser lido.
+  - **Importação dentro de função, de `if` e de `try`:** entra. O motivo é que o PyInstaller põe as quatro no `.exe`. A
+    fonte é o PyInstaller 6.21.0 instalado, `PyInstaller/building/build_main.py`, linhas 60-77: `IMPORT_TYPES` e o
+    texto "conditional: imported within an if-statement / delayed: imported within a function / optional: imported
+    within a try-except-statement".
+  - **`__import__("x")` e `importlib.import_module("x")` com o nome escrito por inteiro:** entram. O PyInstaller não os
+    segue ("Analysis can detect nothing", https://pyinstaller.org/en/stable/when-things-go-wrong.html), mas o programa
+    os carrega quando roda. O nome numa variável não se segue.
+  - **Pacotes de cima** (`a/__init__.py` ao importar `a.b`) e **o `x` de `from a import x`** entram. O relativo vira
+    absoluto. O que não é do repositório não entra. Ciclo não trava.
+- **`CDLL`:** a trava só diz quem pode chamá-lo. O teste de execução ("todo caminho carregado está sob `core/nativo/`")
+  está escrito como pendência, `test_pendencia_o_dono_das_dlls_so_carrega_dll_de_core_nativo`.
+  - Ele fica parado enquanto `core/nativo_dll.py` não existe.
+  - Ele falha no dia em que a peça existir sem a prova escrita.
+  - A peça não foi inventada.
+- **Marca:** `@pytest.mark.xfail(strict=True, reason="D-830: lista de trabalho do atualizador novo")`, só na trava.
+
+## A nova contagem: 34 lugares
+
+**(a1) Atualizador e testes à distância (10).** É a lista de trabalho do atualizador novo.
+- `atualizacao.py`: 114 (`subprocess`), 432, 433, 750, 759 (`ctypes`), 1194, 1279 (`winreg`).
+- `core/_testes_a_distancia_windows.py`: 32, 36 (`ctypes`), 34 (`subprocess`).
+
+**(a2) Windows de verdade em outras partes (6).** Nada mudado nelas.
+- `core/nucleos.py:44`: `ctypes`. A linha 78 usa o `kernel32` para ler a memória livre.
+- `core/ocr_comum.py:209`: `ctypes`. A linha 211 usa `WinDLL kernel32` e o `SetDllDirectoryW`.
+- `historico.py:7`: `subprocess`, para o `explorer /select`.
+- `historico.py:199` e `:212`: `os.startfile`, para abrir a pasta e para imprimir.
+- `ui/brasao_girando.py:223`: `ctypes`. Usa o `OpenProcess` para saber se o programa continua aberto.
+
+**(b) DLL nossa (12).**
+- Os `import ctypes`, mesmo os que só pegam os tipos: `core/caixas_scantailor.py:82`, `core/cores_scantailor.py:52`,
+  `core/desentortar_scantailor.py:69`, `core/dividir_scantailor.py:45`, `core/endireitar_scantailor.py:62`,
+  `core/gravura_scantailor.py:47`, `core/luz_scantailor.py:46`, `core/pontinhos_scantailor.py:63`,
+  `core/preto_e_branco_scantailor.py:60` e `core/st_ferramentas.py:43`.
+- Os dois `CDLL`: `core/gravura_scantailor.py:169` e `core/st_ferramentas.py:315`.
+
+**(b) Processo nosso (5).**
+- `core/ocr_comum.py:39`
+- `core/ocr_kraken.py:89`
+- `core/ocr_tesseract.py:87`
+- `core/paginas_em_outro_processo.py:64`
+- `ui/tela_de_carregamento.py:38`
+
+**O próprio dono do Windows (1).** `core/windows.py:91`: `subprocess`. Ver o ponto 1 de "O que não fecha".
+
+Conta: 10 + 6 + 12 + 5 + 1 = 34.
+
+## O que saiu do escopo pela definição nova, e por quê
+
+Saíram 31 lugares da primeira volta. Os arquivos onde eles estão não são importados a partir do `main.py`, então não
+vão no `.exe`.
+- `avaliar.py`: 3 lugares (26, 31 e 1655), a régua dos filtros. São a Área de Trabalho e o `python -c`.
+- `teste_velocidade.py`: 17 lugares, o PowerShell, o registro e o `kernel32`.
+- `compilar_detector_gravura.py`, `compilar_st_ferramentas.py`, `empacotar.py`, `empacotar_teste_velocidade.py` e
+  `montar_motor_kraken.py`: os scripts de montar.
+- `gerar_prints.py` e `teste_completo.py`.
+- `conferencia.py` e `publicar_versao_kaique.py`.
+- `teste_bateria.py` e `teste_robustez.py`.
+
+Fora do fechamento há 45 arquivos que o porteiro conta como programa. Eles estão na lista `fora` da conferência que
+rodei: os scripts da raiz, `motor_kraken/servidor_kraken.py` e três telas que nada importa (`ui/tela_opcoes.py`,
+`ui/widgets/folhear_pdf.py`, `ui/widgets/trilha_ferramentas.py`). Nada entrou no fechamento que o porteiro não contasse
+como programa.
+
+## O que não fecha no desenho (não ajeitei: implementei ao pé da letra e deixo para decidir)
+
+1. **O dono do Windows precisa rodar programas do Windows** (`schtasks`, PowerShell, `icacls`: `core/windows.py`, linhas
+   1285, 1487 e 1662), mas o mapa não lhe dá `subprocess`. Ao pé da letra, ele é acusado (`core/windows.py:91`). Há
+   dois caminhos: ele ganha o `subprocess`, e aí são dois donos do `subprocess`; ou ele pede ao `core/processos.py` para
+   rodar, e aí "processos" deixa de ser "os nossos processos". O mesmo vale para o `explorer /select` do `historico.py`.
+2. **"Rodar programa pelo `os`" não tem dono no desenho.** Ao pé da letra, ficou proibido em todo lugar, até nos três
+   donos. Tem prova: `test_rodar_programa_pelo_os_nao_tem_dono`. Hoje ninguém do programa usa.
+3. **O dono das DLLs pode o `ctypes` inteiro.** Então ele poderia chamar o Windows (`windll`, `WinDLL`) sem ser
+   acusado. O desenho não separa "ctypes para a DLL nossa" de "ctypes para o Windows", e a trava não separa.
+4. **O `.exe` não é só o `main.py`.**
+   - O motor do Kraken é um programa à parte (`motor_kraken/servidor_kraken.py`, montado por `montar_motor_kraken.py`)
+     e vai para o Kaique. Ele fica fora do fechamento. Hoje não usa nenhuma capacidade, mas a trava não o vigia.
+   - O `empacotar.py` também põe `--hidden-import` (`OCULTOS`). Hoje todos os módulos nossos dessa lista já estão no
+     fechamento. Um módulo que entrasse só ali escaparia.
+5. **O `SetDllDirectoryW` do `core/ocr_comum.py:211`** é do Windows pelo desenho, mas é um passo de "abrir o nosso
+   processo". Quando o código for mudado, o `core/processos.py` terá de chamar o `core/windows.py` para isso. É
+   coerente, mas fica escrito.
+
+## As provas (14 passam, 1 parada, a trava `xfail`)
+
+Rodei `D:\programas\EditorImpressao\.venv\Scripts\python.exe -m pytest tests\test_trava_windows.py -q` em 23/11/2026.
+Resultado: **14 passed, 1 skipped, 1 xfailed.**
+
+- `test_fechamento_dentro_acusa_e_fora_nao_acusa`: o mesmo `import ctypes` é acusado em `core/usa.py`, que o
+  `main.py` importa, e não é acusado em `solto.py`, que ninguém importa.
+- `test_fechamento_segue_funcao_if_try_relativo_from_e_texto`: a importação dentro de função, de `if`, de `try`, a
+  relativa, o `from pacote import modulo`, o `import_module("x")` e o `pacote/__init__.py` entram.
+- `test_fechamento_aguenta_ciclo_e_ignora_o_que_nao_e_do_repositorio` e
+  `test_fechamento_que_nao_le_e_falha_nunca_passou` (arquivo que não abre, código ilegível, falta do `main.py`).
+- `test_cada_dono_usa_a_sua_capacidade_e_nao_a_dos_outros`:
+  - o Windows com `ctypes`, `winreg` e `startfile` não é acusado, e com `subprocess` e `CDLL` é;
+  - as DLLs com `CDLL` não são acusadas, e com `subprocess` são;
+  - os processos com `subprocess` não são acusados, e com `ctypes` são.
+- `test_ctypes_so_para_os_tipos_tambem_e_acusado_fora_do_dono`: o `.ctypes` do numpy não é acusado à parte.
+- `test_acusa_cada_jeito_de_importar_e_de_usar`: 17 achados, cada um com a capacidade certa.
+- `test_rodar_programa_pelo_os_nao_tem_dono`, `test_nao_acusa_comentario_docstring_texto_nem_nome_parecido` (inclui
+  `platform.system()` e `x.exec()`), `test_cada_modulo_proibido_e_acusado` (4 módulos) e
+  `test_o_mapa_dos_donos_so_usa_capacidades_que_existem`.
+
+## Ressalvas da segunda volta
+
+- **A trava não pega:** `multiprocessing`, `asyncio.create_subprocess_*`, `sys.modules[...]`, o nome montado em
+  pedaços, `nt`/`posix`, a importação com o nome numa variável, e o que o `.exe` leva sem o `main.py` importar (ponto 4
+  acima). Está escrito na docstring do teste.
+- **O `xfail(strict=True)` deixa a rodada passar com a trava falhando.** Se algum lugar sair da lista, ela continua
+  `xfail`. Só quando zerar ela vira "passou inesperado" e falha, pedindo para tirar a marca. Então lugar novo também não
+  deixa a rodada vermelha. Isso é o efeito da marca pedida, não um defeito.
+- **Não disparei a rodada do GitHub** (`[skip ci]`; o pedido manda rodar só este arquivo).
+
+# Primeira volta (histórico; o desenho e a lista de lá foram trocados pela segunda volta)
 
 ## Decisões que esta tarefa precisa cumprir
 
