@@ -1684,3 +1684,24 @@ mudança foi barrada; espero a decisão.
    estado com "acesso negado").
 7. 34 de 34 proteções novas acusadas por algum teste, uma por vez.
 8. Pendente: 3 testes da volta 1 (conserto 2) falham com a regra nova; a gerente decide.
+
+## Os 3 testes (D-829)
+
+**Autorização do Samuel (23/11/2026, chat):** "Autoriza mudar os 3 testes? Sugiro sim." → **"ok"**. Exceção à regra de
+não mudar teste antigo (CLAUDE.md §11.8), só para estes 3.
+
+**O que mudou:** uma linha (mais duas de comentário) no `WindowsDeMentira.instalar` de `tests/test_atualizador_4.py`:
+`monkeypatch.setattr(windows, "janela_do_programa_na_frente", lambda janela: janela)`. No Windows de mentira, a janela
+dada está na frente. Nenhuma conferência (`assert`) mudou; nenhum código do programa mudou. Commit `aa1963b7`.
+
+**Por que não tira a prova da espera:** os testes da espera (`test_conserto2_a_pergunta_so_sai_depois_que_a_janela_vem_para_a_frente`
+e os outros do conserto 2 da volta 4) estão em `tests/test_atualizador_volta4.py`, com a peça de mentira própria
+(`windows_volta4` e `_TelaDeMentira`), que não usa o `WindowsDeMentira`. Os outros arquivos que usam o `WindowsDeMentira`
+(`test_decisoes_ajudante_da_atualizacao.py`, `test_decisoes_preparo_d749.py`, `test_decisoes_testes_a_distancia.py`)
+só chamam a primeira abertura sem janela (`None`), caminho em que a espera não roda: nada muda para eles.
+
+**No PC (um arquivo por vez):** antes, `test_atualizador_4.py` 3 falharam e 54 passaram (os 3 de sempre); depois,
+57 de 57 passaram. Conferidos também, depois: `test_atualizador_volta4.py` 55 passaram,
+`test_decisoes_ajudante_da_atualizacao.py` 37, `test_decisoes_preparo_d749.py` 9, `test_decisoes_testes_a_distancia.py` 13.
+
+**GitHub:** rodada 45238891880 (resultado abaixo).
