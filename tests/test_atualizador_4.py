@@ -71,6 +71,9 @@ class WindowsDeMentira:
         monkeypatch.setattr(atualizacao, "_ler_versao_do_visual_c", lambda: self.visual_c)
         monkeypatch.setattr(atualizacao, "achar_instalacao_do_inno", lambda ler_chave=None: self.inno)
         monkeypatch.setattr(atualizacao, "procurar_ao_abrir", self._rodar_o_ajudante)
+        # D-829 (Samuel, 23/11/2026: "ok"): no Windows de mentira, a janela dada esta na frente (a regra da volta 4,
+        # D-806/D-828, so pergunta com a janela do programa na frente; a espera tem os testes proprios dela).
+        monkeypatch.setattr(windows, "janela_do_programa_na_frente", lambda janela: janela)
         return self
 
     def _rodar_o_ajudante(self, *a, **k) -> bool:
