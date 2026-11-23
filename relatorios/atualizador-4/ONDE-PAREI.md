@@ -1704,4 +1704,7 @@ só chamam a primeira abertura sem janela (`None`), caminho em que a espera não
 57 de 57 passaram. Conferidos também, depois: `test_atualizador_volta4.py` 55 passaram,
 `test_decisoes_ajudante_da_atualizacao.py` 37, `test_decisoes_preparo_d749.py` 9, `test_decisoes_testes_a_distancia.py` 13.
 
-**GitHub:** rodada 45238891880 (resultado abaixo).
+**GitHub:** rodada 45238891880 (commit `aa1963b7`). Primeira tentativa: uma falha só, no teste instável já conhecido
+`test_decisoes_gravura_a_mao.py::test_d659_g_outros_filtros_a_mao_nada_e_procurado_e_sai_igual_ao_de_antes[original]`
+("procurou: [0]"), na parte 2; os 3 testes da D-829 passaram. Repetida só a parte que falhou: **tudo passou** (as 5
+partes da suíte, os botões e prints da janela real, o porteiro e o resumo).
