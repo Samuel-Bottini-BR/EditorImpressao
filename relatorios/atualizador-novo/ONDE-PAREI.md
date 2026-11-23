@@ -319,4 +319,4 @@ Não mudei a trava: ela continua como o pedido manda. Abaixo está só a separa�
 
 ## Commits
 
-- `tests/test_trava_windows.py` e este ONDE-PAREI. O commit está no fim da entrega.
+- `cdbaec25`: `tests/test_trava_windows.py` e este ONDE-PAREI, com push no ramo `atualizador-novo-2026-11-23`.
