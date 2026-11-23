@@ -1,0 +1,1597 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Relatório para o Fable</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Relatório para o Fable: o Editor de Impressão, o atualizador, os testes à distância e o jeito de trabalhar</h1>
+<p>23/11/2026. Montado pela conversa gerente do projeto.
+- As Partes 1, 2 e 3 foram escritas por dois agentes que só leram o código.
+- A Parte 4 foi escrita pela gerente.
+- Ninguém mudou código para fazer este relatório.</p>
+<p><strong>Para que serve.</strong> O dono do projeto, o Samuel, quer uma opinião de fora. A conclusão dele: faz um mês que cada
+volta de conserto cria erros novos e obriga a refazer o caminho, e cada vez que isso acontece se escreve uma regra
+nova. As perguntas estão na Parte 5.</p>
+<p><strong>Como ler.</strong> Fato e opinião estão separados: a opinião fica no fim de cada parte, marcada. Cada fato aponta o
+arquivo e a linha num link fixo do GitHub, num commit que não muda. O que o autor não conferiu está escrito "não
+conferi".</p>
+<hr />
+<h1>Parte 0. Onde está cada coisa</h1>
+<h2>O repositório</h2>
+<ul>
+<li>GitHub, público: https://github.com/Samuel-Bottini-BR/EditorImpressao</li>
+<li>No PC do Samuel: <code>D:\programas\EditorImpressao</code>, com um worktree por trabalho em <code>.claude\worktrees\</code>.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Ramo</th>
+<th>Commit lido</th>
+<th>O que é</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>obra-2026-10-26</code></td>
+<td><code>0f58346a</code></td>
+<td><strong>a versão de teste</strong>, o programa de hoje (Parte 1); é onde está o Livro de decisões que vale</td>
+</tr>
+<tr>
+<td><code>atualizador-4-consertos-2026-11-21</code></td>
+<td><code>aa1963b7</code> (código), <code>046c0271</code> (relatório 3)</td>
+<td>o atualizador e os testes à distância (Partes 2 e 3); ainda não juntado</td>
+</tr>
+<tr>
+<td><code>fase-1</code></td>
+<td><code>47394b4a</code></td>
+<td>a versão oficial: tem o plano e o histórico; o código dela parou em 23/10</td>
+</tr>
+</tbody>
+</table>
+<h2>A árvore das pastas e as dependências</h2>
+<p>Estão no anexo "Árvore, dependências e montagem do .exe", no fim deste relatório.</p>
+<h2>Os documentos</h2>
+<table>
+<thead>
+<tr>
+<th>O quê</th>
+<th>Caminho</th>
+<th>Observação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regras do projeto</td>
+<td><code>CLAUDE.md</code></td>
+<td>71 KB</td>
+</tr>
+<tr>
+<td>Regras de cada agente</td>
+<td><code>.claude/agents/*.md</code></td>
+<td>4 arquivos</td>
+</tr>
+<tr>
+<td>Livro de decisões</td>
+<td><code>docs/plano/DECISOES.md</code> no ramo <code>obra-2026-10-26</code></td>
+<td>618 KB; D-001 a D-829</td>
+</tr>
+<tr>
+<td>Plano (fases, Lista de bugs, Registro)</td>
+<td><code>docs/plano/PLANO-DEFINITIVO.md</code> no <code>fase-1</code></td>
+<td>395 KB</td>
+</tr>
+<tr>
+<td>Estado atual</td>
+<td><code>docs/plano/ESTADO-ATUAL.md</code> no <code>fase-1</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Memória por assunto</td>
+<td><code>memoria/INDICE.md</code>; o catálogo de erros em <code>memoria/catalogo-de-erros.md</code></td>
+<td>o catálogo só no <code>obra-2026-10-26</code></td>
+</tr>
+<tr>
+<td>Histórico das sessões</td>
+<td><code>historico/Editor de Impressao - resumo para o Claude.md</code></td>
+<td>784 KB, a PARTE mais nova no topo</td>
+</tr>
+<tr>
+<td>O porteiro (barreira automática)</td>
+<td><code>regras_dos_agentes/</code> e <code>tests/conferencias_excecoes.json</code></td>
+<td>ver Parte 4</td>
+</tr>
+<tr>
+<td>Relatórios do atualizador</td>
+<td><code>relatorios/atualizador-4/</code> (ONDE-PAREI e <code>quem-quebrou/relatorio-1..3</code>), no ramo do atualizador</td>
+<td></td>
+</tr>
+<tr>
+<td>Revisão de código de 10/11</td>
+<td>ramo <code>revisao-codigo-2026-11-10</code>, <code>relatorios/revisao-codigo-2026-11-10/relatorio.md</code></td>
+<td>os 17 remendos</td>
+</tr>
+<tr>
+<td>Revisões de 18/11</td>
+<td>ramos <code>revisao-atualizador-2026-11-18</code> e <code>revisao-distancia-2026-11-18</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>O que não está no GitHub</h2>
+<ul>
+<li><strong>A Central de decisões e as outras páginas de conferência.</strong> São páginas do claude.ai e só abrem na conta do
+  Samuel. O código delas não está no git.</li>
+<li><strong>A cópia do plano que o Samuel edita</strong>, em <code>D:\programas\EditorImpressao-arquivos\plano-24-09-2026\</code>.</li>
+<li><strong>Os livros de teste</strong>: nove livros e 2.903 folhas, que ficam fora do git.</li>
+<li><strong>As redes neurais</strong> (<code>modelos/</code>).</li>
+<li><strong>Os comandos <code>/projeto</code> e <code>/checkpoint</code></strong>, que ficam na pasta do Claude Code do Samuel.</li>
+</ul>
+<hr />
+<h1>Parte 1. O Editor de Impressão hoje</h1>
+<p>Escrito em 23/11/2026 pelo agente pesquisador, só lendo código e documentos (nenhuma linha mudou, nada foi rodado além
+de <code>pytest --collect-only</code>). <strong>Fato</strong> = o que o código ou o documento diz, com apontamento. <strong>Opinião</strong> fica só na
+última seção. O que não conferi está dito.</p>
+<p><strong>Qual código.</strong> O programa de hoje é a "versão de teste", ramo <code>obra-2026-10-26</code>, commit <code>0f58346a</code> (está no GitHub,
+<code>origin/obra-2026-10-26</code>). A "versão oficial" é o ramo <code>fase-1</code> (<code>47394b4a</code>): o código dele (<code>core/</code>, <code>ui/</code>) parou em
+23/10/2026; os 342 commits dele depois da separação (26/10) são só documentos, e a versão de teste tem 1206 commits a
+mais, com 75 arquivos de <code>core/</code>+<code>ui/</code> diferentes (+29.584 / -1.950 linhas; 77 contando <code>modelos.py</code> e <code>projetos.py</code>). Nada da versão de teste entra na oficial
+antes da conferência final do Samuel (regra D-014).</p>
+<p><strong>Links.</strong> Os links apontam para o commit <code>0f58346a</code> (o código de hoje); os marcados <code>bc766007:</code> apontam para
+<code>bc76600779eaa753d9f3a8d3ea9fb30d412e1ae7</code>, o código que a revisão de 10/11 leu ("de antes"). Um "L<n>" solto depois de
+um link é outra linha do mesmo arquivo. Todos os commits citados foram conferidos com <code>git branch -r --contains</code>.</p>
+<h2>1. Para que serve, quem usa, o fluxo</h2>
+<ul>
+<li>Aplicativo de Windows (Python 3.14 + PySide6) que recupera PDFs de livros antigos escaneados e os prepara para
+  reimpressão em cadernos. Projeto de preservação de livros esgotados (CLAUDE.md §1).</li>
+<li>Quem usa: o Kaique, impressor, sem formação técnica. Toda a tela em português, sem termo técnico.</li>
+<li>Critério do dono, Samuel: "Eu quero que o papel saia branco, e o desenho também saia perfeito."</li>
+<li>Fluxo de hoje (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/main.py">main.py</a>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/janela_principal.py#L1-L21">ui/janela_principal.py#L1-L21</a>): arrasta o PDF na tela inicial → o livro abre <strong>direto
+  na área de trabalho</strong> (a tela antiga "O que fazer", <code>ui/tela_opcoes.py</code>, saiu do caminho na etapa 3, decisão D-002) com
+  as páginas como vieram, em Original → o Kaique roda o <strong>Automático</strong> (painel ou janela grande) ou usa as ferramentas
+  página a página → confere com o "Para revisar" → "Confirmar e processar" (pasta e nome) → o programa gera o PDF,
+  uma página por vez → opcional: cadernos no próprio processar (<code>core/cadernos.impor_pdf</code>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/core/pipeline.py#L4695">core/pipeline.py#L4695</a>)
+  ou "Montar para imprimir" (<code>core/impressao.py</code>), que monta outro PDF com as folhas como vão para a impressora.</li>
+</ul>
+<h2>2. Telas e ferramentas</h2>
+<table>
+<thead>
+<tr>
+<th>Nome na tela</th>
+<th>O que faz</th>
+<th>Onde no código</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tela inicial (livros)</td>
+<td>arrastar o PDF, cartões dos livros (continuar, recomeçar, renomear, tirar da lista)</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/tela_inicio.py#L126">ui/tela_inicio.py#L126</a>, <code>ui/widgets/area_arrastar.py</code></td>
+</tr>
+<tr>
+<td>Área de trabalho</td>
+<td>uma tela só, sem abas, com todas as ferramentas à vista (D-001)</td>
+<td><code>TelaConferir</code>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/tela_conferir.py#L650">ui/tela_conferir.py#L650</a> (10.187 linhas); troca de ferramenta em <code>escolher_ferramenta</code> L1630</td>
+</tr>
+<tr>
+<td>Trilha de ferramentas</td>
+<td>Dividir a folha (D), Cortar as bordas (X), Endireitar (I), Mover e redimensionar (F); marcar: Retângulo/Oval, Laço/Ponto a ponto, Pincel, Varinha mágica/Pegar tudo desta cor, Mover a área; Zoom, Mão</td>
+<td><code>GRUPOS</code>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/widgets/trilha_agrupada.py#L122">ui/widgets/trilha_agrupada.py#L122</a>; o desenho à mão em <code>ui/widgets/editor_selecao.py</code></td>
+</tr>
+<tr>
+<td>Girar (de 90 em 90, com "aplicar em")</td>
+<td>só esta / todas / daqui em diante / pares / ímpares</td>
+<td>contas em <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/core/girar.py">core/girar.py</a>; tela em <code>_girar_folhas</code>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/tela_conferir.py#L6570">ui/tela_conferir.py#L6570</a>; barra em <code>ui/widgets/barra_girar.py</code></td>
+</tr>
+<tr>
+<td>Painéis da direita</td>
+<td>Para revisar, Automático, Propriedades, Filtro da página, Histórico</td>
+<td><code>NOMES_DOS_PAINEIS</code>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/widgets/paineis.py#L88">ui/widgets/paineis.py#L88</a>; Automático em <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/automatico.py#L689">ui/automatico.py#L689</a> e <code>core/automatico.py</code></td>
+</tr>
+<tr>
+<td>Filtros</td>
+<td>Original, Preto e branco, Melhorar, Mágico pro, e "Tirar o fundo" (PDF com camadas)</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/core/filtros.py#L71">core/filtros.py#L71</a>; "Só as letras" em <code>core/misto.py</code>; fundo em <code>core/camadas.py</code> e <code>core/fundo_tirado.py</code></td>
+</tr>
+<tr>
+<td>Grade "Todas as páginas"</td>
+<td>escolher várias páginas: girar, tirar, dividir</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/widgets/todas_as_paginas.py#L313">ui/widgets/todas_as_paginas.py#L313</a></td>
+</tr>
+<tr>
+<td>Tela grande e "comparar"</td>
+<td>a página ampliada, comparando dois filtros</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/tela_ampliada.py#L66">ui/tela_ampliada.py#L66</a></td>
+</tr>
+<tr>
+<td>Filtros em tela cheia</td>
+<td>antes/depois de cada filtro e das opções</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/widgets/filtros_tela_cheia.py#L369">ui/widgets/filtros_tela_cheia.py#L369</a></td>
+</tr>
+<tr>
+<td>Desfazer nesta página</td>
+<td>lista do desfazer só de uma página</td>
+<td><code>ui/desfazer_nesta_pagina.py</code></td>
+</tr>
+<tr>
+<td>Antes de processar / Confirmar</td>
+<td>os avisos, depois pasta e nome</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/janela_dos_avisos.py#L87">ui/janela_dos_avisos.py#L87</a>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/janela_confirmar.py#L80">ui/janela_confirmar.py#L80</a></td>
+</tr>
+<tr>
+<td>Progresso e "Ficou pronto!"</td>
+<td>barra, cancelar, conferência dos cadernos</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/tela_final.py#L48">ui/tela_final.py#L48</a>, L122</td>
+</tr>
+<tr>
+<td>Montar para imprimir</td>
+<td>livreto, página inteira, margens da impressora</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/dialogo_impressao.py#L471">ui/dialogo_impressao.py#L471</a>, <code>core/impressao.py</code>, <code>core/cadernos.py</code></td>
+</tr>
+<tr>
+<td>Configurações, menus</td>
+<td>atalhos, temas; menus Arquivo, Editar, Ferramentas, Marcar, Filtro, Página, Ver, Painéis, Ajuda</td>
+<td><code>ui/tela_configuracoes.py</code>, <code>ui/barra_de_menu.py</code></td>
+</tr>
+<tr>
+<td>Atualização e testes à distância</td>
+<td>existem (<code>atualizacao.py</code>, <code>ui/aviso_de_atualizacao.py</code>, <code>core/testes_a_distancia.py</code>, <code>core/windows.py</code>, <code>ui/testes_a_distancia_ui.py</code>); ficam com outro agente</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>Por trás: <code>ui/tarefas.py</code> (QThread/QRunnable para análise, prévias, processar), <code>core/paginas_em_outro_processo.py</code> (dois
+processos desenham as páginas do PDF, porque o PyMuPDF segura o GIL), DLLs do ScanTailor em <code>core/nativo/</code> por <code>ctypes</code>.</p>
+<h2>3. O caminho da página</h2>
+<ul>
+<li><strong>Livro novo</strong> (desde 09/10/2026): girar de 90 em 90 → dividir a folha → <strong>endireitar a página inteira</strong> → achar o corte
+  na página reta e cortar → filtro → cadernos (a ordem do ScanTailor).</li>
+<li><strong>Projeto gravado antes de 09/10</strong> (sem o campo): girar → dividir → <strong>cortar</strong> → endireitar → filtro → cadernos, igual
+  ponto por ponto ao de antes.</li>
+<li>Quem decide: <code>Projeto.ordem_do_preparo</code>, lido só por <code>core/ordem_do_preparo.py</code> (<code>ORDEM_DO_LIVRO_NOVO</code> e
+  <code>ORDEM_DO_PROJETO_ANTIGO</code>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/core/ordem_do_preparo.py#L51-L53">core/ordem_do_preparo.py#L51-L53</a>; <code>endireita_antes</code>, L68; valor estranho cai na ordem
+  antiga, L56). Quem executa: <code>_preparar_metade_e_geometria</code>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/core/pipeline.py#L627">core/pipeline.py#L627</a> (o desvio em L695), chamada por
+  <code>preparar_metade</code> (L567). A mesma ordem tem de valer em <code>_matriz_folha_para_pagina</code>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/core/zonas_na_folha.py#L332">core/zonas_na_folha.py#L332</a>
+  (as marcações à mão são guardadas em relação à folha original).</li>
+<li>Páginas tiradas do livro saem logo depois de dividir. O "Tirar o fundo" roda antes de tudo, na folha inteira do PDF.</li>
+<li>Prévia e PDF: <code>renderizar_pagina</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/core/pipeline.py#L2805">core/pipeline.py#L2805</a>) e <code>_pagina_pronta</code> (L4781) dentro de <code>processar</code>
+  (L4641); o filtro com as opções da página em <code>_filtrar_a_pagina</code> (L3437).</li>
+</ul>
+<h2>4. Modelo de dados, gravação, desfazer</h2>
+<ul>
+<li><code>ConfigFolha</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/modelos.py#L42">modelos.py#L42</a>, 18 campos): o que veio no PDF (dividir, posição do corte, giro, ângulo achado,
+  apagada, avisos...). <code>ConfigPagina</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/modelos.py#L138">modelos.py#L138</a>, 51 campos): o que vai sair (metade inteira/esquerda/direita,
+  filtro, recorte, ângulo, os três ajustes separados <code>forca_preto</code>/<code>clareza_melhorar</code>/<code>intensidade_magico</code>, marcação,
+  opções do "Só as letras", fundo tirado, giro da página...). <code>Projeto</code> (L537, 49 campos): o livro e as opções do livro.
+  <code>Acao</code> (L1175): uma mudança, para o desfazer. Recorte e ângulo moram na página porque vêm depois de dividir.</li>
+<li>Campo novo sempre com valor que reproduz o comportamento antigo quando falta (projeto antigo abre igual).</li>
+<li>Gravação em <code>%LOCALAPPDATA%\EditorImpressao\&lt;projeto&gt;\</code>: <code>projeto.json</code> (<code>ARQUIVO_ESTADO</code>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/projetos.py#L451">projetos.py#L451</a>), gravado
+  por trás num fio só (<code>salvar_estado_por_tras</code>, L475), em arquivo ao lado e trocado no fim; cópias <code>projeto.antigo-*</code>.
+  O PDF do livro nunca é copiado.</li>
+<li>Desfazer/refazer ilimitado: <code>HistoricoAcoes</code>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/historico_acoes.py#L25">historico_acoes.py#L25</a>, uma ação por linha em <code>acoes.jsonl</code>
+  (sobrevive a fechar e abrir); <code>montar_acao</code> (L612) e <code>aplicar</code> (L398). Na tela, a porta oficial é
+  <code>TelaConferir._registrar</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/tela_conferir.py#L5942">ui/tela_conferir.py#L5942</a>); há outras (ver §8, M1).</li>
+</ul>
+<h2>5. Regras técnicas fixas (CLAUDE.md §3)</h2>
+<table>
+<thead>
+<tr>
+<th>Regra</th>
+<th>Por quê</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PySide6, nunca tkinter/customtkinter</td>
+<td>a versão com customtkinter travava</td>
+</tr>
+<tr>
+<td>Uma página por vez na memória</td>
+<td>livro de 300 MB no acervo; provado em <code>tests/test_memoria_nao_cresce_com_o_livro.py</code> (L131, L169); com vários núcleos, uma por trabalhador (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/core/pipeline.py#L4970-L4979">core/pipeline.py#L4970-L4979</a>)</td>
+</tr>
+<tr>
+<td>Interface nunca congela</td>
+<td>tudo que demora em QThread com cancelar (<code>ui/tarefas.py</code>)</td>
+</tr>
+<tr>
+<td>Nenhuma exceção fecha a janela</td>
+<td><code>sys.excepthook</code> grava em <code>erros.log</code> e mostra aviso em português (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/main.py#L64-L76">main.py#L64-L76</a>)</td>
+</tr>
+<tr>
+<td>Nenhum emoji em rótulo</td>
+<td>quebrou no Windows na versão anterior (<code>ui/estilo.py</code>, L3)</td>
+</tr>
+<tr>
+<td>Texto de tela com acento; caminho de disco sem acento</td>
+<td>Windows e o Kaique</td>
+</tr>
+<tr>
+<td>Algoritmo consagrado, não fórmula própria</td>
+<td>a versão com fórmula caseira dava qualidade ruim</td>
+</tr>
+<tr>
+<td>Nenhum modelo generativo</td>
+<td>não pode inventar detalhe numa gravura de 1579; rede só aponta</td>
+</tr>
+<tr>
+<td>Só Python 3.14, sem rebaixar</td>
+<td>a máquina só tem ele; o Kraken roda num Python 3.12 à parte</td>
+</tr>
+<tr>
+<td>GPU GTX 1650 sem tensor cores</td>
+<td>nada que dependa de float16 rápido</td>
+</tr>
+<tr>
+<td>Erro nunca como stack trace</td>
+<td>o Kaique não é técnico</td>
+</tr>
+<tr>
+<td>GPL pode ser incorporado (17/09)</td>
+<td>se distribuir, será grátis com código aberto; por isso o código do ScanTailor (GPL-3) está dentro</td>
+</tr>
+</tbody>
+</table>
+<h2>6. Testes</h2>
+<ul>
+<li><code>pytest tests --collect-only -q</code> no commit <code>0f58346a</code>: <strong>4.668 casos coletados</strong>, de 258 arquivos <code>tests/test_*.py</code>
+  (3.641 funções <code>def test_</code>; o resto vem de <code>parametrize</code>). 64 arquivos são <code>test_decisoes*.py</code>, as provas de
+  comportamento das decisões do Samuel. Rodado da raiz, o pytest também entra em <code>relatorios/</code> e para em 2 erros de
+  leitura (arquivos <code>.txt</code> em outra codificação); por isso contei só <code>tests/</code>.</li>
+<li>Mais 19 scripts <code>teste_*.py</code> soltos na raiz, fora do pytest; o principal é <code>teste_botoes.py</code> (clica em todos os botões).</li>
+<li>Onde rodam (CLAUDE.md §4.6): no PC, um arquivo por vez enquanto o agente trabalha; a suíte inteira e o
+  <code>teste_botoes.py</code> no Windows do GitHub (<code>windows-latest</code>, Python 3.14.3, em 5 partes; <code>.github/workflows/testes-windows.yml</code>
+  no ramo <code>claude/list-server-files-gkos8v</code>, commit <code>4008bd31</code>); filtro de velocidade antes/depois no GitHub; a suíte
+  inteira no PC só antes de juntar na versão oficial.</li>
+<li>Não rodei a suíte. Não conferi quantos passam hoje.</li>
+</ul>
+<h2>7. A situação</h2>
+<p>Fontes: o Livro <code>docs/plano/DECISOES.md</code> (commit <code>0f58346a</code>) e a Lista de bugs do <code>PLANO-DEFINITIVO.md</code> (ramo <code>fase-1</code>).</p>
+<ul>
+<li><strong>Livro de decisões: 804 decisões</strong> (D-001 a D-829, contadas por número único). Pela coluna "Situação": 345
+  construídas, 175 não construídas, 45 pela metade, 54 "pronta para conferir", 23 "a conferir", 28 "testada pelo
+  Samuel", 38 substituídas por uma mais nova, 7 descartadas; o resto são regras de trabalho e "a fazer". 8 dizem
+  "falta o teste" do Samuel (ex.: D-638, D-640, D-645 do Girar; D-699 do fundo tirado; D-758). "Construída" quer dizer
+  achada no código, não aprovada (aviso do próprio Livro, L17-L20).</li>
+<li><strong>Aprovado pelo Samuel no plano</strong> (<code>[x]</code>): 8 itens, todos das fases 0 e 1 (0.1, 0.3, 0.4, 0.5, 0.7; 1.1 tirar o
+  fundo, 1.2 seletor de gravura do ScanTailor, 1.3 OCRs para achar o texto, aprovados em 02/10/2026); 2 com <code>[~]</code>
+  (melhorar); 29 abertos.</li>
+<li><strong>Esperando o olho dele:</strong> a seção "Consertos esperando o olho do Samuel" do Livro (L651) lista <strong>40 consertos</strong> já no
+  programa, com teste, que mudam o que ele vê (ex.: o corte que partia o número da página; o mesmo PDF aberto por outro
+  caminho apagava o trabalho; o Ctrl+Z desfazia a ação errada depois de reabrir). Vão numa conferência só, no fim da obra.</li>
+<li><strong>Lista de bugs</strong> (plano <code>fase-1</code>, seção 5): 273 linhas na tabela e 22 caixinhas (21 abertas). A última contagem por
+  situação é de 20/10/2026 (<code>memoria/bugs.md</code>): 107 abertos, 58 consertados a conferir, 43 fechados. Não refiz essa
+  contagem linha por linha.</li>
+<li><strong>Agora:</strong> a decisão D-765 (17/11) suspendeu todo conserto do programa até o <code>.exe</code> ser entregue ao Kaique e os testes
+  à distância funcionarem. O trabalho de hoje é o atualizador (ramo <code>atualizador-4-consertos-2026-11-21</code>, de outro agente).</li>
+</ul>
+<h2>8. Os ciclos de várias voltas</h2>
+<p>Fontes: a revisão de código de 10/11/2026 (ramo <code>revisao-codigo-2026-11-10</code>, commit <code>ab9ba273</code>,
+<code>relatorios/revisao-codigo-2026-11-10/relatorio.md</code>, 348 linhas; leu o commit <code>bc766007</code>), o CLAUDE.md §11.10 e §11.12,
+o <code>memoria/catalogo-de-erros.md</code> (só no <code>obra-2026-10-26</code>) e o <code>git log</code>. "Hoje" = conferido no <code>0f58346a</code>.</p>
+<p><strong>Caso 1 — Girar.</strong> Decisões: D-035, D-036 (06/10), D-618 (04/11), D-636 (05/11), D-638, D-640, D-645 (06-07/11), D-662
+(10/11), D-666 (10/11, não construída). Commits: <code>1a5745dd</code>, <code>3046cc43</code>, <code>27a0498d</code> (06/10), <code>93a390ed</code>, <code>06b80752</code>
+(04/11), <code>78f2e025</code> (05/11), <code>99d7d782</code>, <code>df8db4ec</code> (07/11), <code>c76d4b97</code> (10/11): <strong>9 voltas</strong>. Causa (revisão, A1): cada
+decisão ganhou um caminho novo em <code>_girar_folhas</code>, escolhido pelo jeito de ver a tela, e não pelo que a folha é; a
+D-662 entrou só no item "todas as folhas". Trecho (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/bc76600779eaa753d9f3a8d3ea9fb30d412e1ae7/ui/tela_conferir.py#L6494-L6500">bc766007:ui/tela_conferir.py#L6494-L6500</a>):</p>
+<pre><code class="language-python">if alcance == girar.ALCANCE_TODAS:
+    # D-662: no Dividir com &quot;Duas lado a lado&quot;, numa folha dividida,
+    # &quot;todas as folhas&quot; gira pagina por pagina, como fora do Dividir
+    referencia = self._pagina_da_folha_dividida_no_dividir_em_duas()
+</code></pre>
+<p><strong>Hoje: não resolvido.</strong> O mesmo desvio está em <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/tela_conferir.py#L6613-L6640">ui/tela_conferir.py#L6613-L6640</a>; a grade ainda soma o giro com
+<code>(rotacao + giro) % 360</code> (L7322, L7382) em vez de <code>girar.nova_rotacao</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/core/girar.py#L170">core/girar.py#L170</a>); D-666 não construída.</p>
+<p><strong>Caso 2 — "Como fica com este filtro" em três contas.</strong> A página e o PDF passam por <code>_filtrar_a_pagina</code>; as
+figurinhas do painel e o "comparar" da tela grande, por <code>filtro_com_as_caixinhas</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/core/pipeline.py#L3546">core/pipeline.py#L3546</a>), que
+não vê a marcação. Voltas no mesmo ponto: <code>dfe3b890</code> (29/09, desvio para "Tirar o fundo"), <code>14d721ad</code> (05/10, desvio
+para "Só as letras" <strong>só nas figurinhas</strong>), <code>e49463c0</code> e <code>e3c4d491</code> (21/10, as figurinhas seguem as caixinhas),
+<code>f86b68a1</code> (13/11, figurinhas, comparar e chave das prévias seguem o fundo tirado, em 3 arquivos de <code>ui/</code>): <strong>5 voltas</strong>.
+Causa (A2): a conta da tela foi copiada em versão simples, e cada defeito ganhou um desvio por caso.
+<strong>Hoje: não resolvido.</strong> <code>_imagem_do_outro_filtro</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/tela_ampliada.py#L304-L351">ui/tela_ampliada.py#L304-L351</a>) continua sem nenhuma linha do
+"Só as letras"; os desvios das figurinhas seguem em <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/tela_conferir.py#L5001">ui/tela_conferir.py#L5001</a>, L5019, L5038.</p>
+<p><strong>Caso 3 — "Usar em todas" quer dizer uma coisa em cada ferramenta.</strong> Cortar, Dividir e Mover deixam de fora o que foi
+mexido à mão (D-090); o Marcar copia a marcação desta página por cima de todas, enquanto o "todas" do Filtro (<code>_filtro_em_todas</code>, hoje
+L9188) diz no comentário "nunca apaga exceção". Trecho (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/bc76600779eaa753d9f3a8d3ea9fb30d412e1ae7/ui/tela_conferir.py#L3325">bc766007:ui/tela_conferir.py#L3325</a>, igual desde <code>b15ac310</code>, 25/09):</p>
+<pre><code class="language-python">{&quot;selecao&quot;: copy.deepcopy(pagina.selecao)},
+</code></pre>
+<p>Causa (A3): cada ferramenta escreveu o seu "aplicar em". <strong>Hoje: não resolvido</strong> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/tela_conferir.py#L3311-L3328">ui/tela_conferir.py#L3311-L3328</a>);
+a pergunta 1 da revisão ao Samuel (devem as quatro proteger o que foi feito à mão?) não achei respondida no Livro.</p>
+<p><strong>Caso 4 — Automático e "não dividir esta" juntam a folha de dois jeitos.</strong> O botão foi refeito na etapa 4 (<code>4d521de0</code>,
+27/10: uma página inteira); o Automático, escrito na etapa 3 (<code>4d535ab6</code>, 26/10), ficou com o jeito antigo (a da direita
+"tirada do livro"), e o comentário dele ainda diz "como o 'não dividir esta'". A revisão provou com script: 1 página
+pelo botão, 2 (uma escondida) pelo Automático, e o contador mostra "1 apagadas". Causa (A4): duas funções para o mesmo
+dado. <strong>Hoje: não resolvido</strong> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/core/automatico.py#L932-L968">core/automatico.py#L932-L968</a>, a linha <code>g.na_pagina(direita, "apagada", not
+medida.dividir)</code> em L968; a função do botão é <code>campos_para_juntar</code>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/core/dividir_a_mao.py#L267">core/dividir_a_mao.py#L267</a>).</p>
+<p><strong>Caso 5 — A lista "o que é do filtro" em seis lugares.</strong> O mesmo dicionário estava copiado em <code>_filtro_em_todas</code> e
+<code>_filtro_nas_proximas</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/bc76600779eaa753d9f3a8d3ea9fb30d412e1ae7/ui/tela_conferir.py#L9001">bc766007:ui/tela_conferir.py#L9001</a> e L9038) e, de outro jeito, em <code>core/automatico.py</code>,
+<code>core/perfis.py</code>, na tela cheia, em <code>MARCAS_DA_PAGINA</code> e na chave das prévias. Já divergia: "Letra clara em fundo escuro"
+(<code>claro_no_escuro</code>) vai pelo Automático e não pelo "todas" do painel. <strong>Hoje: em parte.</strong> Em 13/11 (<code>1268ae56</code>) as duas
+cópias da tela viraram uma função, <code>_campos_do_aplicar_em</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/tela_conferir.py#L9133-L9163">ui/tela_conferir.py#L9133-L9163</a>); mas <code>claro_no_escuro</code>
+continua fora do <code>_campos_do_aplicar_em</code>: está em <code>CAMPOS_DA_PAGINA</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/core/automatico.py#L149-L154">core/automatico.py#L149-L154</a>) e em <code>MARCAS_DA_PAGINA</code> (L10161), e as outras listas continuam separadas.</p>
+<p><strong>Caso 6 — Contraexemplo: "Tirar o fundo" que qualquer filtro desfazia.</strong> O fundo tirado era guardado só como um valor do
+filtro (<code>dfe3b890</code>, 29/09); trocar de filtro, por qualquer caminho, o perdia (D-646, 07/11). Em 13/11 virou um dado
+próprio com regra única em <code>core/fundo_tirado.py</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/core/fundo_tirado.py#L1-L40">core/fundo_tirado.py#L1-L40</a>, que lista os caminhos que a usam).
+<strong>Hoje: resolvido no código</strong> (falta o teste do Samuel, D-699). Mas precisou de mais dois commits no mesmo dia
+(<code>f86b68a1</code>, <code>4747a6a0</code>) para chegar às figurinhas, ao comparar, à chave das prévias, ao "Desfazer nesta página" e à
+tela cheia, justamente os caminhos duplicados dos casos 2 e M1.</p>
+<p><strong>Os 17 remendos da revisão de 10/11</strong> (4 altos, 9 médios, 4 baixos), conferidos um a um no <code>0f58346a</code>:
+<strong>0 consertados por inteiro, 1 em parte (M9, caso 5), 16 continuam.</strong> Continuam, com o lugar de hoje: A1 a A4 (casos 1 a
+4); M1, o "Desfazer nesta página" ainda copia o <code>_registrar</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/desfazer_nesta_pagina.py#L187">ui/desfazer_nesta_pagina.py#L187</a>); M2, "como sai no
+PDF" ainda em <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/tela_conferir.py#L4910">ui/tela_conferir.py#L4910</a> e <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/core/automatico.py#L1292">core/automatico.py#L1292</a>; M3, a prévia ainda lê o livro ao vivo
+(<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/tarefas.py#L978">ui/tarefas.py#L978</a>) e o conserto de 09/11 continua como conta por fio (<code>_resolucao_que_faltava</code>,
+<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/core/pipeline.py#L2928">core/pipeline.py#L2928</a>); M4, <code>recalcular_divisao</code> ainda sem a tampa do scanner (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/core/pipeline.py#L463">core/pipeline.py#L463</a>, usada em
+<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/tela_conferir.py#L6542">ui/tela_conferir.py#L6542</a>); M5, o "dividir" da grade não chama <code>_linha_arrastada</code> (<code>_dividir_escolhidas</code>,
+<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/tela_conferir.py#L7410">ui/tela_conferir.py#L7410</a>), e o comentário "pela MESMA conta do 'dividir esta'" segue em L7402; M6,
+<code>MARCAS_DA_PAGINA</code> sem o giro da página (L10152) e a capa do cartão só com <code>folhas[0].rotacao</code>
+(<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/janela_principal.py#L1662">ui/janela_principal.py#L1662</a>); M7, 26 testes <code>getattr(..., "inserida", ...)</code> espalhados em <code>core/</code>, <code>ui/</code> e
+<code>modelos.py</code>; M8, o "Tirar o fundo" que falha ainda só vai ao registro (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/core/pipeline.py#L2653-L2658">core/pipeline.py#L2653-L2658</a>); B1
+(<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/tarefas.py#L944">ui/tarefas.py#L944</a>), B2 (a tela tem 10.187 linhas, eram 10.041), B3 (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/core/automatico.py#L419">core/automatico.py#L419</a>), B4
+(<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/ui/janela_principal.py#L1916-L1917">ui/janela_principal.py#L1916-L1917</a>). Motivo escrito: D-765 (17/11) congelou os consertos do programa.</p>
+<p><strong>Fora do programa, o mesmo desenho</strong> (só cito; é do outro agente): o catálogo de erros conta a família F2 ("a
+conferência olha o jeito mais comum, e o vizinho passa") voltando nas <strong>seis</strong> voltas de quem tentou quebrar o passo 0, o porteiro
+(as seis voltas acharam 19, 9, 7, 6, 3 e 1 erros, de todas as famílias), e a F5 ("dá como feito o que não conferiu") com 9 erros no passo 1, mesmo com a regra
+§11.12 escrita por causa dela (<code>memoria/catalogo-de-erros.md</code>, L131-L163 e L204-L225, no <code>obra-2026-10-26</code>).</p>
+<h2>9. Opinião do agente</h2>
+<ul>
+<li>O que se repete não é falta de cuidado num ponto: é que a <strong>regra de cada ferramenta não mora num lugar</strong>. Ela mora
+  em <code>ui/tela_conferir.py</code> (10 mil linhas), em vários métodos parecidos, e cada decisão nova do Samuel chega como um
+  <code>if</code> a mais no método onde o defeito apareceu. O próximo caminho continua com o jeito antigo, e o Samuel o encontra.</li>
+<li>O trabalho é guiado por decisão (D-xxx) e por print, e o teste prova o caso pedido. Ninguém é cobrado por "todos os
+  caminhos dão o mesmo resultado", então os caminhos divergem sem nenhum teste ficar vermelho. A regra §11.12 pede
+  exatamente essa prova, mas os 16 remendos de 10/11 continuam no código, então ela ainda não foi aplicada ao passado.</li>
+<li>O caso 6 mostra o remédio funcionando (um dado, uma função em <code>core/</code>) e também o custo de não ter feito o resto:
+  mesmo com a regra certa, foi preciso costurá-la à mão em cinco caminhos duplicados.</li>
+<li>Os comentários do tipo "é a mesma conta de..." ficam falsos e enganam o agente seguinte (casos 4 e M5).</li>
+</ul>
+<hr />
+<h1>Partes 2 e 3: o atualizador e os testes à distância</h1>
+<p>Pesquisador, 23/11/2026. Só leitura: nenhum código, teste ou documento existente mudou, nada rodou no Windows.
+Código lido: ramo <code>atualizador-4-consertos-2026-11-21</code>, ponta de código <code>aa1963b7</code> (relatórios em <code>046c0271</code>; os dois
+estão no GitHub, conferido com <code>git branch -r --contains</code>). Livro de decisões: ramo <code>obra-2026-10-26</code>, <code>0f58346a</code>.
+Histórico e CLAUDE.md: <code>fase-1</code>, <code>47394b4a</code>. Todos os links abaixo são fixos nesses commits.</p>
+<p>Abreviações dos links: <strong>A</strong> = <code>atualizacao.py</code>, <strong>W</strong> = <code>core/windows.py</code>, <strong>T</strong> = <code>core/testes_a_distancia.py</code>,
+<strong>TW</strong> = <code>core/_testes_a_distancia_windows.py</code>. "Fato" = lido no código, no documento ou na fonte de fora citada.
+"Dedução" = minha leitura, marcada. A opinião fica só na última seção.</p>
+<p><strong>Tamanho, para dar a escala (fato, <code>git show &lt;commit&gt;:&lt;arquivo&gt; | wc -l</code>):</strong> <code>atualizacao.py</code> tinha 935 linhas na
+etapa 3 (<code>16c838a7</code>, 16/11), 1.681 no começo deste ramo (<code>4a775ba8</code>, 21/11), 1.892 depois da volta 2, 1.942 depois da
+volta 3 e <strong>2.314</strong> na volta 4 (<code>aa1963b7</code>). <code>core/windows.py</code> (a "peça única", nascida em 19/11) tem 2.813.
+<code>core/testes_a_distancia.py</code> tem 877. Os dois arquivos de teste deste ramo somam 1.855 linhas.</p>
+<hr />
+<h1>Parte 2. O atualizador</h1>
+<h2>2.1 O que o Samuel pediu</h2>
+<ul>
+<li><strong>D-706</strong> (16/11): "vamos adicionar uma forma de atualizar o aplicativo via internet quando ele achar algum problema e
+  precisarmos arrumar, as atualizaçõpes não podem estar ligadas via api". <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/docs/plano/DECISOES.md#L996">Livro L996</a></li>
+<li><strong>D-723</strong>: "velopack" (contra o tufup). <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/docs/plano/DECISOES.md#L1013">L1013</a></li>
+<li><strong>D-718/D-719</strong>: se falhar, volta para a anterior e avisa: "Sim, e tem que avisar a gente de alguma maneira" · "1".
+  <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/docs/plano/DECISOES.md#L1008">L1008</a></li>
+<li><strong>D-715/D-720</strong>: com o programa aberto, aviso "Reiniciar agora" / "Depois". <strong>D-734</strong>: com "Depois", "quando ele abrir
+  o programa de novo". D-715 em L1005, D-720 em L1010, D-734 em <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/docs/plano/DECISOES.md#L1024">L1024</a></li>
+<li><strong>D-732</strong>: procurar "quando ele abre o programa né? assim como todo aplicativo faz". <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/docs/plano/DECISOES.md#L1022">L1022</a></li>
+<li><strong>D-733</strong> (a escolha que gera o ajudante): entre (1) uma pergunta do Windows só na primeira abertura, (2) uma pergunta
+  a cada versão, (3) instalar só na conta do Kaique, "os testes de longe deixam de funcionar": <strong>"1- sim / VAI CONSEGUIR
+  FAZER OS TESTS A DISTANCIA NÉ?"</strong>. <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/docs/plano/DECISOES.md#L1023">L1023</a></li>
+<li><strong>D-735/D-741/D-749</strong>: a pergunta aparece sempre; depois do "Não" volta a cada abertura; preparação pela metade conta
+  como não feita. D-735 em L1025, D-749 em L1039, D-741 em <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/docs/plano/DECISOES.md#L1031">L1031</a></li>
+<li><strong>D-736</strong>: "Se tiver nova versão eu quero poder mandar atualizar aqui pelo meu pc". <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/docs/plano/DECISOES.md#L1026">L1026</a></li>
+<li><strong>D-742/D-748</strong>: a janelinha "Atualizando o programa, espere um pouco..." no "Depois", que some quando o brasão aparece.</li>
+<li><strong>D-767</strong> (18/11): "não faça mais nada escodindo ou de mentira" · "não quero fazer consertos quero que funcione".
+  <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/docs/plano/DECISOES.md#L1057">L1057</a></li>
+<li><strong>D-779</strong>: "ta vamos continuar com ele, mas o que fazemos para ele não dar defeito e porque nossa peças em voltadele
+  deram defeito?" (Velopack 1.2.161 com "a nossa proteção"; situação no Livro: "decidida, não construída").
+  <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/docs/plano/DECISOES.md#L1069">L1069</a></li>
+<li><strong>D-806</strong>: a licença pedida "no mesmo instante do clique do Kaique [...] enquanto a janela do programa ainda está na
+  frente" ("então pode ser opção A"). <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/docs/plano/DECISOES.md#L1096">L1096</a></li>
+<li><strong>D-824</strong> (21/11): entrega em duas vezes, primeiro só "os 4 consertos"; "vamos fazer com um só, uma coisa de cade vez.".
+  Ficam para depois: "Atualizar agora?" ao fechar (D-769/D-794), a janelinha em toda troca (D-770), os testes à distância.
+  <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/docs/plano/DECISOES.md#L1114">L1114</a></li>
+<li><strong>D-828</strong> (22/11): "foi eu, pode consertar essas coisas": o "Reiniciar agora" troca de verdade, "o nosso programa
+  garante que o programa terminou de fechar", abrir pelo atalho no meio não estraga; a pergunta no meio da tela; refazer a
+  preparação dá certo. <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/docs/plano/DECISOES.md#L1118">L1118</a></li>
+</ul>
+<h2>2.2 Como funciona hoje, passo a passo (fato, do código e do cabeçalho de <code>atualizacao.py</code>)</h2>
+<p>Instalação: <code>.msi</code> do Velopack, por máquina, em <code>C:\Program Files\EditorImpressaoPrograma\current</code>. O gancho de instalar
+só anota, porque o <code>.msi</code> roda os ganchos <strong>sem</strong> licença de administrador (achado B1, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L20">A:20-23</a>).</p>
+<ol>
+<li><strong>Primeira abertura (conta do Kaique).</strong> A janela da senha → "Agora não" → um fio solto (daemon) chama
+   <code>preparar_ao_abrir</code> → <code>preparar_na_primeira_abertura</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L2088">A:2088</a>).
+   Espera a janela estar na frente (<code>esperar_a_janela_na_frente</code>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L2042">A:2042</a>),
+   depois <code>core.windows.pedir_licenca</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/windows.py#L2760">W:2760</a>):
+   grava <code>trabalho.json</code> numa pasta de troca e abre <strong>o próprio <code>EditorImpressao.exe</code></strong> com <code>ShellExecuteExW</code> "runas"
+   (o UAC; <code>hwnd</code> = a janela dona, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/windows.py#L2724">W:2724</a>).
+   Esse processo elevado (administrador, sessão do Kaique) roda um passo de PowerShell que abre <strong>de novo</strong> o <code>.exe</code> com
+   <code>--preparar-o-computador</code> e espera (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1906">A:1906</a>).
+   Esse terceiro processo cria o <strong>ajudante</strong> (<code>schtasks /Create</code> com XML: roda como SYSTEM, <code>--procurar-atualizacao</code>,
+   contas autenticadas podem mandar rodar, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1457">A:1457</a>, <code>QUEM_PODE_MANDAR_RODAR</code> <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L164">A:164</a>),
+   a tarefa "desfazer" (pelo caminho dos testes à distância, Parte 3), o Visual C++ e tira o Inno antigo. Depois, na conta
+   do Kaique, <code>ler_o_computador</code> lê as duas tarefas no Agendador e decide se a pergunta volta (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1953">A:1953</a>).</li>
+<li><strong>Toda abertura comum (conta do Kaique).</strong> <code>main.py</code> → <code>atender_linha_de_comando</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L2260">A:2260</a>):
+   se há troca acontecendo (<code>troca_em_andamento</code>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L2286">A:2286</a>), sai em silêncio;
+   se há versão esperando do "Depois", troca antes da janela (<code>trocar_antes_de_abrir</code>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1267">A:1267</a>).
+   Senão a janela abre, segura o mutex <code>Global\EditorImpressao-programa-aberto</code> e manda o ajudante rodar com
+   <code>schtasks /Run</code> (<code>procurar_ao_abrir</code>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1409">A:1409</a>).</li>
+<li><strong>O ajudante (SYSTEM, sessão 0, é o próprio <code>EditorImpressao.exe</code> de <code>current</code>).</strong> <code>rodar_ao_ligar</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L813">A:813</a>):
+   Visual C++/Inno, motor do Kraken, resultado da última troca, e <code>procurar_e_preparar</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L617">A:617</a>):
+   <code>check_for_updates</code> → assinatura Ed25519 antes de baixar → motor no lugar → <code>download_updates</code> → "programa aberto?"
+   (mutex <strong>e</strong> lista de processos de <code>current</code>, até 30 s, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L907">A:907</a>).
+   Aberto: grava <code>"pendente"</code> em <code>C:\ProgramData\EditorImpressao\atualizacao\estado.json</code>; a tela, que lê esse arquivo
+   4 s depois de abrir e de 5 em 5 min, mostra o aviso. Fechado: grava <code>"aplicando"</code> e pede a troca.</li>
+<li><strong>O pedido de troca</strong> passa sempre por <code>GerenteComAMarcaDaTroca.wait_exit_then_apply_updates</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L552">A:552</a>):
+   só chama o Velopack se o mutex <code>Global\EditorImpressao-trocando</code> estiver seguro (<code>segurar_a_marca_da_troca</code>,
+   <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1307">A:1307</a>).
+   O Velopack lança o <code>Update.exe</code> (SYSTEM), que espera o ajudante sair, extrai, fecha à força o que roda da pasta,
+   renomeia <code>current</code> e reabre <code>EditorImpressao.exe --conferir-a-versao-nova</code> (SYSTEM, escondido): teste rápido num
+   subprocesso; passou → <code>"ok"</code> e refaz o ajudante (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L2226">A:2226</a>); falhou → baixa o pacote inteiro da anterior, confere a assinatura e chama <code>Update.exe apply --package</code> direto (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L750">A:750</a>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L779">A:779</a>).</li>
+<li><strong>Caminho COM o script</strong> ("Reiniciar agora", ou "Depois" + nova abertura). A janela fecha gravando; <code>trocar_e_reabrir</code>
+   (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1232">A:1232</a>)
+   lança pela peça um PowerShell solto <strong>na conta do Kaique</strong> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1120">A:1120</a>),
+   com pasta de trabalho System32 e sinal de vida. Linha 1: pega as marcas da troca e de reabrir. Depois: <code>Wait-Process</code>
+   do programa (120 s), <code>schtasks /Run</code> do ajudante (passo 3, agora com o programa fechado), laço lendo <code>estado.json</code> e o
+   estado da tarefa a cada 2 s até 900 s, mais 60 s se a nova falhou no teste, e <code>Start-Process</code> do programa com
+   <code>--depois-da-troca</code>. No "Depois", o mesmo script abre ainda a janelinha (Windows Forms num runspace STA, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L968">A:968</a>).</li>
+<li><strong>Caminho SEM o script</strong> (o Kaique fechou o programa durante o download; ou o Samuel mandou de longe pela conta de
+   testes, <code>ssh ... schtasks /Run</code>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1430">A:1430</a>).
+   O ajudante vê "fechado" e, antes de pedir a troca, lança o <strong>vigia</strong> (PowerShell, SYSTEM, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1091">A:1091</a>),
+   que segura a marca da troca enquanto a fase for "aplicando". Ninguém reabre o programa (SYSTEM não abre janela na tela
+   do Kaique), salvo se ele clicar no atalho no meio: aí <code>abrir_quando_a_troca_acabar</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1362">A:1362</a>)
+   lança o script "só de reabrir" (conta do Kaique), que espera a marca sumir e abre.</li>
+</ol>
+<p>Num "Reiniciar agora" que dá certo, contei (dedução, seguindo o código) <strong>sete processos em duas contas</strong>: o PowerShell
+do script (Kaique), <code>schtasks</code>, o ajudante (SYSTEM), o <code>Update.exe</code> (SYSTEM), o <code>--conferir-a-versao-nova</code> (SYSTEM), o
+teste rápido (SYSTEM) e o programa reaberto (Kaique). O único canal entre as duas contas é <code>estado.json</code> e três mutexes.</p>
+<h2>2.3 As peças, uma ficha cada</h2>
+<p>"Por causa de outra peça nossa?": <strong>fato</strong> quando o próprio comentário do código diz; <strong>dedução</strong> quando é minha.</p>
+<table>
+<thead>
+<tr>
+<th>Peça</th>
+<th>Onde</th>
+<th>O que faz</th>
+<th>Problema que tentou resolver</th>
+<th>Origem</th>
+<th>Se sair</th>
+<th>Por causa de outra peça nossa?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ajudante (tarefa SYSTEM)</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1457">A:1457</a></td>
+<td>troca em Arquivos de Programas sem UAC</td>
+<td>trocar sem pergunta a cada versão; trocar de longe</td>
+<td><strong>D-733</strong> (Samuel, 17/11), commit <code>73dc4122</code></td>
+<td>um UAC por versão (o jeito 2 que ele recusou) e sem "mandar atualizar de longe" (D-736)</td>
+<td>não: vem de o programa morar em Arquivos de Programas</td>
+</tr>
+<tr>
+<td>Pergunta da primeira abertura (exe elevado → PowerShell → exe de novo)</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1906">A:1906</a>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/windows.py#L2760">W:2760</a></td>
+<td>um UAC cria as tarefas, VC++, tira Inno</td>
+<td>o "Não" lido como "Sim" (defeito 2 da etapa 5)</td>
+<td>D-733/D-735/D-805; peça de <code>9e2268cc</code> (19/11), usada desde o conserto 1 <code>85590fe4</code></td>
+<td>sem ajudante não há o que criar</td>
+<td><strong>sim (fato)</strong>: só existe para criar o ajudante; o salto duplo vem de a peça só aceitar passos de uma lista fechada (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/windows.py#L54">W:54-70</a>)</td>
+</tr>
+<tr>
+<td>"Preparado?" lido no Windows</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1953">A:1953</a></td>
+<td>lê as 2 tarefas; vazio = não pergunta</td>
+<td>a marca nas Configurações dizia "preparado" sem estar</td>
+<td>conserto 1 <code>85590fe4</code>; ajustes <code>9979419d</code> (volta 2), <code>ce728693</code>/<code>ebd4197e</code>/<code>f15863b8</code> (volta 3, D-826)</td>
+<td>volta a anotação que mente (§11.12 ponto 2)</td>
+<td><strong>sim (dedução)</strong>: só existe porque o ajudante existe</td>
+</tr>
+<tr>
+<td>Esperar a janela na frente</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L2042">A:2042</a>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/windows.py#L1942">W:1942</a></td>
+<td>sem limite, lê a cada 0,3 s quem está na frente</td>
+<td>a pergunta piscando na barra (prova nº 1)</td>
+<td>volta 4 <code>1e5ea67d</code>; <strong>leitura da gerente</strong> da D-806 (o relatório 3 e a PARTE -44 dizem isso)</td>
+<td>volta a piscar</td>
+<td><strong>sim (fato, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L2052">A:2052-2054</a>)</strong>: o pedido sai 17-20 s depois do clique porque o programa primeiro carrega e monta a janela</td>
+</tr>
+<tr>
+<td>Script da troca (PowerShell, conta do Kaique)</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1120">A:1120</a></td>
+<td>espera fechar, chama o ajudante, espera, reabre</td>
+<td>o .exe tem de sair; SYSTEM não abre janela</td>
+<td>D-720/D-734, <code>73dc4122</code> (17/11)</td>
+<td>"Reiniciar agora" não reabre</td>
+<td><strong>sim (fato, docstring <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1123">A:1123-1127</a>)</strong>: "Por que nao o ajudante: ele roda como SYSTEM"</td>
+</tr>
+<tr>
+<td>Lançar solto com sinal de vida e pasta System32</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/windows.py#L1662">W:1662</a>, <code>cwd</code> <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/windows.py#L1689">W:1689</a></td>
+<td>lança o script e confere que começou</td>
+<td><code>DETACHED_PROCESS</code> (o PowerShell saía sem rodar); a pasta de trabalho prendia <code>current</code></td>
+<td>peça <code>9e2268cc</code>; usada no conserto 3 <code>77a05d2e</code>; <code>cwd</code> na volta 4 <code>b756ddc2</code></td>
+<td>o script não roda ou prende a pasta</td>
+<td><strong>sim (dedução)</strong>: existe para o script da troca</td>
+</tr>
+<tr>
+<td>Mutex "programa aberto"</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L864">A:864</a></td>
+<td>a janela segura; o ajudante lê</td>
+<td>o ajudante (outra sessão) saber se o programa está aberto</td>
+<td>etapa 3 <code>16c838a7</code></td>
+<td>o ajudante trocaria com o programa aberto</td>
+<td><strong>sim (dedução)</strong>: só porque quem troca é outro processo</td>
+</tr>
+<tr>
+<td>Lista de processos de <code>current</code>, até 30 s</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L907">A:907</a>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/windows.py#L1855">W:1855</a></td>
+<td>confere que nada roda de <code>current</code></td>
+<td>o mutex some antes de o processo terminar de gravar</td>
+<td>volta 4 <code>3adea01f</code>; D-828 "garante que o programa terminou de fechar"</td>
+<td>o Velopack fecha à força o que ainda grava</td>
+<td><strong>sim (dedução)</strong>: o <code>--waitPid</code> do Velopack espera o <strong>ajudante</strong>, não a janela</td>
+</tr>
+<tr>
+<td>Marca da troca + <code>troca_em_andamento</code></td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L196">A:196</a>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1344">A:1344</a></td>
+<td>clique no atalho durante a troca sai em silêncio</td>
+<td>o clique às 14h34min58 da prova nº 1</td>
+<td>volta 4 <code>586b483f</code>; D-828</td>
+<td>o clique estraga a troca</td>
+<td>não conferi se o atalho do Velopack (<code>stub.rs</code>) já faz algo parecido</td>
+</tr>
+<tr>
+<td><code>FASES_EM_QUE_HA_TROCA</code></td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L206">A:206</a></td>
+<td>só lê o mutex nessas fases</td>
+<td>não carregar a peça (~30 ms) em toda abertura</td>
+<td>volta 4 <code>586b483f</code>, escolha do escritor</td>
+<td>30 ms por abertura</td>
+<td><strong>sim (fato, comentário)</strong>: atalho de velocidade da marca da troca</td>
+</tr>
+<tr>
+<td>Vigia da troca (PowerShell, SYSTEM)</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1091">A:1091</a></td>
+<td>segura a marca na troca sem script</td>
+<td>o clique no meio da troca sem script</td>
+<td>volta 4 <code>586b483f</code>; <strong>resposta 4 da gerente</strong>, não do Samuel (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/046c0271a4227848809eb2ed38d7541d5cdf7859/relatorios/atualizador-4/ONDE-PAREI.md#L1428">ONDE-PAREI L1428</a>)</td>
+<td>volta a ressalva que o escritor propunha deixar</td>
+<td><strong>sim (fato)</strong>: existe só para a marca da troca no caminho sem script; e porque o ajudante (que é o <code>.exe</code> de <code>current</code>) tem de sair antes da troca</td>
+</tr>
+<tr>
+<td><code>GerenteComAMarcaDaTroca</code> + <code>segurar_a_marca</code> + <code>TrocaSemAMarca</code></td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L552">A:552</a>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1307">A:1307</a></td>
+<td>embrulha o <code>UpdateManager</code>; sem marca, não troca; lança o vigia e espera 10 s o mutex</td>
+<td>"toda troca com a marca"</td>
+<td>volta 4 <code>586b483f</code></td>
+<td>uma troca sem marca</td>
+<td><strong>sim (fato)</strong>: força a marca da troca e lança o vigia</td>
+</tr>
+<tr>
+<td>Marca de reabrir + script "só de reabrir"</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L200">A:200</a>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1167">A:1167</a></td>
+<td>depois do clique engolido, alguém reabre, uma vez só</td>
+<td>o clique engolido não abria nada</td>
+<td>volta 4 <code>586b483f</code></td>
+<td>o Kaique clica e nada abre</td>
+<td><strong>sim (fato)</strong>: existe porque a marca da troca engole o clique e o vigia não reabre</td>
+</tr>
+<tr>
+<td>Janelinha + mutex da janelinha</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L968">A:968</a>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L187">A:187</a></td>
+<td>avisa durante a espera do "Depois"</td>
+<td>o Kaique achar que não abriu</td>
+<td><strong>D-742, D-748</strong> (Samuel, 17/11), <code>1a42dfb0</code>, <code>5a407a6f</code></td>
+<td>contra a decisão dele</td>
+<td>sim (dedução): existe porque a troca do "Depois" é fora do programa</td>
+</tr>
+<tr>
+<td>Voltar para a anterior</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L750">A:750</a>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L779">A:779</a></td>
+<td>teste rápido; falhou → baixa a anterior e <code>Update.exe apply --package</code></td>
+<td>versão nova estragada</td>
+<td><strong>D-718</strong> (Samuel), etapa 3 <code>16c838a7</code></td>
+<td>contra a decisão dele</td>
+<td>não; mas fica <strong>fora</strong> da peça e do pedido único de troca (baixo 1 do relatório 3)</td>
+</tr>
+<tr>
+<td>Refazer o ajudante depois da troca</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L2226">A:2226</a></td>
+<td>recria a tarefa como SYSTEM</td>
+<td>o gancho de atualizar não tem licença (B1)</td>
+<td><code>73dc4122</code></td>
+<td>XML de versão velha</td>
+<td>sim (dedução): por causa do ajudante</td>
+</tr>
+<tr>
+<td>Motor do Kraken à parte</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1766">A:1766</a></td>
+<td>põe o motor em <code>&lt;raiz&gt;\motor-kraken\1</code>; sem ele, não anuncia versão</td>
+<td>não baixar 370 MB a cada versão</td>
+<td><strong>D-768/D-788/D-790</strong> (Samuel), conserto 4 <code>75cfa928</code>, volta 2</td>
+<td>o motor some na troca</td>
+<td>não</td>
+</tr>
+<tr>
+<td><code>estado.json</code> + gravar com 30 tentativas</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L285">A:285</a>, leitura <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1059">A:1059</a></td>
+<td>o canal entre SYSTEM e Kaique</td>
+<td>duas contas precisam combinar a fase</td>
+<td>etapa 3; o "tenta de novo" e o <code>-ErrorAction Stop</code> na volta 4 (<code>5a1aa6b2</code>)</td>
+<td>sem canal</td>
+<td><strong>sim (dedução)</strong>: por causa do ajudante e dos scripts</td>
+</tr>
+<tr>
+<td>Pasta segura</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/windows.py#L2287">W:2287-2385</a></td>
+<td>pasta em Arquivos de Programas com as licenças de fábrica</td>
+<td>a tranca à mão (<code>icacls /T</code>) deixava arquivos sem licença</td>
+<td>peça <code>9e2268cc</code> (plano-v3); usada nos testes à distância na volta 4 <code>929195b4</code></td>
+<td>volta a tranca à mão</td>
+<td>sim (fato): substitui a nossa tranca de 18/11</td>
+</tr>
+</tbody>
+</table>
+<h2>2.4 O que o Windows e o Velopack fazem de difícil</h2>
+<table>
+<thead>
+<tr>
+<th>Comportamento</th>
+<th>Fonte</th>
+<th>Lido por mim?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O <code>Update.exe</code> fecha à força todo processo cujo <code>.exe</code> está dentro da raiz (<code>PROCESS_TERMINATE</code>), menos ele mesmo</td>
+<td>Velopack 1.2.161, <a href="https://github.com/velopack/velopack/blob/1.2.161/src/bins/src/shared/util_windows.rs"><code>util_windows.rs</code></a> (<code>get_processes_running_in_directory</code>, <code>_force_stop_package</code>)</td>
+<td>sim, hoje</td>
+</tr>
+<tr>
+<td>Renomeia <code>current</code> com 10 tentativas, 1 s cada; se não der: "Unable to start the update, because one or more running processes prevented it"; se falhar a <strong>segunda</strong> troca de nome, "the app was left in a broken state" (a volta está comentada no código)</td>
+<td><a href="https://github.com/velopack/velopack/blob/1.2.161/src/bins/src/commands/apply_windows_impl.rs"><code>apply_windows_impl.rs</code></a></td>
+<td>sim, hoje</td>
+</tr>
+<tr>
+<td><code>WaitExitThenApplyUpdates</code> "wait for 60 seconds before proceeding. If your app has not exited within 60 seconds it will be killed"</td>
+<td><a href="https://docs.velopack.io/integrating/overview">docs.velopack.io/integrating/overview</a></td>
+<td>sim, hoje</td>
+</tr>
+<tr>
+<td>A tranca do Velopack (<code>packages\.velopack_lock</code>) é segurada também durante o download; o atalho passa <code>AllowSetForegroundWindow</code> e abre com <code>current</code> como pasta de trabalho</td>
+<td><code>manager.rs:406</code>, <code>stub.rs:39-41</code>, segundo o escritor (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/046c0271a4227848809eb2ed38d7541d5cdf7859/relatorios/atualizador-4/ONDE-PAREI.md#L1376">ONDE-PAREI L1376</a>)</td>
+<td><strong>não conferi</strong></td>
+</tr>
+<tr>
+<td>O processo filho herda a pasta de trabalho do pai, e uma pasta que é pasta de trabalho não se renomeia (erro 32)</td>
+<td><code>CreateProcessW</code>, <code>lpCurrentDirectory</code> (citado pelo escritor) e experimento no PC (<code>anexos/volta4-experimentos.txt</code>)</td>
+<td>a documentação não reabri; o experimento não refiz</td>
+</tr>
+<tr>
+<td>O Windows tira de um programa o direito de vir para a frente "the next time the user generates input"; o UAC usa a janela dona</td>
+<td><code>AllowSetForegroundWindow</code>, <code>SetForegroundWindow</code> (citados pelo escritor)</td>
+<td>não reabri</td>
+</tr>
+<tr>
+<td>O <code>.msi</code> "PerMachine" roda os ganchos sem administrador (<code>Impersonate="yes"</code>)</td>
+<td>achado B1, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L20">A:20-23</a></td>
+<td>não reabri o WiX</td>
+</tr>
+<tr>
+<td>PowerShell 5.1 lê <code>.ps1</code> sem BOM como ANSI: "Without the BOM, Windows PowerShell misinterprets your script as being encoded in the legacy "ANSI" codepage"</td>
+<td><a href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_character_encoding?view=powershell-5.1">about_Character_Encoding (5.1)</a></td>
+<td>sim, hoje</td>
+</tr>
+<tr>
+<td>PowerShell 5.1 com <code>DETACHED_PROCESS</code> sai sem rodar</td>
+<td>provado na etapa 5 (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/8cf8358aaf310a726c4833cbd951f1c133e8f086/relatorios/revisao-atualizador-2026-11-18/relatorio.md#L50">revisão 18/11 §1.1</a>)</td>
+<td>não refiz</td>
+</tr>
+<tr>
+<td><code>ctypes.get_last_error()</code> sem <code>use_last_error=True</code> devolve sempre 0: o "Não" do UAC (1223) virava sucesso</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/windows.py#L45">W:45</a> e o conserto 1</td>
+<td>doc do Python não reabri</td>
+</tr>
+<tr>
+<td><code>icacls /inheritance:r /grant:r ... /T</code> deixa os arquivos já existentes com a lista de licenças vazia, e devolve 0</td>
+<td>provado em 18/11 (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/77848768818c294f9b0e95029b2827dd78ac4600/relatorios/revisao-distancia-2026-11-18/relatorio.md#L21">revisão distância</a>)</td>
+<td>não refiz</td>
+</tr>
+<tr>
+<td><code>Start-Process</code> 5.1: o documento diz que a pasta padrão é a do executável; o experimento mediu a do PowerShell</td>
+<td>baixo 2 do <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/046c0271a4227848809eb2ed38d7541d5cdf7859/relatorios/atualizador-4/quem-quebrou/relatorio-3.md#L106">relatório 3</a></td>
+<td>não</td>
+</tr>
+</tbody>
+</table>
+<h2>2.5 A história das voltas</h2>
+<ul>
+<li><strong>16 a 18/11.</strong> Etapa 3 escrita com o Velopack. Na etapa 5 (18/11, PC do Samuel), 7 defeitos no Windows de verdade; as
+  revisões só lendo acharam mais 13 no atualizador e 4 causas de estrutura nos testes à distância. Frase central da
+  revisão: "o que o programa lembra não é prova; prova é o que o Windows responde" (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/8cf8358aaf310a726c4833cbd951f1c133e8f086/relatorios/revisao-atualizador-2026-11-18/relatorio.md#L29">revisão atualizador</a>).
+  Nasce a regra §11.12 ampliada (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/47394b4a5d7d4f9d461d6987676d235254910d9f/CLAUDE.md#L712">CLAUDE.md L712</a>) e a peça única (19/11).</li>
+<li><strong>Volta 1 (21/11, escritor A).</strong> Os 4 consertos: o "Não" pela peça; a janela como dona; "Reiniciar agora" sem
+  <code>DETACHED_PROCESS</code>; o motor à parte. <strong>Relatório 1:</strong> NÃO ESTÁ PRONTO, 3 médios (motor estragado engolido, "versão
+  nova" sem fim sem o motor, a pergunta voltando depois do "Sim") e 10 baixos (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/046c0271a4227848809eb2ed38d7541d5cdf7859/relatorios/atualizador-4/quem-quebrou/relatorio-1.md#L8">R1 L8</a>).</li>
+<li><strong>Volta 2 (escritor A).</strong> Os 3 médios consertados. <strong>Relatório 2:</strong> PRONTO PARA CONFERIR, 6 baixos e uma pergunta
+  (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/046c0271a4227848809eb2ed38d7541d5cdf7859/relatorios/atualizador-4/quem-quebrou/relatorio-2.md#L8">R2 L8</a>).
+  Samuel: "então o agente fez um codigo novo para arrumar outro e criou 6 problemas novos?" → D-826, D-827.</li>
+<li><strong>Volta 3 (escritor B).</strong> Os 2 baixos de código e os testes das proteções. Não achei relatório de "quem quebrou" desta
+  volta na pasta.</li>
+<li><strong>Prova à vista nº 1 (22/11, 13h52-14h39).</strong> Funcionou: o "Não", o "Sim" lido do Windows, a conta comum lê as tarefas,
+  o motor, o aviso, a volta com a frase da falha. Falhou: o "Reiniciar agora" não troca (erro 32 em 10 tentativas), a
+  pergunta pisca na barra, a segunda preparação dá "acesso negado" (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/47394b4a5d7d4f9d461d6987676d235254910d9f/historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md#L70">PARTE -44 §3</a>).</li>
+<li><strong>Volta 4 (escritor C).</strong> A causa do erro 32 (a pasta de trabalho), a lista de processos, a marca da troca, o vigia,
+  o só de reabrir, a espera pela janela na frente, a pasta segura. D-829 autoriza 3 testes. <strong>Relatório 3:</strong> NÃO ESTÁ
+  PRONTO, 5 médios (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/046c0271a4227848809eb2ed38d7541d5cdf7859/relatorios/atualizador-4/quem-quebrou/relatorio-3.md#L12">R3 L12</a>).
+  Ele diz que "a causa principal saiu" e que "nenhum pede para refazer a volta".</li>
+</ul>
+<h2>2.6 Os 5 médios do relatório 3, com o código</h2>
+<p><strong>Médio 1. Sem o script, "está aberto?" vem antes da marca</strong> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/046c0271a4227848809eb2ed38d7541d5cdf7859/relatorios/atualizador-4/quem-quebrou/relatorio-3.md#L31">R3 L31</a>).
+<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L676">A:676-685</a>:</p>
+<pre><code class="language-python">    if programa_aberto():                      # 676: pergunta primeiro
+        ...
+    gravar_estado({&quot;fase&quot;: &quot;aplicando&quot;, **base})
+    try:
+        gerente.wait_exit_then_apply_updates(...)   # 684: só aqui o vigia nasce e a marca aparece (até 10 s)
+</code></pre>
+<p>Um clique no atalho entre a pergunta e a marca abre o programa; o Velopack o fecha à força e ninguém reabre.</p>
+<p><strong>Médio 2. O script da troca zera a fase antes de ler</strong> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/046c0271a4227848809eb2ed38d7541d5cdf7859/relatorios/atualizador-4/quem-quebrou/relatorio-3.md#L48">R3 L48</a>).
+<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1189">A:1189-1196</a>:</p>
+<pre><code class="language-python">        &quot;    $fase = ''; $tipo = ''&quot;,
+        &quot;    &quot; + _linha_de_ler_a_fase(estado),       # uma leitura que falha deixa $fase vazia
+        ...
+        &quot;    if ($fase -ne 'pendente' -and $fase -ne 'aplicando') { break }&quot;,
+</code></pre>
+<p>O vigia não zera (a regra "só muda a fase se leu", <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1059">A:1059</a>). O verificador provou no Windows: com o arquivo
+travado, o laço saiu em 1 s. O script então reabre o programa no meio da troca.</p>
+<p><strong>Médio 3. "Sem licença para abrir a marca" = "existe", sem teste</strong> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/046c0271a4227848809eb2ed38d7541d5cdf7859/relatorios/atualizador-4/quem-quebrou/relatorio-3.md#L65">R3 L65</a>).
+<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1085">A:1085-1086</a>:</p>
+<pre><code class="language-python">        &quot;  try { if ([System.Threading.Mutex]::TryOpenExisting($nome, [ref]$m)) { $m.Dispose(); return $true }&quot;
+        &quot; ; return $false } catch { return $true }&quot;,
+</code></pre>
+<p>Trocando o <code>catch</code> por <code>return $false</code>, os 55 testes passam.</p>
+<p><strong>Médio 4. A janela da frente vira a dona, sem teste</strong> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/046c0271a4227848809eb2ed38d7541d5cdf7859/relatorios/atualizador-4/quem-quebrou/relatorio-3.md#L76">R3 L76</a>).
+<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L2106">A:2106-2111</a>:</p>
+<pre><code class="language-python">        dona = esperar_a_janela_na_frente(janela)
+        if dona is None:
+            ...
+        janela = dona                                # trocar por `pass`: os 55 testes passam
+</code></pre>
+<p><strong>Médio 5. A pasta segura criada e gravada por fora da peça, e conferida depois</strong> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/046c0271a4227848809eb2ed38d7541d5cdf7859/relatorios/atualizador-4/quem-quebrou/relatorio-3.md#L84">R3 L84</a>).
+<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/testes_a_distancia.py#L378">T:378-379</a> (repetido em <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/testes_a_distancia.py#L290">T:290</a>) e <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/testes_a_distancia.py#L869">T:869-872</a>:</p>
+<pre><code class="language-python">    return (f&quot;$pasta = '{pasta_dos_testes()}';&quot;
+            f&quot; if (-not (Test-Path -LiteralPath $pasta)) {{ New-Item -ItemType Directory -Path $pasta -Force | Out-Null }}&quot;)
+    ...
+        resultado = executor.aplicar_ja_como_administrador(plano_de_preparar_o_desfazer())  # já gravou desfazer.ps1 e a tarefa
+        ...
+        conferida = executor.conferir_a_pasta_dos_testes()                                  # só agora confere
+</code></pre>
+<p>A peça já tem <code>criar_pasta_segura</code> (cria, confere, apaga se não confere) e <code>gravar_na_pasta_segura</code> (confere antes,
+lê de volta), <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/windows.py#L2320">W:2320</a> e <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/windows.py#L2361">W:2361</a>, e os passos <code>passo_criar_pasta_segura</code>, <code>passo_gravar_na_pasta_segura</code>, <code>passo_criar_tarefa</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/windows.py#L2394">W:2394-2414</a>).</p>
+<hr />
+<h1>Parte 3. Os testes à distância</h1>
+<h2>3.1 O que é e o que ele pediu</h2>
+<p>O Samuel entra de longe no notebook do Kaique para rodar testes (velocidade e outros) e mandar atualizar.
+- <strong>D-705</strong>: "vamos colocar uma api no programa para que eu possa fazer chamadas dentro do proprio pc do kaique para
+  fazer testes de velocidade e outras coisas" → escolhido o Servidor OpenSSH do Windows, só pela rede do Tailscale, sem
+  porta dentro do programa. <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/docs/plano/DECISOES.md#L995">L995</a>
+- <strong>D-711</strong> "liga sozinho com o windows, eu vou fazer uma senha, e não vai sr chave"; <strong>D-712</strong> ligado de fábrica, botão
+  nas Configurações; <strong>D-717</strong> conta separada, sem administrador, escondida ("sim"); <strong>D-721</strong> janela da senha na primeira
+  abertura; <strong>D-731</strong> desinstalar desfaz tudo ("ok"); <strong>D-736</strong> mandar atualizar de longe.
+- Decididas e <strong>não construídas</strong>: <strong>D-771</strong> ligar é "tudo ou nada" ("A"); <strong>D-780</strong> duas trancas, firewall e dentro do
+  próprio OpenSSH; <strong>D-781</strong> dois campos de senha. <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/docs/plano/DECISOES.md#L1061">L1061</a>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/docs/plano/DECISOES.md#L1070">L1070</a>
+- <strong>D-824/D-825</strong>: ficam para uma entrega depois; nesta, a senha digitada não liga nada ("opção B").
+  <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/docs/plano/DECISOES.md#L1115">L1115</a></p>
+<h2>3.2 Como funciona hoje, e as peças</h2>
+<ul>
+<li><strong>Ligar</strong> (botão das Configurações, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/ui/tela_configuracoes.py#L389">ui/tela_configuracoes.py:389</a>) → <code>ligar(senha)</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/testes_a_distancia.py#L802">T:802</a>) →
+  <code>plano_de_ligar</code> (9 passos, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/testes_a_distancia.py#L408">T:408</a>) →
+  <code>ExecutorWindows.aplicar</code> → <code>TW.aplicar_no_windows</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/_testes_a_distancia_windows.py#L103">TW:103</a>):
+  script em <code>tempfile.mkdtemp</code>, senha cifrada por DPAPI, e <code>_rodar_elevado</code>, um <code>runas</code> <strong>próprio</strong>, fora da peça única.</li>
+<li><strong>Desligar</strong>: o mesmo caminho, com outro UAC. <strong>Desfazer</strong>: a tarefa SYSTEM "Desfazer testes a distancia" roda
+  <code>desfazer.ps1</code> da pasta segura; o gancho de desinstalar só manda rodar (<code>schtasks /Run</code>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/testes_a_distancia.py#L840">T:840</a>).
+  A primeira abertura cria essa tarefa pelo <code>aplicar_ja_como_administrador_no_windows</code>, que abre o <code>powershell.exe</code> direto
+  e grava o script em UTF-8 <strong>sem BOM</strong> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/_testes_a_distancia_windows.py#L148">TW:148-152</a>).</li>
+<li><strong><code>core/_testes_a_distancia_windows.py</code> não mudou desde <code>b74a94e2</code></strong> (a base das revisões de 18/11): <code>git diff
+  b74a94e2 aa1963b7</code> vazio. A linha que lia o "Não" como "Sim" continua no caminho do ligar:
+  <code>return ctypes.get_last_error()</code> com <code>ctypes.windll</code> (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/_testes_a_distancia_windows.py#L94">TW:94-95</a>). Isso já está anotado como lembrete no relatório 1 (L119-L121).</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Peça</th>
+<th>Onde</th>
+<th>O que faz</th>
+<th>Origem</th>
+<th>Se sair</th>
+<th>Por causa de outra peça nossa?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Conta <code>EditorTestes</code> (Usuários, escondida)</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/testes_a_distancia.py#L408">T:408</a></td>
+<td>quem entra de longe</td>
+<td>D-717 (Samuel)</td>
+<td>entra com a conta do Kaique</td>
+<td>não</td>
+</tr>
+<tr>
+<td>OpenSSH + bloco no <code>sshd_config</code> (<code>AllowUsers</code>, <code>PasswordAuthentication yes</code>, <code>MaxAuthTries 3</code>)</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/testes_a_distancia.py#L120">T:120</a></td>
+<td>a porta de entrar</td>
+<td>D-705, D-711</td>
+<td>não há teste à distância</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Regra do firewall só para 100.64.0.0/10 e a placa Tailscale</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/testes_a_distancia.py#L88">T:88</a></td>
+<td>tranca de rede</td>
+<td>D-705</td>
+<td>porta aberta à rede da casa</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Caderninho <code>antes.json</code></td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/testes_a_distancia.py#L268">T:268</a></td>
+<td>o que o PC já tinha, para desfazer só o nosso</td>
+<td>D-731, <code>65303058</code></td>
+<td>o desfazer tiraria o OpenSSH do dono</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Tarefa "desfazer" (SYSTEM; nega a conta de testes; AU pode mandar rodar)</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/testes_a_distancia.py#L306">T:306</a>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/testes_a_distancia.py#L334">T:334</a></td>
+<td>desfaz ao desinstalar, apaga também o ajudante</td>
+<td>D-731/D-733, <code>77be80ff</code></td>
+<td>desinstalar deixa tudo (o gancho não tem licença)</td>
+<td><strong>sim (fato)</strong>: o gancho do <code>.msi</code> roda sem administrador (B1)</td>
+</tr>
+<tr>
+<td><code>Executor</code> / <code>ExecutorWindows</code></td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/testes_a_distancia.py#L669">T:669-760</a></td>
+<td>os testes trocam por um de mentira</td>
+<td>etapa 4 <code>59aa8049</code></td>
+<td>nada</td>
+<td>não; mas é a segunda "peça do Windows" do programa (dedução)</td>
+</tr>
+<tr>
+<td><code>CHAVE_PRONTO</code> nas Configurações</td>
+<td><a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/testes_a_distancia.py#L158">T:158</a></td>
+<td>anota "ligado"</td>
+<td>etapa 4</td>
+<td>—</td>
+<td>é a anotação que a §11.12 (ponto 2) proíbe como prova (dedução)</td>
+</tr>
+</tbody>
+</table>
+<h2>3.3 O que dá para fazer no PC do Kaique, e os riscos</h2>
+<p>Fato do código: pelo <code>ssh EditorTestes@&lt;endereço&gt;</code> o Samuel roda comandos como uma conta comum; pode mandar o ajudante
+rodar (<code>comando_de_longe_para_atualizar</code>, <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1430">A:1430</a>) e ler <code>atualizacao.log</code> no ProgramData (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/atualizacao.py#L1445">A:1445</a>).
+O ajudante só roda o <code>.exe</code> fixo com o argumento fixo; mudar a tarefa pede administrador (<code>GRGX</code> só lê e executa).</p>
+<p>Riscos (fato, salvo onde marcado):
+- <strong>Senha por senha</strong>, com 3 tentativas por conexão; a única tranca de rede é o firewall (a segunda, D-780, não existe):
+  o bloco do <code>sshd_config</code> não tem <code>Match Address</code>. Desligado o firewall, a porta 22 aceita qualquer rede (dedução).
+- <strong>Ligar pela metade:</strong> o script do ligar para no primeiro erro e não desfaz (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/testes_a_distancia.py#L619">T:619-660</a>):
+  pode ficar o OpenSSH, a regra, a conta. D-771 ("tudo ou nada") não está construída.
+- <strong>O "Não" do UAC pode virar "ligado"</strong> no caminho das Configurações (TW:95, acima): <code>CHAVE_PRONTO = True</code> sem nada feito.
+- <strong>Senha com acento</strong> trocada no caminho (provado na <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/77848768818c294f9b0e95029b2827dd78ac4600/relatorios/revisao-distancia-2026-11-18/relatorio.md#L25">revisão de 18/11</a>); o arquivo não mudou depois, então continua (dedução).
+- <strong>Desfazer:</strong> roda como SYSTEM o <code>desfazer.ps1</code> da pasta segura (contas comuns só leem). Com o médio 5, numa pasta que
+  já existia com outras licenças, o script é gravado e a tarefa aponta para ele mesmo assim.
+- O que fica se falhar no meio do desfazer: os passos seguem depois de erro e a tarefa só se apaga se tudo deu certo
+  (<a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/aa1963b76ca2dc343bcd06b6e33166cb712f6fa8/core/testes_a_distancia.py#L524">T:524</a>): dá para rodar de novo.</p>
+<h2>3.4 A situação de agora</h2>
+<p>Não entra na primeira entrega ao Kaique (D-824, D-825). O que existe no código é o de 16 a 17/11, mais a pasta segura
+da volta 4. O ligar e o desligar nunca passaram pela peça única. As decisões de 18/11 (D-771, D-780, D-781) estão só no
+Livro. Na prova de 18/11 (etapa 5), os testes à distância deram os defeitos que a revisão daquele dia descreve.</p>
+<hr />
+<h1>Opinião do agente</h1>
+<p>Tudo aqui é opinião. Marco <strong>certeza</strong> quando decorre direto do código lido, e <strong>palpite</strong> quando não.</p>
+<p><strong>1. As peças que parecem existir só para proteger outra.</strong> Certeza, pelo próprio comentário do código: o vigia existe
+para a marca da troca no caminho sem script; a marca de reabrir e o script "só de reabrir" existem porque a marca da
+troca engole o clique e o vigia não reabre; o <code>GerenteComAMarcaDaTroca</code> existe para obrigar a marca; <code>FASES_EM_QUE_HA_TROCA</code>
+existe para a marca não custar 30 ms. As quatro nasceram juntas na volta 4 (<code>586b483f</code>), e três dos cinco médios moram
+nelas (1, 3 e, em parte, 2). Num nível abaixo, quase todo o resto é consequência de uma escolha só: <strong>quem troca é um
+processo SYSTEM que é o próprio <code>.exe</code> de <code>current</code></strong>. Por isso ele tem de sair antes da troca; por isso alguém de fora
+precisa segurar o estado (script, vigia, <code>estado.json</code>, mutexes); por isso o <code>--waitPid</code> do Velopack espera o processo
+errado e foi preciso a lista de processos.</p>
+<p><strong>2. O desenho mais simples do atualizador (palpite).</strong>
+- <em>Só o Velopack:</em> instalar por usuário (<code>%LOCALAPPDATA%</code>), procurar e baixar no próprio programa, <code>apply_updates_and_restart</code>
+  no "Reiniciar agora" e <code>wait_exit_then_apply_updates</code> (ou a troca do próprio Velopack ao abrir) no "Depois". O Velopack
+  espera o programa sair, fecha o que sobrou, troca e reabre na conta certa. Somem o ajudante, a pergunta da primeira
+  abertura, os dois scripts, o vigia, as três marcas, a lista de processos e o <code>estado.json</code>. <strong>Perde-se:</strong> o jeito 1 da
+  D-733 (era o jeito 3 que ele não quis, "os testes de longe deixam de funcionar") e o "mandar atualizar de longe" da
+  D-736; o Visual C++ e tirar o Inno ainda pediriam uma licença. Em Arquivos de Programas sem ajudante, seria um UAC por
+  versão (o jeito 2, também recusado).
+- <em>Mantendo a D-733:</em> um ajudante que <strong>não mora em <code>current</code></strong> (um <code>.exe</code> pequeno na pasta segura, ou a tarefa chamando o
+  <code>Update.exe</code> direto), que segura ele mesmo a marca do começo ao fim, espera o programa do Kaique pelo número do
+  processo e faz o teste rápido e a volta. Sumiriam o vigia, o <code>GerenteComAMarcaDaTroca</code>, a espera de 10 s pela marca e a
+  duplicação "script lê o estado / vigia lê o estado". Ficaria um script do lado do Kaique só para reabrir (SYSTEM não
+  abre janela na sessão dele sem um caminho mais complicado). Não conferi no Velopack 1.2.161 se a tarefa pode chamar o
+  <code>Update.exe</code> assim.</p>
+<p><strong>3. O desenho mais simples dos testes à distância (palpite).</strong> Ligar e desligar pela peça única, com os passos que ela
+já tem (<code>passo_criar_pasta_segura</code>, <code>passo_gravar_na_pasta_segura</code>, <code>passo_criar_tarefa</code>, <code>passo_script</code>), e apagar o
+<code>runas</code> próprio de <code>_testes_a_distancia_windows.py</code>. Isso cumpre o ponto 1 da §11.12 e leva junto o "Não" lido como "Sim"
+e o médio 5. A tela mostraria o que o Windows tem (o serviço, a conta, a regra), não <code>CHAVE_PRONTO</code>.</p>
+<p><strong>4. Quais dos 5 médios somem se a peça sair.</strong>
+- Médio 1: some se o ajudante nunca trocar sem o script (certeza: o defeito só existe nesse caminho). O preço: a troca
+  de longe e a do "fechou durante o download" esperariam a próxima abertura (mexe na D-736).
+- Médio 2: não depende de peça a mais. É a mesma leitura escrita duas vezes, uma certa e uma errada (certeza). Some
+  apagando a linha <code>$fase = ''</code>, ou se o script esperasse a marca em vez de ler o JSON (palpite).
+- Médio 3: some se o vigia e o "só de reabrir" saírem (certeza), porque a marca SYSTEM lida da conta comum só acontece
+  entre os dois.
+- Médio 4: some se a espera pela janela sair (certeza). A pergunta volta a piscar, a não ser que ela seja feita antes de
+  o programa carregar, o jeito que a D-806 descreve ("no mesmo instante do clique") e que o escritor recusou (palpite meu
+  de que é o mais simples; ele argumentou que o brasão não toma a frente).
+- Médio 5: some se o desfazer for preparado pela peça (certeza: a peça já cria, confere e grava).</p>
+<p><strong>5. Resposta curta à pergunta do Samuel (palpite com base nos fatos acima).</strong> Sim, em parte. As voltas 1 a 3 consertaram
+causas de verdade e não empilharam proteção. A volta 4 consertou a causa principal com um conserto pequeno (<code>b756ddc2</code>: 19 linhas de código, o <code>cwd</code> do lançado solto) e depois
+acrescentou de uma vez quatro peças que só protegem outra, e foi ali que o relatório 3 achou três dos cinco médios. O que
+não é "proteção da proteção" é o custo da escolha do ajudante SYSTEM (D-733), que foi do Samuel e tem motivo.</p>
+<hr />
+<h2>Fontes consultadas (23/11/2026)</h2>
+<ul>
+<li>Código e relatórios do repositório, nos commits dos links.</li>
+<li>Velopack 1.2.161: <a href="https://github.com/velopack/velopack/blob/1.2.161/src/bins/src/commands/apply_windows_impl.rs">apply_windows_impl.rs</a>,
+  <a href="https://github.com/velopack/velopack/blob/1.2.161/src/bins/src/shared/util_windows.rs">util_windows.rs</a> (licença MIT,
+  D-723); <a href="https://docs.velopack.io/integrating/overview">docs.velopack.io/integrating/overview</a>.</li>
+<li>Microsoft: <a href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_character_encoding?view=powershell-5.1">about_Character_Encoding, PowerShell 5.1</a>.</li>
+<li>O resto das fontes de fora (CreateProcessW, AllowSetForegroundWindow, CreateMutexW, <code>manager.rs</code>, <code>stub.rs</code>) é citado
+  pelo escritor da volta 4 e <strong>não foi reaberto por mim</strong>.</li>
+</ul>
+<hr />
+<h1>Parte 4. A Central e o jeito de trabalhar</h1>
+<p>Escrita pela conversa gerente em 23/11/2026. Fato e opinião separados: a opinião está no fim, marcada.</p>
+<h2>4.1 Quem faz o quê</h2>
+<ul>
+<li><strong>O dono (Samuel)</strong> decide o que o programa faz e confere o resultado. Não é programador. Lê em português simples.</li>
+<li><strong>O usuário (Kaique)</strong> é impressor e não tem formação técnica. Recebe o programa instalado no notebook dele.</li>
+<li><strong>A conversa gerente</strong> é uma sessão do Claude Code aberta com o Samuel. Ela conversa com ele, divide o trabalho,
+  manda os subagentes, junta os ramos e mantém os documentos. Pela regra, não escreve código do programa
+  (<code>CLAUDE.md</code> §10.1).</li>
+<li><strong>Os subagentes</strong> têm as regras em <code>.claude/agents/</code>. Cada arquivo tem de 10 a 14 KB.</li>
+<li><code>implementador.md</code>: código de <code>core/</code> e scripts.</li>
+<li><code>verificador.md</code>: testes, antes/depois, pilotar a janela; nunca aprova.</li>
+<li><code>pesquisador.md</code>: lê código e documentação de fora.</li>
+<li><code>layout.md</code>: só <code>ui/</code>.</li>
+<li>Desde 20/11 (D-815), quem confere é um <strong>agente novo a cada volta</strong> ("quem tenta quebrar"). Ele lê o código,
+    desliga as proteções uma a uma (mutação manual) e roda demonstrações no Windows de verdade. Um mesmo escritor
+    fica no máximo 2 voltas.</li>
+<li><strong>Limite:</strong> no máximo 2 agentes ao mesmo tempo, ou 3 quando o terceiro só lê (§11.11). Agente não abre agente.</li>
+</ul>
+<h2>4.2 Os documentos que mandam</h2>
+<p>Ordem de leitura obrigatória, no topo do <code>CLAUDE.md</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Documento</th>
+<th>Onde</th>
+<th>Tamanho em 23/11</th>
+<th>O que é</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Livro de decisões</td>
+<td><code>docs/plano/DECISOES.md</code>; a cópia que vale está no ramo da versão de teste <code>obra-2026-10-26</code></td>
+<td>618 KB, 841 linhas de decisão (D-001 a D-829)</td>
+<td>Cada decisão do Samuel: palavras exatas, o que quer dizer, onde toca, prova de comportamento, situação, dono</td>
+</tr>
+<tr>
+<td>Estado atual</td>
+<td><code>docs/plano/ESTADO-ATUAL.md</code> (<code>fase-1</code>)</td>
+<td>pequeno</td>
+<td>Onde o projeto está</td>
+</tr>
+<tr>
+<td>Plano</td>
+<td><code>docs/plano/PLANO-DEFINITIVO.md</code> (<code>fase-1</code>)</td>
+<td>395 KB</td>
+<td>Fases, Lista de bugs, Lista de espera, Registro de mudanças</td>
+</tr>
+<tr>
+<td>Regras técnicas</td>
+<td><code>CLAUDE.md</code> (raiz)</td>
+<td>71 KB</td>
+<td>Regras do projeto; a seção 11 tem 13 regras, de 26/10 a 18/11</td>
+</tr>
+<tr>
+<td>Memória</td>
+<td><code>memoria/</code> (índice em <code>memoria/INDICE.md</code>)</td>
+<td>vários arquivos</td>
+<td>Fichas por assunto, <code>bugs.md</code>, <code>catalogo-de-erros.md</code> (só nos ramos <code>obra-2026-10-26</code> e seguintes)</td>
+</tr>
+<tr>
+<td>Histórico</td>
+<td><code>historico/Editor de Impressao - resumo para o Claude.md</code></td>
+<td>784 KB</td>
+<td>Um "PARTE -N" por checkpoint, o mais novo no topo</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>O plano e o Livro têm uma segunda cópia em <code>D:\programas\EditorImpressao-arquivos\plano-24-09-2026\</code>, fora do
+  git, onde o Samuel edita. A gerente mantém as duas iguais (§10.4).</li>
+<li>Todo relatório para o Samuel sai em <code>.md</code>, <code>.html</code> e <code>.pdf</code> por <code>relatorio.gravar</code> (<code>relatorio.py</code>, linha 346),
+  porque ele não abre <code>.md</code>.</li>
+<li>Os comandos <code>/projeto</code> e <code>/checkpoint</code> ficam fora do repositório (<code>C:\Users\fotog\.claude\commands\</code>).</li>
+<li><code>/projeto</code> obriga a conversa nova a ler as regras inteiras.</li>
+<li><code>/checkpoint</code> grava o estado no histórico e faz commit.</li>
+</ul>
+<h2>4.3 Ramos</h2>
+<ul>
+<li><strong><code>fase-1</code></strong>: a versão oficial. Tem o plano e o histórico.</li>
+<li><strong><code>obra-2026-10-26</code></strong>: a versão de teste, que o Samuel instala e testa. É o ramo onde o Livro vale. Worktree em
+  <code>.claude/worktrees/obra-juncao</code>.</li>
+<li><strong>Um ramo por trabalho</strong>, cada um no seu worktree em <code>.claude/worktrees/</code>. Em 23/11 havia 200 worktrees (194 em <code>.claude/worktrees/</code>)
+  (<code>git worktree list</code>). Só a gerente junta os ramos.</li>
+<li>O atualizador está em <code>atualizador-4-consertos-2026-11-21</code>, que ainda não foi juntado.</li>
+</ul>
+<h2>4.4 Testes</h2>
+<ul>
+<li>O <code>pytest</code> inteiro roda no GitHub num Windows da nuvem, pela ação "Testes no Windows":
+  <code>.github/workflows/testes-windows.yml</code> no ramo <code>claude/list-server-files-gkos8v</code>.</li>
+<li>Comando: <code>gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao --ref claude/list-server-files-gkos8v -f ramo=&lt;ramo&gt;</code>.</li>
+<li>Leva cerca de 2 h.</li>
+<li>No PC do Samuel, um arquivo de teste por vez enquanto o agente trabalha. A suíte inteira roda só antes de juntar no
+  <code>fase-1</code>.</li>
+<li>Há um filtro de velocidade no GitHub: antes e depois alternados (§4.6).</li>
+<li>Todo conserto de bug ganha um teste que falha no código antigo (§4.7).</li>
+<li>Cada decisão tem uma prova de comportamento em <code>tests/test_decisoes*.py</code> (§11.4).</li>
+</ul>
+<h3>O porteiro: a barreira automática que já existe</h3>
+<p>Este fato a gerente tinha esquecido e só achou ao escrever esta parte.</p>
+<ul>
+<li><strong>O que é.</strong> Existe uma barreira automática desde 18/11 (D-791; ligada no GitHub em 19/11, D-801): o "porteiro", em <code>regras_dos_agentes/porteiro.py</code>
+  (1.048 linhas) e <code>porteiro_mudancas.py</code>. Ele tem 25 conferências, K01 a K25.</li>
+<li><strong>O que confere.</strong> Algumas leem o código parado. Exemplos:</li>
+<li>K01: conversa com o Windows fora de <code>core/windows.py</code>;</li>
+<li>K02: <code>DETACHED_PROCESS</code>;</li>
+<li>K03: licença de pasta à mão.</li>
+</ul>
+<p>Outras olham o que a entrega mudou.
+- <strong>Onde roda.</strong> No GitHub, em toda entrega (<code>tests/test_conferencias_codigo.py</code>), e por
+  <code>python -m regras_dos_agentes porteiro</code>.
+- <strong>O gancho que não roda.</strong> Existe um gancho antes do commit (<code>ganchos/pre-commit</code>), mas ele <strong>não está instalado</strong> no
+  clone do PC: <code>.git/hooks/pre-commit</code> não existe e <code>core.hooksPath</code> não está definido.
+- <strong>A lista de exceções.</strong> O que já estava errado em 19/11 fica em <code>tests/conferencias_excecoes.json</code>, um item por
+  lugar, ligada com o "sim" dele (D-801/D-802). No ramo do atualizador (<code>aa1963b7</code>) ela tem <strong>164 lugares</strong> (175 na versão de teste, <code>0f58346a</code>). Os que mais pesam:
+  - 52 em <code>teste_velocidade.py</code>;
+  - 50 em <code>core/testes_a_distancia.py</code>;
+  - 33 em <code>atualizacao.py</code>;
+  - 12 em <code>core/_testes_a_distancia_windows.py</code>.
+- <strong>Rodado no código da volta 4</strong> (<code>aa1963b7</code>, 23/11): "Porteiro: nada novo (5000 arquivos lidos; a lista deixa 164
+  lugares)". Ele não pegou o médio 5 por dois motivos:
+  - <code>New-Item -ItemType Directory</code> não está na lista de palavras da K01;
+  - o arquivo já tem 50 lugares de conversa com o Windows aceitos como exceção.
+- <strong>O que ele não pode pegar.</strong> Uma mesma lógica escrita de dois jeitos, como o médio 2: é texto diferente fazendo a
+  mesma coisa.</p>
+<h2>4.5 A Central de decisões</h2>
+<ul>
+<li><strong>O que é.</strong> Uma página do claude.ai, um "artifact" com banco de dados:
+  https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy. Só abre logado na conta do Samuel. <strong>O código da página não
+  está no git</strong>: ele só é lido e publicado pela ferramenta de artifacts da conversa gerente.</li>
+<li><strong>Para que serve.</strong> É onde o Samuel responde perguntas com imagens grandes, escolhe uma opção, comenta, dá
+  ordens e registra testes. As respostas ficam gravadas na hora.</li>
+<li><strong>As abas:</strong> Decidir agora · Conferência · Respostas · Quadro dos trabalhos · Etapas · Agentes · Defeitos ·
+  Velocidade · Ordens e ideias.</li>
+<li><strong>As coleções do banco:</strong></li>
+<li><code>respostas</code>: o que ele escolheu e comentou. A gerente responde no próprio documento, com os campos
+    <code>gerente</code>, <code>gerenteEm</code> e <code>lida</code>, e com <code>reabrir</code>/<code>anteriores</code> para pedir uma resposta de novo sem perder a
+    antiga.</li>
+<li><code>conferencias</code>: um relatório por aba.</li>
+<li><code>ordens</code>, <code>testes</code>, <code>ideias</code> e <code>config</code>: escritas pela página. A gerente marca <code>estado</code>.</li>
+<li>O resto, gerado pela gerente.</li>
+<li><strong>Como é alimentada:</strong>
+  1. A gerente mantém <code>docs/plano/central/fonte.json</code>, com as chaves <code>geral</code>, <code>trabalhos</code>, <code>agentes</code> e
+     <code>velocidade</code>.
+  2. <code>docs/plano/para_a_central.py</code> junta esse arquivo com o plano, o <code>memoria/bugs.md</code> e o git, e grava lotes
+     JSON em <code>D:\programas\EditorImpressao-arquivos\central-banco\</code>.
+  3. A gerente grava esses lotes no banco, de 50 em 50, com a ferramenta de dados de artifacts (ação <code>batch</code>).
+  4. As abas da Conferência saem de <code>docs/plano/central/extrair_conferencia.py</code>, e há 18 arquivos em
+     <code>docs/plano/central/conferencias/</code>.</li>
+<li><strong>As regras de escrita</strong> estão no <code>CLAUDE.md</code> §10.10 e §11.13. São dez pontos sobre como perguntar ao Samuel,
+  tirados de 106 casos de "Ainda não entendi" e 176 comentários dele. Há também um modelo de print com faixas
+  coloridas de antes e depois, em <code>docs/plano/central/modelo-de-print/</code>.</li>
+<li><strong>Outras páginas</strong> do mesmo tipo: "Escolhas do Editor de Impressão", "Layout do Editor de Impressão" e "Quando
+  revisar uma página". Os endereços estão no <code>CLAUDE.md</code> §10.10.</li>
+<li><strong>Situação:</strong> o quadro dos trabalhos não é atualizado desde 18/11.</li>
+</ul>
+<h2>4.6 Como um trabalho anda, do pedido ao programa</h2>
+<ol>
+<li>O Samuel pede, no chat ou na Central. A gerente grava a decisão no Livro, com as palavras dele, e no Registro
+   do plano.</li>
+<li>A gerente escreve o pedido ao agente. Ele leva as decisões que tocam aquilo e as regras de que o agente lê o
+   arquivo dele, o <code>CLAUDE.md</code> inteiro e o índice da memória.</li>
+<li>O agente escreve no seu <code>ONDE-PAREI.md</code>, antes de mexer:
+   - as decisões que precisa cumprir;
+   - o que já está escolhido e testado;
+   - como fica para quem usa;
+   - a causa;
+   - os caminhos que chegam na função;
+   - a lista das falhas.</li>
+</ol>
+<p>Depois faz o código e os testes, e entrega à gerente.
+4. A gerente manda a rodada inteira no GitHub. Depois vem um agente novo que tenta quebrar.
+5. Se ele acha problema, volta para o escritor, numa nova "volta".
+6. Quando não acha mais nada, o trabalho entra na versão de teste e o Samuel testa no PC dele. Só ele marca
+   aprovado.</p>
+<h2>4.7 O que não está funcionando</h2>
+<p>Fatos:</p>
+<ul>
+<li><strong>As regras crescem e os erros continuam.</strong></li>
+<li>A seção 11 do <code>CLAUDE.md</code> nasceu em 26/10/2026 e tem hoje 13 regras.</li>
+<li>A regra 12 ("sem gambiarra") ocupa mais de uma página. Foi escrita em 13/11 e estendida a todo o código em
+    18/11.</li>
+<li>De 18 a 22/11 entraram mais decisões de processo: D-796 a D-798, D-807, D-811 a D-813, D-815, D-819 e
+    D-827. Várias ainda não viraram texto nas regras.</li>
+<li><strong>Antes de trabalhar, cada agente lê cerca de 95 KB de regras:</strong> o <code>CLAUDE.md</code> (71 KB), o arquivo dele (10 a 14 KB) e o índice (12 KB). Mais
+  as decisões copiadas no pedido.</li>
+<li><strong>O caso do atualizador:</strong> 4 consertos pedidos em 21/11 já levaram 4 voltas, mais uma prova à vista no PC do
+  Samuel, e a quinta volta está pendente. A volta 4 foi escrita por um agente que leu a regra 12. Mesmo assim, o
+  agente seguinte achou 5 problemas médios, dois deles do tipo que a regra proíbe:</li>
+<li>a mesma leitura do arquivo de estado com duas regras, uma no vigia e outra no script da troca;</li>
+<li>a pasta segura criada por <code>New-Item</code> próprio em vez de <code>core.windows.criar_pasta_segura</code>.</li>
+</ul>
+<p>Detalhe na Parte 2.
+- <strong>O mesmo padrão antes do atualizador:</strong> o Girar, o "Só as letras", o "usar em todas" e o Automático. A revisão de
+  código de 10/11 achou 17 remendos desse tipo. Detalhe na Parte 1, seção "Os outros ciclos".
+- <strong>A gerente também falhou.</strong>
+  - Passou a volta 4 para a conferência sem procurar duplicação antes.
+  - Em 23/11 disse ao Samuel que não havia barreira automática. O porteiro (acima) existe desde 19/11. As regras e
+    os documentos já são tantos que a própria gerente perde o que está construído.</p>
+<h2>4.8 Anatomia dos ciclos</h2>
+<p>Fatos tirados das Partes 1 e 2. Os casos são o Girar, as três contas do "como fica com este filtro", o "usar em
+todas", o Automático contra o "não dividir esta", a lista "o que é do filtro" e a volta 4 do atualizador. O ciclo
+tem sempre os mesmos passos:</p>
+<ol>
+<li><strong>O pedido chega como um caso.</strong> O Samuel vê um defeito ou decide algo olhando uma página, um botão, um item do
+   "aplicar em". A decisão é gravada com as palavras dele sobre aquele caso.</li>
+<li><strong>O conserto vai para o lugar onde o caso apareceu.</strong> O agente muda o método que o print mostra. A regra não mora
+   num lugar só: fica espalhada em métodos parecidos de <code>ui/tela_conferir.py</code> (10.187 linhas) ou em textos de
+   PowerShell montados dentro de <code>atualizacao.py</code> (2.314 linhas).
+   - Exemplo do programa: a D-662 entrou só no "todas as folhas" do Girar.
+   - Exemplo do atualizador: a leitura que tenta de novo entrou só no vigia.</li>
+<li><strong>O teste prova o caso pedido.</strong> Ninguém cobra que todos os caminhos deem o mesmo resultado. Então a divergência não
+   deixa nenhum teste vermelho.</li>
+<li><strong>O Samuel ou o agente que tenta quebrar acha o mesmo defeito no caminho vizinho.</strong> Abre-se uma volta nova.
+   - O Girar levou 9 voltas.
+   - As figurinhas e o "comparar" levaram 5.
+   - O porteiro (o passo 0 da parte do Windows) teve 6 rodadas de conferência, com 19, 9, 7, 6, 3 e 1 achados.</li>
+<li><strong>Quando o defeito é de efeito colateral, entra uma proteção nova em vez de sair a causa.</strong> Na volta 4 do
+   atualizador, quatro peças que só protegem outra nasceram num commit só (<code>586b483f</code>). Três dos cinco problemas novos
+   moram nelas.</li>
+</ol>
+<p>Dois fatos agravam o ciclo:</p>
+<ul>
+<li><strong>O que se sabe errado não é desfeito.</strong> Dos 17 remendos que a revisão de 10/11 listou, 16 continuam no código. A
+  decisão D-765, de 17/11, congelou os consertos do programa até a entrega ao Kaique, e o código novo continua sendo
+  escrito em cima deles.</li>
+<li><strong>A resposta a cada ciclo foi escrever uma regra nova.</strong> A regra 12 ("sem gambiarra") nasceu do Girar em 13/11. A
+  ampliação de 18/11 nasceu do atualizador. A volta 4 foi escrita depois das duas e repetiu o padrão.</li>
+</ul>
+<p>O único caso em que o ciclo fechou foi o "Tirar o fundo" (caso 6 da Parte 1). Ali o dado passou a ter uma função só
+em <code>core/</code>, e os caminhos foram levados até ela.</p>
+<h2>4.9 Opinião da gerente (separada)</h2>
+<ul>
+<li>Escrever mais regra não segurou o erro. O que segurou foi o agente que tenta quebrar, e ele só entra no fim da
+  volta, quando o código já está escrito.</li>
+<li>Parte das voltas do atualizador vem do desenho dele: peças que existem para proteger outras peças nossas. Cada
+  conserto acrescentou uma peça em vez de tirar uma causa. A Parte 2 diz quais peças parecem ser assim.</li>
+<li>O peso de leitura antes de cada tarefa (regras longas, documentos de centenas de KB) provavelmente atrapalha mais
+  do que ajuda. Isso é palpite, não medição.</li>
+</ul>
+<hr />
+<h1>Parte 5. O que queremos que você responda</h1>
+<ol>
+<li><strong>O atualizador e os testes à distância estão complicados demais?</strong> A Parte 2 mostra que quase tudo vem de uma
+   escolha: quem troca a versão é uma tarefa SYSTEM que roda o próprio <code>.exe</code> instalado. Dado o que o Samuel pediu
+   (Parte 2.1, principalmente D-733 e D-736), qual seria o desenho mais simples? Vale a pena refazer, ou consertar os 5
+   problemas e seguir?</li>
+<li><strong>Por que o ciclo se repete?</strong> A seção 4.8 descreve o mesmo padrão em seis casos. Qual é a causa de verdade: o
+   código (regras espalhadas numa tela de 10 mil linhas, PowerShell montado como texto), o jeito de trabalhar (pedido
+   por caso, conserto por volta, regra nova a cada falha) ou os dois?</li>
+<li><strong>O jeito de trabalhar está pesado demais?</strong> Cada agente lê cerca de 95 KB de regras antes de começar, e o Livro tem
+   mais de 800 decisões. O que você cortaria, e o que manteria? O agente novo que tenta quebrar é o que mais acha
+   defeito.</li>
+<li><strong>O porteiro existe e não pegou o problema.</strong> Como deixar essa barreira útil de verdade? Ampliar as palavras, diminuir
+   as 164 exceções, ou outro tipo de conferência?</li>
+<li><strong>Os 16 remendos conhecidos do programa</strong> continuam no código, congelados até a entrega ao Kaique. Isso deve mudar de
+   ordem?</li>
+<li><strong>Algo que não perguntamos</strong> e que você faria diferente.</li>
+</ol>
+<p><strong>Como responder.</strong> Sua resposta vai para a gerente, que vai explicar ao Samuel em português simples e levar as
+escolhas a ele. Separe o que é certeza do que é palpite. Diga também o que você precisaria ler a mais para ter
+certeza.</p>
+<hr />
+<h1>Anexo. Editor de Impressão — árvore, dependências e montagem do .exe</h1>
+<p>Escrito em 23/11/2026 pelo agente pesquisador, só lendo o código (nenhuma linha mudou).
+Código lido: ramo <code>obra-2026-10-26</code> (a "versão de teste", o programa de hoje), commit
+<code>0f58346ae3c49f10a07ec5abc8411d9f441da946</code> (conferido: está em <code>origin/obra-2026-10-26</code>).
+Links abaixo: <code>O/&lt;caminho&gt;#L&lt;n&gt;</code> = <code>https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/&lt;caminho&gt;#L&lt;n&gt;</code>.</p>
+<h2>1. Árvore (só o que importa)</h2>
+<p>Contado com <code>git ls-files</code> no commit acima (arquivos no git por pasta, entre parênteses).</p>
+<pre><code>EditorImpressao/
+├─ main.py                ponto de entrada; excepthook; atende --servidor-de-paginas e --conferir-ocr antes de abrir janela
+├─ modelos.py             ConfigFolha, ConfigPagina, Projeto, Acao (o modelo de dados)
+├─ projetos.py            gravar/abrir projetos em %LOCALAPPDATA%\EditorImpressao (gravação por trás, cópias de segurança)
+├─ historico_acoes.py     desfazer/refazer ilimitado (acoes.jsonl)
+├─ historico.py, configuracoes.py, atalhos.py, registro.py   livros recentes, preferências, atalhos, erros.log
+├─ versao.py              o número da versão (único lugar; hoje &quot;1.1.0&quot;)
+├─ atualizacao.py, assinatura.py, servidor_das_versoes.py, publicar_versao_kaique.py
+│                         atualizador (Velopack) e publicação; ficam com outro agente, só cito que existem
+├─ empacotar.py, instalador.iss, montar_motor_kraken.py, compilar_*.py   montar o .exe, o instalador, o motor do Kraken e as DLLs
+├─ avaliar.py, avaliar_selecao.py, conferencia.py, conferir.py           réguas e páginas de conferência
+├─ teste_*.py (19)      scripts de teste soltos na raiz, fora do pytest; o principal é teste_botoes.py (clica em todos os botões)
+├─ core/ (67)             todo o processamento; não importa nada de ui/ (O/core/__init__.py#L3)
+│  └─ nativo/             st_gravura.dll e st_ferramentas.dll: código original do ScanTailor Advanced compilado (GPL-3)
+├─ ui/ (49)               as telas em PySide6; ui/widgets/ = peças (painéis, prévia, tira, grade, trilha de ferramentas)
+├─ tests/ (269)           o pytest: 258 arquivos test_*.py, 64 deles test_decisoes*.py (provas das decisões do Samuel)
+├─ terceiros/scantailor-advanced/ (268)   fonte original do ScanTailor Advanced v1.2.1 + a &quot;cola&quot; em C nossa (ligacao*/)
+├─ motor_kraken/ (2)      servidor_kraken.py + requisitos-travados.txt do motor à parte (Python 3.12)
+├─ docs/plano/ (69)       DECISOES.md (Livro de decisões), PLANO-DEFINITIVO.md, ESTADO-ATUAL.md, prints de bugs
+├─ docs/pesquisa/ (8)     pesquisas de código de fora
+├─ memoria/ (209)         memória por assunto (fichas de itens, livros, páginas de teste, catálogo de erros)
+├─ relatorios/ (3912)     relatórios de cada trabalho e conferência (.md/.html/.pdf + prints)
+├─ regras_dos_agentes/ (18), .claude/agents/   regras dos agentes de IA que trabalham no projeto
+├─ gabarito/ (5)          lista das páginas-gabarito (as imagens ficam fora do git)
+├─ modelos/               redes neurais, FORA do git: doclayout.onnx, mobile_sam/, doctr/, tessdata/
+├─ recursos/, arte/       brasão e ícones
+└─ velhos/                o EditorImpressao.spec antigo, guardado por decisão
+</code></pre>
+<h2>2. Dependências externas</h2>
+<p>Fonte: <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/requirements.txt"><code>requirements.txt</code></a>
+(não há <code>pyproject.toml</code> nem <code>setup.py</code>). "No .venv" = versão instalada hoje em <code>D:\programas\EditorImpressao\.venv</code>
+(lida nos <code>*.dist-info</code>). Python do programa: 3.14 (o GitHub usa 3.14.3, <code>.github/workflows/testes-windows.yml</code> L98, ramo
+<code>claude/list-server-files-gkos8v</code>). Licenças: as marcadas (CLAUDE) vêm do CLAUDE.md §3; (req) do comentário do
+requirements; (LICENSE) do arquivo no repositório; as outras são <strong>de memória, não conferi</strong> no arquivo da licença.</p>
+<table>
+<thead>
+<tr>
+<th>Pacote</th>
+<th>Pedido</th>
+<th>No .venv</th>
+<th>Para que o programa usa</th>
+<th>Licença</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PySide6</td>
+<td>&gt;=6.9</td>
+<td>6.11.1</td>
+<td>toda a interface (Qt); as DLLs do ScanTailor usam o mesmo Qt 6.11.1</td>
+<td>LGPL-3 (CLAUDE)</td>
+</tr>
+<tr>
+<td>PyMuPDF</td>
+<td>&gt;=1.24</td>
+<td>1.28.0</td>
+<td>única porta de PDF: ler páginas, escrever o PDF final, cadernos (<code>core/pdf_io.py</code>, <code>core/cadernos.py</code>)</td>
+<td>AGPL-3 (CLAUDE)</td>
+</tr>
+<tr>
+<td>opencv-python</td>
+<td>&gt;=4.10</td>
+<td>5.0.0.93</td>
+<td>operações de imagem em todo <code>core/</code></td>
+<td>Apache-2.0 (CLAUDE)</td>
+</tr>
+<tr>
+<td>numpy</td>
+<td>&gt;=2.0</td>
+<td>2.5.1</td>
+<td>imagens como matrizes</td>
+<td>BSD (CLAUDE)</td>
+</tr>
+<tr>
+<td>Pillow</td>
+<td>&gt;=10.0</td>
+<td>12.3.0</td>
+<td>ler/gravar imagens, prints</td>
+<td>HPND (CLAUDE)</td>
+</tr>
+<tr>
+<td>doxapy</td>
+<td>&gt;=0.9.9</td>
+<td>0.9.9</td>
+<td>binarização (Sauvola e outros) do Preto e branco</td>
+<td>CC0 (CLAUDE)</td>
+</tr>
+<tr>
+<td>scikit-image</td>
+<td>&gt;=0.24</td>
+<td>0.26.0</td>
+<td>operações morfológicas e de medida (traz o scipy)</td>
+<td>BSD (CLAUDE)</td>
+</tr>
+<tr>
+<td>onnxruntime</td>
+<td>&gt;=1.28.0</td>
+<td>1.28.0</td>
+<td>roda as redes que só apontam: doclayout (gravura/letra) e MobileSAM (seleção por clique)</td>
+<td>MIT (de memória)</td>
+</tr>
+<tr>
+<td>onnxtr</td>
+<td>==0.9.0 (travado)</td>
+<td>0.9.0</td>
+<td>detector de texto docTR <code>fast_base</code> (<code>core/ocr_doctr.py</code>; usa método interno, por isso travado)</td>
+<td>Apache-2.0 (de memória)</td>
+</tr>
+<tr>
+<td>pyclipper</td>
+<td>==1.4.0 (travado)</td>
+<td>1.4.0</td>
+<td>alarga as caixas do docTR, por dentro do OnnxTR</td>
+<td>MIT (de memória)</td>
+</tr>
+<tr>
+<td>velopack</td>
+<td>==1.2.161 (travado)</td>
+<td>1.2.161</td>
+<td>atualização pela internet (<code>atualizacao.py</code>); travado na mesma versão do <code>vpk</code></td>
+<td>MIT (req)</td>
+</tr>
+<tr>
+<td>markdown</td>
+<td>&gt;=3.10.3</td>
+<td>3.10.3</td>
+<td>relatórios <code>.md</code> → <code>.html</code>/<code>.pdf</code> (<code>relatorio.py</code>)</td>
+<td>BSD (de memória)</td>
+</tr>
+<tr>
+<td>pytest</td>
+<td>&gt;=8.0</td>
+<td>9.1.1</td>
+<td>testes</td>
+<td>MIT (de memória)</td>
+</tr>
+<tr>
+<td>pyinstaller</td>
+<td>&gt;=6.0</td>
+<td>6.21.0</td>
+<td>monta o <code>.exe</code></td>
+<td>GPL-2 com exceção do bootloader (de memória)</td>
+</tr>
+</tbody>
+</table>
+<p>Fora do <code>requirements.txt</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Peça</th>
+<th>Versão</th>
+<th>Para que</th>
+<th>Onde</th>
+<th>Licença</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ScanTailor Advanced (código-fonte)</td>
+<td>v1.2.1</td>
+<td>detector de gravura, limpar pontinhos, dividir, endireitar, caixas, compilados em <code>core/nativo/*.dll</code> e chamados por <code>ctypes</code></td>
+<td><code>terceiros/scantailor-advanced/</code></td>
+<td>GPL-3 (LICENSE)</td>
+</tr>
+<tr>
+<td>Motor do Kraken</td>
+<td>kraken 7.1.1, torch 2.14.0 (CPU), Python 3.12 embutível</td>
+<td>segunda opinião das linhas de texto do "Só as letras"; processo à parte</td>
+<td><code>motor_kraken/requisitos-travados.txt</code>, <code>montar_motor_kraken.py</code></td>
+<td>Kraken Apache-2.0, PyTorch BSD (de memória)</td>
+</tr>
+<tr>
+<td>Tesseract (UB Mannheim)</td>
+<td>5.4.0</td>
+<td>OCR instalado, desligado de fábrica</td>
+<td>levado por <code>empacotar.py</code> (L64)</td>
+<td>Apache-2.0 (de memória)</td>
+</tr>
+<tr>
+<td>Visual C++ Redistributable</td>
+<td>oficial Microsoft</td>
+<td>DLLs que o programa precisa; conferido pela assinatura digital</td>
+<td><code>empacotar.py</code> (L68-80)</td>
+<td>licença da Microsoft</td>
+</tr>
+<tr>
+<td>Redes neurais</td>
+<td>doclayout.onnx, MobileSAM, docTR rep_fast_base</td>
+<td>só apontam onde está gravura, letra, texto (nunca desenham)</td>
+<td><code>modelos/</code>, fora do git; caminhos em <code>core/detectar_regioes.py</code> L158, <code>core/rede_selecao.py</code> L29-31, <code>core/ocr_doctr.py</code> L100</td>
+<td>não conferi</td>
+</tr>
+<tr>
+<td>Inno Setup 6</td>
+<td>—</td>
+<td>instalador antigo da "pasta portátil" (<code>ISCC.exe</code>)</td>
+<td><code>instalador.iss</code></td>
+<td>licença própria do Inno (de memória)</td>
+</tr>
+<tr>
+<td>vpk (Velopack) + WiX</td>
+<td>vpk 1.2.161</td>
+<td>pacote de atualização e o <code>.msi</code></td>
+<td><code>empacotar.py</code> L1192 (<code>VERSAO_DO_VPK</code>)</td>
+<td>MIT / MS-RL (de memória)</td>
+</tr>
+</tbody>
+</table>
+<p>Roda no PC do Samuel (Windows 11, Python 3.14, GTX 1650; o pacote é o <code>onnxruntime</code> comum, não o <code>-gpu</code>, então as redes rodam no processador: dedução pelo nome do pacote) e no notebook do
+Kaique (i5-1235U, sem placa de vídeo) <strong>pelo que o código diz</strong>; o notebook só recebeu o teste de velocidade da Fase 0
+(não conferi o resultado).</p>
+<h2>3. Como o <code>.exe</code> e o instalador são montados</h2>
+<ul>
+<li><strong>Script único:</strong> <a href="https://github.com/Samuel-Bottini-BR/EditorImpressao/blob/0f58346ae3c49f10a07ec5abc8411d9f441da946/empacotar.py"><code>empacotar.py</code></a>
+  (2036 linhas). Modos <code>tudo | pasta | arquivo | instalador | entrega</code> (<code>main</code>, L1971).</li>
+<li><strong>PyInstaller</strong> monta a versão em pasta (<code>onedir</code>, <code>--contents-directory _internal</code>) e o arquivo único do pendrive
+  (<code>comando_do_pyinstaller</code>, L859; <code>_pyinstaller</code>, L907). O script põe junto os modelos, as DLLs do ScanTailor, o
+  docTR, o motor do Kraken, o Tesseract e o Visual C++, e <strong>para antes de gerar</strong> se faltar alguma peça; depois confere
+  que cada peça chegou (cabeçalho, L29-106).</li>
+<li><strong>Três saídas, descritas num lugar só</strong> (<code>Saida</code>, <code>PORTATIL</code>, <code>ATUALIZACAO</code>, <code>INSTALADOR</code>, L228-268): a pasta
+  portátil (o Inno Setup a empacota em <code>dist\EditorImpressao-Setup.exe</code>, <code>instalador.iss</code>); a atualização do Velopack
+  (sem o motor do Kraken, que é publicado à parte); e o instalador <code>.msi</code> feito pelo <code>vpk</code> (que chama o WiX). O <code>vpk</code>
+  roda só por <code>rodar_vpk</code> (L1530).</li>
+<li><strong>Publicar</strong> uma versão para o Kaique é outro script, <code>publicar_versao_kaique.py</code> (assina, sobe ao GitHub); é do
+  agente do atualizador.</li>
+<li><strong>DLLs do ScanTailor:</strong> <code>compilar_detector_gravura.py</code> e <code>compilar_st_ferramentas.py</code> (CMake + Visual Studio 2022
+  Build Tools, Qt 6.11.1 qtbase e Boost 1.78 baixados e conferidos pela soma).</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 23/11/2026 às 18:21</p>
+</body>
+</html>
