@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quem tentou quebrar: a volta 4 dos consertos do atualizador (relatório 3)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Quem tentou quebrar: a volta 4 dos consertos do atualizador (relatório 3)</h1>
+<p>Verificador, 23/11/2026. É a conferência do atualizador, a peça que troca o programa pela versão nova no notebook do
+Kaique. Conferi só a volta 4: os 3 defeitos que a prova à vista de 22/11 achou (o "Reiniciar agora" não trocava, a
+pergunta do Windows piscava na barra, a segunda preparação dava "acesso negado").</p>
+<p>Trabalho conferido: ramo <code>atualizador-4-consertos-2026-11-21</code>, ponta de código <code>aa1963b7</code>, mais o plano <code>00506da4</code> e os
+commits <code>b756ddc2</code>, <code>3adea01f</code>, <code>586b483f</code>, <code>1e5ea67d</code>, <code>929195b4</code>, <code>5a1aa6b2</code>, <code>7ca2c55f</code>, <code>b3f6d99f</code>, <code>528afac0</code> e
+<code>aa1963b7</code>. Eu não escrevi este código. Não abri janela na tela do Samuel, não pedi licença ao Windows e não mudei o
+código do ramo. As provas foram feitas numa cópia minha (<code>.claude/worktrees/quebra-volta4</code>), tirada no fim.</p>
+<h2>Veredito</h2>
+<p><strong>NÃO ESTÁ PRONTO.</strong> A causa principal saiu: o script da troca não segura mais a pasta do programa, e isso está bem feito.
+Mas achei <strong>5 médios</strong>, e pela regra "só grave e médio voltam" eles voltam ao escritor:</p>
+<ul>
+<li>dois buracos em que a troca ainda pode ser estragada por um clique no atalho, ou pela abertura do próprio programa no
+  meio dela;</li>
+<li>duas proteções novas sem teste nenhum (desligadas, todos os testes continuam passando);</li>
+<li>a pasta segura feita por fora da peça única e conferida só depois de já ter gravado nela.</li>
+</ul>
+<p>Nenhum é grave. Os consertos são pequenos e ficam nos mesmos lugares únicos que o escritor criou: nenhum pede para
+refazer a volta.</p>
+<p>Máquina ou olho: tudo aqui é <strong>máquina</strong> (leitura do código, testes no PC um arquivo por vez, 26 proteções desligadas uma
+por vez na minha cópia, 3 demonstrações rodando de verdade no Windows, sem licença e sem janela). O que só o Windows de
+verdade prova está na lista do fim.</p>
+<h2>Os achados</h2>
+<h3>Médio 1. A troca sem o script confere "o programa está aberto?" antes de a marca existir (nasceu na volta 4)</h3>
+<ul>
+<li><strong>Onde:</strong> <code>atualizacao.py</code>, <code>procurar_e_preparar</code>. A pergunta "está aberto?" (linha 676) vem primeiro. Depois o estado
+  vira "aplicando" (linha 681) e só então o pedido da troca (linha 684) chama <code>segurar_a_marca_da_troca</code> (linha 1307),
+  que lança o vigia e espera a marca aparecer por até 10 s. Depois que a marca aparece, ninguém pergunta de novo.</li>
+<li><strong>O caso:</strong> o Kaique fecha o programa durante o download e logo o abre de novo. Nesse meio tempo (o PowerShell do vigia
+  nascendo como o sistema, de 1 a 10 s), a marca ainda não existe. O clique abre o programa normalmente, e o pedido de
+  troca sai mesmo assim. O Velopack espera o ajudante sair, monta a versão nova e <strong>fecha à força tudo o que roda da pasta
+  do programa</strong>: o programa do Kaique some no meio do uso. Nesse caminho ninguém o reabre, porque o vigia não reabre.</li>
+<li><strong>Prova (minha cópia):</strong> <code>test_demo_a_troca_sem_o_script_confere_o_programa_antes_de_ter_a_marca</code>. O clique "no meio"
+  não é segurado (<code>troca_em_andamento</code> = False), e mesmo com o programa já aberto o pedido de troca sai ("aplicando", 1
+  troca pedida). O teste passa: o defeito existe.</li>
+<li><strong>Por que é médio:</strong> o pedido da gerente (resposta 4) era a mesma proteção na troca sem o script. No caminho do script
+  a ordem está certa (primeiro a marca, depois a pergunta). No caminho do vigia está ao contrário. O conserto natural
+  fica no lugar único: perguntar "está aberto?" de novo <strong>depois</strong> de a marca estar segura, dentro do
+  <code>GerenteComAMarcaDaTroca</code>. Antes da volta 4 a janela era maior: sem marca nenhuma, já existia.</li>
+</ul>
+<h3>Médio 2. O script da troca para de esperar quando uma leitura do estado falha (já existia; a volta 4 deixou duas regras para a mesma leitura)</h3>
+<ul>
+<li><strong>Onde:</strong> <code>atualizacao.py</code>, <code>script_de_trocar_e_reabrir</code>, linha 1189. A linha <code>$fase = ''; $tipo = ''</code> zera a fase
+  antes de cada leitura. Se a leitura falha, a fase fica vazia, e o teste <code>$fase -ne 'pendente' -and $fase -ne
+  'aplicando'</code> sai do laço.</li>
+<li><strong>O caso:</strong> a leitura falha no instante em que o ajudante troca o arquivo do estado pelo nome. O próprio escritor achou
+  isso e consertou só no vigia (o teste dele diz: "o arquivo trocado no instante da leitura"). Quando o script da troca
+  sai do laço: reabre o programa com o argumento "depois da troca", que a marca nunca segura; e solta a marca. O programa
+  nasce de dentro da pasta no meio da troca, e o Velopack o fecha à força ou a troca falha ("A atualização não deu
+  certo"). É exatamente o defeito 1 da prova.</li>
+<li><strong>Prova (de verdade, no Windows):</strong> o laço tirado do script de verdade, com o estado "aplicando" e o arquivo sem
+  deixar ler por 6 s, saiu em 1 s com a fase vazia (<code>SAIU fase=[] depois de 1 s</code>). Controle: o mesmo laço, sem travar o
+  arquivo, esperou o estado mudar (<code>SAIU fase=[ok] depois de 6 s</code>).</li>
+<li><strong>Por que é médio:</strong> é raro (a leitura precisa coincidir com uma das 2 ou 3 gravações da troca). Mas fica no caminho
+  principal do "Reiniciar agora", e a regra "só muda a fase se leu" já está escrita em <code>_linha_de_ler_a_fase</code>. O script
+  da troca só não a segue, porque zera antes. É a mesma leitura com dois comportamentos (§11.12).</li>
+</ul>
+<h3>Médio 3. "Sem licença para abrir a marca" quer dizer "existe": proteção sem teste (nasceu na volta 4; D-827)</h3>
+<ul>
+<li><strong>Onde:</strong> <code>atualizacao.py</code>, <code>_linhas_da_marca_existe</code>, linha 1086: <code>catch { return $true }</code>.</li>
+<li><strong>Para que serve:</strong> na troca sem o script, a marca é do sistema. O script "só de reabrir" roda na conta do Kaique e não
+  tem licença para abri-la. Confirmei no Windows deste PC que o Windows avisa isso com um erro, e não com "não existe":
+  uma marca sem licença para a conta faz a pergunta do PowerShell dar <code>UnauthorizedAccessException</code>. Sem esse <code>catch</code>,
+  o script entenderia "a troca acabou" e reabriria o programa no meio dela.</li>
+<li><strong>Prova:</strong> desliguei a proteção (<code>return $false</code> no <code>catch</code>) e os 55 testes do arquivo continuaram passando (M02).</li>
+<li><strong>Como testar sem licença:</strong> uma marca criada pelo próprio teste com a lista de licenças vazia dá o mesmo erro. Testei
+  isso no PC.</li>
+</ul>
+<h3>Médio 4. A pergunta vai com a janela da frente como dona: proteção sem teste (nasceu na volta 4; D-827)</h3>
+<ul>
+<li><strong>Onde:</strong> <code>atualizacao.py</code>, <code>preparar_na_primeira_abertura</code>, linha 2111: <code>janela = dona</code>.</li>
+<li><strong>Para que serve:</strong> quando um aviso do programa está na frente, a pergunta do Windows tem de ir com o aviso como dona.
+  Com a janela principal como dona (ela fica atrás do aviso), a pergunta pode voltar a piscar na barra.</li>
+<li><strong>Prova:</strong> troquei a linha por <code>pass</code> e os 55 testes continuaram passando (M08). Os testes da tela de mentira sempre
+  devolvem a própria janela principal, então não veem a diferença.</li>
+</ul>
+<h3>Médio 5. A pasta segura do desfazer é criada e gravada por fora da peça única, e conferida só depois (nasceu na volta 4)</h3>
+<ul>
+<li><strong>Onde:</strong> <code>core/testes_a_distancia.py</code>. <code>_comando_criar_a_pasta</code> (linhas 370 a 379) cria a pasta com <code>New-Item</code>. O
+  mesmo texto está repetido em <code>_comando_anotar_o_antes</code> (linha 290). Depois o passo 2 grava o <code>desfazer.ps1</code> e cria a
+  tarefa que o roda como o sistema. Só então <code>preparar_o_desfazer</code> (linhas 869 e 872) confere a pasta.</li>
+<li><strong>A peça única já tem isso:</strong> <code>core.windows.criar_pasta_segura</code> cria, confere e, se não conferir, apaga.
+  <code>gravar_na_pasta_segura</code> confere antes de gravar e lê de volta. A volta 4 usou a conferência da peça, mas não a criação
+  nem a gravação (§11.12, ponto 1: uma peça só para cada conversa com o Windows ou com o disco).</li>
+<li><strong>O caso:</strong> a pasta <code>C:\Program Files\EditorImpressaoAjudante</code> já existe com outras licenças, ou é um atalho para outro
+  lugar (só um administrador consegue fazer isso, então é raro). O script que roda como o sistema é gravado nela, a
+  tarefa passa a apontar para ele e fica. A preparação diz "falhou", e a pergunta do Windows volta em toda abertura, sem
+  nunca dar certo.</li>
+<li><strong>O que o formulário afirma e o código não faz:</strong> "A pasta segura existe mas não confere: [...] não grava nada nela".
+  Grava. Isso é o ponto 2 da §11.12: o formulário dá como feito o que não foi conferido.</li>
+</ul>
+<h3>Baixos (para a lista do depois)</h3>
+<ol>
+<li><strong>A volta para a versão anterior não passa pelo pedido único de troca</strong> (já existia). <code>_aplicar_pacote_quando_sair</code>
+   (linha 779) chama o <code>Update.exe</code> direto. A marca só a cobre por 60 s fixos (<code>ESPERA_DA_VOLTA_S</code>), e a volta primeiro
+   baixa a versão anterior inteira (~460 MB). Com internet lenta, a marca acaba antes de a volta começar. O comentário
+   "É o único jeito de o programa pedir uma troca ao Velopack" (linhas 558 e 559) e a lista "caminho → função" estão
+   errados e precisam ser corrigidos. O caminho só acontece se a versão nova falhar no teste rápido.</li>
+<li><strong>A leitura do PowerShell cita o documento ao contrário.</strong> O documento do <code>Start-Process</code> 5.1 diz: "The default is
+   the location of the executable file or document being started". O formulário cita esse documento para "abre na
+   localização atual do PowerShell", que é o que o experimento 3 mediu. O código funciona dos dois jeitos (o
+   <code>Set-Location</code> vai para a pasta do próprio programa). Só a citação precisa dizer que o documento e o Windows
+   divergem.</li>
+<li><strong>"Alguém já vai reabrir?" em Python não tem teste</strong> (M25 sobreviveu). Não faz mal: o script "só de reabrir" confere
+   de novo e não reabre. A conferência usa <code>_marca_existe</code>, a cópia antiga que o escritor já anotou como bug.</li>
+<li><strong>Duas leituras de marca no mesmo arquivo</strong> (<code>_marca_existe</code> antiga e <code>core.windows.marca_existe</code>). Já existia e já
+   está anotada pelo escritor.</li>
+<li><strong>No meio da troca, o clique no atalho fica sem resposta.</strong> No caso normal, de 1 a 3 minutos. No pior caso, até ~16
+   min: o estado preso em "aplicando" e o vigia esperando o limite. É escolha (nenhuma frase nova sem o "sim" do
+   Samuel; a janelinha fica para depois), e o escritor já pôs como ressalva. Entra na prova à vista.</li>
+<li><strong>O "ligar" das Configurações cria a pasta segura sem conferi-la</strong> (fora desta entrega, ressalva do escritor). A
+   conferência antiga, o mesmo <code>icacls</code> no ligar e na preparação, saiu do ligar sem nada no lugar. Foi listado, como a
+   D-827 pede, mas o ligar ficou sem nenhuma conferência.</li>
+</ol>
+<h2>O que está certo (conferido)</h2>
+<ul>
+<li><strong>A causa do defeito 1</strong> (o PowerShell da troca nascendo com a pasta do programa como pasta de trabalho) saiu na peça
+  única (<code>core/windows._lancar_solto</code>, <code>cwd=</code> a pasta do sistema). Vale para todo processo lançado solto, não só para
+  este. Confere com o Velopack 1.2.161 que eu li: <code>force_stop_package</code> fecha só o que roda de dentro da pasta do
+  programa, e o PowerShell mora no System32. A pasta é renomeada com 10 tentativas, uma por segundo, com a frase "one or
+  more running processes prevented it".</li>
+<li><strong>"O programa terminou de fechar?"</strong> passou a ser lido no Windows (<code>programas_rodando_de</code>), num lugar só, usado só pelo
+  ajudante. Os servidores de páginas e o brasão saem junto com o programa, então a espera de 30 s basta. O programa
+  empacotado é "em pasta", um processo por programa, então o próprio ajudante não se conta.</li>
+<li><strong>A pergunta do Windows</strong> espera num fio solto (daemon), que não segura o programa ao fechar. A janela minimizada não é
+  desminimizada. A janela fechada não recebe pergunta.</li>
+<li><strong>A pasta segura:</strong> as licenças de Arquivos de Programas deste PC (lidas só para ver, com <code>icacls</code>) são as que o
+  formulário diz. Refazer a preparação regrava o <code>desfazer.ps1</code> (o teste do escritor faz isso de verdade).</li>
+<li><strong>Os 3 testes autorizados pelo Samuel em 23/11</strong> ("ok"): mudou só uma linha, mais duas de comentário, no Windows de
+  mentira de <code>tests/test_atualizador_4.py</code>. Nenhuma conferência mudou, nenhum código do programa mudou. Depois do
+  <code>528afac0</code>, só esse arquivo e o formulário mudaram. No PC: 57 de 57. No GitHub: rodada 45238891880, que testou
+  <code>aa1963b7</code>, success na 2ª tentativa (a 1ª caiu no teste instável já conhecido da gravura). A rodada 45065432536, que
+  testou <code>b3f6d99f</code>, só falhou nesses 3.</li>
+<li><strong>Os testes que a regra de 18/11 nomeou</strong> (<code>tests/test_decisoes_desinstalar.py</code>): mudaram só os 3 nomeados. A lista
+  de exceções do porteiro só perdeu os 4 itens do <code>icacls</code>, e nenhum entrou.</li>
+<li><strong>Nenhuma frase nova na tela:</strong> os textos novos vão só ao registro.</li>
+</ul>
+<h2>As decisões, uma por uma</h2>
+<table>
+<thead>
+<tr>
+<th>Decisão (palavras do Samuel)</th>
+<th>Situação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-828 (1) "foi eu, pode consertar essas coisas": o "Reiniciar agora" troca, também com o atalho clicado no meio</td>
+<td><strong>Pela metade.</strong> A causa saiu. Ficam os médios 1, 2 e 3.</td>
+</tr>
+<tr>
+<td>D-828 (2) a pergunta no meio da tela</td>
+<td><strong>Feita no código, pela metade nas provas</strong> (médio 4). Só a prova à vista confirma.</td>
+</tr>
+<tr>
+<td>D-828 (3) refazer a preparação dá certo</td>
+<td><strong>Feita</strong> (sem tranca, provado numa pasta do teste), mas fora da peça única (médio 5).</td>
+</tr>
+<tr>
+<td>D-828: nenhuma frase nova sem o "sim" dele</td>
+<td><strong>Cumprida.</strong></td>
+</tr>
+<tr>
+<td>D-806 "no mesmo instante do clique [...] enquanto a janela do programa ainda está na frente"</td>
+<td>Leitura da gerente: ver abaixo.</td>
+</tr>
+<tr>
+<td>D-824 "uma coisa de cade vez"</td>
+<td><strong>Cumprida</strong> (um conserto por commit).</td>
+</tr>
+<tr>
+<td>D-827 proteção sem teste volta na hora</td>
+<td><strong>Não cumprida</strong> em 2 proteções (médios 3 e 4).</td>
+</tr>
+<tr>
+<td>D-811 cada proteção com o teste que a acusa</td>
+<td>23 de 26 acusadas; das 3 que sobreviveram, 2 são proteções (médios 3 e 4) e 1 é uma conferência repetida (baixo 3).</td>
+</tr>
+<tr>
+<td>D-812 dado do próprio conferido não vale</td>
+<td>Os testes principais cobram o comportamento (código de saída, script lançado, marca de verdade). O registro entra só como prova extra.</td>
+</tr>
+<tr>
+<td>D-813 todos os jeitos que a peça de fora aceita</td>
+<td>Velopack, CreateProcess, mutex e janela da frente batem com a documentação. A citação do <code>Start-Process</code> está trocada (baixo 2).</td>
+</tr>
+<tr>
+<td>D-767 só conta rodando de verdade</td>
+<td>O que eu não pude provar está na lista do fim.</td>
+</tr>
+<tr>
+<td>D-829 os 3 testes só no Windows de mentira</td>
+<td><strong>Cumprida</strong>: nada mais mudou.</td>
+</tr>
+<tr>
+<td>§11.8 o novo não estraga o que já funcionava</td>
+<td>Os arquivos dos testes de antes passam (no GitHub, todos; no PC, <code>test_atualizador_4.py</code> 57).</td>
+</tr>
+<tr>
+<td>§11.12 sem gambiarra, uma peça só</td>
+<td><strong>Pela metade:</strong> a pasta segura por fora da peça (médio 5); a mesma leitura do estado com duas regras (médio 2).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>A espera sem limite pela janela na frente (leitura da gerente da D-806, não palavra do Samuel).</strong> O risco de <strong>nunca
+perguntar</strong> é pequeno. Ele só acontece se o Kaique não voltar à janela do programa durante aquela abertura, e a próxima
+abertura pergunta de novo. Procurei no código algo que recriasse a janela principal (o que faria o programa achar que
+ela fechou) e não achei. Os riscos de verdade são três:</p>
+<ul>
+<li>a pergunta pode aparecer <strong>minutos depois</strong>, num momento que o Kaique não espera (quando ele volta ao programa). Isso
+  já não é "no mesmo instante do clique";</li>
+<li>a tentativa de trazer a janela para a frente, quando o Windows recusa, faz o <strong>botão do programa piscar uma vez</strong> na
+  barra. O Samuel reclamou justamente de piscar;</li>
+<li>uma janela do programa aberta sem dona (por exemplo, o aviso de erro inesperado) segura a pergunta até ser fechada.</li>
+</ul>
+<p>Quem decide se isso é o que ele quis é o Samuel, na prova à vista.</p>
+<h2>As mutações (proteção desligada → teste que acusou)</h2>
+<p>Na minha cópia, uma por vez, rodando <code>tests/test_atualizador_volta4.py</code> inteiro (55 testes). Na primeira rodada, as
+mutações M02 a M10 deram erro de preparação dos testes (a pasta temporária ficou presa por um processo da M01). Refiz
+essas com uma pasta temporária nova para cada uma, e os resultados abaixo são os da segunda rodada. A M16 também foi
+refeita: a primeira versão dela não mudava nada.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Proteção desligada</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M01</td>
+<td>o lançado solto nasce na pasta do sistema</td>
+<td>acusada (<code>..._nao_prende_a_pasta_de_trabalho_de_quem_lancou</code>)</td>
+</tr>
+<tr>
+<td>M02</td>
+<td>"sem licença para abrir a marca" = existe (script só de reabrir)</td>
+<td><strong>sobreviveu</strong> (médio 3)</td>
+</tr>
+<tr>
+<td>M03</td>
+<td>o "só de reabrir" só reabre se criou a marca de reabrir</td>
+<td>acusada (<code>test_d827_dois_cliques_no_meio_da_troca_so_um_reabre</code>)</td>
+</tr>
+<tr>
+<td>M04</td>
+<td>o próprio ajudante não conta</td>
+<td>acusada (<code>test_conserto1_o_proprio_ajudante_nao_conta</code>)</td>
+</tr>
+<tr>
+<td>M05</td>
+<td>o processo sem caminho conta pelo nome</td>
+<td>acusada (<code>test_d827_o_processo_que_nao_deixa_ler_o_caminho_...</code>)</td>
+</tr>
+<tr>
+<td>M06</td>
+<td>a lista cortada é "não sei"</td>
+<td>acusada (<code>test_d827_a_lista_que_o_windows_nao_deu_inteira_e_nao_sei[cortada]</code>)</td>
+</tr>
+<tr>
+<td>M07</td>
+<td>o executor confere que a pasta conferida é a do desfazer</td>
+<td>acusada (<code>test_conserto3_o_executor_de_verdade_le_a_pasta_segura[...Outra\Pasta...]</code>)</td>
+</tr>
+<tr>
+<td>M08</td>
+<td>a dona da pergunta é a janela da frente (o aviso)</td>
+<td><strong>sobreviveu</strong> (médio 4)</td>
+</tr>
+<tr>
+<td>M09</td>
+<td>o aviso do programa na frente conta</td>
+<td>acusada (<code>test_d827_a_leitura_da_frente_reconhece_o_aviso_...</code>)</td>
+</tr>
+<tr>
+<td>M10</td>
+<td>a janela minimizada não conta como na frente</td>
+<td>acusada (o mesmo teste)</td>
+</tr>
+<tr>
+<td>M11</td>
+<td>não traz a janela minimizada</td>
+<td>acusada (<code>test_conserto2_a_janela_minimizada_...</code>)</td>
+</tr>
+<tr>
+<td>M12</td>
+<td>sem a marca, a versão volta a "pendente"</td>
+<td>acusada (<code>test_conserto1_sem_a_marca_segura_o_velopack_nem_e_chamado_...</code>)</td>
+</tr>
+<tr>
+<td>M13</td>
+<td>o pedido de troca só com a marca</td>
+<td>acusada (o mesmo teste)</td>
+</tr>
+<tr>
+<td>M14</td>
+<td><code>criar_gerente</code> devolve o gerente com a proteção</td>
+<td>acusada (<code>test_conserto1_o_gerente_do_programa_e_sempre_...</code>)</td>
+</tr>
+<tr>
+<td>M15</td>
+<td>o vigia só conta como seguro depois de ler a marca</td>
+<td>acusada (<code>test_conserto1_segurar_a_marca_usa_a_do_script_...</code>)</td>
+</tr>
+<tr>
+<td>M16</td>
+<td>a marca que não deu para ler não segura a abertura</td>
+<td>acusada (<code>..._nao_deu_para_ler_nao_segura_a_abertura[None]</code>)</td>
+</tr>
+<tr>
+<td>M17</td>
+<td>o vigia espera a volta para a anterior</td>
+<td>acusada (<code>test_d827_o_vigia_segura_a_marca_durante_a_volta_...</code>)</td>
+</tr>
+<tr>
+<td>M18</td>
+<td>o programa reaberto nasce na pasta dele</td>
+<td>acusada (<code>test_conserto1_o_programa_reaberto_pela_troca_nasce_...</code>)</td>
+</tr>
+<tr>
+<td>M19</td>
+<td>a lista que não deu para ler conta como aberto</td>
+<td>acusada (<code>..._lista_que_nao_deu_para_ler_...[None]</code>)</td>
+</tr>
+<tr>
+<td>M21</td>
+<td>a preparação confere a pasta</td>
+<td>acusada (<code>test_conserto3_a_preparacao_so_da_certo_com_a_pasta_conferida[False]</code>)</td>
+</tr>
+<tr>
+<td>M22</td>
+<td>a gravação do estado tenta de novo</td>
+<td>acusada (<code>test_d827_a_gravacao_do_estado_espera_...</code>)</td>
+</tr>
+<tr>
+<td>M23</td>
+<td>a leitura do estado com o <code>-ErrorAction Stop</code></td>
+<td>acusada (<code>test_d827_o_vigia_nao_solta_a_marca_por_um_estado_...</code>)</td>
+</tr>
+<tr>
+<td>M24</td>
+<td>o reaberto pela troca não sai pela marca</td>
+<td>acusada (<code>..._os_ganchos_e_os_modos_escondidos_nao_saem[--depois-da-troca]</code>)</td>
+</tr>
+<tr>
+<td>M25</td>
+<td>"alguém já vai reabrir?" em Python</td>
+<td><strong>sobreviveu</strong> (baixo 3: o script confere de novo)</td>
+</tr>
+<tr>
+<td>M27</td>
+<td>a pasta do desfazer é a pasta segura</td>
+<td>acusada (<code>test_conserto3_nenhum_comando_de_licenca_a_mao_...</code>)</td>
+</tr>
+<tr>
+<td>M28</td>
+<td>o script da troca segura a marca da troca</td>
+<td>acusada (<code>test_conserto1_o_script_da_troca_segura_as_duas_marcas_...</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Os médios 1, 2 e 5 não são proteção desligada, e sim proteção que falta. Nenhuma mutação os pega. Eles foram mostrados
+pelas demonstrações descritas acima.</p>
+<h2>O que a prova à vista nº 2 precisa conferir</h2>
+<p>Só o Windows de verdade prova isto (D-767). Tudo na conta comum do Kaique (ou numa conta comum), com o .msi aberto com
+dois cliques, sem licença.</p>
+<ol>
+<li><strong>"Reiniciar agora"</strong>: a versão nova abre sozinha. No registro do Velopack como o sistema, nenhum "erro 32" e nenhum
+   "running processes prevented it".</li>
+<li><strong>Clique no atalho no meio dessa troca</strong> (uma, duas, três vezes): nada abre na hora, a troca termina e o programa abre
+   <strong>uma vez só</strong> no fim.</li>
+<li><strong>"Depois" e abrir de novo</strong>: a janelinha aparece, a troca acontece e o programa abre na versão nova.</li>
+<li><strong>A troca sem o script</strong> (fechar o programa enquanto a versão nova baixa):
+   - o vigia nasce como o sistema e a troca acontece;
+   - um clique no atalho no meio não abre nada e o programa abre no fim (o "só de reabrir" lendo uma marca do sistema
+     que ele não tem licença para abrir; médio 3);
+   - abrir de novo <strong>logo depois de fechar</strong> (médio 1): se ainda não estiver consertado, espera-se o programa fechar
+     sozinho no meio do uso.</li>
+<li><strong>A marca criada pela conta comum</strong> (o script da troca) com a conta do Kaique, não com a do Samuel.</li>
+<li><strong>A pergunta do Windows:</strong>
+   - (a) abrir e ficar na janela: a pergunta vem no meio da tela, na hora;
+   - (b) clicar noutra janela durante o carregamento: a pergunta não pisca. Anotar se o botão do programa pisca uma vez.
+     Ao voltar ao programa, a pergunta aparece no meio;
+   - (c) minimizar durante o carregamento: nada até restaurar, e a janela não se desminimiza sozinha;
+   - (d) com um aviso do programa na frente: a pergunta no meio (médio 4);
+   - (e) fechar sem voltar: nada é perguntado, e a próxima abertura pergunta.</li>
+<li><strong>Refazer a preparação.</strong> No PC do Samuel as duas tarefas já existem (da prova nº 1) e a tarefa "desfazer" aponta
+   para a pasta antiga do ProgramData, possivelmente trancada outra vez. Do jeito que está, a pergunta não volta, e o
+   conserto 3 não aparece. Para provar:
+   - começar sem as tarefas;
+   - preparar com "Sim";
+   - tirar uma tarefa e preparar de novo com "Sim";
+   - as duas vezes têm de dar certo, sem "acesso negado";
+   - <code>C:\Program Files\EditorImpressaoAjudante</code> nasce com as licenças de fábrica (ler com <code>icacls</code>, só leitura);
+   - a pasta antiga não atrapalha.</li>
+<li><strong>A pasta segura criada como administrador</strong> pelo <code>New-Item</code> (não pela peça): o dono são os Administradores e as
+   contas comuns só leem.</li>
+<li>O motor do Kraken depois da troca (<code>EditorImpressao.exe --conferir-ocr</code>).</li>
+<li>Desinstalar: a tarefa "desfazer" roda o script da pasta nova.</li>
+</ol>
+<h2>Ressalvas</h2>
+<ul>
+<li>Não rodei o programa instalado, não pedi licença e não abri janela (pedido da gerente). A troca inteira, a pergunta no
+  meio da tela e a pasta criada como administrador só se provam à vista.</li>
+<li>No PC rodei, um arquivo por vez: <code>tests/test_atualizador_volta4.py</code> (55, sem mudança; e 26 vezes com uma proteção
+  desligada) e <code>tests/test_atualizador_4.py</code> (57). O conjunto inteiro é a rodada 45238891880 do GitHub.</li>
+<li>Não rodei <code>tests/test_decisoes_desinstalar.py</code> no PC. As três mutações que deviam rodá-lo (M07, M21, M27) já foram
+  acusadas no primeiro arquivo, e ele passa no GitHub.</li>
+<li>O médio 2 depende de um instante raro. A minha demonstração trava o arquivo por 6 s, o que é muito mais do que o
+  instante real. Ela prova o que o script faz quando a leitura falha, não quantas vezes isso acontece.</li>
+<li>As demonstrações e as mutações ficaram na minha cópia, que foi removida no fim. O código delas está descrito acima.
+  Para refazer: uma cópia nova de <code>aa1963b7</code> e o mesmo arquivo de testes.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 23/11/2026 às 15:40</p>
+</body>
+</html>
