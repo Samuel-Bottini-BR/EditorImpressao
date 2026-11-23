@@ -6,7 +6,12 @@ como o plano da parte do Windows sugeriu (plano-v2 §6.1, risco 17). **O que man
 parte do Windows (`relatorios/plano-windows-2026-11-18/plano-v2.md`, ramo `plano-windows-2026-11-18`, esperando a
 aprovação do Samuel). Ficha irmã: [testes-a-distancia.md](testes-a-distancia.md). O instalador em si: [itens/6.8.md](../itens/6.8.md).
 
-## Situação (18/11/2026)
+## Situação (22/11/2026)
+
+- **Entrega em duas vezes (D-824, 21/11):** primeiro o programa que se atualiza, só com 4 consertos do que falhou em 18/11; os testes à distância e o resto do plano depois, em atualizações ("Sim, mas como vai ser feito esses 4 consertos, preciso que isso seja feito de forma rapida" · "vamos fazer com um só, uma coisa de cade vez.").
+- **Ramo `atualizador-4-consertos-2026-11-21`** (não juntado): voltas 1 a 4. Prova à vista nº 1 (22/11): funcionaram o "Não" e o "Sim" do Windows lidos do Windows, a conta comum lendo as tarefas, o motor posto pelo ajudante, o aviso de versão nova e a volta com o aviso de falha; não funcionaram a troca do "Reiniciar agora", a pergunta no meio da tela e a segunda preparação (pasta trancada) — consertados na volta 4 (D-828), esperando a resposta dele sobre 3 testes e a prova nº 2 ([PARTE -44](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md)).
+
+### Situação de antes (18/11/2026)
 
 - **Não está pronto para o Kaique.** Rodou de verdade pela primeira vez na etapa 5 (18/11, PC do Samuel): funcionou
   procurar, baixar, conferir a assinatura, trocar pelo ajudante, voltar da versão estragada e recusar a assinatura
@@ -16,6 +21,8 @@ aprovação do Samuel). Ficha irmã: [testes-a-distancia.md](testes-a-distancia.
 
 ## O que vale hoje
 
+- **Primeira entrega (D-824, D-825, D-826, D-828):** a janela da senha fica na primeira abertura e o Kaique clica "Agora não"; nesta entrega a senha digitada não liga nada (D-825, "ok"); o pedido de licença passa pela peça única e só sai com a janela do programa na frente; o "preparado" é lido do Windows (as duas tarefas); depois do "Sim", erro só no Visual C++ ou na instalação antiga o ajudante completa sozinho (escolha do agente da volta 2, construída, **sem resposta dele**: a perguntar de novo); se o Windows não deixa ler as tarefas, a pergunta volta sempre (D-826); a troca só começa com nada rodando de `current`, e abrir o atalho no meio da troca sai em silêncio (volta 4); a pasta dos testes à distância é a pasta segura `C:\Program Files\EditorImpressaoAjudante`, sem licença à mão (volta 4, saída B).
+- **Regra de trabalho D-827 (22/11):** proteção sem teste nunca é "baixo"; trocar uma conferência por outra só depois de listar o que a antiga cobria ("porque a regra não funcionou?" · "2 - mas isso não estpa nas regras?").
 - **Publicar (20-21/11):** a pasta montada do zero recebe o Visual C++ na montagem; a pasta já montada é conferida igual à montada do zero, pela mesma régua (D-818: "vai ter que reprogramar?" · "A"); as peças (motor do Kraken, Visual C++) vêm de uma pasta escrita num lugar só, `D:\programas\EditorImpressao-arquivos\ferramentas`, rodando da pasta principal ou de uma cópia de trabalho; se faltar, para e avisa (D-820: "não era melhor só ver se está instaldo no pc?" · "A"). Provado à vista em 20/11 (prova nº 2, 7 passos), antes da volta 10; falta o pedaço curto da prova e juntar (ramo `passo2-publicar-2026-11-19`).
 
 - **A peça:** Velopack 1.2.161, que fica, com a nossa proteção em volta dos dois defeitos dele (D-779: "ta vamos
@@ -43,6 +50,7 @@ aprovação do Samuel). Ficha irmã: [testes-a-distancia.md](testes-a-distancia.
 
 ## Mudou em
 
+- 21-22/11/2026 — a ordem da entrega (D-765: o .exe e os testes à distância juntos) → em duas vezes (D-824); a senha digitada liga os testes na mesma pergunta (D-733/D-735) → nesta entrega não liga nada (D-825); erro no meio da preparação sempre traz a pergunta de volta (D-749) → só se as tarefas não ficaram prontas (D-826).
 - 16/11/2026 — a frente do notebook do Kaique: Velopack escolhido (D-723, "velopack"), assinatura grátis (D-724),
   procurar ao abrir (D-732), ajudante como SYSTEM (D-733), "Depois" entra na próxima abertura (D-734, **trocada pela
   D-769** em 18/11), janelinha só nesse caso (D-742, **ampliada pela D-770**).
@@ -52,6 +60,8 @@ aprovação do Samuel). Ficha irmã: [testes-a-distancia.md](testes-a-distancia.
 
 ## Tentado e descartado
 
+- 21/11/2026 — trocar a conferência da tarefa do ajudante pela da peça única sem listar o que a antiga cobria (volta 2, a pedido da gerente): com a licença ilegível, deixou de conferir o resto (um passo para trás); voltou na volta 3 (D-827).
+- 22/11/2026 — lançar o PowerShell da troca solto sem dizer a pasta de trabalho: herda `current` e impede o Velopack de renomeá-la (erro 32); a troca desiste (prova nº 1).
 - 20-21/11/2026 — achar a pasta das ferramentas perguntando ao git onde fica a pasta principal (voltas 9 e 10 do passo 2): sem resposta do git, voltava calado à pasta errada (relatório 8); trocado pelo caminho escrito num lugar só (D-820). A gerente tinha aceitado o jeito do git sem perguntar (D-819).
 
 - **A diferença ("só o que mudou"):** ~20 MB para baixar, mas o notebook remonta o pacote inteiro (22-23 min contra
@@ -62,6 +72,7 @@ aprovação do Samuel). Ficha irmã: [testes-a-distancia.md](testes-a-distancia.
 
 ## Comportamento real já provado (não redescobrir)
 
+- **Prova nº 1 (22/11):** a conta comum lê as tarefas do ajudante (`Get-ScheduledTask` sem licença); como o sistema, o `WaitPid` do Velopack dá "Acesso negado" e ele segue sem esperar; o registro do Velopack como o sistema fica em `C:\Windows\System32\config\systemprofile\AppData\Local\velopack\`; o .msi aberto por janela com licença abre o programa com licença no "Iniciar" do fim; a fonte de pasta lê `releases.win.json` na raiz (o publicar grava `v<versão>\`); o .msi com o motor instala ~1,2 GB em 3 min; o motor posto pelo ajudante em 1 min; o aviso olha 4 s depois de abrir e de 5 em 5 min (só lê um bilhete local; a procura na internet é só ao abrir).
 - Sem administrador, o Velopack grava `Update.exe` numa pasta de reserva `LocalAppData\<nome do pacote>`; o desinstalador
   apaga `LocalAppData\<título>` (prova de 17/11, ramos `velopack-pasta-2026-11-17` e `nome-pacote-2026-11-17`).
 - Abrir o programa no meio da troca faz o Velopack fechá-lo à força (lido no código, revisão do atualizador).

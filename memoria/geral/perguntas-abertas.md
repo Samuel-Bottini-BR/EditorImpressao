@@ -9,6 +9,14 @@ Como manter: quando ele responder, registre no plano (as duas cópias) e na fich
 daqui** (ou mova para "Respondidas recentemente" com a data). O `conferir_memoria.py` avisa quando uma pergunta desta
 lista com nome entre crases já aparece como decidida no Registro.
 
+## 0000000e. Atualização de 22/11/2026, noite (vale sobre o resto; [PARTE -44](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §5)
+
+- **"Autoriza essa mudança nos 3 testes?"** (chat, 22/11): os 3 testes da volta 1 dos consertos do atualizador cobram o jeito antigo da pergunta do Windows (uma janela que não existe); a mudança faz a janela de mentira contar como "na frente". A proteção do Claude Code barrou a mudança pelo agente.
+- **"Fica assim: o erro pequeno se conserta sozinho, e no caso raro a pergunta volta sempre?"** (chat, 22/11 04h42 UTC): a parte do "erro pequeno" (D-826) nunca teve resposta dele; já está no código (volta 2).
+- **O aviso de versão nova** (pedido dele de 22/11, a perguntar depois da prova): "devia avisar na hora que conectou que tem uma atualização para baixar" · "o programa não deve ficar procurando atualização de 5 em 5 minutos [...] não é melhor ele procurar só quando abre?".
+- Desinstalar o programa da prova do PC dele ou deixá-lo para a prova nº 2 (não perguntado).
+- Continuam as da atualização de 21/11 abaixo, menos "Fazemos assim?" (respondida: D-824).
+
 ## 0000000d. Atualização de 21/11/2026, noite (vale sobre o resto; [PARTE -43](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §8)
 
 - **Respondidas de 18 a 21/11 (não perguntar de novo):** o plano da parte do Windows v3 (D-799); os pontos do §6.3 (D-794, D-795, D-800, D-802); X4, X5, X7 (D-796 a D-798); o catálogo dos erros e as seis perguntas (D-803 a D-814); D-815 a D-823; o estudo do Kraken (aprovado em 19/11); a ficha do motor (gravada com o "ok" dele em 20/11).

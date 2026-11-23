@@ -8,6 +8,14 @@ Escrito em 24/09/2026. A ordem de autoridade é:
 
 O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que vale é o Plano Definitivo.
 
+> **Onde o projeto está em 22/11/2026, noite (vale sobre tudo abaixo; detalhe na [PARTE -44](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
+> - **Entrega ao Kaique em duas vezes (D-824):** primeiro o programa que se atualiza, só com os consertos do atualizador; os testes à distância e o resto do plano da parte do Windows vêm depois, em atualizações. O Kaique clica "Agora não" na janela da senha.
+> - **Os 4 consertos do atualizador** (ramo `atualizador-4-consertos-2026-11-21`, não juntado): voltas 1 a 3, duas conferências (a 2ª PRONTO PARA CONFERIR), D-825 a D-827.
+> - **Prova à vista nº 1 no PC do Samuel (22/11):** funcionaram o "Não" e o "Sim" do Windows, o "preparado" lido do Windows, o motor do Kraken no lugar, o aviso de versão nova e a volta com o aviso de falha. **Não funcionaram:** a troca no "Reiniciar agora", a pergunta no meio da tela (pisca na barra) e a pasta trancada na segunda preparação (D-828).
+> - **Volta 4** (os 3 defeitos, pela causa): feita; GitHub 45065432536 falhou só em 3 testes da volta 1 que cobram o jeito antigo da pergunta. **Esperando ele:** "Autoriza essa mudança nos 3 testes?" (chat, 22/11). Depois: conferência, versões novas e a prova nº 2.
+> - Regra nova D-827: proteção sem teste nunca é "baixo". O programa da prova continua instalado no PC dele. Nada do processamento das páginas mudou. O programa ainda não está pronto para o Kaique.
+>
+> **Antes (21/11, noite), já superado:**
 > **Onde o projeto está em 21/11/2026, noite (vale sobre tudo abaixo; detalhe na [PARTE -43](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
 > - **Passo 2 (publicar) terminado e juntado na versão de teste** (`909c710c`), junto com as regras novas do caderno de erros (`1ca1c70a`). A prova 3 à vista passou; as duas últimas conferências deram PRONTO PARA CONFERIR, sem grave nem médio. D-821 a D-823.
 > - **A rodada inteira do GitHub da versão de teste (44952773951) passou**, na 2ª tentativa (a 1ª caiu na parte 5, num teste instável já conhecido, `test_caixinha_do_dividir_nao_volta.py`).
