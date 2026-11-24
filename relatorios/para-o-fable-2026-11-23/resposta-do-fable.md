@@ -32,7 +32,7 @@ O atualizador será **refeito no desenho simples antes de entregar ao Kaique**, 
 Princípio: nenhum processo nosso roda fora da sessão do Kaique. O único ato privilegiado acontece uma vez, na primeira abertura, e é dar à pasta do programa a licença que uma instalação por usuário já teria.
 
 1. **Primeira abertura — o único UAC (D-733, jeito 1).** Pela peça (`passo_*`), nunca à mão: Users (`S-1-5-32-545`) com Modificar `(OI)(CI)M` na raiz da instalação do Velopack; VC++; tirar o Inno; tarefa "desfazer". Sem ajudante SYSTEM, sem `--preparar-o-computador`, sem exe elevado que abre PowerShell que abre exe.
-2. **Toda abertura e de 5 em 5 min, dentro do programa:** `check_for_updates` → assinatura Ed25519 → `download_updates`. Programa aberto: "Reiniciar agora / Depois" (D-715/D-720).
+2. **Só ao abrir o programa (D-732: "quando ele abre o programa, assim como todo aplicativo faz"; o "de 5 em 5 min" era o código antigo, não decisão do Samuel — corrigido 23/11 20:42), dentro do programa:** `check_for_updates` → assinatura Ed25519 → `download_updates`. Programa aberto: "Reiniciar agora / Depois" (D-715/D-720).
 3. **"Reiniciar agora":** `apply_updates_and_restart`, na sessão do Kaique; o `Update.exe` espera o PID, troca `current` e reabre na conta certa. **"Depois":** `wait_exit_then_apply_updates` ao fechar (D-734). Teste rápido e volta à anterior (D-718) continuam, chamados pelo próprio programa em `--conferir-a-versao-nova` antes de abrir a janela.
 4. **D-736 (mandar atualizar de longe):** o Samuel publica e, por SSH como `EditorTestes` (conta Users), roda `EditorImpressao.exe --baixar-atualizacao`: baixa e deixa pronto; a troca acontece na próxima abertura do Kaique ou no "Reiniciar agora". Forçar troca com o programa aberto já contradizia D-715.
 
@@ -113,3 +113,24 @@ Refatorações 1, 2 e 3 da Pergunta 2, nesta ordem, com a suíte rodando a cada 
 ## O que isto resolve e o que não resolve
 
 Resolve o retrabalho "consertei aqui, quebrou ao lado" (Girar 9 voltas, figurinhas 5, volta 4). Resolve pela metade o do atualizador (depende do experimento). **Não resolve** dois tipos: pedido que muda depois de pronto (descoberta normal de produto; a estrutura só garante que o conserto seja feito uma vez) e agente que dá como feito o que não conferiu (só teste que falha antes e passa depois, rodando sem depender do agente). Risco real: a refatoração 2 mexe em 10 mil linhas; por isso vem depois da entrega, começando pelo passo pequeno (1) e com os 4.668 testes a cada passo.
+
+
+## Correção (23/11/2026, 20:42)
+
+- A procura de versão nova é **só ao abrir** (D-732). O "de 5 em 5 minutos" citado antes era o comportamento do código antigo, não decisão do Samuel; ele lembrou que já tinha dito que não era bom. Nada roda por trás enquanto o Kaique trabalha. O "mandar de longe" (D-736) continua: publicou com o programa aberto, entra na próxima abertura (D-734).
+- Resultado do experimento (23/11, 20:20): **funcionou**. Com Usuários:(OI)(CI)(M) na raiz, como conta comum, `apply_updates_and_restart` trocou 1.1.0→1.1.2 com o programa aberto e reabriu na conta do usuário; `wait_exit_then_apply_updates` trocou 1.1.2→1.1.1 com o programa fechado. Nenhum UAC. Única falha, cosmética: "Failed to update uninstall entry" (Programas e Recursos continua mostrando a versão antiga; decidir depois da entrega se o UAC único dá licença nessa chave do registro). O desenho simples está liberado; o plano B não é necessário.
+
+## Revisão contra o Livro de decisões (23/11/2026, 20:50)
+
+Conferi o desenho da Pergunta 1 contra as palavras do Samuel em D-705 a D-825 (as que tocam atualizador e testes à distância). Três correções ao que escrevi acima:
+
+1. **"Depois" entra ao fechar, não na próxima abertura.** Eu citei a D-734 (17/11), mas ela foi superada pela **D-769** (18/11, "b": ao fechar o programa) e pela **D-794** (ao fechar, aviso "Atualizar agora?"). A D-824 adiou as duas para uma segunda entrega porque no desenho antigo eram caras; no desenho novo "ao fechar" é `wait_exit_then_apply_updates`, provado no experimento. **Escolha pendente do Samuel:** (a) fazer já como decidido em 18/11 (recomendado); (b) manter o adiamento e entregar com "próxima abertura".
+2. **A janelinha "Atualizando o programa..." (D-742, D-748, D-770: em toda troca) é obrigatória** e eu não a listei. No desenho novo quem troca é o `Update.exe`, depois que o programa fechou; a janelinha tem de ser a tela de progresso do próprio Velopack. **A confirmar pelo agente:** se ela aparece no `apply`, e se aceita o nosso texto e o brasão. Se não, a janelinha volta a ser nossa, sem script.
+3. **O motor do Kraken, "tudo ou nada" (D-768, D-788, D-789, D-790),** não foi citado: a versão nova só é anunciada com o motor dela no lugar. Já existe (conserto 4 da volta 1) e passa inteiro para o desenho novo.
+
+Confirmados: um UAC só (D-733); procura só ao abrir (D-732/D-740); "mandar de longe" baixa por SSH e o programa não procura fora da abertura (D-736, texto completo: "mas o programa não precisa procurar versão nova"); pergunta volta até o "Sim" e preparação pela metade conta como não feita (D-741/D-749 — no desenho novo "preparado?" é lido da licença da pasta, não de anotação); volta à anterior com aviso na tela e registro lido de longe (D-718/D-719); pergunta antes de montar a janela (D-806); desinstalar desfaz tudo (D-731); senha dos testes na primeira abertura e botão nas Configurações (D-721/D-712) não mudam.
+
+### Decisões do Samuel sobre a revisão (23/11/2026, 20:48)
+
+1. **"a"** — "Depois" entra ao fechar, com o aviso "Atualizar agora?" ao fechar (D-769/D-794), já nesta entrega. O adiamento da D-824 para esses dois itens cai.
+2. **"pode ser velopack, deixamos para mudar isso mais para frente"** — a janelinha da troca é a tela de progresso do próprio Velopack. Texto e brasão nossos ficam para depois.
