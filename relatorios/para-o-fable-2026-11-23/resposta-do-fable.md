@@ -188,3 +188,17 @@ Quando uma versão passa no teste rápido, o programa guarda o pacote dela (`ult
 **Escritor novo** (D-815: o atual já deu duas voltas). Não é reescrever: é trocar o juiz (a abertura deriva o estado) e a volta (arquivo local). A máquina de estados fica e **perde** fases (`VOLTANDO` encurta; `TROCANDO` deixa de depender do bilhete). Sinal de gambiarra para a gerente conferir na entrega: arquivo novo, espera, cadeado, ou o `estado.json` voltando a ser consultado para decidir alguma coisa além de "não tentar" e "frase uma vez".
 
 Depois: GitHub → quem tenta quebrar (novo) → lista com "consertado"/"deixo para depois" do Samuel (D-842) → prova à vista.
+
+## Depois do terceiro "quem tenta quebrar" — encolher a volta automática (24/11/2026, 18:05)
+
+Relatório lido na íntegra (`quem-tenta-quebrar-3/relatorio.md`: 1 grave, 7 médios). As duas perguntas do Fable passaram (o bilhete só decide reprovadas e frase; não sobrou volta por download). Os 8 achados estão todos em volta da **volta automática** e da **última boa** — a camada mais nova. Não é o loop antigo (nada que funcionava quebrou), mas é sinal de que a volta automática é a parte mais complicada do atualizador. Em vez de 8 consertos separados, **três regras**, aprovadas pelo Samuel ("Ok", 18:05):
+
+1. **A volta tenta uma vez e nunca fica em laço.** O pedido de volta leva marca (`--voltando <de> <para>`), como a troca normal leva `--conferir-a-versao-nova` (D-839). A versão reaberta com essa marca **não testa de novo**: mostra a frase (3) da D-778 e abre o que der. Mata G1 e o laço do M1.
+2. **Versão aprovada não é testada de novo.** Passou no teste rápido → marca no disco (`aprovada-<versao>`, ao lado da última boa) → nenhuma abertura seguinte refaz o teste. Se a guarda da nova não couber (disco), **a última boa anterior continua valendo**; nada se repete a cada abertura; conferir espaço livre antes de copiar pela mesma função que o motor usa (M4).
+3. **Sem última boa, a primeira atualização acontece assim mesmo; se falhar o teste, frase (3) e para.** A primeira versão instalada pelo `.msi` **não tem volta automática** (o `.msi` não deixa o pacote em `packages\`; baixar 460 MB na primeira abertura foi a origem de M4/M5). A partir da primeira atualização que der certo, o pacote é copiado de `packages\`, sem internet, para sempre. A D-851 muda nesse sentido. (M2, M5)
+
+Mais: **M3** — o "Sim" ao fechar que não pode trocar ganha a mesma frase do "Reiniciar agora", mostrada na abertura seguinte (D-845 vale para os dois). **M6** — a regra passa a usar o "pacote esperando" (`get_update_pending_restart`), que recebe e ignora. **M7** — os quatro testes. **M1 (dois cliques rápidos)**: com a regra 1 deixa de ser laço e vira uma frase; o resto, **"deixo para depois" do Samuel**.
+
+**Antes de uma linha de código (volta 4, mesmo escritor, a segunda dele):** a tabela passos × jeitos de dar errado — passos: procurar, baixar, conferir, trocar, testar, guardar, voltar; jeitos: desliga no meio, Windows nega, disco cheio, sem internet, clique repetido, arquivo some, sem licença — com "o que o Kaique vê" em cada casinha. É a outra metade das colunas do teste exaustivo da máquina de estados. O "quem tenta quebrar" 4 confere a tabela contra o código.
+
+Previsão do Fable: a rodada 4 ainda acha coisa pequena (frases, tempos). Grave e médio, com as três regras, não deveria.
