@@ -1,0 +1,65 @@
+Volta 3, segunda parte: tests/test_atualizador_d851.py rodado no codigo de 04dd0cd4 (git archive numa pasta de rascunho). Os 2 da D-848 e o da copia de packages passam la (ja era assim: nada a consertar); os 3 do 'baixar so se nao estiver la' falham (nao existia).
+
+...FFF                                                                   [100%]
+================================== FAILURES ===================================
+______________ test_d851_sem_o_pacote_em_packages_baixa_e_guarda ______________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3b/antigo2/test_d851_sem_o_pacote_em_pack0')
+
+    def test_d851_sem_o_pacote_em_packages_baixa_e_guarda(tmp_path):
+        """D-851 ("baixar só se o arquivo não estiver lá"): a primeira abertura depois do .msi (que não põe nada em
+        `packages`): o pacote da versão que roda é baixado pelo Velopack, conferido contra a assinatura do Samuel, e
+        guardado como a última boa."""
+        p = Prova(tmp_path, publicar_nova=False)
+        p.conteudo_de(ATUAL)                                    # publicada, mas não está em packages
+        p.abrir()
+>       assert [c[:2] for c in p.vp.chamadas if c[0] == "baixar"] == [("baixar", ATUAL)]
+E       AssertionError: assert [] == [('baixar', '1.1.0')]
+E         
+E         Right contains one more item: ('baixar', '1.1.0')
+E         Use -v to get more diff
+
+tests\test_atualizador_d851.py:111: AssertionError
+_ test_d851_o_pacote_publicado_sem_a_assinatura_certa_nao_e_baixado_nem_guardado _
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3b/antigo2/test_d851_o_pacote_publicado_s0')
+
+    def test_d851_o_pacote_publicado_sem_a_assinatura_certa_nao_e_baixado_nem_guardado(tmp_path):
+        """D-851 e D-724: o pacote da versão que roda, publicado com outra assinatura, não é baixado nem guardado; o
+        registro diz por quê, e nada vira a última boa."""
+        p = Prova(tmp_path, publicar_nova=False)
+        conteudo = p.conteudo_de(ATUAL)
+        _publicar(p.fonte_pasta, ATUAL, conteudo, OUTRA_CHAVE)
+        p.abrir()
+        assert "baixar" not in p.vp.nomes() and atualizacao.ler_ultima_boa(p.raiz) == ""
+>       assert "não tem a assinatura certa" in _registro()
+E       AssertionError: assert 'não tem a assinatura certa' in '2026-11-24T15:13:34 | versão 1.1.0 | não há versão guardada e o pacote da 1.1.0 não está no computador: a volta não vai ser possível\n2026-11-24T15:13:34 | versão 1.1.0 | procurei: nenhuma versão nova (esta é a 1.1.0)\n'
+E        +  where '2026-11-24T15:13:34 | versão 1.1.0 | não há versão guardada e o pacote da 1.1.0 não está no computador: a volta não vai ser possível\n2026-11-24T15:13:34 | versão 1.1.0 | procurei: nenhuma versão nova (esta é a 1.1.0)\n' = _registro()
+
+tests\test_atualizador_d851.py:123: AssertionError
+_______ test_d851_sem_o_pacote_e_sem_internet_tenta_na_proxima_abertura _______
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3b/antigo2/test_d851_sem_o_pacote_e_sem_i0')
+
+    def test_d851_sem_o_pacote_e_sem_internet_tenta_na_proxima_abertura(tmp_path):
+        """D-851: sem o pacote em `packages` e sem internet, nada é guardado (o registro diz); a próxima abertura testa e
+        tenta guardar de novo (por trás, com a janela aberta). É o único caso em que o teste se repete."""
+        p = Prova(tmp_path, publicar_nova=False)
+        _sem_internet(p, tmp_path)
+        p.abrir()
+>       assert atualizacao.ler_ultima_boa(p.raiz) == "" and "não está em packages" in _registro()
+E       AssertionError: assert ('' == '' and 'não está em packages' in '2026-11-24T15:13:34 | versão 1.1.0 | não há versão guardada e o pacote da 1.1.0 não está no computador: a volta não vai ser possível\n2026-11-24T15:13:34 | versão 1.1.0 | procurei: nenhuma versão nova (esta é a 1.1.0)\n')
+E        +  where '' = <function ler_ultima_boa at 0x000001F88BF60CA0>(WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3b/antigo2/test_d851_sem_o_pacote_e_sem_i0/raiz'))
+E        +    where <function ler_ultima_boa at 0x000001F88BF60CA0> = atualizacao.ler_ultima_boa
+E        +    and   WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3b/antigo2/test_d851_sem_o_pacote_e_sem_i0/raiz') = <tests.ajudante_do_atualizador.Prova object at 0x000001F8AB6E29F0>.raiz
+E        +  and   '2026-11-24T15:13:34 | versão 1.1.0 | não há versão guardada e o pacote da 1.1.0 não está no computador: a volta não vai ser possível\n2026-11-24T15:13:34 | versão 1.1.0 | procurei: nenhuma versão nova (esta é a 1.1.0)\n' = _registro()
+
+tests\test_atualizador_d851.py:132: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_atualizador_d851.py::test_d851_sem_o_pacote_em_packages_baixa_e_guarda
+FAILED tests/test_atualizador_d851.py::test_d851_o_pacote_publicado_sem_a_assinatura_certa_nao_e_baixado_nem_guardado
+FAILED tests/test_atualizador_d851.py::test_d851_sem_o_pacote_e_sem_internet_tenta_na_proxima_abertura
+PASSED tests/test_atualizador_d851.py::test_d848_reiniciar_agora_com_o_pacote_trocado_mostra_a_frase_2
+PASSED tests/test_atualizador_d851.py::test_d848_trocado_nos_segundos_do_fechar_a_reabertura_mostra_a_frase_2
+PASSED tests/test_atualizador_d851.py::test_d851_com_o_pacote_em_packages_guarda_sem_internet_e_sem_baixar
+3 failed, 3 passed in 0.80s

@@ -26,8 +26,10 @@ repositório do Velopack; a seção "Leitura das peças de fora" do ONDE-PAREI t
   `baixar` é a pasta da última boa: o Velopack copia o arquivo de lá (`sources/file.rs` 37-48) e confere tamanho e
   soma, sem internet.
 - O pacote da versão que roda fica em `packages\\`: a abertura (`VelopackApp.run`) apaga os outros e guarda o da
-  versão atual e o que está esperando (`app.rs`, `cleanup_old_packages_from_list`); o instalador põe o primeiro
-  (`bins/src/commands/install.rs`, "Copying nupkg to packages directory"). É dali que a última boa é copiada.
+  versão atual e o que está esperando (`app.rs`, `cleanup_old_packages_from_list`). O `Setup.exe` põe o primeiro
+  (`bins/src/commands/install.rs`, "Copying nupkg to packages directory"); o .msi, o NOSSO instalador, não põe nada em
+  `packages\\` (o .msi instala a pasta portátil: `WindowsPackCommandRunner.cs` 230-243; lido nas tabelas do nosso .msi
+  da 1.1.0). É dali que a última boa é copiada; sem ele lá, o executor o baixa antes (D-851).
 - `trocar`: `wait_exit_then_apply_updates` (`manager.rs` 602-675): confere que o pacote está em `packages\\` e abre o
   atualizador do Velopack com `apply --package <arquivo> --waitPid <este processo>` (e `--norestart` se não for para
   reabrir; os `argumentos` vão depois de `--`) e VOLTA LOGO. O atualizador espera este processo sair (no máximo 60 s,

@@ -29,7 +29,7 @@ AQUI = Path(__file__).resolve().parent
 RELATORIOS = AQUI.parent
 A, W, F, U = "atualizacao.py", "core/windows.py", "core/fases_da_atualizacao.py", "ui/aviso_de_atualizacao.py"
 C, P = "core/conversa_com_o_velopack.py", "regras_dos_agentes/porteiro.py"
-TESTES = ["tests/test_atualizador_volta3.py", "tests/test_fases_da_atualizacao.py", "tests/test_atualizador_novo.py",
+TESTES = ["tests/test_atualizador_volta3.py", "tests/test_atualizador_d851.py", "tests/test_fases_da_atualizacao.py", "tests/test_atualizador_novo.py",
           "tests/test_atualizador_volta2.py", "tests/test_decisoes_atualizacao.py",
           "tests/test_atualizador_volta3_de_verdade.py", "tests/test_windows_preparo_do_computador.py",
           "tests/test_decisoes_ajudante_da_atualizacao.py", "tests/test_decisoes_preparo_d749.py",
@@ -221,6 +221,17 @@ NOVAS = [
      "        motivo = conferir_assinatura_do(self.fonte, self._achada, self._chave)"),
     ("N28 o pendente é perguntado sem a licença", A,
      "        pendente = self._pendente() if grava else \"\"", "        pendente = self._pendente()"),
+    # Volta 3, segunda parte (D-851): a última boa copiada de packages; baixada só se não estiver lá.
+    ("N29 D-851: baixa mesmo com o pacote em packages", A,
+     "        if not (self.raiz / \"packages\" / nome_do_pacote(versao_boa)).is_file():", "        if True:"),
+    ("N30 D-851: sem o pacote em packages, não baixa", A,
+     "            motivo = self._baixar_a_que_roda(versao_boa)", "            pass"),
+    ("N31 D-851: o pacote baixado sem conferir a assinatura", A,
+     "        if motivo is not None:\n            return f\"o pacote publicado da {v} não tem a assinatura certa",
+     "        if False:\n            return f\"o pacote publicado da {v} não tem a assinatura certa"),
+    ("N32 D-848: o pacote trocado no Reiniciar agora com a frase da D-845", F,
+     "                MostrarFalha(FALHA_RECUSADA, id_da_falha(FALHA_RECUSADA, estado.nova), sempre=True)]",
+     "                MostrarFalha(NAO_DEU_AGORA, motivo_da_tela=MOTIVO_ERRO, sempre=True)]"),
 ]
 
 

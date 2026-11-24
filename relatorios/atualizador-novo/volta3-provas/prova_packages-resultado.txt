@@ -1,0 +1,74 @@
+{
+ "vpk 1.0.0": {
+  "codigo": 0,
+  "fim": "Complete: Building portable package\n[15:16:16 INF] Complete: Building release 1.0.0\n[15:16:16 INF] Starting: Building setup package\n[15:16:16 INF] Setup bundle created 'ProvaPacotesEditor-win-Setup.exe'.\n[15:16:16 INF] Configuring WiX in x64 mode\n[15:16:16 INF] Compiling WiX Template\n[15:16:19 INF] MSI created 'ProvaPacotesEditor-win.msi'.\n[15:16:19 WRN] No signing parameters provided, 2 file(s) will not be signed.\n[15:16:19 INF] Complete: Building setup package\n[15:16:19 INF] Starting: Post-process steps\n[15:16:19 INF] Complete: Post-process steps\n[15:16:19 INF] Finished in 00:00:03.8783646.\n"
+ },
+ "vpk 1.0.1": {
+  "codigo": 0,
+  "fim": "Complete: Building portable package\n[15:16:20 INF] Complete: Building release 1.0.1\n[15:16:20 INF] Starting: Building setup package\n[15:16:20 INF] Setup bundle created 'ProvaPacotesEditor-win-Setup.exe'.\n[15:16:20 INF] Configuring WiX in x64 mode\n[15:16:21 INF] Compiling WiX Template\n[15:16:23 INF] MSI created 'ProvaPacotesEditor-win.msi'.\n[15:16:23 WRN] No signing parameters provided, 2 file(s) will not be signed.\n[15:16:23 INF] Complete: Building setup package\n[15:16:23 INF] Starting: Post-process steps\n[15:16:24 INF] Complete: Post-process steps\n[15:16:24 INF] Finished in 00:00:03.9057988.\n"
+ },
+ "o que o vpk produziu": [
+  "ProvaPacotesEditor-1.0.0-full.nupkg",
+  "ProvaPacotesEditor-1.0.1-full.nupkg",
+  "ProvaPacotesEditor-win-Portable.zip",
+  "ProvaPacotesEditor-win-Setup.exe",
+  "ProvaPacotesEditor-win.msi",
+  "RELEASES",
+  "assets.win.json",
+  "releases.win.json"
+ ],
+ "1. o .msi": {
+  "diretorio packages no msi": [
+   "PACKAGES_DIR"
+  ],
+  "arquivos do msi dentro de packages": [],
+  "algum .nupkg no msi": [],
+  "quantos arquivos o msi tem": 6,
+  "erros": ""
+ },
+ "1b. o nosso .msi da 1.1.0 (só lido)": {
+  "diretorio packages no msi": [
+   "PACKAGES_DIR"
+  ],
+  "arquivos do msi dentro de packages": [],
+  "algum .nupkg no msi": [],
+  "quantos arquivos o msi tem": 586,
+  "erros": ""
+ },
+ "2. o portátil (a pasta que o .msi instala)": {
+  "arquivo": "ProvaPacotesEditor-win-Portable.zip",
+  "tem packages\\": [],
+  "o que tem na raiz": [
+   ".portable",
+   "Prova.exe",
+   "Update.exe",
+   "current"
+  ]
+ },
+ "3. baixar pela biblioteca": {
+  "packages antes (portátil, como o .msi)": [],
+  "packages com o da 1.0.0 posto como o Setup.exe põe": "ProvaPacotesEditor-1.0.0-full.nupkg",
+  "achada": [
+   "1.0.1",
+   "ProvaPacotesEditor-1.0.1-full.nupkg"
+  ],
+  "packages depois de baixar": [
+   ".betaId",
+   ".velopack_lock",
+   "ProvaPacotesEditor-1.0.1-full.nupkg"
+  ],
+  "pendente pelo Velopack": "1.0.1"
+ },
+ "4. a troca pelo Update.exe de verdade (--silent, --norestart)": {
+  "codigo": 0,
+  "versao em current depois": "1.0.1",
+  "packages depois da troca": [
+   ".betaId",
+   ".velopack_lock",
+   "ProvaPacotesEditor-1.0.1-full.nupkg",
+   "VelopackTemp"
+  ],
+  "pendente depois da troca": "",
+  "fim do registro do Update.exe": "te\\\\prova-packages\\\\instalado\\\\current\"))' with arguments: WideString(\"\\\"D:\\\\programas\\\\EditorImpressao\\\\saida_teste\\\\prova-packages\\\\instalado\\\\current\\\\ProvaPacotesEditor.exe\\\" --veloapp-updated 1.0.1\\0\")\n[15:16:27] [INFO] Environment block present: true, flags: PROCESS_CREATION_FLAGS(134218752)\n[15:16:27] [INFO] Waiting 15000ms for process handle to exit.\n[15:16:27] [WARN] Hook exited with non-zero exit code: 1\n[15:16:27] [INFO] Checking for running processes in: D:\\programas\\EditorImpressao\\saida_teste\\prova-packages\\instalado\n[15:16:27] [INFO] Inspected 243 running processes in 18ms, 1 matched directory\n[15:16:27] [WARN] Skipping killing self: D:\\programas\\EditorImpressao\\saida_teste\\prova-packages\\instalado\\Update.exe (22908)\n[15:16:27] [INFO] Force-stop check complete.\n[15:16:27] [INFO] Removed temp dir \"D:\\\\programas\\\\EditorImpressao\\\\saida_teste\\\\prova-packages\\\\instalado\\\\packages\\\\VelopackTemp\\\\tmp_PnyyzlRJEw5Lr6GM\" in 95ms\n[15:16:27] [INFO] Package applied successfully.\n[15:16:27] [INFO] Update.exe is already in the correct location: \"D:\\\\programas\\\\EditorImpressao\\\\saida_teste\\\\prova-packages\\\\instalado\\\\Update.exe\"\n[15:16:27] [INFO] Extracting stub 'Prova_ExecutionStub.exe' to '\"D:\\\\programas\\\\EditorImpressao\\\\saida_teste\\\\prova-packages\\\\instalado\\\\Prova.exe\"'\n[15:16:27] [INFO] Successfully extracted stub executable: \"D:\\\\programas\\\\EditorImpressao\\\\saida_teste\\\\prova-packages\\\\instalado\\\\Prova.exe\"\n[15:16:27] [INFO] Package version 1.0.1 applied successfully.\n"
+ }
+}

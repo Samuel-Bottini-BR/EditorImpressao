@@ -166,8 +166,7 @@ class Abriu:
     """O programa abriu. O que o executor leu do disco e do Windows AGORA (nunca de uma anotação):
     `instalado`: pelo instalador do Velopack (pelo código é False). `pasta_grava`: a conta que abriu consegue gravar na
     pasta do programa (o "preparado?", D-741). `versao`: a que roda. `ultima_boa`: a última que passou no teste, com o
-    pacote guardado ("" = nenhuma). `pacote_da_versao`: o pacote da versão que roda está no computador (sem ele, ela não
-    tem como virar a última boa). `nao_tentar`: as reprovadas no teste (do bilhete). `pendente`: a versão baixada
+    pacote guardado ("" = nenhuma). `nao_tentar`: as reprovadas no teste (do bilhete). `pendente`: a versão baixada
     esperando a troca, pelo Velopack ("" = nenhuma). `troca_em_curso`: o atualizador do Velopack está rodando agora
     (True / False / None = não deu para saber); só é perguntado quando há troca possível e o programa não foi reaberto
     por ele. `reaberto_de`/`reaberto_para`: o pedido com que o Velopack reabriu o programa (a linha de comando).
@@ -180,7 +179,6 @@ class Abriu:
     pasta_grava: bool
     versao: str
     ultima_boa: str = ""
-    pacote_da_versao: bool = True
     nao_tentar: tuple[str, ...] = ()
     pendente: str = ""
     troca_em_curso: bool | None = False
@@ -583,13 +581,9 @@ def _ao_abrir(estado: Estado, e: Abriu) -> tuple[Estado, list[Efeito]]:
                 antes + [RodarTesteRapido(antes_da_janela=True)])
     if e.sem_janela:
         return replace(novo, fase=Fase.PARADO), antes + [Registrar("reaberto sem janela sem nada a conferir"), Sair(0)]
-    if not e.ultima_boa and not e.pacote_da_versao:
-        # Sem última boa e sem o pacote da versão que roda no computador: não há o que guardar (nem para onde voltar).
-        return replace(novo, fase=Fase.MOTOR), antes + [Registrar(
-            f"não há versão guardada e o pacote da {e.versao} não está no computador: a volta não vai ser possível"),
-            GarantirMotor()]
     # Rodando a última boa: o motor e a procura. Sem última boa nenhuma (a primeira abertura depois de instalar): o
-    # teste por trás, com a janela aberta (não há para onde voltar), e o pacote dela é guardado.
+    # teste por trás, com a janela aberta (não há para onde voltar), e o pacote dela é guardado (D-851: copiado de
+    # packages\, ou baixado se não estiver lá; o .msi não o põe lá).
     return _com_antes(antes, _depois_da_licenca(novo, por_tras=True))
 
 

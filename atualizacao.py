@@ -342,10 +342,14 @@ def ler_ultima_boa(raiz: Path) -> str:
 def _gravar_texto_inteiro(caminho: Path, texto: str) -> None:
     """Grava um texto pequeno de uma vez (provisório + troca), BYTE POR BYTE como veio (em UTF-8, sem trocar o fim de
     linha: gravado como texto, o Windows troca cada "
-" por "
-", e uma assinatura publicada com "
+" por "
+
+", e uma assinatura publicada com "
+
 " virava
-    "
+    "
+
+
 " e deixava de ser lida; achado pela mutação N27 da volta 3). Levanta OSError."""
     provisorio = caminho.with_name(caminho.name + ".gravando")
     provisorio.write_bytes(texto.encode("utf-8"))
@@ -376,8 +380,9 @@ def _copiar_somando(origem: Path, destino: Path) -> str:
 def guardar_ultima_boa(raiz: Path, versao_boa: str, fonte: "Fonte", chave_publica: str | None = None) -> str | None:
     """Guarda o pacote da versão que passou no teste rápido como a última boa (D-844). None = guardado e conferido;
     senão, o motivo. Nunca levanta.
-    1. O pacote vem de `<raiz>\\packages\\` (o Velopack deixa ali o pacote da versão que roda: app.rs,
-       `cleanup_old_packages_from_list` guarda o da versão atual; o instalador põe o primeiro: install.rs).
+    1. O pacote vem de `<raiz>\\packages\\` (o Velopack baixa a versão nova para lá, manager.rs 405-481, a troca não o
+       apaga, e a abertura guarda o da versão atual: app.rs, `cleanup_old_packages_from_list`). O .msi NÃO o põe lá
+       (conferido nas tabelas do nosso .msi): nesse caso quem chama baixa antes (`Atualizacao._baixar_a_que_roda`).
     2. A assinatura: a guardada ao conferir (em `ultima-boa\\`) ou, sem ela, a publicada (a fonte). Tem de ser do
        Samuel e afirmar este pacote.
     3. Copia para `<nome>.chegando` somando; só com a soma assinada dá o nome final (uma troca de nome no mesmo disco).
@@ -1072,9 +1077,50 @@ class Atualizacao:
         self.evento(fases.TesteRapido(passou, detalhe))
 
     def _guardar(self, versao_boa: str) -> None:
-        """Guarda o pacote da versão que passou no teste como a última boa (D-844), e o resultado como evento."""
-        motivo = guardar_ultima_boa(self.raiz, versao_boa, self.fonte, self._chave)
+        """Guarda o pacote da versão que passou no teste como a última boa (D-844), e o resultado como evento.
+
+        D-851 (Samuel, 24/11/2026): "a última versão boa deve ser guardada copiando o pacote que já está na pasta
+        packages\\ do programa [...] sem internet; baixar só se o arquivo não estiver lá." Conferido (volta 3, segunda
+        parte; `volta3-provas/prova_packages-resultado.txt`): depois de cada troca o pacote da versão que roda está em
+        `packages\\` (o Velopack o baixa para lá e a troca não o apaga); depois do .msi, NÃO está (o .msi não tem
+        arquivo nenhum em `packages\\`: lido nas tabelas do nosso .msi da 1.1.0). Então: se está lá, só a cópia
+        conferida (`guardar_ultima_boa`, sem internet); se não está, baixa pelo Velopack (`_baixar_a_que_roda`) e
+        então a mesma cópia conferida."""
+        motivo = None
+        if not (self.raiz / "packages" / nome_do_pacote(versao_boa)).is_file():
+            motivo = self._baixar_a_que_roda(versao_boa)
+        if motivo is None:
+            motivo = guardar_ultima_boa(self.raiz, versao_boa, self.fonte, self._chave)
         self.evento(fases.UltimaBoaGuardada(motivo is None, motivo or ""))
+
+    def _baixar_a_que_roda(self, v: str) -> str | None:
+        """Baixa para `packages\\` o pacote da versão que roda, quando ele não está lá (D-851; o caso do .msi). None =
+        baixado; senão, o motivo. O tamanho e a soma vêm do índice publicado da versão (`releases.win.json`, como o
+        publicar põe ao lado do pacote); a assinatura do Samuel tem de afirmar esse pacote (D-724) e fica guardada na
+        pasta da última boa; o Velopack confere o tamanho e a soma do que baixou (manager.rs 537-561). Precisa de
+        internet: sem ela, nada é guardado e a próxima abertura tenta de novo (o teste roda de novo, por trás)."""
+        nome = nome_do_pacote(v)
+        try:
+            indice = json.loads(self.fonte.ler(v, NOME_DO_INDICE_PUBLICADO).decode("utf-8-sig"))
+        except (OSError, ValueError) as erro:
+            return f"o pacote da {v} não está em packages e o índice publicado não deu para ler ({erro})"
+        itens = [a for a in (indice.get("Assets") or []) if isinstance(a, dict) and a.get("FileName") == nome]
+        if not itens:
+            return f"o pacote da {v} não está em packages e o índice publicado não tem {nome}"
+        item = itens[0]
+        try:
+            alvo = self.velopack.pacote_da_versao(versao.ID_DO_PACOTE, v, nome, str(item.get("SHA256") or ""),
+                                                  str(item.get("SHA1") or ""), int(item.get("Size") or 0))
+        except Exception as erro:  # noqa: BLE001
+            return f"não deu para montar o pedido da {v}: {erro}"
+        motivo = conferir_assinatura_do(self.fonte, alvo, self._chave, guardar_em=pasta_da_ultima_boa(self.raiz))
+        if motivo is not None:
+            return f"o pacote publicado da {v} não tem a assinatura certa: {motivo}"
+        try:
+            self.velopack.baixar(self.fonte.endereco, alvo)
+        except Exception as erro:  # noqa: BLE001
+            return f"não consegui baixar o pacote da {v}: {erro}"
+        return None
 
     def _trocar(self, ef) -> None:
         """O efeito Trocar: pela troca única (`trocar_para`). Um erro fora do previsto lá dentro vira "não pedida"
@@ -1250,7 +1296,6 @@ class Atualizacao:
             em_curso = self.windows.atualizador_do_velopack_rodando(self.raiz)
         self.evento(fases.Abriu(instalado=True, conta_de_testes=conta_de_testes, portatil=portatil,
                                 pasta_grava=grava, versao=versao.VERSAO, ultima_boa=ultima,
-                                pacote_da_versao=(self.raiz / "packages" / nome_do_pacote(versao.VERSAO)).is_file(),
                                 nao_tentar=reprovadas_do_bilhete(bilhete), pendente=pendente,
                                 troca_em_curso=em_curso, reaberto_de=de, reaberto_para=para,
                                 sem_janela=ARG_SEM_JANELA in argumentos, frase_guardada=frase_do_bilhete(bilhete)))

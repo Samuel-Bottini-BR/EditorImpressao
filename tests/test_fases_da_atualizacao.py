@@ -57,7 +57,6 @@ EVENTOS = {
                                                sem_janela=True),
     # A primeira abertura depois de instalar: nenhuma última boa guardada.
     "abriu_sem_ultima_boa": f.Abriu(**{**COMUM, "ultima_boa": ""}),
-    "abriu_sem_ultima_boa_sem_pacote": f.Abriu(**{**COMUM, "ultima_boa": ""}, pacote_da_versao=False),
     "abriu_sem_janela_sem_nada": f.Abriu(**COMUM, sem_janela=True),
     # Volta 2, G1: o atualizador do Velopack rodando (o clique no atalho no meio da troca), ou sem saber.
     "abriu_troca_em_curso": f.Abriu(**NOVA, troca_em_curso=True),
@@ -162,10 +161,9 @@ ESPERADO = {
                                                     ("GarantirMotor",)], **A),
     (F.INICIO, "abriu_troca_recusada_sem_janela"): E(F.PARADO, [R, ("GuardarFrase", "troca", "1.2.0", ""), R,
                                                                 ("Sair", 0)], **A, sem_janela=True),
-    # A primeira abertura: sem última boa, o teste por trás (não há para onde voltar); sem o pacote, nem isso.
+    # A primeira abertura: sem última boa, o teste por trás (não há para onde voltar) (D-851: o pacote dela vem de packages, ou é baixado).
     (F.INICIO, "abriu_sem_ultima_boa"): E(F.CONFERINDO_NOVA, [("RodarTesteRapido", False)],
                                           **{**A, "anterior": ""}, nova="1.1.0"),
-    (F.INICIO, "abriu_sem_ultima_boa_sem_pacote"): E(F.MOTOR, [R, ("GarantirMotor",)], **{**A, "anterior": ""}),
     (F.INICIO, "abriu_sem_janela_sem_nada"): E(F.PARADO, [R, ("Sair", 0)], **A, sem_janela=True),
     # Volta 2, G1 (D-828 (1), D-770): o atualizador do Velopack rodando: nada feito, sai sem janela.
     (F.INICIO, "abriu_troca_em_curso"): E(F.PARADO, [R, ("Sair", 0)], **{**A, "versao": "1.2.0"}),
