@@ -634,7 +634,8 @@ class Atualizacao:
     Tudo o que fala com o mundo de fora entra pelos argumentos, e os testes trocam só a borda: `windows` (a peça
     `core.windows`), `velopack` (`core.conversa_com_o_velopack`), `raiz` (a raiz da instalação), `fonte`, `por_tras`
     (quem roda o trabalho por trás; os testes rodam na hora), `pasta_grava` (o teste de gravar), `garantir_motor` e
-    `motor_no_lugar` (o motor). A lógica entre eles é a de verdade.
+    `motor_no_lugar` (o motor), `teste` (o teste rápido) e `chave_publica` (os testes assinam com uma chave deles; no
+    programa é sempre a do Samuel). A lógica entre eles é a de verdade.
 
     Como roda: `evento(e)` pede a fase nova à regra (`fases.proxima_fase`, sob a tranca) e roda os efeitos, no fio de
     quem mandou o evento; o resultado de cada efeito volta como evento novo. Dois efeitos começam um fio por trás (o
@@ -647,7 +648,8 @@ class Atualizacao:
                  pasta_grava: Callable[[Path], bool] = pasta_aceita_gravacao,
                  garantir_motor: Callable[[], bool] | None = None,
                  motor_no_lugar: Callable[[], bool] | None = None,
-                 teste: Callable[[], tuple[bool, str]] | None = None) -> None:
+                 teste: Callable[[], tuple[bool, str]] | None = None,
+                 chave_publica: str | None = None) -> None:
         if windows is None:
             from core import windows
         if velopack is None:
@@ -659,6 +661,7 @@ class Atualizacao:
         self._garantir_motor = garantir_motor or (lambda: garantir_o_motor(self.raiz, self.raiz / "current"))
         self._motor_no_lugar = motor_no_lugar or (lambda: motor_esta_no_lugar(self.raiz))
         self._teste = teste or self._rodar_teste_rapido
+        self._chave = chave_publica              # None = a do Samuel (assinatura.CHAVE_PUBLICA_DO_SAMUEL)
         self._estado = fases.Estado()
         self._tranca = threading.RLock()
         self._tela: Callable[[object], None] | None = None
@@ -783,7 +786,7 @@ class Atualizacao:
     def _conferir_assinatura(self) -> None:
         """A assinatura do Samuel na versão achada, ANTES de baixar (D-724). A soma assinada fica guardada para a
         conferência de antes da troca (`trocar_para`)."""
-        motivo = conferir_assinatura_do(self.fonte, self._achada)
+        motivo = conferir_assinatura_do(self.fonte, self._achada, self._chave)
         if motivo is None:
             self._somas_assinadas[self._achada.versao] = self._achada.sha256
         self.evento(fases.Assinatura(motivo is None, motivo or ""))
@@ -865,7 +868,7 @@ class Atualizacao:
         item = itens[0]
         sha256, sha1, tamanho = str(item.get("SHA256") or ""), str(item.get("SHA1") or ""), int(item.get("Size") or 0)
         motivo = assinatura.conferir_versao(texto.decode("utf-8", errors="replace"),
-                                            assinatura.VersaoAssinada(pacote, ef.para, nome, sha256))
+                                            assinatura.VersaoAssinada(pacote, ef.para, nome, sha256), self._chave)
         if motivo is not None:
             return fases.VoltaPedida(False, f"a versão {ef.para} não tem a assinatura certa: {motivo}")
         try:
