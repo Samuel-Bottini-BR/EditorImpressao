@@ -2673,7 +2673,7 @@ def problemas_da_licenca_dos_usuarios(antes: Licencas, depois: Licencas) -> list
     return problemas
 
 
-def _usuarios_modificam(licencas: Licencas) -> bool:
+def usuarios_modificam(licencas: Licencas) -> bool:
     """Alguma linha que permite a Usuários Modificar (própria ou herdada) neste arquivo ou pasta?"""
     return any(li.sid == SID_USUARIOS and li.tipo == "permite" and not li.so_para_dentro
                and (li.mascara & DIREITOS_DE_MODIFICAR) == DIREITOS_DE_MODIFICAR for li in licencas.lista)
@@ -2714,7 +2714,7 @@ def dar_licenca_aos_usuarios(raiz: Path) -> Resposta:
     manifesto = raiz / NOME_DA_PASTA_TROCADA / NOME_DO_MANIFESTO
     if manifesto.is_file():
         try:
-            if not _usuarios_modificam(ler_licencas(manifesto)):
+            if not usuarios_modificam(ler_licencas(manifesto)):
                 problemas.append(f"o arquivo {manifesto.name} de dentro não ficou com a licença")
         except OSError as erro:
             problemas.append(f"não deu para ler a licença de {manifesto.name} ({erro})")

@@ -743,16 +743,17 @@ def test_a_licenca_da_tarefa_e_comparada_pelo_sentido_com_o_que_o_windows_devolv
     efetiva = ("D:(A;;FA;;;BA)(A;;FA;;;SY)(A;;0x1200a9;;;LS)(A;;FR;;;AU)(A;ID;0x1f019f;;;BA)(A;ID;0x1f019f;;;SY)"
                "(A;ID;FR;;;AU)(A;ID;FR;;;LS)(A;ID;FR;;;NS)(A;ID;FA;;;SY)(A;;FR;;;SY)")
     assert windows.problemas_da_licenca_da_tarefa(pedida, efetiva) == []
-    import atualizacao
-
-    assert windows.problemas_da_licenca_da_tarefa(atualizacao.QUEM_PODE_MANDAR_RODAR,
+    # A licença do ajudante da atualização (era atualizacao.QUEM_PODE_MANDAR_RODAR, que saiu com o ajudante no
+    # atualizador novo, 23/11/2026; D-836: a conferência fica igual, com o mesmo texto escrito aqui).
+    quem_pode_mandar_rodar = "D:(A;;FA;;;BA)(A;;FA;;;SY)(A;;GRGX;;;AU)"
+    assert windows.problemas_da_licenca_da_tarefa(quem_pode_mandar_rodar,
                                                   "D:(A;;FA;;;BA)(A;;FA;;;SY)(A;;0x1200a9;;;AU)") == []
-    assert windows.problemas_da_licenca_da_tarefa(atualizacao.QUEM_PODE_MANDAR_RODAR,
+    assert windows.problemas_da_licenca_da_tarefa(quem_pode_mandar_rodar,
                                                   "D:(A;;FA;;;BA)(A;;FA;;;SY)(A;;FR;;;AU)")
     assert windows.problemas_da_licenca_da_tarefa("D:(A;;FA;;;BA)", "D:(A;;FA;;;BA)(A;;FA;;;BU)")
     lida = windows.Tarefa("EditorImpressao\\x", True, True, comando="C:\\a.exe", argumentos="",
                           usuario=windows.SID_SISTEMA, licenca="D:(A;;FA;;;BA)(A;;FA;;;SY)(A;;0x1200a9;;;AU)")
-    xml = windows.xml_da_tarefa_do_sistema("C:\\a.exe", "", "d", atualizacao.QUEM_PODE_MANDAR_RODAR)
+    xml = windows.xml_da_tarefa_do_sistema("C:\\a.exe", "", "d", quem_pode_mandar_rodar)
     assert windows.problemas_da_tarefa_criada(xml, lida) == []
     assert windows.problemas_da_tarefa_criada(xml, windows.Tarefa("EditorImpressao\\x", True, True,
                                                                   comando="C:\\a.exe", usuario=windows.SID_SISTEMA))
@@ -960,10 +961,9 @@ def test_a_tarefa_numa_pasta_do_agendador_que_mudou_no_meio_e_apagada(monkeypatc
     if os.environ.get("GITHUB_ACTIONS") != "true":
         pytest.skip("só no Windows do GitHub: no PC do Samuel nenhuma tarefa é criada escondida (D-785)")
     nome = f"EditorImpressao\\Teste da pasta que mudou {os.getpid()}"
-    import atualizacao
-
+    # (era atualizacao.QUEM_PODE_MANDAR_RODAR, que saiu com o ajudante, 23/11/2026; D-836: o mesmo texto aqui)
     xml = windows.xml_da_tarefa_do_sistema("C:\\nao\\existe.exe", "", "teste da peça (pode apagar)",
-                                           atualizacao.QUEM_PODE_MANDAR_RODAR)
+                                           "D:(A;;FA;;;BA)(A;;FA;;;SY)(A;;GRGX;;;AU)")
     existia = windows.pasta_de_tarefas_existe()
     real = windows.conferir_pasta_de_tarefas
     leituras = []
