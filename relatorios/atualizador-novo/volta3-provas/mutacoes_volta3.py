@@ -29,7 +29,7 @@ AQUI = Path(__file__).resolve().parent
 RELATORIOS = AQUI.parent
 A, W, F, U = "atualizacao.py", "core/windows.py", "core/fases_da_atualizacao.py", "ui/aviso_de_atualizacao.py"
 C, P = "core/conversa_com_o_velopack.py", "regras_dos_agentes/porteiro.py"
-TESTES = ["tests/test_atualizador_volta3.py", "tests/test_atualizador_d851.py", "tests/test_fases_da_atualizacao.py", "tests/test_atualizador_novo.py",
+TESTES = ["tests/test_atualizador_volta4.py", "tests/test_atualizador_volta3.py", "tests/test_atualizador_d851.py", "tests/test_fases_da_atualizacao.py", "tests/test_atualizador_novo.py",
           "tests/test_atualizador_volta2.py", "tests/test_decisoes_atualizacao.py",
           "tests/test_atualizador_volta3_de_verdade.py", "tests/test_windows_preparo_do_computador.py",
           "tests/test_decisoes_ajudante_da_atualizacao.py", "tests/test_decisoes_preparo_d749.py",
@@ -53,6 +53,8 @@ def _carregar(caminho: Path, nome: str):
 IMPL = _carregar(RELATORIOS / "mutacoes.py", "mutacoes_impl")
 QTQ1 = _carregar(RELATORIOS / "quem-tenta-quebrar-1" / "provas" / "mutacoes_qtq.py", "mutacoes_qtq1")
 QTQ2 = _carregar(RELATORIOS / "quem-tenta-quebrar-2" / "provas" / "mutacoes_qtq2.py", "mutacoes_qtq2")
+# Volta 4: as 14 do terceiro "quem tenta quebrar" também.
+QTQ3 = _carregar(RELATORIOS / "quem-tenta-quebrar-3" / "provas" / "mutacoes_qtq3.py", "mutacoes_qtq3")
 
 # A mesma proteção, no código novo: nome da mutação de antes -> (porquê, arquivo, trecho, troca).
 NO_CODIGO_NOVO = {
@@ -93,9 +95,38 @@ NO_CODIGO_NOVO = {
         "M7 a: o sem caminho virou 'não deu para saber'; a mutação o dá como parado", W,
         "    return None if any(not caminho_conferido(c) for _, c in achados) else False", "    return False"),
     "V5 G1: o executor pergunta também na reabertura com linha de comando": (
-        "a pergunta só fora da reabertura, agora pelo pacote esperando ou pela versão sem teste", A,
-        "        if not fora and ARG_CONFERIR_NOVA not in argumentos and (pendente or",
+        "a pergunta só fora da reabertura (a da troca e, desde a volta 4, a da volta)", A,
+        "        if not fora and not reaberto and (pendente or",
         "        if not fora and (pendente or"),
+    "Q6 a reabertura pelo Velopack também pergunta se o atualizador roda (e sai, se ele ainda estiver saindo)": (
+        "o mesmo do V5, no código da volta 4", A,
+        "        if not fora and not reaberto and (pendente or",
+        "        if not fora and (pendente or"),
+    "Q1 motor: sem a conferencia do espaco livre": (
+        "volta 4: o motor pergunta o espaço pela conta única (espaco_livre_basta)", A,
+        "            cabe, tem = espaco_livre_basta(destino.parent, precisa, livre)\n            if not cabe:",
+        "            cabe, tem = espaco_livre_basta(destino.parent, precisa, livre)\n            if False:"),
+    "V26 a falha de teste não põe a versão em 'não tentar'": (
+        "volta 4: a reprovação é posta antes de escolher entre a volta e a frase (3)", F,
+        "        reprovada = replace(estado, nao_tentar=_com_mais(estado.nao_tentar, estado.nova))",
+        "        reprovada = estado"),
+    "Q1 a guarda apaga também a assinatura da versão mais nova que está chegando": (
+        "volta 4: a limpeza só apaga as versões mais velhas", A,
+        "        if v and (v == versao_boa or fases._mais_nova(v, versao_boa)):",
+        "        if v and v == versao_boa:"),
+    "Q4 D-839: a frase da troca recusada aparece também quando a troca deu certo": (
+        "volta 4: a mesma condição, separada da volta", F,
+        "    if e.reaberto_para and not e.reaberto_voltando and e.versao == e.reaberto_de and \\",
+        "    if e.reaberto_para and not e.reaberto_voltando and \\"),
+    "Q13 a cópia com a soma errada deixa o .chegando (460 MB) no disco": (
+        "volta 4: a soma pela conta única", A,
+        "        if assinatura.soma_sha256(origem, copiar_para=chegando) != soma_assinada:\n"
+        "            chegando.unlink(missing_ok=True)\n",
+        "        if assinatura.soma_sha256(origem, copiar_para=chegando) != soma_assinada:\n"),
+    "Q14 a volta reabre com os argumentos da troca normal (a anterior acha que a troca foi recusada)": (
+        "volta 4: a volta leva a marca dela", A,
+        "        argumentos = ([ARG_VOLTANDO, de, para] if volta else",
+        "        argumentos = ([ARG_CONFERIR_NOVA, para, de] if volta else"),
     "V6 M1: a conferência antes de fechar sempre diz 'pode'": ("a conferência roda por trás (M2)", A,
                                                               "            self._por_tras(lambda: self.evento("
                                                               "self.conferencia_da_troca(self._achada)))",
@@ -146,13 +177,12 @@ FORCAR = {"9 outra janela aberta não troca"}
 # As proteções novas da volta 3: (nome, arquivo, trecho, troca).
 NOVAS = [
     ("N1 G1/A: rodando o que não é a última boa, o teste antes da janela", F,
-     "    if e.ultima_boa and e.versao != e.ultima_boa:\n        # A versão que roda",
-     "    if False:\n        # A versão que roda"),
+     "    if _precisa_do_teste(e):\n", "    if False:\n"),
     ("N2 D-844: a volta pela pasta da última boa, sem internet", A,
      "            self.velopack.baixar(str(pasta), v)", "            self.velopack.baixar(self.fonte.endereco, v)"),
     ("N3 D-844: a guarda confere a soma da cópia", A,
-     "        if _copiar_somando(origem, chegando) != soma_assinada:", "        if _copiar_somando(origem, chegando) "
-     "and False:"),
+     "        if assinatura.soma_sha256(origem, copiar_para=chegando) != soma_assinada:",
+     "        if assinatura.soma_sha256(origem, copiar_para=chegando) and False:"),
     ("N4 a guarda copia para o nome provisório", A,
      "    chegando = pasta / (nome + \".chegando\")", "    chegando = pasta / nome"),
     ("N5 M1: a assinatura recusada não reprova", F,
@@ -205,9 +235,9 @@ NOVAS = [
      "    pasta.mkdir(parents=True, exist_ok=True)\n    if False:"),
     ("N22 D-769: a guarda sem janela vai por trás (o processo sai antes)", F,
      "GuardarUltimaBoa(estado.nova, por_tras=not estado.sem_janela)", "GuardarUltimaBoa(estado.nova, por_tras=True)"),
-    ("N23 a volta só antes da janela", F,
-     "        if estado.antes_da_janela and estado.anterior and estado.anterior != estado.nova:",
-     "        if estado.anterior and estado.anterior != estado.nova:"),
+    ("N23 a volta só com uma última boa diferente (sem ela: a frase 3 e para, D-857)", F,
+     "        if estado.anterior and estado.anterior != estado.nova:\n            return (replace(reprovada, fase=Fase.VOLTANDO),",
+     "        if True:\n            return (replace(reprovada, fase=Fase.VOLTANDO),"),
     ("N24 o bilhete só com as duas chaves", A,
      "    limpo = {k: lido[k] for k in CHAVES_DO_BILHETE if k in lido}", "    limpo = dict(lido)"),
     ("N25 D-839: a troca recusada pelo Windows sem a frase", F,
@@ -217,21 +247,63 @@ NOVAS = [
      "               if v and assinatura.nome_do_arquivo_da_assinatura(versao.ID_DO_PACOTE, v) in nomes]",
      "               if v]"),
     ("N27 a assinatura da versão que chega não é guardada", A,
-     "        motivo = conferir_assinatura_do(self.fonte, self._achada, self._chave, guardar_em=pasta_da_ultima_boa(self.raiz))",
-     "        motivo = conferir_assinatura_do(self.fonte, self._achada, self._chave)"),
+     "            motivo = conferir_assinatura_do(self.fonte, self._achada, self._chave,\n"
+     "                                            guardar_em=pasta_da_ultima_boa(self.raiz))",
+     "            motivo = conferir_assinatura_do(self.fonte, self._achada, self._chave)"),
     ("N28 o pendente é perguntado sem a licença", A,
      "        pendente = self._pendente() if grava else \"\"", "        pendente = self._pendente()"),
     # Volta 3, segunda parte (D-851): a última boa copiada de packages; baixada só se não estiver lá.
-    ("N29 D-851: baixa mesmo com o pacote em packages", A,
-     "        if not (self.raiz / \"packages\" / nome_do_pacote(versao_boa)).is_file():", "        if True:"),
-    ("N30 D-851: sem o pacote em packages, não baixa", A,
-     "            motivo = self._baixar_a_que_roda(versao_boa)", "            pass"),
-    ("N31 D-851: o pacote baixado sem conferir a assinatura", A,
-     "        if motivo is not None:\n            return f\"o pacote publicado da {v} não tem a assinatura certa",
-     "        if False:\n            return f\"o pacote publicado da {v} não tem a assinatura certa"),
+    # (N29 a N31 eram do download da D-851, que a D-857 tirou: saíram com ele.)
     ("N32 D-848: o pacote trocado no Reiniciar agora com a frase da D-845", F,
      "                MostrarFalha(FALHA_RECUSADA, id_da_falha(FALHA_RECUSADA, estado.nova), sempre=True)]",
      "                MostrarFalha(NAO_DEU_AGORA, motivo_da_tela=MOTIVO_ERRO, sempre=True)]"),
+    # Volta 4: as três regras do Samuel, o "Sim" ao fechar, o pacote esperando, a rede na assinatura, L1 e L5.
+    ("P1 D-855: a volta sem a marca --voltando", A,
+     "        argumentos = ([ARG_VOLTANDO, de, para] if volta else", "        argumentos = ([] if volta else"),
+    ("P2 D-855: a reaberta da volta recusada testa de novo", F,
+     "    if e.reaberto_voltando and e.reaberto_de and e.versao == e.reaberto_de:", "    if False:"),
+    ("P3 D-863: a volta recusada não deixa a marca de sem volta", F,
+     "                            f\"{e.versao}): não tento de novo\"), MarcarSemVolta(e.versao)]",
+     "                            f\"{e.versao}): não tento de novo\")]"),
+    ("P4 D-863: a marca de sem volta não é olhada", F,
+     "    if e.versao == e.ultima_boa or e.aprovada or e.sem_volta:", "    if e.versao == e.ultima_boa or e.aprovada:"),
+    ("P5 D-863: a volta que nem pode ser pedida não marca", F,
+     "    efeitos: list[Efeito] = [Registrar(motivo), MarcarSemVolta(estado.nova)] + _frase(estado, FALHA_VOLTA, estado.nova)",
+     "    efeitos: list[Efeito] = [Registrar(motivo)] + _frase(estado, FALHA_VOLTA, estado.nova)"),
+    ("P6 D-856: a marca de aprovada não é posta", F,
+     "                MarcarAprovada(estado.nova), GuardarUltimaBoa(estado.nova, por_tras=not estado.sem_janela)]",
+     "                GuardarUltimaBoa(estado.nova, por_tras=not estado.sem_janela)]"),
+    ("P7 D-856: a marca de aprovada não é olhada", F,
+     "    if e.versao == e.ultima_boa or e.aprovada or e.sem_volta:", "    if e.versao == e.ultima_boa or e.sem_volta:"),
+    ("P8 D-856: a guarda não confere o espaço", A,
+     "        if not cabe:\n            return (f\"falta espaço para guardar", "        if False:\n            return (f\"falta espaço para guardar"),
+    ("P9 D-857: a primeira versão do .msi é testada", F,
+     "    return bool(e.ultima_boa) or e.pacote_da_versao", "    return True"),
+    ("P10 D-857: sem última boa, a falha não mostra a frase (3)", F,
+     "        fase_nova, efeitos = _volta_que_nao_deu(reprovada, f\"{motivo}; não há versão guardada para voltar\")",
+     "        fase_nova, efeitos = replace(reprovada, fase=Fase.MOTOR), [GarantirMotor()]"),
+    ("P11 D-858: o Sim ao fechar sem a frase", F,
+     "            return replace(estado, fase=Fase.PARADO), efeitos + [GuardarFrase(NAO_DEU_AGORA, estado.nova,",
+     "            return replace(estado, fase=Fase.PARADO), efeitos + [] or efeitos + [GuardarFrase(NAO_DEU_AGORA, estado.nova,"),
+    ("P12 D-864: o Sim ao fechar com outra janela usa o motivo genérico", F,
+     "            motivo_da_tela = MOTIVO_HAVIA_OUTRA_JANELA if e.outra_janela else (e.motivo_da_tela or MOTIVO_ERRO)",
+     "            motivo_da_tela = e.motivo_da_tela or MOTIVO_ERRO"),
+    ("P13 D-859: sem internet o pacote esperando não é oferecido", F,
+     "            if estado.pendente and _mais_nova(estado.pendente, estado.versao) and \\",
+     "            if False and \\"),
+    ("P14 D-859: o pacote esperando reprovado é oferecido", F,
+     "                    estado.pendente not in estado.nao_tentar:", "                    True:"),
+    ("P15 a rede que não responde vira recusada", F,
+     "        if e.sem_rede:\n            # Volta 4", "        if False:\n            # Volta 4"),
+    ("P16 a fonte de pasta inacessível conta como 'não existe'", A,
+     "            if not Path(self.endereco).is_dir():\n                raise ConnectionError",
+     "            if False:\n                raise ConnectionError"),
+    ("P17 L1: a assinatura da última boa antes do pacote conferido", A,
+     "        os.replace(chegando, pasta / nome)\n        _gravar_texto_inteiro(pasta / nome_da_assinatura, texto)",
+     "        _gravar_texto_inteiro(pasta / nome_da_assinatura, texto)\n        os.replace(chegando, pasta / nome)"),
+    ("P18 a assinatura que chega fica com o nome da última boa", A,
+     "            _gravar_texto_inteiro(Path(guardar_em) / (nome + \".chegando\"), texto)",
+     "            _gravar_texto_inteiro(Path(guardar_em) / nome, texto)"),
 ]
 
 
@@ -304,6 +376,7 @@ def main() -> int:
         de_antes("mutacoes.py (as do implementador)", IMPL.MUTACOES, False)
         de_antes("mutacoes_qtq.py (as 17 do primeiro quem tenta quebrar)", QTQ1.MUTACOES, True)
         de_antes("mutacoes_qtq2.py (as 26 V do segundo quem tenta quebrar)", QTQ2.MUTACOES, True)
+        de_antes("mutacoes_qtq3.py (as 14 do terceiro quem tenta quebrar)", QTQ3.MUTACOES, True)
     anotar("== as proteções novas da volta 3" + (f" (só {', '.join(so)})" if so else ""))
     for nome, arquivo, de, para in NOVAS:
         if so is None or nome.split()[0] in so:
