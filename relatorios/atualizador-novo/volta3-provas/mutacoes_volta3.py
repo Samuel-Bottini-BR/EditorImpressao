@@ -10,10 +10,11 @@ segundo), importadas dos arquivos deles (nada copiado à mão). Para cada uma:
 - a proteção saiu de propósito com o desenho da emenda do Fable (`SAIU`, com o porquê e o teste que cobra o contrário).
 Depois, as proteções novas da volta 3 (`NOVAS`).
 
-Roda numa CÓPIA do ramo (o primeiro argumento; feita com `git archive`), nunca no worktree: se o processo morrer no meio,
-o código de verdade não fica estragado. Cada mutação: troca o trecho (que tem de aparecer uma vez só), roda os arquivos
-de teste do atualizador (com `-x`) e devolve o arquivo como estava. "SOBREVIVEU" = nenhum teste falhou.
-Uso: python mutacoes_volta3.py <cópia do ramo>
+Roda NO LUGAR (o primeiro argumento é a pasta do ramo: a trava dos donos precisa do git do ramo, que uma cópia feita
+com `git archive` não tem; a primeira tentativa numa cópia parou na conferência sem mutação por isso). Cada mutação:
+troca o trecho (que tem de aparecer uma vez só), roda os arquivos de teste do atualizador (com `-x`) e devolve o
+arquivo como estava (num `finally`; depois, `git status` tem de estar limpo). "SOBREVIVEU" = nenhum teste falhou.
+Uso: python mutacoes_volta3.py <pasta do ramo>
 """
 from __future__ import annotations
 
@@ -236,9 +237,9 @@ def _rodar_uma(nome: str, arquivo: str, de: str, para: str) -> str:
     try:
         caminho.write_bytes(texto.replace(de, para).encode("utf-8"))
         feito = subprocess.run([sys.executable, "-m", "pytest", *TESTES, "-q", "-p", "no:cacheprovider", "-x",
-                                f"--basetemp={RAIZ.parent / 'mut3-tmp'}"],
+                                f"--basetemp={RAIZ / 'saida_teste' / 'mut3-tmp'}"],
                                cwd=RAIZ, capture_output=True, text=True, encoding="utf-8", errors="replace",
-                               env={**os.environ, "PROGRAMDATA": str(RAIZ.parent / "mut3-pd")})
+                               env={**os.environ, "PROGRAMDATA": str(RAIZ / "saida_teste" / "mut3-pd")})
     finally:
         caminho.write_bytes(original)
     fim = (feito.stdout.strip().splitlines() or ["?"])[-1]
@@ -278,8 +279,8 @@ def main() -> int:
     # Antes de tudo, sem mutação nenhuma, os testes juntos têm de passar (senão "acusada" não quer dizer nada: um teste
     # que falha sozinho acusaria todas). Foi assim que se achou que as frases "já vistas" vazavam de um teste para outro.
     base = subprocess.run([sys.executable, "-m", "pytest", *TESTES, "-q", "-p", "no:cacheprovider",
-                           f"--basetemp={RAIZ.parent / 'mut3-tmp'}"], cwd=RAIZ, capture_output=True, text=True,
-                          encoding="utf-8", errors="replace", env={**os.environ, "PROGRAMDATA": str(RAIZ.parent / "mut3-pd")})
+                           f"--basetemp={RAIZ / 'saida_teste' / 'mut3-tmp'}"], cwd=RAIZ, capture_output=True, text=True,
+                          encoding="utf-8", errors="replace", env={**os.environ, "PROGRAMDATA": str(RAIZ / "saida_teste" / "mut3-pd")})
     anotar(f"== sem mutação: {(base.stdout.strip().splitlines() or ['?'])[-1]}")
     if base.returncode != 0:
         anotar("PAROU: sem mutação os testes já falham")
