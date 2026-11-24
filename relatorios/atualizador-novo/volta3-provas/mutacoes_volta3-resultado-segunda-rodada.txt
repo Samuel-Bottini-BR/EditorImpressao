@@ -1,0 +1,6 @@
+== sem mutação: 2540 passed, 8 skipped in 73.47s (0:01:13)
+== as proteções novas da volta 3 (só N26, N27, N28)
+acusada     N26 D-844: a última boa sem a assinatura ao lado conta | 1 failed, 33 passed in 4.20s | FAILED tests/test_atualizador_volta3.py::test_n26_a_ultima_boa_e_o_pacote_com_a_assinatura_ao_lado
+acusada     N27 a assinatura da versão que chega não é guardada | 1 failed, 34 passed in 3.28s | FAILED tests/test_atualizador_volta3.py::test_n27_a_versao_nova_vira_a_ultima_boa_sem_internet
+acusada     N28 o pendente é perguntado sem a licença | 1 failed, 35 passed in 3.48s | FAILED tests/test_atualizador_volta3.py::test_n28_sem_a_licenca_nada_do_velopack_e_perguntado
+3 acusadas, 0 sobreviveram, 0 saíram com o desenho (com o porquê), 0 erros de mutação
