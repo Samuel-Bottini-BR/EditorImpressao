@@ -314,6 +314,16 @@ PALAVRAS_DE_LICENCA: list[tuple[str, str]] = [
     (r"SetFileSecurity", "advapi32.SetFileSecurityW(a)"),
 ]
 LICENCA_A_MAO = re.compile("|".join(f"(?:{p})" for p, _ in PALAVRAS_DE_LICENCA), re.I)
+# K03, a única exceção (D-837, Samuel 23/11/2026: "6 – opção 1"; o Fable: "um caminho só, o provado no experimento
+# (`icacls /grant ... /T` pela peça)"): a função da peça do Windows que ACRESCENTA a Usuários a licença de Modificar na
+# pasta do programa. Nela, a ferramenta de licença de pasta é aceita só na linha que a chama e só sozinha (qualquer
+# outra palavra da K03 na mesma linha continua acusada), e qualquer opção que tire, negue, troque o dono ou mexa na
+# herança é acusada em toda a função (`NUNCA_NA_LICENCA_QUE_ACRESCENTA`). Fora dessa função, nada muda. Arriscado:
+# pôr outra função aqui, ou tirar opção da lista do "nunca" (as duas afrouxam a K03 calada).
+LICENCA_QUE_SO_ACRESCENTA = (PECA_UNICA_DO_WINDOWS, "dar_licenca_aos_usuarios")
+_A_FERRAMENTA_QUE_ACRESCENTA = re.compile(r"\bicacls\b", re.I)
+NUNCA_NA_LICENCA_QUE_ACRESCENTA = re.compile(
+    r"/inheritance|/setowner|/remove|/deny|/reset|/restore|/substitute|/setintegritylevel|/save|:r\b", re.I)
 # K04 e K05: PROTEGIDAS.
 PADRAO_DO_NUMERO_DE_DECISAO = r"\bD-\d{3,}\b"
 NUMERO_DE_DECISAO = re.compile(PADRAO_DO_NUMERO_DE_DECISAO)
@@ -743,10 +753,26 @@ def k02(arq: _Arquivo) -> list[Achado]:
 
 
 def k03(arq: _Arquivo) -> list[Achado]:
-    """K03: comando de licença de pasta à mão, em qualquer arquivo do programa (até na peça única)."""
+    """K03: comando de licença de pasta à mão, em qualquer arquivo do programa (até na peça única). A única exceção é
+    `LICENCA_QUE_SO_ACRESCENTA` (D-837): ali a ferramenta passa só sozinha na linha, e o que tira, nega, troca o dono
+    ou mexe na herança é acusado na função inteira."""
     if not e_programa(arq.caminho):
         return []
-    return _por_linha(arq, "K03", LICENCA_A_MAO, "licença de pasta mudada à mão (etapa 5, defeito 4)")
+    arquivo, funcao = LICENCA_QUE_SO_ACRESCENTA
+    achados = []
+    for a in _por_linha(arq, "K03", LICENCA_A_MAO, "licença de pasta mudada à mão (etapa 5, defeito 4)"):
+        so_a_ferramenta = not LICENCA_A_MAO.search(_A_FERRAMENTA_QUE_ACRESCENTA.sub("", arq.codigo[a.linha - 1]))
+        if not (arq.caminho == arquivo and a.funcao == funcao and so_a_ferramenta):
+            achados.append(a)
+    if arq.caminho == arquivo:
+        ja = {a.linha for a in achados}
+        for n, linha in enumerate(arq.codigo, 1):
+            m = NUNCA_NA_LICENCA_QUE_ACRESCENTA.search(linha)
+            if m and n not in ja and arq.funcao(n) == funcao:
+                achados.append(Achado("K03", arq.caminho, n, _texto_do_lugar(linha),
+                                      f"a função que só acrescenta licença não pode tirar, negar, trocar o dono nem "
+                                      f"mexer na herança: {m.group(0)}", funcao))
+    return sorted(achados, key=lambda a: a.linha)
 
 
 def k04(arq: _Arquivo) -> list[Achado]:
