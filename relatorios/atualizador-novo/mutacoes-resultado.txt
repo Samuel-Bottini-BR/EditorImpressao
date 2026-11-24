@@ -1,22 +1,34 @@
-[FALHOU (a proteção acusa)] 1 sem licença não procura -> tests/test_atualizador_novo.py::test_protecao_1_sem_licenca_pergunta_ao_windows_e_nao_procura | 1 failed in 0.43s
-[FALHOU (a proteção acusa)] 2 assinatura antes de baixar -> tests/test_atualizador_novo.py::test_protecao_2_assinatura_errada_nao_baixa_e_avisa_com_a_frase_2 | 1 failed in 0.37s
-[FALHOU (a proteção acusa)] 3 soma do arquivo baixado antes de trocar -> tests/test_atualizador_novo.py::test_protecao_3_pacote_trocado_depois_de_baixar_nao_troca | 1 failed in 0.38s
-[FALHOU (a proteção acusa)] 4a motor antes de anunciar -> tests/test_atualizador_novo.py::test_protecao_4a_motor_fora_do_lugar_nada_e_procurado_nem_anunciado | 1 failed in 0.41s
-[FALHOU (a proteção acusa)] 4b motor antes de trocar -> tests/test_atualizador_novo.py::test_protecao_4b_motor_fora_do_lugar_na_hora_de_trocar_nao_troca | 1 failed in 0.40s
-[FALHOU (a proteção acusa)] 5 a licença é o último passo -> tests/test_atualizador_novo.py::test_protecoes_5_e_6_a_ordem_dos_passos_da_pergunta | 1 failed in 0.35s
-[FALHOU (a proteção acusa)] 6 o ajudante antigo sai antes da licença -> tests/test_atualizador_novo.py::test_protecoes_5_e_6_a_ordem_dos_passos_da_pergunta | 1 failed in 0.34s
-[FALHOU (a proteção acusa)] 7 a conta de testes não pergunta nem procura -> tests/test_atualizador_novo.py::test_protecao_7_conta_de_testes_nao_pergunta_nem_procura | 1 failed in 0.39s
-[FALHOU (a proteção acusa)] 8 a versão que falhou não é tentada de novo -> tests/test_atualizador_novo.py::test_protecao_8_a_versao_que_falhou_nao_e_baixada_de_novo | 1 failed in 0.37s
-[FALHOU (a proteção acusa)] 9 outra janela aberta não troca -> tests/test_atualizador_novo.py::test_protecao_9_outra_janela_aberta_nao_troca | 1 failed in 0.39s
-[FALHOU (a proteção acusa)] 10 a troca só depois de a janela fechar -> tests/test_atualizador_novo.py::test_protecao_10_a_janela_que_nao_fecha_nao_troca | 1 failed in 0.40s
-[FALHOU (a proteção acusa)] 11 a volta só com pacote assinado -> tests/test_atualizador_novo.py::test_protecao_11_a_volta_sem_a_assinatura_nao_troca_e_avisa_com_a_frase_3 | 1 failed in 0.40s
-[FALHOU (a proteção acusa)] 12 pelo código nada roda -> tests/test_atualizador_novo.py::test_protecao_12_pelo_codigo_nada_roda | 1 failed in 0.47s
-[FALHOU (a proteção acusa)] 13 só trocar_para chama a troca -> tests/test_atualizador_novo.py::test_protecao_13_so_um_lugar_chama_a_troca_do_velopack | 1 failed in 4.07s
-[FALHOU (a proteção acusa)] D-749 o preparo vale pelo teste de gravar, não pelo que o trabalho disse -> tests/test_decisoes_preparo_d749.py::test_d749_sim_com_a_preparacao_parada_no_meio_a_pergunta_volta | 1 failed in 0.38s
-[FALHOU (a proteção acusa)] D-832 a janelinha do Velopack (sem o modo silencioso) -> tests/test_atualizador_novo.py::test_d832_a_troca_usa_a_janelinha_do_velopack | 1 failed in 0.47s
-[FALHOU (a proteção acusa)] D-837 a licença que só acrescenta: a herança -> tests/test_windows_preparo_do_computador.py::test_d837_o_que_tira_ou_nao_acrescenta_e_acusado | 1 failed in 0.36s
-[FALHOU (a proteção acusa)] D-837 o porteiro: nada de tirar dentro da função -> tests/test_porteiro_licenca_que_acrescenta.py::test_d837_tirar_negar_trocar_dono_ou_heranca_e_acusado_ate_na_funcao | 1 failed, 1 passed in 0.30s
-[FALHOU (a proteção acusa)] D-837 o porteiro: a exceção é uma função só -> tests/test_porteiro_licenca_que_acrescenta.py::test_d837_a_funcao_que_so_acrescenta_passa_so_na_peca | 1 failed in 0.30s
-[FALHOU (a proteção acusa)] a trava: velopack só no dono -> tests/test_trava_windows.py::test_velopack_so_no_dono | 1 failed in 0.34s
+[FALHOU (a proteção acusa)] 1 sem licença não procura -> tests/test_atualizador_novo.py::test_protecao_1_sem_licenca_pergunta_ao_windows_e_nao_procura | 1 failed in 0.69s
+[FALHOU (a proteção acusa)] 2 assinatura antes de baixar -> tests/test_atualizador_novo.py::test_protecao_2_assinatura_errada_nao_baixa_e_avisa_com_a_frase_2 | 1 failed in 0.59s
+[FALHOU (a proteção acusa)] 3 soma do arquivo baixado antes de trocar -> tests/test_atualizador_novo.py::test_protecao_3_pacote_trocado_depois_de_baixar_nao_troca | 1 failed in 0.75s
+[FALHOU (a proteção acusa)] 4a motor antes de anunciar -> tests/test_atualizador_novo.py::test_protecao_4a_motor_fora_do_lugar_nada_e_procurado_nem_anunciado | 1 failed in 0.68s
+[FALHOU (a proteção acusa)] 4b motor antes de trocar -> tests/test_atualizador_novo.py::test_protecao_4b_motor_fora_do_lugar_na_hora_de_trocar_nao_troca | 1 failed in 0.83s
+[FALHOU (a proteção acusa)] 5 a licença é o último passo -> tests/test_atualizador_novo.py::test_protecoes_5_e_6_a_ordem_dos_passos_da_pergunta | 1 failed in 0.56s
+[FALHOU (a proteção acusa)] 6 o ajudante antigo sai antes da licença -> tests/test_atualizador_novo.py::test_protecoes_5_e_6_a_ordem_dos_passos_da_pergunta | 1 failed in 0.56s
+[FALHOU (a proteção acusa)] 7 a conta de testes não pergunta nem procura -> tests/test_atualizador_novo.py::test_protecao_7_conta_de_testes_nao_pergunta_nem_procura | 1 failed in 0.66s
+[FALHOU (a proteção acusa)] 8 a versão que falhou não é tentada de novo -> tests/test_atualizador_novo.py::test_protecao_8_a_versao_que_falhou_nao_e_baixada_de_novo | 1 failed in 0.99s
+[FALHOU (a proteção acusa)] 9 outra janela aberta não troca -> tests/test_atualizador_novo.py::test_protecao_9_outra_janela_aberta_nao_troca | 1 failed in 0.72s
+[FALHOU (a proteção acusa)] 10 a troca só depois de a janela fechar -> tests/test_atualizador_novo.py::test_protecao_10_a_janela_que_nao_fecha_nao_troca | 1 failed in 0.72s
+[FALHOU (a proteção acusa)] 11 a volta só com pacote assinado -> tests/test_atualizador_novo.py::test_protecao_11_a_volta_sem_a_assinatura_nao_troca_e_avisa_com_a_frase_3 | 1 failed in 0.81s
+[FALHOU (a proteção acusa)] 12 pelo código nada roda -> tests/test_atualizador_novo.py::test_protecao_12_pelo_codigo_nada_roda | 1 failed in 0.71s
+[FALHOU (a proteção acusa)] 13 só trocar_para chama a troca -> tests/test_atualizador_novo.py::test_protecao_13_so_um_lugar_chama_a_troca_do_velopack | 1 failed in 7.63s
+[FALHOU (a proteção acusa)] D-749 o preparo vale pelo teste de gravar, não pelo que o trabalho disse -> tests/test_decisoes_preparo_d749.py::test_d749_sim_com_a_preparacao_parada_no_meio_a_pergunta_volta | 1 failed in 0.67s
+[FALHOU (a proteção acusa)] D-832 a janelinha do Velopack (sem o modo silencioso) -> tests/test_atualizador_novo.py::test_d832_a_troca_usa_a_janelinha_do_velopack | 1 failed in 0.76s
+[FALHOU (a proteção acusa)] D-837 a licença que só acrescenta: a herança -> tests/test_windows_preparo_do_computador.py::test_d837_o_que_tira_ou_nao_acrescenta_e_acusado | 1 failed in 0.71s
+[FALHOU (a proteção acusa)] D-837 o porteiro: nada de tirar dentro da função -> tests/test_porteiro_licenca_que_acrescenta.py::test_d837_tirar_negar_trocar_dono_ou_heranca_e_acusado_ate_na_funcao | 1 failed, 1 passed in 0.58s
+[FALHOU (a proteção acusa)] D-837 o porteiro: a exceção é uma função só -> tests/test_porteiro_licenca_que_acrescenta.py::test_d837_a_funcao_que_so_acrescenta_passa_so_na_peca | 1 failed in 0.58s
+[FALHOU (a proteção acusa)] G1 a troca em curso não vira falha -> tests/test_atualizador_volta2.py::test_g1_abrir_pelo_atalho_no_meio_da_troca_nao_anota_falha_e_sai_sem_janela | 1 failed in 0.73s
+[FALHOU (a proteção acusa)] M1 conferir antes de fechar -> tests/test_atualizador_volta2.py::test_m1_reiniciar_agora_que_nao_pode_trocar_nao_fecha_a_janela | 1 failed in 0.69s
+[FALHOU (a proteção acusa)] M1 reabrir o que falha depois de fechar -> tests/test_atualizador_volta2.py::test_m1_a_troca_que_falha_depois_de_fechar_reabre_o_programa | 1 failed in 0.60s
+[FALHOU (a proteção acusa)] M2 o motor da versão que entra (na troca) -> tests/test_atualizador_volta2.py::test_m2_a_volta_confere_o_motor_da_anterior_e_volta | 1 failed in 0.70s
+[FALHOU (a proteção acusa)] M2 o motor da versão nova (no anúncio) -> tests/test_atualizador_volta2.py::test_m2_a_versao_nova_sem_o_motor_dela_nao_e_anunciada | 1 failed in 0.62s
+[FALHOU (a proteção acusa)] M4 a troca só com a anotação gravada -> tests/test_atualizador_volta2.py::test_m4_com_o_estado_que_nao_grava_nada_e_procurado_nem_trocado | 1 failed in 0.67s
+[FALHOU (a proteção acusa)] M4 nada procurado sem o estado gravando -> tests/test_atualizador_volta2.py::test_m4_com_o_estado_que_nao_grava_nada_e_procurado_nem_trocado | 1 failed in 0.62s
+[FALHOU (a proteção acusa)] leve 2 nenhuma licença a mais -> tests/test_atualizador_volta2.py::test_leve2_uma_licenca_a_mais_na_pasta_e_acusada | 1 failed in 0.64s
+[FALHOU (a proteção acusa)] leve 2 o porteiro: só a linha do experimento -> tests/test_atualizador_volta2.py::test_leve2_o_porteiro_acusa_o_que_a_d837_nao_deixa | 1 failed in 0.71s
+[FALHOU (a proteção acusa)] leve 2 o porteiro: a ferramenta em pedaços -> tests/test_atualizador_volta2.py::test_leve2_o_porteiro_acusa_o_que_a_d837_nao_deixa | 1 failed, 1 passed in 0.60s
+[FALHOU (a proteção acusa)] leve 2 o porteiro: quem chama a licença -> tests/test_atualizador_volta2.py::test_leve2_o_porteiro_acusa_o_que_a_d837_nao_deixa | 1 failed, 3 passed in 0.60s
+[FALHOU (a proteção acusa)] leve 3 a família pela hora em que nasceu -> tests/test_atualizador_volta2.py::test_leve3_a_familia_respeita_a_hora_em_que_cada_um_nasceu | 1 failed in 0.61s
+[FALHOU (a proteção acusa)] a trava: velopack só no dono -> tests/test_trava_windows.py::test_velopack_so_no_dono | 1 failed in 0.61s
 
-20 de 20 mutações acusadas.
+32 de 32 mutações acusadas.
