@@ -1,3 +1,266 @@
+# Volta 4 — a tabela das falhas (24/11/2026)
+
+Implementador (o mesmo da volta 3; esta é a minha segunda volta, a última pela D-815). Pedido da gerente de 24/11:
+**antes de qualquer código**, a tabela "passos × jeitos de dar errado" (D-862), já com as três regras do Samuel (D-855,
+D-856, D-857) e o resto do recado (D-858, D-859, D-860; D-861 fica para depois). Ramo `atualizador-novo-2026-11-23`, a
+partir de `1d01aaf9`. Li inteiro: `quem-tenta-quebrar-3/relatorio.md`, a seção "Depois do terceiro 'quem tenta
+quebrar' — encolher a volta automática" do `resposta-do-fable.md` e as linhas D-851 e D-855 a D-862 do Livro.
+
+**Situação: só a tabela e as perguntas. Nenhuma linha de código mudou. Parado, esperando o "pode" da gerente.**
+
+## As palavras do Samuel que esta volta cumpre
+
+- D-855: "A volta tenta **uma vez** e nunca fica em laço: o pedido de volta leva marca (`--voltando de para`, como a
+  D-839); a versão reaberta com a marca não testa de novo, mostra a frase (3) e abre."
+- D-856: "Versão aprovada no teste rápido ganha uma marca no disco e **não é testada de novo**. Se a cópia da última
+  boa não couber, a anterior continua valendo; conferir espaço antes de copiar, pela mesma função do motor."
+- D-857: "**A primeira versão instalada não tem volta automática.** Sem baixar 460 MB na primeira abertura. A última
+  boa passa a existir a partir da primeira atualização que der certo, copiada de `packages\`, sem internet. A D-851 muda
+  nesse sentido."
+- D-858: "o 'Sim' ao fechar que não troca ganha a mesma frase do 'Reiniciar agora', na abertura seguinte."
+- D-859: "a regra usa o 'pacote esperando'." · D-860: "os quatro testes." · D-861: "M1 (dois cliques): deixo para
+  depois."
+
+## Como as três regras ficam na abertura (o desenho que a tabela usa)
+
+A abertura continua derivando tudo do que existe (a emenda do Fable). O que muda:
+
+- **Marca de aprovada (D-856):** um arquivo `aprovada-<versão>` em `<raiz>\ultima-boa\`, escrito quando a versão passa
+  no teste rápido, ANTES de copiar o pacote. É dado no disco, ao lado da última boa (como a assinatura, D-852); o
+  `estado.json` continua só com "reprovadas" e "frase".
+- **Quem testa:** só a versão que roda que **não é a última boa e não tem a marca de aprovada**, e só antes da janela.
+  O teste "por trás, com a janela aberta" sai inteiro (ele só existia para a primeira versão e para depois da pergunta
+  do Windows).
+- **A primeira versão instalada (D-857):** é a que roda sem última boa e **sem o pacote dela em `packages\`** (o `.msi`
+  não põe nada lá: conferido de verdade na volta 3). Ela não é testada, nada é baixado, não há volta. Sai o
+  `_baixar_a_que_roda` (o download da D-851) e o que só servia a ele.
+- **Sem última boa, mas com o pacote da versão em `packages\`** (uma atualização entrou e a última boa não existe: a
+  primeira atualização depois do `.msi`, ou a pasta apagada): testa antes da janela; passou → marca e guarda (ela vira a
+  primeira última boa, copiada de `packages\`, sem internet); não passou → frase (3) e para (D-857: "se a versão nova
+  falhar no teste, aparece a frase (3) da D-778 e para").
+- **A volta (D-855):** o pedido leva `--voltando <de> <para>` pela peça única do Velopack. Reaberta a anterior com a
+  marca: a frase (1), uma vez, e a abertura comum. Reaberta a que falhou com a marca (o Windows não deixou trocar): não
+  testa, a frase (3), e abre. Nunca há laço.
+- **O espaço (D-856):** a guarda confere o espaço livre antes de copiar, pela mesma conta que o motor já faz
+  (`garantir_o_motor`, hoje escrita dentro dele: o `shutil.disk_usage` com a `FOLGA_DO_MOTOR_BYTES`). Ela sai de dentro
+  do motor para uma função só, que os dois chamam.
+- **O pacote esperando (D-859):** sem internet, com o pacote da versão nova já em `packages\` e a assinatura dela
+  guardada quando ela foi conferida, o aviso volta e a pergunta ao fechar aparece.
+- **O "Sim" ao fechar que não troca (D-858):** guarda no bilhete a frase da D-845 com o motivo (ou a frase 2, se o
+  pacote não tem a assinatura, D-848), e a abertura seguinte a mostra.
+
+As frases, palavra por palavra do Livro (o título da caixa é sempre "Atualização", D-846):
+**(1)** "A atualização não deu certo. O programa voltou para a versão anterior e continua funcionando. Avise o Samuel."
+· **(2)** "Chegou uma versão nova, mas ela não foi instalada porque não tem a assinatura do Samuel. O programa continua
+funcionando. Avise o Samuel." · **(3)** "A atualização não deu certo e o programa não conseguiu voltar sozinho. Não
+desinstale nada. Avise o Samuel." · **(D-839)** "A atualização não deu certo. O programa continua na versão de antes e
+funcionando. Avise o Samuel." · **(D-840)** "Feche a outra janela do programa e clique de novo." · **(D-843)** "Esta
+versão precisa de um motor novo. Avise o Samuel." · **(D-845)** "Não deu para atualizar agora: [motivo]. Tente ao fechar
+o programa.", com um dos nove motivos da D-847.
+
+## A tabela
+
+Em cada passo, uma linha por jeito de dar errado. **"muda na volta 4"** = em `1d01aaf9` o resultado é outro (dito entre
+parênteses). Os achados do terceiro "quem tenta quebrar" vão marcados onde caem (G1, M1 a M6; L1 a L7 = os leves).
+
+### 1. Procurar (só ao abrir, por trás, com a janela aberta)
+
+| Jeito | O programa faz | O Kaique vê | Fica no disco |
+|---|---|---|---|
+| desliga no meio | nada a desfazer: procurar só lê | nada (estava por trás) | nada |
+| Windows nega | não se aplica: procurar não pede nada ao Windows (só à rede; um bloqueio de rede é "sem internet") | — | — |
+| disco cheio | não se aplica: procurar não grava (a linha do registro, se não couber, vai para o `erros.log`) | — | — |
+| sem internet | registra; **se há pacote esperando** (o da versão nova, já em `packages\`, com a assinatura guardada quando foi conferida), confere essa assinatura e segue como se tivesse achado: o aviso. **muda na volta 4** (hoje: nada; M6) | sem pacote esperando: nada (sem internet não é falha); com ele: o aviso "Reiniciar agora / Depois" | nada |
+| clique repetido | duas aberturas procuram cada uma; as duas podem mostrar o aviso | o aviso em cada janela | nada |
+| arquivo some | não se aplica (procurar não usa arquivo nosso). Se a assinatura guardada do pacote esperando sumiu: sem internet, o pacote esperando não é oferecido (sem a assinatura não dá para conferir) | nada | nada |
+| sem licença | não procura: a pasta do programa não aceita gravação, e a abertura faz a pergunta do Windows antes da janela (D-806) | a pergunta do Windows | nada |
+
+### 2. Baixar (por trás)
+
+| Jeito | O programa faz | O Kaique vê | Fica no disco |
+|---|---|---|---|
+| desliga no meio | o Velopack deixa `<nome>.partial`; a próxima abertura baixa de novo e ele apaga o `.partial` (manager.rs 419-481) | nada | o `.partial` até a próxima |
+| Windows nega (o antivírus prende o arquivo) | o download falha; registra; a próxima abertura tenta | nada: o aviso não aparece (ver pergunta 4) | o `.partial`, às vezes |
+| disco cheio | o download falha; registra; a próxima abertura tenta | nada (ver pergunta 4) | o `.partial`, às vezes |
+| sem internet (cai no meio) | igual ao "desliga" | nada | o `.partial` |
+| clique repetido | a segunda janela não consegue a tranca do Velopack (manager.rs 406); registra; a primeira baixa | o aviso na que baixou; na outra, só depois, na próxima abertura | nada a mais |
+| arquivo some (o antivírus tira o pacote logo depois) | a leitura do motor que ele pede falha: não é anunciado; registra | nada; a próxima abertura baixa de novo | nada |
+| sem licença | não se aplica: sem licença nada é procurado | — | — |
+
+### 3. Conferir (a assinatura do Samuel antes de baixar; o motor da versão nova depois)
+
+| Jeito | O programa faz | O Kaique vê | Fica no disco |
+|---|---|---|---|
+| desliga no meio | nada a desfazer | nada | às vezes a assinatura guardada (dado, D-852) |
+| Windows nega / disco cheio (a assinatura não fica guardada em `ultima-boa\`) | segue: a assinatura guardada só serve depois (guardar sem internet, D-859) | nada; depois, sem internet, a guarda e o pacote esperando não acham a assinatura (registro) | nada |
+| sem internet (cai entre procurar e conferir) | **muda na volta 4** (achado meu ao montar a tabela): hoje "não achei a assinatura" vira "recusada" e mostra a frase (2); passa a separar "o arquivo da assinatura não existe na versão publicada" (a frase 2, como hoje) de "a rede não respondeu" (só o registro; a próxima abertura tenta) | sem internet: nada (hoje: a frase (2), errada) | nada |
+| assinatura errada | não baixa; não vai para "não tentar"; a próxima abertura confere de novo | a frase (2), uma vez | nada |
+| motor novo que não está no lugar | não anuncia nem troca (D-843) | "Esta versão precisa de um motor novo. Avise o Samuel.", uma vez | o pacote baixado em `packages\` |
+| clique repetido | não se aplica (não há clique aqui) | — | — |
+| arquivo some | ver "Baixar, arquivo some" | — | — |
+| sem licença | não se aplica | — | — |
+
+### 4. "Reiniciar agora" (a conferência por trás, o fechar, o pedido da troca)
+
+| Jeito | O programa faz | O Kaique vê | Fica no disco |
+|---|---|---|---|
+| desliga no meio | antes do pedido: nada mudou; a próxima abertura mostra o aviso de novo | o aviso de novo na próxima abertura | o pacote esperando |
+| Windows nega (a lista de processos) | não troca | "Não deu para atualizar agora: o Windows não mostrou quais programas estão abertos. Tente ao fechar o programa." | nada |
+| Windows nega (o atualizador do Velopack não abre, depois de a janela fechar) | o programa abre de novo | a janela reabre e mostra "Não deu para atualizar agora: o atualizador do programa não começou. Tente ao fechar o programa." | a frase no bilhete, até mostrar |
+| disco cheio | não se aplica ao clique (nada é gravado pelo atualizador; o fechar grava o projeto como sempre) | — | — |
+| sem internet | não se aplica (tudo é local) | — | — |
+| clique repetido | com outra janela aberta: não troca e o aviso volta (D-840, D-841); a conferência roda por trás, sem empilhar | "Feche a outra janela do programa e clique de novo." e o aviso de novo | nada |
+| arquivo some (o pacote sumiu) | não troca (antes de fechar); ou, nos segundos do fechar, reabre | "Não deu para atualizar agora: o arquivo da versão nova sumiu do computador. Tente ao fechar o programa." | nada |
+| pacote trocado (a soma não é a assinada) | não troca (D-848) | a frase (2) | nada |
+| sem licença | não se aplica: sem licença não há aviso | — | — |
+
+### 5. "Sim" ao fechar ("Atualizar agora?" → "Sim")
+
+| Jeito | O programa faz | O Kaique vê | Fica no disco |
+|---|---|---|---|
+| desliga no meio | o programa já gravou e saiu; ver "Trocar" | — | — |
+| Windows nega (a lista; o atualizador não abre) | não troca e guarda a frase com o motivo. **muda na volta 4** (hoje: nada; M3, D-858) | na abertura seguinte: "Não deu para atualizar agora: [o motivo]. Tente ao fechar o programa." | a frase no bilhete |
+| disco cheio | não se aplica (nada é gravado pelo atualizador) | — | — |
+| sem internet | não se aplica (local) | — | — |
+| clique repetido (outra janela aberta) | não troca (o Velopack fecharia a outra à força) e guarda a frase. **muda na volta 4** (M3). O motivo "outra janela" não está entre os nove da D-847: **pergunta 2** | na abertura seguinte, a frase com o motivo da pergunta 2 | a frase no bilhete |
+| arquivo some (o pacote sumiu; o motor saiu) | não troca, guarda a frase. **muda na volta 4** (M3) | na abertura seguinte: "...o arquivo da versão nova sumiu do computador..." / "...falta no computador uma peça que a versão nova precisa..." | a frase no bilhete |
+| pacote trocado | não troca, guarda a frase (2). **muda na volta 4** (M3, D-848) | na abertura seguinte, a frase (2) | a frase no bilhete |
+| sem licença | não se aplica | — | — |
+
+### 6. Trocar (o atualizador do Velopack, depois que o programa saiu)
+
+| Jeito | O programa faz | O Kaique vê | Fica no disco |
+|---|---|---|---|
+| desliga antes de trocar o nome de `current` | nada mudou; a próxima abertura roda a versão de antes, acha o pacote esperando e mostra o aviso (com ou sem internet, D-859) | o aviso de novo | o pacote esperando |
+| desliga entre as duas trocas de nome | o defeito conhecido do Velopack ("the app was left in a broken state", `apply_windows_impl.rs` 174-176): `current` fica faltando e o programa não abre; só reinstalar pelo `.msi` conserta (os projetos ficam). **Não muda na volta 4: pergunta 3** | o atalho não abre o programa | `current` faltando |
+| desliga depois de trocar, antes de reabrir | a próxima abertura roda a nova, sem a marca de aprovada: teste antes da janela | segundos sem nada na tela, e o programa (ou a volta) | — |
+| Windows nega (arquivo preso) | o Velopack tenta 10 vezes, desiste e reabre a de antes com o pedido (`apply.rs` 47-75); ela mostra a frase da D-839; o aviso volta quando a versão é achada (ou pelo pacote esperando) | a frase da D-839 (com janela); no "Sim" ao fechar, na abertura seguinte | o pacote esperando |
+| disco cheio (o Velopack não consegue abrir o pacote numa pasta provisória) | igual ao "Windows nega" (ele desiste antes de mexer e reabre a de antes; lido, não rodado) | a frase da D-839 | o pacote esperando |
+| sem internet | não se aplica (local) | — | — |
+| clique repetido (o atalho durante a troca) | a abertura vê o atualizador do Velopack rodando e sai sem janela (G1 da volta 2) | nada: o clique se perde; ele clica de novo depois | nada |
+| arquivo some (o pacote, ou o `Update.exe`, sumiu depois do pedido) | o Velopack não acha e reabre a de antes com o pedido | a frase da D-839 | — |
+| sem licença | não se aplica: só se troca com a pasta aceitando gravação (sem ela, a abertura pergunta ao Windows e nada é procurado) | — | — |
+
+### 7. Testar (o teste rápido, antes da janela)
+
+Roda só na versão que não é a última boa e não tem a marca de aprovada. **muda na volta 4** (hoje: também na primeira
+versão depois do `.msi`, por trás, e em toda abertura enquanto a guarda não der certo; D-856, D-857, M4).
+
+| Jeito | O programa faz | O Kaique vê | Fica no disco |
+|---|---|---|---|
+| desliga no meio | nada anotado; a próxima abertura testa de novo | segundos sem nada na tela (o leve 12 da volta 1), na próxima também | nada |
+| Windows nega (o antivírus não deixa o teste rodar) | conta como "não passou" (não dá para separar): volta, ou frase (3) sem última boa | como "não passou" | a reprovação |
+| disco cheio | o teste não grava; a marca de aprovada, se não couber, não fica: a próxima abertura testa de novo (segundos); registra | segundos sem nada na tela a cada abertura, só enquanto o disco estiver cheio | nada |
+| sem internet | não se aplica (local) | — | — |
+| clique repetido (dois cliques nos segundos do teste) | **D-861: fica para depois.** Com a D-855, nenhum laço: as duas aberturas testam; se a versão falhou, uma pede a volta e a outra pode ver "outra janela" e mostrar a frase (3) antes de o Velopack fechá-la (M1) | às vezes a frase (3) numa janela que o Velopack fecha em seguida | a reprovação |
+| arquivo some (falta uma peça da versão nova) | é para isso que o teste existe: "não passou" → a volta (ou a frase 3) | ver "Voltar" | a reprovação |
+| passou | a marca de aprovada; a guarda; nenhuma abertura seguinte testa de novo (D-856). **muda na volta 4** | nada (a janela abre) | `aprovada-<versão>` |
+| sem licença | não se aplica: sem licença a abertura pergunta ao Windows antes de testar; depois do "Sim" vai direto ao motor (a próxima abertura testa, se precisar). **muda na volta 4** (hoje: o teste por trás logo depois do "Sim") | a pergunta do Windows | — |
+
+### 8. Guardar a última boa (logo depois de passar no teste; copiada de `packages\`, sem internet)
+
+| Jeito | O programa faz | O Kaique vê | Fica no disco |
+|---|---|---|---|
+| desliga no meio da cópia | a última boa anterior continua valendo; a marca de aprovada já está lá: nada se repete (D-856). **muda na volta 4** (hoje: teste e cópia de novo em toda abertura; M4) | nada | o `<nome>.chegando` até a próxima guarda que der certo (que o apaga) |
+| Windows nega (arquivo preso) | não guarda; a anterior vale; nada se repete. **muda na volta 4** (M4) | nada | nada (o `.chegando` é apagado) |
+| disco cheio | confere o espaço ANTES (a mesma função do motor) e não copia; a anterior vale; nada se repete. **muda na volta 4** (hoje: copia até encher o disco, em toda abertura; M4) | nada | nada |
+| sem internet | não importa: copia de `packages\`; a assinatura é a guardada quando a versão foi conferida. Sem ela, não guarda (a anterior vale). **muda na volta 4** (hoje: busca na internet e repete; M5, D-857) | nada | nada |
+| clique repetido (duas aberturas guardando) | o pacote final fica certo; uma das duas registra "não consegui guardar" (L2) | nada | a última boa certa |
+| arquivo some (o pacote não está em `packages\`) | não guarda e **não baixa** (D-857); a anterior vale; nada se repete. **muda na volta 4** (hoje: baixa 460 MB, ou repete sem internet; M5) | nada | nada |
+| o nome final preso com um arquivo velho (L1) | **muda na volta 4:** o nome final é tirado do caminho antes de copiar; se não der, nada é feito; a pasta nunca passa a dizer que a última boa é a nova sem o pacote conferido | nada | nada |
+| primeira versão instalada (sem o pacote em `packages\`) | não há o que guardar e nada é baixado (D-857). **muda na volta 4** (hoje: baixa 460 MB na primeira abertura) | nada | nada |
+| sem licença | não se aplica: só se guarda com a pasta aceitando gravação | — | — |
+
+### 9. Voltar (o pacote guardado → `packages\` → o atualizador do Velopack, com `--voltando <de> <para>`)
+
+| Jeito | O programa faz | O Kaique vê | Fica no disco |
+|---|---|---|---|
+| deu certo | o Velopack reabre a anterior com a marca; ela vê que voltou | a frase (1), uma vez, e a janela | a reprovação da que falhou |
+| desliga no meio (antes de o Velopack trocar) | a próxima abertura roda a que falhou, sem a marca: ver **pergunta 1** (sugestão: tenta voltar uma vez de novo, sem testar, porque ela já foi reprovada) | depende da pergunta 1 | a reprovação |
+| Windows nega (arquivo preso) | **G1, muda na volta 4 (D-855):** o Velopack reabre a que falhou com a marca; ela não testa, mostra a frase (3) e abre (hoje: testa de novo, pede a volta de novo, em laço, sem frase) | a frase (3), uma vez, e a janela (na versão que falhou) | a reprovação |
+| disco cheio (a cópia de `ultima-boa\` para `packages\` não cabe; ou o Velopack não consegue abrir o pacote) | a volta não é pedida (frase 3 e abre), ou é recusada pelo Velopack (reabre com a marca: frase 3 e abre) | a frase (3) e a janela | o `.partial`, às vezes (L3) |
+| sem internet | não importa (a volta é local, D-844) | — | — |
+| clique repetido | **D-861, fica para depois** (M1): sem laço; às vezes a frase (3) numa das janelas | ver "Testar, clique repetido" | — |
+| arquivo some (o pacote guardado, a assinatura ou a pasta `ultima-boa`) | não há última boa: a versão que falhou fica, frase (3), para (D-857). **muda na volta 4** (hoje: nada na tela, e a versão nem é reprovada; M2) | a frase (3), uma vez, e a janela | a reprovação |
+| sem última boa (a primeira atualização depois do `.msi` falhou no teste) | frase (3) e para (D-857). **muda na volta 4** (M2) | a frase (3), uma vez, e a janela | a reprovação |
+| sem licença | não se aplica: sem licença a abertura pergunta ao Windows antes; a volta nunca pede licença | — | — |
+
+## Os achados do terceiro "quem tenta quebrar", casinha por casinha
+
+| Achado | Onde cai | O que o mata |
+|---|---|---|
+| G1 a volta recusada vira laço | Voltar × Windows nega | a regra 1 (D-855): `--voltando`, sem teste, frase (3) |
+| M1 dois cliques nos segundos do teste | Testar × clique repetido; Voltar × clique repetido | D-861: fica para depois; com a regra 1 já não há laço |
+| M2 sem última boa a versão nova entra e falha calada | Voltar × arquivo some; Voltar × sem última boa | a regra 3 (D-857): frase (3) e para, e a versão fica reprovada |
+| M3 "Sim" ao fechar sem resposta | a linha 5 inteira | D-858: a frase guardada para a abertura seguinte |
+| M4 teste e cópia a cada abertura; disco cheio até o fim | Testar × disco cheio; Guardar × desliga, nega, disco cheio | a regra 2 (D-856): a marca de aprovada e o espaço conferido antes |
+| M5 a premissa da D-851 e o "tentar de novo" | Guardar × sem internet, arquivo some; primeira versão | a regra 3 (D-857): nada é baixado; a última boa nasce da primeira atualização |
+| M6 o pacote esperando não usado | Procurar × sem internet | D-859 |
+| M7 quatro proteções sem teste | — (são testes) | D-860: um teste para cada (Q1, Q2, Q9, Q13), que falha quando ela é desligada |
+| achado meu: "sem internet" na conferência da assinatura mostra a frase (2) | Conferir × sem internet | separar "não existe" de "a rede não respondeu" (pergunta nenhuma: a frase (2) continua só para a versão sem a assinatura) |
+
+**Os leves:**
+1. L1 (a guarda que falha deixa a pasta dizendo "a nova"): **conserto** (Guardar, linha própria).
+2. L2 (dois processos guardando, o registro confuso): o pacote final fica certo; o Kaique nunca vê. **Pergunta 4.**
+3. L3 (um `.partial` da volta com o pacote guardado estragado, até o próximo download): o Kaique nunca vê; ocupa até
+   460 MB até a próxima atualização. **Pergunta 4.**
+4. L4 (sobras): o campo `pendente` passa a ser usado (D-859); o texto do motivo "outra janela" passa a ser usado no
+   "Sim" ao fechar se o Samuel aprovar (pergunta 2), senão sai; o texto velho de
+   `tests/test_velopack_de_verdade.py` é corrigido (só o texto; entra na lista da D-836). **Conserto.**
+5. L5 (a soma do pacote escrita em dois lugares): **conserto**: uma função só de somar (em `assinatura.py`, ao lado da
+   de hoje), que a guarda usa para somar e copiar numa leitura só.
+6. L6 (a licença `/T` da pasta do registro: o arquivo ligado criado nos milissegundos entre conferir e dar a licença):
+   o Kaique nunca vê; a mesma conferência já vale para a raiz. **Pergunta 4.**
+7. L7 (dois testes de fora do atualizador lentos com o PC ocupado): não é do atualizador; nada a mudar.
+
+## O que a tabela já diz que muda no código, depois do "pode" (para a gerente conferir o tamanho do trabalho)
+
+- A regra: a abertura ganha "aprovada" e "o pacote da versão em `packages\`"; sai o teste por trás; a volta leva a
+  marca; o "Sim" ao fechar guarda a frase; a procura sem internet usa o pacote esperando.
+- O executor: sai `_baixar_a_que_roda` (e a leitura do índice publicado, que só ele usa); a guarda escreve a marca e
+  confere o espaço pela função que sai de dentro do motor; a volta passa a marca pela peça do Velopack (a mesma
+  `trocar_para`).
+- A tela: nada novo (as frases já existem; a do "Sim" ao fechar vem pela fila de sempre).
+- Testes: os da D-851 que cobram o download saem ou mudam (lista da D-836); testes novos que falham em `1d01aaf9`; os
+  quatro do M7; mutações de novo.
+
+## Perguntas para o Samuel (§11.13)
+
+**1. Depois da frase "não conseguiu voltar sozinho", o programa tenta voltar de novo?** É a volta automática para a
+versão anterior, quando a versão nova não passa no teste. Com a sua regra, ela tenta uma vez; se o Windows não deixar
+(um arquivo preso), aparece "A atualização não deu certo e o programa não conseguiu voltar sozinho. Não desinstale nada.
+Avise o Samuel." e o programa abre na versão nova (a que falhou). A dúvida é a abertura SEGUINTE, pelo atalho: o arquivo
+preso pode já ter sido solto.
+**O que o senhor escolhe:** (A) na abertura seguinte, tenta voltar mais uma vez, sem testar de novo (sugestão: a trava
+de um arquivo costuma passar; continua sem laço, uma tentativa por abertura, e a frase aparece uma vez só); (B) não
+tenta mais: fica na versão que falhou até o senhor resolver. Só comentário também vale. Nada do que já funciona muda.
+
+**2. A frase do "Sim" ao fechar quando há outra janela do programa aberta.** Com a sua decisão de hoje, o "Sim" ao
+fechar que não consegue trocar mostra, na abertura seguinte, "Não deu para atualizar agora: [motivo]. Tente ao fechar o
+programa." O caso mais comum é haver outra janela do programa aberta, e esse motivo não está entre os nove que o senhor
+aprovou (no "Reiniciar agora" esse caso tem a frase "Feche a outra janela do programa e clique de novo.", que não serve
+para a abertura seguinte). Exemplo: o Kaique tem duas janelas, fecha uma com "Sim"; na próxima vez que abrir, aparece
+a frase.
+**O que o senhor escolhe:** (A) "Não deu para atualizar agora: havia outra janela do programa aberta. Tente ao fechar o
+programa." (sugestão); (B) "Não deu para atualizar agora: o programa estava aberto em outra janela. Tente ao fechar o
+programa."; (C) outro texto (escreva). Só comentário também vale.
+
+**3. O defeito do próprio Velopack no meio da troca.** Se o notebook desliga no instante exato entre as duas trocas de
+nome que o atualizador faz na pasta do programa (uma fração de segundo), a pasta fica sem a versão que roda e o atalho
+não abre mais o programa. Só reinstalar pelo instalador conserta; os projetos do Kaique não são tocados. É do Velopack
+(o senhor já tinha escolhido continuar com ele); a volta automática não alcança esse caso, porque nada do
+programa roda.
+**O que o senhor escolhe:** (A) deixo para depois (sugestão: raríssimo, e reinstalar resolve sem perder nada); (B)
+estudar agora uma proteção (um trabalho novo, fora destas regras). Só comentário também vale.
+
+**4. Quatro casos que o Kaique não vê.** (a) duas aberturas guardando a cópia ao mesmo tempo: a cópia fica certa, só o
+registro que a gerente lê fica confuso; (b) a volta com a cópia guardada estragada deixa um arquivo provisório de até
+460 MB na pasta do atualizador, até a próxima atualização; (c) uma brecha de milissegundos na licença da pasta do
+registro, que só outra conta do notebook poderia usar; (d) o download que falha por disco cheio ou arquivo preso: a
+atualização não chega e nada aparece na tela (a próxima abertura tenta de novo).
+**O que o senhor escolhe:** (A) deixo os quatro para depois (sugestão); (B) consertar algum agora (diga qual). Só
+comentário também vale.
+
 # Volta 3, segunda parte: as respostas do Samuel (D-847 a D-853) (24/11/2026)
 
 Pedido da gerente de 24/11 (depois da rodada verde do GitHub de `04dd0cd4`, 45449425841): conferir a D-848, fazer a
