@@ -162,3 +162,49 @@ cópia de trabalho e devolvendo o arquivo depois). Os 26 do arquivo passam.
 | `tests/test_atualizador_volta2.py::test_m1_reiniciar_agora_que_nao_pode_trocar_nao_fecha_a_janela` (uma linha) | vale hoje | D-841 (chat 24/11: "1, desde que seja a volta à fase 'pronta'"): com outra janela aberta a fase depois do "Reiniciar agora" é PRONTA (o aviso volta), não DEPOIS; o resto do teste não mudou |
 | `tests/test_fases_da_atualizacao.py` (a linha `conferida_outra_janela`) e `tests/test_decisoes_atualizacao.py::test_d840_reiniciar_agora_com_outra_janela_...` | vale hoje | D-841: depois da frase, o aviso aparece de novo |
 | `tests/test_decisoes_atualizacao.py::test_d841_depois_da_frase_o_aviso_volta_e_com_a_outra_fechada_troca` | novo | a prova da D-841; falha em `4f542399` |
+
+## Volta 3 (24/11/2026): a emenda do Fable e os achados do segundo "quem tenta quebrar"
+
+O que mudou e por quê, em uma frase: a abertura passou a olhar o que existe (a versão que roda, a última boa guardada,
+o pacote esperando) em vez da anotação da troca; só o teste rápido reprovado põe a versão em "não tentar"; a volta usa o
+pacote guardado; o "Reiniciar agora" que não pode responde com a frase (D-845, título D-846); a licença da pergunta
+única vale também para a pasta do registro. Todo teste abaixo é do atualizador. Fora do atualizador, só a
+configuração comum dos testes (`tests/conftest.py`) mudou: ela passou a trocar também o PROGRAMDATA, como já trocava o
+LOCALAPPDATA (leve 1: dois testes escreviam no registro de verdade do PC); nenhum teste de fora do atualizador mudou.
+
+| Arquivo :: teste | O que aconteceu | Por quê (a decisão ou o achado) |
+|---|---|---|
+| `tests/test_fases_da_atualizacao.py` (a tabela inteira) | vale hoje (reescrita) | a regra recebe o que existe (`ultima_boa`, `pendente`, `reaberto_de/para`, `frase_guardada`) no lugar da anotação (`troca_de/para`, `falha_anotada`, `estado_grava`); fases novas GUARDANDO; efeitos novos `Reprovar`, `GuardarUltimaBoa`, `GuardarFrase`; saem `AnotarFalha`, `AnotarOk`, `PedirParaFecharAOutraJanela` (que virou `MostrarFalha(nao_deu_agora)`). Teste novo: `test_m1_so_o_teste_reprovado_poe_a_versao_em_nao_tentar` (em TODOS os pares, o "não tentar" só cresce pelo `Reprovar`, e só no teste que falhou) |
+| `tests/test_atualizador_novo.py::test_protecao_2_...` | vale hoje | a assinatura recusada não vai mais para "não tentar" (emenda: "Só o teste rápido reprovado põe versão em 'não tentar'"); continua não baixando e mostrando a frase 2 |
+| `::test_protecao_8_...` | adaptado | a chave do bilhete é `reprovadas` |
+| `::test_d720_reiniciar_agora_fecha_a_janela_e_so_depois_troca` | vale hoje (uma linha) | nada é anotado antes de trocar (o bilhete fica vazio) |
+| `::test_protecao_10_a_janela_que_nao_fecha_nao_troca` | vale hoje (uma linha) | D-845: o clique tem resposta (a frase "o programa não conseguiu fechar") antes da pergunta ao fechar |
+| `::test_protecao_3_pacote_trocado_depois_de_baixar_nao_troca` | vale hoje (uma linha) | não troca e fica no registro; não vai para "não tentar" |
+| `::test_d718_reaberto_na_versao_nova_que_passa_no_teste` | vale hoje | o teste roda porque a versão não é a última boa; passou, vira a última boa (D-844) |
+| `::test_d718_teste_que_falha_volta_para_a_anterior_assinada` | vale hoje | a volta pelo pacote guardado (o `baixar` com a pasta da última boa); o bilhete só com `reprovadas` |
+| `::test_protecao_11_a_volta_sem_a_assinatura_...` | vale hoje | a assinatura que vale é a guardada com o pacote da última boa |
+| `::test_a_troca_que_nao_aconteceu_avisa_uma_vez` | vale hoje | M1: a frase da D-839 continua, a versão NÃO vai para "não tentar" |
+| `::test_d769_reabertura_sem_janela_que_passa_sai_sem_janela` | vale hoje | sai sem janela e a última boa fica guardada antes de sair |
+| `::test_d719_a_falha_vai_para_a_janela_uma_vez_so_nesta_conta` | vale hoje | a frase (1) é derivada (rodando a última boa com a mais nova reprovada), não anotada |
+| `::test_d835_e_d778_os_textos_da_tela_palavra_por_palavra` | vale hoje (uma linha a mais) | D-843: a frase do motor novo no dicionário das frases |
+| `::test_os_tres_caminhos_da_troca_passam_pela_mesma_conferencia` | adaptado | a volta precisa da última boa guardada |
+| `tests/test_atualizador_volta2.py::test_g1_abrir_pelo_atalho_no_meio_da_troca_...`, `::test_g1_sem_saber_...` | adaptado | a mesma proteção (sai sem janela; sem saber, segue e nada é anotado), agora disparada pelo pacote esperando, sem a anotação |
+| `::test_g1_a_troca_que_acabou_sem_trocar_continua_sendo_falha` | vale hoje (nome novo: `test_g1_a_troca_que_acabou_sem_trocar_nao_e_falha_e_a_reabertura_nao_pergunta`) | M1 da emenda: "Troca que não aconteceu não é falha de versão" |
+| `::test_m2_a_volta_confere_o_motor_da_anterior_e_volta` | adaptado | a volta precisa da última boa guardada; o bilhete diz `reprovadas` |
+| `::test_m2_a_versao_nova_sem_o_motor_dela_nao_e_anunciada` | vale hoje | D-843: no lugar de nada na tela, a frase do motor novo |
+| `::test_m4_com_o_estado_que_nao_grava_nada_e_procurado_nem_trocado` | vale hoje (nome novo: `test_m4_com_o_estado_que_nao_grava_a_atualizacao_continua_e_o_registro_diz`) | M4 da emenda: "Se não puder ser gravado, o programa continua atualizando e registra o motivo" |
+| `::test_q7_a_licenca_tem_de_chegar_ao_arquivo_de_dentro` | adaptado | quem pede diz o arquivo de dentro a conferir (a mesma função serve às duas pastas) |
+| `::test_q14_sem_a_lista_de_processos_nao_troca` | adaptado | a conferência única direto (saiu o embrulho `conferir_troca`) |
+| `tests/test_decisoes_atualizacao.py::test_d724_versao_com_assinatura_errada_...`, `::test_d724_versao_sem_arquivo_...`, `::test_d724_pacote_trocado_...` | vale hoje | D-724 igual (não baixa); a versão não vai para "não tentar"; a frase 2 na tela (ou, já vista, o registro) |
+| `::test_d724_versao_que_ja_falhou_nao_e_tentada_de_novo` | adaptado | a chave `reprovadas` |
+| `::test_d719_a_falha_aparece_na_tela_uma_vez_so` | vale hoje | a frase (1) derivada |
+| `::test_d719_o_erro_vai_para_o_registro_no_programdata` | adaptado | a função única que reprova é `reprovar` |
+| `::test_d718_versao_nova_que_nao_passa_no_teste_volta_para_a_anterior`, `::test_d718_versao_nova_que_passa_no_teste_fica`, `::test_d718_a_volta_so_aceita_o_pacote_assinado` | vale hoje | a volta e a guarda pela última boa (D-844) |
+| `::test_d718_troca_desfeita_pelo_velopack_conta_como_falha` | vale hoje (nome novo: `test_d718_troca_desfeita_pelo_velopack_mostra_a_frase_e_nao_proibe_a_versao`) | D-839 (a frase) continua; M1: não proíbe a versão |
+| `::test_d839_a_troca_que_nao_aconteceu_...` (2) | adaptado | sem janela, a frase vai pelo bilhete (`frase`) para a próxima abertura |
+| `::test_d840_reiniciar_agora_com_outra_janela_...`, `::test_d841_...` | vale hoje (o título) | D-846: o título da caixa é "Atualização" |
+| `::test_d840_a_frase_so_aparece_com_outra_janela_aberta` (2) | vale hoje | D-845: nos outros casos aparece "Não deu para atualizar agora: [motivo]..." (antes, nada) |
+| `tests/test_porteiro_licenca_que_acrescenta.py` (a amostra `CERTO`) | adaptado | a K03 aceita a linha do experimento com `pasta` (a mesma função para as duas pastas); nada mais mudou na K03 |
+| `tests/ajudante_do_atualizador.py` | mudado | a `Prova` ganhou `ultima_boa` e `pendente`; o Velopack de mentira copia da pasta (como a fonte de pasta do Velopack, conferindo a soma) e falha sem a fonte (como sem internet); a peça do Windows de mentira usa a leitura de verdade `caminho_conferido` |
+| `tests/test_atualizador_volta3.py` (33) | novos | um por achado do segundo "quem tenta quebrar" (G1, M1 a M9, L1 a L4) e pela D-844; 23 falham no código de `012c849c` pelo comportamento (`volta3-testes-no-codigo-antigo.txt`); os 8 do M9 passam lá (as proteções existiam; faltava o teste: a prova é a rodada de mutações) |
+| `tests/test_atualizador_volta3_de_verdade.py` (5) | novos | o Velopack de verdade (a volta pela pasta da última boa sem índice e sem SHA1; o pendente), o `icacls` de verdade numa pasta de prova com o bilhete e o registro dentro, a recusa do arquivo ligado e do atalho |

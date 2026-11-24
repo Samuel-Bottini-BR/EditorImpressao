@@ -275,8 +275,12 @@ def _registro() -> str:
 
 @pytest.fixture
 def programdata_de_prova(tmp_path, monkeypatch):
-    """O estado.json e o registro vão para uma pasta de prova; a conta não é a de testes."""
+    """O estado.json e o registro vão para uma pasta de prova; a conta não é a de testes. Volta 3: a pasta de dados da
+    conta também é desta prova (as frases "já vistas" moram lá); sem isso, uma frase mostrada num teste ficava "vista"
+    para o teste seguinte da mesma rodada, e o resultado dependia da ordem dos arquivos (achado ao rodar as mutações
+    com todos os arquivos juntos)."""
     monkeypatch.setenv("PROGRAMDATA", str(tmp_path / "ProgramData"))
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "LocalAppData"))
     monkeypatch.setenv("USERNAME", "Kaique")
 
 

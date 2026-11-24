@@ -275,6 +275,16 @@ def main() -> int:
             else:
                 anotar(f"[ERRO DA MUTAÇÃO] {nome}: o trecho não existe mais e não há o equivalente")
 
+    # Antes de tudo, sem mutação nenhuma, os testes juntos têm de passar (senão "acusada" não quer dizer nada: um teste
+    # que falha sozinho acusaria todas). Foi assim que se achou que as frases "já vistas" vazavam de um teste para outro.
+    base = subprocess.run([sys.executable, "-m", "pytest", *TESTES, "-q", "-p", "no:cacheprovider",
+                           f"--basetemp={RAIZ.parent / 'mut3-tmp'}"], cwd=RAIZ, capture_output=True, text=True,
+                          encoding="utf-8", errors="replace", env={**os.environ, "PROGRAMDATA": str(RAIZ.parent / "mut3-pd")})
+    anotar(f"== sem mutação: {(base.stdout.strip().splitlines() or ['?'])[-1]}")
+    if base.returncode != 0:
+        anotar("PAROU: sem mutação os testes já falham")
+        (AQUI / "mutacoes_volta3-resultado.txt").write_text("\n".join(linhas) + "\n", encoding="utf-8")
+        return 1
     de_antes("mutacoes.py (as do implementador)", IMPL.MUTACOES, False)
     de_antes("mutacoes_qtq.py (as 17 do primeiro quem tenta quebrar)", QTQ1.MUTACOES, True)
     de_antes("mutacoes_qtq2.py (as 26 V do segundo quem tenta quebrar)", QTQ2.MUTACOES, True)

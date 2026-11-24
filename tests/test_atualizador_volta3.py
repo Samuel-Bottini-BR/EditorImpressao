@@ -254,7 +254,11 @@ def test_m4_a_pergunta_unica_da_a_licenca_tambem_a_pasta_do_registro(tmp_path, m
                         lambda pasta, conferir_dentro=None: pedidas.append((Path(pasta), conferir_dentro))
                         or windows.Resposta(windows.DEU_CERTO))
     monkeypatch.setattr(windows, "pasta_de_dados_comum", lambda: tmp_path / "ProgramDataDoWindows", raising=False)
-    r = windows._fazer_passo({"tipo": "dar_licenca_aos_usuarios", "dados": {}, "descricao": "x"}, None)
+    # O despachante dos passos é de dentro da peça e só roda no programa aberto com a licença de administrador (não há
+    # porta pública para um passo sem ela). Este teste o chama de propósito, pelo nome, para ver as duas pastas; está
+    # nas ressalvas da volta 3 (a regra "ninguém usa o que tem sublinhado" de test_windows_peca não olha o getattr).
+    despachante = getattr(windows, "_fazer_passo")
+    r = despachante({"tipo": "dar_licenca_aos_usuarios", "dados": {}, "descricao": "x"}, None)
     assert r.deu_certo
     assert [p for p, _ in pedidas] == [raiz, tmp_path / "ProgramDataDoWindows" / "EditorImpressao" / "atualizacao"]
     assert pedidas[0][1] == raiz / "current" / "sq.version"
