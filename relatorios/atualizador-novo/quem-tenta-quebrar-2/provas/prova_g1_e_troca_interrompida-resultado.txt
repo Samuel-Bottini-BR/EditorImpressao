@@ -1,0 +1,61 @@
+{
+ "1_g1_com_o_velopack_esperando": {
+  "saida": 0,
+  "fase": "parado",
+  "estado.json": {
+   "tentando": {
+    "de": "1.1.0",
+    "para": "1.2.0",
+    "volta": false,
+    "quando": "x"
+   }
+  },
+  "para a tela": []
+ },
+ "2_troca_interrompida_abertura_seguinte": {
+  "saida": null,
+  "fase": "parado",
+  "estado.json": {
+   "nao_tentar": [
+    "1.2.0"
+   ],
+   "falha": {
+    "id": "troca-1.2.0",
+    "tipo": "troca",
+    "fica": "1.1.0",
+    "falhou": "1.2.0",
+    "motivo": "o Velopack não trocou; o programa continua na versão de antes",
+    "quando": "2026-11-24T10:37:39"
+   }
+  },
+  "para a tela": [
+   "MostrarFalha(troca) -> A atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel."
+  ]
+ },
+ "2b_mais_uma_abertura_a_1.2.0_publicada": {
+  "saida": null,
+  "fase": "parado",
+  "estado.json": {
+   "nao_tentar": [
+    "1.2.0"
+   ],
+   "falha": {
+    "id": "troca-1.2.0",
+    "tipo": "troca",
+    "fica": "1.1.0",
+    "falhou": "1.2.0",
+    "motivo": "o Velopack não trocou; o programa continua na versão de antes",
+    "quando": "2026-11-24T10:37:39"
+   }
+  },
+  "para a tela": [
+   "MostrarFalha(troca) -> A atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel."
+  ]
+ },
+ "registro": [
+  "a troca de 1.1.0 para 1.2.0 está acontecendo agora: nada anotado, saio sem janela",
+  "FALHOU (troca) a atualização para a 1.2.0; o programa fica na 1.1.0: o Velopack não trocou; o programa continua na versão de antes",
+  "a versão 1.2.0 já falhou antes; espero uma mais nova",
+  "a versão 1.2.0 já falhou antes; espero uma mais nova"
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "A (pacote no lugar)": {
+  "caixas na tela": [
+   [
+    "pergunta",
+    "Versão nova do programa",
+    "Chegou uma versão nova do Editor de Impressão.\n\nSalve o seu trabalho e reinicie o programa para usar a versão nova.\n\nSe escolher \"Depois\", você pode atualizar quando fechar o programa."
+   ]
+  ],
+  "a janela fechou": true,
+  "janela ainda visível": false,
+  "fase": "trocando",
+  "do clique ao fechar (s)": 0.54,
+  "maior tempo da tela parada entre o clique e o fechar (s)": 0.54
+ },
+ "B (o pacote sumiu antes do clique)": {
+  "caixas na tela": [
+   [
+    "pergunta",
+    "Versão nova do programa",
+    "Chegou uma versão nova do Editor de Impressão.\n\nSalve o seu trabalho e reinicie o programa para usar a versão nova.\n\nSe escolher \"Depois\", você pode atualizar quando fechar o programa."
+   ]
+  ],
+  "a janela fechou": false,
+  "janela ainda visível": false,
+  "fase": "depois",
+  "do clique ao fechar (s)": null,
+  "maior tempo da tela parada entre o clique e o fechar (s)": 0.07
+ }
+}

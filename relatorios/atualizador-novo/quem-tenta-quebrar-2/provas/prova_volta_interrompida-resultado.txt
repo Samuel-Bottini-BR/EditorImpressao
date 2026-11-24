@@ -1,0 +1,27 @@
+{
+ "processo 1: codigo de saida (9 = morreu no meio da volta)": 9,
+ "estado.json depois do processo 1": {
+  "nao_tentar": [
+   "1.2.0"
+  ],
+  "falha": {
+   "id": "teste-1.2.0",
+   "tipo": "teste",
+   "fica": "1.1.0",
+   "falhou": "1.2.0",
+   "motivo": "a versão nova não passou no teste rápido (falta um arquivo (de mentira))",
+   "quando": "2026-11-24T10:42:01"
+  }
+ },
+ "processo 2 (o atalho no dia seguinte)": {
+  "versao que roda": "1.2.0",
+  "fase": "motor",
+  "saida": null,
+  "para a tela": [
+   "teste: A atualização não deu certo. O programa voltou para a versão anterior e continua funcionando. Avise o Samuel."
+  ],
+  "teste rapido rodou de novo?": false
+ },
+ "erros": "",
+ "registro": "2026-11-24T10:42:01 | versão 1.2.0 | FALHOU (teste) a atualização para a 1.2.0; o programa fica na 1.1.0: a versão nova não passou no teste rápido (falta um arquivo (de mentira))\n"
+}

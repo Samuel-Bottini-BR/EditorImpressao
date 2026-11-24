@@ -1,0 +1,47 @@
+{
+ "licencas": [
+  [
+   0,
+   [
+    "Processados com sucesso 1 arquivos; falha no processamento de 0 arquivos"
+   ]
+  ],
+  [
+   0,
+   [
+    "Processados com sucesso 1 arquivos; falha no processamento de 0 arquivos"
+   ]
+  ],
+  [
+   0,
+   [
+    "Processados com sucesso 1 arquivos; falha no processamento de 0 arquivos"
+   ]
+  ]
+ ],
+ "aberturas": [
+  {
+   "fase": "parado",
+   "procurou": 0,
+   "para a tela": []
+  },
+  {
+   "fase": "parado",
+   "procurou": 0,
+   "para a tela": []
+  },
+  {
+   "fase": "parado",
+   "procurou": 0,
+   "para a tela": []
+  }
+ ],
+ "licenca devolvida": [
+  0,
+  [
+   "Processados com sucesso 10 arquivos; falha no processamento de 0 arquivos"
+  ]
+ ],
+ "atualizacao.log (o que a gerente le de longe)": "2026-11-24T10:40:47 | versão 1.1.0 | criado pela abertura com licença (imitada)\n",
+ "erros.log da conta": "\n===== 2026-11-24T10:40:47 | atualização =====\nnão consegui gravar o estado da atualização: [WinError 5] Acesso negado: 'D:\\\\programas\\\\EditorImpressao\\\\rascunho-qtq2\\\\outra-conta\\\\pd\\\\EditorImpressao\\\\atualizacao\\\\estado.json.gravando' -> 'D:\\\\programas\\\\EditorImpressao\\\\rascunho-qtq2\\\\outra-conta\\\\pd\\\\EditorImpressao\\\\atualizacao\\\\estado.json'\n\n===== 2026-11-24T10:40:47 | atualização =====\no estado da atualização não aceita gravação: nenhuma versão é procurada\n\n===== 2026-11-24T10:40:47 | atualização =====\nnão consegui gravar o estado da atualização: [WinError 5] Acesso negado: 'D:\\\\programas\\\\EditorImpressao\\\\rascunho-qtq2\\\\outra-conta\\\\pd\\\\EditorImpressao\\\\atualizacao\\\\estado.json.gravando' -> 'D:\\\\programas\\\\EditorImpressao\\\\rascunho-qtq2\\\\outra-conta\\\\pd\\\\EditorImpressao\\\\atualizacao\\\\estado.json'\n\n===== 2026-11-24T10:40:47 | atualização =====\no estado da atualização não aceita gravação: nenhuma versão é procurada\n\n===== 2026-11-24T10:40:47 | atualização =====\nnão consegui gravar o estado da atualização: [WinError 5] Acesso negado: 'D:\\\\programas\\\\EditorImpressao\\\\rascunho-qtq2\\\\outra-conta\\\\pd\\\\EditorImpressao\\\\atualizacao\\\\estado.json.gravando' -> 'D:\\\\programas\\\\EditorImpressao\\\\rascunho-qtq2\\\\outra-conta\\\\pd\\\\EditorImpressao\\\\atualizacao\\\\estado.json'\n\n===== 2026-11-24T10:40:47 | atualização =====\no estado da atualização não aceita gravação: nenhuma versão é procurada\n"
+}

@@ -1,0 +1,86 @@
+== mutacoes.py (implementador)
+[FALHOU (a proteção acusa)] 1 sem licença não procura -> tests/test_atualizador_novo.py::test_protecao_1_sem_licenca_pergunta_ao_windows_e_nao_procura | 1 failed in 0.88s
+[FALHOU (a proteção acusa)] 2 assinatura antes de baixar -> tests/test_atualizador_novo.py::test_protecao_2_assinatura_errada_nao_baixa_e_avisa_com_a_frase_2 | 1 failed in 0.52s
+[FALHOU (a proteção acusa)] 3 soma do arquivo baixado antes de trocar -> tests/test_atualizador_novo.py::test_protecao_3_pacote_trocado_depois_de_baixar_nao_troca | 1 failed in 0.56s
+[FALHOU (a proteção acusa)] 4a motor antes de anunciar -> tests/test_atualizador_novo.py::test_protecao_4a_motor_fora_do_lugar_nada_e_procurado_nem_anunciado | 1 failed in 0.51s
+[FALHOU (a proteção acusa)] 4b motor antes de trocar -> tests/test_atualizador_novo.py::test_protecao_4b_motor_fora_do_lugar_na_hora_de_trocar_nao_troca | 1 failed in 0.46s
+[FALHOU (a proteção acusa)] 5 a licença é o último passo -> tests/test_atualizador_novo.py::test_protecoes_5_e_6_a_ordem_dos_passos_da_pergunta | 1 failed in 0.43s
+[FALHOU (a proteção acusa)] 6 o ajudante antigo sai antes da licença -> tests/test_atualizador_novo.py::test_protecoes_5_e_6_a_ordem_dos_passos_da_pergunta | 1 failed in 0.46s
+[FALHOU (a proteção acusa)] 7 a conta de testes não pergunta nem procura -> tests/test_atualizador_novo.py::test_protecao_7_conta_de_testes_nao_pergunta_nem_procura | 1 failed in 0.47s
+[FALHOU (a proteção acusa)] 8 a versão que falhou não é tentada de novo -> tests/test_atualizador_novo.py::test_protecao_8_a_versao_que_falhou_nao_e_baixada_de_novo | 1 failed in 0.46s
+[FALHOU (a proteção acusa)] 9 outra janela aberta não troca -> tests/test_atualizador_novo.py::test_protecao_9_outra_janela_aberta_nao_troca | 1 failed in 0.51s
+[FALHOU (a proteção acusa)] 10 a troca só depois de a janela fechar -> tests/test_atualizador_novo.py::test_protecao_10_a_janela_que_nao_fecha_nao_troca | 1 failed in 0.57s
+[FALHOU (a proteção acusa)] 11 a volta só com pacote assinado -> tests/test_atualizador_novo.py::test_protecao_11_a_volta_sem_a_assinatura_nao_troca_e_avisa_com_a_frase_3 | 1 failed in 0.71s
+[FALHOU (a proteção acusa)] 12 pelo código nada roda -> tests/test_atualizador_novo.py::test_protecao_12_pelo_codigo_nada_roda | 1 failed in 0.81s
+[FALHOU (a proteção acusa)] 13 só trocar_para chama a troca -> tests/test_atualizador_novo.py::test_protecao_13_so_um_lugar_chama_a_troca_do_velopack | 1 failed in 9.06s
+[FALHOU (a proteção acusa)] D-749 o preparo vale pelo teste de gravar, não pelo que o trabalho disse -> tests/test_decisoes_preparo_d749.py::test_d749_sim_com_a_preparacao_parada_no_meio_a_pergunta_volta | 1 failed in 0.52s
+[FALHOU (a proteção acusa)] D-832 a janelinha do Velopack (sem o modo silencioso) -> tests/test_atualizador_novo.py::test_d832_a_troca_usa_a_janelinha_do_velopack | 1 failed in 0.44s
+[FALHOU (a proteção acusa)] D-837 a licença que só acrescenta: a herança -> tests/test_windows_preparo_do_computador.py::test_d837_o_que_tira_ou_nao_acrescenta_e_acusado | 1 failed in 0.51s
+[FALHOU (a proteção acusa)] D-837 o porteiro: nada de tirar dentro da função -> tests/test_porteiro_licenca_que_acrescenta.py::test_d837_tirar_negar_trocar_dono_ou_heranca_e_acusado_ate_na_funcao | 1 failed, 1 passed in 0.73s
+[FALHOU (a proteção acusa)] D-837 o porteiro: a exceção é uma função só -> tests/test_porteiro_licenca_que_acrescenta.py::test_d837_a_funcao_que_so_acrescenta_passa_so_na_peca | 1 failed in 0.37s
+[FALHOU (a proteção acusa)] G1 a troca em curso não vira falha -> tests/test_atualizador_volta2.py::test_g1_abrir_pelo_atalho_no_meio_da_troca_nao_anota_falha_e_sai_sem_janela | 1 failed in 0.84s
+[FALHOU (a proteção acusa)] M1 conferir antes de fechar -> tests/test_atualizador_volta2.py::test_m1_reiniciar_agora_que_nao_pode_trocar_nao_fecha_a_janela | 1 failed in 0.48s
+[FALHOU (a proteção acusa)] M1 reabrir o que falha depois de fechar -> tests/test_atualizador_volta2.py::test_m1_a_troca_que_falha_depois_de_fechar_reabre_o_programa | 1 failed in 0.55s
+[FALHOU (a proteção acusa)] M2 o motor da versão que entra (na troca) -> tests/test_atualizador_volta2.py::test_m2_a_volta_confere_o_motor_da_anterior_e_volta | 1 failed in 0.52s
+[FALHOU (a proteção acusa)] M2 o motor da versão nova (no anúncio) -> tests/test_atualizador_volta2.py::test_m2_a_versao_nova_sem_o_motor_dela_nao_e_anunciada | 1 failed in 0.51s
+[FALHOU (a proteção acusa)] M4 a troca só com a anotação gravada -> tests/test_atualizador_volta2.py::test_m4_com_o_estado_que_nao_grava_nada_e_procurado_nem_trocado | 1 failed in 0.56s
+[FALHOU (a proteção acusa)] M4 nada procurado sem o estado gravando -> tests/test_atualizador_volta2.py::test_m4_com_o_estado_que_nao_grava_nada_e_procurado_nem_trocado | 1 failed in 0.55s
+[FALHOU (a proteção acusa)] leve 2 nenhuma licença a mais -> tests/test_atualizador_volta2.py::test_leve2_uma_licenca_a_mais_na_pasta_e_acusada | 1 failed in 0.53s
+[FALHOU (a proteção acusa)] leve 2 o porteiro: só a linha do experimento -> tests/test_atualizador_volta2.py::test_leve2_o_porteiro_acusa_o_que_a_d837_nao_deixa | 1 failed in 0.66s
+[FALHOU (a proteção acusa)] leve 2 o porteiro: a ferramenta em pedaços -> tests/test_atualizador_volta2.py::test_leve2_o_porteiro_acusa_o_que_a_d837_nao_deixa | 1 failed, 1 passed in 0.51s
+[FALHOU (a proteção acusa)] leve 2 o porteiro: quem chama a licença -> tests/test_atualizador_volta2.py::test_leve2_o_porteiro_acusa_o_que_a_d837_nao_deixa | 1 failed, 3 passed in 0.47s
+[FALHOU (a proteção acusa)] leve 3 a família pela hora em que nasceu -> tests/test_atualizador_volta2.py::test_leve3_a_familia_respeita_a_hora_em_que_cada_um_nasceu | 1 failed in 0.52s
+[FALHOU (a proteção acusa)] a trava: velopack só no dono -> tests/test_trava_windows.py::test_velopack_so_no_dono | 1 failed in 0.49s
+
+32 de 32 mutações acusadas.
+
+== mutacoes_qtq_no_lugar.py (as 17 da volta 1)
+[acusada] Q1 motor: sem a conferencia do espaco livre | 1 failed, 1181 passed, 1 skipped, 1 warning in 21.37s | ['FAILED tests/test_atualizador_volta2.py::test_q1_conserto4_sem_espaco_nao_comeca']
+[acusada] Q2 motor: o motor aberto nao e conferido antes do nome final | 1 failed, 1181 passed, 1 skipped in 19.62s | ['FAILED tests/test_atualizador_volta2.py::test_q2_conserto4_motor_estragado_nunca_fica_com_o_nome_final']
+[acusada] Q3 motor: nunca poe o motor e diz que esta no lugar | 8 failed, 1174 passed, 1 skipped in 19.16s | ['FAILED tests/test_atualizador_volta2.py::test_q3_conserto4_o_motor_do_instalador_vai_para_o_lugar_dele', 'FAILED tests/test_atualizador_volta2.py::test_q1_conserto4_sem_espaco_nao_comeca']
+[acusada] Q4 motor: 'esta no lugar' sempre sim (trecho do código novo) | 1 failed, 1181 passed, 1 skipped in 18.75s | ['FAILED tests/test_atualizador_volta2.py::test_q4_conserto4_o_motor_no_lugar_e_a_mesma_conferencia']
+[acusada] Q5 preparado?: so olha se a pasta existe (como o os.access) | 1 failed, 1181 passed, 1 skipped in 28.24s | ['FAILED tests/test_atualizador_volta2.py::test_q5_a_pasta_que_existe_e_nao_aceita_gravacao_nao_conta_como_preparada']
+[acusada] Q6 licenca da pasta: nao cobra a linha de Usuarios Modificar | 4 failed, 1178 passed, 1 skipped in 19.98s | ['FAILED tests/test_windows_preparo_do_computador.py::test_d837_o_que_tira_ou_nao_acrescenta_e_acusado[depois3-n\\xe3o ficou]', 'FAILED tests/test_windows_preparo_do_computador.py::test_d837_o_que_tira_ou_nao_acrescenta_e_acusado[depois4-n\\xe3o ficou]']
+[acusada] Q7 licenca da pasta: nao confere o arquivo de dentro (manifesto) | 1 failed, 1181 passed, 1 skipped in 19.15s | ['FAILED tests/test_atualizador_volta2.py::test_q7_a_licenca_tem_de_chegar_ao_arquivo_de_dentro']
+[acusada] Q8 Visual C++: roda o instalador que uma conta comum pode trocar | 1 failed, 1181 passed, 1 skipped in 26.69s | ['FAILED tests/test_atualizador_volta2.py::test_q8_o_visual_c_que_uma_conta_comum_pode_trocar_nao_roda']
+[acusada] Q9 o aviso de falha: mostra de novo a cada abertura | 3 failed, 1179 passed, 1 skipped in 19.56s | ['FAILED tests/test_atualizador_novo.py::test_a_troca_que_nao_aconteceu_avisa_uma_vez', 'FAILED tests/test_atualizador_novo.py::test_d719_a_falha_vai_para_a_janela_uma_vez_so_nesta_conta']
+[acusada] Q10 o disco: a versao que falhou nao entra em 'nao tentar' | 5 failed, 1177 passed, 1 skipped in 18.91s | ['FAILED tests/test_atualizador_novo.py::test_protecao_2_assinatura_errada_nao_baixa_e_avisa_com_a_frase_2', 'FAILED tests/test_atualizador_novo.py::test_protecao_3_pacote_trocado_depois_de_baixar_nao_troca']
+[acusada] Q11 Inno: nao espera a chave sumir | 2 failed, 1180 passed, 1 skipped in 16.96s | ['FAILED tests/test_windows_preparo_do_computador.py::test_o_inno_antigo_so_conta_como_tirado_quando_a_chave_some', 'FAILED tests/test_decisoes_preparo_d749.py::test_d749_visual_c_ou_inno_que_falham_contam_como_erro']
+[acusada] Q12 Inno: aceita a pasta antiga que contem a pasta dos projetos | 1 failed, 1181 passed, 1 skipped in 18.44s | ['FAILED tests/test_decisoes_atualizacao.py::test_d723_o_comando_que_tira_o_inno']
+[acusada] Q13 raiz da instalacao: aceita fora de Arquivos de Programas | 1 failed, 1181 passed, 1 skipped in 18.61s | ['FAILED tests/test_windows_preparo_do_computador.py::test_a_raiz_da_instalacao_so_dentro_de_arquivos_de_programas']
+[acusada] Q14 troca: o Windows nao deu a lista de processos e troca mesmo assim | 2 failed, 1180 passed, 1 skipped in 18.49s | ['FAILED tests/test_decisoes_atualizacao.py::test_d840_a_frase_so_aparece_com_outra_janela_aberta[sem_a_lista_de_processos]', 'FAILED tests/test_atualizador_volta2.py::test_q14_sem_a_lista_de_processos_nao_troca']
+[acusada] Q15 processos: o que nao deixa ler o caminho nao conta | 1 failed, 1181 passed, 1 skipped in 18.77s | ['FAILED tests/test_atualizador_volta2.py::test_q15_o_processo_cujo_caminho_nao_da_para_ler_conta']
+[acusada] Q16 a linha de comando da reabertura vale mais que a anotacao | 11 failed, 1171 passed, 1 skipped in 18.27s | ['FAILED tests/test_atualizador_novo.py::test_d718_teste_que_falha_volta_para_a_anterior_assinada', 'FAILED tests/test_atualizador_novo.py::test_protecao_11_a_volta_sem_a_assinatura_nao_troca_e_avisa_com_a_frase_3']
+[acusada] Q17 a anotacao velha (de outra versao) nao e apagada | 2 failed, 1180 passed, 1 skipped in 18.25s | ['FAILED tests/test_fases_da_atualizacao.py::test_todo_par_fase_evento_tem_a_resposta_escrita[abriu_velha-inicio]', 'FAILED tests/test_fases_da_atualizacao.py::test_todo_par_fase_evento_tem_a_resposta_escrita[abriu_velha_sem_janela-inicio]']
+
+0 de 17 mutações sobreviveram.
+
+== mutacoes_qtq2.py (minhas)
+acusada     V1 G1: 'não deu para saber' conta como 'a troca acabou' (anota falha) | 1 failed, 36 passed in 11.00s | FAILED tests/test_atualizador_volta2.py::test_g1_sem_saber_se_a_troca_acontece_nada_e_anotado
+acusada     V2 G1: em curso abre a janela em vez de sair | 1 failed, 35 passed in 8.10s | FAILED tests/test_atualizador_volta2.py::test_g1_abrir_pelo_atalho_no_meio_da_troca_nao_anota_falha_e_sai_sem_janela
+SOBREVIVEU  V3 G1: o Update.exe cujo caminho não deu para ler não conta | 1263 passed, 4 skipped in 74.71s (0:01:14)
+acusada     V4 G1: o executor nunca pergunta se o Velopack roda | 1 failed, 35 passed in 10.77s | FAILED tests/test_atualizador_volta2.py::test_g1_abrir_pelo_atalho_no_meio_da_troca_nao_anota_falha_e_sai_sem_janela
+acusada     V5 G1: o executor pergunta também na reabertura com linha de comando | 1 failed, 37 passed in 9.05s | FAILED tests/test_atualizador_volta2.py::test_g1_a_troca_que_acabou_sem_trocar_continua_sendo_falha
+acusada     V6 M1: a conferência antes de fechar sempre diz 'pode' | 1 failed, 39 passed in 8.80s | FAILED tests/test_atualizador_volta2.py::test_m1_reiniciar_agora_que_nao_pode_trocar_nao_fecha_a_janela
+acusada     V7 M1: a troca que falha depois de fechar não reabre | 1 failed, 40 passed in 9.04s | FAILED tests/test_atualizador_volta2.py::test_m1_a_troca_que_falha_depois_de_fechar_reabre_o_programa
+acusada     V8 M1: o sinal de vida não é dado | 1 failed, 41 passed in 9.11s | FAILED tests/test_atualizador_volta2.py::test_m1_o_sinal_de_vida_e_dado_antes_de_tudo
+SOBREVIVEU  V9 M1: o reabrir dá como feito sem o sinal (olha só se lançou) | 1263 passed, 4 skipped in 69.59s (0:01:09)
+SOBREVIVEU  V10 M2: pacote sem o motor-exigido.json conta como motor no lugar (anunciar) | 1263 passed, 4 skipped in 68.82s (0:01:08)
+SOBREVIVEU  V11 M2: pacote sem o motor-exigido.json pode trocar | 1263 passed, 4 skipped in 69.69s (0:01:09)
+acusada     V12 M2: a troca confere o motor do programa que roda, não o da versão que entra | 1 failed, 42 passed in 11.40s | FAILED tests/test_atualizador_volta2.py::test_m2_a_volta_confere_o_motor_da_anterior_e_volta
+SOBREVIVEU  V13 M2: o número do motor aceita texto e booleano | 1263 passed, 4 skipped in 68.94s (0:01:08)
+acusada     V14 M4: a troca é pedida mesmo sem a anotação gravada | 1 failed, 45 passed in 11.61s | FAILED tests/test_atualizador_volta2.py::test_m4_com_o_estado_que_nao_grava_nada_e_procurado_nem_trocado
+acusada     V15 M4: o estado sempre 'aceita gravação' | 1 failed, 45 passed in 9.59s | FAILED tests/test_atualizador_volta2.py::test_m4_com_o_estado_que_nao_grava_nada_e_procurado_nem_trocado
+acusada     V16 M4: sem o estado gravando, procura mesmo assim | 1 failed, 45 passed in 9.65s | FAILED tests/test_atualizador_volta2.py::test_m4_com_o_estado_que_nao_grava_nada_e_procurado_nem_trocado
+acusada     V17 leve 3: a família sem a hora em que cada um nasceu | 1 failed, 59 passed in 9.99s | FAILED tests/test_atualizador_volta2.py::test_leve3_a_familia_respeita_a_hora_em_que_cada_um_nasceu
+acusada     V18 leve 2: a leitura de volta aceita linha a mais | 1 failed, 60 passed in 11.69s | FAILED tests/test_atualizador_volta2.py::test_leve2_uma_licenca_a_mais_na_pasta_e_acusada
+acusada     V19 D-839: a falha 'troca' volta a usar a frase (1) | 1 failed, 26 passed in 2.42s | FAILED tests/test_atualizador_novo.py::test_d835_e_d778_os_textos_da_tela_palavra_por_palavra
+acusada     V20 D-840: outra janela sem a frase | 1 failed, 824 passed in 12.37s | FAILED tests/test_fases_da_atualizacao.py::test_todo_par_fase_evento_tem_a_resposta_escrita[conferida_outra_janela-conferindo_troca]
+acusada     V21 D-841: outra janela sem o aviso de novo | 1 failed, 824 passed in 12.44s | FAILED tests/test_fases_da_atualizacao.py::test_todo_par_fase_evento_tem_a_resposta_escrita[conferida_outra_janela-conferindo_troca]
+acusada     V22 D-840: 'não deu para saber' (sem a lista) também mostra a frase da outra janela | 1 failed, 1137 passed, 1 skipped in 16.70s | FAILED tests/test_decisoes_atualizacao.py::test_d840_a_frase_so_aparece_com_outra_janela_aberta[sem_a_lista_de_processos]
+acusada     V23 a falha aparece toda vez (sem o 'já vista') | 1 failed, 22 passed in 2.25s | FAILED tests/test_atualizador_novo.py::test_a_troca_que_nao_aconteceu_avisa_uma_vez
+acusada     V24 a ponte da tela: 'Reiniciar agora' manda 'Depois' | 1 failed, 1106 passed, 1 skipped in 15.99s | FAILED tests/test_decisoes_atualizacao.py::test_d720_reiniciar_agora_fecha_gravando_e_so_depois_troca
+acusada     V25 a ponte: a frase da outra janela não aparece | 1 failed, 1136 passed, 1 skipped in 17.40s | FAILED tests/test_decisoes_atualizacao.py::test_d840_reiniciar_agora_com_outra_janela_aberta_diz_para_fechar_e_nada_fecha
+acusada     V26 a falha de teste não põe a versão em 'não tentar' | 1 failed, 1033 passed in 13.42s | FAILED tests/test_fases_da_atualizacao.py::test_todo_par_fase_evento_tem_a_resposta_escrita[teste_nao-conferindo_nova]
+5 de 26 sobreviveram
+FIM

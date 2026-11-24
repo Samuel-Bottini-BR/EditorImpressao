@@ -1,0 +1,20 @@
+{
+ "arquivo de dentro preso (alça)": "472",
+ "antes": {
+  "raiz": false,
+  "fora (pela junção)": false
+ },
+ "resposta": {
+  "desfecho": "deu certo",
+  "motivo": "as contas do computador podem atualizar a pasta do programa",
+  "detalhe": ""
+ },
+ "depois": {
+  "raiz": true,
+  "current\\preso.dll (aberto sem compartilhar)": true,
+  "fora-da-raiz (o alvo da junção, FORA da raiz)": false,
+  "fora-da-raiz\\arquivo-de-fora.txt": false
+ },
+ "licencas devolvidas": "Processados com sucesso 9 arquivos; falha no processamento de 0 arquivos",
+ "depois de devolver: fora": false
+}
