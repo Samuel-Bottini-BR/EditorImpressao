@@ -150,3 +150,12 @@ cópia de trabalho e devolvendo o arquivo depois). Os 26 do arquivo passam.
 | `tests/test_fases_da_atualizacao.py` (a tabela) | mudado pelo conserto | a regra mudou: o "Reiniciar agora" passa pela fase nova (conferir antes de fechar, M1) e guarda `trocando_com_janela`; linhas novas para a troca em curso (G1), o estado que não grava (M4), o motor da versão nova (M2) e a conferência; mais 2 testes (M1, M4) |
 | `tests/test_porteiro_licenca_que_acrescenta.py` (a amostra `CERTO` e duas linhas dela) | mudado pelo conserto | a K03 passou a aceitar só a linha do experimento escrita igual (leve 2); a amostra passou a ser essa linha; o que os testes cobram não mudou |
 | `tests/ajudante_do_atualizador.py` | mudado | os pacotes de prova passaram a ter o `motor-exigido.json` (M2); a peça do Windows de mentira ganhou o que a de verdade ganhou (a troca em curso, abrir de novo) |
+
+## Volta 2b (24/11/2026): as frases D-839 e D-840
+
+| Arquivo :: teste | O que aconteceu | Por quê |
+|---|---|---|
+| `tests/test_atualizador_volta2.py::test_leve1_a_frase_da_troca_espera_a_resposta_do_samuel` | vale hoje (cobra a frase nova) | existia para a frase da falha "troca" não mudar calada até a resposta do Samuel; ele respondeu (D-839, chat 24/11: "sim"); a gerente liberou a troca deste teste |
+| `tests/test_atualizador_novo.py::test_d835_e_d778_os_textos_da_tela_palavra_por_palavra` (só a linha "troca" do dicionário) | vale hoje (cobra a frase nova) | a mesma decisão: a D-839 deu frase própria à falha "troca"; as outras três linhas (as da D-778) e os textos da D-835 não mudaram |
+| `tests/test_fases_da_atualizacao.py` (a tabela) | uma linha nova, nenhuma mudada | o evento novo "conferida_outra_janela" (D-840): DEPOIS, com o registro e a frase; o "conferida_nao" continua igual (nada na tela) |
+| `tests/test_decisoes_atualizacao.py::test_d839_*` (3), `::test_d840_*` (3) | novos | as provas das duas decisões pelo caminho inteiro (a regra, o executor e a ponte da tela); 4 falham no código de `63bd8546` (`volta2b-testes-no-codigo-antigo.txt`); os 2 de "só com outra janela" passam lá e aqui (nada mudou nos outros casos) |

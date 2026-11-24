@@ -23,7 +23,9 @@ AS FASES (`Fase`), na ordem em que costumam acontecer numa abertura do programa 
     BAIXANDO        baixando (o Velopack confere o tamanho e a soma do que baixou).
     PRONTA          baixada; o aviso "Reiniciar agora" / "Depois" está na tela (D-715, D-720).
     CONFERINDO_TROCA "Reiniciar agora": ANTES de a janela fechar, a conferência única da troca (o pacote, o motor da
-                    versão nova, outra janela aberta); sem ela, a janela continua aberta (volta 2, achado M1).
+                    versão nova, outra janela aberta); sem ela, a janela continua aberta (volta 2, achado M1); com
+                    outra janela do programa aberta, a frase "Feche a outra janela do programa e clique de novo."
+                    (D-840, efeito `PedirParaFecharAOutraJanela`).
     DEPOIS          escolheu "Depois": ao fechar, a pergunta "Atualizar agora?" (D-769, D-794, D-831, D-835).
     FECHANDO        escolheu "Reiniciar agora": a janela fecha pelo caminho de sempre (grava o trabalho).
     PERGUNTANDO     a pergunta "Atualizar agora?" ao fechar está na tela.
@@ -81,7 +83,8 @@ class Fase(str, Enum):
 
 # Os tipos de falha (um lugar só: o executor escolhe a frase da tela por eles, D-778).
 FALHA_TESTE = "teste"          # a versão nova não passou no teste rápido e o programa voltou (frase 1)
-FALHA_TROCA = "troca"          # o Velopack não conseguiu trocar; o programa continua na versão de antes (frase 1)
+FALHA_TROCA = "troca"          # o Velopack não conseguiu trocar; o programa continua na versão de antes (a frase da
+                               # D-839, "continua na versão de antes"; a (1) é só para a que entrou e voltou)
 FALHA_RECUSADA = "recusada"    # a versão não tem a assinatura do Samuel (frase 2)
 FALHA_VOLTA = "volta"          # a versão nova falhou e a volta para a anterior não deu certo (frase 3)
 TIPOS_DE_FALHA = (FALHA_TESTE, FALHA_TROCA, FALHA_RECUSADA, FALHA_VOLTA)
@@ -202,11 +205,14 @@ class Baixou:
 @dataclass(frozen=True)
 class TrocaConferida:
     """A conferência única da troca, feita ANTES de a janela fechar no "Reiniciar agora" (volta 2, achado M1): pode
-    trocar? `recusada`: o pacote baixado não tem a soma assinada."""
+    trocar? `recusada`: o pacote baixado não tem a soma assinada. `outra_janela`: não pode porque há OUTRA janela do
+    programa aberta (a lista de processos do Windows a mostrou); é o que leva à frase da D-840. Só a conferência
+    (`atualizacao.Atualizacao.conferencia_da_troca`) diz isso; "não deu para saber" (sem a lista) não é outra janela."""
 
     pode: bool
     motivo: str = ""
     recusada: bool = False
+    outra_janela: bool = False
 
 
 @dataclass(frozen=True)
@@ -389,6 +395,12 @@ class ConferirTroca:
 
 
 @dataclass(frozen=True)
+class PedirParaFecharAOutraJanela:
+    """A frase da D-840 na janela ("Feche a outra janela do programa e clique de novo."): o "Reiniciar agora" não pôde
+    trocar porque há outra janela do programa aberta. Mostrada a cada vez que acontece (não é falha anotada)."""
+
+
+@dataclass(frozen=True)
 class ReabrirOPrograma:
     """Abrir o programa de novo (o "Reiniciar agora" cuja troca não pôde ser pedida depois de a janela fechar: o
     programa nunca some calado; volta 2, achado M1)."""
@@ -403,7 +415,7 @@ class Sair:
 
 Efeito = Union[PedirLicenca, EsperarPreparo, GarantirMotor, Procurar, ConferirAssinatura, Baixar, MostrarVersaoNova,
                FecharJanela, PerguntarAoFechar, Trocar, RodarTesteRapido, AnotarOk, AnotarFalha, Voltar,
-               MostrarFalha, Registrar, Sair, ConferirTroca, ReabrirOPrograma]
+               MostrarFalha, Registrar, Sair, ConferirTroca, ReabrirOPrograma, PedirParaFecharAOutraJanela]
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -582,9 +594,12 @@ def proxima_fase(estado: Estado, evento: Evento) -> tuple[Estado, list[Efeito]]:
             return (replace(estado, fase=Fase.PARADO, nao_tentar=_com_mais(estado.nao_tentar, estado.nova)),
                     [AnotarFalha(FALHA_RECUSADA, estado.versao, estado.nova, e.motivo),
                      MostrarFalha(FALHA_RECUSADA, id_da_falha(FALHA_RECUSADA, estado.nova))])
+        # D-840: com outra janela do programa aberta, a frase para fechá-la; nos outros "não pode agora", nada na tela.
+        # Nos dois, a janela continua aberta e a pergunta vem ao fechar (como no "Depois").
+        frase: list[Efeito] = [PedirParaFecharAOutraJanela()] if e.outra_janela else []
         return replace(estado, fase=Fase.DEPOIS), [Registrar(
             f"\"Reiniciar agora\": a troca não pode ser pedida agora ({e.motivo}); a janela continua aberta e a "
-            "pergunta vem ao fechar")]
+            "pergunta vem ao fechar")] + frase
 
     if isinstance(e, JanelaFechou) and f is Fase.FECHANDO:
         if e.fechou:

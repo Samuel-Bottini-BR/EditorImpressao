@@ -1,3 +1,97 @@
+# Volta 2b: as frases D-839 e D-840 (24/11/2026)
+
+Implementador. Pedido da gerente de 24/11: pôr no atualizador novo as duas frases que o Samuel decidiu (respostas às
+perguntas A e B da volta 2, logo abaixo). Não abri agente nem janela. **Situação: feito; os testes dos arquivos que toquei passam no meu PC; falta a rodada do GitHub (é da gerente).**
+
+## Decisões que esta tarefa precisa cumprir
+
+- **D-839** (chat 24/11, à pergunta "Aceita as duas sugestões, a frase da 1 e a minha da 2?": "sim"): quando o Windows
+  não deixa trocar a versão e o programa nunca saiu da de antes, a frase é "A atualização não deu certo. O programa
+  continua na versão de antes e funcionando. Avise o Samuel." As três da D-778 ficam iguais; a (1) "voltou para a
+  versão anterior" fica só para quando a versão nova entrou, falhou e o programa voltou.
+- **D-840** (a mesma resposta, "sim"): "Reiniciar agora" com outra janela do programa aberta não troca e mostra a frase
+  curta "Feche a outra janela do programa e clique de novo." O programa continua aberto; ao fechar, vem a pergunta
+  "Atualizar agora?" (D-831, D-835).
+- Em volta: D-778 (as três frases, iguais), D-831/D-835 (a pergunta ao fechar, igual), §11.7 (nenhum outro texto,
+  botão ou comportamento), §11.8, §11.12.
+
+## O que já está escolhido e testado aqui
+
+- As três frases da D-778 e os textos da D-835: `test_atualizador_novo::test_d835_e_d778_os_textos_da_tela_palavra_
+  por_palavra`, `test_decisoes_atualizacao::test_d719_*`. A linha "troca" desse dicionário e o
+  `test_atualizador_volta2::test_leve1_a_frase_da_troca_espera_a_resposta_do_samuel` cobram a frase (1) na falha
+  "troca": a D-839 mudou essa frase, então essas duas linhas passam a cobrar a frase nova (anotado na lista D-836).
+- O "Reiniciar agora" que não pode trocar não fecha a janela e a pergunta vem ao fechar (volta 2, M1):
+  `test_atualizador_volta2::test_m1_*`, a tabela de `test_fases_da_atualizacao.py`. Continua igual.
+
+## Como fica para quem usa e no livro
+
+- D-839: o Kaique vê, numa vez só, a caixa "Atualização" com a frase nova, em vez de "voltou para a versão anterior",
+  quando a troca não aconteceu. Nada mais muda. O PDF não muda.
+- D-840: com o programa aberto duas vezes, ele clica "Reiniciar agora" no aviso da versão nova: nada fecha e aparece
+  uma caixa com "Feche a outra janela do programa e clique de novo." (botão de fechar a caixa). O programa continua
+  aberto; ao fechar, vem "Atualizar agora?" como já vinha. O PDF não muda.
+
+## Como cumpri cada uma (caminho -> função)
+
+- **D-839.** A frase sai do dicionário único `atualizacao.FRASES_DA_FALHA` (a linha da falha "troca" passou a ser
+  `FRASE_DA_FALHA_SEM_TROCA`, palavra por palavra); as três da D-778 não mudaram. Os caminhos que chegam nela:
+  - a abertura com janela em que a troca não aconteceu (o Velopack reabriu a de antes, ou o atalho depois de a troca
+    acabar) -> `fases._ao_abrir` -> `MostrarFalha("troca")` -> `Atualizacao._para_a_tela` -> `PonteDaTela._mostrar`
+    -> `FRASES_DA_FALHA`;
+  - a reabertura sem janela do "Sim" ao fechar -> `AnotarFalha("troca")` -> a abertura seguinte -> `_falha_a_mostrar`
+    -> o mesmo `MostrarFalha` e o mesmo dicionário.
+  A (1) continua só na falha "teste" (a versão nova entrou, não passou e voltou).
+- **D-840.** A frase vem da conferência única da troca. `Atualizacao.conferencia_da_troca` (o corpo que era o
+  `conferir_troca`, sem mudar uma conferência) devolve o evento `TrocaConferida`, que ganhou `outra_janela`: verdade só
+  no "há outra janela do programa aberta" da lista de processos. A regra (`fases.proxima_fase`, CONFERINDO_TROCA) põe o
+  efeito novo `PedirParaFecharAOutraJanela`, e a ponte da tela mostra `FRASE_DA_OUTRA_JANELA`. A fase continua DEPOIS:
+  nada fecha, e a pergunta "Atualizar agora?" vem ao fechar, como já vinha. Caminhos:
+  - "Reiniciar agora" -> `Escolheu(True)` -> `ConferirTroca` -> `conferencia_da_troca` -> `TrocaConferida` -> a regra
+    -> a frase;
+  - `trocar_para` (o "Sim" ao fechar, a volta, e a segunda conferência depois de a janela fechar) -> `conferir_troca`,
+    que agora só mostra a mesma `conferencia_da_troca` como (pode, motivo, recusada). Conta própria: nenhuma.
+  Nos outros "não pode trocar agora" (o Windows não deu a lista; o motor fora; o pacote não está lá) nada aparece, como
+  antes (§11.7: a decisão fala de outra janela aberta).
+
+## O teste que falhava antes
+
+`tests/test_decisoes_atualizacao.py`: `test_d839_a_troca_que_nao_aconteceu_diz_que_continua_na_versao_de_antes`
+(os dois caminhos), `test_d839_as_tres_frases_da_d778_continuam_iguais`, `test_d840_reiniciar_agora_com_outra_janela_
+aberta_diz_para_fechar_e_nada_fecha`: **os 4 falham no código de `63bd8546`** (rodados antes de mexer no programa:
+`relatorios/atualizador-novo/volta2b-testes-no-codigo-antigo.txt`) e passam agora. `test_d840_a_frase_so_aparece_com_
+outra_janela_aberta` (2) passa nos dois: prova que os outros casos não mudaram. Rodam pela regra, pelo executor e pela
+ponte da tela de verdade; só o Windows e o Velopack são de mentira (a lista de processos responde "outra janela").
+
+Os dois testes antigos que cobravam a frase (1) na falha "troca" passaram a cobrar a frase nova (a decisão mudou; a
+gerente liberou o primeiro; o segundo é a mesma linha): `test_atualizador_volta2::test_leve1_...` e a linha "troca" de
+`test_atualizador_novo::test_d835_e_d778_...`. Anotados em `lista-dos-testes-d836.md`. A prova de quem tentou quebrar
+(`quem-tenta-quebrar-1/provas/test_qtq_provas.py`, linha 128, fora de `tests/`) mostrava o defeito e agora falha nessa
+linha, como devia; não mexi nela.
+
+## Ressalvas
+
+1. **"clique de novo"**: depois da frase, nesta abertura o aviso "Reiniciar agora" não volta (a decisão diz "ao fechar,
+   vem a pergunta"). Então o "clique de novo" só pode ser no "Sim" da pergunta ao fechar, ou no aviso da próxima
+   abertura. Fiz como a decisão diz; se o Samuel esperava o aviso de volta para clicar, é outra decisão.
+2. **O título da caixa da D-840** é o do aviso da versão nova ("Versão nova do programa"), de onde veio o clique. Não é
+   texto novo; a decisão não diz o título.
+3. Se a outra janela for aberta nos segundos entre a conferência e o fechar, a segunda conferência (`trocar_para`)
+   recusa e o programa reabre (como na volta 2, M1), sem a frase: a decisão é sobre o clique.
+4. Não rodei as 32 mutações de novo (a 9, "outra janela aberta não troca", acha a mesma linha `if outras:`).
+   Rodei três novas, à mão (o arquivo voltou depois de cada uma): tirar o `outra_janela` da conferência, tirar a
+   frase da regra, e voltar a frase (1) na falha "troca": as três acusadas pelos testes novos.
+
+## Os testes no meu PC (um arquivo por vez, a pasta temporária no D:)
+
+`test_decisoes_atualizacao` 41, `test_fases_da_atualizacao` 1012, `test_atualizador_volta2` 32,
+`test_atualizador_novo` 35, `test_decisoes_ajudante_da_atualizacao` 22, `test_decisoes_desinstalar` 45,
+`test_decisoes_desinstalar_pasta` 6, `test_decisoes_testes_a_distancia` 13, `test_decisoes_preparo_d749` 3,
+`test_decisoes_brasao` 20, `test_trava_windows` 42 + 3 pulados, `test_porteiro_licenca_que_acrescenta` 14,
+`test_conferencias_codigo` 122, `test_conferencias_excecoes` 14, `test_windows_peca` 68 + 3 pulados,
+`test_windows_preparo_do_computador` 19 + 1 pulado: **todos passaram**. O porteiro: "nada novo (4997 arquivos
+lidos; a lista deixa 135 lugares)". O GitHub não foi disparado (pedido da gerente).
+
 # Volta 2: os achados do quem tenta quebrar (24/11/2026)
 
 Implementador. Pedido da gerente de 24/11 (D-815, segunda e última volta), sobre o relatório

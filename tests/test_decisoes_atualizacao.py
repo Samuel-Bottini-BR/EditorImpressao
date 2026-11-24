@@ -541,3 +541,108 @@ def test_d835_ao_fechar_a_pergunta_curta_e_o_sim_esconde_a_janela_e_troca(app, t
     q, ponte, janela = _ponte(app, tmp_path / "b", [False, False], [])
     aviso.ao_fechar(ponte.parent())
     assert janela.escondeu == 0 and "trocar" not in q.vp.nomes()
+
+
+# ---------------------------------------------------------------------------
+# D-839 e D-840 (Samuel, chat 24/11/2026: "sim"): a frase da troca que não aconteceu e a do "Reiniciar agora" com
+# outra janela aberta. Pela regra, pelo executor e pela ponte da tela de verdade; só a borda é de mentira.
+# ---------------------------------------------------------------------------
+
+FRASE_D839 = "A atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel."
+FRASE_D840 = "Feche a outra janela do programa e clique de novo."
+OUTRA_JANELA = (7, r"C:\Program Files\EditorImpressaoPrograma\current\EditorImpressao.exe")
+
+
+def _ponte_da_prova(app, p, respostas: list[bool], avisos: list):
+    """A `PonteDaTela` de verdade ligada a uma abertura já feita (`Prova.abrir`), com as caixas de mentira: cada
+    caixa mostrada vira uma linha em `avisos` (as perguntas com os botões, os avisos com o título e a frase)."""
+    from PySide6.QtWidgets import QWidget
+
+    from ui import aviso_de_atualizacao as aviso
+
+    pai = QWidget()
+    janela = JanelaFalsa()
+    janela.pai = pai
+    ponte = aviso.PonteDaTela(pai, p.atual,
+                              perguntar=lambda j, t, x, sim, nao: avisos.append((t, x, sim, nao)) or respostas.pop(0),
+                              avisar=lambda j, t, x, icone=None: avisos.append((t, x)))
+    ponte.janela = janela
+    pai._ponte_da_atualizacao = ponte
+    p.atual.ligar_a_tela(ponte.receber)
+    return ponte, janela
+
+
+@pytest.mark.parametrize("caminho", ["com_janela", "sem_janela_e_depois_a_proxima_abertura"])
+def test_d839_a_troca_que_nao_aconteceu_diz_que_continua_na_versao_de_antes(app, tmp_path, monkeypatch, caminho):
+    """D-839 (Samuel, 24/11/2026: "sim"): o Windows não deixou trocar e o programa nunca saiu da versão de antes: a
+    frase é "A atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel.", e não
+    a (1) da D-778 ("voltou para a versão anterior"). Os dois caminhos que chegam nela: a abertura com janela (o atalho,
+    ou o Velopack que reabriu a de antes) e a reabertura sem janela do "Sim" ao fechar, que só anota e a frase aparece
+    na abertura seguinte. Falha no código de `63bd8546` (lá aparece a frase (1))."""
+    from tests.ajudante_do_atualizador import Prova
+
+    de, para = "7.0.0", "7.0.1" if caminho == "com_janela" else "7.0.2"   # versões só deste teste (os vistos)
+    monkeypatch.setattr(versao, "VERSAO", de)
+    if caminho == "com_janela":
+        p = Prova(tmp_path / "a", publicar_nova=False)
+        p.abrir(atualizacao.ARG_CONFERIR_NOVA, de, para)
+    else:
+        primeira = Prova(tmp_path / "a", publicar_nova=False)
+        assert primeira.abrir(atualizacao.ARG_CONFERIR_NOVA, de, para, atualizacao.ARG_SEM_JANELA) == 0
+        p = Prova(tmp_path / "b", publicar_nova=False)
+        p.abrir()
+    assert atualizacao.ler_estado()["falha"]["tipo"] == fases.FALHA_TROCA
+    avisos = []
+    _ponte_da_prova(app, p, [], avisos)
+    assert avisos == [(atualizacao.TITULO_DA_FALHA, FRASE_D839)]
+
+
+def test_d839_as_tres_frases_da_d778_continuam_iguais():
+    """D-839: "As três da D-778 continuam iguais"; a (1) fica para a versão nova que entrou, falhou e voltou."""
+    assert atualizacao.FRASES_DA_FALHA[fases.FALHA_TESTE] == (
+        "A atualização não deu certo. O programa voltou para a versão anterior e continua funcionando. Avise o Samuel.")
+    assert atualizacao.FRASES_DA_FALHA[fases.FALHA_RECUSADA] == (
+        "Chegou uma versão nova, mas ela não foi instalada porque não tem a assinatura do Samuel. O programa continua "
+        "funcionando. Avise o Samuel.")
+    assert atualizacao.FRASES_DA_FALHA[fases.FALHA_VOLTA] == (
+        "A atualização não deu certo e o programa não conseguiu voltar sozinho. Não desinstale nada. Avise o Samuel.")
+    assert atualizacao.FRASES_DA_FALHA[fases.FALHA_TROCA] == FRASE_D839
+
+
+def test_d840_reiniciar_agora_com_outra_janela_aberta_diz_para_fechar_e_nada_fecha(app, tmp_path):
+    """D-840 (Samuel, 24/11/2026: "sim"): "Reiniciar agora" com outra janela do programa aberta não troca e mostra "Feche
+    a outra janela do programa e clique de novo."; o programa continua aberto e, ao fechar, vem "Atualizar agora?".
+    A frase vem da conferência única da troca (a que decide "não pode trocar agora"). Falha no código de `63bd8546`
+    (lá nada aparece)."""
+    from tests.ajudante_do_atualizador import Prova
+    from ui import aviso_de_atualizacao as aviso
+
+    p = Prova(tmp_path, outras=[OUTRA_JANELA])
+    p.abrir()
+    avisos = []
+    ponte, janela = _ponte_da_prova(app, p, [True, False], avisos)
+    assert avisos == [(atualizacao.TITULO_DA_VERSAO_NOVA, atualizacao.FRASE_DA_VERSAO_NOVA,
+                       atualizacao.BOTAO_REINICIAR, atualizacao.BOTAO_DEPOIS),
+                      (atualizacao.TITULO_DA_VERSAO_NOVA, FRASE_D840)]
+    assert janela.fechou == 0 and janela.escondeu == 0 and "trocar" not in p.vp.nomes()
+    aviso.ao_fechar(ponte.parent())
+    assert avisos[-1] == ("Atualizar agora?", "Quer atualizar o programa agora, ao fechar?", "Sim", "Não")
+
+
+@pytest.mark.parametrize("porque", ["sem_a_lista_de_processos", "sem_o_motor_da_nova"])
+def test_d840_a_frase_so_aparece_com_outra_janela_aberta(app, tmp_path, porque):
+    """D-840 e §11.7 (só o que ele mandou): a frase é para "outra janela do programa aberta". Nos outros "não pode trocar
+    agora" (o Windows não deu a lista de processos; o motor que a versão nova pede saiu do lugar) nada aparece, como
+    antes; a janela continua aberta e a pergunta vem ao fechar."""
+    from tests.ajudante_do_atualizador import Prova
+
+    p = Prova(tmp_path)
+    if porque == "sem_a_lista_de_processos":
+        p.win.outras = None
+    p.abrir()
+    if porque == "sem_o_motor_da_nova":
+        p.motores_no_lugar = set()
+    avisos = []
+    _, janela = _ponte_da_prova(app, p, [True], avisos)
+    assert len(avisos) == 1 and avisos[0][1] == atualizacao.FRASE_DA_VERSAO_NOVA
+    assert janela.fechou == 0 and p.atual.estado.fase is fases.Fase.DEPOIS

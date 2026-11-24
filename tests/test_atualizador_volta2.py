@@ -433,10 +433,14 @@ def test_leve2_o_porteiro_acusa_o_que_a_d837_nao_deixa(arquivo, texto):
 # ---------------------------------------------------------------------------------------------------------------------
 
 def test_leve1_a_frase_da_troca_espera_a_resposta_do_samuel():
-    """Leve 1 (era `test_D`): a D-778 não tem frase para "a troca não aconteceu e o programa continua na versão de
-    antes". A escolha é do Samuel (pergunta no ONDE-PAREI); até a resposta, fica a frase (1), como foi entregue. Este
-    teste existe para a mudança não entrar calada: quando ele responder, a frase nova entra aqui."""
-    assert atualizacao.FRASES_DA_FALHA[fases.FALHA_TROCA] == atualizacao.FRASE_DA_FALHA
+    """Leve 1 (era `test_D`): a D-778 não tinha frase para "a troca não aconteceu e o programa continua na versão de
+    antes". Até a resposta do Samuel, este teste cobrava a frase (1), para a mudança não entrar calada. Ele respondeu
+    (D-839, chat 24/11/2026: "sim"): a frase nova entra aqui, palavra por palavra, e a (1) fica para a versão que entrou
+    e voltou. A prova pelo caminho inteiro (a regra, o executor e a ponte da tela) é
+    `test_decisoes_atualizacao::test_d839_*`."""
+    assert atualizacao.FRASES_DA_FALHA[fases.FALHA_TROCA] == (
+        "A atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel.")
+    assert atualizacao.FRASES_DA_FALHA[fases.FALHA_TESTE] == atualizacao.FRASE_DA_FALHA
 
 
 def test_os_comentarios_do_desfazer_nao_citam_o_que_saiu():

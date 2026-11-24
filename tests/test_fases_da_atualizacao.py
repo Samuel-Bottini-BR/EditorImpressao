@@ -80,6 +80,8 @@ EVENTOS = {
     "conferida_pode": f.TrocaConferida(True),
     "conferida_nao": f.TrocaConferida(False, "outra janela aberta"),
     "conferida_recusada": f.TrocaConferida(False, "a soma não confere", recusada=True),
+    # D-840: o "não pode" porque há outra janela do programa aberta (a conferência única diz).
+    "conferida_outra_janela": f.TrocaConferida(False, "há outra janela do programa aberta", outra_janela=True),
     "reiniciar": f.Escolheu(True),
     "depois": f.Escolheu(False),
     "fechou": f.JanelaFechou(True),
@@ -201,6 +203,8 @@ ESPERADO = {
     (F.PRONTA, "reiniciar"): E(F.CONFERINDO_TROCA, [("ConferirTroca",)]),
     (F.CONFERINDO_TROCA, "conferida_pode"): E(F.FECHANDO, [("FecharJanela",)]),
     (F.CONFERINDO_TROCA, "conferida_nao"): E(F.DEPOIS, [R]),
+    # D-840: com outra janela aberta, a frase "Feche a outra janela do programa e clique de novo."; o resto igual.
+    (F.CONFERINDO_TROCA, "conferida_outra_janela"): E(F.DEPOIS, [R, ("PedirParaFecharAOutraJanela",)]),
     (F.CONFERINDO_TROCA, "conferida_recusada"): E(F.PARADO, [("AnotarFalha", "recusada", "1.1.0", "1.2.0"),
                                                              ("MostrarFalha", "recusada", "recusada-1.2.0")],
                                                   nao_tentar=("1.2.0", "1.3.0")),

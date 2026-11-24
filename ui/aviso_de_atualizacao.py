@@ -10,7 +10,10 @@ O que aparece (decisões do Samuel, palavras combinadas, textos em `atualizacao.
 - D-769/D-794/D-831/D-835: com "Depois", ao fechar o programa: "Atualizar agora?" / "Quer atualizar o programa agora,
   ao fechar?" / "Sim" / "Não". Com "Sim" a janela some, o programa grava e sai, e o Velopack troca (com a janelinha
   dele, D-832); nada abre na tela depois. Com "Não", fecha sem trocar; o aviso volta na próxima abertura.
-- D-719/D-778: uma falha, uma vez por falha nesta conta, com a frase do caso (`atualizacao.FRASES_DA_FALHA`).
+- D-719/D-778/D-839: uma falha, uma vez por falha nesta conta, com a frase do caso (`atualizacao.FRASES_DA_FALHA`;
+  a troca que não aconteceu: "O programa continua na versão de antes e funcionando.").
+- D-840: "Reiniciar agora" com outra janela do programa aberta: "Feche a outra janela do programa e clique de novo."
+  (`atualizacao.FRASE_DA_OUTRA_JANELA`); nada fecha e a pergunta vem ao fechar.
 
 COMO LIGA. main.py chama `ligar_na_janela(janela)` uma vez, depois de abrir a janela; e o fechar da janela principal
 (`ui/janela_principal.py`, `closeEvent`) chama `ao_fechar(janela)` depois de gravar o trabalho e parar as tarefas.
@@ -77,6 +80,11 @@ class PonteDaTela(QObject):
         elif isinstance(ef, fases.MostrarFalha):
             self._avisar(self.janela, atualizacao.TITULO_DA_FALHA,
                          atualizacao.FRASES_DA_FALHA.get(ef.tipo, atualizacao.FRASE_DA_FALHA),
+                         icone=QMessageBox.Information)
+        elif isinstance(ef, fases.PedirParaFecharAOutraJanela):
+            # D-840: o "Reiniciar agora" não trocou porque há outra janela do programa aberta; esta continua aberta
+            # (a regra já a deixou como no "Depois": a pergunta vem ao fechar).
+            self._avisar(self.janela, atualizacao.TITULO_DA_VERSAO_NOVA, atualizacao.FRASE_DA_OUTRA_JANELA,
                          icone=QMessageBox.Information)
 
     def ao_fechar(self) -> None:

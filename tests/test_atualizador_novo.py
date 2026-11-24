@@ -371,8 +371,8 @@ def test_d835_e_d778_os_textos_da_tela_palavra_por_palavra():
     assert atualizacao.FRASES_DA_FALHA == {
         "teste": "A atualização não deu certo. O programa voltou para a versão anterior e continua funcionando. "
                  "Avise o Samuel.",
-        "troca": "A atualização não deu certo. O programa voltou para a versão anterior e continua funcionando. "
-                 "Avise o Samuel.",
+        # D-839 (Samuel, 24/11/2026: "sim"): a troca que não aconteceu tem frase própria (era a (1) da D-778).
+        "troca": "A atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel.",
         "recusada": "Chegou uma versão nova, mas ela não foi instalada porque não tem a assinatura do Samuel. O "
                     "programa continua funcionando. Avise o Samuel.",
         "volta": "A atualização não deu certo e o programa não conseguiu voltar sozinho. Não desinstale nada. Avise "

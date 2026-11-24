@@ -27,7 +27,10 @@ CAMINHO -> FUNÇÃO (§11.12)
     a espera do preparo (por trás)  efeito EsperarPreparo -> PedidoDeLicenca.esperar + pasta_aceita_gravacao
     o motor do Kraken               efeito GarantirMotor -> garantir_o_motor (o único que mexe em motor-kraken\\)
     procurar / assinatura / baixar  Procurar, ConferirAssinatura, Baixar -> conversa_com_o_velopack + conferir_assinatura_do
-    "Reiniciar agora" / "Depois"    ui -> Escolheu; FecharJanela -> ui fecha a janela -> JanelaFechou -> Trocar
+    "Reiniciar agora" / "Depois"    ui -> Escolheu -> ConferirTroca -> Atualizacao.conferencia_da_troca (a ÚNICA
+                                    conferência) -> TrocaConferida; pode: FecharJanela -> ui fecha a janela ->
+                                    JanelaFechou -> Trocar; outra janela aberta: PedirParaFecharAOutraJanela -> ui
+                                    mostra FRASE_DA_OUTRA_JANELA (D-840) e a janela continua aberta
     fechar o programa               ui/janela_principal.closeEvent -> ui.ao_fechar -> Fechando -> PerguntarAoFechar ->
                                     RespondeuAoFechar -> Trocar
     a troca (qualquer caminho)      efeito Trocar e a volta -> trocar_para (a ÚNICA; confere a soma assinada do
@@ -35,12 +38,13 @@ CAMINHO -> FUNÇÃO (§11.12)
     reaberto pelo Velopack          atender_linha_de_comando -> Abriu(troca_de, troca_para) -> RodarTesteRapido
     a volta para a anterior         efeito Voltar -> Atualizacao._voltar (pacote assinado) -> trocar_para
     uma falha                       efeito AnotarFalha -> anotar_falha (a ÚNICA); a frase da tela, FRASES_DA_FALHA
+                                    (o tipo da falha escolhe a frase; a tela só lê este dicionário)
 
 NADA PELO CÓDIGO. Pelo atalho "(desenvolvimento)" e nos testes o programa não está instalado pelo Velopack
 (`instalado_pelo_velopack`): `atender_linha_de_comando` devolve None sem importar o velopack, e nada roda.
 
 Seguro mexer: as frases do registro (sem número de decisão: o porteiro barra, K04). Arriscado: os textos da tela
-(palavras combinadas com o Samuel: D-719, D-778, D-835); `NOME_DA_TAREFA` (o nome do ajudante antigo que o preparo
+(palavras combinadas com o Samuel: D-719, D-778, D-835, D-839, D-840); `NOME_DA_TAREFA` (o nome do ajudante antigo que o preparo
 apaga); a ordem dos passos do preparo (`passos_do_preparo`: a licença da pasta é o ÚLTIMO, D-749, e o ajudante antigo
 sai ANTES dela); qualquer caminho que chame a troca do Velopack sem passar por `trocar_para`.
 """
@@ -112,10 +116,16 @@ FRASE_DA_FALHA_SEM_ASSINATURA = ("Chegou uma versão nova, mas ela não foi inst
                                  "Samuel. O programa continua funcionando. Avise o Samuel.")
 FRASE_DA_FALHA_SEM_VOLTA = ("A atualização não deu certo e o programa não conseguiu voltar sozinho. "
                             "Não desinstale nada. Avise o Samuel.")
-# Qual frase para cada falha (a regra num lugar só). A troca que não aconteceu deixa o programa na versão de antes,
-# funcionando: é a frase (1).
-FRASES_DA_FALHA = {fases.FALHA_TESTE: FRASE_DA_FALHA, fases.FALHA_TROCA: FRASE_DA_FALHA,
+# D-839 (Samuel, 24/11/2026: "sim"): o Windows não deixou trocar e o programa nunca saiu da versão de antes. A (1),
+# "voltou para a versão anterior", fica só para a versão nova que entrou, falhou no teste e voltou.
+FRASE_DA_FALHA_SEM_TROCA = ("A atualização não deu certo. O programa continua na versão de antes e funcionando. "
+                            "Avise o Samuel.")
+# Qual frase para cada falha (a regra num lugar só; a tela só lê este dicionário).
+FRASES_DA_FALHA = {fases.FALHA_TESTE: FRASE_DA_FALHA, fases.FALHA_TROCA: FRASE_DA_FALHA_SEM_TROCA,
                    fases.FALHA_RECUSADA: FRASE_DA_FALHA_SEM_ASSINATURA, fases.FALHA_VOLTA: FRASE_DA_FALHA_SEM_VOLTA}
+# D-840 (Samuel, 24/11/2026: "sim"): "Reiniciar agora" com outra janela do programa aberta (efeito
+# PedirParaFecharAOutraJanela). A caixa usa o título do aviso da versão nova, de onde veio o clique.
+FRASE_DA_OUTRA_JANELA = "Feche a outra janela do programa e clique de novo."
 
 # O arquivo que o teste de gravar cria e apaga na raiz (o Velopack faz o mesmo com outro nome, ".velopack_dir_test").
 ARQUIVO_DO_TESTE_DE_GRAVAR = ".editor_teste_de_gravar"
@@ -757,13 +767,13 @@ class Atualizacao:
         elif isinstance(ef, fases.Voltar):
             self.evento(self._voltar(ef))
         elif isinstance(ef, fases.ConferirTroca):
-            pode, motivo, recusada = self.conferir_troca(self._achada)
-            self.evento(fases.TrocaConferida(pode, motivo, recusada))
+            self.evento(self.conferencia_da_troca(self._achada))
         elif isinstance(ef, fases.ReabrirOPrograma):
             self._reabrir()
         elif isinstance(ef, fases.Sair):
             self.saida = ef.codigo
-        elif isinstance(ef, (fases.MostrarVersaoNova, fases.MostrarFalha, fases.FecharJanela, fases.PerguntarAoFechar)):
+        elif isinstance(ef, (fases.MostrarVersaoNova, fases.MostrarFalha, fases.FecharJanela, fases.PerguntarAoFechar,
+                             fases.PedirParaFecharAOutraJanela)):
             self._para_a_tela(ef)
         else:
             registrar(f"efeito desconhecido: {ef!r}")
@@ -852,8 +862,16 @@ class Atualizacao:
         self.evento(fases.TrocaPedida(certa, motivo, recusada))
 
     def conferir_troca(self, v) -> tuple[bool, str, bool]:
+        """A conferência única (`conferencia_da_troca`) vista como (pode, motivo, recusada): o jeito que
+        `trocar_para` (e quem já a chamava) usa. Nenhuma conta aqui."""
+        c = self.conferencia_da_troca(v)
+        return c.pode, c.motivo, c.recusada
+
+    def conferencia_da_troca(self, v) -> "fases.TrocaConferida":
         """A CONFERÊNCIA ÚNICA de toda troca (o "Reiniciar agora" a faz ANTES de fechar a janela, volta 2, M1; e
-        `trocar_para` a faz de novo logo antes de pedir). Devolve (pode, motivo, recusada). Confere, nesta ordem:
+        `trocar_para` a faz de novo logo antes de pedir, por `conferir_troca`). Devolve o evento `TrocaConferida`
+        (pode, motivo, recusada, outra_janela): o `outra_janela` só é verdade no "há outra janela aberta" do item 3,
+        e é ele que leva à frase da D-840. Confere, nesta ordem:
         1. o pacote baixado está em `<raiz>\\packages\\` (com a raiz aceitando gravação, é onde o Velopack o põe:
            locator.rs 154-158) e a soma SHA256 DELE é a que a assinatura do Samuel afirma (conferida nesta abertura).
            Com a pasta aceitando gravação de Usuários, outra conta poderia trocar o arquivo depois de baixado; e o
@@ -864,29 +882,33 @@ class Atualizacao:
            apply_windows_impl.rs 159), nem dá para dizer que não há (o Windows não deu a lista: não troca). Este
            processo e os que ele abriu (o servidor de páginas, o brasão) não contam."""
         if v is None:
-            return False, "não há versão baixada nesta abertura", False
+            return fases.TrocaConferida(False, "não há versão baixada nesta abertura")
         assinada = self._somas_assinadas.get(v.versao)
         arquivo = self.raiz / "packages" / v.arquivo
         if not assinada:
-            return False, f"a versão {v.versao} não teve a assinatura conferida nesta abertura", True
+            return fases.TrocaConferida(False, f"a versão {v.versao} não teve a assinatura conferida nesta abertura",
+                                        recusada=True)
         try:
             soma = assinatura.soma_sha256(arquivo)
         except OSError as erro:
-            return False, f"o pacote baixado não está em {arquivo.parent} ({erro})", False
+            return fases.TrocaConferida(False, f"o pacote baixado não está em {arquivo.parent} ({erro})")
         if soma.lower() != assinada.lower():
-            return False, "o pacote baixado não tem a soma assinada pelo Samuel (foi trocado depois de baixar)", True
+            return fases.TrocaConferida(False, "o pacote baixado não tem a soma assinada pelo Samuel (foi trocado "
+                                               "depois de baixar)", recusada=True)
         motor = motor_exigido_pelo_pacote(arquivo)
         if motor is None:
-            return False, f"o pacote da versão {v.versao} não diz que motor do Kraken pede", False
+            return fases.TrocaConferida(False, f"o pacote da versão {v.versao} não diz que motor do Kraken pede")
         if not self._motor_no_lugar(motor):
-            return False, f"o motor do Kraken {motor}, que a versão {v.versao} pede, não está no lugar", False
+            return fases.TrocaConferida(False, f"o motor do Kraken {motor}, que a versão {v.versao} pede, não está no "
+                                               "lugar")
         outras = self.windows.programas_rodando_de(self.raiz / "current",
                                                    menos_a_familia_de=self.windows.numero_deste_processo())
         if outras is None:
-            return False, "não deu para saber se há outra janela do programa aberta", False
+            return fases.TrocaConferida(False, "não deu para saber se há outra janela do programa aberta")
         if outras:
-            return False, "há outra janela do programa aberta: " + ", ".join(c for _, c in outras), False
-        return True, "", False
+            return fases.TrocaConferida(False, "há outra janela do programa aberta: "
+                                        + ", ".join(c for _, c in outras), outra_janela=True)
+        return fases.TrocaConferida(True)
 
     def trocar_para(self, v, de: str, para: str, *, reabrir: bool, sem_janela: bool = False,
                     volta: bool = False) -> tuple[bool, str, bool]:
