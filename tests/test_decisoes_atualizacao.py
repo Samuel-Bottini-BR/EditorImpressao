@@ -16,6 +16,11 @@ e as versoes publicadas ficam numa pasta (o servidor de mentira).
   nao roda; a chave nunca dentro do repositorio.
 - D-727: o Visual C++ vai dentro do pacote; nada se baixa na hora de instalar.
 
+Atualizador novo (23/11/2026, D-830; D-836, os testes antigos: "os que cobram as mesmas decisões passam a chamar o
+caminho novo"): o "gerente falso" saiu; as provas passam pelo executor de verdade (atualizacao.Atualizacao) com só a
+borda de mentira (tests/ajudante_do_atualizador.py). As que cobravam o ajudante (a tarefa do Windows que rodava como
+o sistema) saíram com ele; a lista teste por teste está em relatorios/atualizador-novo/lista-dos-testes-d836.md.
+
 Nada aqui grava no %ProgramData% de verdade: PROGRAMDATA aponta para uma
 pasta temporaria em todos os testes (fixture _programdata_de_mentira).
 """
@@ -33,6 +38,8 @@ import assinatura
 import atualizacao
 import empacotar
 import versao
+from core import conversa_com_o_velopack as conversa
+from core import fases_da_atualizacao as fases
 
 RAIZ = Path(__file__).resolve().parent.parent
 CHAVE = bytes(range(32))                        # chave de mentira (so nos testes)
@@ -55,51 +62,6 @@ class Pacote:
         self.SHA256 = sha256
 
 
-class Info:
-    def __init__(self, alvo: Pacote):
-        self.TargetFullRelease = alvo
-
-
-class GerenteFalso:
-    """O UpdateManager do Velopack de mentira: anota o que lhe pediram."""
-
-    def __init__(self, atual: str = "1.1.0", nova: str | None = "1.2.0", portatil: bool = False,
-                 erro: Exception | None = None):
-        self.atual = atual
-        self.alvo = Pacote(nova) if nova else None
-        self.portatil = portatil
-        self.erro = erro
-        self.baixou = False
-        self.trocou: list = []
-
-    def get_current_version(self):
-        return self.atual
-
-    def get_is_portable(self):
-        return self.portatil
-
-    def check_for_updates(self):
-        if self.erro:
-            raise self.erro
-        return Info(self.alvo) if self.alvo else None
-
-    def download_updates(self, info):
-        self.baixou = True
-
-    def wait_exit_then_apply_updates(self, alvo, silent=False, restart=True, restart_args=None):
-        self.trocou.append((alvo.Version, silent, restart, list(restart_args or [])))
-
-
-def _servidor(tmp_path: Path, alvo: Pacote, chave: bytes = CHAVE) -> atualizacao.Fonte:
-    """Uma pasta com o arquivo da assinatura da versao alvo (o servidor de mentira)."""
-    pasta = tmp_path / "servidor"
-    pasta.mkdir(exist_ok=True)
-    v = assinatura.VersaoAssinada(alvo.PackageId, alvo.Version, alvo.FileName, alvo.SHA256)
-    nome = assinatura.nome_do_arquivo_da_assinatura(alvo.PackageId, alvo.Version)
-    (pasta / nome).write_text(assinatura.escrever_assinatura(chave, v), encoding="utf-8")
-    return atualizacao.Fonte(str(pasta))
-
-
 # ---------------------------------------------------------------------------
 # D-714: a versao de um lugar so
 # ---------------------------------------------------------------------------
@@ -119,108 +81,79 @@ def test_d714_a_versao_vem_de_um_lugar_so():
     assert achados == []
 
 
-def test_d714_a_tarefa_roda_ao_ligar_como_o_sistema_sem_janela():
-    """Mudado pela D-740 (Samuel, 17/11/2026: "Sim"), por causa da D-732 ("não, faz quando o programa é
-    aberto"): a tarefa NAO tem mais gatilho de ligar o computador (nem nenhum outro: so roda quando o programa
-    a chama) e continua rodando como o sistema, sem janela, em prioridade baixa. Antes cobrava o <BootTrigger>.
-    O nome ficou o de antes porque a D-740 cita o teste por ele."""
-    xml = atualizacao.xml_da_tarefa(Path(r"C:\Program Files\EditorImpressao\current\EditorImpressao.exe"))
-    assert "<BootTrigger>" not in xml and "<Triggers>" not in xml, "D-732: sem gatilho de ligar o computador"
-    assert "<UserId>S-1-5-18</UserId>" in xml, "continua rodando como o sistema (sem janela na tela de ninguém)"
-    assert f"<Arguments>{atualizacao.ARG_PROCURAR}</Arguments>" in xml
-    assert "<Priority>7</Priority>" in xml          # prioridade baixa
-    assert "<RunOnlyIfNetworkAvailable>false" in xml  # a 1a rodada instala o Visual C++ sem internet
-    assert "current\\EditorImpressao.exe" in xml
-
-
-def test_d714_criar_e_apagar_a_tarefa_pelo_schtasks():
-    pedidos = []
-
-    def rodar(comando, tempo=120):
-        pedidos.append(comando)
-        return 0, "ok"
-
-    assert atualizacao.criar_tarefa(Path("C:/x/EditorImpressao.exe"), rodar=rodar)
-    assert atualizacao.apagar_tarefa(rodar=rodar)
-    assert pedidos[0][:4] == ["schtasks", "/Create", "/TN", atualizacao.NOME_DA_TAREFA]
-    assert pedidos[1][:4] == ["schtasks", "/Delete", "/TN", atualizacao.NOME_DA_TAREFA]
-
-
 # ---------------------------------------------------------------------------
 # D-724: a assinatura, antes de baixar
 # ---------------------------------------------------------------------------
 
 def test_d724_versao_com_assinatura_errada_e_recusada_antes_de_baixar(tmp_path):
-    gerente = GerenteFalso()
-    fonte = _servidor(tmp_path, gerente.alvo, chave=bytes(range(1, 33)))   # assinada por outro
-    feito = atualizacao.procurar_e_preparar(gerente, fonte, lambda: False, chave_publica=PUBLICA)
-    assert feito == "recusada"
-    assert not gerente.baixou and gerente.trocou == []
-    estado = atualizacao.ler_estado()
-    assert estado["fase"] == "falhou" and estado["tipo"] == "recusada" and "1.2.0" in estado["nao_tentar"]
-    assert "assinatura recusada" in atualizacao.caminho_do_registro().read_text(encoding="utf-8")
+    """D-724 (adaptado pela D-836, atualizador novo 23/11/2026: o mesmo que cobrava, pelo caminho novo): a versão
+    publicada com a assinatura de outra chave é recusada ANTES de baixar, e fica em "não tentar"."""
+    from tests.ajudante_do_atualizador import NOVA, OUTRA_CHAVE, Prova
+
+    p = Prova(tmp_path, chave_da_nova=OUTRA_CHAVE)
+    p.abrir()
+    assert "baixar" not in p.vp.nomes()
+    assert NOVA in atualizacao.ler_estado()["nao_tentar"]
 
 
 def test_d724_versao_sem_arquivo_de_assinatura_e_recusada(tmp_path):
-    gerente = GerenteFalso()
-    (tmp_path / "vazio").mkdir()
-    feito = atualizacao.procurar_e_preparar(gerente, atualizacao.Fonte(str(tmp_path / "vazio")),
-                                            lambda: False, chave_publica=PUBLICA)
-    assert feito == "recusada" and not gerente.baixou
+    """D-724 (adaptado pela D-836): sem o arquivo da assinatura publicado, a versão é recusada e não é baixada."""
+    from tests.ajudante_do_atualizador import NOVA, PACOTE, Prova
+
+    p = Prova(tmp_path)
+    (p.fonte_pasta / assinatura.nome_do_arquivo_da_assinatura(PACOTE, NOVA)).unlink()
+    p.abrir()
+    assert "baixar" not in p.vp.nomes()
+    assert atualizacao.ler_estado()["falha"]["tipo"] == "recusada"
 
 
 def test_d724_pacote_trocado_depois_de_assinado_e_recusado(tmp_path):
-    """A assinatura e da soma do pacote: se o pacote publicado for outro, recusa."""
-    gerente = GerenteFalso()
-    fonte = _servidor(tmp_path, gerente.alvo)
-    gerente.alvo.SHA256 = "cd" * 32
-    assert atualizacao.procurar_e_preparar(gerente, fonte, lambda: False, chave_publica=PUBLICA) == "recusada"
-    assert not gerente.baixou
+    """D-724 (adaptado pela D-836): o índice publicado aponta para um pacote com outra soma que a assinada (o pacote foi
+    trocado depois de assinado) → recusada antes de baixar."""
+    from tests.ajudante_do_atualizador import Prova
+
+    p = Prova(tmp_path)
+    p.vp.publicada = conversa.VersaoDoVelopack(p.vp.publicada.pacote, p.vp.publicada.versao, p.vp.publicada.arquivo,
+                                               "cd" * 32, p.vp.publicada.tamanho)
+    p.abrir()
+    assert "baixar" not in p.vp.nomes()
+    assert atualizacao.ler_estado()["falha"]["tipo"] == "recusada"
 
 
 def test_d724_versao_que_ja_falhou_nao_e_tentada_de_novo(tmp_path):
-    gerente = GerenteFalso()
-    fonte = _servidor(tmp_path, gerente.alvo, chave=bytes(range(1, 33)))
-    atualizacao.procurar_e_preparar(gerente, fonte, lambda: False, chave_publica=PUBLICA)
-    assert atualizacao.procurar_e_preparar(gerente, fonte, lambda: False, chave_publica=PUBLICA) == "ja-falhou"
+    """D-724/D-718 (adaptado pela D-836): a versão que já falhou não é conferida nem baixada de novo."""
+    from tests.ajudante_do_atualizador import NOVA, Prova
+
+    atualizacao.gravar_estado({"nao_tentar": [NOVA]})
+    p = Prova(tmp_path)
+    p.abrir()
+    assert p.vp.nomes() == ["procurar"]
 
 
 # ---------------------------------------------------------------------------
 # D-714 / D-715 / D-720: programa fechado troca; aberto fica pendente
 # ---------------------------------------------------------------------------
 
-def test_d714_programa_fechado_baixa_e_troca_e_reabre_escondido_para_conferir(tmp_path):
-    gerente = GerenteFalso()
-    fonte = _servidor(tmp_path, gerente.alvo)
-    assert atualizacao.procurar_e_preparar(gerente, fonte, lambda: False, chave_publica=PUBLICA) == "aplicando"
-    assert gerente.baixou
-    assert gerente.trocou == [("1.2.0", True, True, [atualizacao.ARG_CONFERIR_NOVA])]
-    estado = atualizacao.ler_estado()
-    assert (estado["fase"], estado["nova"], estado["anterior"]) == ("aplicando", "1.2.0", "1.1.0")
-
-
 def test_d715_programa_aberto_fica_pendente_e_a_tela_avisa(tmp_path):
-    gerente = GerenteFalso()
-    fonte = _servidor(tmp_path, gerente.alvo)
-    assert atualizacao.procurar_e_preparar(gerente, fonte, lambda: True, chave_publica=PUBLICA) == "pendente"
-    assert gerente.baixou and gerente.trocou == [], "com o programa aberto não pode trocar"
-    assert atualizacao.o_que_avisar(atualizacao.ler_estado(), "1.1.0", set()) == ("versao-nova", "1.2.0")
+    """D-715 (adaptado pela D-836): com o programa aberto, a versão baixada não é trocada sozinha; a janela recebe o
+    aviso "Reiniciar agora" / "Depois"."""
+    from tests.ajudante_do_atualizador import Prova
+
+    p = Prova(tmp_path)
+    p.abrir()
+    p.ligar_a_tela()
+    assert p.tipos_na_tela() == ["MostrarVersaoNova"]
+    assert "trocar" not in p.vp.nomes()
 
 
-def test_d720_depois_do_depois_a_tarefa_troca_quando_o_computador_liga(tmp_path):
-    """Com "Depois", na proxima vez que o computador liga (programa fechado) a tarefa troca."""
-    gerente = GerenteFalso()
-    fonte = _servidor(tmp_path, gerente.alvo)
-    atualizacao.procurar_e_preparar(gerente, fonte, lambda: True, chave_publica=PUBLICA)
-    assert atualizacao.procurar_e_preparar(gerente, fonte, lambda: False, chave_publica=PUBLICA) == "aplicando"
+def test_sem_internet_nao_e_falha_e_nao_avisa(tmp_path):
+    """Sem internet não é falha (adaptado pela D-836): nada na tela, nada anotado como falha, uma linha no registro."""
+    from tests.ajudante_do_atualizador import Prova
 
-
-def test_sem_internet_nao_e_falha_e_nao_avisa():
-    gerente = GerenteFalso(erro=OSError("sem rede"))
-    assert atualizacao.rodar_ao_ligar(atualizacao.Fonte("x"), gerente=gerente, preparar=lambda g: None,
-                                      programa_aberto=lambda: False) == 1
-    assert atualizacao.o_que_avisar(atualizacao.ler_estado(), "1.1.0", set()) is None
-    assert "sem rede" in atualizacao.caminho_do_registro().read_text(encoding="utf-8")
+    p = Prova(tmp_path, erro_ao_procurar="sem internet")
+    p.abrir()
+    p.ligar_a_tela()
+    assert p.tela == [] and "falha" not in atualizacao.ler_estado()
 
 
 @pytest.fixture(scope="module")
@@ -231,64 +164,37 @@ def app():
 
 
 class JanelaFalsa:
-    """Basta para o vigia: um QWidget de verdade que anota o close()."""
+    """A janela de mentira da tela (a de verdade é a QWidget da PonteDaTela; esta só conta o fechar e o esconder)."""
 
-    def __init__(self):
-        from PySide6.QtWidgets import QWidget
+    def __init__(self, fecha: bool = True):
+        self.fecha, self.fechou, self.escondeu = fecha, 0, 0
 
-        class _J(QWidget):
-            fechou = 0
+    def close(self):
+        self.fechou += 1
+        return self.fecha
 
-            def close(self):  # noqa: D401
-                type(self).fechou += 1
-                return True
-
-        self.widget = _J()
+    def hide(self):
+        self.escondeu += 1
 
 
-def _vigia(estado: dict, respostas: list[bool], pedidos: list, avisos: list, aplicou: list):
-    from ui.aviso_de_atualizacao import VigiaDaAtualizacao
-
-    def perguntar(pai, titulo, texto, sim="Sim", nao="Não", padrao_sim=False):
-        pedidos.append((titulo, texto, sim, nao, padrao_sim))
-        return respostas.pop(0)
-
-    def avisar(pai, titulo, texto, botao="entendi", icone=None):
-        avisos.append((titulo, texto))
-
-    janela = JanelaFalsa().widget
-    vigia = VigiaDaAtualizacao(janela, ler_estado=lambda: estado, versao_atual=lambda: "1.1.0",
-                               perguntar=perguntar, avisar=avisar, aplicar=lambda: aplicou.append(1) or True)
-    return vigia, janela
+def test_d720_o_aviso_tem_reiniciar_agora_e_depois_e_depois_nao_troca(app, tmp_path):
+    """D-720 e D-835 (adaptado pela D-836, e o texto mudado pela D-835): o aviso tem "Reiniciar agora" e "Depois", com
+    a frase "Se escolher "Depois", você pode atualizar quando fechar o programa."; "Depois" não fecha nem troca."""
+    avisos = []
+    p, _, janela = _ponte(app, tmp_path, [False], avisos)
+    assert avisos == [(atualizacao.TITULO_DA_VERSAO_NOVA, atualizacao.FRASE_DA_VERSAO_NOVA,
+                       atualizacao.BOTAO_REINICIAR, atualizacao.BOTAO_DEPOIS)]
+    assert "você pode atualizar quando fechar o programa" in atualizacao.FRASE_DA_VERSAO_NOVA
+    assert janela.fechou == 0 and "trocar" not in p.vp.nomes()
 
 
-def test_d720_o_aviso_tem_reiniciar_agora_e_depois_e_depois_nao_troca(app):
-    """Mudado pela D-740 (Samuel, 17/11/2026: "Sim"), por causa da D-734 ("quando ele abrir o programa de
-    novo"): o aviso fala da "próxima vez que você abrir o programa", nao mais do computador ligar. O resto
-    (os dois botoes, o Enter no "Depois", "Depois" nao troca nem fecha, nao volta nesta abertura) ficou igual."""
-    pedidos, avisos, aplicou = [], [], []
-    vigia, janela = _vigia({"fase": "pendente", "nova": "1.2.0", "anterior": "1.1.0"}, [False], pedidos,
-                           avisos, aplicou)
-    fechou_antes = type(janela).fechou
-    vigia.olhar()
-    assert len(pedidos) == 1
-    titulo, texto, sim, nao, padrao_sim = pedidos[0]
-    assert (sim, nao) == ("Reiniciar agora", "Depois")
-    assert padrao_sim is False, "o Enter fica no \"Depois\""
-    assert "Salve o seu trabalho" in texto and "próxima vez que você abrir o programa" in texto
-    assert aplicou == [] and type(janela).fechou == fechou_antes, "\"Depois\" não troca nem fecha"
-    vigia.olhar()
-    assert len(pedidos) == 1, "depois do \"Depois\" o aviso não volta nesta abertura"
-
-
-def test_d720_reiniciar_agora_fecha_gravando_e_so_depois_troca(app):
-    pedidos, avisos, aplicou = [], [], []
-    vigia, janela = _vigia({"fase": "pendente", "nova": "1.2.0", "anterior": "1.1.0"}, [True], pedidos,
-                           avisos, aplicou)
-    fechou_antes = type(janela).fechou
-    vigia.olhar()
-    assert type(janela).fechou == fechou_antes + 1, "fecha pela janela (o closeEvent grava o trabalho)"
-    assert aplicou == [1]
+def test_d720_reiniciar_agora_fecha_gravando_e_so_depois_troca(app, tmp_path):
+    """D-720/D-828 (adaptado pela D-836): "Reiniciar agora" fecha pela janela (o closeEvent grava o trabalho) e só
+    depois pede a troca; se a janela recusa fechar, nada é trocado."""
+    p, _, janela = _ponte(app, tmp_path / "a", [True], [])
+    assert janela.fechou == 1 and "trocar" in p.vp.nomes()
+    q, _, janela = _ponte(app, tmp_path / "b", [True], [], fecha=False)
+    assert janela.fechou == 1 and "trocar" not in q.vp.nomes()
 
 
 def test_os_textos_do_aviso_sem_emoji_e_com_acento():
@@ -299,9 +205,12 @@ def test_os_textos_do_aviso_sem_emoji_e_com_acento():
 
 
 def test_pelo_codigo_o_aviso_nao_liga():
-    from ui.aviso_de_atualizacao import ligar_na_janela
+    """Pelo código não há executor da atualização: a janela não liga nada (adaptado pela D-836)."""
+    from ui.aviso_de_atualizacao import ao_fechar, ligar_na_janela
 
-    assert ligar_na_janela(object(), instalado=lambda: False) is None
+    assert atualizacao.da_abertura() is None
+    assert ligar_na_janela(object()) is None
+    ao_fechar(object())                                # sem ponte: não faz nada e não levanta
 
 
 # ---------------------------------------------------------------------------
@@ -313,90 +222,86 @@ def test_d719_a_frase_da_falha_e_a_combinada():
                                           "e continua funcionando. Avise o Samuel.")
 
 
-def test_d719_a_falha_aparece_na_tela_uma_vez_so(app):
-    atualizacao.registrar_falha("teste", "1.1.0", "1.2.0", "de mentira")
-    pedidos, avisos, aplicou = [], [], []
-    vigia, _ = _vigia(atualizacao.ler_estado(), [], pedidos, avisos, aplicou)
-    vigia.olhar()
-    vigia.olhar()
-    assert avisos == [(atualizacao.TITULO_DA_FALHA, atualizacao.FRASE_DA_FALHA)]
-    assert pedidos == [] and aplicou == []
+def test_d719_a_falha_aparece_na_tela_uma_vez_so(app, tmp_path):
+    """D-719/D-778 (adaptado pela D-836): a falha anotada aparece na janela com a frase do caso, uma vez só."""
+    from tests.ajudante_do_atualizador import Prova
+
+    atualizacao.anotar_falha("teste", "1.0.0", "1.2.0", "de mentira")
+    avisos = []
+    for pasta in ("a", "b"):
+        p = Prova(tmp_path / pasta, publicar_nova=False)
+        p.abrir()
+        p.atual.ligar_a_tela(lambda ef: avisos.append(atualizacao.FRASES_DA_FALHA[ef.tipo]))
+    assert avisos == [atualizacao.FRASE_DA_FALHA]
 
 
 def test_d719_o_erro_vai_para_o_registro_no_programdata(_programdata_de_mentira):
-    atualizacao.registrar_falha("troca", "1.1.0", "1.2.0", "motivo de mentira")
+    """D-719 (adaptado pela D-836: a função única de anotar a falha passou a se chamar `anotar_falha`): a falha vai
+    para o registro em %ProgramData%\\EditorImpressao\\atualizacao\\atualizacao.log."""
+    atualizacao.anotar_falha("troca", "1.1.0", "1.2.0", "motivo de mentira")
     registro = _programdata_de_mentira / "EditorImpressao" / "atualizacao" / "atualizacao.log"
     assert registro == atualizacao.caminho_do_registro()
     assert "FALHOU (troca)" in registro.read_text(encoding="utf-8")
 
 
-def test_d718_versao_nova_que_nao_passa_no_teste_volta_para_a_anterior():
-    atualizacao.gravar_estado({"fase": "aplicando", "nova": "1.2.0", "anterior": "1.1.0"})
-    voltou = []
-    codigo = atualizacao.conferir_versao_nova(atualizacao.Fonte("x"), "1.2.0", teste=lambda: (False, "quebrada"),
-                                              voltar=lambda fonte, anterior: voltou.append(anterior) or True)
-    assert codigo == 1 and voltou == ["1.1.0"]
-    assert atualizacao.o_que_avisar(atualizacao.ler_estado(), "1.1.0", set())[0] == "falhou"
+def test_d718_versao_nova_que_nao_passa_no_teste_volta_para_a_anterior(tmp_path):
+    """D-718 (adaptado pela D-836): a versão nova que não passa no teste rápido volta para a anterior (pedida ao
+    Velopack) e a falha fica anotada para a janela da anterior mostrar."""
+    from tests.ajudante_do_atualizador import ANTERIOR, ATUAL, Prova
+
+    p = Prova(tmp_path, teste=(False, "quebrada"))
+    assert p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL) == 0
+    assert [c for c in p.vp.chamadas if c[0] == "trocar"][0][1] == ANTERIOR
+    assert atualizacao.ler_estado()["falha"]["tipo"] == "teste"
 
 
-def test_d718_versao_nova_que_passa_no_teste_fica():
-    atualizacao.gravar_estado({"fase": "aplicando", "nova": "1.2.0", "anterior": "1.1.0"})
-    codigo = atualizacao.conferir_versao_nova(atualizacao.Fonte("x"), "1.2.0", teste=lambda: (True, ""),
-                                              voltar=lambda *a: pytest.fail("não pode voltar"))
-    assert codigo == 0 and atualizacao.ler_estado()["fase"] == "ok"
-    assert atualizacao.o_que_avisar(atualizacao.ler_estado(), "1.2.0", set()) is None
+def test_d718_versao_nova_que_passa_no_teste_fica(tmp_path):
+    """D-718 (adaptado pela D-836): a versão nova que passa fica; nada volta e nada é anotado como falha."""
+    from tests.ajudante_do_atualizador import ANTERIOR, ATUAL, Prova
+
+    p = Prova(tmp_path, teste=(True, ""), publicar_nova=False)
+    assert p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL) is None
+    assert "trocar" not in p.vp.nomes() and "falha" not in atualizacao.ler_estado()
 
 
-def test_d718_troca_desfeita_pelo_velopack_conta_como_falha():
-    """Estava "aplicando" a 1.2.0 e o programa continua na 1.1.0: o Velopack devolveu a anterior."""
-    atualizacao.gravar_estado({"fase": "aplicando", "nova": "1.2.0", "anterior": "1.1.0"})
-    assert atualizacao.situacao(atualizacao.ler_estado(), "1.1.0") == ("falhou", "troca-1.2.0")
-    gerente = GerenteFalso(nova=None)
-    atualizacao.rodar_ao_ligar(atualizacao.Fonte("x"), gerente=gerente, preparar=lambda g: None,
-                               programa_aberto=lambda: False)
-    assert atualizacao.ler_estado()["tipo"] == "troca"
+def test_d718_troca_desfeita_pelo_velopack_conta_como_falha(tmp_path):
+    """D-718 (adaptado pela D-836): o Velopack reabriu a versão de antes (a troca não aconteceu) → falha "troca"."""
+    from tests.ajudante_do_atualizador import ATUAL, NOVA, Prova
 
-
-def _pacote_publicado(pasta: Path, versao_do_pacote: str, chave: bytes) -> Path:
-    pasta.mkdir(parents=True, exist_ok=True)
-    nome = f"{versao.ID_DO_PACOTE}-{versao_do_pacote}-full.nupkg"
-    (pasta / nome).write_bytes(b"pacote da " + versao_do_pacote.encode())
-    v = assinatura.VersaoAssinada(versao.ID_DO_PACOTE, versao_do_pacote, nome,
-                                  assinatura.soma_sha256(pasta / nome))
-    (pasta / assinatura.nome_do_arquivo_da_assinatura(versao.ID_DO_PACOTE, versao_do_pacote)).write_text(
-        assinatura.escrever_assinatura(chave, v), encoding="utf-8")
-    return pasta / nome
+    p = Prova(tmp_path, publicar_nova=False)
+    p.abrir(atualizacao.ARG_CONFERIR_NOVA, ATUAL, NOVA)
+    assert atualizacao.ler_estado()["falha"]["tipo"] == "troca"
 
 
 def test_d718_a_volta_so_aceita_o_pacote_assinado(tmp_path):
-    _pacote_publicado(tmp_path / "servidor", "1.1.0", CHAVE)
-    aplicados = []
-    certo = atualizacao.voltar_para_a_anterior(atualizacao.Fonte(str(tmp_path / "servidor")), "1.1.0",
-                                               tmp_path / "trabalho", aplicar=aplicados.append,
-                                               chave_publica=PUBLICA)
-    assert certo and len(aplicados) == 1 and aplicados[0].read_bytes() == b"pacote da 1.1.0"
-    # agora assinado por outra chave: nao volta
-    _pacote_publicado(tmp_path / "falso", "1.1.0", bytes(range(1, 33)))
-    aplicados.clear()
-    assert not atualizacao.voltar_para_a_anterior(atualizacao.Fonte(str(tmp_path / "falso")), "1.1.0",
-                                                  tmp_path / "trabalho2", aplicar=aplicados.append,
-                                                  chave_publica=PUBLICA)
-    assert aplicados == []
+    """D-718/D-724 (adaptado pela D-836): a anterior sem a assinatura do Samuel não é baixada nem trocada."""
+    from tests.ajudante_do_atualizador import ANTERIOR, ATUAL, OUTRA_CHAVE, Prova, _publicar
+
+    p = Prova(tmp_path, teste=(False, "quebrada"))
+    _publicar(p.fonte_pasta, ANTERIOR, b"pacote da versao anterior", OUTRA_CHAVE)
+    p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL)
+    assert "baixar" not in p.vp.nomes() and "trocar" not in p.vp.nomes()
 
 
 # ---------------------------------------------------------------------------
 # D-719: nenhum token ou senha dentro do programa
 # ---------------------------------------------------------------------------
 
-def test_d719_nenhum_token_dentro_do_programa():
+def test_d719_nenhum_token_dentro_do_programa(monkeypatch):
+    """D-719 (adaptado pela D-836: deixou de conferir uma palavra no texto do código e passou a conferir o que a peça
+    do Velopack faz): nenhum token nos arquivos da atualização; a fonte do GitHub é criada só com o endereço público."""
     arquivos = [RAIZ / n for n in ("atualizacao.py", "assinatura.py", "versao.py", "main.py")]
-    arquivos.append(RAIZ / "ui" / "aviso_de_atualizacao.py")
+    arquivos += [RAIZ / "ui" / "aviso_de_atualizacao.py", RAIZ / "core" / "conversa_com_o_velopack.py"]
     proibidos = re.compile(r"ghp_|github_pat_|gho_|access_token\s*=|Authorization|HttpHeader|--token")
     for arquivo in arquivos:
-        texto = arquivo.read_text(encoding="utf-8")
-        assert not proibidos.search(texto), arquivo.name
-    assert "velopack.GithubSource(self.endereco)" in (RAIZ / "atualizacao.py").read_text(encoding="utf-8")
-    assert atualizacao.Fonte.padrao().endereco == "https://github.com/Samuel-Bottini-BR/EditorImpressao"
+        assert not proibidos.search(arquivo.read_text(encoding="utf-8")), arquivo.name
+    from core import conversa_com_o_velopack as conversa
+
+    criadas = []
+    falso = type("vp", (), {"GithubSource": lambda *a, **k: criadas.append((a, k)) or "fonte"})
+    monkeypatch.setattr(conversa, "_velopack", lambda: falso)
+    conversa._fonte(atualizacao.Fonte.padrao().endereco)
+    assert criadas == [(("https://github.com/Samuel-Bottini-BR/EditorImpressao",), {})]
 
 
 # ---------------------------------------------------------------------------
@@ -479,48 +384,36 @@ def test_d723_o_desinstalador_do_inno_nao_apaga_os_projetos():
     assert not any("localappdata" in l.lower() for l in regras)
 
 
-def test_d723_o_pacote_portatil_do_ensaio_nunca_mexe_no_windows(monkeypatch):
-    monkeypatch.setattr(atualizacao, "tirar_instalacao_antiga", lambda *a, **k: pytest.fail("tirou o Inno"))
-    monkeypatch.setattr(atualizacao, "instalar_visual_c_se_faltar", lambda *a, **k: pytest.fail("rodou o vc_redist"))
-    atualizacao.preparar_o_computador(GerenteFalso(portatil=True))
+def test_d723_o_pacote_portatil_do_ensaio_nunca_mexe_no_windows(tmp_path):
+    """D-723 (adaptado pela D-836): o pacote portátil do ensaio (o `.portable` na raiz) nunca pergunta ao Windows nem
+    procura."""
+    from tests.ajudante_do_atualizador import Prova
 
-
-def test_d723_o_portatil_nunca_cria_nem_apaga_a_tarefa(monkeypatch):
-    """Achado no ensaio de 16/11: o gancho "depois de atualizar" do pacote
-    portatil tentou criar a tarefa no PC do Samuel (o Windows negou). Teste de
-    reversao: falha no codigo antigo (os ganchos nao olhavam o portatil)."""
-    monkeypatch.setattr(atualizacao, "criar_tarefa", lambda *a, **k: pytest.fail("criou a tarefa"))
-    monkeypatch.setattr(atualizacao, "apagar_tarefa", lambda *a, **k: pytest.fail("apagou a tarefa"))
-    atualizacao.ao_instalar("1.2.0", portatil=lambda: True)
-    atualizacao.ao_atualizar("1.2.0", portatil=lambda: True)
-    atualizacao.ao_desinstalar("1.2.0", portatil=lambda: True)
-    # e sem conseguir perguntar ao Velopack (pelo codigo), conta como portatil
-    class SemResposta:
-        def get_is_portable(self):
-            raise RuntimeError("não instalado")
-
-    assert atualizacao.e_portatil(SemResposta()) is True
-    assert atualizacao.e_portatil(GerenteFalso(portatil=False)) is False
+    p = Prova(tmp_path, grava=False)
+    (p.raiz / ".portable").write_text("", encoding="utf-8")
+    p.abrir()
+    assert p.win.pedidos == [] and p.vp.chamadas == []
+    assert atualizacao.e_portatil(p.raiz) is True and atualizacao.e_portatil(tmp_path) is False
 
 
 def test_d714_a_instalacao_de_verdade_nao_cria_a_tarefa(monkeypatch):
-    """Mudado (e renomeado; era test_d714_a_instalacao_de_verdade_cria_e_roda_a_tarefa) pela D-740 (Samuel,
-    17/11/2026: "Sim"), por causa da D-733 ("1- sim": o ajudante nasce na pergunta do Windows da primeira
-    abertura) e do achado B1 (16/11/2026: o .msi roda o gancho de instalar SEM administrador, e a tarefa nunca
-    nasceria ali). Agora cobra o contrario do que cobrava: a instalacao de verdade NAO cria nem roda a tarefa."""
-    feito = []
-    monkeypatch.setattr(atualizacao, "criar_tarefa", lambda *a, **k: feito.append("criar") or True)
-    monkeypatch.setattr(atualizacao, "rodar_tarefa_agora", lambda *a, **k: feito.append("rodar") or True)
-    atualizacao.ao_instalar("1.2.0", portatil=lambda: False)
-    assert feito == [], "B1/D-733: o gancho de instalar não cria nem roda a tarefa"
+    """B1/D-733 (adaptado pela D-836): os ganchos de instalar e de atualizar do Velopack só anotam; nenhum pede nada ao
+    Windows (no desenho novo não existe tarefa nenhuma a criar)."""
+    from core import windows
+
+    for nome in ("comecar_pedido_de_licenca", "pedir_licenca", "criar_tarefa", "rodar_tarefa"):
+        monkeypatch.setattr(windows, nome, lambda *a, **k: pytest.fail("o gancho falou com o Windows"))
+    atualizacao.ao_instalar("1.2.0")
+    atualizacao.ao_atualizar("1.2.0")
+    assert "instalada a versão 1.2.0" in atualizacao.caminho_do_registro().read_text(encoding="utf-8")
 
 
-def test_d723_instalacao_de_verdade_prepara_o_computador(monkeypatch):
-    feito = []
-    monkeypatch.setattr(atualizacao, "tirar_instalacao_antiga", lambda *a, **k: feito.append("inno"))
-    monkeypatch.setattr(atualizacao, "instalar_visual_c_se_faltar", lambda *a, **k: feito.append("vc"))
-    atualizacao.preparar_o_computador(GerenteFalso(portatil=False))
-    assert feito == ["vc", "inno"]
+def test_d723_instalacao_de_verdade_prepara_o_computador():
+    """D-723/D-727 (adaptado pela D-836: o Visual C++ e tirar o Inno passaram a ser passos da peça do Windows, na
+    pergunta da primeira abertura): a pergunta leva os dois, nesta ordem, antes da licença da pasta."""
+    tipos = [p.tipo for p in atualizacao.passos_do_preparo()]
+    assert tipos.index("instalar_visual_c") < tipos.index("tirar_instalacao_do_inno") < \
+        tipos.index("dar_licenca_aos_usuarios")
 
 
 # ---------------------------------------------------------------------------
@@ -592,3 +485,59 @@ def test_o_main_chama_a_atualizacao_por_um_ponto_so():
     # os modos que ja existiam continuam antes dela
     assert texto.index("--servidor-de-paginas") < texto.index("atender_linha_de_comando(sys.argv)")
     assert texto.index("--conferir-ocr") < texto.index("atender_linha_de_comando(sys.argv)")
+
+
+def test_d720_depois_do_depois_a_versao_entra_ao_fechar(tmp_path):
+    """Era `test_d720_depois_do_depois_a_tarefa_troca_quando_o_computador_liga` (D-714 antiga). A decisão mudou
+    (D-769 "b", D-794, D-831 "a"): com "Depois", a versão entra AO FECHAR, com a pergunta "Atualizar agora?" (D-835).
+    Cobra o que vale hoje (D-836): "Depois" não troca; fechar pergunta; "Sim" troca."""
+    from tests.ajudante_do_atualizador import _ate_o_aviso
+
+    p = _ate_o_aviso(tmp_path)
+    p.atual.evento(fases.Escolheu(False))
+    assert "trocar" not in p.vp.nomes()
+    p.atual.evento(fases.Fechando())
+    assert p.tipos_na_tela()[-1] == "PerguntarAoFechar"
+    p.atual.evento(fases.RespondeuAoFechar(True))
+    assert "trocar" in p.vp.nomes()
+
+
+def _ponte(app, tmp_path, respostas: list[bool], avisos: list, fecha: bool = True):
+    """A ponte da tela de verdade (ui/aviso_de_atualizacao.PonteDaTela), com as caixas de mentira e o executor de
+    verdade (`Prova`) até o aviso da versão nova."""
+    from PySide6.QtWidgets import QWidget
+
+    from tests.ajudante_do_atualizador import Prova
+    from ui import aviso_de_atualizacao as aviso
+
+    import os
+
+    os.environ["PROGRAMDATA"] = str(tmp_path / "ProgramData")     # cada computador com o seu estado (a fixture devolve)
+    p = Prova(tmp_path)
+    p.abrir()
+    pai = QWidget()
+    janela = JanelaFalsa(fecha)
+    janela.pai = pai                                               # segura a janela de verdade (e a ponte) viva
+    ponte = aviso.PonteDaTela(pai, p.atual,
+                              perguntar=lambda j, t, x, sim, nao: avisos.append((t, x, sim, nao)) or respostas.pop(0),
+                              avisar=lambda j, t, x, icone=None: avisos.append((t, x)))
+    ponte.janela = janela
+    pai._ponte_da_atualizacao = ponte                              # como o ligar_na_janela faz
+    p.atual.ligar_a_tela(ponte.receber)
+    return p, ponte, janela
+
+
+def test_d835_ao_fechar_a_pergunta_curta_e_o_sim_esconde_a_janela_e_troca(app, tmp_path):
+    """D-835 e D-831 (novo, D-836): ao fechar com "Depois", a caixa "Atualizar agora?" / "Quer atualizar o programa
+    agora, ao fechar?" / "Sim" / "Não"; "Sim" esconde a janela e troca; "Não" não troca."""
+    from ui import aviso_de_atualizacao as aviso
+
+    avisos = []
+    p, ponte, janela = _ponte(app, tmp_path / "a", [False, True], avisos)
+    pai = ponte.parent()
+    aviso.ao_fechar(pai)
+    assert avisos[-1] == ("Atualizar agora?", "Quer atualizar o programa agora, ao fechar?", "Sim", "Não")
+    assert janela.escondeu == 1 and "trocar" in p.vp.nomes()
+    q, ponte, janela = _ponte(app, tmp_path / "b", [False, False], [])
+    aviso.ao_fechar(ponte.parent())
+    assert janela.escondeu == 0 and "trocar" not in q.vp.nomes()
