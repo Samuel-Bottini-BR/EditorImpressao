@@ -10,6 +10,14 @@ o conserto muda a regra num lugar só. Li o relatório inteiro, as provas (`test
 7. O leve 1 (a frase da falha "troca") precisa de frase nova: PAREI e está em "Perguntas para o Samuel". M5 não é
 comigo. Os leves 5 (= M3), 8, 9, 10, 11 e 12: anotados abaixo com o porquê.** Último commit: ver a mensagem de entrega.
 
+## Os testes no meu PC depois da volta 2 (um arquivo por vez, a pasta temporária no D:)
+
+79 arquivos: os do atualizador (os novos e os da volta 2), a trava, a peça do Windows, a janela de prova, o porteiro e
+as provas dele (`test_conferencias_codigo`, `_excecoes`, `_pacote`, `_protecao`), o publicar, o motor e os 64
+`test_decisoes*.py`: **2473 passaram, 17 pulados, 1 falhou uma vez**: de novo o intermitente
+`test_decisoes_desfazer_pagina.py::...[marcar]` (longe do atualizador; passou nas 3 vezes seguintes; está nos "Bugs para
+a Lista de bugs" da seção do código). O porteiro: "nada novo (4997 arquivos lidos; a lista deixa 135 lugares)".
+
 ## Os testes de cada achado: falham no código de antes, passam agora
 
 `tests/test_atualizador_volta2.py` (32 testes). Rodado com os arquivos do programa de `cd4b8414` no lugar (e devolvidos
