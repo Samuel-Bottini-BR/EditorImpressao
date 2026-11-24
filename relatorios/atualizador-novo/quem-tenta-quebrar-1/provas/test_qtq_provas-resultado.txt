@@ -1,0 +1,8 @@
+relatorios/atualizador-novo/quem-tenta-quebrar-1/provas/test_qtq_provas.py::test_A_abrir_pelo_atalho_no_meio_da_troca_anota_uma_falha_que_nao_houve PASSED [ 14%]
+relatorios/atualizador-novo/quem-tenta-quebrar-1/provas/test_qtq_provas.py::test_A2_se_a_janela_fechada_a_forca_nao_chegou_a_mostrar_a_frase_vem_na_abertura_seguinte PASSED [ 28%]
+relatorios/atualizador-novo/quem-tenta-quebrar-1/provas/test_qtq_provas.py::test_B_reiniciar_agora_com_a_troca_recusada_fecha_o_programa_e_nada_reabre PASSED [ 42%]
+relatorios/atualizador-novo/quem-tenta-quebrar-1/provas/test_qtq_provas.py::test_C_a_volta_e_recusada_pelo_motor_da_versao_que_falhou PASSED [ 57%]
+relatorios/atualizador-novo/quem-tenta-quebrar-1/provas/test_qtq_provas.py::test_D_a_falha_da_troca_usa_a_frase_de_que_voltou PASSED [ 71%]
+relatorios/atualizador-novo/quem-tenta-quebrar-1/provas/test_qtq_provas.py::test_E_a_regra_pura_reiniciar_com_troca_recusada_nao_tem_efeito_de_tela PASSED [ 85%]
+relatorios/atualizador-novo/quem-tenta-quebrar-1/provas/test_qtq_provas.py::test_F_se_o_estado_nao_grava_a_versao_quebrada_volta_a_ser_baixada_e_o_aviso_some PASSED [100%]
+============================== 7 passed in 1.06s ==============================
