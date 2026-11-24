@@ -1,0 +1,190 @@
+{
+ "G1 presente em packages, sem internet": {
+  "devolveu": "None (guardado e conferido)",
+  "segundos": 2.4,
+  "ultima-boa\\": [
+   "EditorImpressaoPrograma-1.2.0-full.nupkg (120 MB)",
+   "EditorImpressaoPrograma-1.2.0.assinatura (0 MB)"
+  ],
+  "packages\\": [
+   "EditorImpressaoPrograma-1.2.0-full.nupkg"
+  ],
+  "ler_ultima_boa": "1.2.0"
+ },
+ "G2 ausente de packages, sem internet (Atualizacao._guardar)": {
+  "evento": "[UltimaBoaGuardada(certa=False, motivo='o pacote da 1.2.0 não está em packages e o índice publicado não deu para ler (<urlopen error [WinError 10061] Nenhuma conexão pôde ser feita porque a máquina de destino as recusou ativamente>)')]",
+  "ultima-boa\\": [
+   "EditorImpressaoPrograma-1.1.0-full.nupkg (120 MB)",
+   "EditorImpressaoPrograma-1.1.0.assinatura (0 MB)"
+  ],
+  "packages\\": [],
+  "ler_ultima_boa": "1.1.0"
+ },
+ "G3 incompleto em packages": {
+  "devolveu": "a cópia do pacote não tem a soma assinada pelo Samuel",
+  "segundos": 1.2,
+  "ultima-boa\\": [
+   "EditorImpressaoPrograma-1.1.0-full.nupkg (120 MB)",
+   "EditorImpressaoPrograma-1.1.0.assinatura (0 MB)",
+   "EditorImpressaoPrograma-1.2.0.assinatura (0 MB)"
+  ],
+  "packages\\": [
+   "EditorImpressaoPrograma-1.2.0-full.nupkg"
+  ],
+  "ler_ultima_boa": "1.1.0"
+ },
+ "G4 assinatura de outra chave": {
+  "devolveu": "a assinatura não confere com a chave do Samuel",
+  "segundos": 0.0,
+  "ultima-boa\\": [
+   "EditorImpressaoPrograma-1.1.0-full.nupkg (120 MB)",
+   "EditorImpressaoPrograma-1.1.0.assinatura (0 MB)",
+   "EditorImpressaoPrograma-1.2.0.assinatura (0 MB)"
+  ],
+  "packages\\": [
+   "EditorImpressaoPrograma-1.2.0-full.nupkg"
+  ],
+  "ler_ultima_boa": "1.1.0"
+ },
+ "G5 assinatura que não bate com o pacote": {
+  "devolveu": "a cópia do pacote não tem a soma assinada pelo Samuel",
+  "segundos": 2.5,
+  "ultima-boa\\": [
+   "EditorImpressaoPrograma-1.1.0-full.nupkg (120 MB)",
+   "EditorImpressaoPrograma-1.1.0.assinatura (0 MB)",
+   "EditorImpressaoPrograma-1.2.0.assinatura (0 MB)"
+  ],
+  "packages\\": [
+   "EditorImpressaoPrograma-1.2.0-full.nupkg"
+  ],
+  "ler_ultima_boa": "1.1.0"
+ },
+ "G6 disco cheio (simulado)": {
+  "devolveu": "não consegui guardar o pacote ([Errno 28] Espaço insuficiente no disco (simulado))",
+  "segundos": 0.1,
+  "ultima-boa\\": [
+   "EditorImpressaoPrograma-1.1.0-full.nupkg (120 MB)",
+   "EditorImpressaoPrograma-1.1.0.assinatura (0 MB)",
+   "EditorImpressaoPrograma-1.2.0.assinatura (0 MB)"
+  ],
+  "packages\\": [
+   "EditorImpressaoPrograma-1.2.0-full.nupkg"
+  ],
+  "ler_ultima_boa": "1.1.0"
+ },
+ "G7 origem presa por outro processo": {
+  "devolveu": "não consegui guardar o pacote ([Errno 13] Permission denied: 'D:\\\\programas\\\\EditorImpressao\\\\.claude\\\\worktrees\\\\atualizador-novo\\\\saida_teste\\\\qtq3\\\\guarda\\\\g7\\\\packages\\\\EditorImpressaoPrograma-1.2.0-full.nupkg')",
+  "segundos": 0.0,
+  "ultima-boa\\": [
+   "EditorImpressaoPrograma-1.1.0-full.nupkg (120 MB)",
+   "EditorImpressaoPrograma-1.1.0.assinatura (0 MB)",
+   "EditorImpressaoPrograma-1.2.0.assinatura (0 MB)"
+  ],
+  "packages\\": [
+   "EditorImpressaoPrograma-1.2.0-full.nupkg"
+  ],
+  "ler_ultima_boa": "1.1.0"
+ },
+ "G8 destino preso por outro processo": {
+  "devolveu": "não consegui guardar o pacote ([WinError 5] Acesso negado: 'D:\\\\programas\\\\EditorImpressao\\\\.claude\\\\worktrees\\\\atualizador-novo\\\\saida_teste\\\\qtq3\\\\guarda\\\\g8\\\\ultima-boa\\\\EditorImpressaoPrograma-1.2.0-full.nupkg.chegando' -> 'D:\\\\programas\\\\EditorImpressao\\\\.claude\\\\worktrees\\\\atualizador-novo\\\\saida_teste\\\\qtq3\\\\guarda\\\\g8\\\\ultima-boa\\\\EditorImpressaoPrograma-1.2.0-full.nupkg')",
+  "segundos": 2.3,
+  "ultima-boa\\": [
+   "EditorImpressaoPrograma-1.1.0-full.nupkg (120 MB)",
+   "EditorImpressaoPrograma-1.1.0.assinatura (0 MB)",
+   "EditorImpressaoPrograma-1.2.0-full.nupkg (0 MB)",
+   "EditorImpressaoPrograma-1.2.0.assinatura (0 MB)"
+  ],
+  "packages\\": [
+   "EditorImpressaoPrograma-1.2.0-full.nupkg"
+  ],
+  "ler_ultima_boa": "1.2.0"
+ },
+ "G9 desligar no meio da cópia": {
+  "logo depois de morrer": {
+   "ultima-boa\\": [
+    "EditorImpressaoPrograma-1.1.0-full.nupkg (120 MB)",
+    "EditorImpressaoPrograma-1.1.0.assinatura (0 MB)",
+    "EditorImpressaoPrograma-1.2.0-full.nupkg.chegando (32 MB)",
+    "EditorImpressaoPrograma-1.2.0.assinatura (0 MB)"
+   ],
+   "packages\\": [
+    "EditorImpressaoPrograma-1.2.0-full.nupkg"
+   ],
+   "ler_ultima_boa": "1.1.0"
+  },
+  "a guarda refeita (próxima abertura)": {
+   "devolveu": "None (guardado e conferido)",
+   "segundos": 2.7,
+   "ultima-boa\\": [
+    "EditorImpressaoPrograma-1.2.0-full.nupkg (120 MB)",
+    "EditorImpressaoPrograma-1.2.0.assinatura (0 MB)"
+   ],
+   "packages\\": [
+    "EditorImpressaoPrograma-1.2.0-full.nupkg"
+   ],
+   "ler_ultima_boa": "1.2.0"
+  }
+ },
+ "V1 volta sem internet (Velopack de verdade copia e confere)": {
+  "VoltaPedida": [
+   true,
+   ""
+  ],
+  "segundos": 2.4,
+  "pedido ao Update.exe (anotado)": [
+   [
+    "1.1.0",
+    true,
+    []
+   ]
+  ],
+  "ultima-boa\\": [
+   "EditorImpressaoPrograma-1.1.0-full.nupkg (120 MB)",
+   "EditorImpressaoPrograma-1.1.0.assinatura (0 MB)"
+  ],
+  "packages\\": [
+   ".velopack_lock",
+   "EditorImpressaoPrograma-1.1.0-full.nupkg"
+  ],
+  "ler_ultima_boa": "1.1.0"
+ },
+ "V2 pacote guardado estragado": {
+  "VoltaPedida": [
+   false,
+   "o Velopack não aceitou o pacote guardado da 1.1.0: baixar a 1.1.0: RuntimeError: Checksum did not match for D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\qtq3\\guarda\\v2\\packages\\EditorImpressaoPrograma-1.1.0-full.partial (expected eab0deb520a4dfc5cee253d85ffc192fc63e63512b749c2a8be807546530af83, actual 620F263E7326FACB257C761D799F8888ADD8F894D4F38D290A7BD5DEEDE69ACC)"
+  ],
+  "segundos": 1.0,
+  "pedido ao Update.exe (anotado)": [],
+  "ultima-boa\\": [
+   "EditorImpressaoPrograma-1.1.0-full.nupkg (40 MB)",
+   "EditorImpressaoPrograma-1.1.0.assinatura (0 MB)"
+  ],
+  "packages\\": [
+   ".velopack_lock",
+   "EditorImpressaoPrograma-1.1.0-full.partial"
+  ],
+  "ler_ultima_boa": "1.1.0"
+ },
+ "V3 assinatura guardada faltando: a volta": {
+  "VoltaPedida": [
+   false,
+   "a versão 1.1.0 não está guardada ([Errno 2] No such file or directory: 'D:\\\\programas\\\\EditorImpressao\\\\.claude\\\\worktrees\\\\atualizador-novo\\\\saida_teste\\\\qtq3\\\\guarda\\\\v3\\\\ultima-boa\\\\EditorImpressaoPrograma-1.1.0.assinatura')"
+  ],
+  "segundos": 0.0,
+  "pedido ao Update.exe (anotado)": [],
+  "ultima-boa\\": [
+   "EditorImpressaoPrograma-1.1.0-full.nupkg (120 MB)"
+  ],
+  "packages\\": [],
+  "ler_ultima_boa": ""
+ },
+ "V3 ... a abertura com esse disco (a regra de verdade)": {
+  "ultima boa lida": "",
+  "efeitos": [
+   "RodarTesteRapido(antes_da_janela=False)",
+   "Registrar(texto='a versão 1.2.0 não passou no teste rápido (código 1); não há versão guardada para voltar')",
+   "GarantirMotor()"
+  ],
+  "frase na tela?": false
+ }
+}

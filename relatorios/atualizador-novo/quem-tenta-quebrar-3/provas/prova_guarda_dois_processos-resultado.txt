@@ -1,0 +1,57 @@
+[
+ {
+  "rodada": 1,
+  "processo 1 devolveu": "\"n\\u00e3o consegui guardar o pacote ([WinError 32] O arquivo j\\u00e1 est\\u00e1 sendo usado por outro processo: 'D:\\\\\\\\programas\\\\\\\\EditorImpressao\\\\\\\\.claude\\\\\\\\worktrees\\\\\\\\atualizador-novo\\\\\\\\saida_teste\\\\\\\\qtq3\\\\\\\\dois\\\\\\\\rodada1\\\\\\\\ultima-boa\\\\\\\\EditorImpressaoPrograma-1.2.0-full.nupkg.chegando' -> 'D:\\\\\\\\programas\\\\\\\\EditorImpressao\\\\\\\\.claude\\\\\\\\worktrees\\\\\\\\atualizador-novo\\\\\\\\saida_teste\\\\\\\\qtq3\\\\\\\\dois\\\\\\\\rodada1\\\\\\\\ultima-boa\\\\\\\\EditorImpressaoPrograma-1.2.0-full.nupkg')\"",
+  "processo 2 devolveu": "null",
+  "ler_ultima_boa (o que a abertura seguinte e a volta usam)": "1.2.0",
+  "o pacote guardado tem a soma assinada?": true,
+  "arquivos na ultima-boa": [
+   "EditorImpressaoPrograma-1.2.0-full.nupkg",
+   "EditorImpressaoPrograma-1.2.0.assinatura"
+  ]
+ },
+ {
+  "rodada": 2,
+  "processo 1 devolveu": "null",
+  "processo 2 devolveu": "\"n\\u00e3o consegui guardar o pacote ([WinError 2] O sistema n\\u00e3o pode encontrar o arquivo especificado: 'D:\\\\\\\\programas\\\\\\\\EditorImpressao\\\\\\\\.claude\\\\\\\\worktrees\\\\\\\\atualizador-novo\\\\\\\\saida_teste\\\\\\\\qtq3\\\\\\\\dois\\\\\\\\rodada2\\\\\\\\ultima-boa\\\\\\\\EditorImpressaoPrograma-1.2.0-full.nupkg.chegando' -> 'D:\\\\\\\\programas\\\\\\\\EditorImpressao\\\\\\\\.claude\\\\\\\\worktrees\\\\\\\\atualizador-novo\\\\\\\\saida_teste\\\\\\\\qtq3\\\\\\\\dois\\\\\\\\rodada2\\\\\\\\ultima-boa\\\\\\\\EditorImpressaoPrograma-1.2.0-full.nupkg')\"",
+  "ler_ultima_boa (o que a abertura seguinte e a volta usam)": "1.2.0",
+  "o pacote guardado tem a soma assinada?": true,
+  "arquivos na ultima-boa": [
+   "EditorImpressaoPrograma-1.2.0-full.nupkg",
+   "EditorImpressaoPrograma-1.2.0.assinatura"
+  ]
+ },
+ {
+  "rodada": 3,
+  "processo 1 devolveu": "\"n\\u00e3o consegui guardar o pacote ([WinError 32] O arquivo j\\u00e1 est\\u00e1 sendo usado por outro processo: 'D:\\\\\\\\programas\\\\\\\\EditorImpressao\\\\\\\\.claude\\\\\\\\worktrees\\\\\\\\atualizador-novo\\\\\\\\saida_teste\\\\\\\\qtq3\\\\\\\\dois\\\\\\\\rodada3\\\\\\\\ultima-boa\\\\\\\\EditorImpressaoPrograma-1.2.0-full.nupkg.chegando' -> 'D:\\\\\\\\programas\\\\\\\\EditorImpressao\\\\\\\\.claude\\\\\\\\worktrees\\\\\\\\atualizador-novo\\\\\\\\saida_teste\\\\\\\\qtq3\\\\\\\\dois\\\\\\\\rodada3\\\\\\\\ultima-boa\\\\\\\\EditorImpressaoPrograma-1.2.0-full.nupkg')\"",
+  "processo 2 devolveu": "null",
+  "ler_ultima_boa (o que a abertura seguinte e a volta usam)": "1.2.0",
+  "o pacote guardado tem a soma assinada?": true,
+  "arquivos na ultima-boa": [
+   "EditorImpressaoPrograma-1.2.0-full.nupkg",
+   "EditorImpressaoPrograma-1.2.0.assinatura"
+  ]
+ },
+ {
+  "rodada": 4,
+  "processo 1 devolveu": "null",
+  "processo 2 devolveu": "null",
+  "ler_ultima_boa (o que a abertura seguinte e a volta usam)": "1.2.0",
+  "o pacote guardado tem a soma assinada?": true,
+  "arquivos na ultima-boa": [
+   "EditorImpressaoPrograma-1.2.0-full.nupkg",
+   "EditorImpressaoPrograma-1.2.0.assinatura"
+  ]
+ },
+ {
+  "rodada": 5,
+  "processo 1 devolveu": "\"n\\u00e3o consegui guardar o pacote ([WinError 32] O arquivo j\\u00e1 est\\u00e1 sendo usado por outro processo: 'D:\\\\\\\\programas\\\\\\\\EditorImpressao\\\\\\\\.claude\\\\\\\\worktrees\\\\\\\\atualizador-novo\\\\\\\\saida_teste\\\\\\\\qtq3\\\\\\\\dois\\\\\\\\rodada5\\\\\\\\ultima-boa\\\\\\\\EditorImpressaoPrograma-1.2.0-full.nupkg.chegando' -> 'D:\\\\\\\\programas\\\\\\\\EditorImpressao\\\\\\\\.claude\\\\\\\\worktrees\\\\\\\\atualizador-novo\\\\\\\\saida_teste\\\\\\\\qtq3\\\\\\\\dois\\\\\\\\rodada5\\\\\\\\ultima-boa\\\\\\\\EditorImpressaoPrograma-1.2.0-full.nupkg')\"",
+  "processo 2 devolveu": "null",
+  "ler_ultima_boa (o que a abertura seguinte e a volta usam)": "1.2.0",
+  "o pacote guardado tem a soma assinada?": true,
+  "arquivos na ultima-boa": [
+   "EditorImpressaoPrograma-1.2.0-full.nupkg",
+   "EditorImpressaoPrograma-1.2.0.assinatura"
+  ]
+ }
+]

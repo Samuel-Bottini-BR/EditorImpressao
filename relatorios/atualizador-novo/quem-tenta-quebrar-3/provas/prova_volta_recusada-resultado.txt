@@ -1,0 +1,101 @@
+{
+ "vpk 1.1.0": 0,
+ "vpk 1.2.0": 0,
+ "instalada (current)": "1.2.0",
+ "A. a VOLTA 1.2.0 -> 1.1.0 com um arquivo preso, sem argumentos (como `_voltar` pede)": {
+  "codigo do Update.exe": 1,
+  "segundos": 10.9,
+  "versao em current depois": "1.2.0",
+  "aberturas do programa de prova (o log dele)": [
+   "2026-11-24T16:27:12.469 | versao 1.2.0 | pasta current | args ['--veloapp-obsolete', '1.2.0'] | VELOPACK_RESTART=None",
+   "2026-11-24T16:27:23.153 | versao 1.2.0 | pasta current | args [] | VELOPACK_RESTART=true"
+  ],
+  "fim do registro do Update.exe": [
+   "[16:27:16] [WARN] Retrying operation in 1000ms... (error was: Some(Os { code: 5, kind: PermissionDenied, message: \"Acesso negado.\" }))",
+   "[16:27:17] [WARN] Retrying operation in 1000ms... (error was: Some(Os { code: 5, kind: PermissionDenied, message: \"Acesso negado.\" }))",
+   "[16:27:18] [WARN] Retrying operation in 1000ms... (error was: Some(Os { code: 5, kind: PermissionDenied, message: \"Acesso negado.\" }))",
+   "[16:27:19] [WARN] Retrying operation in 1000ms... (error was: Some(Os { code: 5, kind: PermissionDenied, message: \"Acesso negado.\" }))",
+   "[16:27:20] [WARN] Retrying operation in 1000ms... (error was: Some(Os { code: 5, kind: PermissionDenied, message: \"Acesso negado.\" }))",
+   "[16:27:21] [WARN] Retrying operation in 1000ms... (error was: Some(Os { code: 5, kind: PermissionDenied, message: \"Acesso negado.\" }))",
+   "[16:27:22] [ERROR] Apply error: Error applying package: Unable to start the update, because one or more running processes prevented it. Try again later, or if the issue persists, restart your computer.",
+   "[16:27:22] [ERROR] An error has occurred: Apply error: Error applying package: Unable to start the update, because one or more running processes prevented it. Try again later, or if the issue persists, restart your computer."
+  ]
+ },
+ "B. a TROCA NORMAL com um arquivo preso, com os argumentos do pedido (o caso da D-839)": {
+  "codigo do Update.exe": 1,
+  "segundos": 10.9,
+  "versao em current depois": "1.2.0",
+  "aberturas do programa de prova (o log dele)": [
+   "2026-11-24T16:27:26.426 | versao 1.2.0 | pasta current | args ['--veloapp-obsolete', '1.2.0'] | VELOPACK_RESTART=None",
+   "2026-11-24T16:27:37.057 | versao 1.2.0 | pasta current | args ['--conferir-a-versao-nova', '1.2.0', '1.1.0'] | VELOPACK_RESTART=true"
+  ],
+  "fim do registro do Update.exe": [
+   "[16:27:30] [WARN] Retrying operation in 1000ms... (error was: Some(Os { code: 5, kind: PermissionDenied, message: \"Acesso negado.\" }))",
+   "[16:27:31] [WARN] Retrying operation in 1000ms... (error was: Some(Os { code: 5, kind: PermissionDenied, message: \"Acesso negado.\" }))",
+   "[16:27:32] [WARN] Retrying operation in 1000ms... (error was: Some(Os { code: 5, kind: PermissionDenied, message: \"Acesso negado.\" }))",
+   "[16:27:33] [WARN] Retrying operation in 1000ms... (error was: Some(Os { code: 5, kind: PermissionDenied, message: \"Acesso negado.\" }))",
+   "[16:27:34] [WARN] Retrying operation in 1000ms... (error was: Some(Os { code: 5, kind: PermissionDenied, message: \"Acesso negado.\" }))",
+   "[16:27:35] [WARN] Retrying operation in 1000ms... (error was: Some(Os { code: 5, kind: PermissionDenied, message: \"Acesso negado.\" }))",
+   "[16:27:36] [ERROR] Apply error: Error applying package: Unable to start the update, because one or more running processes prevented it. Try again later, or if the issue persists, restart your computer.",
+   "[16:27:36] [ERROR] An error has occurred: Apply error: Error applying package: Unable to start the update, because one or more running processes prevented it. Try again later, or if the issue persists, restart your computer."
+  ]
+ },
+ "packages depois de A e B": [
+  ".velopack_lock",
+  "ProvaVolta-1.1.0-full.nupkg",
+  "VelopackTemp"
+ ],
+ "C. a mesma volta, sem nada preso": {
+  "codigo do Update.exe": 0,
+  "segundos": 1.5,
+  "versao em current depois": "1.1.0",
+  "aberturas do programa de prova (o log dele)": [
+   "2026-11-24T16:27:40.218 | versao 1.2.0 | pasta current | args ['--veloapp-obsolete', '1.2.0'] | VELOPACK_RESTART=None",
+   "2026-11-24T16:27:40.969 | versao 1.1.0 | pasta current | args ['--veloapp-updated', '1.1.0'] | VELOPACK_RESTART=None",
+   "2026-11-24T16:27:41.568 | versao 1.1.0 | pasta current | args [] | VELOPACK_RESTART=true"
+  ],
+  "fim do registro do Update.exe": [
+   "[16:27:39] [INFO] Starting Velopack Updater (1.2.161)",
+   "[16:27:41] [INFO] Package applied successfully.",
+   "[16:27:41] [INFO] Package version 1.1.0 applied successfully."
+  ]
+ },
+ "D. a regra de verdade com o disco depois da parte A": [
+  {
+   "abertura": 1,
+   "ultima boa lida do disco": "1.1.0",
+   "efeitos": [
+    "RodarTesteRapido(antes_da_janela=True)",
+    "Reprovar",
+    "Voltar",
+    "Registrar",
+    "Sair"
+   ],
+   "alguma frase na tela ou guardada": []
+  },
+  {
+   "abertura": 2,
+   "ultima boa lida do disco": "1.1.0",
+   "efeitos": [
+    "RodarTesteRapido(antes_da_janela=True)",
+    "Reprovar",
+    "Voltar",
+    "Registrar",
+    "Sair"
+   ],
+   "alguma frase na tela ou guardada": []
+  },
+  {
+   "abertura": 3,
+   "ultima boa lida do disco": "1.1.0",
+   "efeitos": [
+    "RodarTesteRapido(antes_da_janela=True)",
+    "Reprovar",
+    "Voltar",
+    "Registrar",
+    "Sair"
+   ],
+   "alguma frase na tela ou guardada": []
+  }
+ ]
+}

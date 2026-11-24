@@ -1,0 +1,7 @@
+2026-11-24T16:27:12.469 | versao 1.2.0 | pasta current | args ['--veloapp-obsolete', '1.2.0'] | VELOPACK_RESTART=None
+2026-11-24T16:27:23.153 | versao 1.2.0 | pasta current | args [] | VELOPACK_RESTART=true
+2026-11-24T16:27:26.426 | versao 1.2.0 | pasta current | args ['--veloapp-obsolete', '1.2.0'] | VELOPACK_RESTART=None
+2026-11-24T16:27:37.057 | versao 1.2.0 | pasta current | args ['--conferir-a-versao-nova', '1.2.0', '1.1.0'] | VELOPACK_RESTART=true
+2026-11-24T16:27:40.218 | versao 1.2.0 | pasta current | args ['--veloapp-obsolete', '1.2.0'] | VELOPACK_RESTART=None
+2026-11-24T16:27:40.969 | versao 1.1.0 | pasta current | args ['--veloapp-updated', '1.1.0'] | VELOPACK_RESTART=None
+2026-11-24T16:27:41.568 | versao 1.1.0 | pasta current | args [] | VELOPACK_RESTART=true
