@@ -535,3 +535,40 @@ def test_o_bilhete_so_guarda_as_duas_coisas(tmp_path):
     atualizacao.reprovar("9.9.9", "prova")
     atualizacao.guardar_frase(fases.NAO_DEU_AGORA, "9.9.9", fases.MOTIVO_ERRO)
     assert set(_estado()) == {"reprovadas", "frase"} and _estado()["reprovadas"] == ["9.9.9"]
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# As três proteções novas que a primeira rodada de mutações achou sem teste (N26, N27, N28; D-827)
+# ---------------------------------------------------------------------------------------------------------------------
+
+def test_n26_a_ultima_boa_e_o_pacote_com_a_assinatura_ao_lado(tmp_path):
+    """D-844: a última boa é a versão que tem na pasta o pacote E a assinatura do Samuel; só o pacote (ou só a
+    assinatura, a da versão que está chegando) não é última boa (a volta não teria como conferir o pacote)."""
+    p = Prova(tmp_path, publicar_nova=False)
+    pasta = atualizacao.pasta_da_ultima_boa(p.raiz)
+    pasta.mkdir(parents=True)
+    (pasta / atualizacao.nome_do_pacote(ANTERIOR)).write_bytes(p.vp.conteudo[ANTERIOR])
+    assert atualizacao.ler_ultima_boa(p.raiz) == ""
+    (pasta / assinatura.nome_do_arquivo_da_assinatura(PACOTE, NOVA)).write_text("x", encoding="utf-8")
+    assert atualizacao.ler_ultima_boa(p.raiz) == ""
+    _guardar_a_mao(p, ANTERIOR)
+    assert atualizacao.ler_ultima_boa(p.raiz) == ANTERIOR
+
+
+def test_n27_a_versao_nova_vira_a_ultima_boa_sem_internet(tmp_path, monkeypatch):
+    """D-844 ("sem internet"): a assinatura da versão nova é guardada quando ela é conferida, antes de baixar; depois
+    da troca, a versão nova passa no teste e é guardada como a última boa mesmo sem internet."""
+    p = _ate_o_aviso(tmp_path, ultima_boa=ATUAL)
+    monkeypatch.setattr(versao, "VERSAO", NOVA)
+    depois = _outra_abertura(p)
+    depois.fonte = atualizacao.Fonte(str(tmp_path / "sem-internet"))
+    depois.abrir([atualizacao.ARG_CONFERIR_NOVA, ATUAL, NOVA])
+    assert atualizacao.ler_ultima_boa(p.raiz) == NOVA
+
+
+def test_n28_sem_a_licenca_nada_do_velopack_e_perguntado(tmp_path):
+    """Sem a licença na pasta, nenhuma troca nossa acontece (o Velopack pediria licença ao Windows): a abertura nem
+    pergunta ao Velopack se há pacote esperando (só a pergunta do Windows)."""
+    p = Prova(tmp_path, grava=False)
+    p.abrir()
+    assert p.vp.leituras == [] and p.vp.chamadas == []

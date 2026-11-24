@@ -340,10 +340,22 @@ def ler_ultima_boa(raiz: Path) -> str:
 
 
 def _gravar_texto_inteiro(caminho: Path, texto: str) -> None:
-    """Grava um texto pequeno de uma vez (provisório + troca). Levanta OSError."""
+    """Grava um texto pequeno de uma vez (provisório + troca), BYTE POR BYTE como veio (em UTF-8, sem trocar o fim de
+    linha: gravado como texto, o Windows troca cada "
+" por "
+", e uma assinatura publicada com "
+" virava
+    "
+" e deixava de ser lida; achado pela mutação N27 da volta 3). Levanta OSError."""
     provisorio = caminho.with_name(caminho.name + ".gravando")
-    provisorio.write_text(texto, encoding="utf-8")
+    provisorio.write_bytes(texto.encode("utf-8"))
     provisorio.replace(caminho)
+
+
+def _ler_texto(caminho: Path) -> str:
+    """Lê um texto pequeno byte por byte (o par de `_gravar_texto_inteiro`: sem trocar o fim de linha). Levanta
+    OSError."""
+    return caminho.read_bytes().decode("utf-8", errors="replace")
 
 
 def _copiar_somando(origem: Path, destino: Path) -> str:
@@ -377,7 +389,7 @@ def guardar_ultima_boa(raiz: Path, versao_boa: str, fonte: "Fonte", chave_public
     if not origem.is_file():
         return f"o pacote da {versao_boa} não está em {origem.parent}"
     try:
-        texto = (pasta / nome_da_assinatura).read_text(encoding="utf-8")
+        texto = _ler_texto(pasta / nome_da_assinatura)
     except OSError:
         try:
             texto = fonte.ler(versao_boa, nome_da_assinatura).decode("utf-8", errors="replace")
@@ -1176,7 +1188,7 @@ class Atualizacao:
         pacote = versao.ID_DO_PACOTE
         nome = nome_do_pacote(ef.para)
         try:
-            texto = (pasta / assinatura.nome_do_arquivo_da_assinatura(pacote, ef.para)).read_text(encoding="utf-8")
+            texto = _ler_texto(pasta / assinatura.nome_do_arquivo_da_assinatura(pacote, ef.para))
             tamanho = (pasta / nome).stat().st_size
         except OSError as erro:
             return fases.VoltaPedida(False, f"a versão {ef.para} não está guardada ({erro})")
