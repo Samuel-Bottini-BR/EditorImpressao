@@ -84,14 +84,18 @@ def _agora() -> str:
 # Os pedidos de cada prova (sem o Windows: os testes passam cada um pelas regras da peça)
 # ---------------------------------------------------------------------------------------------------------------------
 
+# Quem pode o quê na tarefa de prova (texto do Windows): administradores e o sistema, tudo; as contas que entraram no
+# Windows, só ler e mandar rodar. Era o descritor do ajudante da atualização (atualizacao.QUEM_PODE_MANDAR_RODAR), que
+# saiu com o ajudante no atualizador novo (23/11/2026); a prova da peça continua precisando dele, então mora aqui.
+QUEM_PODE_MANDAR_RODAR_A_PROVA = "D:(A;;FA;;;BA)(A;;FA;;;SY)(A;;GRGX;;;AU)"
+
+
 def _xml_de_prova() -> str:
     """O desenho da tarefa de prova: roda como o sistema o script da pasta segura de prova; a conta comum pode
-    mandar rodar (o mesmo descritor do ajudante do programa, lido do lugar único dele)."""
-    import atualizacao
-
+    mandar rodar (`QUEM_PODE_MANDAR_RODAR_A_PROVA`, o mesmo texto que o ajudante antigo usava)."""
     return windows.xml_da_tarefa_de_script(windows.pasta_segura(PASTA_DE_PROVA) / SCRIPT_DA_TAREFA,
                                            "Editor de Impressão: tarefa de prova da peça do Windows (pode apagar).",
-                                           atualizacao.QUEM_PODE_MANDAR_RODAR, limite="PT10M")
+                                           QUEM_PODE_MANDAR_RODAR_A_PROVA, limite="PT10M")
 
 
 _SCRIPT_DA_TAREFA = (
