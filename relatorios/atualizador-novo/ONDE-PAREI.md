@@ -1,19 +1,328 @@
-# Atualizador novo: o código (23/11/2026) — EM ANDAMENTO
+# Atualizador novo: o código (23 e 24/11/2026)
 
-Implementador. Ramo `atualizador-novo-2026-11-23`. Pedido da gerente de 23/11/2026: escrever o código do plano abaixo
-(seção "Atualizador novo: o plano"), com as respostas do Samuel (D-834 a D-838) e as da gerente (os 4 arquivos de tela
-liberados; a capacidade "Velopack" na trava; tirar da lista de exceções só o que o código deixou de ter; um caminho só
-para a licença da pasta, o `icacls ... /grant "*S-1-5-32-545:(OI)(CI)M" /T` do experimento).
+Implementador. Ramo `atualizador-novo-2026-11-23`, worktree `.claude/worktrees/atualizador-novo`. Pedido da gerente de
+23/11/2026: escrever o código do plano (seção "Atualizador novo: o plano", logo abaixo), com as respostas do Samuel
+(D-834 a D-838) e as da gerente. Não abri agente nenhum, não rodei o programa com janela, não gerei instalador nem
+versão, não disparei o GitHub e não mexi no PC fora da pasta do projeto.
 
-**Situação:** começando. Este cabeçalho é atualizado a cada passo; a seção completa (decisões e como cumpri, caminho →
-função, falhas, leitura das peças de fora, provas) entra aqui no fim.
+**Situação: o código está escrito e os testes dos arquivos que toquei passam no meu PC, um arquivo por vez. Falta (é
+da gerente): a rodada do GitHub, a revisão do Fable da lista dos testes, quem tenta quebrar e a prova à vista com o
+Samuel.** Dois testes fora do atualizador quebram por causa da lista de exceções que diminuiu (ver "Perguntas para a
+gerente"). Último commit: ver a mensagem de entrega.
 
-Decisões que esta tarefa precisa cumprir: as da seção 1 do plano abaixo, mais D-834 (a pergunta do Windows antes da
-janela, a senha depois), D-835 (os textos curtos: "Se escolher "Depois", você pode atualizar quando fechar o
-programa."; "Atualizar agora?" / "Quer atualizar o programa agora, ao fechar?" / "Sim" / "Não"), D-836 (os testes
-antigos; a lista teste por teste num arquivo próprio), D-837 (o porteiro deixa só uma função da peça, só para
-acrescentar "Usuários podem modificar"), D-838 (o programa só apaga sozinho a tarefa antiga do ajudante), D-778 (as três
-frases de falha entram agora) e D-832 (a janelinha é a do Velopack).
+## O desenho, em uma frase
+
+O único ato com licença é dar à pasta do programa a licença de Modificar para Usuários, uma vez, na primeira abertura,
+ANTES da janela (com o ajudante antigo apagado, o Visual C++ e o Inno antes dela, na mesma pergunta). Depois, o
+programa, na conta do Kaique, procura só ao abrir, confere a assinatura e o motor, baixa e pede ao Velopack para trocar;
+o Velopack espera o programa sair, troca, mostra a janelinha dele e reabre. A regra é uma função pura
+(`core/fases_da_atualizacao.py`); quem faz é o executor (`atualizacao.Atualizacao`); o Windows só pela peça
+(`core/windows.py`); o Velopack só pela peça dele (`core/conversa_com_o_velopack.py`); a tela só traduz
+(`ui/aviso_de_atualizacao.py`).
+
+## Os arquivos
+
+Programa: `atualizacao.py` (refeito, 2314 → ~900 linhas, sem PowerShell, sem `subprocess`, sem `ctypes`, sem `winreg`),
+`core/fases_da_atualizacao.py` (novo), `core/conversa_com_o_velopack.py` (novo), `core/windows.py` (os três passos do
+preparo, a licença que só acrescenta, as duas metades do pedido, a lista de processos, o dono do arquivo, as leituras
+do Visual C++ e do Inno), `core/ocr_kraken.py` e `configuracoes.py` (do `atualizador-4`: o lugar do motor no instalado;
+a marca do computador preparado saiu), `main.py` (só comentários), e a tela que a gerente liberou:
+`ui/aviso_de_atualizacao.py` (refeito), `ui/janela_principal.py` (uma chamada no fechar e o comentário),
+`ui/testes_a_distancia_ui.py` (a janela da senha não pergunta mais nada ao Windows), `ui/brasao_girando.py` (saiu a
+espera da janelinha). E `janela_de_prova.py` (a janela de prova da peça usava o descritor da tarefa do ajudante,
+`atualizacao.QUEM_PODE_MANDAR_RODAR`, que saiu: o mesmo texto passou a morar nela; era um bug que impedia, porque os 3
+testes dela quebravam). Porteiro: `regras_dos_agentes/porteiro.py` (a única exceção da K03, D-837) e
+`tests/conferencias_excecoes.json` (40 lugares tirados pelo `excecoes --diminuir`, nenhum acrescentado).
+
+Testes novos: `tests/test_fases_da_atualizacao.py` (807 casos: toda fase com todo evento), `tests/test_atualizador_novo.py`
+(35), `tests/test_windows_preparo_do_computador.py` (20; um só roda no GitHub ou com `EDITOR_PROVA_DO_WINDOWS=1`),
+`tests/test_velopack_de_verdade.py` (3, a biblioteca de verdade), `tests/test_porteiro_licenca_que_acrescenta.py` (14),
+`tests/ajudante_do_atualizador.py` (as peças de mentira da borda, um lugar só). As mutações:
+`relatorios/atualizador-novo/mutacoes.py` e `mutacoes-resultado.txt`. Adaptados pela D-836: a lista teste por
+teste em `relatorios/atualizador-novo/lista-dos-testes-d836.md` (e `.html`). A trava: `tests/test_trava_windows.py`.
+
+## Decisões que esta tarefa precisa cumprir, e como cumpri cada uma
+
+| Decisão | Palavras dele | Como cumpri | Prova |
+|---|---|---|---|
+| D-706, D-723 | "como funciona com apps" · "velopack" | o Velopack troca a pasta `current`; nada se reinstala | `test_d832_a_troca_usa_a_janelinha_do_velopack`; prova à vista |
+| D-713, D-719 (token) | "não precisa ser privado" | GitHub público, só o endereço | `test_decisoes_atualizacao::test_d719_nenhum_token_dentro_do_programa` |
+| D-714 | "1 - vamos seguir sua sugestão" | o publicar não mudou | `test_publicar_versao.py` (125 passam) |
+| D-715, D-720 | "um aviso para salvar o trabalho atual e reinicializar" · "Sim" | o aviso com "Reiniciar agora" / "Depois", vindo da regra | `test_d715_...`, `test_d720_o_aviso_tem_reiniciar_agora_e_depois...`, `test_d720_reiniciar_agora_fecha_gravando...` |
+| D-718, D-719, D-778 | "tem que avisar a gente" · "1" · "A" | teste rápido antes da janela; volta pela biblioteca com pacote assinado; as três frases, cada falha com a sua; o registro no ProgramData | `test_d718_teste_que_falha_volta_para_a_anterior_assinada`, `test_protecao_11_...`, `test_a_troca_que_nao_aconteceu_avisa_uma_vez`, `test_d835_e_d778_os_textos_da_tela_palavra_por_palavra` |
+| D-724 | "o que é essa assinatura e é segura?" | assinatura antes de baixar; e a soma do arquivo baixado antes de trocar | `test_protecao_2_...`, `test_protecao_3_...`, os 4 `d724` adaptados |
+| D-727 | "tudo no instalador" | o Visual C++ e o motor vêm do pacote; nada baixado na instalação | `test_d727_*` (iguais), `test_o_visual_c_confere_lendo_de_novo_depois_de_instalar` |
+| D-732 | "não, faz quando o programa é aberto" | a procura nasce só da abertura; a janela não tem relógio | `test_d732_a_procura_e_so_ao_abrir_nada_roda_por_tras_depois`, a tabela da regra |
+| D-733, D-735, D-741 | "1- sim" · "Sim" · "Sim" | uma pergunta só, a da abertura, com ou sem a senha; volta enquanto a pasta não aceitar gravação; nenhuma no "Reiniciar agora" | `test_protecao_1_...`, `test_d741_depois_do_nao_a_pergunta_volta...`, os `d735`/`d741` adaptados, `test_d733_reiniciar_agora_nao_pede_licenca` |
+| D-736 | "o programa não precisa procurar versão nova" (conta de testes) | na conta de testes nada pergunta nem procura | `test_protecao_7_...`, `test_d736_aberto_por_teste_a_distancia...` |
+| D-749 | "Sim" (pela metade = não feita) | a licença é o último passo; "preparado?" é o teste de gravar feito DE NOVO depois do trabalho, nunca o que ele disse | `test_protecoes_5_e_6_...`, `test_d749_sim_com_a_preparacao_parada_no_meio_a_pergunta_volta` (2 casos) |
+| D-763/D-764 | "ok, pode fazer" | o nome do pacote não mudou | `test_nome_do_pacote.py` (5 passam) |
+| D-765 | "nenhum conserto até o .exe estar pronto" | só o atualizador mudou | o diff do ramo |
+| D-767 | "não faça mais nada escondendo ou de mentira" | as peças de mentira só na borda; a biblioteca do Velopack de verdade numa instalação de prova; a licença da pasta de verdade numa pasta de prova; o resto só à vista | `test_velopack_de_verdade.py`, `test_d837_de_verdade_numa_pasta_de_prova`; "O que ficou para a prova à vista" |
+| D-768/D-788/D-789, D-790, D-833 | "16" · "1" · "A" · "tudo ou nada continua" | o motor em `<raiz>\motor-kraken\<versão>` (do `atualizador-4`); sem ele, nada anunciado nem trocado | `test_protecao_4a_...`, `test_protecao_4b_...`, `test_ocr_kraken.py` (28 passam) |
+| D-769, D-794, D-831 | "b" · "aparecer o aviso [...] na hora de fechar" · "a" | com "Depois", ao fechar: "Atualizar agora?"; "Sim" → esconde, troca, reabre só para conferir, sem janela; "Não" → fecha; o aviso volta | `test_d831_depois_e_sim_ao_fechar_troca_sem_janela`, `test_d794_nao_ao_fechar_fecha_sem_trocar`, `test_d769_reabertura_sem_janela_que_passa_sai_sem_janela` |
+| D-805, D-806, D-834 | "a" · "opção A" · "1 – sim" | a pergunta do Windows abre o próprio `EditorImpressao.exe`, dentro de `atender_linha_de_comando`, antes do brasão e da janela; a janela da senha vem depois, com a janela aberta, e não pergunta nada ao Windows | `test_protecao_1_...` (o pedido acontece dentro de `abrir`), `test_d733_com_a_senha_nada_dos_testes_vai_na_pergunta`, `test_d721_primeira_vez_pede_a_senha_e_liga` |
+| D-824, D-825 | "um só, uma coisa de cada vez" · "ok" | os testes à distância ficaram como estavam; a senha não liga nada | `test_decisoes_testes_a_distancia.py` (13 passam) |
+| D-828 | "pode consertar essas coisas" | quem espera é o Velopack, pelo número do nosso processo; a troca só depois de gravar; nenhuma tranca à mão | `test_d720_reiniciar_agora_fecha_a_janela_e_so_depois_troca`, `test_protecao_10_...` |
+| D-830 | "refazer" | este código | — |
+| D-832 | "pode ser velopack" | a troca sem o modo silencioso; a janelinha nossa e as marcas saíram | `test_d832_...`, `test_d742_a_janelinha_da_troca_e_a_do_velopack`, `test_d748_o_brasao_nao_espera_janelinha_nenhuma` |
+| D-835 | "2 – B (texto curto)" | os textos palavra por palavra | `test_d835_e_d778_os_textos_da_tela_palavra_por_palavra`, `test_d835_ao_fechar_a_pergunta_curta...` |
+| D-836 | "a lista dos testes vai para o Fable" | a lista em `lista-dos-testes-d836.md` | — |
+| D-837 | "6 – opção 1" + o Fable: "um caminho só" | `dar_licenca_aos_usuarios` com `icacls "<raiz>" /grant "*S-1-5-32-545:(OI)(CI)M" /T` pela peça, conferido lendo de volta; nada de `SetNamedSecurityInfoW`; o porteiro deixa só essa função, e acusa nela `/inheritance`, `/setowner`, `/remove`, `/deny`, `/reset`, `/restore`, `/substitute`, `/setintegritylevel`, `/save` e o `:r` | `test_porteiro_licenca_que_acrescenta.py` (14), `test_d837_*` da peça |
+| D-838 | "7 – opção 1" | o primeiro passo da pergunta apaga o ajudante antigo (só ele); nada mais é limpo sozinho | `test_protecoes_5_e_6_...`, `test_d731_o_atualizador_novo_nao_poe_tarefa_no_windows` |
+| D-605/§11.8, D-637/§11.9, §11.12, D-811 a D-813, D-827 | — | ver as seções de baixo | as mutações |
+
+**A seção 4 do plano, corrigida (pedido da gerente):** o passo 4 tem um caminho só, o provado no experimento: o
+`icacls "<raiz>" /grant "*S-1-5-32-545:(OI)(CI)M" /T`, pela peça, pelo caminho inteiro da pasta do sistema. O
+`SetNamedSecurityInfoW` NÃO é usado, nem de reserva (e o porteiro continua o barrando até na função da exceção).
+
+## O que já estava escolhido e testado aqui, e se algo mudou (§11.8)
+
+- As decisões da tabela de cima e os testes delas (a lista do plano, seção 2). Pela D-836 (o "sim" dele para os testes
+  do atualizador), os testes das peças que saíram saíram, os que cobram as mesmas decisões passaram a chamar o caminho
+  novo e os das decisões mudadas cobram o que vale hoje. A lista teste por teste: `lista-dos-testes-d836.md`.
+- Fora do atualizador: não mudei teste nenhum. O publicar (`test_publicar_versao.py`, 125), o empacotar (43), o motor
+  (`test_ocr_kraken.py`, 28), o nome do pacote (5), a peça do Windows (68 dos 71 iguais; 2 só trocaram a constante que
+  saiu pelo mesmo texto, D-836) e os 33 do desinstalar que são dos testes à distância passam.
+- **Mudou sem querer: nada.** Mas dois testes do porteiro (`test_conferencias_pacote.py`, fora do atualizador) usavam o
+  `atualizacao.py` como exemplo de arquivo com lugares na lista de exceções; agora ele não tem mais. Não os mexi: ver
+  "Perguntas para a gerente".
+
+## Como fica para quem usa e no livro (§11.9)
+
+**No livro (o PDF): nada muda.** Pelo atalho "(desenvolvimento)": nada muda (o programa não está instalado pelo
+Velopack; `atender_linha_de_comando` devolve None sem importar o Velopack).
+
+- **Primeira abertura do instalado:** clique → a pergunta do Windows ("Deseja permitir...? EditorImpressao.exe") →
+  "Sim" → o brasão e a janela abrem enquanto a preparação termina por trás → a janela da senha (como hoje; não liga
+  nada). "Não" → a janela abre; na próxima abertura a pergunta volta, até o "Sim".
+- **Abertura com versão nova:** nada atrasa; quando o download termina, o aviso "Reiniciar agora" / "Depois" (a última
+  frase agora: "Se escolher "Depois", você pode atualizar quando fechar o programa.").
+- **"Reiniciar agora":** a janela fecha gravando → a janelinha do Velopack → uns segundos sem nada (o teste rápido) → o
+  brasão e a janela na versão nova.
+- **"Depois":** nada agora. Ao fechar: "Atualizar agora?" / "Quer atualizar o programa agora, ao fechar?". "Sim" → a
+  janela some, o programa grava e sai, a janelinha do Velopack aparece e some, nada abre. "Não" → fecha; o aviso volta
+  na próxima abertura.
+- **Falhas:** cada uma com a sua frase, uma vez por conta, na janela.
+- **Não conferi clicando nem olhando o PDF**: o pedido proíbe abrir janela na tela do Samuel e o comportamento só
+  existe no programa instalado pelo Velopack. O caminho da tela foi conferido pela `PonteDaTela` de verdade com caixas
+  de mentira (`test_d720_*`, `test_d835_ao_fechar_*`) e o fechar da janela principal só ganhou uma chamada que, sem a
+  ponte (pelo código), não faz nada. **Problema novo que pode aparecer:** a ordem da primeira abertura (a pergunta antes
+  do brasão) e os segundos sem nada na tela depois da troca (ressalvas 1 e 3 do plano).
+
+## Caminho → função (§11.12)
+
+| Caminho | Entra por | A regra | A ação |
+|---|---|---|---|
+| Abrir pelo atalho | `main.py` → `atualizacao.atender_linha_de_comando` → `Atualizacao.abrir` | `proxima_fase(Abriu)` | `PedirLicenca` → `windows.comecar_pedido_de_licenca(passos_do_preparo())`; ou `GarantirMotor` → (por trás) `garantir_o_motor` → `Procurar` → `conversa_com_o_velopack.procurar` → `ConferirAssinatura` → `conferir_assinatura_do` → `Baixar` → `conversa_com_o_velopack.baixar` → `MostrarVersaoNova` |
+| A espera do preparo | efeito `EsperarPreparo` (fio por trás) | `proxima_fase(PreparoTerminou)` | `PedidoDeLicenca.esperar` + `pasta_aceita_gravacao` |
+| Conta de testes / pelo código / portátil | o mesmo | `Abriu` → `FORA` | nada |
+| Reaberto pelo Velopack | o mesmo, `--conferir-a-versao-nova <de> <para>` (ou a anotação `tentando`) | `Abriu(troca_*)` | `RodarTesteRapido` → `windows.rodar_e_esperar([este exe, --teste-rapido])` |
+| "Reiniciar agora" | `PonteDaTela._mostrar` → `Escolheu(True)` | `FECHANDO` | `FecharJanela` → `janela.close()` (o fechar grava) → `JanelaFechou` → `Trocar` → `Atualizacao.trocar_para` → `conversa_com_o_velopack.trocar` |
+| "Depois" | o mesmo → `Escolheu(False)` | `DEPOIS` | nada |
+| Fechar o programa | `JanelaPrincipal.closeEvent` → `aviso_de_atualizacao.ao_fechar` → `Fechando` | `PERGUNTANDO` | `PerguntarAoFechar` → `RespondeuAoFechar` → `Trocar` → `trocar_para` → `conversa_com_o_velopack.trocar` |
+| A volta | `TesteRapido(False)` | `VOLTANDO` | `Voltar` → `Atualizacao._voltar` → `conversa_com_o_velopack.pacote_da_versao` + `baixar` + `trocar_para` |
+| O motor | `GarantirMotor`; e dentro de `trocar_para` | `motor_esta_no_lugar` (uma só) | `garantir_o_motor` (o único que mexe em `motor-kraken\`) |
+| Uma falha | `AnotarFalha` | — | `anotar_falha` (a única); a frase: `FRASES_DA_FALHA` (a única tabela) |
+| Os ganchos do Velopack | `atender_linha_de_comando` → `conversa_com_o_velopack.atender_ganchos` | — | `ao_instalar` / `ao_atualizar` / `ao_desinstalar` |
+| A tarefa antiga chamando `--procurar-atualizacao` | `atender_linha_de_comando` | — | anota e sai |
+
+Provas de "um lugar só": `test_protecao_13_so_um_lugar_chama_a_troca_do_velopack` (pela árvore de todo o programa:
+`wait_exit_then_apply_updates` só em `conversa_com_o_velopack.trocar`; `.trocar(` só em `Atualizacao.trocar_para`) e
+`test_os_tres_caminhos_da_troca_passam_pela_mesma_conferencia` ("Reiniciar agora", "Sim" ao fechar e a volta chegam
+os três a `trocar_para`). A trava cobra que só a peça do Velopack importa `velopack` (`test_velopack_so_no_dono`).
+
+## A lista das falhas, e o que o código faz em cada uma (§11.12, ponto 3)
+
+Regra para todas: erro técnico só no registro (`%ProgramData%\EditorImpressao\atualizacao\atualizacao.log`; se o
+arquivo não aceitar, o `erros.log`); na tela, só as frases combinadas; nada dá como feito sem conferir.
+
+**A pergunta do Windows e o preparo**
+- "Não" (ou fechou a pergunta): `LicencaRespondida("disse_nao")` → nada muda, nada procurado; a pergunta volta.
+- O Windows não abre o pedido / o pedido está errado / o disco não aceita a pasta de troca: "falhou" → idem.
+- O ajudante antigo existe e não sai: a peça para no passo 1; a licença NÃO é dada (segurança); a pergunta volta.
+- O Visual C++ falha (código de erro, ou terminou sem a versão no registro): o passo falha; a peça para; a licença não
+  é dada; a pergunta volta. O instalador que uma conta comum poderia trocar não é rodado (a regra da pasta segura).
+- O Inno não sai (a chave continua depois de esperar até 5 minutos): o passo falha; idem. Caminho que não parece seguro:
+  não tira de propósito e segue (como antes).
+- A licença não "pega" (a leitura de volta não tem a linha de Usuários, a herança ou o dono mudaram, uma linha sumiu, o
+  manifesto de `current` não ficou com a licença): o passo falha; o que foi acrescentado fica (tirar licença é proibido,
+  D-837); a pergunta volta se a pasta não gravar.
+- O trabalho com licença disse "deu certo" mas a pasta não grava: conta como não feito (vale o teste de gravar).
+- Desligar no meio: o que foi feito fica; a próxima abertura testa a pasta e decide.
+- Fechar o programa no meio do preparo: o fio por trás morre; o trabalho com licença (outro processo) termina sozinho.
+
+**Procurar, conferir, baixar**
+- Sem internet / GitHub fora: só o registro; tenta na próxima abertura.
+- Assinatura errada ou sem o arquivo: não baixa; falha "recusada" (frase 2), a versão em "não tentar".
+- O motor fora do lugar e o arquivo dele não está no pacote, ou falta espaço: nada procurado nem anunciado.
+- Disco cheio no download, a tranca de outra janela, o Velopack recusa (tamanho ou soma): só o registro.
+
+**Trocar** (sempre por `trocar_para`)
+- O arquivo em `packages\` com outra soma que a assinada (trocado depois de baixar): não troca; falha "recusada".
+- A assinatura não foi conferida nesta abertura: não troca.
+- O motor saiu do lugar: não troca.
+- Outra janela do programa aberta (ou o Windows não deu a lista): não troca; o aviso volta na próxima abertura.
+- O Velopack não aceita o pedido: a anotação da troca é apagada; o programa segue/fecha normalmente.
+- A janela não fecha no "Reiniciar agora": nada trocado; vira "Depois" (pergunta ao fechar).
+- O Velopack não consegue renomear (arquivo preso): ele reabre a versão de antes com os mesmos argumentos; ela vê que
+  continua na de antes, falha "troca" (frase 1), a versão em "não tentar" (ressalva 5 do plano). Se ele nem reabrir, a
+  anotação `tentando` faz a próxima abertura saber.
+- A versão nova não passa no teste rápido: falha "teste"; a volta pela biblioteca com o pacote assinado; o Velopack abre
+  a anterior, que mostra a frase 1.
+- A volta não dá (sem internet, sem a assinatura, fora dos 10 "Releases" mais novos, o Velopack recusa): falha "volta"
+  (frase 3); a versão nova abre se conseguir (sem janela, se era a reabertura do "Sim" ao fechar).
+- A troca de volta não acontece (o Velopack reabre a quebrada): pela anotação `tentando` (volta), falha "volta".
+- A anotação da troca é velha (outra versão): é apagada e a abertura segue.
+- O segundo renomear do Velopack falha ("broken state"): o programa fica sem `current`; reinstalar pelo `.msi` (os
+  projetos ficam). É o defeito da D-779, sem proteção nesta entrega (ressalva 6 do plano).
+
+**Os restos do PC do Samuel (o experimento já desfeito, pela gerente):** a tarefa `\EditorImpressao\Procurar versao
+nova` (desativada) é apagada pelo passo 1 da pergunta; se o Windows a rodar antes disso, o programa novo (como o
+sistema) só anota e sai. O `estado.json.antes-do-experimento` não é lido (o nome é outro). A pasta
+`C:\ProgramData\EditorImpressao\atualizacao\` é do sistema: a conta comum consegue CRIAR arquivo novo nela (a licença
+de fábrica do ProgramData), então o `estado.json` novo nasce; o `atualizacao.log` velho (do sistema) não aceita
+acréscimo, e as linhas vão para o `erros.log` (ressalva). A tarefa "Desfazer testes a distancia" não é tocada.
+
+## A leitura das peças de fora, com a fonte (§11.12, ponto 6)
+
+Velopack 1.2.161 (o clone na etiqueta `1.2.161`, commit `92d6a1c`; caminhos do repositório do Velopack):
+- `wait_exit_then_apply_updates` (`src/lib-rust/src/manager.rs` 602-675): exige o pacote em `packages\`, abre o
+  `Update.exe apply --package <arquivo> --waitPid <este processo> [--silent] [--norestart] --root ... --packageDir ...
+  -- <argumentos>` com a pasta de trabalho na raiz, e volta. O Python só repassa (`src/lib-python/src/manager.rs`
+  116-127).
+- A espera: no máximo 60 s pelo processo, depois segue (`src/bins/src/shared/util_common.rs` 14-26).
+- O apply (`src/bins/src/commands/apply_windows_impl.rs`): sem gravar na raiz, pede licença ao Windows ("Re-launching
+  as administrator"; por isso nunca pedimos troca sem a licença da pasta); tranca; a janelinha
+  (`show_apply_progress`); fecha à força o que roda da raiz (`force_stop_package`); renomeia `current` (10 tentativas;
+  se não der, "Unable to start the update..." e nada mudou); põe a nova ("left in a broken state" se falhar); a entrada
+  de "Programas e Recursos" ("Failed to update uninstall entry" não para nada); `reporter.close()` (275).
+- A reabertura (`apply.rs` 47-75): com `restart`, abre a versão nova com os argumentos; se o apply falhou, abre a de
+  antes com os MESMOS argumentos.
+- `download_updates` (`manager.rs` 405-480, 537-561): tranca `.velopack_lock`; baixa para `.partial`; confere tamanho e
+  SHA256; dá o nome final; tira o `Update.exe` novo do pacote; apaga os pacotes velhos. Se o arquivo final já existe,
+  NÃO baixa nem confere (413-416).
+- O localizador (`locator.rs` 140-176, 337-376): a raiz gravável → `packages` na raiz; não gravável → a reserva em
+  `%LOCALAPPDATA%\<id>` (isso continua acontecendo na abertura sem a licença, pelo `App().run()`, como antes);
+  `IsPortable` = `.portable` na raiz; o manifesto `current\sq.version`. O teste de gravar: `misc.rs` 72-89
+  (`.velopack_dir_test` com apagar-ao-fechar).
+- `App().run()` (`app.rs` 125-203): os ganchos saem do processo; sem troca automática com `set_auto_apply_on_startup(False)`.
+- A fonte do GitHub (`sources/github.rs` 80, 129-138): os 10 "Releases" mais novos; acha o arquivo pelo nome. A de
+  pasta (`sources/file.rs` 37-48): copia pelo nome.
+- Conferido com a biblioteca de verdade numa instalação de prova (`tests/test_velopack_de_verdade.py`): procurar, baixar
+  a anterior pelo pedido montado em Python, e a soma errada recusada.
+
+Windows:
+- icacls (Microsoft Learn, "icacls", atualizado em 14/10/2026): "/grant[:r] ... Not adding :r means that permissions
+  are added to any previously granted explicit permissions"; "/t Performs the operation on all specified files in the
+  current directory and its subdirectories"; "/c Continues the operation even if file errors occur" (sem ele, para);
+  "(OI) Object inherit", "(CI) Container inherit"; "M - Modify access"; o SID numérico com "*". Conferido de verdade numa
+  pasta de prova (`test_d837_de_verdade_numa_pasta_de_prova`, rodado aqui com `EDITOR_PROVA_DO_WINDOWS=1`): a raiz e o
+  manifesto passam a deixar Usuários modificar, nada de antes sumiu, rodar de novo também dá certo.
+- Python `os.access` no Windows só olha o atributo de só leitura (documentação do `os.access`); por isso o teste de
+  gravar abre o arquivo com `os.O_TEMPORARY` (o apagar-ao-fechar).
+- A lista de processos: `CreateToolhelp32Snapshot`/`Process32FirstW`/`Process32NextW` (o número de quem abriu cada
+  processo, `th32ParentProcessID`) e `QueryFullProcessImageNameW` (já da volta 4).
+
+## Cada proteção e o teste que falha quando ela é desligada (D-811 a D-813, D-827)
+
+O script `relatorios/atualizador-novo/mutacoes.py` desliga cada uma (troca o trecho do código), roda só o teste dela e
+devolve o arquivo. O resultado está em `relatorios/atualizador-novo/mutacoes-resultado.txt` (abaixo, copiado).
+
+- **falhou (acusa)**: 1 sem licença não procura -> tests/test_atualizador_novo.py::test_protecao_1_sem_licenca_pergunta_ao_windows_e_nao_procura | 1 failed in 0.43s
+- **falhou (acusa)**: 2 assinatura antes de baixar -> tests/test_atualizador_novo.py::test_protecao_2_assinatura_errada_nao_baixa_e_avisa_com_a_frase_2 | 1 failed in 0.37s
+- **falhou (acusa)**: 3 soma do arquivo baixado antes de trocar -> tests/test_atualizador_novo.py::test_protecao_3_pacote_trocado_depois_de_baixar_nao_troca | 1 failed in 0.38s
+- **falhou (acusa)**: 4a motor antes de anunciar -> tests/test_atualizador_novo.py::test_protecao_4a_motor_fora_do_lugar_nada_e_procurado_nem_anunciado | 1 failed in 0.41s
+- **falhou (acusa)**: 4b motor antes de trocar -> tests/test_atualizador_novo.py::test_protecao_4b_motor_fora_do_lugar_na_hora_de_trocar_nao_troca | 1 failed in 0.40s
+- **falhou (acusa)**: 5 a licença é o último passo -> tests/test_atualizador_novo.py::test_protecoes_5_e_6_a_ordem_dos_passos_da_pergunta | 1 failed in 0.35s
+- **falhou (acusa)**: 6 o ajudante antigo sai antes da licença -> tests/test_atualizador_novo.py::test_protecoes_5_e_6_a_ordem_dos_passos_da_pergunta | 1 failed in 0.34s
+- **falhou (acusa)**: 7 a conta de testes não pergunta nem procura -> tests/test_atualizador_novo.py::test_protecao_7_conta_de_testes_nao_pergunta_nem_procura | 1 failed in 0.39s
+- **falhou (acusa)**: 8 a versão que falhou não é tentada de novo -> tests/test_atualizador_novo.py::test_protecao_8_a_versao_que_falhou_nao_e_baixada_de_novo | 1 failed in 0.37s
+- **falhou (acusa)**: 9 outra janela aberta não troca -> tests/test_atualizador_novo.py::test_protecao_9_outra_janela_aberta_nao_troca | 1 failed in 0.39s
+- **falhou (acusa)**: 10 a troca só depois de a janela fechar -> tests/test_atualizador_novo.py::test_protecao_10_a_janela_que_nao_fecha_nao_troca | 1 failed in 0.40s
+- **falhou (acusa)**: 11 a volta só com pacote assinado -> tests/test_atualizador_novo.py::test_protecao_11_a_volta_sem_a_assinatura_nao_troca_e_avisa_com_a_frase_3 | 1 failed in 0.40s
+- **falhou (acusa)**: 12 pelo código nada roda -> tests/test_atualizador_novo.py::test_protecao_12_pelo_codigo_nada_roda | 1 failed in 0.47s
+- **falhou (acusa)**: 13 só trocar_para chama a troca -> tests/test_atualizador_novo.py::test_protecao_13_so_um_lugar_chama_a_troca_do_velopack | 1 failed in 4.07s
+- **falhou (acusa)**: D-749 o preparo vale pelo teste de gravar, não pelo que o trabalho disse -> tests/test_decisoes_preparo_d749.py::test_d749_sim_com_a_preparacao_parada_no_meio_a_pergunta_volta | 1 failed in 0.38s
+- **falhou (acusa)**: D-832 a janelinha do Velopack (sem o modo silencioso) -> tests/test_atualizador_novo.py::test_d832_a_troca_usa_a_janelinha_do_velopack | 1 failed in 0.47s
+- **falhou (acusa)**: D-837 a licença que só acrescenta: a herança -> tests/test_windows_preparo_do_computador.py::test_d837_o_que_tira_ou_nao_acrescenta_e_acusado | 1 failed in 0.36s
+- **falhou (acusa)**: D-837 o porteiro: nada de tirar dentro da função -> tests/test_porteiro_licenca_que_acrescenta.py::test_d837_tirar_negar_trocar_dono_ou_heranca_e_acusado_ate_na_funcao | 1 failed, 1 passed in 0.30s
+- **falhou (acusa)**: D-837 o porteiro: a exceção é uma função só -> tests/test_porteiro_licenca_que_acrescenta.py::test_d837_a_funcao_que_so_acrescenta_passa_so_na_peca | 1 failed in 0.30s
+- **falhou (acusa)**: a trava: velopack só no dono -> tests/test_trava_windows.py::test_velopack_so_no_dono | 1 failed in 0.34s
+
+**20 de 20 mutações acusadas.** Cada arquivo foi devolvido como estava depois de cada mutação (o `git status` limpo depois).
+
+## O que ficou para a prova à vista (D-767, D-785)
+
+Tudo o que mexe no Windows ou troca de versão de verdade: os 10 passos da seção 11 do plano (a pergunta no meio da
+tela logo no clique; "Não" e "Sim"; a licença lida de volta na pasta de verdade; o Inno de 01/09 tirado; "Reiniciar
+agora" com a janelinha do Velopack; "Depois" + fechar + "Sim"/"Não"; a versão quebrada voltando; a assinatura falsa
+recusada; fechar no meio do download; sem o motor; clique no atalho durante a troca; desinstalar; as medidas de tempo).
+Antes dela, a limpeza do PC do Samuel (D-838, com a gerente) e quem tenta quebrar.
+
+## Ressalvas
+
+1. **Não rodei o programa instalado.** Nenhuma troca de verdade, nenhuma pergunta do Windows de verdade. As provas do
+   executor usam a borda de mentira; a biblioteca do Velopack e a licença da pasta rodaram de verdade só em pastas de
+   prova.
+2. **O Visual C++ não confere a assinatura da Microsoft no notebook** (o plano dizia que conferiria). A régua única dela
+   mora no `empacotar.py`, que o programa não pode importar (a trava acusaria o `subprocess` dele) e que eu não podia
+   mexer; copiar a régua seria gambiarra (§11.12). No lugar: o passo só roda o instalador se só o sistema e os
+   administradores podem mudá-lo (a regra da pasta segura, que já existia). Como antes deste trabalho, o instalador vem
+   dentro do pacote assinado. Ideia para a Lista de espera: levar a régua para o `core/` e o empacotar importá-la.
+3. **O passo 1 (apagar o ajudante antigo) vai sempre na pergunta**, sem ler antes se a tarefa existe (o plano dizia
+   "só se a leitura achou"): ler antes custaria um PowerShell de ~1 s ANTES da pergunta (D-806 quer a pergunta logo no
+   clique), e o passo já não faz nada quando a tarefa não existe (`windows.apagar_tarefa`: "a tarefa já não existia").
+4. **`NOME_DA_TAREFA` ficou no `atualizacao.py`** (o plano o tirava): o `core/testes_a_distancia.py`, que não é desta
+   entrega, o importa para o "desfazer" apagar o ajudante antigo; e o passo 1 usa o mesmo nome.
+5. **As fases e os eventos mudaram um pouco do plano** (ex.: "conferir antes de trocar" e "pode trocar" viraram uma
+   coisa só, a troca única `trocar_para`, que confere e pede; "anotar a tentativa" ficou dentro dela). A ideia é a
+   mesma; a tabela do teste diz cada transição.
+6. **A peça do Velopack ganhou um argumento só para as provas** (`localizador`, onde está a instalação), para a
+   biblioteca de verdade rodar numa instalação de prova. No programa é sempre None.
+7. **O `estado.json` no PC do Samuel:** a pasta do ProgramData é do sistema; pela licença de fábrica a conta comum cria
+   arquivo novo nela, mas o `atualizacao.log` velho não aceita acréscimo (vai para o `erros.log`). A limpeza da D-838
+   resolve.
+8. **A pergunta do Windows leva um pouco para aparecer** depois do clique: a pasta de troca do pedido carrega a pasta
+   de dados do programa (~1 s, medido em 19/11 no `core/windows.py`), antes da pergunta. Não medi no instalado; a
+   prova à vista mede (passo 10 da seção 11 do plano).
+9. **O teste rápido roda pelo `rodar_e_esperar` da peça, com limite de 5 minutos**, sem janela; se o Windows demorar,
+   conta como "não passou" e a volta começa (como antes).
+10. **Dois testes do desinstalar dos testes à distância e um de pasta falham neste PC quando a pasta temporária do pytest
+   fica no C:** (o próprio teste recusa comandos com "C:\"); com `--basetemp` no D: passam. Era assim antes (não é
+   deste trabalho). Ver "Bugs para a Lista de bugs".
+11. **A janela da senha (D-721) continua a mesma**, e a opção dos testes ligada de fábrica faz ela aparecer na
+    primeira abertura, depois da janela. Nada liga (D-825).
+
+## Ideias para a Lista de espera
+
+- Levar a régua do Visual C++ oficial (`empacotar.vc_redist_confere`) para `core/`, para o programa instalado conferir a
+  assinatura da Microsoft antes de rodar com licença (ressalva 2).
+- Levar `NOME_DO_INDICE` (`releases.win.json`) para o `versao.py`, o lugar único dos nomes do pacote (hoje está escrito
+  no `empacotar.py` e no `atualizacao.py`, com um teste que cobra que são iguais).
+- As do plano: guardar o pacote da versão que funciona antes de trocar (D-779); a troca que falha por arquivo preso não
+  pôr a versão em "não tentar"; o brasão girando durante o teste rápido.
+
+## Bugs para a Lista de bugs
+
+- 24/11/2026, `tests/test_decisoes_desinstalar.py` e `tests/test_decisoes_desinstalar_pasta.py`: neste PC, com a pasta
+  temporária do pytest no C: (o padrão), 24 + 5 testes falham com "o comando cita o disco C: (caminho não trocado)";
+  com `--basetemp` no D: todos passam. Não impede a tarefa; não consertei.
+
+## Perguntas para a gerente
+
+- **`tests/test_conferencias_pacote.py` (2 testes) quebra.** O que é: dois testes do pacote de regras usam o
+  `atualizacao.py` de verdade como exemplo de "arquivo com lugares na lista de exceções" (e a função `criar_as_tarefas`,
+  com lugares do passo 5). Com o atualizador novo, o `atualizacao.py` não tem mais nenhum lugar na lista (os 40 saíram,
+  como você liberou). Não mexi: são testes fora do atualizador e a regra proíbe mudar teste antigo para ele passar.
+  O que você escolhe: (1) **sugestão:** você (ou quem você mandar) troca o arquivo de exemplo desses dois testes por um
+  que ainda tem lugares na lista (ex.: `core/testes_a_distancia.py`), sem mudar o que eles cobram; (2) deixar como
+  está até a lista ser gerada de novo.
+
+## Perguntas para o Samuel
+
+Nenhuma. Nenhuma decisão dele ficou em dúvida neste código; as duas diferenças do plano que tocam o que ele vê são só
+de ordem interna (ressalvas 3 e 5) e a do Visual C++ (ressalva 2) não muda nada na tela nem no livro.
 
 ---
 
