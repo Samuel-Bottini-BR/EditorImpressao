@@ -387,6 +387,7 @@ class _Bibliotecas:
             (k.QueryFullProcessImageNameW, [wintypes.HANDLE, wintypes.DWORD, wintypes.LPWSTR,
                                             ctypes.POINTER(wintypes.DWORD)], wintypes.BOOL),
             (k.GetCurrentProcessId, [], wintypes.DWORD),
+            (k.GetProcessTimes, [wintypes.HANDLE] + [ctypes.POINTER(wintypes.FILETIME)] * 4, wintypes.BOOL),
             (a.GetNamedSecurityInfoW, [wintypes.LPCWSTR, ctypes.c_int, wintypes.DWORD, ctypes.POINTER(P),
                                        ctypes.POINTER(P), ctypes.POINTER(P), ctypes.POINTER(P), ctypes.POINTER(P)],
              wintypes.DWORD),
@@ -1855,41 +1856,61 @@ def _dentro_de(caminho: str, pastas: tuple[str, ...]) -> bool:
     return any(c.startswith(p + os.sep) for p in pastas)
 
 
-def familia_de(pid: int, pais: dict[int, int]) -> set[int]:
+def familia_de(pid: int, pais: dict[int, int], criados: dict[int, int] | None = None) -> set[int]:
     """`pid` e todos os processos que ele abriu, e os que esses abriram (pela tabela processo -> quem o abriu, como o
-    Windows a dá). Lugar único da conta. Um número de quem abriu que já não existe não liga nada a ninguém."""
+    Windows a dá). Lugar único da conta. Um número de quem abriu que já não existe não liga nada a ninguém.
+    `criados` (processo -> a hora em que nasceu, do Windows): o Windows reaproveita os números, então um processo só é
+    filho de quem nasceu ANTES dele (volta 2, leve 3: sem isto, uma janela aberta por um processo que já morreu, cujo
+    número passou a este programa, contava como da família e ficava de fora da conta de "outra janela aberta")."""
+    criados = criados or {}
     familia, mudou = {int(pid)}, True
     while mudou:
         mudou = False
         for filho, pai in pais.items():
             if pai in familia and filho not in familia and filho != pai:
+                if filho in criados and pai in criados and criados[filho] < criados[pai]:
+                    continue                    # nasceu antes do "pai": o número do pai é reaproveitado
                 familia.add(filho)
                 mudou = True
     return familia
 
 
-def programas_rodando_de(pasta: Path | str, menos_a_familia_de: int | None = None) -> list[tuple[int, str]] | None:
+def _hora_em_que_nasceu(alca) -> int | None:
+    """A hora em que o processo nasceu (GetProcessTimes, em unidades de 100 ns), ou None se não deu para ler."""
+    w = _win()
+    nasceu, saiu, nucleo, usuario = (wintypes.FILETIME() for _ in range(4))
+    if not w.kernel32.GetProcessTimes(alca, ctypes.byref(nasceu), ctypes.byref(saiu), ctypes.byref(nucleo),
+                                      ctypes.byref(usuario)):
+        return None
+    return (nasceu.dwHighDateTime << 32) | nasceu.dwLowDateTime
+
+
+def programas_rodando_de(pasta: Path | str, menos_a_familia_de: int | None = None,
+                         nomes: set[str] | None = None) -> list[tuple[int, str]] | None:
     """Os processos cujo programa está dentro de `pasta` (em qualquer conta), lidos agora no Windows: [(número,
     caminho)], [] se nenhum, None se o Windows não deu a lista. `menos_a_familia_de`: deixa de fora esse processo e os
     que ele abriu (o servidor de páginas, o brasão): para o atualizador saber se há OUTRA janela do programa aberta.
+    `nomes`: os nomes de programa (.exe, em minúsculas) que contam quando o caminho não deu para ler; None = os .exe
+    que estão na pasta (lidos do disco).
 
     É a mesma pergunta que o Velopack faz antes de fechar à força o que roda na pasta dele (util_windows.rs,
     `get_processes_running_in_directory`: o caminho de cada processo pelo `QueryFullProcessImageNameW`), feita ANTES,
     para o atualizador não pedir a troca com outra janela do programa aberta (o Velopack a fecharia à força, com o que
     estivesse nela). Como: a lista do Windows (`CreateToolhelp32Snapshot`) dá o número, o número de quem o abriu e o
-    nome de cada processo sem abri-lo; o caminho vem de `OpenProcess` só para perguntar
-    (`PROCESS_QUERY_LIMITED_INFORMATION`) e `QueryFullProcessImageNameW`. Um processo cujo caminho não deu para ler
-    (outra conta sem licença, um processo protegido do Windows) conta como de dentro se o NOME dele é o de um programa
-    (.exe) que está na pasta: nunca se dá como fechado o que não deu para conferir. Só lê; não fecha nada.
+    nome de cada processo sem abri-lo; o caminho e a hora em que nasceu vêm de `OpenProcess` só para perguntar
+    (`PROCESS_QUERY_LIMITED_INFORMATION`), `QueryFullProcessImageNameW` e `GetProcessTimes`. Um processo cujo caminho
+    não deu para ler (outra conta sem licença, um processo protegido do Windows) conta como de dentro se o NOME dele é o
+    de um programa que está na pasta: nunca se dá como fechado o que não deu para conferir. Só lê; não fecha nada.
     Seguro mexer: as frases. Arriscado: comparar só pelo nome (outro programa com o mesmo nome contaria) ou só pelo
     caminho (o processo que não deixa ler o caminho sumiria da conta)."""
     w = _win()
     pastas = tuple({os.path.normcase(os.path.normpath(str(pasta))),
                     os.path.normcase(os.path.normpath(os.path.realpath(str(pasta))))})
-    try:
-        nomes = {p.name.lower() for p in Path(pasta).rglob("*.exe")}
-    except OSError:
-        nomes = set()
+    if nomes is None:
+        try:
+            nomes = {p.name.lower() for p in Path(pasta).rglob("*.exe")}
+        except OSError:
+            nomes = set()
     lista = w.kernel32.CreateToolhelp32Snapshot(_TODOS_OS_PROCESSOS, 0)
     if not lista or lista == _ALCA_INVALIDA:
         return None
@@ -1907,27 +1928,60 @@ def programas_rodando_de(pasta: Path | str, menos_a_familia_de: int | None = Non
                 break
     finally:
         w.kernel32.CloseHandle(lista)
-    fora = familia_de(menos_a_familia_de, {pid: pai for pid, pai, _ in lidos}) if menos_a_familia_de else set()
-    achados: list[tuple[int, str]] = []
-    for pid, _pai, nome in lidos:
-        if not pid or pid in fora:
+    caminhos: dict[int, str | None] = {}
+    criados: dict[int, int] = {}
+    for pid, _pai, _nome in lidos:
+        caminhos[pid] = None
+        if not pid:
             continue
-        caminho = None
         alca = w.kernel32.OpenProcess(_SO_PERGUNTAR_O_CAMINHO, False, pid)
         if alca:
             try:
                 buffer = ctypes.create_unicode_buffer(32768)
                 tamanho = wintypes.DWORD(len(buffer))
                 if w.kernel32.QueryFullProcessImageNameW(alca, 0, buffer, ctypes.byref(tamanho)):
-                    caminho = buffer.value
+                    caminhos[pid] = buffer.value
+                hora = _hora_em_que_nasceu(alca)
+                if hora is not None:
+                    criados[pid] = hora
             finally:
                 w.kernel32.CloseHandle(alca)
+    fora = (familia_de(menos_a_familia_de, {pid: pai for pid, pai, _ in lidos}, criados)
+            if menos_a_familia_de else set())
+    achados: list[tuple[int, str]] = []
+    for pid, _pai, nome in lidos:
+        if not pid or pid in fora:
+            continue
+        caminho = caminhos[pid]
         if caminho is not None:
             if _dentro_de(caminho, pastas):
                 achados.append((pid, caminho))
         elif nome.lower() in nomes:
             achados.append((pid, f"{nome} (o caminho não deu para ler)"))
     return achados
+
+
+NOME_DO_ATUALIZADOR_DO_VELOPACK = "Update.exe"
+
+
+def atualizador_do_velopack_rodando(raiz: Path | str) -> bool | None:
+    """O atualizador do Velopack desta instalação (`<raiz>\\Update.exe`) está rodando agora? True, False, ou None (o
+    Windows não deu a lista de processos). Só lê.
+
+    Para quê (volta 2 do atualizador novo, achado G1): o atualizador do Velopack roda do pedido da troca até reabrir o
+    programa: espera o programa sair (`util_common.rs` 14-26), mostra a janelinha, abre o pacote, fecha à força o que
+    roda da pasta, renomeia `current` e reabre (`apply_windows_impl.rs` 134-176; `apply.rs` 47-75). Enquanto ele roda,
+    a troca está acontecendo, e quem abre o programa pelo atalho nesse tempo abre a versão de antes (o atalho só chama
+    `Update.exe start`, que abre `current\\` sem esperar nem olhar a tranca: `stub.rs` 32-39,
+    `start_windows_impl.rs` 111-133; o `start` volta logo depois de abrir o programa). Um processo de nome
+    `Update.exe` cujo caminho não deu para ler conta como rodando (nunca se dá como parado o que não deu para
+    conferir)."""
+    alvo = os.path.normcase(os.path.normpath(str(Path(raiz) / NOME_DO_ATUALIZADOR_DO_VELOPACK)))
+    achados = programas_rodando_de(raiz, nomes={NOME_DO_ATUALIZADOR_DO_VELOPACK.lower()})
+    if achados is None:
+        return None
+    return any(os.path.normcase(os.path.normpath(c)) == alvo or c.endswith("(o caminho não deu para ler)")
+               for _, c in achados)
 
 
 def numero_deste_processo() -> int:
@@ -2666,6 +2720,22 @@ def problemas_da_licenca_dos_usuarios(antes: Licencas, depois: Licencas) -> list
     for velha in antes.lista:
         if not cobre(velha):
             problemas.append(f"sumiu a licença de {nome_para_mostrar(velha.sid, velha.nome)}: {velha.direitos()}")
+
+    def e_a_nova(li: Licenca) -> bool:
+        return li.sid == SID_USUARIOS and li.tipo == "permite" and not li.herdada
+
+    def veio_de_antes(li: Licenca) -> bool:
+        return any(v.sid == li.sid and v.tipo == li.tipo and v.herdada == li.herdada and v.so_para_dentro ==
+                   li.so_para_dentro and v.para_objetos == li.para_objetos and v.para_pastas == li.para_pastas
+                   and (li.mascara & v.mascara) == v.mascara for v in antes.lista)
+
+    for nova in depois.lista:
+        # Volta 2, leve 2 (D-837, "só para acrescentar Usuários podem modificar"): nenhuma linha a mais além dessa.
+        # (Modificar escrito do jeito genérico, ler+gravar+executar+apagar, também vale; Controle total nunca.)
+        if not veio_de_antes(nova) and not (e_a_nova(nova) and not (nova.mascara & ~(DIREITOS_DE_MODIFICAR
+                                                                                       | 0xE0010000))):
+            problemas.append(f"apareceu uma licença que não era para acrescentar: "
+                             f"{nome_para_mostrar(nova.sid, nova.nome)}: {nova.direitos()}")
     if not any(li.sid == SID_USUARIOS and li.tipo == "permite" and not li.herdada and not li.so_para_dentro
                and li.para_objetos and li.para_pastas and (li.mascara & DIREITOS_DE_MODIFICAR) == DIREITOS_DE_MODIFICAR
                for li in depois.lista):

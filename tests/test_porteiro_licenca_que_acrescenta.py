@@ -40,7 +40,7 @@ CERTO = py('''
     def dar_licenca_aos_usuarios(raiz):
         """Acrescenta."""
         ferramenta = pasta_do_sistema() / "icacls.exe"
-        return _rodar([ferramenta, raiz, "/grant", "*S-1-5-32-545:(OI)(CI)M", "/T"], 1800)
+        feito = _rodar([ferramenta, raiz, "/grant", f"*{SID_USUARIOS}:(OI)(CI)M", "/T"], LIMITE_DA_LICENCA_DA_PASTA_S)
 ''')
 
 
@@ -58,9 +58,9 @@ def test_d837_a_funcao_que_so_acrescenta_passa_so_na_peca():
 def test_d837_tirar_negar_trocar_dono_ou_heranca_e_acusado_ate_na_funcao(opcao):
     """Dentro da própria função que acrescenta, qualquer opção que tira, nega, troca o dono, mexe na herança ou
     SUBSTITUI a licença (o ":r" do "/grant:r") é acusada, na linha da ferramenta e em qualquer outra linha da função."""
-    na_linha = CERTO.replace('"/T"]', f'"/T", "{opcao}"]')
+    na_linha = CERTO.replace('"/T"]', f'"/T", "{opcao}"]')  # a linha do experimento com uma opção a mais
     assert k03({"core/windows.py": na_linha}) == [("core/windows.py", 7)]
-    em_outra = CERTO.replace('    return _rodar(', f'    extra = "{opcao}"\n    return _rodar(')
+    em_outra = CERTO.replace('    feito = _rodar(', f'    extra = "{opcao}"\n    return _rodar(')
     assert ("core/windows.py", 7) in k03({"core/windows.py": em_outra})
 
 
@@ -68,7 +68,7 @@ def test_d837_tirar_negar_trocar_dono_ou_heranca_e_acusado_ate_na_funcao(opcao):
 def test_d837_outra_ferramenta_de_licenca_na_funcao_continua_acusada(palavra):
     """A exceção é só a ferramenta do experimento: as outras palavras da K03 (inclusive a função do Windows de mudar
     licença, que o Fable descartou) continuam acusadas dentro da função, sozinhas ou junto com a ferramenta."""
-    sozinha = CERTO.replace('    return _rodar(', f'    x = "{palavra}"\n    return _rodar(')
+    sozinha = CERTO.replace('    feito = _rodar(', f'    x = "{palavra}"\n    return _rodar(')
     assert ("core/windows.py", 7) in k03({"core/windows.py": sozinha})
     junto = CERTO.replace('/ "icacls.exe"', f'/ "icacls.exe {palavra}"')
     assert k03({"core/windows.py": junto}) == [("core/windows.py", 6)]

@@ -22,6 +22,8 @@ AS FASES (`Fase`), na ordem em que costumam acontecer numa abertura do programa 
     CONFERINDO      a assinatura do Samuel na versão achada, antes de baixar (D-724).
     BAIXANDO        baixando (o Velopack confere o tamanho e a soma do que baixou).
     PRONTA          baixada; o aviso "Reiniciar agora" / "Depois" está na tela (D-715, D-720).
+    CONFERINDO_TROCA "Reiniciar agora": ANTES de a janela fechar, a conferência única da troca (o pacote, o motor da
+                    versão nova, outra janela aberta); sem ela, a janela continua aberta (volta 2, achado M1).
     DEPOIS          escolheu "Depois": ao fechar, a pergunta "Atualizar agora?" (D-769, D-794, D-831, D-835).
     FECHANDO        escolheu "Reiniciar agora": a janela fecha pelo caminho de sempre (grava o trabalho).
     PERGUNTANDO     a pergunta "Atualizar agora?" ao fechar está na tela.
@@ -67,6 +69,7 @@ class Fase(str, Enum):
     CONFERINDO = "conferindo"
     BAIXANDO = "baixando"
     PRONTA = "pronta"
+    CONFERINDO_TROCA = "conferindo_troca"
     DEPOIS = "depois"
     FECHANDO = "fechando"
     PERGUNTANDO = "perguntando"
@@ -110,6 +113,8 @@ class Estado:
     anterior: str = ""
     nao_tentar: tuple[str, ...] = ()
     sem_janela: bool = False
+    estado_grava: bool = True            # o estado.json aceita gravação nesta abertura (volta 2, M4)
+    trocando_com_janela: bool = False    # a troca em andamento é a do "Reiniciar agora" (reabre se não for pedida)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -123,7 +128,9 @@ class Abriu:
     desta abertura (pela linha de comando da reabertura ou pela anotação do disco); `troca_volta`: essa troca era a volta
     para a anterior. `sem_janela`: a reabertura do "Sim" ao fechar. `falha_anotada`: (tipo, nome) da última falha
     anotada no disco; a tela só a mostra se esta conta ainda não a viu (quem confere é o executor, na hora de entregar
-    à janela, `atualizacao.Atualizacao._para_a_tela`)."""
+    à janela, `atualizacao.Atualizacao._para_a_tela`). `troca_em_curso` (volta 2, achado G1): a troca anotada no
+    disco (sem a linha de comando da reabertura) ainda está acontecendo agora? True / False / None (não deu para
+    saber). `estado_grava` (volta 2, M4): o estado.json aceita gravação agora."""
 
     instalado: bool
     conta_de_testes: bool
@@ -136,6 +143,8 @@ class Abriu:
     troca_volta: bool = False
     sem_janela: bool = False
     falha_anotada: tuple[str, str] | None = None
+    troca_em_curso: bool | None = False
+    estado_grava: bool = True
 
 
 @dataclass(frozen=True)
@@ -182,10 +191,22 @@ class Assinatura:
 
 @dataclass(frozen=True)
 class Baixou:
-    """O download terminou (o Velopack conferiu tamanho e soma) ou deu erro."""
+    """O download terminou (o Velopack conferiu tamanho e soma) ou deu erro. `motor_da_nova`: o motor que a versão
+    baixada pede (o `motor-exigido.json` de dentro dela) está inteiro no lugar (volta 2, achado M2; D-833)."""
 
     certo: bool
     erro: str = ""
+    motor_da_nova: bool = True
+
+
+@dataclass(frozen=True)
+class TrocaConferida:
+    """A conferência única da troca, feita ANTES de a janela fechar no "Reiniciar agora" (volta 2, achado M1): pode
+    trocar? `recusada`: o pacote baixado não tem a soma assinada."""
+
+    pode: bool
+    motivo: str = ""
+    recusada: bool = False
 
 
 @dataclass(frozen=True)
@@ -243,9 +264,9 @@ class VoltaPedida:
 
 
 Evento = Union[Abriu, LicencaRespondida, PreparoTerminou, MotorConferido, Procurou, Assinatura, Baixou, Escolheu,
-               JanelaFechou, Fechando, RespondeuAoFechar, TrocaPedida, TesteRapido, VoltaPedida]
+               JanelaFechou, Fechando, RespondeuAoFechar, TrocaPedida, TesteRapido, VoltaPedida, TrocaConferida]
 TIPOS_DE_EVENTO = (Abriu, LicencaRespondida, PreparoTerminou, MotorConferido, Procurou, Assinatura, Baixou, Escolheu,
-                   JanelaFechou, Fechando, RespondeuAoFechar, TrocaPedida, TesteRapido, VoltaPedida)
+                   JanelaFechou, Fechando, RespondeuAoFechar, TrocaPedida, TesteRapido, VoltaPedida, TrocaConferida)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -363,6 +384,17 @@ class Registrar:
 
 
 @dataclass(frozen=True)
+class ConferirTroca:
+    """A conferência única da troca (`atualizacao.Atualizacao.conferir_troca`), sem pedir nada ao Velopack."""
+
+
+@dataclass(frozen=True)
+class ReabrirOPrograma:
+    """Abrir o programa de novo (o "Reiniciar agora" cuja troca não pôde ser pedida depois de a janela fechar: o
+    programa nunca some calado; volta 2, achado M1)."""
+
+
+@dataclass(frozen=True)
 class Sair:
     """Este processo sai sem abrir a janela, com o código `codigo`."""
 
@@ -371,7 +403,7 @@ class Sair:
 
 Efeito = Union[PedirLicenca, EsperarPreparo, GarantirMotor, Procurar, ConferirAssinatura, Baixar, MostrarVersaoNova,
                FecharJanela, PerguntarAoFechar, Trocar, RodarTesteRapido, AnotarOk, AnotarFalha, Voltar,
-               MostrarFalha, Registrar, Sair]
+               MostrarFalha, Registrar, Sair, ConferirTroca, ReabrirOPrograma]
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -414,7 +446,19 @@ def _ao_abrir(estado: Estado, e: Abriu) -> tuple[Estado, list[Efeito]]:
     """`Abriu` (só na fase INICIO)."""
     if not e.instalado or e.conta_de_testes or e.portatil:
         return replace(estado, fase=Fase.FORA, versao=e.versao), []
-    novo = replace(estado, versao=e.versao, nao_tentar=tuple(e.nao_tentar), sem_janela=e.sem_janela)
+    novo = replace(estado, versao=e.versao, nao_tentar=tuple(e.nao_tentar), sem_janela=e.sem_janela,
+                   estado_grava=e.estado_grava)
+    if e.troca_para and e.versao == e.troca_de and e.troca_em_curso is not False:
+        # Volta 2, achado G1 (D-828 (1), D-770): rodar a versão de antes com uma troca anotada só quer dizer "a troca não
+        # aconteceu" quando ela já acabou. Com o atualizador do Velopack ainda rodando, a troca está acontecendo (este
+        # é o clique no atalho no meio dela): nada é anotado e este processo sai sem janela (o Velopack o fecharia à
+        # força). Sem saber (o Windows não deu a lista), nada é anotado e a abertura segue; a próxima decide.
+        if e.troca_em_curso:
+            return replace(novo, fase=Fase.PARADO), [Registrar(
+                f"a troca de {e.troca_de} para {e.troca_para} está acontecendo agora: nada anotado, saio sem janela"),
+                Sair(0)]
+        return _abertura_comum(novo, e, [Registrar("não deu para saber se a troca anotada ainda está acontecendo: "
+                                                   "nada anotado nesta abertura")])
     if e.troca_para:
         if e.troca_volta:
             if e.versao == e.troca_para:          # a volta aconteceu: esta é a anterior, que funcionava
@@ -485,6 +529,11 @@ def proxima_fase(estado: Estado, evento: Evento) -> tuple[Estado, list[Efeito]]:
             "pergunta volta na próxima abertura")]
 
     if isinstance(e, MotorConferido) and f is Fase.MOTOR:
+        if e.no_lugar and not estado.estado_grava:
+            # Volta 2, achado M4: sem o estado gravando, a versão que falhar não ficaria em "não tentar" nem a troca
+            # anotada: nada é procurado (nada segue como se tivesse gravado).
+            return replace(estado, fase=Fase.PARADO), [Registrar(
+                "o estado da atualização não aceita gravação: nenhuma versão é procurada")]
         if e.no_lugar:
             return replace(estado, fase=Fase.PROCURANDO), [Procurar()]
         return replace(estado, fase=Fase.PARADO), [Registrar(
@@ -513,19 +562,34 @@ def proxima_fase(estado: Estado, evento: Evento) -> tuple[Estado, list[Efeito]]:
                  MostrarFalha(FALHA_RECUSADA, id_da_falha(FALHA_RECUSADA, estado.nova))])
 
     if isinstance(e, Baixou) and f is Fase.BAIXANDO:
+        if e.certo and not e.motor_da_nova:
+            return replace(estado, fase=Fase.PARADO), [Registrar(
+                f"o motor do Kraken que a versão {estado.nova} pede não está no lugar: ela não é anunciada")]
         if e.certo:
             return replace(estado, fase=Fase.PRONTA), [MostrarVersaoNova(estado.nova)]
         return replace(estado, fase=Fase.PARADO), [Registrar(f"não consegui baixar a versão {estado.nova}: {e.erro}")]
 
     if isinstance(e, Escolheu) and f is Fase.PRONTA:
         if e.reiniciar:
-            return replace(estado, fase=Fase.FECHANDO), [FecharJanela()]
+            return replace(estado, fase=Fase.CONFERINDO_TROCA), [ConferirTroca()]
         return replace(estado, fase=Fase.DEPOIS), [Registrar(
             f"versão {estado.nova} pronta; o Kaique escolheu \"Depois\": a pergunta vem ao fechar")]
 
+    if isinstance(e, TrocaConferida) and f is Fase.CONFERINDO_TROCA:
+        if e.pode:
+            return replace(estado, fase=Fase.FECHANDO), [FecharJanela()]
+        if e.recusada:
+            return (replace(estado, fase=Fase.PARADO, nao_tentar=_com_mais(estado.nao_tentar, estado.nova)),
+                    [AnotarFalha(FALHA_RECUSADA, estado.versao, estado.nova, e.motivo),
+                     MostrarFalha(FALHA_RECUSADA, id_da_falha(FALHA_RECUSADA, estado.nova))])
+        return replace(estado, fase=Fase.DEPOIS), [Registrar(
+            f"\"Reiniciar agora\": a troca não pode ser pedida agora ({e.motivo}); a janela continua aberta e a "
+            "pergunta vem ao fechar")]
+
     if isinstance(e, JanelaFechou) and f is Fase.FECHANDO:
         if e.fechou:
-            return replace(estado, fase=Fase.TROCANDO), [Trocar(estado.versao, estado.nova, REABRIR_COM_JANELA)]
+            return (replace(estado, fase=Fase.TROCANDO, trocando_com_janela=True),
+                    [Trocar(estado.versao, estado.nova, REABRIR_COM_JANELA)])
         return replace(estado, fase=Fase.DEPOIS), [Registrar(
             "\"Reiniciar agora\": a janela não fechou; nada foi trocado (a pergunta vem ao fechar)")]
 
@@ -543,11 +607,14 @@ def proxima_fase(estado: Estado, evento: Evento) -> tuple[Estado, list[Efeito]]:
     if isinstance(e, TrocaPedida) and f is Fase.TROCANDO:
         if e.certa:
             return estado, [Registrar(f"troca para a {estado.nova} pedida ao Velopack; o programa sai e ele troca")]
+        # Volta 2, achado M1: depois de a janela fechar no "Reiniciar agora", a troca que não pôde ser pedida reabre o
+        # programa (nunca some calado). No "Sim" ao fechar, o programa ia fechar mesmo: só fica anotado.
+        reabrir: list[Efeito] = [ReabrirOPrograma()] if estado.trocando_com_janela else []
         if e.recusada:
             return (replace(estado, fase=Fase.PARADO, nao_tentar=_com_mais(estado.nao_tentar, estado.nova)),
-                    [AnotarFalha(FALHA_RECUSADA, estado.versao, estado.nova, e.motivo)])
+                    [AnotarFalha(FALHA_RECUSADA, estado.versao, estado.nova, e.motivo)] + reabrir)
         return replace(estado, fase=Fase.PARADO), [Registrar(
-            f"a troca para a {estado.nova} não foi pedida ({e.motivo}); fica para a próxima abertura")]
+            f"a troca para a {estado.nova} não foi pedida ({e.motivo}); fica para a próxima abertura")] + reabrir
 
     if isinstance(e, TesteRapido) and f is Fase.CONFERINDO_NOVA:
         if e.passou:

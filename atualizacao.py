@@ -5,7 +5,8 @@ ato com licença é dar à pasta do programa a licença de Modificar para Usuár
 janela. Depois disso o próprio programa, na conta do Kaique, procura (só ao abrir, D-732), confere a assinatura do Samuel
 (D-724), confere o motor do Kraken (D-790, D-833), baixa e pede ao Velopack para trocar; o Velopack espera o programa
 sair, troca, mostra a janelinha dele (D-832) e reabre na conta do Kaique. Nenhum processo nosso roda como o sistema,
-nenhum PowerShell, nenhuma marca, nenhum canal entre contas. O plano inteiro, com as decisões e a leitura do Velopack,
+nenhum script do PowerShell nosso (o único PowerShell que sobra é o da peça do Windows para ler a tarefa do ajudante
+antigo no passo 1 da pergunta; ver o ONDE-PAREI, volta 2), nenhuma marca, nenhum canal entre contas. O plano inteiro, com as decisões e a leitura do Velopack,
 está em `relatorios/atualizador-novo/ONDE-PAREI.md`.
 
 AS PEÇAS (CLAUDE.md §11.12, ponto 1: uma peça só para cada conversa com o que está fora)
@@ -86,6 +87,10 @@ NOME_DO_INDICE_PUBLICADO = "releases.win.json"
 PASTA_DO_QUE_SE_INSTALA = "instalar"
 VC_REDIST_NOME = "vc_redist.x64.exe"
 VC_REDIST_VERSAO = "vc_redist.versao.txt"
+
+# O programa reaberto pela atualização (volta 2, M1) cria este arquivo logo ao começar: é o sinal de vida que a peça
+# do Windows espera para dar o "abrir de novo" como feito (`windows.lancar_solto`).
+ARG_SINAL_DE_VIDA = "--sinal-de-vida"
 
 # Os textos da tela (português, sem jargão, sem emoji; CLAUDE.md §3). Palavras combinadas com o Samuel.
 TITULO_DA_VERSAO_NOVA = "Versão nova do programa"
@@ -183,25 +188,28 @@ def _agora() -> str:
     return datetime.now().isoformat(timespec="seconds")
 
 
-def anotar_falha(tipo: str, fica: str, falhou: str, motivo: str) -> None:
+def anotar_falha(tipo: str, fica: str, falhou: str, motivo: str) -> bool:
     """A ÚNICA forma de anotar que a atualização falhou (D-718, D-719, D-778). Grava a falha (a tela a mostra uma vez,
     pelo nome `fases.id_da_falha`), põe a versão que falhou em "não tentar" (não é baixada de novo), apaga a troca em
-    andamento e anota no registro (a gerente lê)."""
+    andamento e anota no registro (a gerente lê). Devolve se o disco aceitou (volta 2, M4: o registro diz quando não)."""
     estado = ler_estado()
     nao_tentar = sorted(set(estado.get("nao_tentar") or []) | ({falhou} if falhou else set()))
     estado.update(nao_tentar=nao_tentar, falha={"id": fases.id_da_falha(tipo, falhou), "tipo": tipo, "fica": fica,
                                                 "falhou": falhou, "motivo": motivo, "quando": _agora()})
     estado.pop("tentando", None)
-    gravar_estado(estado)
-    registrar(f"FALHOU ({tipo}) a atualização para a {falhou}; o programa fica na {fica}: {motivo}")
+    gravou = gravar_estado(estado)
+    registrar(f"FALHOU ({tipo}) a atualização para a {falhou}; o programa fica na {fica}: {motivo}"
+              + ("" if gravou else " (a falha NÃO ficou gravada: o estado não aceitou)"))
+    return gravou
 
 
-def anotar_ok(versao_que_roda: str) -> None:
-    """A versão que roda está conferida: apaga a troca em andamento (a falha anotada continua, para a tela mostrar)."""
+def anotar_ok(versao_que_roda: str) -> bool:
+    """A versão que roda está conferida: apaga a troca em andamento (a falha anotada continua, para a tela mostrar).
+    Devolve se o disco aceitou (ou se nada precisava mudar)."""
     estado = ler_estado()
-    if estado.pop("tentando", None) is not None:
-        gravar_estado(estado)
-    registrar(f"versão {versao_que_roda} instalada e conferida")
+    gravou = gravar_estado(estado) if estado.pop("tentando", None) is not None else True
+    registrar(f"versão {versao_que_roda} instalada e conferida" + ("" if gravou else " (o estado NÃO aceitou)"))
+    return gravou
 
 
 def anotar_tentativa(de: str, para: str, volta: bool) -> bool:
@@ -211,11 +219,16 @@ def anotar_tentativa(de: str, para: str, volta: bool) -> bool:
     return gravar_estado(estado)
 
 
-def apagar_tentativa() -> None:
-    """A troca não chegou a ser pedida: apaga a anotação."""
+def apagar_tentativa() -> bool:
+    """A troca não chegou a ser pedida: apaga a anotação. Devolve se o disco aceitou (ou se não havia anotação)."""
     estado = ler_estado()
-    if estado.pop("tentando", None) is not None:
-        gravar_estado(estado)
+    return gravar_estado(estado) if estado.pop("tentando", None) is not None else True
+
+
+def estado_aceita_gravacao() -> bool:
+    """O estado.json aceita gravação AGORA, pela conta que abriu? (volta 2, M4: a atualização só anda se o que ela
+    precisa anotar fica anotado). Testado gravando o estado de agora de volta, pela gravação única."""
+    return gravar_estado(ler_estado())
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -475,19 +488,42 @@ def comando_para_tirar_o_inno(antiga: dict, pasta_nova: Path) -> list[str] | Non
 FOLGA_DO_MOTOR_BYTES = 500 * 1024 * 1024
 
 
-def motor_esta_no_lugar(raiz: Path | None = None) -> bool:
+# O que o pacote de uma versão diz do motor (o publicar o põe dentro dele: empacotar.PASTA_NO_NUPKG +
+# empacotar.NOME_DO_MOTOR_EXIGIDO; o programa não importa o empacotar.py, e um teste cobra que são iguais).
+CAMINHO_DO_MOTOR_EXIGIDO_NO_PACOTE = "lib/app/motor-exigido.json"
+
+
+def motor_exigido_pelo_pacote(arquivo: Path) -> int | None:
+    """A versão do motor do Kraken que o pacote (`.nupkg`) de uma versão pede, lida do `motor-exigido.json` de dentro
+    dele (volta 2, achado M2; D-833: "a versão nova só é anunciada com o motor DELA no lugar"). None se o pacote não
+    abre, não tem o arquivo ou ele não diz um número. Quem chama confere a soma assinada do pacote antes de confiar."""
+    import zipfile
+
+    try:
+        with zipfile.ZipFile(arquivo) as z:
+            lido = json.loads(z.read(CAMINHO_DO_MOTOR_EXIGIDO_NO_PACOTE).decode("utf-8"))
+        numero = lido.get("versao") if isinstance(lido, dict) else None
+        return int(numero) if isinstance(numero, int) and not isinstance(numero, bool) else None
+    except (OSError, KeyError, ValueError, zipfile.BadZipFile):
+        return None
+
+
+def motor_esta_no_lugar(raiz: Path | None = None, versao_do_motor: int | None = None) -> bool:
     """O motor do Kraken que este programa pede está inteiro no lugar dele (core/ocr_kraken.pasta_do_motor_instalado)?
 
-    A regra única de "pode anunciar e trocar de versão sem perder o motor" (D-790, D-833). Pelo código, no portátil ou
-    fora de uma instalação do Velopack: True (o motor ali não é o da instalação, e nada é trocado). A conferência é a
-    única do motor (core/ocr_kraken.conferir_motor: a ficha e o tamanho de cada arquivo)."""
+    A regra única de "o motor está no lugar" (D-790, D-833). `versao_do_motor`: o motor de QUAL versão (a que vai
+    entrar, lida do pacote dela: `motor_exigido_pelo_pacote`); None = o que este programa pede. Pelo código, no
+    portátil ou fora de uma instalação do Velopack: True (o motor ali não é o da instalação, e nada é trocado). A
+    conferência é a única do motor (core/ocr_kraken.conferir_motor: a ficha e o tamanho de cada arquivo)."""
     from core import ocr_kraken
 
     if raiz is None:
         if not instalado_pelo_velopack() or e_portatil():
             return True
         raiz = pasta_do_programa().parent
-    return not ocr_kraken.conferir_motor(ocr_kraken.pasta_do_motor_instalado(raiz))
+    versao_do_motor = ocr_kraken.VERSAO_DO_MOTOR if versao_do_motor is None else versao_do_motor
+    return not ocr_kraken.conferir_motor(ocr_kraken.pasta_do_motor_instalado(raiz, versao_do_motor),
+                                         versao_do_motor)
 
 
 def _apagar_pasta_do_motor(pasta: Path) -> bool:
@@ -634,7 +670,7 @@ class Atualizacao:
     Tudo o que fala com o mundo de fora entra pelos argumentos, e os testes trocam só a borda: `windows` (a peça
     `core.windows`), `velopack` (`core.conversa_com_o_velopack`), `raiz` (a raiz da instalação), `fonte`, `por_tras`
     (quem roda o trabalho por trás; os testes rodam na hora), `pasta_grava` (o teste de gravar), `garantir_motor` e
-    `motor_no_lugar` (o motor), `teste` (o teste rápido) e `chave_publica` (os testes assinam com uma chave deles; no
+    `motor_no_lugar` (o motor de uma versão), `teste` (o teste rápido), `estado_grava` e `chave_publica` (os testes assinam com uma chave deles; no
     programa é sempre a do Samuel). A lógica entre eles é a de verdade.
 
     Como roda: `evento(e)` pede a fase nova à regra (`fases.proxima_fase`, sob a tranca) e roda os efeitos, no fio de
@@ -649,7 +685,8 @@ class Atualizacao:
                  garantir_motor: Callable[[], bool] | None = None,
                  motor_no_lugar: Callable[[], bool] | None = None,
                  teste: Callable[[], tuple[bool, str]] | None = None,
-                 chave_publica: str | None = None) -> None:
+                 chave_publica: str | None = None,
+                 estado_grava: Callable[[], bool] = estado_aceita_gravacao) -> None:
         if windows is None:
             from core import windows
         if velopack is None:
@@ -659,7 +696,9 @@ class Atualizacao:
         self.fonte = fonte or Fonte.padrao()
         self._por_tras, self._pasta_grava = por_tras, pasta_grava
         self._garantir_motor = garantir_motor or (lambda: garantir_o_motor(self.raiz, self.raiz / "current"))
-        self._motor_no_lugar = motor_no_lugar or (lambda: motor_esta_no_lugar(self.raiz))
+        self._motor_no_lugar = motor_no_lugar or (lambda versao_do_motor: motor_esta_no_lugar(self.raiz,
+                                                                                              versao_do_motor))
+        self._estado_grava = estado_grava
         self._teste = teste or self._rodar_teste_rapido
         self._chave = chave_publica              # None = a do Samuel (assinatura.CHAVE_PUBLICA_DO_SAMUEL)
         self._estado = fases.Estado()
@@ -717,6 +756,11 @@ class Atualizacao:
             anotar_falha(ef.tipo, ef.fica, ef.falhou, ef.motivo)
         elif isinstance(ef, fases.Voltar):
             self.evento(self._voltar(ef))
+        elif isinstance(ef, fases.ConferirTroca):
+            pode, motivo, recusada = self.conferir_troca(self._achada)
+            self.evento(fases.TrocaConferida(pode, motivo, recusada))
+        elif isinstance(ef, fases.ReabrirOPrograma):
+            self._reabrir()
         elif isinstance(ef, fases.Sair):
             self.saida = ef.codigo
         elif isinstance(ef, (fases.MostrarVersaoNova, fases.MostrarFalha, fases.FecharJanela, fases.PerguntarAoFechar)):
@@ -798,7 +842,8 @@ class Atualizacao:
         except Exception as erro:  # noqa: BLE001
             self.evento(fases.Baixou(False, str(erro) or type(erro).__name__))
             return
-        self.evento(fases.Baixou(True))
+        motor = motor_exigido_pelo_pacote(self.raiz / "packages" / self._achada.arquivo)
+        self.evento(fases.Baixou(True, motor_da_nova=motor is not None and bool(self._motor_no_lugar(motor))))
 
     def _trocar(self, ef) -> None:
         """O efeito Trocar: pela troca única (`trocar_para`)."""
@@ -806,20 +851,18 @@ class Atualizacao:
                                                    reabrir=True, sem_janela=ef.reabrir == fases.REABRIR_SEM_JANELA)
         self.evento(fases.TrocaPedida(certa, motivo, recusada))
 
-    def trocar_para(self, v, de: str, para: str, *, reabrir: bool, sem_janela: bool = False,
-                    volta: bool = False) -> tuple[bool, str, bool]:
-        """A ÚNICA troca do programa (o "Reiniciar agora", o "Sim" ao fechar e a volta passam aqui). Devolve (pedida,
-        motivo, recusada). Antes de pedir ao Velopack, confere, nesta ordem:
+    def conferir_troca(self, v) -> tuple[bool, str, bool]:
+        """A CONFERÊNCIA ÚNICA de toda troca (o "Reiniciar agora" a faz ANTES de fechar a janela, volta 2, M1; e
+        `trocar_para` a faz de novo logo antes de pedir). Devolve (pode, motivo, recusada). Confere, nesta ordem:
         1. o pacote baixado está em `<raiz>\\packages\\` (com a raiz aceitando gravação, é onde o Velopack o põe:
            locator.rs 154-158) e a soma SHA256 DELE é a que a assinatura do Samuel afirma (conferida nesta abertura).
            Com a pasta aceitando gravação de Usuários, outra conta poderia trocar o arquivo depois de baixado; e o
            Velopack não confere de novo um arquivo que já está lá (manager.rs 413-416). Senão: recusada;
-        2. o motor do Kraken está no lugar (D-790, D-833);
+        2. o motor do Kraken que ESSA versão pede (o `motor-exigido.json` de dentro do pacote, já conferido pela soma)
+           está no lugar (D-790, D-833; volta 2, M2: antes era o motor do programa que roda);
         3. não há OUTRA janela do programa aberta (o Velopack a fecharia à força, com o que estivesse nela:
-           apply_windows_impl.rs 159). Este processo e os que ele abriu (o servidor de páginas, o brasão) não contam.
-        Então anota a troca em andamento (`anotar_tentativa`) e pede (`conversa_com_o_velopack.trocar`). O programa
-        reaberto recebe `--conferir-a-versao-nova <de> <para>` (e `--sem-janela` no "Sim" ao fechar); na volta, nada
-        (abre a anterior como uma abertura comum). Se o Velopack não aceitar, apaga a anotação."""
+           apply_windows_impl.rs 159), nem dá para dizer que não há (o Windows não deu a lista: não troca). Este
+           processo e os que ele abriu (o servidor de páginas, o brasão) não contam."""
         if v is None:
             return False, "não há versão baixada nesta abertura", False
         assinada = self._somas_assinadas.get(v.versao)
@@ -832,23 +875,56 @@ class Atualizacao:
             return False, f"o pacote baixado não está em {arquivo.parent} ({erro})", False
         if soma.lower() != assinada.lower():
             return False, "o pacote baixado não tem a soma assinada pelo Samuel (foi trocado depois de baixar)", True
-        if not self._motor_no_lugar():
-            return False, "o motor do Kraken não está no lugar", False
+        motor = motor_exigido_pelo_pacote(arquivo)
+        if motor is None:
+            return False, f"o pacote da versão {v.versao} não diz que motor do Kraken pede", False
+        if not self._motor_no_lugar(motor):
+            return False, f"o motor do Kraken {motor}, que a versão {v.versao} pede, não está no lugar", False
         outras = self.windows.programas_rodando_de(self.raiz / "current",
                                                    menos_a_familia_de=self.windows.numero_deste_processo())
         if outras is None:
             return False, "não deu para saber se há outra janela do programa aberta", False
         if outras:
             return False, "há outra janela do programa aberta: " + ", ".join(c for _, c in outras), False
+        return True, "", False
+
+    def trocar_para(self, v, de: str, para: str, *, reabrir: bool, sem_janela: bool = False,
+                    volta: bool = False) -> tuple[bool, str, bool]:
+        """A ÚNICA troca do programa (o "Reiniciar agora", o "Sim" ao fechar e a volta passam aqui). Devolve (pedida,
+        motivo, recusada). Primeiro a conferência única (`conferir_troca`); então anota a troca em andamento
+        (`anotar_tentativa`) e, SÓ SE A ANOTAÇÃO GRAVOU (volta 2, M4), pede (`conversa_com_o_velopack.trocar`). O
+        programa reaberto recebe `--conferir-a-versao-nova <de> <para>` (e `--sem-janela` no "Sim" ao fechar); na
+        volta, nada (abre a anterior como uma abertura comum). Se o Velopack não aceitar, apaga a anotação."""
+        pode, motivo, recusada = self.conferir_troca(v)
+        if not pode:
+            return False, motivo, recusada
         argumentos = [] if volta else [ARG_CONFERIR_NOVA, de, para] + ([ARG_SEM_JANELA] if sem_janela else [])
         argumentos += _argumentos_da_fonte(self.fonte)
-        anotar_tentativa(de, para, volta)
+        if not anotar_tentativa(de, para, volta):
+            return False, "o estado da atualização não aceitou a anotação da troca: a troca não foi pedida", False
         try:
             self.velopack.trocar(self.fonte.endereco, v, reabrir, argumentos)
         except Exception as erro:  # noqa: BLE001
             apagar_tentativa()
             return False, f"o Velopack não aceitou a troca: {erro}", False
         return True, "", False
+
+    def _reabrir(self) -> None:
+        """Abre o programa de novo (volta 2, M1: o "Reiniciar agora" cuja troca não pôde ser pedida depois de a janela
+        fechar). Pela peça do Windows (`lancar_solto`), que só dá certo quando o programa aberto deu sinal de vida
+        (ele cria o arquivo do sinal logo ao começar: `ARG_SINAL_DE_VIDA`). Se não der, fica no registro."""
+        try:
+            pasta = self.windows.criar_pasta_de_troca()
+        except OSError as erro:
+            registrar(f"não consegui reabrir o programa: {erro}")
+            return
+        try:
+            sinal = pasta / "sinal-de-vida"
+            r = self.windows.lancar_solto([sys.executable, ARG_SINAL_DE_VIDA, str(sinal)], sinal, 60)
+            registrar("o programa foi aberto de novo" if r.deu_certo
+                      else f"não consegui reabrir o programa: {r.motivo} {r.detalhe}".strip())
+        finally:
+            self.windows.apagar_pasta_de_troca(pasta)
 
     def _voltar(self, ef) -> "fases.VoltaPedida":
         """A volta para a anterior (D-718): busca o índice e a assinatura da versão `ef.para` na fonte, confere que a
@@ -901,11 +977,18 @@ class Atualizacao:
         anotada = (str(falha.get("tipo")), str(falha.get("id"))) if falha.get("tipo") and falha.get("id") else None
         conta_de_testes, portatil = e_a_conta_de_testes(), e_portatil(self.raiz)
         grava = False if (conta_de_testes or portatil) else self._pasta_grava(self.raiz)
+        # Volta 2, G1: a troca anotada no disco (não a da linha de comando, que o Velopack só passa depois de acabar:
+        # apply.rs 47-75) ainda está acontecendo? O atualizador do Velopack roda do começo da espera até reabrir.
+        em_curso = False
+        if para and ARG_CONFERIR_NOVA not in argumentos and versao.VERSAO == de and not (conta_de_testes or portatil):
+            em_curso = self.windows.atualizador_do_velopack_rodando(self.raiz)
         self.evento(fases.Abriu(instalado=True, conta_de_testes=conta_de_testes, portatil=portatil,
                                 pasta_grava=grava, versao=versao.VERSAO,
                                 nao_tentar=tuple(str(v) for v in (estado.get("nao_tentar") or [])),
                                 troca_de=de, troca_para=para, troca_volta=volta,
-                                sem_janela=ARG_SEM_JANELA in argumentos, falha_anotada=anotada))
+                                sem_janela=ARG_SEM_JANELA in argumentos, falha_anotada=anotada,
+                                troca_em_curso=em_curso,
+                                estado_grava=True if (conta_de_testes or portatil) else self._estado_grava()))
         return self.saida
 
 
@@ -977,6 +1060,14 @@ def atender_linha_de_comando(argv: list[str]) -> int | None:
     não faz nada."""
     global _DESTA_ABERTURA
     argumentos = list(argv[1:])
+    if ARG_SINAL_DE_VIDA in argumentos:              # reaberto pela atualização: o sinal de vida, antes de tudo
+        i = argumentos.index(ARG_SINAL_DE_VIDA)
+        if i + 1 < len(argumentos):
+            try:
+                Path(argumentos[i + 1]).write_bytes(b"")
+            except OSError as erro:
+                registrar(f"não consegui dar o sinal de vida: {erro}")
+        del argumentos[i:i + 2]
     primeiro = argumentos[0] if argumentos else ""
     if primeiro == ARG_TESTE_RAPIDO:
         return teste_rapido()
