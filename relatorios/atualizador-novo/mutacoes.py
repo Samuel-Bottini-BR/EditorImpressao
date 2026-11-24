@@ -91,6 +91,8 @@ def rodar() -> int:
         caminho = RAIZ / arquivo
         original = caminho.read_bytes()
         texto = original.decode("utf-8")
+        if "\r\n" in texto:                       # a cópia do Windows guarda o fim de linha do Windows
+            de, para = de.replace("\n", "\r\n"), para.replace("\n", "\r\n")
         if texto.count(de) != 1:
             linhas.append(f"[ERRO DA MUTAÇÃO] {nome}: o trecho aparece {texto.count(de)} vezes em {arquivo}")
             sobreviventes += 1
