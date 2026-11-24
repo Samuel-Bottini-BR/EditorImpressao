@@ -153,3 +153,38 @@ Plano lido: `relatorios/atualizador-novo/plano-do-atualizador-novo.md` (seções
 - Pergunta 5 (testes antigos): **"Não quero [ver antes], mas quero que ele passe a lista para você verificar"** — a lista teste por teste (apagado / adaptado / passou a cobrar o que vale hoje, com a decisão que cada um protege) vem na entrega e é conferida pelo Fable antes do "quem tenta quebrar".
 - Pergunta 6 (porteiro e licença): opção (1) — só a função da peça, só para acrescentar.
 - Pergunta 7 (limpeza do PC do Samuel): opção (1) — desinstalar pelo Windows; a gerente lista o que sobrou; o Samuel aprova o que apagar.
+
+## Emenda ao desenho do atualizador — depois do segundo "quem tenta quebrar" (24/11/2026, 11:30)
+
+Relatório lido na íntegra: `relatorios/atualizador-novo/quem-tenta-quebrar-2/relatorio.md` (1 grave, 9 médios, 4 leves; rodado no Windows de verdade). Terceiro ciclo: parei para olhar o desenho, como combinado com o Samuel.
+
+**Veredito.** O desenho grande está certo (nenhum processo nosso fora da sessão do Kaique, zero script, uma peça para o Velopack; o grave de 22/11 está resolvido com o `Update.exe` de verdade). O erro está em **duas peças que o plano manteve do atualizador antigo** (seção 5 do plano, "Fica": `ler_estado`/`gravar_estado` e `voltar_para_a_anterior`). É onde G1, M1, M2, M3, M4 e M5 se concentram. Erro meu: aceitei o "Fica" sem perguntar por que essas duas ficavam.
+
+**A causa em uma frase:** o programa confia num bilhete (`estado.json`) em vez de olhar o que existe, e a volta à anterior é um segundo atualizador (internet, 460 MB, minutos) — a janela em que desligar deixa o Kaique na versão estragada.
+
+### A. A verdade vem do disco, não do bilhete
+
+A cada abertura o programa deriva o estado de três coisas que existem: (1) a versão que está rodando (`versao.VERSAO`); (2) a **última versão que passou no teste rápido** ("última boa", guardada com o pacote dela); (3) se há pacote baixado esperando (`get_update_pending_restart` do Velopack).
+
+- Rodando ≠ última boa → versão ainda não aprovada → roda o teste rápido **nesta abertura**, em toda abertura até passar. Passou → vira a última boa (e o pacote dela é guardado). Falhou → volta (B). Mata o G1: uma volta interrompida é refeita na abertura seguinte, porque o disco ainda diz "rodando 1.2.0, última boa 1.1.0".
+- Troca que não aconteceu (desligou, arquivo preso, Windows recusou) **não é falha de versão**: o pacote continua em `packages\`, o aviso volta. Só o teste rápido reprovado põe uma versão em "não tentar" (M1).
+- O bilhete fica só com "versões reprovadas no teste" e "frase a mostrar uma vez". Se não puder ser gravado, o programa **continua atualizando** e registra o motivo; nunca para calado (M4, M5). A pasta do bilhete e do registro (`%ProgramData%\EditorImpressao\atualizacao`) é criada no UAC único com Usuários: Modificar (OI)(CI), uma linha a mais no passo que já existe, pela peça.
+- Frases: a (1) "voltou para a anterior" só quando rodando == última boa **e** há reprovação registrada da versão seguinte — derivado, nunca anotado antes de acontecer.
+
+### B. A volta é instantânea e sem internet
+
+Quando uma versão passa no teste rápido, o programa guarda o pacote dela (`ultima-boa.nupkg`). A volta passa a ser `apply` desse arquivo local (pela biblioteca, com a soma conferida contra a assinatura guardada): segundos, sem rede. É a proteção da D-779 que estava na lista de espera. Custo: ~460 MB no notebook. **Decisão do Samuel pendente (recomendo sim).**
+
+### O resto
+
+- **M2** (janela parada até 8 s): a conferência da troca sai do fio da tela e vai para o fio de trás que já existe; a janela fecha quando a conferência termina. Linha movida, não peça nova.
+- **M3** (clique sem resposta): frase genérica para todo "não deu agora": "Não deu para atualizar agora: [motivo em português]. Tente ao fechar o programa." **Decisão do Samuel pendente (recomendo sim).**
+- **M6** (motor novo): **decisão do Samuel, 24/11 11:28: "vamos fazer b e colocamos isso no plano"** — (b) nesta entrega, quando uma versão pedir motor que não está no lugar, o programa mostra uma vez "Esta versão precisa de um motor novo. Avise o Samuel." e registra; **o download do motor pela internet é o primeiro trabalho depois da entrega ao Kaique**, antes de qualquer conserto do programa. Entra no plano com esse lugar.
+- **M7, M9, leves 1–4:** consertos normais, cada um com teste que acusa o código de hoje.
+- **M8** (título da caixa): escolha do Samuel; sugestão "Atualização".
+
+### Quem faz
+
+**Escritor novo** (D-815: o atual já deu duas voltas). Não é reescrever: é trocar o juiz (a abertura deriva o estado) e a volta (arquivo local). A máquina de estados fica e **perde** fases (`VOLTANDO` encurta; `TROCANDO` deixa de depender do bilhete). Sinal de gambiarra para a gerente conferir na entrega: arquivo novo, espera, cadeado, ou o `estado.json` voltando a ser consultado para decidir alguma coisa além de "não tentar" e "frase uma vez".
+
+Depois: GitHub → quem tenta quebrar (novo) → lista com "consertado"/"deixo para depois" do Samuel (D-842) → prova à vista.
