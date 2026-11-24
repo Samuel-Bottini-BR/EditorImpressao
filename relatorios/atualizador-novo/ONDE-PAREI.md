@@ -3,31 +3,282 @@
 Implementador novo (D-815). Pedido da gerente de 24/11: aplicar ao atualizador novo a emenda do desenho escrita pelo
 Fable depois do segundo "quem tenta quebrar" (`relatorios/para-o-fable-2026-11-23/resposta-do-fable.md`, seção
 "Emenda ao desenho do atualizador") e consertar os achados de `quem-tenta-quebrar-2/relatorio.md`. Ramo
-`atualizador-novo-2026-11-23`, a partir de `012c849c`. Não abri agente nem janela.
+`atualizador-novo-2026-11-23`, a partir de `012c849c`. Não abri agente nem janela; nada no programa instalado, no
+`C:\ProgramData` nem em tarefa do Windows de verdade (as provas de verdade rodaram em pastas minhas no D:).
 
-**Situação: em andamento.** (Esta seção é preenchida passo a passo; se o trabalho parar no meio, o que está escrito
-aqui diz até onde foi.)
+**Situação: feito; os testes dos arquivos que toquei passam no meu PC, um arquivo por vez (e os 14 do atualizador
+juntos: 2540 casos); as mutações todas acusadas; falta a rodada do GitHub (é da gerente) e a resposta do Samuel às
+perguntas do fim.**
 
-## Decisões que esta tarefa precisa cumprir
+## Decisões que esta tarefa precisa cumprir, e como cumpri cada uma
 
-- D-843 (M6), à emenda: "vamos fazer b e colocamos isso no plano" — versão que pede motor do Kraken que não está no
-  lugar: mostra uma vez "Esta versão precisa de um motor novo. Avise o Samuel." e registra; não anuncia nem troca. O
-  download do motor NÃO é desta entrega.
-- D-844, chat 24/11, "ok" (1): guardar o pacote da última versão que passou no teste rápido (~460 MB); a volta usa esse
-  pacote: segundos, sem internet.
-- D-845, "ok" (2): todo "não deu" do "Reiniciar agora": "Não deu para atualizar agora: [motivo]. Tente ao fechar o
-  programa." (a frase da D-840/D-841, outra janela aberta, continua).
-- D-846, "ok" (3): o título dessa caixa: "Atualização".
-- D-842: nenhum item aberto entra na prova sem a decisão do Samuel; todo achado do relatório 2 é consertado aqui ou vai
-  a "Perguntas para o Samuel" com o porquê.
-- D-839 ("sim"): troca recusada pelo Windows → "A atualização não deu certo. O programa continua na versão de antes e
-  funcionando. Avise o Samuel.", nunca a (1). D-840/D-841 ("sim"; "1, desde que seja a volta à fase 'pronta', sem
-  espera nem peça nova"). D-718/D-719/D-778 (a volta, o aviso uma vez, as três frases). D-769 ("Se o notebook desligar
-  no meio, nada se perde e a troca tenta de novo depois"). D-732 (só ao abrir). D-733/D-741/D-749/D-806/D-834 (uma
-  pergunta do Windows, antes da janela; preparação pela metade conta como não feita). D-790/D-833 (motor tudo ou nada).
-  D-837 (a única licença: `icacls ... /grant "*S-1-5-32-545:(OI)(CI)M" /T` pela peça). D-831/D-835 (o "Depois" ao
-  fechar, os textos). D-832 (a janelinha do Velopack). D-836 (a lista dos testes que mudam). D-767, D-811 a D-813,
-  D-827 (prova de verdade; cada proteção com o teste que a acusa). §11.7, §11.8, §11.12, §11.13.
+| Decisão (palavras dele) | Como cumpri | Prova |
+|---|---|---|
+| D-843 (M6): "vamos fazer b e colocamos isso no plano" — motor novo fora do lugar: a frase uma vez, registra, não anuncia nem troca; o download do motor não é desta entrega | `Baixou(motor_da_nova=False)` → `MostrarFalha("motor")` (uma vez por versão, nesta conta) + registro; nada anunciado; a conferência da troca continua recusando sem o motor. Nada baixa motor. | `test_atualizador_volta3::test_m6_...`; tabela da regra `baixou_sem_o_motor_da_nova` |
+| D-844: "ok" (1) — guardar o pacote da última versão que passou no teste; a volta usa esse pacote, segundos, sem internet | `<raiz>\ultima-boa\` com o pacote e a assinatura; `guardar_ultima_boa` (cópia somada, nome final só com a soma assinada); a volta (`_voltar`) usa essa pasta como a fonte de pasta do Velopack | `test_d844_a_volta_funciona_sem_internet`, `test_d844_guardar_...`, `test_g_a_guarda_interrompida_...`; de verdade: `test_atualizador_volta3_de_verdade::test_d844_...` e `volta3-provas/prova_dois_processos-resultado.txt` |
+| D-845: "ok" (2) — "Não deu para atualizar agora: [motivo]. Tente ao fechar o programa." | todo "não pode" do "Reiniciar agora" (menos outra janela, que tem a frase dela, e o pacote sem a assinatura, ver pergunta 2) vira `MostrarFalha(nao_deu_agora, motivo)`; a frase é montada num lugar só (`frase_da_falha`); depois de a janela fechar, vai pelo bilhete para o programa reaberto | `test_m3_...` (3 motivos), `test_m1_m3_m5_...` na tabela, `test_d840_a_frase_so_aparece_com_outra_janela_aberta` |
+| D-846: "ok" (3) — o título "Atualização" | a ponte mostra toda frase com `TITULO_DA_FALHA` ("Atualização") | `test_m8_...`, `test_d840_...`, `test_d841_...` |
+| D-842 — nada aberto entra na prova sem a decisão dele | todo achado do relatório 2 foi consertado (tabela "achado por achado"); o que é escolha vai em "Perguntas para o Samuel" | esta seção |
+| D-839 ("sim") — troca recusada pelo Windows: "...continua na versão de antes...", nunca a (1) | o Velopack reabre a versão de antes com o pedido (apply.rs 56-60): a abertura vê `reaberto_para` mais nova que a que roda e mostra a frase (ou a guarda no bilhete, sem janela). Não vai para "não tentar" (M1) | `test_d839_...` (2), tabela `abriu_troca_recusada*` |
+| D-840/D-841 ("sim"; "1, desde que seja a volta à fase 'pronta', sem espera nem peça nova") | iguais: a frase e a volta a PRONTA no mesmo evento; nenhuma espera; a conferência por trás não muda isso | `test_d840_...`, `test_d841_...`, `test_l2_...` (200 cliques) |
+| D-718/D-719/D-778 (a volta; o aviso uma vez; as três frases) | a volta antes da janela, pela última boa; a frase (1) derivada; as frases iguais | `test_d718_*`, `test_d719_*`, `test_g1_*` |
+| D-769 ("Se o notebook desligar no meio, nada se perde e a troca tenta de novo depois") | troca interrompida não proíbe a versão; volta e guarda interrompidas são refeitas na abertura seguinte | `test_m1_...`, `test_g1_a_volta_interrompida_...`, `prova_dois_processos` (G1 e G) |
+| D-732, D-733, D-741, D-749, D-806, D-834 | iguais (a pergunta antes da janela; "preparado?" = a raiz grava; a licença da raiz é o último passo; a do ProgramData vem depois dela no mesmo passo e não decide o "preparado?") | `test_atualizador_novo::test_protecao_1..7`, `test_decisoes_preparo_d749` |
+| D-790/D-833 | iguais | `test_protecao_4a/4b`, `test_m9_v10/v11` |
+| D-837 (a única licença, `icacls ... /grant "*S-1-5-32-545:(OI)(CI)M" /T` pela peça) | a MESMA função (`dar_licenca_aos_usuarios`) e a MESMA linha, agora com a pasta que recebe; chamada só por `_fazer_passo`, duas vezes; a K03 só mudou o nome da variável na linha aceita (`raiz` → `pasta`) | `test_porteiro_licenca_que_acrescenta` (14), `test_m4_a_pergunta_unica_...`, `test_m4_de_verdade_...` |
+| D-831/D-835/D-832 | iguais | `test_d831_*`, `test_d835_*`, `test_d832_*` |
+| D-836 | a lista teste por teste, seção "Volta 3" de `lista-dos-testes-d836.md` | — |
+| D-767, D-811 a D-813, D-827 | as provas de verdade (Velopack, `icacls`, dois processos) e as mutações (abaixo) | `volta3-provas/` |
+
+## O que já estava escolhido e testado aqui, e o que mudou (§11.8)
+
+- Escolhido por ele e **mudado pela emenda que a gerente trouxe** (não por mim): o M1 (troca que não aconteceu não é
+  falha), o M4 (sem bilhete o programa continua), a volta pelo pacote guardado (D-844), a frase da D-845 e o título da
+  D-846. Os testes que cobravam o jeito antigo estão na lista da D-836 ("vale hoje").
+- Escolhido por ele e **igual**: as frases da D-778, D-835, D-839, D-840; a ordem da pergunta (D-834); o motor tudo ou
+  nada; a janelinha do Velopack; o "Depois" ao fechar. Nenhum desses textos mudou.
+- Escolhido por implementador antes e mudado (não era decisão dele): a assinatura recusada deixa de ir para "não
+  tentar" (a emenda: "Só teste rápido reprovado põe versão em 'não tentar'"); o `Update.exe` sem caminho legível deixa
+  de contar como "rodando" (M7 a; ver pergunta 3).
+- Fora do atualizador: só `tests/conftest.py` (o PROGRAMDATA da rodada, leve 1). Nenhum teste de fora mudou.
+
+## Como fica para quem usa e no livro (§11.9)
+
+**No livro (PDF): nada muda.** Pelo atalho "(desenvolvimento)" e pelo código, nada muda (o programa não está instalado
+pelo Velopack: nada roda).
+
+- **Primeira abertura depois de instalar:** igual (a pergunta do Windows antes da janela). Novo, por trás, com a janela
+  aberta: o teste rápido da versão instalada e a cópia do pacote dela para `ultima-boa` (uns 460 MB, segundos de
+  disco). Precisa da assinatura publicada dessa versão (internet); sem internet, tenta de novo nas aberturas seguintes,
+  sempre por trás (ressalva 3).
+- **Abertura comum:** igual. Nada a mais na frente da janela.
+- **"Reiniciar agora":** o aviso some e a janela **continua respondendo** enquanto o programa confere o pacote (antes
+  ficava parada até uns 8 s); então fecha e o Velopack troca. Se não puder trocar: "Não deu para atualizar agora:
+  [motivo]. Tente ao fechar o programa." (título "Atualização"); com outra janela aberta, a frase de sempre e o aviso de
+  novo. Se a troca falhar depois de a janela fechar, o programa abre de novo e mostra a frase com o motivo.
+- **Versão nova que não passa no teste:** volta para a anterior em segundos, sem internet, antes da janela; a anterior
+  abre e mostra uma vez "A atualização não deu certo. O programa voltou para a versão anterior...". Se o notebook
+  desligar no meio da volta, a próxima abertura refaz a volta (antes ficava na versão estragada com a frase errada).
+- **Troca interrompida (desligou, arquivo preso):** não aparece mais "A atualização não deu certo" para quem só
+  desligou; o aviso da versão nova volta. Se foi o Windows que recusou trocar, aparece a frase da D-839 uma vez e o aviso
+  volta (antes a versão nunca mais chegava).
+- **Versão que pede motor novo:** "Esta versão precisa de um motor novo. Avise o Samuel." uma vez (antes, nada, para
+  sempre).
+- **Espaço no notebook:** mais uns 460 MB (a última boa), dentro da pasta do programa; o desinstalar apaga junto.
+- **Problema novo que eu vejo:** depois de cada versão nova aprovada, uma cópia de 460 MB por trás (uma vez por versão);
+  no primeiro dia sem internet, o teste rápido por trás a cada abertura (ressalva 3).
+
+## Caminho → função (§11.12)
+
+| Caminho | Entra por | A regra | A ação |
+|---|---|---|---|
+| Abrir (qualquer abertura) | `main.py` → `atender_linha_de_comando` → `Atualizacao.abrir` | `proxima_fase(Abriu)`, com o que existe: `ler_ultima_boa`, `velopack.pendente`, `windows.atualizador_do_velopack_rodando` (só com troca possível e sem a linha de comando da reabertura), o bilhete (`reprovadas`, `frase`) | `PedirLicenca` / `RodarTesteRapido(antes_da_janela)` / `GarantirMotor` / `Sair` |
+| Reaberto pelo Velopack depois de trocar | o mesmo, com `--conferir-a-versao-nova <de> <para>` | a versão que roda não é a última boa → teste antes da janela; é a de antes → a frase da D-839 | `RodarTesteRapido` / `MostrarFalha(troca)` ou `GuardarFrase` |
+| Clique no atalho no meio da troca | o mesmo, sem a linha de comando | o atualizador do Velopack rodando → sai | `Sair(0)` |
+| Teste rápido | efeito `RodarTesteRapido` → `Atualizacao._testar` → `windows.rodar_e_esperar` | passou → `GuardarUltimaBoa`; não passou e antes da janela → `Reprovar` + `Voltar` | `guardar_ultima_boa` (a única que guarda) / `reprovar` (a única que põe em "não tentar") / `_voltar` |
+| A volta | efeito `Voltar` → `Atualizacao._voltar` | — | a assinatura guardada; `velopack.pacote_da_versao` + `velopack.baixar(<pasta da última boa>)`; `trocar_para` |
+| "Reiniciar agora" | `ui/aviso_de_atualizacao.py` → `Escolheu(True)` | `ConferirTroca` (por trás) → `TrocaConferida` | `FecharJanela` / `MostrarFalha(nao_deu_agora, motivo)` / `MostrarFalha(recusada)` |
+| Fechar com versão pronta | `closeEvent` → `ao_fechar` → `Fechando` | `PerguntarAoFechar` → `RespondeuAoFechar` | `Trocar` |
+| Toda troca (Reiniciar, Sim ao fechar, volta) | efeito `Trocar` / `_voltar` | — | `trocar_para` (a ÚNICA; a conferência única `conferencia_da_troca` antes) → `conversa_com_o_velopack.trocar` |
+| A troca que não foi pedida depois de fechar | `TrocaPedida(False)` com a janela | com outra janela aberta: nada; senão `GuardarFrase` + `ReabrirOPrograma` | `guardar_frase`, `windows.lancar_solto` |
+| Toda frase na tela | `MostrarFalha(tipo, nome, motivo, sempre)` | — | ponte → `atualizacao.frase_da_falha` (a ÚNICA escolha do texto), título `TITULO_DA_FALHA` |
+| O bilhete | `Reprovar`, `GuardarFrase` | — | `mudar_o_bilhete` (a ÚNICA escrita; só `reprovadas` e `frase`) |
+| A licença das duas pastas | o passo `dar_licenca_aos_usuarios` da pergunta única | — | `windows._fazer_passo` → `dar_licenca_aos_usuarios(raiz, manifesto)` e depois `dar_licenca_aos_usuarios(<ProgramData>\EditorImpressao\atualizacao, atualizacao.log)` |
+| "Outra janela?" e "o atualizador roda?" | conferência da troca; abertura | — | `windows.programas_rodando_de` + `windows.caminho_conferido` (a única leitura de "o caminho foi lido") |
+
+Prova de que os caminhos chegam ao mesmo lugar: `test_os_tres_caminhos_da_troca_passam_pela_mesma_conferencia`,
+`test_protecao_13_so_um_lugar_chama_a_troca_do_velopack` (pela árvore), a tabela exaustiva da regra e
+`test_m1_so_o_teste_reprovado_poe_a_versao_em_nao_tentar` (todos os pares).
+
+## A lista das falhas (§11.12 ponto 3), o que mudou na volta 3
+
+- **Desligar no meio da troca** (Velopack ainda não trocou): a próxima abertura roda a de antes = última boa; o pacote
+  continua esperando; procura, acha, o aviso volta. Nada proibido. (Se desligar entre as duas trocas de nome do
+  Velopack, o defeito dele de "broken state" continua: ressalva antiga 6.)
+- **Desligar no meio da troca, depois de o Velopack trocar e antes do teste:** a próxima abertura roda a nova, que não
+  é a última boa → teste antes da janela.
+- **Desligar no meio da volta:** idem (a nova continua não sendo a última boa) → teste de novo → volta de novo
+  (provado com dois processos).
+- **Desligar no meio da guarda da última boa:** sobra `<nome>.chegando`; a última boa continua a de antes; a próxima
+  abertura testa e guarda de novo (provado).
+- **O bilhete não grava** (de outra conta, preso): a atualização continua; a reprovação ou a frase que não gravou fica
+  no registro ("NÃO ficou gravada"); a pasta ganha a licença no passo da pergunta única para isso não acontecer.
+- **O registro não grava:** a linha vai para o `erros.log` da conta (como antes).
+- **Sem internet na volta:** não importa (a volta é local).
+- **Sem o pacote da última boa** (apagado à mão, antivírus): a volta não dá → a frase (3); a abertura seguinte tenta
+  de novo.
+- **A assinatura guardada não confere** (trocada): a volta não dá → a frase (3).
+- **O Velopack recusa a cópia** (a soma não bate, disco cheio): a volta não dá → a frase (3), com o motivo no registro.
+- **Sem o pacote da versão que roda em `packages`** (para guardar): a guarda não dá; registro; o teste roda de novo na
+  próxima abertura (ressalva 3). Sem última boa e sem o pacote: nem testa (não há o que guardar nem para onde voltar).
+- **Sem a assinatura da versão que roda** (nem guardada ao conferir, nem a internet): a guarda não dá; tenta depois.
+- **Disco cheio ao guardar:** a cópia falha; o `.chegando` é apagado; tenta depois.
+- **Uma pasta do registro que é um atalho, ou com um arquivo ligado a outro lugar dentro:** a licença não é dada
+  nela (o passo falha com o motivo; a raiz já foi preparada, a pergunta não volta por isso).
+- **Fechar o programa enquanto a conferência do "Reiniciar agora" roda por trás:** o fio de trás morre com o programa;
+  nada foi pedido; o aviso volta na próxima abertura.
+- **Erro fora do previsto dentro da troca:** vira "não pedida" e o programa reabre com a frase (leve 3).
+
+## A leitura do Velopack (§11.12 ponto 6), com a fonte
+
+Clone da etiqueta `1.2.161` (commit `92d6a1c`), numa pasta minha de rascunho, só lido; e o `__init__.pyi` da `.venv`.
+
+- **Aplicar um pacote guardado por nós, sem remendo: dá.** `wait_exit_then_apply_updates` (`src/lib-rust/src/manager.rs`
+  602-683) só aceita o pacote que está em `packages\` (`unsafe_apply_updates` monta `packages_dir.join(FileName)` e
+  falha se não existe, 629-634). O caminho da biblioteca para pôr um arquivo nosso lá é o `download_updates` com uma
+  fonte de PASTA: uma `str` que não é endereço da internet vira `FileSource` (`sources/mod.rs` 64-85, `AutoSource::new`);
+  o `download_release_entry` da `FileSource` só copia `<pasta>\<FileName>` (`sources/file.rs` 37-48, não lê índice); o
+  `download_updates` copia para `<nome>.partial`, confere o TAMANHO e a SHA256 do pedido (`verify_package_checksum`,
+  537-561; com a SHA256 preenchida a SHA1 não é olhada) e só então dá o nome final (465-466). Provado de verdade:
+  `test_atualizador_volta3_de_verdade::test_d844_...` (sem índice e sem SHA1; com a soma errada recusa e não deixa o
+  nome final).
+- **Se o arquivo já está em `packages\`, não copia nem confere** (413-416): por isso a conferência única da troca soma o
+  arquivo de novo (já era assim).
+- **O `download_updates` apaga os outros `.nupkg` de `packages\`** depois de baixar (419-481): na volta, o pacote da
+  versão que falhou sai (provado em `prova_dois_processos`).
+- **A abertura (`VelopackApp.run`) apaga de `packages\` todo pacote que não é o da versão que roda nem o esperando**
+  (`app.rs` 160-194, `cleanup_old_packages_from_list` 228-245): por isso o pacote da anterior NÃO fica em `packages\`
+  depois de uma troca, e a última boa tem de ser guardada em outra pasta (a `ultima-boa`).
+- **O instalador põe o pacote da versão instalada em `packages\`** (`bins/src/commands/install.rs` 200-215, "Copying
+  nupkg to packages directory"); no PC do Samuel, lido sem mexer, `packages\` tem o da 1.1.1 (a versão de agora).
+- **`get_update_pending_restart`** (272-281): o pacote completo mais novo de `packages\` (lendo o manifesto de dentro:
+  `locator.rs` 633-657) com versão maior que a que roda; só disco. Provado de verdade (`test_a_abertura_le_o_pacote_
+  esperando_pelo_velopack`).
+- **Quando a troca falha, o atualizador do Velopack reabre a versão de antes com os mesmos argumentos**
+  (`bins/src/commands/apply.rs` 47-75): é o que a abertura usa para a frase da D-839.
+- O que continua só para a prova à vista: o `Update.exe` de verdade aplicando o pacote da última boa (a volta) e a
+  janelinha dele.
+
+## Achado por achado (relatório 2): causa → conserto → o teste que falhava antes
+
+Os testes estão em `tests/test_atualizador_volta3.py`; a saída deles em `012c849c` está em
+`volta3-testes-no-codigo-antigo.txt` (23 falham lá pelo comportamento; os 8 do M9 passam lá, ver o M9).
+
+| Achado | Causa | Conserto | Teste (falha em `012c849c`) |
+|---|---|---|---|
+| G1 volta interrompida → versão estragada com a frase (1) | a falha anotada antes de a volta acontecer e a anotação da troca apagada (o bilhete decidia) | a abertura deriva: rodando ≠ última boa → teste antes da janela → volta de novo; a frase (1) só rodando a última boa com a mais nova reprovada | `test_g1_a_volta_interrompida_...` (lá: `None == 0`), `test_g1_a_frase_1_so_depois_de_voltar`; de verdade: `prova_dois_processos` (G1) |
+| M1 troca interrompida → "não deu certo" e versão proibida | a regra não separava versão ruim de troca que não aconteceu | só `Reprovar` (teste rápido) põe em "não tentar"; troca não acontecida → abertura comum, o aviso volta | `test_m1_a_troca_interrompida_...` (lá: `MostrarFalha` no lugar do aviso); tabela `test_m1_so_o_teste_reprovado_...` |
+| M2 janela parada na conferência | a conferência rodava no fio da tela | `ConferirTroca` roda por trás; a janela fecha quando ela termina | `test_m2_...` (lá: 5,0 s parado) |
+| M3 clique sem resposta | os outros "não pode" iam calados para DEPOIS | a frase da D-845 com o motivo (texto em `MOTIVOS_DA_TELA`), título D-846 | `test_m3_...` (3 casos; lá: nada na tela) |
+| M4 o bilhete de outra conta para tudo, calado | a atualização dependia de o bilhete gravar; a pasta sem licença para Usuários | a atualização não depende do bilhete; a pasta do registro ganha Usuários: Modificar no passo da pergunta única, pela mesma função | `test_m4_o_bilhete_que_nao_grava_...` (lá: nada procurado), `test_m4_a_pergunta_unica_...` (lá: só a raiz); de verdade: `test_m4_de_verdade_...` |
+| M5 o bilhete preso reabre sem trocar; duas janelas | a anotação feita depois de fechar; o reabrir sem olhar a outra janela | nada é anotado antes de trocar; com outra janela aberta no fechar, não reabre | `test_m5_o_bilhete_preso_...` (lá: não trocou), `test_m5_outra_janela_...` (lá: reabriu) |
+| M6 motor novo calado para sempre | nada dizia; o download do motor é outro trabalho | a frase da D-843 uma vez + registro | `test_m6_...` (lá: nada na tela) |
+| M7 contar pelo nome | o processo sem caminho legível contava como "rodando"/"outra janela" | `caminho_conferido` (uma leitura só): o `Update.exe` sem caminho é "não deu para saber" (a abertura segue); o processo sem caminho na conferência é "não deu para conferir" (frase da D-845), nunca "outra janela" | `test_m7a_...` (lá: `True`), `test_m7b_...` (lá: `outra_janela=True`) |
+| M8 o título | sem decisão | D-846: "Atualização" | `test_m8_...` (lá: "Versão nova do programa") |
+| M9 cinco proteções sem teste | falta de teste (D-827) | V3 virou o M7 a; V9, V10, V11, V13 ganharam teste | `test_m9_*` (passam lá: a proteção existia); a prova é a rodada de mutações |
+| L1 testes no ProgramData de verdade | a configuração comum não trocava o PROGRAMDATA | `tests/conftest.py` troca, como o LOCALAPPDATA | `test_l1_...` (lá: o registro em `C:\ProgramData`) |
+| L2 o laço da D-841 empilhava | a caixa seguinte abria por dentro da anterior | a conferência por trás: a caixa seguinte vem pela fila do Qt | `test_l2_...` (lá: parou em 138 de 200) |
+| L3 erro fora do previsto não reabria | `_trocar` não pegava | vira "não pedida" → reabre com a frase | `test_l3_...` (lá: não reabriu) |
+| L4 bilhete regravado em toda abertura | `estado_aceita_gravacao` e a anotação da troca | a abertura só lê; escreve só reprovação e frase, pela escrita única | `test_l4_...` (lá: 2 gravações); o resto: pergunta 4 |
+
+## As mutações (D-827)
+
+`volta3-provas/mutacoes_volta3.py`, numa cópia do ramo (`git archive`), com os 14 arquivos de teste do atualizador:
+as do implementador (`mutacoes.py`), as 17 do primeiro "quem tenta quebrar", as 26 V do segundo e 28 novas.
+Antes de tudo, sem mutação nenhuma, os 14 arquivos juntos passam (2537 casos): sem isso "acusada" não quer dizer nada.
+A primeira tentativa achou que não passavam juntos (as frases "já vistas" vazavam de um teste para o outro, pela pasta
+de dados da conta): consertado no ajudante dos testes, e a conferência sem mutação ficou no executor.
+
+- **Rodada inteira** (`volta3-provas/mutacoes_volta3-resultado.txt`): **93 acusadas, 3 sobreviveram, 7 saíram com o
+  desenho (cada uma com o porquê e o teste que cobra o contrário), 0 erros.** Das de antes, todas as que continuam
+  existindo foram acusadas, no trecho de antes ou no equivalente do código novo (escrito ao lado de cada uma). As que
+  saíram: as da anotação da troca e do "sem o bilhete nada anda" (V1, V14, V15, V16, M4 duas vezes, Q17), que a emenda
+  mandou tirar. As 3 que sobreviveram eram proteções novas minhas sem teste (N26: a última boa precisa da assinatura ao
+  lado; N27: a assinatura da versão que chega é guardada; N28: sem licença nem se pergunta ao Velopack).
+- **A N27 achou um defeito de verdade no meu código:** a assinatura guardada era gravada como texto, e o Windows trocava
+  cada fim de linha; uma assinatura publicada com fim de linha do Windows deixava de ser lida, e a versão nova não
+  virava a última boa sem internet. Consertado (gravada e lida byte por byte) e com teste
+  (`test_n27_a_versao_nova_vira_a_ultima_boa_sem_internet`, que falhava antes do conserto).
+- **Segunda rodada, com os três testes** (`volta3-provas/mutacoes_volta3-resultado-segunda-rodada.txt`): **3 de 3
+  acusadas.** No total: **96 acusadas, 0 sobreviventes.**
+
+## Ressalvas
+
+1. **A máquina de estados não perdeu fase; ganhou uma (GUARDANDO).** A emenda diz "perde fases". O que saiu foi a
+   dependência do bilhete (TROCANDO), o embrulho `conferir_troca`, os efeitos `AnotarFalha`, `AnotarOk` e
+   `PedirParaFecharAOutraJanela`, e a volta pela internet (VOLTANDO é um passo local). GUARDANDO existe porque guardar
+   a última boa é um passo com resultado conferido (a soma), e o que vem depois depende dele (§11.12 ponto 2).
+2. **Um arquivo novo, para a gerente conferir se é o "arquivo novo de controle" que a emenda proíbe:** a assinatura da
+   versão que está chegando é guardada em `ultima-boa\` ao ser conferida (antes de baixar), para a versão virar a
+   última boa depois do teste sem precisar de internet. Nada decide pela existência dela sozinha (a última boa é a
+   versão com o pacote E a assinatura). Sem ela, a guarda busca a assinatura na internet. A pasta `ultima-boa` em si
+   é a da emenda ("ultima-boa.nupkg").
+3. **Sem a assinatura da versão instalada** (a primeira abertura depois do `.msi`, sem internet), a guarda não dá, e o
+   teste rápido roda por trás a cada abertura até dar (segundos de processador, nada na tela). O mesmo se o pacote da
+   versão que roda sumir de `packages\`. Ver pergunta 5.
+4. **Não rodei o atualizador do Velopack de verdade aplicando a volta** (ele mexe na pasta e reabre): só a cópia e a
+   conferência dele, de verdade. A troca de verdade fica para a prova à vista (D-767, D-785).
+5. **A conta do Kaique e o `.msi`:** as ressalvas antigas (conta padrão; "Programas e Recursos" com a versão do
+   instalador) continuam.
+6. **Velocidade:** a abertura comum não ganhou trabalho na frente da janela (uma lista de pasta e a leitura do pacote
+   esperando, que não usa a rede). Depois de cada versão aprovada, uma cópia de 460 MB por trás, uma vez. Não rodei o
+   filtro de velocidade (é da gerente; mexi em `core/`).
+7. **Os leves 8 a 12 da volta 1** (que o relatório 2 lembra que o Kaique veria) não eram desta tarefa; o leve 12 (os
+   segundos sem nada na tela no teste rápido depois da troca) continua; os outros mudaram de forma com a emenda.
+8. **O teste do M3 com o motor** usa o motor do programa fora do lugar (a conferência pergunta pelo motor que a versão
+   pede; nos testes, a pergunta de mentira responde pelo mesmo interruptor).
+9. **Um teste chama o despachante de dentro da peça** (`test_m4_a_pergunta_unica_da_a_licenca_tambem_a_pasta_do_registro`
+   usa `getattr(windows, "_fazer_passo")`): é o único jeito de ver as duas pastas do passo sem a licença de
+   administrador. A regra "ninguém usa o que tem sublinhado" (`test_windows_peca`) não olha o `getattr`; a gerente decide
+   se isso é aceitável ou se prefere só a prova à vista para esse ponto.
+10. **Dois processos testando ao mesmo tempo** (o atalho clicado nos segundos em que a reabertura sem janela testa):
+   os dois reprovam a mesma versão (o bilhete fica igual) e os dois pedem a volta; um deles pode não conseguir (a
+   tranca do Velopack) e mostrar a frase (3) antes de o Velopack fechá-lo. Raro; não provado; parte da pergunta 4.
+
+## Perguntas para o Samuel (§11.13)
+
+**1. As palavras do "Não deu para atualizar agora".** É a caixa "Atualização" que aparece quando o Kaique clica
+"Reiniciar agora" e o programa não pode trocar a versão naquela hora (o texto que o senhor aprovou: "Não deu para
+atualizar agora: [motivo]. Tente ao fechar o programa."). O motivo é texto de tela que o senhor ainda não viu. Situação:
+já está no programa de teste, esperando o seu "sim". Os motivos, e quando cada um aparece:
+- "o arquivo da versão nova sumiu do computador" (um antivírus o tirou depois de baixar);
+- "o arquivo da versão nova está incompleto" (o pacote não diz que motor ele precisa);
+- "falta no computador uma peça que a versão nova precisa" (o motor de leitura de texto dela saiu do lugar);
+- "o Windows não mostrou quais programas estão abertos";
+- "há um programa aberto que pode ser outra janela do Editor de Impressão" (o Windows não deixa conferir se é dele);
+- "o programa não conseguiu fechar";
+- "o atualizador do programa não começou";
+- "a versão nova ainda não terminou de chegar";
+- "aconteceu um erro inesperado".
+Exemplo: "Não deu para atualizar agora: o Windows não mostrou quais programas estão abertos. Tente ao fechar o
+programa." **O que o senhor escolhe:** (A) aprovar como estão (sugestão); (B) mudar algum (escreva qual); ou só
+comentário. Nada do que já funciona muda.
+
+**2. O arquivo baixado que não bate com a sua assinatura, no "Reiniciar agora".** Acontece se alguém (outra conta do
+notebook, um vírus) trocar o arquivo da versão nova depois de baixado. Hoje aparece a frase que o senhor já aprovou para
+versão sem assinatura ("Chegou uma versão nova, mas ela não foi instalada porque não tem a assinatura do Samuel. O
+programa continua funcionando. Avise o Samuel."), e nada é trocado. A frase do "Não deu para atualizar agora" diria
+"Tente ao fechar o programa", o que não adiantaria. **O que o senhor escolhe:** (A) fica a frase da assinatura
+(sugestão); (B) a do "Não deu para atualizar agora". É defeito raro, não escolha do dia a dia.
+
+**3. Um programa de outra conta com o nome do atualizador.** Quando o Kaique abre o programa pelo atalho enquanto há uma
+versão nova esperando, o programa olha se o atualizador está trocando a versão naquele instante (se estiver, ele não
+abre, para não ser fechado no meio). Se aparecer um programa com o mesmo nome do atualizador que o Windows não deixa
+conferir (de outra conta), antes o programa não abria, sem dizer nada, enquanto aquele rodasse; agora abre normalmente
+(no pior caso, o atualizador de verdade o fecha, como já acontecia antes da volta 2). **O que o senhor escolhe:**
+(A) abrir (sugestão; é o que está feito); (B) não abrir. Só comentário também vale.
+
+**4. Dois "pedaços" do programa anotando ao mesmo tempo.** O caderninho da atualização (as versões que falharam no
+teste e a frase a mostrar uma vez) agora só é escrito quando há o que anotar, e a anotação que se perdia (a da troca em
+andamento) não existe mais. Sobra um caso raro: dois pedaços do programa anotando no mesmo instante; um pode apagar a
+anotação do outro. O efeito para o Kaique: uma frase de aviso que não aparece, ou uma versão estragada oferecida de novo
+(e devolvida de novo em segundos). Não provado. **O que o senhor escolhe:** (A) deixo para depois (sugestão); (B)
+consertar agora (precisaria de uma tranca entre os pedaços, que o Fable pediu para não pôr).
+
+**5. O teste da versão instalada sem internet no primeiro dia.** Na primeira vez que o programa abre depois de
+instalado, ele testa a versão por trás e guarda uma cópia dela (para poder voltar a ela no futuro). Para guardar, ele
+confere a sua assinatura, que vem da internet. Sem internet, ele repete o teste por trás a cada abertura (alguns
+segundos de processador, nada na tela) até conseguir. **O que o senhor escolhe:** (A) deixo assim (sugestão; some no
+primeiro dia com internet); (B) pôr a assinatura da versão dentro do instalador (mexe no publicar; outro trabalho).
+
+## Ideias para a Lista de espera
+
+- Pôr a assinatura da versão no instalador (resolveria a pergunta 5 de vez).
+
+## Bugs para a Lista de bugs
+
+- Nenhum fora do que está acima.
+
 
 # Volta 2b: as frases D-839 e D-840 (24/11/2026)
 

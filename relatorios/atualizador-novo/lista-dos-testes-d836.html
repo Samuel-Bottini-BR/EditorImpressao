@@ -676,6 +676,241 @@ cópia de trabalho e devolvendo o arquivo depois). Os 26 do arquivo passam.</p>
 </tr>
 </tbody>
 </table>
-<p class="rodape">Editor de Impressão &middot; gerado em 24/11/2026 às 09:09</p>
+<h2>Volta 2b (24/11/2026): as frases D-839 e D-840</h2>
+<table>
+<thead>
+<tr>
+<th>Arquivo :: teste</th>
+<th>O que aconteceu</th>
+<th>Por quê</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tests/test_atualizador_volta2.py::test_leve1_a_frase_da_troca_espera_a_resposta_do_samuel</code></td>
+<td>vale hoje (cobra a frase nova)</td>
+<td>existia para a frase da falha "troca" não mudar calada até a resposta do Samuel; ele respondeu (D-839, chat 24/11: "sim"); a gerente liberou a troca deste teste</td>
+</tr>
+<tr>
+<td><code>tests/test_atualizador_novo.py::test_d835_e_d778_os_textos_da_tela_palavra_por_palavra</code> (só a linha "troca" do dicionário)</td>
+<td>vale hoje (cobra a frase nova)</td>
+<td>a mesma decisão: a D-839 deu frase própria à falha "troca"; as outras três linhas (as da D-778) e os textos da D-835 não mudaram</td>
+</tr>
+<tr>
+<td><code>tests/test_fases_da_atualizacao.py</code> (a tabela)</td>
+<td>uma linha nova, nenhuma mudada</td>
+<td>o evento novo "conferida_outra_janela" (D-840): DEPOIS, com o registro e a frase; o "conferida_nao" continua igual (nada na tela)</td>
+</tr>
+<tr>
+<td><code>tests/test_decisoes_atualizacao.py::test_d839_*</code> (3), <code>::test_d840_*</code> (3)</td>
+<td>novos</td>
+<td>as provas das duas decisões pelo caminho inteiro (a regra, o executor e a ponte da tela); 4 falham no código de <code>63bd8546</code> (<code>volta2b-testes-no-codigo-antigo.txt</code>); os 2 de "só com outra janela" passam lá e aqui (nada mudou nos outros casos)</td>
+</tr>
+<tr>
+<td><code>tests/test_atualizador_volta2.py::test_m1_reiniciar_agora_que_nao_pode_trocar_nao_fecha_a_janela</code> (uma linha)</td>
+<td>vale hoje</td>
+<td>D-841 (chat 24/11: "1, desde que seja a volta à fase 'pronta'"): com outra janela aberta a fase depois do "Reiniciar agora" é PRONTA (o aviso volta), não DEPOIS; o resto do teste não mudou</td>
+</tr>
+<tr>
+<td><code>tests/test_fases_da_atualizacao.py</code> (a linha <code>conferida_outra_janela</code>) e <code>tests/test_decisoes_atualizacao.py::test_d840_reiniciar_agora_com_outra_janela_...</code></td>
+<td>vale hoje</td>
+<td>D-841: depois da frase, o aviso aparece de novo</td>
+</tr>
+<tr>
+<td><code>tests/test_decisoes_atualizacao.py::test_d841_depois_da_frase_o_aviso_volta_e_com_a_outra_fechada_troca</code></td>
+<td>novo</td>
+<td>a prova da D-841; falha em <code>4f542399</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Volta 3 (24/11/2026): a emenda do Fable e os achados do segundo "quem tenta quebrar"</h2>
+<p>O que mudou e por quê, em uma frase: a abertura passou a olhar o que existe (a versão que roda, a última boa guardada,
+o pacote esperando) em vez da anotação da troca; só o teste rápido reprovado põe a versão em "não tentar"; a volta usa o
+pacote guardado; o "Reiniciar agora" que não pode responde com a frase (D-845, título D-846); a licença da pergunta
+única vale também para a pasta do registro. Todo teste abaixo é do atualizador. Fora do atualizador, só a
+configuração comum dos testes (<code>tests/conftest.py</code>) mudou: ela passou a trocar também o PROGRAMDATA, como já trocava o
+LOCALAPPDATA (leve 1: dois testes escreviam no registro de verdade do PC); nenhum teste de fora do atualizador mudou.</p>
+<table>
+<thead>
+<tr>
+<th>Arquivo :: teste</th>
+<th>O que aconteceu</th>
+<th>Por quê (a decisão ou o achado)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tests/test_fases_da_atualizacao.py</code> (a tabela inteira)</td>
+<td>vale hoje (reescrita)</td>
+<td>a regra recebe o que existe (<code>ultima_boa</code>, <code>pendente</code>, <code>reaberto_de/para</code>, <code>frase_guardada</code>) no lugar da anotação (<code>troca_de/para</code>, <code>falha_anotada</code>, <code>estado_grava</code>); fases novas GUARDANDO; efeitos novos <code>Reprovar</code>, <code>GuardarUltimaBoa</code>, <code>GuardarFrase</code>; saem <code>AnotarFalha</code>, <code>AnotarOk</code>, <code>PedirParaFecharAOutraJanela</code> (que virou <code>MostrarFalha(nao_deu_agora)</code>). Teste novo: <code>test_m1_so_o_teste_reprovado_poe_a_versao_em_nao_tentar</code> (em TODOS os pares, o "não tentar" só cresce pelo <code>Reprovar</code>, e só no teste que falhou)</td>
+</tr>
+<tr>
+<td><code>tests/test_atualizador_novo.py::test_protecao_2_...</code></td>
+<td>vale hoje</td>
+<td>a assinatura recusada não vai mais para "não tentar" (emenda: "Só o teste rápido reprovado põe versão em 'não tentar'"); continua não baixando e mostrando a frase 2</td>
+</tr>
+<tr>
+<td><code>::test_protecao_8_...</code></td>
+<td>adaptado</td>
+<td>a chave do bilhete é <code>reprovadas</code></td>
+</tr>
+<tr>
+<td><code>::test_d720_reiniciar_agora_fecha_a_janela_e_so_depois_troca</code></td>
+<td>vale hoje (uma linha)</td>
+<td>nada é anotado antes de trocar (o bilhete fica vazio)</td>
+</tr>
+<tr>
+<td><code>::test_protecao_10_a_janela_que_nao_fecha_nao_troca</code></td>
+<td>vale hoje (uma linha)</td>
+<td>D-845: o clique tem resposta (a frase "o programa não conseguiu fechar") antes da pergunta ao fechar</td>
+</tr>
+<tr>
+<td><code>::test_protecao_3_pacote_trocado_depois_de_baixar_nao_troca</code></td>
+<td>vale hoje (uma linha)</td>
+<td>não troca e fica no registro; não vai para "não tentar"</td>
+</tr>
+<tr>
+<td><code>::test_d718_reaberto_na_versao_nova_que_passa_no_teste</code></td>
+<td>vale hoje</td>
+<td>o teste roda porque a versão não é a última boa; passou, vira a última boa (D-844)</td>
+</tr>
+<tr>
+<td><code>::test_d718_teste_que_falha_volta_para_a_anterior_assinada</code></td>
+<td>vale hoje</td>
+<td>a volta pelo pacote guardado (o <code>baixar</code> com a pasta da última boa); o bilhete só com <code>reprovadas</code></td>
+</tr>
+<tr>
+<td><code>::test_protecao_11_a_volta_sem_a_assinatura_...</code></td>
+<td>vale hoje</td>
+<td>a assinatura que vale é a guardada com o pacote da última boa</td>
+</tr>
+<tr>
+<td><code>::test_a_troca_que_nao_aconteceu_avisa_uma_vez</code></td>
+<td>vale hoje</td>
+<td>M1: a frase da D-839 continua, a versão NÃO vai para "não tentar"</td>
+</tr>
+<tr>
+<td><code>::test_d769_reabertura_sem_janela_que_passa_sai_sem_janela</code></td>
+<td>vale hoje</td>
+<td>sai sem janela e a última boa fica guardada antes de sair</td>
+</tr>
+<tr>
+<td><code>::test_d719_a_falha_vai_para_a_janela_uma_vez_so_nesta_conta</code></td>
+<td>vale hoje</td>
+<td>a frase (1) é derivada (rodando a última boa com a mais nova reprovada), não anotada</td>
+</tr>
+<tr>
+<td><code>::test_d835_e_d778_os_textos_da_tela_palavra_por_palavra</code></td>
+<td>vale hoje (uma linha a mais)</td>
+<td>D-843: a frase do motor novo no dicionário das frases</td>
+</tr>
+<tr>
+<td><code>::test_os_tres_caminhos_da_troca_passam_pela_mesma_conferencia</code></td>
+<td>adaptado</td>
+<td>a volta precisa da última boa guardada</td>
+</tr>
+<tr>
+<td><code>tests/test_atualizador_volta2.py::test_g1_abrir_pelo_atalho_no_meio_da_troca_...</code>, <code>::test_g1_sem_saber_...</code></td>
+<td>adaptado</td>
+<td>a mesma proteção (sai sem janela; sem saber, segue e nada é anotado), agora disparada pelo pacote esperando, sem a anotação</td>
+</tr>
+<tr>
+<td><code>::test_g1_a_troca_que_acabou_sem_trocar_continua_sendo_falha</code></td>
+<td>vale hoje (nome novo: <code>test_g1_a_troca_que_acabou_sem_trocar_nao_e_falha_e_a_reabertura_nao_pergunta</code>)</td>
+<td>M1 da emenda: "Troca que não aconteceu não é falha de versão"</td>
+</tr>
+<tr>
+<td><code>::test_m2_a_volta_confere_o_motor_da_anterior_e_volta</code></td>
+<td>adaptado</td>
+<td>a volta precisa da última boa guardada; o bilhete diz <code>reprovadas</code></td>
+</tr>
+<tr>
+<td><code>::test_m2_a_versao_nova_sem_o_motor_dela_nao_e_anunciada</code></td>
+<td>vale hoje</td>
+<td>D-843: no lugar de nada na tela, a frase do motor novo</td>
+</tr>
+<tr>
+<td><code>::test_m4_com_o_estado_que_nao_grava_nada_e_procurado_nem_trocado</code></td>
+<td>vale hoje (nome novo: <code>test_m4_com_o_estado_que_nao_grava_a_atualizacao_continua_e_o_registro_diz</code>)</td>
+<td>M4 da emenda: "Se não puder ser gravado, o programa continua atualizando e registra o motivo"</td>
+</tr>
+<tr>
+<td><code>::test_q7_a_licenca_tem_de_chegar_ao_arquivo_de_dentro</code></td>
+<td>adaptado</td>
+<td>quem pede diz o arquivo de dentro a conferir (a mesma função serve às duas pastas)</td>
+</tr>
+<tr>
+<td><code>::test_q14_sem_a_lista_de_processos_nao_troca</code></td>
+<td>adaptado</td>
+<td>a conferência única direto (saiu o embrulho <code>conferir_troca</code>)</td>
+</tr>
+<tr>
+<td><code>tests/test_decisoes_atualizacao.py::test_d724_versao_com_assinatura_errada_...</code>, <code>::test_d724_versao_sem_arquivo_...</code>, <code>::test_d724_pacote_trocado_...</code></td>
+<td>vale hoje</td>
+<td>D-724 igual (não baixa); a versão não vai para "não tentar"; a frase 2 na tela (ou, já vista, o registro)</td>
+</tr>
+<tr>
+<td><code>::test_d724_versao_que_ja_falhou_nao_e_tentada_de_novo</code></td>
+<td>adaptado</td>
+<td>a chave <code>reprovadas</code></td>
+</tr>
+<tr>
+<td><code>::test_d719_a_falha_aparece_na_tela_uma_vez_so</code></td>
+<td>vale hoje</td>
+<td>a frase (1) derivada</td>
+</tr>
+<tr>
+<td><code>::test_d719_o_erro_vai_para_o_registro_no_programdata</code></td>
+<td>adaptado</td>
+<td>a função única que reprova é <code>reprovar</code></td>
+</tr>
+<tr>
+<td><code>::test_d718_versao_nova_que_nao_passa_no_teste_volta_para_a_anterior</code>, <code>::test_d718_versao_nova_que_passa_no_teste_fica</code>, <code>::test_d718_a_volta_so_aceita_o_pacote_assinado</code></td>
+<td>vale hoje</td>
+<td>a volta e a guarda pela última boa (D-844)</td>
+</tr>
+<tr>
+<td><code>::test_d718_troca_desfeita_pelo_velopack_conta_como_falha</code></td>
+<td>vale hoje (nome novo: <code>test_d718_troca_desfeita_pelo_velopack_mostra_a_frase_e_nao_proibe_a_versao</code>)</td>
+<td>D-839 (a frase) continua; M1: não proíbe a versão</td>
+</tr>
+<tr>
+<td><code>::test_d839_a_troca_que_nao_aconteceu_...</code> (2)</td>
+<td>adaptado</td>
+<td>sem janela, a frase vai pelo bilhete (<code>frase</code>) para a próxima abertura</td>
+</tr>
+<tr>
+<td><code>::test_d840_reiniciar_agora_com_outra_janela_...</code>, <code>::test_d841_...</code></td>
+<td>vale hoje (o título)</td>
+<td>D-846: o título da caixa é "Atualização"</td>
+</tr>
+<tr>
+<td><code>::test_d840_a_frase_so_aparece_com_outra_janela_aberta</code> (2)</td>
+<td>vale hoje</td>
+<td>D-845: nos outros casos aparece "Não deu para atualizar agora: [motivo]..." (antes, nada)</td>
+</tr>
+<tr>
+<td><code>tests/test_porteiro_licenca_que_acrescenta.py</code> (a amostra <code>CERTO</code>)</td>
+<td>adaptado</td>
+<td>a K03 aceita a linha do experimento com <code>pasta</code> (a mesma função para as duas pastas); nada mais mudou na K03</td>
+</tr>
+<tr>
+<td><code>tests/ajudante_do_atualizador.py</code></td>
+<td>mudado</td>
+<td>a <code>Prova</code> ganhou <code>ultima_boa</code> e <code>pendente</code>; o Velopack de mentira copia da pasta (como a fonte de pasta do Velopack, conferindo a soma) e falha sem a fonte (como sem internet); a peça do Windows de mentira usa a leitura de verdade <code>caminho_conferido</code>; a fixture <code>programdata_de_prova</code> passou a trocar também o LOCALAPPDATA (as frases "já vistas" vazavam de um teste para o seguinte: achado ao rodar os 14 arquivos juntos nas mutações)</td>
+</tr>
+<tr>
+<td><code>tests/test_atualizador_volta3.py</code> (36)</td>
+<td>novos</td>
+<td>um por achado do segundo "quem tenta quebrar" (G1, M1 a M9, L1 a L4) e pela D-844, mais os três que a rodada de mutações pediu (N26, N27, N28); 23 dos 31 primeiros falham no código de <code>012c849c</code> pelo comportamento (<code>volta3-testes-no-codigo-antigo.txt</code>); os 8 do M9 passam lá (as proteções existiam; faltava o teste: a prova é a rodada de mutações)</td>
+</tr>
+<tr>
+<td><code>tests/test_atualizador_volta3_de_verdade.py</code> (5)</td>
+<td>novos</td>
+<td>o Velopack de verdade (a volta pela pasta da última boa sem índice e sem SHA1; o pendente), o <code>icacls</code> de verdade numa pasta de prova com o bilhete e o registro dentro, a recusa do arquivo ligado e do atalho</td>
+</tr>
+</tbody>
+</table>
+<p class="rodape">Editor de Impressão &middot; gerado em 24/11/2026 às 13:28</p>
 </body>
 </html>
