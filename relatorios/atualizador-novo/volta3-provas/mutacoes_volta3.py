@@ -286,16 +286,22 @@ def main() -> int:
         anotar("PAROU: sem mutação os testes já falham")
         (AQUI / "mutacoes_volta3-resultado.txt").write_text("\n".join(linhas) + "\n", encoding="utf-8")
         return 1
-    de_antes("mutacoes.py (as do implementador)", IMPL.MUTACOES, False)
-    de_antes("mutacoes_qtq.py (as 17 do primeiro quem tenta quebrar)", QTQ1.MUTACOES, True)
-    de_antes("mutacoes_qtq2.py (as 26 V do segundo quem tenta quebrar)", QTQ2.MUTACOES, True)
-    anotar("== as proteções novas da volta 3")
+    # `--so N26,N27`: só essas das novas (a segunda rodada, depois de pôr o teste que faltava); a saída vai para outro
+    # arquivo, e a rodada inteira continua guardada no de sempre.
+    so = sys.argv[sys.argv.index("--so") + 1].split(",") if "--so" in sys.argv else None
+    if so is None:
+        de_antes("mutacoes.py (as do implementador)", IMPL.MUTACOES, False)
+        de_antes("mutacoes_qtq.py (as 17 do primeiro quem tenta quebrar)", QTQ1.MUTACOES, True)
+        de_antes("mutacoes_qtq2.py (as 26 V do segundo quem tenta quebrar)", QTQ2.MUTACOES, True)
+    anotar("== as proteções novas da volta 3" + (f" (só {', '.join(so)})" if so else ""))
     for nome, arquivo, de, para in NOVAS:
-        anotar(_rodar_uma(nome, arquivo, de, para))
+        if so is None or nome.split()[0] in so:
+            anotar(_rodar_uma(nome, arquivo, de, para))
     resumo = (f"{contas['acusada']} acusadas, {contas['SOBREVIVEU']} sobreviveram, {contas['saiu']} saíram com o "
               f"desenho (com o porquê), {contas['erro']} erros de mutação")
     anotar(resumo)
-    (AQUI / "mutacoes_volta3-resultado.txt").write_text("\n".join(linhas) + "\n", encoding="utf-8")
+    saida = "mutacoes_volta3-resultado.txt" if so is None else "mutacoes_volta3-resultado-segunda-rodada.txt"
+    (AQUI / saida).write_text("\n".join(linhas) + "\n", encoding="utf-8")
     return contas["SOBREVIVEU"] + contas["erro"]
 
 
