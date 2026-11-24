@@ -1,3 +1,22 @@
+# Atualizador novo: o código (23/11/2026) — EM ANDAMENTO
+
+Implementador. Ramo `atualizador-novo-2026-11-23`. Pedido da gerente de 23/11/2026: escrever o código do plano abaixo
+(seção "Atualizador novo: o plano"), com as respostas do Samuel (D-834 a D-838) e as da gerente (os 4 arquivos de tela
+liberados; a capacidade "Velopack" na trava; tirar da lista de exceções só o que o código deixou de ter; um caminho só
+para a licença da pasta, o `icacls ... /grant "*S-1-5-32-545:(OI)(CI)M" /T` do experimento).
+
+**Situação:** começando. Este cabeçalho é atualizado a cada passo; a seção completa (decisões e como cumpri, caminho →
+função, falhas, leitura das peças de fora, provas) entra aqui no fim.
+
+Decisões que esta tarefa precisa cumprir: as da seção 1 do plano abaixo, mais D-834 (a pergunta do Windows antes da
+janela, a senha depois), D-835 (os textos curtos: "Se escolher "Depois", você pode atualizar quando fechar o
+programa."; "Atualizar agora?" / "Quer atualizar o programa agora, ao fechar?" / "Sim" / "Não"), D-836 (os testes
+antigos; a lista teste por teste num arquivo próprio), D-837 (o porteiro deixa só uma função da peça, só para
+acrescentar "Usuários podem modificar"), D-838 (o programa só apaga sozinho a tarefa antiga do ajudante), D-778 (as três
+frases de falha entram agora) e D-832 (a janelinha é a do Velopack).
+
+---
+
 # Atualizador novo: o plano (23/11/2026)
 
 Implementador. Ramo `atualizador-novo-2026-11-23`, worktree `.claude/worktrees/atualizador-novo`, ponta `732a143e`.
