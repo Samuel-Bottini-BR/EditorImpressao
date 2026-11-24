@@ -129,10 +129,13 @@ ponta `fda954aa` (o plano).
 | test_velopack_so_no_dono | novo | `import velopack` fora do dono é acusado |
 | test_cada_capacidade_so_no_seu_dono | igual (a catraca desceu: 12 lugares do `atualizacao.py` saíram, TETO 46 → 34) | — |
 
-## Fora do atualizador, que quebram e não foram mexidos
+## Fora do atualizador, adaptados com o "sim" do Samuel (24/11/2026)
 
-- `tests/test_conferencias_pacote.py::test_o_pacote_mostra_os_lugares_da_lista_nos_arquivos_do_pedido` e
-  `::test_q3_o_pacote_do_passo_diz_as_funcoes_de_outros_passos_que_nao_se_mexem`: usam o `atualizacao.py` de verdade
-  como exemplo de "arquivo com lugares na lista de exceções" (e a função `criar_as_tarefas`). Com o código novo, o
-  `atualizacao.py` não tem mais lugar nenhum na lista (os 40 saíram, com a licença da gerente). Não mexi (regra: teste
-  fora do atualizador não se mexe; teste antigo não muda para passar). Pergunta para a gerente no ONDE-PAREI.
+| Teste | O que aconteceu | O que cobra agora |
+|---|---|---|
+| tests/test_conferencias_pacote.py::test_o_pacote_mostra_os_lugares_da_lista_nos_arquivos_do_pedido | adaptado: só o arquivo de exemplo (`atualizacao.py` → `core/testes_a_distancia.py`), porque o `atualizacao.py` ficou sem lugares na lista | o mesmo: o pacote mostra a seção "Lugares da lista de exceções nos seus arquivos" e o aviso |
+| tests/test_conferencias_pacote.py::test_q3_o_pacote_do_passo_diz_as_funcoes_de_outros_passos_que_nao_se_mexem | adaptado: só o arquivo de exemplo (`atualizacao.py`, passo 3, com `criar_as_tarefas` do passo 5 → `core/testes_a_distancia.py`, passo 4, com `_passos_das_nossas_tarefas` do passo 5), pelo mesmo motivo | o mesmo: o pacote do passo lista as funções de outros passos e não as do próprio |
+
+Os dois continuam cobrando o que cobravam: com o pacote sem a seção dos lugares, o primeiro falha; com o pacote sem a
+lista das funções de outros passos, o segundo falha (conferido trocando o `regras_dos_agentes/montar_pacote.py` numa
+cópia de trabalho e devolvendo o arquivo depois). Os 26 do arquivo passam.

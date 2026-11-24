@@ -7,8 +7,8 @@ versão, não disparei o GitHub e não mexi no PC fora da pasta do projeto.
 
 **Situação: o código está escrito e os testes dos arquivos que toquei passam no meu PC, um arquivo por vez. Falta (é
 da gerente): a rodada do GitHub, a revisão do Fable da lista dos testes, quem tenta quebrar e a prova à vista com o
-Samuel.** Dois testes fora do atualizador quebram por causa da lista de exceções que diminuiu (ver "Perguntas para a
-gerente"). Último commit: ver a mensagem de entrega.
+Samuel.** Os dois testes fora do atualizador que quebravam pela lista de exceções menor foram adaptados com o "sim" do
+Samuel (só o arquivo de exemplo). Último commit: ver a mensagem de entrega.
 
 ## Os testes no meu PC (um arquivo por vez; a pasta temporária do pytest no D:, ver o bug de baixo)
 
@@ -24,7 +24,7 @@ gerente"). Último commit: ver a mensagem de entrega.
   14, `test_publicar_versao.py` 125, `test_publicar_motor.py` 12, `test_empacotar.py` 43, `test_ocr_kraken.py` 28 + 5,
   `test_ocr_diagnostico.py` 6, `test_ocr_comparar.py` 16 + 23, `test_pasta_das_ferramentas.py` 17, `test_promessas.py`
   270 + 1 esperado, `test_nome_do_pacote.py` 5.
-- **Falham:** `test_conferencias_pacote.py`, 2 de 26 (ver "Perguntas para a gerente").
+- `test_conferencias_pacote.py`: 26 passam, depois da troca do arquivo de exemplo dos 2 testes que quebravam (o "sim" do Samuel à sugestão (1), 24/11; ver "Perguntas para a gerente").
 - O porteiro (`python -m regras_dos_agentes porteiro`): "nada novo (4981 arquivos lidos; a lista deixa 135 lugares)".
 - As mutações: 20 de 20 acusadas (seção de baixo).
 
@@ -340,6 +340,12 @@ Antes dela, a limpeza do PC do Samuel (D-838, com a gerente) e quem tenta quebra
   O que você escolhe: (1) **sugestão:** você (ou quem você mandar) troca o arquivo de exemplo desses dois testes por um
   que ainda tem lugares na lista (ex.: `core/testes_a_distancia.py`), sem mudar o que eles cobram; (2) deixar como
   está até a lista ser gerada de novo.
+
+**Respondida (24/11/2026):** o Samuel disse "sim" à sugestão (1). Feito: nos 2 testes, só o arquivo de exemplo mudou
+(`atualizacao.py` → `core/testes_a_distancia.py`; no do passo, passo 3 com `criar_as_tarefas` → passo 4 com
+`_passos_das_nossas_tarefas`, do passo 5). Conferido que continuam cobrando: sem a seção dos lugares no pacote, o
+primeiro falha; sem a lista das funções de outros passos, o segundo falha (mudando o `montar_pacote.py` só durante a
+conferência e devolvendo depois). Os 26 do arquivo passam. Anotado na lista da D-836.
 
 ## Perguntas para o Samuel
 

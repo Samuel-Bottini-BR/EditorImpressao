@@ -614,14 +614,31 @@ ponta <code>fda954aa</code> (o plano).</p>
 </tr>
 </tbody>
 </table>
-<h2>Fora do atualizador, que quebram e não foram mexidos</h2>
-<ul>
-<li><code>tests/test_conferencias_pacote.py::test_o_pacote_mostra_os_lugares_da_lista_nos_arquivos_do_pedido</code> e
-  <code>::test_q3_o_pacote_do_passo_diz_as_funcoes_de_outros_passos_que_nao_se_mexem</code>: usam o <code>atualizacao.py</code> de verdade
-  como exemplo de "arquivo com lugares na lista de exceções" (e a função <code>criar_as_tarefas</code>). Com o código novo, o
-  <code>atualizacao.py</code> não tem mais lugar nenhum na lista (os 40 saíram, com a licença da gerente). Não mexi (regra: teste
-  fora do atualizador não se mexe; teste antigo não muda para passar). Pergunta para a gerente no ONDE-PAREI.</li>
-</ul>
-<p class="rodape">Editor de Impressão &middot; gerado em 24/11/2026 às 00:47</p>
+<h2>Fora do atualizador, adaptados com o "sim" do Samuel (24/11/2026)</h2>
+<table>
+<thead>
+<tr>
+<th>Teste</th>
+<th>O que aconteceu</th>
+<th>O que cobra agora</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tests/test_conferencias_pacote.py::test_o_pacote_mostra_os_lugares_da_lista_nos_arquivos_do_pedido</td>
+<td>adaptado: só o arquivo de exemplo (<code>atualizacao.py</code> → <code>core/testes_a_distancia.py</code>), porque o <code>atualizacao.py</code> ficou sem lugares na lista</td>
+<td>o mesmo: o pacote mostra a seção "Lugares da lista de exceções nos seus arquivos" e o aviso</td>
+</tr>
+<tr>
+<td>tests/test_conferencias_pacote.py::test_q3_o_pacote_do_passo_diz_as_funcoes_de_outros_passos_que_nao_se_mexem</td>
+<td>adaptado: só o arquivo de exemplo (<code>atualizacao.py</code>, passo 3, com <code>criar_as_tarefas</code> do passo 5 → <code>core/testes_a_distancia.py</code>, passo 4, com <code>_passos_das_nossas_tarefas</code> do passo 5), pelo mesmo motivo</td>
+<td>o mesmo: o pacote do passo lista as funções de outros passos e não as do próprio</td>
+</tr>
+</tbody>
+</table>
+<p>Os dois continuam cobrando o que cobravam: com o pacote sem a seção dos lugares, o primeiro falha; com o pacote sem a
+lista das funções de outros passos, o segundo falha (conferido trocando o <code>regras_dos_agentes/montar_pacote.py</code> numa
+cópia de trabalho e devolvendo o arquivo depois). Os 26 do arquivo passam.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 24/11/2026 às 07:25</p>
 </body>
 </html>
