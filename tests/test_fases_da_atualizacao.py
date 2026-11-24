@@ -203,8 +203,10 @@ ESPERADO = {
     (F.PRONTA, "reiniciar"): E(F.CONFERINDO_TROCA, [("ConferirTroca",)]),
     (F.CONFERINDO_TROCA, "conferida_pode"): E(F.FECHANDO, [("FecharJanela",)]),
     (F.CONFERINDO_TROCA, "conferida_nao"): E(F.DEPOIS, [R]),
-    # D-840: com outra janela aberta, a frase "Feche a outra janela do programa e clique de novo."; o resto igual.
-    (F.CONFERINDO_TROCA, "conferida_outra_janela"): E(F.DEPOIS, [R, ("PedirParaFecharAOutraJanela",)]),
+    # D-840 e D-841: com outra janela aberta, a frase "Feche a outra janela do programa e clique de novo." e a volta
+    # a PRONTA com o mesmo aviso de sempre (o "Reiniciar agora" pode ser clicado de novo).
+    (F.CONFERINDO_TROCA, "conferida_outra_janela"): E(F.PRONTA, [R, ("PedirParaFecharAOutraJanela",),
+                                                                 ("MostrarVersaoNova", "1.2.0")]),
     (F.CONFERINDO_TROCA, "conferida_recusada"): E(F.PARADO, [("AnotarFalha", "recusada", "1.1.0", "1.2.0"),
                                                              ("MostrarFalha", "recusada", "recusada-1.2.0")],
                                                   nao_tentar=("1.2.0", "1.3.0")),

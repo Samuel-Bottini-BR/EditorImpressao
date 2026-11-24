@@ -13,7 +13,8 @@ O que aparece (decisões do Samuel, palavras combinadas, textos em `atualizacao.
 - D-719/D-778/D-839: uma falha, uma vez por falha nesta conta, com a frase do caso (`atualizacao.FRASES_DA_FALHA`;
   a troca que não aconteceu: "O programa continua na versão de antes e funcionando.").
 - D-840: "Reiniciar agora" com outra janela do programa aberta: "Feche a outra janela do programa e clique de novo."
-  (`atualizacao.FRASE_DA_OUTRA_JANELA`); nada fecha e a pergunta vem ao fechar.
+  (`atualizacao.FRASE_DA_OUTRA_JANELA`); nada fecha, e o aviso "Reiniciar agora" / "Depois" aparece de novo
+  (D-841): fechada a outra janela, o clique troca; "Depois" leva à pergunta ao fechar.
 
 COMO LIGA. main.py chama `ligar_na_janela(janela)` uma vez, depois de abrir a janela; e o fechar da janela principal
 (`ui/janela_principal.py`, `closeEvent`) chama `ao_fechar(janela)` depois de gravar o trabalho e parar as tarefas.
@@ -82,8 +83,8 @@ class PonteDaTela(QObject):
                          atualizacao.FRASES_DA_FALHA.get(ef.tipo, atualizacao.FRASE_DA_FALHA),
                          icone=QMessageBox.Information)
         elif isinstance(ef, fases.PedirParaFecharAOutraJanela):
-            # D-840: o "Reiniciar agora" não trocou porque há outra janela do programa aberta; esta continua aberta
-            # (a regra já a deixou como no "Depois": a pergunta vem ao fechar).
+            # D-840: o "Reiniciar agora" não trocou porque há outra janela do programa aberta; esta continua aberta.
+            # Logo depois a regra manda o aviso da versão nova de novo (D-841), pelo mesmo MostrarVersaoNova.
             self._avisar(self.janela, atualizacao.TITULO_DA_VERSAO_NOVA, atualizacao.FRASE_DA_OUTRA_JANELA,
                          icone=QMessageBox.Information)
 

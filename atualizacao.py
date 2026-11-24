@@ -30,7 +30,8 @@ CAMINHO -> FUNÇÃO (§11.12)
     "Reiniciar agora" / "Depois"    ui -> Escolheu -> ConferirTroca -> Atualizacao.conferencia_da_troca (a ÚNICA
                                     conferência) -> TrocaConferida; pode: FecharJanela -> ui fecha a janela ->
                                     JanelaFechou -> Trocar; outra janela aberta: PedirParaFecharAOutraJanela -> ui
-                                    mostra FRASE_DA_OUTRA_JANELA (D-840) e a janela continua aberta
+                                    mostra FRASE_DA_OUTRA_JANELA (D-840), a janela continua aberta e o aviso volta
+                                    (MostrarVersaoNova, a fase PRONTA de novo, D-841)
     fechar o programa               ui/janela_principal.closeEvent -> ui.ao_fechar -> Fechando -> PerguntarAoFechar ->
                                     RespondeuAoFechar -> Trocar
     a troca (qualquer caminho)      efeito Trocar e a volta -> trocar_para (a ÚNICA; confere a soma assinada do

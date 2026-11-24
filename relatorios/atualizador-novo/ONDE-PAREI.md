@@ -92,6 +92,36 @@ linha, como devia; não mexi nela.
 `test_windows_preparo_do_computador` 19 + 1 pulado: **todos passaram**. O porteiro: "nada novo (4997 arquivos
 lidos; a lista deixa 135 lugares)". O GitHub não foi disparado (pedido da gerente).
 
+## D-841 (segunda volta, 24/11/2026)
+
+- **A decisão** (chat 24/11, à opção "depois da frase, o aviso 'Reiniciar agora / Depois' aparece de novo"): "1, desde
+  que seja a volta à fase 'pronta', sem espera nem peça nova." Era a ressalva 1 de cima.
+- **Como cumpri:** na regra (`core/fases_da_atualizacao.py`, CONFERINDO_TROCA), o `TrocaConferida` com `outra_janela`
+  volta à fase PRONTA no mesmo evento, com os efeitos: o registro, `PedirParaFecharAOutraJanela` (a frase) e
+  `MostrarVersaoNova` (o mesmo aviso de sempre). Nenhum efeito, peça, tela, espera ou temporizador novo. Fechada a outra
+  janela, o "Reiniciar agora" passa pela mesma conferência e troca; "Depois" leva à pergunta ao fechar (a fase PRONTA e
+  a DEPOIS já levavam). Os outros "não pode agora" continuam em DEPOIS, sem nada na tela.
+- **Como fica para quem usa:** com o programa aberto duas vezes, o Kaique clica "Reiniciar agora", lê "Feche a outra
+  janela do programa e clique de novo.", fecha a caixa e o aviso da versão nova aparece de novo. Se ele fechou a outra
+  janela, "Reiniciar agora" fecha esta, grava o trabalho e troca. Se não fechou, a frase volta. O PDF não muda.
+- **Caminho -> função:** "Reiniciar agora" -> `Escolheu` -> `ConferirTroca` -> `conferencia_da_troca` ->
+  `TrocaConferida(outra_janela)` -> `proxima_fase` -> PRONTA + a frase + `MostrarVersaoNova` -> `PonteDaTela._mostrar`
+  (os dois ramos que já existiam). O segundo clique é o mesmo caminho.
+- **A prova:** `tests/test_decisoes_atualizacao.py::test_d841_depois_da_frase_o_aviso_volta_e_com_a_outra_fechada_troca`
+  (pela regra, pelo executor e pela ponte da tela de verdade): **falha em `4f542399`** (lá, depois da frase, o aviso não
+  voltava: `relatorios/atualizador-novo/volta2b-d841-teste-no-codigo-antigo.txt`) e passa agora.
+- **Testes que mudaram porque a decisão mudou** (anotados na lista D-836):
+  - a linha da tabela que eu tinha posto na entrega anterior, `(CONFERINDO_TROCA, conferida_outra_janela)`: de DEPOIS
+    para PRONTA com o aviso (a regra não ganhou transição nova, a minha mudou);
+  - o meu `test_d840_reiniciar_agora_com_outra_janela_...`: agora espera o aviso de novo depois da frase e responde
+    "Depois";
+  - **um antigo:** `test_atualizador_volta2::test_m1_reiniciar_agora_que_nao_pode_trocar_nao_fecha_a_janela` cobrava a
+    fase DEPOIS depois do "Reiniciar agora" com outra janela; a decisão manda PRONTA. Mudei só essa linha. O resto
+    dele (não fecha, não troca, a pergunta vem ao fechar) continua igual e passa.
+- **Ressalva:** se o Kaique clicar "Reiniciar agora" de novo sem fechar a outra janela, a frase e o aviso voltam, quantas
+  vezes ele clicar (cada vez é um clique dele; "Depois" sai do ciclo).
+- **Os testes no meu PC** (os mesmos 16 arquivos da entrega anterior, um por vez): todos passaram (test_decisoes_atualizacao 42; os outros com os mesmos números de antes). O porteiro: "nada novo (4998 arquivos lidos; a lista deixa 135 lugares)". O GitHub não foi disparado.
+
 # Volta 2: os achados do quem tenta quebrar (24/11/2026)
 
 Implementador. Pedido da gerente de 24/11 (D-815, segunda e última volta), sobre o relatório

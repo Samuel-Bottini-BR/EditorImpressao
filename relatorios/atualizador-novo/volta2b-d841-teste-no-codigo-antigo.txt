@@ -1,0 +1,7 @@
+O teste da D-841 rodado no codigo de 4f542399 (so o arquivo de teste novo; o programa sem mudanca), 24/11/2026
+E       assert [('Versão nov...ue de novo.')] == [('Versão nov...a', 'Depois')]
+E         
+E         Right contains one more item: ('Versão nova do programa', 'Chegou uma versão nova do Editor de Impressão.\n\nSalve o seu trabalho e reinicie o progr...ar a versão nova.\n\nSe escolher "Depois", você pode atualizar quando fechar o programa.', 'Reiniciar agora', 'Depois')
+E         Use -v to get more diff
+FAILED tests/test_decisoes_atualizacao.py::test_d841_depois_da_frase_o_aviso_volta_e_com_a_outra_fechada_troca
+1 failed, 41 deselected in 0.71s

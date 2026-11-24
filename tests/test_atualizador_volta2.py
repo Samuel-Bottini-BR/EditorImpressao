@@ -113,7 +113,9 @@ def test_m1_reiniciar_agora_que_nao_pode_trocar_nao_fecha_a_janela(tmp_path):
     p.atual.ligar_a_tela(tela)
     p.atual.evento(fases.Escolheu(True))
     assert "FecharJanela" not in vistos and "trocar" not in p.vp.nomes()
-    assert p.atual.estado.fase is fases.Fase.DEPOIS
+    # D-841 (Samuel, 24/11/2026: "1, desde que seja a volta à fase 'pronta'"): com outra janela aberta, a regra volta a
+    # PRONTA (o aviso aparece de novo); antes desta decisão era DEPOIS. Ao fechar, a pergunta vem igual nas duas.
+    assert p.atual.estado.fase is fases.Fase.PRONTA
     p.atual.evento(fases.Fechando())
     assert vistos[-1] == "PerguntarAoFechar"
 

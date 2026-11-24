@@ -613,17 +613,17 @@ def test_d840_reiniciar_agora_com_outra_janela_aberta_diz_para_fechar_e_nada_fec
     """D-840 (Samuel, 24/11/2026: "sim"): "Reiniciar agora" com outra janela do programa aberta não troca e mostra "Feche
     a outra janela do programa e clique de novo."; o programa continua aberto e, ao fechar, vem "Atualizar agora?".
     A frase vem da conferência única da troca (a que decide "não pode trocar agora"). Falha no código de `63bd8546`
-    (lá nada aparece)."""
+    (lá nada aparece). Com a D-841, depois da frase o aviso aparece de novo; aqui a resposta a ele é "Depois"."""
     from tests.ajudante_do_atualizador import Prova
     from ui import aviso_de_atualizacao as aviso
 
     p = Prova(tmp_path, outras=[OUTRA_JANELA])
     p.abrir()
     avisos = []
-    ponte, janela = _ponte_da_prova(app, p, [True, False], avisos)
-    assert avisos == [(atualizacao.TITULO_DA_VERSAO_NOVA, atualizacao.FRASE_DA_VERSAO_NOVA,
-                       atualizacao.BOTAO_REINICIAR, atualizacao.BOTAO_DEPOIS),
-                      (atualizacao.TITULO_DA_VERSAO_NOVA, FRASE_D840)]
+    ponte, janela = _ponte_da_prova(app, p, [True, False, False], avisos)
+    o_aviso = (atualizacao.TITULO_DA_VERSAO_NOVA, atualizacao.FRASE_DA_VERSAO_NOVA,
+               atualizacao.BOTAO_REINICIAR, atualizacao.BOTAO_DEPOIS)
+    assert avisos == [o_aviso, (atualizacao.TITULO_DA_VERSAO_NOVA, FRASE_D840), o_aviso]
     assert janela.fechou == 0 and janela.escondeu == 0 and "trocar" not in p.vp.nomes()
     aviso.ao_fechar(ponte.parent())
     assert avisos[-1] == ("Atualizar agora?", "Quer atualizar o programa agora, ao fechar?", "Sim", "Não")
@@ -646,3 +646,37 @@ def test_d840_a_frase_so_aparece_com_outra_janela_aberta(app, tmp_path, porque):
     _, janela = _ponte_da_prova(app, p, [True], avisos)
     assert len(avisos) == 1 and avisos[0][1] == atualizacao.FRASE_DA_VERSAO_NOVA
     assert janela.fechou == 0 and p.atual.estado.fase is fases.Fase.DEPOIS
+
+
+def test_d841_depois_da_frase_o_aviso_volta_e_com_a_outra_fechada_troca(app, tmp_path):
+    """D-841 (Samuel, 24/11/2026: "1, desde que seja a volta à fase 'pronta', sem espera nem peça nova."): com duas
+    janelas, "Reiniciar agora" -> a frase da D-840 -> o aviso "Reiniciar agora / Depois" de novo (a regra volta à fase
+    PRONTA no mesmo evento, com o mesmo efeito do aviso). Fechada a outra janela, "Reiniciar agora" troca normalmente.
+    Falha no código de `4f542399` (lá, depois da frase, o aviso não voltava)."""
+    from PySide6.QtWidgets import QWidget
+
+    from tests.ajudante_do_atualizador import Prova
+    from ui import aviso_de_atualizacao as aviso
+
+    p = Prova(tmp_path, outras=[OUTRA_JANELA])
+    p.abrir()
+    avisos = []
+
+    def perguntar(j, t, x, sim, nao):
+        avisos.append((t, x, sim, nao))
+        if len(avisos) > 1:                 # o aviso de novo: o Kaique fechou a outra janela e clica de novo
+            p.win.outras = []
+        return True                          # "Reiniciar agora", as duas vezes
+
+    pai = QWidget()
+    janela = JanelaFalsa()
+    janela.pai = pai
+    ponte = aviso.PonteDaTela(pai, p.atual, perguntar=perguntar,
+                              avisar=lambda j, t, x, icone=None: avisos.append((t, x)))
+    ponte.janela = janela
+    pai._ponte_da_atualizacao = ponte
+    p.atual.ligar_a_tela(ponte.receber)
+    o_aviso = (atualizacao.TITULO_DA_VERSAO_NOVA, atualizacao.FRASE_DA_VERSAO_NOVA,
+               atualizacao.BOTAO_REINICIAR, atualizacao.BOTAO_DEPOIS)
+    assert avisos == [o_aviso, (atualizacao.TITULO_DA_VERSAO_NOVA, FRASE_D840), o_aviso]
+    assert janela.fechou == 1 and [c[:2] for c in p.vp.chamadas if c[0] == "trocar"] == [("trocar", "9.9.0")]

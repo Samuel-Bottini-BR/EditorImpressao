@@ -25,7 +25,7 @@ AS FASES (`Fase`), na ordem em que costumam acontecer numa abertura do programa 
     CONFERINDO_TROCA "Reiniciar agora": ANTES de a janela fechar, a conferência única da troca (o pacote, o motor da
                     versão nova, outra janela aberta); sem ela, a janela continua aberta (volta 2, achado M1); com
                     outra janela do programa aberta, a frase "Feche a outra janela do programa e clique de novo."
-                    (D-840, efeito `PedirParaFecharAOutraJanela`).
+                    (D-840, efeito `PedirParaFecharAOutraJanela`) e a volta a PRONTA com o aviso de novo (D-841).
     DEPOIS          escolheu "Depois": ao fechar, a pergunta "Atualizar agora?" (D-769, D-794, D-831, D-835).
     FECHANDO        escolheu "Reiniciar agora": a janela fecha pelo caminho de sempre (grava o trabalho).
     PERGUNTANDO     a pergunta "Atualizar agora?" ao fechar está na tela.
@@ -594,12 +594,17 @@ def proxima_fase(estado: Estado, evento: Evento) -> tuple[Estado, list[Efeito]]:
             return (replace(estado, fase=Fase.PARADO, nao_tentar=_com_mais(estado.nao_tentar, estado.nova)),
                     [AnotarFalha(FALHA_RECUSADA, estado.versao, estado.nova, e.motivo),
                      MostrarFalha(FALHA_RECUSADA, id_da_falha(FALHA_RECUSADA, estado.nova))])
-        # D-840: com outra janela do programa aberta, a frase para fechá-la; nos outros "não pode agora", nada na tela.
-        # Nos dois, a janela continua aberta e a pergunta vem ao fechar (como no "Depois").
-        frase: list[Efeito] = [PedirParaFecharAOutraJanela()] if e.outra_janela else []
+        if e.outra_janela:
+            # D-840 e D-841: com outra janela do programa aberta, a frase para fechá-la e, no mesmo evento, a volta à
+            # fase PRONTA com o mesmo aviso de sempre ("Reiniciar agora" / "Depois"): fechada a outra, o clique troca;
+            # "Depois" leva à pergunta ao fechar. Sem espera, sem temporizador.
+            return replace(estado, fase=Fase.PRONTA), [Registrar(
+                f"\"Reiniciar agora\": a troca não pode ser pedida agora ({e.motivo}); a frase para fechar a outra "
+                "janela e o aviso de novo"), PedirParaFecharAOutraJanela(), MostrarVersaoNova(estado.nova)]
+        # Nos outros "não pode agora", nada na tela: a janela continua aberta e a pergunta vem ao fechar.
         return replace(estado, fase=Fase.DEPOIS), [Registrar(
             f"\"Reiniciar agora\": a troca não pode ser pedida agora ({e.motivo}); a janela continua aberta e a "
-            "pergunta vem ao fechar")] + frase
+            "pergunta vem ao fechar")]
 
     if isinstance(e, JanelaFechou) and f is Fase.FECHANDO:
         if e.fechou:
