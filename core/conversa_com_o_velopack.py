@@ -77,11 +77,13 @@ def _fonte(endereco: str):
     return str(endereco)
 
 
-def _gerente(endereco: str, permitir_voltar: bool = False):
-    """O `UpdateManager` para esta fonte (lugar único). `permitir_voltar`: aceitar versão mais velha (a volta)."""
+def _gerente(endereco: str, permitir_voltar: bool = False, localizador=None):
+    """O `UpdateManager` para esta fonte (lugar único). `permitir_voltar`: aceitar versão mais velha (a volta).
+    `localizador`: onde está a instalação (um `velopack.VelopackLocatorConfig`); None = a deste programa, achada pelo
+    próprio Velopack. Só as provas passam um (a instalação de prova numa pasta)."""
     vp = _velopack()
     opcoes = vp.UpdateOptions(AllowVersionDowngrade=permitir_voltar, MaximumDeltasBeforeFallback=10)
-    return vp.UpdateManager(_fonte(endereco), opcoes)
+    return vp.UpdateManager(_fonte(endereco), opcoes, localizador)
 
 
 def _da_resposta(pedido) -> VersaoDoVelopack:
@@ -106,19 +108,19 @@ def atender_ganchos(ao_instalar: Callable[[str], None], ao_atualizar: Callable[[
         raise ErroDoVelopack(f"o Velopack não iniciou: {type(erro).__name__}: {erro}") from erro
 
 
-def procurar(endereco: str) -> VersaoDoVelopack | None:
+def procurar(endereco: str, localizador=None) -> VersaoDoVelopack | None:
     """A versão publicada mais nova que a instalada, ou None. Levanta `ErroDoVelopack` (sem internet etc.)."""
     try:
-        pedido = _gerente(endereco).check_for_updates()
+        pedido = _gerente(endereco, localizador=localizador).check_for_updates()
     except Exception as erro:  # noqa: BLE001
         raise ErroDoVelopack(f"procurar: {type(erro).__name__}: {erro}") from erro
     return None if pedido is None else _da_resposta(pedido)
 
 
-def baixar(endereco: str, versao: VersaoDoVelopack) -> None:
+def baixar(endereco: str, versao: VersaoDoVelopack, localizador=None) -> None:
     """Baixa a versão para `packages\\` (o Velopack confere tamanho e soma). Levanta `ErroDoVelopack`."""
     try:
-        _gerente(endereco, permitir_voltar=True).download_updates(versao.pedido)
+        _gerente(endereco, permitir_voltar=True, localizador=localizador).download_updates(versao.pedido)
     except Exception as erro:  # noqa: BLE001
         raise ErroDoVelopack(f"baixar a {versao.versao}: {type(erro).__name__}: {erro}") from erro
 

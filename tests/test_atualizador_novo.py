@@ -454,7 +454,7 @@ def test_d832_a_troca_usa_a_janelinha_do_velopack(monkeypatch):
     pedidos = []
 
     class Gerente:
-        def __init__(self, fonte, opcoes):
+        def __init__(self, fonte, opcoes, localizador=None):
             pass
 
         def wait_exit_then_apply_updates(self, pedido, silent, restart, restart_args):
@@ -491,3 +491,24 @@ def test_o_teste_de_gravar_cria_e_apaga(tmp_path):
     assert atualizacao.pasta_aceita_gravacao(tmp_path) is True
     assert list(tmp_path.iterdir()) == []
     assert atualizacao.pasta_aceita_gravacao(tmp_path / "nao-existe") is False
+
+
+def test_d731_o_atualizador_novo_nao_poe_tarefa_no_windows():
+    """D-731 ("o notebook fica como era antes de instalar"; substitui as provas do ajudante e da tarefa "desfazer" da
+    primeira abertura, que saíram com eles, D-836): a única coisa com tarefa do Windows na pergunta da primeira
+    abertura é APAGAR o ajudante antigo; nada é criado. Desinstalar apaga a pasta do programa inteira (o Velopack), e
+    não sobra tarefa do atualizador."""
+    passos = atualizacao.passos_do_preparo()
+    assert [p.tipo for p in passos if "tarefa" in p.tipo] == ["apagar_tarefa"]
+    assert not any(p.tipo in ("criar_tarefa", "script") for p in passos)
+
+
+def test_d732_a_procura_e_so_ao_abrir_nada_roda_por_tras_depois():
+    """D-732 ("não, faz quando o programa é aberto"; a correção das 20:42: o "de 5 em 5 minutos" era do código antigo):
+    a janela não tem relógio de procurar; a procura só nasce da abertura (a regra: `Procurar` só depois de
+    `MotorConferido`, que só vem da abertura, do preparo ou da versão nova conferida)."""
+    import ui.aviso_de_atualizacao as aviso
+
+    assert not hasattr(aviso, "INTERVALO_MS") and not hasattr(aviso, "VigiaDaAtualizacao")
+    arvore = ast.parse(Path(aviso.__file__).read_text(encoding="utf-8"))
+    assert "QTimer" not in {n.id for n in ast.walk(arvore) if isinstance(n, ast.Name)}
