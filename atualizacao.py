@@ -1228,7 +1228,8 @@ class Atualizacao:
         fora = conta_de_testes or portatil
         grava = False if fora else self._pasta_grava(self.raiz)
         ultima = "" if fora else ler_ultima_boa(self.raiz)
-        pendente = "" if fora else self._pendente()
+        # Sem a licença na pasta nenhuma troca nossa acontece (o Velopack pediria licença): nem se pergunta.
+        pendente = self._pendente() if grava else ""
         em_curso: bool | None = False
         if not fora and ARG_CONFERIR_NOVA not in argumentos and (pendente or (ultima and versao.VERSAO != ultima)):
             # Volta 2, G1: o atualizador do Velopack roda do pedido da troca até reabrir; o clique no atalho nesse

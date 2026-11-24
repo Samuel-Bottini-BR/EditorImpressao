@@ -87,13 +87,16 @@ def test_d714_a_versao_vem_de_um_lugar_so():
 
 def test_d724_versao_com_assinatura_errada_e_recusada_antes_de_baixar(tmp_path):
     """D-724 (adaptado pela D-836, atualizador novo 23/11/2026: o mesmo que cobrava, pelo caminho novo): a versão
-    publicada com a assinatura de outra chave é recusada ANTES de baixar, e fica em "não tentar"."""
-    from tests.ajudante_do_atualizador import NOVA, OUTRA_CHAVE, Prova
+    publicada com a assinatura de outra chave é recusada ANTES de baixar, e a frase 2 vai para a tela. Volta 3 (D-836,
+    a emenda do Fable): ela não vai mais para "não tentar" (só o teste rápido reprova); é conferida de novo a cada
+    abertura e nunca baixada."""
+    from tests.ajudante_do_atualizador import OUTRA_CHAVE, Prova
 
     p = Prova(tmp_path, chave_da_nova=OUTRA_CHAVE)
     p.abrir()
+    p.ligar_a_tela()
     assert "baixar" not in p.vp.nomes()
-    assert NOVA in atualizacao.ler_estado()["nao_tentar"]
+    assert [getattr(e, "tipo", "") for e in p.tela] == [fases.FALHA_RECUSADA]
 
 
 def test_d724_versao_sem_arquivo_de_assinatura_e_recusada(tmp_path):
@@ -103,8 +106,10 @@ def test_d724_versao_sem_arquivo_de_assinatura_e_recusada(tmp_path):
     p = Prova(tmp_path)
     (p.fonte_pasta / assinatura.nome_do_arquivo_da_assinatura(PACOTE, NOVA)).unlink()
     p.abrir()
+    p.ligar_a_tela()
     assert "baixar" not in p.vp.nomes()
-    assert atualizacao.ler_estado()["falha"]["tipo"] == "recusada"
+    # volta 3 (D-836): a frase 2 vai para a tela uma vez por versão nesta conta (já vista no teste de cima): o registro
+    assert "assinatura recusada" in atualizacao.caminho_do_registro().read_text(encoding="utf-8")
 
 
 def test_d724_pacote_trocado_depois_de_assinado_e_recusado(tmp_path):
@@ -116,15 +121,17 @@ def test_d724_pacote_trocado_depois_de_assinado_e_recusado(tmp_path):
     p.vp.publicada = conversa.VersaoDoVelopack(p.vp.publicada.pacote, p.vp.publicada.versao, p.vp.publicada.arquivo,
                                                "cd" * 32, p.vp.publicada.tamanho)
     p.abrir()
+    p.ligar_a_tela()
     assert "baixar" not in p.vp.nomes()
-    assert atualizacao.ler_estado()["falha"]["tipo"] == "recusada"
+    # volta 3 (D-836): a frase 2 vai para a tela uma vez por versão nesta conta (já vista no teste de cima): o registro
+    assert "assinatura recusada" in atualizacao.caminho_do_registro().read_text(encoding="utf-8")
 
 
 def test_d724_versao_que_ja_falhou_nao_e_tentada_de_novo(tmp_path):
     """D-724/D-718 (adaptado pela D-836): a versão que já falhou não é conferida nem baixada de novo."""
     from tests.ajudante_do_atualizador import NOVA, Prova
 
-    atualizacao.gravar_estado({"nao_tentar": [NOVA]})
+    atualizacao.gravar_estado({"reprovadas": [NOVA]})       # volta 3 (D-836): a chave do bilhete
     p = Prova(tmp_path)
     p.abrir()
     assert p.vp.nomes() == ["procurar"]
@@ -223,62 +230,72 @@ def test_d719_a_frase_da_falha_e_a_combinada():
 
 
 def test_d719_a_falha_aparece_na_tela_uma_vez_so(app, tmp_path):
-    """D-719/D-778 (adaptado pela D-836): a falha anotada aparece na janela com a frase do caso, uma vez só."""
-    from tests.ajudante_do_atualizador import Prova
+    """D-719/D-778 (adaptado pela D-836): a falha aparece na janela com a frase do caso, uma vez só. Volta 3: a frase
+    (1) é derivada (rodando a última boa, com uma versão mais nova reprovada no teste), não anotada antes."""
+    from tests.ajudante_do_atualizador import ATUAL, NOVA, Prova
 
-    atualizacao.anotar_falha("teste", "1.0.0", "1.2.0", "de mentira")
+    atualizacao.gravar_estado({"reprovadas": [NOVA]})
     avisos = []
     for pasta in ("a", "b"):
-        p = Prova(tmp_path / pasta, publicar_nova=False)
+        p = Prova(tmp_path / pasta, publicar_nova=False, ultima_boa=ATUAL)
         p.abrir()
-        p.atual.ligar_a_tela(lambda ef: avisos.append(atualizacao.FRASES_DA_FALHA[ef.tipo]))
+        p.atual.ligar_a_tela(lambda ef: avisos.append(atualizacao.frase_da_falha(ef.tipo, ef.motivo_da_tela)))
     assert avisos == [atualizacao.FRASE_DA_FALHA]
 
 
 def test_d719_o_erro_vai_para_o_registro_no_programdata(_programdata_de_mentira):
-    """D-719 (adaptado pela D-836: a função única de anotar a falha passou a se chamar `anotar_falha`): a falha vai
-    para o registro em %ProgramData%\\EditorImpressao\\atualizacao\\atualizacao.log."""
-    atualizacao.anotar_falha("troca", "1.1.0", "1.2.0", "motivo de mentira")
+    """D-719 (adaptado pela D-836; volta 3: a função única que põe a versão em "não tentar" é `reprovar`): a falha
+    vai para o registro em %ProgramData%\\EditorImpressao\\atualizacao\\atualizacao.log."""
+    atualizacao.reprovar("1.2.0", "motivo de mentira")
     registro = _programdata_de_mentira / "EditorImpressao" / "atualizacao" / "atualizacao.log"
     assert registro == atualizacao.caminho_do_registro()
-    assert "FALHOU (troca)" in registro.read_text(encoding="utf-8")
+    assert "FALHOU no teste rápido a versão 1.2.0" in registro.read_text(encoding="utf-8")
 
 
 def test_d718_versao_nova_que_nao_passa_no_teste_volta_para_a_anterior(tmp_path):
     """D-718 (adaptado pela D-836): a versão nova que não passa no teste rápido volta para a anterior (pedida ao
-    Velopack) e a falha fica anotada para a janela da anterior mostrar."""
+    Velopack) e a versão fica reprovada (a janela da anterior deriva a frase 1 disso: volta 3). Volta 3 (D-844): a
+    anterior é a última boa guardada no computador."""
     from tests.ajudante_do_atualizador import ANTERIOR, ATUAL, Prova
 
-    p = Prova(tmp_path, teste=(False, "quebrada"))
+    p = Prova(tmp_path, teste=(False, "quebrada"), ultima_boa=ANTERIOR)
     assert p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL) == 0
     assert [c for c in p.vp.chamadas if c[0] == "trocar"][0][1] == ANTERIOR
-    assert atualizacao.ler_estado()["falha"]["tipo"] == "teste"
+    assert atualizacao.ler_estado()["reprovadas"] == [ATUAL]
 
 
 def test_d718_versao_nova_que_passa_no_teste_fica(tmp_path):
     """D-718 (adaptado pela D-836): a versão nova que passa fica; nada volta e nada é anotado como falha."""
     from tests.ajudante_do_atualizador import ANTERIOR, ATUAL, Prova
 
-    p = Prova(tmp_path, teste=(True, ""), publicar_nova=False)
+    p = Prova(tmp_path, teste=(True, ""), publicar_nova=False, ultima_boa=ANTERIOR)
+    p.pacote_em_packages(ATUAL)
     assert p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL) is None
-    assert "trocar" not in p.vp.nomes() and "falha" not in atualizacao.ler_estado()
+    assert "trocar" not in p.vp.nomes() and "reprovadas" not in atualizacao.ler_estado()
+    assert atualizacao.ler_ultima_boa(p.raiz) == ATUAL          # volta 3 (D-844): vira a última boa
 
 
-def test_d718_troca_desfeita_pelo_velopack_conta_como_falha(tmp_path):
-    """D-718 (adaptado pela D-836): o Velopack reabriu a versão de antes (a troca não aconteceu) → falha "troca"."""
+def test_d718_troca_desfeita_pelo_velopack_mostra_a_frase_e_nao_proibe_a_versao(tmp_path):
+    """D-718/D-839 (adaptado pela D-836; volta 3, M1: "troca que não aconteceu não é falha de versão"): o Velopack
+    reabriu a versão de antes (a troca não aconteceu) → a frase da D-839 na tela, e a versão NÃO vai para "não
+    tentar" (o aviso volta quando ela for achada de novo)."""
     from tests.ajudante_do_atualizador import ATUAL, NOVA, Prova
 
-    p = Prova(tmp_path, publicar_nova=False)
+    p = Prova(tmp_path, publicar_nova=False, ultima_boa=ATUAL)
     p.abrir(atualizacao.ARG_CONFERIR_NOVA, ATUAL, NOVA)
-    assert atualizacao.ler_estado()["falha"]["tipo"] == "troca"
+    p.ligar_a_tela()
+    assert [getattr(e, "tipo", "") for e in p.tela] == [fases.FALHA_TROCA]
+    assert "reprovadas" not in atualizacao.ler_estado()
 
 
 def test_d718_a_volta_so_aceita_o_pacote_assinado(tmp_path):
-    """D-718/D-724 (adaptado pela D-836): a anterior sem a assinatura do Samuel não é baixada nem trocada."""
+    """D-718/D-724 (adaptado pela D-836): a anterior sem a assinatura do Samuel não é baixada nem trocada. Volta 3:
+    a assinatura que vale é a guardada com o pacote da última boa."""
     from tests.ajudante_do_atualizador import ANTERIOR, ATUAL, OUTRA_CHAVE, Prova, _publicar
 
-    p = Prova(tmp_path, teste=(False, "quebrada"))
-    _publicar(p.fonte_pasta, ANTERIOR, b"pacote da versao anterior", OUTRA_CHAVE)
+    p = Prova(tmp_path, teste=(False, "quebrada"), ultima_boa=ANTERIOR)
+    pasta = atualizacao.pasta_da_ultima_boa(p.raiz)
+    _publicar(pasta, ANTERIOR, (pasta / atualizacao.nome_do_pacote(ANTERIOR)).read_bytes(), OUTRA_CHAVE)
     p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL)
     assert "baixar" not in p.vp.nomes() and "trocar" not in p.vp.nomes()
 
@@ -589,9 +606,11 @@ def test_d839_a_troca_que_nao_aconteceu_diz_que_continua_na_versao_de_antes(app,
     else:
         primeira = Prova(tmp_path / "a", publicar_nova=False)
         assert primeira.abrir(atualizacao.ARG_CONFERIR_NOVA, de, para, atualizacao.ARG_SEM_JANELA) == 0
+        # volta 3 (D-836): a reabertura sem janela guarda a frase no bilhete; a próxima abertura com janela a mostra
+        assert atualizacao.ler_estado()["frase"]["tipo"] == fases.FALHA_TROCA
         p = Prova(tmp_path / "b", publicar_nova=False)
         p.abrir()
-    assert atualizacao.ler_estado()["falha"]["tipo"] == fases.FALHA_TROCA
+    assert "reprovadas" not in atualizacao.ler_estado()         # volta 3, M1: não é falha de versão
     avisos = []
     _ponte_da_prova(app, p, [], avisos)
     assert avisos == [(atualizacao.TITULO_DA_FALHA, FRASE_D839)]
@@ -623,7 +642,8 @@ def test_d840_reiniciar_agora_com_outra_janela_aberta_diz_para_fechar_e_nada_fec
     ponte, janela = _ponte_da_prova(app, p, [True, False, False], avisos)
     o_aviso = (atualizacao.TITULO_DA_VERSAO_NOVA, atualizacao.FRASE_DA_VERSAO_NOVA,
                atualizacao.BOTAO_REINICIAR, atualizacao.BOTAO_DEPOIS)
-    assert avisos == [o_aviso, (atualizacao.TITULO_DA_VERSAO_NOVA, FRASE_D840), o_aviso]
+    # D-846 (volta 3): o título da caixa é "Atualização" (antes era o do aviso da versão nova, sem decisão dele)
+    assert avisos == [o_aviso, (atualizacao.TITULO_DA_FALHA, FRASE_D840), o_aviso]
     assert janela.fechou == 0 and janela.escondeu == 0 and "trocar" not in p.vp.nomes()
     aviso.ao_fechar(ponte.parent())
     assert avisos[-1] == ("Atualizar agora?", "Quer atualizar o programa agora, ao fechar?", "Sim", "Não")
@@ -631,9 +651,11 @@ def test_d840_reiniciar_agora_com_outra_janela_aberta_diz_para_fechar_e_nada_fec
 
 @pytest.mark.parametrize("porque", ["sem_a_lista_de_processos", "sem_o_motor_da_nova"])
 def test_d840_a_frase_so_aparece_com_outra_janela_aberta(app, tmp_path, porque):
-    """D-840 e §11.7 (só o que ele mandou): a frase é para "outra janela do programa aberta". Nos outros "não pode trocar
-    agora" (o Windows não deu a lista de processos; o motor que a versão nova pede saiu do lugar) nada aparece, como
-    antes; a janela continua aberta e a pergunta vem ao fechar."""
+    """D-840: a frase "Feche a outra janela..." é só para "outra janela do programa aberta". Volta 3 (D-845, D-836:
+    antes, nos outros casos nada aparecia, e era o M3 do segundo "quem tenta quebrar", um clique sem resposta): nos
+    outros "não pode trocar agora" (o Windows não deu a lista de processos; o motor que a versão nova pede saiu do
+    lugar) aparece "Não deu para atualizar agora: [motivo]. Tente ao fechar o programa.", com o título "Atualização"
+    (D-846); a janela continua aberta e a pergunta vem ao fechar."""
     from tests.ajudante_do_atualizador import Prova
 
     p = Prova(tmp_path)
@@ -644,7 +666,11 @@ def test_d840_a_frase_so_aparece_com_outra_janela_aberta(app, tmp_path, porque):
         p.motores_no_lugar = set()
     avisos = []
     _, janela = _ponte_da_prova(app, p, [True], avisos)
-    assert len(avisos) == 1 and avisos[0][1] == atualizacao.FRASE_DA_VERSAO_NOVA
+    motivo = atualizacao.MOTIVOS_DA_TELA[fases.MOTIVO_SEM_LISTA if porque == "sem_a_lista_de_processos"
+                                         else fases.MOTIVO_MOTOR]
+    assert [a[1] for a in avisos] == [atualizacao.FRASE_DA_VERSAO_NOVA,
+                                      f"Não deu para atualizar agora: {motivo}. Tente ao fechar o programa."]
+    assert avisos[1][0] == "Atualização" and FRASE_D840 not in avisos[1][1]
     assert janela.fechou == 0 and p.atual.estado.fase is fases.Fase.DEPOIS
 
 
@@ -678,5 +704,6 @@ def test_d841_depois_da_frase_o_aviso_volta_e_com_a_outra_fechada_troca(app, tmp
     p.atual.ligar_a_tela(ponte.receber)
     o_aviso = (atualizacao.TITULO_DA_VERSAO_NOVA, atualizacao.FRASE_DA_VERSAO_NOVA,
                atualizacao.BOTAO_REINICIAR, atualizacao.BOTAO_DEPOIS)
-    assert avisos == [o_aviso, (atualizacao.TITULO_DA_VERSAO_NOVA, FRASE_D840), o_aviso]
+    # D-846 (volta 3): o título da caixa é "Atualização" (antes era o do aviso da versão nova, sem decisão dele)
+    assert avisos == [o_aviso, (atualizacao.TITULO_DA_FALHA, FRASE_D840), o_aviso]
     assert janela.fechou == 1 and [c[:2] for c in p.vp.chamadas if c[0] == "trocar"] == [("trocar", "9.9.0")]

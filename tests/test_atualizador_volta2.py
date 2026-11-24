@@ -47,45 +47,40 @@ def _abrir_como(tmp_path, nome, versao_que_roda, monkeypatch, *argumentos, **kw)
 # ---------------------------------------------------------------------------------------------------------------------
 
 def test_g1_abrir_pelo_atalho_no_meio_da_troca_nao_anota_falha_e_sai_sem_janela(tmp_path, monkeypatch):
-    """Achado grave 1 (era `test_A` de quem tentou quebrar). D-828 (1): "abrir o programa pelo atalho no meio da troca
-    não estraga a troca"; D-770: "em vez de o programa ser fechado à força e acusar uma falha que não houve". Com a troca
-    anotada e o atualizador do Velopack ainda rodando, a abertura pelo atalho não anota falha nenhuma, não põe a versão
-    nova em "não tentar" e sai sem janela; o Velopack troca e reabre a nova, que passa; a abertura seguinte não mostra
-    falha nenhuma."""
+    """Achado grave 1 da volta 1 (era `test_A` de quem tentou quebrar). D-828 (1): "abrir o programa pelo atalho no
+    meio da troca não estraga a troca"; D-770: "em vez de o programa ser fechado à força e acusar uma falha que não
+    houve". Volta 3 (D-836: adaptado ao desenho novo, sem a anotação da troca): com uma versão baixada esperando (o
+    Velopack diz) e o atualizador do Velopack rodando, a abertura pelo atalho não anota nada e sai sem janela."""
     de, para = "1.1.0", "1.1.2"
-    monkeypatch.setattr(versao, "VERSAO", de)
-    atualizacao.anotar_tentativa(de, para, False)
-    p2, saida = _abrir_como(tmp_path, "p2", de, monkeypatch, troca_em_curso=True)
+    p2, saida = _abrir_como(tmp_path, "p2", de, monkeypatch, troca_em_curso=True, ultima_boa=de, pendente=para)
     assert saida == 0 and p2.tela == []
-    assert "falha" not in _estado() and para not in (_estado().get("nao_tentar") or [])
-    assert _estado()["tentando"]["para"] == para, "a anotação da troca continua: a reabertura confere"
-    _abrir_como(tmp_path, "p3", para, monkeypatch, atualizacao.ARG_CONFERIR_NOVA, de, para)
-    p4, _ = _abrir_como(tmp_path, "p4", para, monkeypatch)
-    assert [e for e in p4.tela if isinstance(e, fases.MostrarFalha)] == []
+    assert _estado() == {}, "nada anotado"
+    assert p2.win.perguntas_do_atualizador == [p2.raiz]
 
 
 def test_g1_sem_saber_se_a_troca_acontece_nada_e_anotado(tmp_path, monkeypatch):
     """Achado grave 1 (era `test_A2`): sem saber se o atualizador do Velopack roda (o Windows não deu a lista), nada é
-    anotado como falha; a abertura segue (com janela) e a anotação fica para a próxima decidir."""
+    anotado; a abertura segue (com janela). Volta 3 (D-836): sem a anotação da troca, o "nada anotado" é o bilhete
+    vazio."""
     de, para = "1.1.0", "1.1.2"
-    monkeypatch.setattr(versao, "VERSAO", de)
-    atualizacao.anotar_tentativa(de, para, False)
-    p2, saida = _abrir_como(tmp_path, "p2", de, monkeypatch, troca_em_curso=None)
-    assert saida is None and "falha" not in _estado() and "tentando" in _estado()
+    p2, saida = _abrir_como(tmp_path, "p2", de, monkeypatch, troca_em_curso=None, ultima_boa=de, pendente=para)
+    assert saida is None and _estado() == {}
+    assert "não deu para saber se a troca está acontecendo" in _registro()
 
 
-def test_g1_a_troca_que_acabou_sem_trocar_continua_sendo_falha(tmp_path, monkeypatch):
-    """O outro lado do G1 (nada do que já funcionava mudou): com o atualizador do Velopack parado, a versão de antes
-    com a troca anotada é "a troca não aconteceu" (falha "troca"); e a reabertura do Velopack, que vem com a linha de
-    comando, nem pergunta se ele roda (ele só reabre depois de acabar: apply.rs 47-75)."""
+def test_g1_a_troca_que_acabou_sem_trocar_nao_e_falha_e_a_reabertura_nao_pergunta(tmp_path, monkeypatch):
+    """O outro lado do G1. Volta 3 (D-836: era "a troca que acabou sem trocar continua sendo falha"; a emenda do Fable
+    e o M1 do segundo "quem tenta quebrar" mudaram isso: "troca que não aconteceu não é falha de versão: o pacote
+    continua em packages, o aviso volta"): com o atualizador parado e o pacote esperando, a abertura é a comum (nada
+    em "não tentar"); e a reabertura do Velopack, que vem com a linha de comando, nem pergunta se ele roda (ele pode
+    ainda estar saindo: apply.rs 47-75)."""
     de, para = "1.1.0", "1.1.2"
-    monkeypatch.setattr(versao, "VERSAO", de)
-    atualizacao.anotar_tentativa(de, para, False)
-    _abrir_como(tmp_path, "p2", de, monkeypatch, troca_em_curso=False)
-    assert _estado()["falha"]["tipo"] == fases.FALHA_TROCA
-    atualizacao.gravar_estado({"tentando": {"de": de, "para": para, "volta": False}})
-    _abrir_como(tmp_path, "p3", de, monkeypatch, atualizacao.ARG_CONFERIR_NOVA, de, para, troca_em_curso=True)
-    assert _estado()["falha"]["tipo"] == fases.FALHA_TROCA, "a reabertura do Velopack não consulta a troca em curso"
+    p2, saida = _abrir_como(tmp_path, "p2", de, monkeypatch, troca_em_curso=False, ultima_boa=de, pendente=para)
+    assert saida is None and "reprovadas" not in _estado() and p2.atual.estado.fase is not fases.Fase.CONFERINDO_NOVA
+    p3, _ = _abrir_como(tmp_path, "p3", de, monkeypatch, atualizacao.ARG_CONFERIR_NOVA, de, para, troca_em_curso=True,
+                        ultima_boa=de, pendente=para)
+    assert p3.win.perguntas_do_atualizador == [], "a reabertura do Velopack não consulta a troca em curso"
+    assert [e.tipo for e in p3.tela if isinstance(e, fases.MostrarFalha)] == [fases.FALHA_TROCA]     # a D-839
 
 
 @no_windows
@@ -153,19 +148,21 @@ def test_m2_a_volta_confere_o_motor_da_anterior_e_volta(tmp_path, monkeypatch):
     teste rápido; a anterior pede o motor 1, que está no lugar: a volta acontece."""
     monkeypatch.setattr(versao, "VERSAO", NOVA)
     p = Prova(tmp_path, teste=(False, "falta o motor do Kraken"), motores={NOVA: 2, ANTERIOR: 1},
-              motores_no_lugar={1})
+              motores_no_lugar={1}, ultima_boa=ANTERIOR)
     saida = p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, NOVA)
     assert saida == 0 and p.vp.chamadas[-1][:2] == ("trocar", ANTERIOR)
-    assert _estado()["falha"]["tipo"] == fases.FALHA_TESTE
+    assert _estado()["reprovadas"] == [NOVA]          # volta 3 (D-836): a reprovação, no lugar da falha anotada
 
 
 def test_m2_a_versao_nova_sem_o_motor_dela_nao_e_anunciada(tmp_path):
     """D-833: a versão nova que pede o motor 2 (fora do lugar) é baixada (é o download que diz o motor), mas não é
-    anunciada nem trocada; com o motor 2 no lugar, é."""
+    anunciada nem trocada; com o motor 2 no lugar, é. Volta 3 (D-843, D-836): no lugar do aviso, a frase "Esta versão
+    precisa de um motor novo. Avise o Samuel." (uma vez)."""
     p = Prova(tmp_path / "a", motores={NOVA: 2}, motores_no_lugar={1})
     p.abrir()
     p.ligar_a_tela()
-    assert p.tela == [] and "trocar" not in p.vp.nomes()
+    assert [(type(e).__name__, getattr(e, "tipo", "")) for e in p.tela] == [("MostrarFalha", fases.FALHA_MOTOR)]
+    assert "trocar" not in p.vp.nomes()
     q = Prova(tmp_path / "b", motores={NOVA: 2}, motores_no_lugar={1, 2})
     q.abrir()
     q.ligar_a_tela()
@@ -192,17 +189,19 @@ def test_m2_o_motor_exigido_e_lido_de_dentro_do_pacote(tmp_path):
 # M4: o estado que não grava
 # ---------------------------------------------------------------------------------------------------------------------
 
-def test_m4_com_o_estado_que_nao_grava_nada_e_procurado_nem_trocado(tmp_path, monkeypatch):
-    """Achado médio 4 (era `test_F`). Com o estado.json recusando gravação, a atualização não anda: nada é procurado
-    nem baixado (a versão que falhasse não ficaria em "não tentar"), e a troca nunca é pedida sem a anotação."""
+def test_m4_com_o_estado_que_nao_grava_a_atualizacao_continua_e_o_registro_diz(tmp_path, monkeypatch):
+    """Achado médio 4. Volta 3 (D-836: era "nada é procurado nem trocado"; a emenda do Fable mudou: "Se não puder ser
+    gravado, o programa continua atualizando e registra o motivo; nunca para calado"): com o estado.json recusando
+    gravação, a versão nova é procurada e anunciada, a volta acontece, e o registro diz que a reprovação não ficou
+    gravada. Nada da troca depende do bilhete."""
     monkeypatch.setattr(atualizacao, "gravar_estado", lambda estado: False)
     p = Prova(tmp_path / "a")
     p.abrir()
-    assert p.vp.chamadas == []
+    assert p.vp.nomes() == ["procurar", "baixar"]
     monkeypatch.setattr(versao, "VERSAO", NOVA)
-    q = Prova(tmp_path / "b", teste=(False, "código 1"))
-    q.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, NOVA)
-    assert "trocar" not in q.vp.nomes(), "a troca de volta não é pedida sem a anotação gravada"
+    q = Prova(tmp_path / "b", teste=(False, "código 1"), ultima_boa=ANTERIOR)
+    assert q.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, NOVA) == 0
+    assert "trocar" in q.vp.nomes(), "a volta é pedida mesmo sem o bilhete gravar"
     assert "NÃO ficou gravada" in _registro()
 
 
@@ -348,7 +347,7 @@ def test_q7_a_licenca_tem_de_chegar_ao_arquivo_de_dentro(tmp_path, monkeypatch):
     leituras = iter([ANTES, DEPOIS_CERTO])
     monkeypatch.setattr(windows, "_rodar", lambda *a, **k: windows.Resposta(windows.DEU_CERTO))
     monkeypatch.setattr(windows, "ler_licencas", lambda c: next(leituras) if Path(c) == raiz else ANTES)
-    r = windows.dar_licenca_aos_usuarios(raiz)
+    r = windows.dar_licenca_aos_usuarios(raiz, raiz / "current" / "sq.version")    # volta 3: quem pede diz qual
     assert r.desfecho == windows.FALHOU and "sq.version" in r.motivo
 
 
@@ -371,8 +370,8 @@ def test_q14_sem_a_lista_de_processos_nao_troca(tmp_path):
     """Q14: o Windows não deu a lista de processos: não dá para dizer que não há outra janela aberta, e não troca."""
     p = _ate_o_aviso(tmp_path)
     p.win.outras = None
-    pode, motivo, _ = p.atual.conferir_troca(p.atual._achada)
-    assert pode is False and "não deu para saber" in motivo
+    c = p.atual.conferencia_da_troca(p.atual._achada)            # volta 3: a conferência única, sem o embrulho
+    assert c.pode is False and "não deu para saber" in c.motivo and c.motivo_da_tela == fases.MOTIVO_SEM_LISTA
 
 
 @no_windows

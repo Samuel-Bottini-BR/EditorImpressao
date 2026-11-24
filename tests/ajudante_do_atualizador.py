@@ -106,6 +106,7 @@ class VelopackFalso:
         self.conteudo = conteudo or {}
         self.chamadas: list[tuple] = []
         self.versao_pendente = pendente
+        self.leituras: list[tuple] = []
         self.trocar_levanta: Exception | None = None
 
     def procurar(self, endereco):
@@ -115,7 +116,8 @@ class VelopackFalso:
         return self.publicada
 
     def pendente(self, endereco):
-        self.chamadas.append(("pendente",))
+        """Só lê (o pacote esperando): anotado em `leituras`, não em `chamadas` (que são os pedidos que mudam algo)."""
+        self.leituras.append(("pendente",))
         return self.versao_pendente
 
     def baixar(self, endereco, v):
@@ -193,7 +195,7 @@ class Prova:
         """`motores`: o motor que cada versão pede (padrão: 1 nas duas). `motores_no_lugar`: os motores que estão no
         lugar (padrão: todos, ou nenhum com `motor=False`). `troca_em_curso`: o que a peça responde sobre o
         atualizador do Velopack. `ultima_boa` (volta 3): a versão (ANTERIOR ou a ATUAL) cujo pacote e assinatura já
-        estão guardados em `<raiz>\ultima-boa` (None = nenhuma). `pendente`: o que o Velopack diz que está esperando."""
+        estão guardados em `<raiz>/ultima-boa` (None = nenhuma). `pendente`: o que o Velopack diz que está esperando."""
         self.raiz, self.fonte_pasta = tmp / "raiz", tmp / "fonte"
         (self.raiz / "current").mkdir(parents=True)
         self.grava = {"agora": grava}
@@ -225,7 +227,7 @@ class Prova:
         return self.conteudos[v]
 
     def guardar(self, v: str) -> Path:
-        """Põe em `<raiz>\ultima-boa` o pacote e a assinatura da versão `v`, como `guardar_ultima_boa` deixa."""
+        """Põe em `<raiz>/ultima-boa` o pacote e a assinatura da versão `v`, como `guardar_ultima_boa` deixa."""
         pasta = atualizacao.pasta_da_ultima_boa(self.raiz)
         pasta.mkdir(parents=True, exist_ok=True)
         conteudo = self.conteudo_de(v)
@@ -235,7 +237,7 @@ class Prova:
         return pasta
 
     def pacote_em_packages(self, v: str) -> Path:
-        """Põe o pacote da versão `v` em `<raiz>\packages`, como o Velopack deixa o da versão que roda."""
+        """Põe o pacote da versão `v` em `<raiz>/packages`, como o Velopack deixa o da versão que roda."""
         destino = self.raiz / "packages" / atualizacao.nome_do_pacote(v)
         destino.parent.mkdir(parents=True, exist_ok=True)
         destino.write_bytes(self.conteudo_de(v))
