@@ -96,6 +96,34 @@ def test_g1_a_volta_interrompida_e_refeita_na_abertura_seguinte_sem_a_frase_1(tm
     assert not [e for e in tela if isinstance(e, fases.MostrarFalha) and e.tipo == fases.FALHA_TESTE]
 
 
+def test_g1_a_frase_1_nunca_antes_de_voltar(tmp_path, monkeypatch):
+    """G1: rodando uma versão que ainda não passou no teste (não é a última boa), a frase (1) não aparece, mesmo com
+    uma versão mais nova reprovada no bilhete: ela só aparece rodando a última boa (o programa voltou de fato)."""
+    monkeypatch.setattr(versao, "VERSAO", "1.2.0")
+    p = Prova(tmp_path, publicar_nova=False, teste=(True, ""))
+    _guardar_a_mao(p, ANTERIOR)
+    atualizacao.gravar_estado({"reprovadas": ["1.3.0"], "nao_tentar": ["1.3.0"]})
+    p.abrir()
+    p.ligar_a_tela()
+    assert not [e for e in p.tela if isinstance(e, fases.MostrarFalha) and e.tipo == fases.FALHA_TESTE]
+
+
+def test_g_a_guarda_interrompida_nao_vira_ultima_boa(tmp_path, monkeypatch):
+    """A guarda da última boa interrompida no meio da cópia (o notebook desligou): o pedaço copiado não vira a última
+    boa (a cópia vai para um nome provisório e só ganha o nome final depois da soma conferida); a de antes continua."""
+    p = Prova(tmp_path, publicar_nova=False, ultima_boa=ANTERIOR)
+    p.pacote_em_packages(ATUAL)
+
+    def copia_que_morre(origem, destino):
+        destino.write_bytes(origem.read_bytes()[:10])
+        raise Morreu()
+
+    monkeypatch.setattr(atualizacao, "_copiar_somando", copia_que_morre)
+    with pytest.raises(Morreu):
+        atualizacao.guardar_ultima_boa(p.raiz, ATUAL, p.atual.fonte, PUBLICA)
+    assert atualizacao.ler_ultima_boa(p.raiz) == ANTERIOR
+
+
 def test_g1_a_frase_1_so_depois_de_voltar(tmp_path, monkeypatch):
     """G1, o outro lado: rodando a anterior (a última boa), com a versão nova reprovada, a frase (1) aparece uma vez
     (derivada do que existe, nunca anotada antes)."""

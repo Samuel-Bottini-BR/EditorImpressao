@@ -136,6 +136,8 @@ class VelopackFalso:
                 raise conversa.ErroDoVelopack("o pacote da pasta não confere (tamanho ou soma)")
             destino.write_bytes(dados)
             return
+        if not str(endereco).startswith("http") and not Path(str(endereco)).is_dir():
+            raise conversa.ErroDoVelopack("a fonte não está acessível (como sem internet)")    # volta 3
         destino.write_bytes(self.conteudo[v.versao])
 
     def pacote_da_versao(self, pacote, v, arquivo, sha256, sha1, tamanho):
