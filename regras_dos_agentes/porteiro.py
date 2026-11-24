@@ -321,6 +321,17 @@ LICENCA_A_MAO = re.compile("|".join(f"(?:{p})" for p, _ in PALAVRAS_DE_LICENCA),
 # herança é acusada em toda a função (`NUNCA_NA_LICENCA_QUE_ACRESCENTA`). Fora dessa função, nada muda. Arriscado:
 # pôr outra função aqui, ou tirar opção da lista do "nunca" (as duas afrouxam a K03 calada).
 LICENCA_QUE_SO_ACRESCENTA = (PECA_UNICA_DO_WINDOWS, "dar_licenca_aos_usuarios")
+# Volta 2 (leve 2 de quem tentou quebrar): na função da exceção, a única licença que pode ser pedida é a do experimento,
+# escrita deste jeito, numa linha só (qualquer outra conta, outro direito ou outro jeito de escrever é acusado); a
+# função só pode ser chamada pelo despachante dos passos da peça (`_fazer_passo`, com a raiz que a peça calcula).
+# Volta 3 (emenda do Fable): a mesma função serve às duas pastas do passo da pergunta única (a raiz da instalação e a
+# do registro no ProgramData), por isso a linha fala da `pasta` que ela recebe; nada mais muda (a ferramenta, a conta,
+# o direito, o "/T" e quem pode chamar continuam os mesmos).
+LINHA_DA_LICENCA_QUE_SO_ACRESCENTA = ('feito = _rodar([ferramenta, pasta, "/grant", f"*{SID_USUARIOS}:(OI)(CI)M", "/T"], '
+                                      'LIMITE_DA_LICENCA_DA_PASTA_S)')
+QUEM_PODE_CHAMAR_A_LICENCA_QUE_SO_ACRESCENTA = (PECA_UNICA_DO_WINDOWS, "_fazer_passo")
+_CHAMA_A_LICENCA = re.compile(r"(?<!\w)dar_licenca_aos_usuarios\s*\(")
+_PEDIDO_DE_LICENCA = re.compile(r"/grant|\*S-1-\d|:\((?:OI|CI|IO|NP|I)\)", re.I)
 _A_FERRAMENTA_QUE_ACRESCENTA = re.compile(r"\bicacls\b", re.I)
 NUNCA_NA_LICENCA_QUE_ACRESCENTA = re.compile(
     r"/inheritance|/setowner|/remove|/deny|/reset|/restore|/substitute|/setintegritylevel|/save|:r\b", re.I)
@@ -752,27 +763,76 @@ def k02(arq: _Arquivo) -> list[Achado]:
     return _por_linha(arq, "K02", DETACHED, "o processo lançado assim sai sem rodar (etapa 5, defeito 1)")
 
 
+def _textos_dobrados(arq: _Arquivo) -> list[tuple[int, int, str]]:
+    """(primeira linha, última linha, texto) de cada texto do código com os pedaços juntados: os textos colados ("a" "b", que o Python junta)
+    e as somas de textos ("a" + "b"). A busca por linha não vê a palavra escrita em pedaços (volta 2, leve 2)."""
+    def dobrar(no) -> str | None:
+        if isinstance(no, ast.Constant) and isinstance(no.value, str):
+            return no.value
+        if isinstance(no, ast.BinOp) and isinstance(no.op, ast.Add):
+            esquerda, direita = dobrar(no.left), dobrar(no.right)
+            return esquerda + direita if esquerda is not None and direita is not None else None
+        return None
+
+    soltos = {id(no.value) for no in ast.walk(arq.raiz) if isinstance(no, ast.Expr)}   # docstrings: não contam
+    textos = []
+    for no in ast.walk(arq.raiz):
+        if isinstance(no, (ast.Constant, ast.BinOp)) and id(no) not in soltos:
+            texto = dobrar(no)
+            if texto:
+                textos.append((no.lineno, no.end_lineno or no.lineno, texto))
+    return textos
+
+
 def k03(arq: _Arquivo) -> list[Achado]:
-    """K03: comando de licença de pasta à mão, em qualquer arquivo do programa (até na peça única). A única exceção é
-    `LICENCA_QUE_SO_ACRESCENTA` (D-837): ali a ferramenta passa só sozinha na linha, e o que tira, nega, troca o dono
-    ou mexe na herança é acusado na função inteira."""
+    """K03: comando de licença de pasta à mão, em qualquer arquivo do programa (até na peça única), na linha ou num
+    texto escrito em pedaços. A única exceção é `LICENCA_QUE_SO_ACRESCENTA` (D-837): ali a ferramenta passa só na
+    linha do experimento (`LINHA_DA_LICENCA_QUE_SO_ACRESCENTA`); outro pedido de licença na função, e o que tira,
+    nega, troca o dono ou mexe na herança, é acusado na função inteira; e a função só pode ser chamada por
+    `QUEM_PODE_CHAMAR_A_LICENCA_QUE_SO_ACRESCENTA`."""
     if not e_programa(arq.caminho):
         return []
     arquivo, funcao = LICENCA_QUE_SO_ACRESCENTA
-    achados = []
+    achados: dict[int, Achado] = {}
+
+    def acusar(n: int, porque: str) -> None:
+        if n not in achados and arq.codigo[n - 1].strip():
+            achados[n] = Achado("K03", arq.caminho, n, _texto_do_lugar(arq.codigo[n - 1]), porque, arq.funcao(n))
+
+    def na_excecao(n: int) -> bool:
+        return arq.caminho == arquivo and arq.funcao(n) == funcao
+
+    def e_a_linha_provada(n: int) -> bool:
+        return _texto_do_lugar(arq.codigo[n - 1]) == LINHA_DA_LICENCA_QUE_SO_ACRESCENTA
+
     for a in _por_linha(arq, "K03", LICENCA_A_MAO, "licença de pasta mudada à mão (etapa 5, defeito 4)"):
         so_a_ferramenta = not LICENCA_A_MAO.search(_A_FERRAMENTA_QUE_ACRESCENTA.sub("", arq.codigo[a.linha - 1]))
-        if not (arq.caminho == arquivo and a.funcao == funcao and so_a_ferramenta):
-            achados.append(a)
-    if arq.caminho == arquivo:
-        ja = {a.linha for a in achados}
-        for n, linha in enumerate(arq.codigo, 1):
+        if not (na_excecao(a.linha) and so_a_ferramenta):
+            achados.setdefault(a.linha, a)
+    for n, ultima, texto in _textos_dobrados(arq):
+        m = LICENCA_A_MAO.search(texto)
+        ja_na_linha = any(LICENCA_A_MAO.search(arq.codigo[i - 1]) for i in range(n, ultima + 1))
+        if m and not ja_na_linha and \
+                not (na_excecao(n) and not LICENCA_A_MAO.search(_A_FERRAMENTA_QUE_ACRESCENTA.sub("", texto))):
+            acusar(n, f"licença de pasta mudada à mão, escrita em pedaços: {m.group(0)}")
+    for n, linha in enumerate(arq.codigo, 1):
+        if na_excecao(n):
             m = NUNCA_NA_LICENCA_QUE_ACRESCENTA.search(linha)
-            if m and n not in ja and arq.funcao(n) == funcao:
-                achados.append(Achado("K03", arq.caminho, n, _texto_do_lugar(linha),
-                                      f"a função que só acrescenta licença não pode tirar, negar, trocar o dono nem "
-                                      f"mexer na herança: {m.group(0)}", funcao))
-    return sorted(achados, key=lambda a: a.linha)
+            if m:
+                acusar(n, f"a função que só acrescenta licença não pode tirar, negar, trocar o dono nem mexer na "
+                          f"herança: {m.group(0)}")
+            elif _PEDIDO_DE_LICENCA.search(linha) and not e_a_linha_provada(n):
+                acusar(n, "a função que só acrescenta licença só pode pedir a do experimento (Usuários, Modificar, "
+                          "passando para dentro)")
+        if _CHAMA_A_LICENCA.search(linha) and not linha.lstrip().startswith("def ") and \
+                (arq.caminho, arq.funcao(n)) != QUEM_PODE_CHAMAR_A_LICENCA_QUE_SO_ACRESCENTA:
+            acusar(n, "a licença que só acrescenta só pode ser pedida pelos passos da peça, com a raiz que ela calcula")
+    for n, _ultima, texto in _textos_dobrados(arq):
+        if na_excecao(n):
+            m = NUNCA_NA_LICENCA_QUE_ACRESCENTA.search(texto)
+            if m:
+                acusar(n, f"a função que só acrescenta licença não pode tirar nada, escrito em pedaços: {m.group(0)}")
+    return sorted(achados.values(), key=lambda a: a.linha)
 
 
 def k04(arq: _Arquivo) -> list[Achado]:
