@@ -121,8 +121,9 @@ class Abriu:
     """O programa abriu. `instalado`: pelo instalador do Velopack (pelo código é False). `pasta_grava`: a conta que abriu
     consegue gravar na pasta do programa (é o "preparado?", D-741). `troca_de`/`troca_para`: uma troca foi pedida antes
     desta abertura (pela linha de comando da reabertura ou pela anotação do disco); `troca_volta`: essa troca era a volta
-    para a anterior. `sem_janela`: a reabertura do "Sim" ao fechar. `falha_nao_vista`: (tipo, nome) de uma falha
-    anotada que esta conta ainda não viu."""
+    para a anterior. `sem_janela`: a reabertura do "Sim" ao fechar. `falha_anotada`: (tipo, nome) da última falha
+    anotada no disco; a tela só a mostra se esta conta ainda não a viu (quem confere é o executor, na hora de entregar
+    à janela, `atualizacao.Atualizacao._para_a_tela`)."""
 
     instalado: bool
     conta_de_testes: bool
@@ -134,7 +135,7 @@ class Abriu:
     troca_para: str = ""
     troca_volta: bool = False
     sem_janela: bool = False
-    falha_nao_vista: tuple[str, str] | None = None
+    falha_anotada: tuple[str, str] | None = None
 
 
 @dataclass(frozen=True)
@@ -450,9 +451,9 @@ def _ao_abrir(estado: Estado, e: Abriu) -> tuple[Estado, list[Efeito]]:
 
 
 def _falha_a_mostrar(e: Abriu) -> list[Efeito]:
-    """A falha anotada que esta conta ainda não viu, mostrada uma vez (D-719, D-778)."""
-    if e.falha_nao_vista and e.falha_nao_vista[0] in TIPOS_DE_FALHA:
-        return [MostrarFalha(e.falha_nao_vista[0], e.falha_nao_vista[1])]
+    """A falha anotada, para a janela mostrar uma vez por conta (D-719, D-778)."""
+    if e.falha_anotada and e.falha_anotada[0] in TIPOS_DE_FALHA:
+        return [MostrarFalha(e.falha_anotada[0], e.falha_anotada[1])]
     return []
 
 

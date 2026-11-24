@@ -15,7 +15,9 @@ O desenho (o mapa `DONOS`, escrito uma vez só, aqui):
   único que pode carregar DLL (`CDLL`), mas não pode "o Windows pelo ctypes" (`windll`, `WinDLL`, `oledll`, `OleDLL`,
   `wintypes`, `get_last_error`, `FormatError`, `GetLastError`);
 - abrir e falar com os nossos processos (OCR, Kraken, servidor de páginas, brasão): `core/processos.py` (ainda não
-  existe), que pode `subprocess`.
+  existe), que pode `subprocess`;
+- a biblioteca do Velopack (procurar, baixar e trocar a versão): `core/conversa_com_o_velopack.py` (atualizador novo,
+  23/11/2026; pedido da gerente: "o dono único do `import velopack` é `core/conversa_com_o_velopack.py`").
 O `subprocess` tem dois donos. A separação entre os dois (o Windows só lança programa da pasta do Windows; os processos
 recusam programa da pasta do Windows) não se vê pelo import: é feita quando o programa roda. Por isso está escrita aqui
 como duas pendências paradas até as peças existirem, como a do `CDLL`. "Rodar programa pelo `os`" (`os.system`,
@@ -109,6 +111,7 @@ CAPACIDADES = {
     "winreg": "o registro do Windows (winreg)",
     "os.startfile": "abrir arquivo ou programa pelo Windows (os.startfile)",
     "rodar programa pelo os": "rodar programa pelo os (os.system, os.popen, os.spawn*, os.exec*)",
+    "Velopack": "a biblioteca do Velopack (velopack): procurar, baixar e trocar a versão do programa",
 }
 
 # O mapa dos donos: arquivo → as capacidades que só ele pode usar. Lugar único. Capacidade que não aparece aqui não
@@ -117,10 +120,12 @@ DONOS: dict[str, frozenset[str]] = {
     "core/windows.py": frozenset({"ctypes", "Windows pelo ctypes", "winreg", "os.startfile", "subprocess"}),
     "core/nativo_dll.py": frozenset({"ctypes", "carregar DLL"}),             # as nossas DLLs (ainda não existe)
     "core/processos.py": frozenset({"subprocess"}),                          # os nossos processos (ainda não existe)
+    "core/conversa_com_o_velopack.py": frozenset({"Velopack"}),              # o Velopack (atualizador novo, 23/11)
 }
 
 # Os nomes dos módulos de cada capacidade de módulo (o `_winreg` é o nome antigo do `winreg`).
-_MODULOS = {"ctypes": "ctypes", "subprocess": "subprocess", "winreg": "winreg", "_winreg": "winreg"}
+_MODULOS = {"ctypes": "ctypes", "subprocess": "subprocess", "winreg": "winreg", "_winreg": "winreg",
+            "velopack": "Velopack"}
 _CARREGAR_DLL = frozenset({"CDLL", "cdll", "PyDLL", "pydll"})
 # As partes do ctypes que só existem para o Windows (https://docs.python.org/3/library/ctypes.html: "windll",
 # "oledll", "WinDLL", "OleDLL", "ctypes.wintypes", "get_last_error", "FormatError", "GetLastError"; o último também é o
@@ -532,19 +537,8 @@ def conferir_a_catraca(lugares: list[Lugar], congelada, teto: int) -> list[str]:
 
 # A lista de 23/11/2026 (terceira volta), lugar por lugar, pela chave (`Lugar.chave`). Só diminui.
 LISTA_CONGELADA = (
-    # (a1) O atualizador e os testes à distância (20): a lista de trabalho do atualizador novo.
-    "atualizacao.py | (fora de função) | subprocess | import subprocess",
-    "atualizacao.py | _dono_do_arquivo | ctypes | import ctypes",
-    "atualizacao.py | _dono_do_arquivo | ctypes | from ctypes import ...",
-    "atualizacao.py | _dono_do_arquivo | Windows pelo ctypes | from ctypes import wintypes",
-    "atualizacao.py | _dono_do_arquivo | Windows pelo ctypes | usa ...windll",
-    "atualizacao.py | _dono_do_arquivo | Windows pelo ctypes | usa wintypes",
-    "atualizacao.py | marcar_programa_aberto | ctypes | import ctypes",
-    "atualizacao.py | marcar_programa_aberto | Windows pelo ctypes | usa ...windll",
-    "atualizacao.py | _marca_existe | ctypes | import ctypes",
-    "atualizacao.py | _marca_existe | Windows pelo ctypes | usa ...windll",
-    "atualizacao.py | _ler_versao_do_visual_c | winreg | import winreg",
-    "atualizacao.py | _ler_chave_do_inno | winreg | import winreg",
+    # (a1) Os testes à distância (8): ficam para a entrega dos testes à distância. As 12 linhas do atualizacao.py
+    # saíram com o atualizador novo (23/11/2026): ele fala com o Windows só pela peça.
     "core/_testes_a_distancia_windows.py | (fora de função) | ctypes | import ctypes",
     "core/_testes_a_distancia_windows.py | (fora de função) | ctypes | from ctypes import ...",
     "core/_testes_a_distancia_windows.py | (fora de função) | subprocess | import subprocess",
@@ -584,7 +578,7 @@ LISTA_CONGELADA = (
     "core/paginas_em_outro_processo.py | (fora de função) | subprocess | import subprocess",
     "ui/tela_de_carregamento.py | (fora de função) | subprocess | import subprocess",
 )
-TETO = 46       # o tamanho da lista em 23/11/2026 (20 + 9 + 12 + 5); só desce
+TETO = 34       # 46 em 23/11/2026 (20 + 9 + 12 + 5); 34 com o atualizador novo (8 + 9 + 12 + 5); só desce
 
 
 # ---------------------------------------------------------------- a trava
@@ -847,13 +841,15 @@ def test_cada_modulo_proibido_e_acusado(modulo, capacidade):
 def test_o_mapa_dos_donos_so_usa_capacidades_que_existem():
     """O mapa final (terceira volta): todo dono só tem capacidades de `CAPACIDADES`; o ctypes tem dois donos (o Windows
     e as nossas DLLs), o subprocess dois (o Windows e os nossos processos); o Windows pelo ctypes, o winreg e o
-    startfile, só o Windows; carregar DLL, só as DLLs; rodar programa pelo os, nenhum."""
+    startfile, só o Windows; carregar DLL, só as DLLs; rodar programa pelo os, nenhum; o Velopack, só a peça dele
+    (atualizador novo, 23/11/2026)."""
     assert all(caps <= set(CAPACIDADES) for caps in DONOS.values())
     donos_de = {cap: sorted(a for a, caps in DONOS.items() if cap in caps) for cap in CAPACIDADES}
     assert donos_de == {"ctypes": ["core/nativo_dll.py", "core/windows.py"], "carregar DLL": ["core/nativo_dll.py"],
                         "Windows pelo ctypes": ["core/windows.py"],
                         "subprocess": ["core/processos.py", "core/windows.py"], "winreg": ["core/windows.py"],
-                        "os.startfile": ["core/windows.py"], "rodar programa pelo os": []}
+                        "os.startfile": ["core/windows.py"], "rodar programa pelo os": [],
+                        "Velopack": ["core/conversa_com_o_velopack.py"]}
 
 
 # ---------------------------------------------------------------- as provas da catraca
@@ -994,3 +990,15 @@ def test_cada_raiz_de_verdade_entra_no_fechamento():
     assert {r.arquivo for r in raizes} >= {"main.py", "motor_kraken/servidor_kraken.py", "core/gravura_scantailor.py",
                                           "core/st_ferramentas.py", "core/ocr_comum.py", "core/ocr_kraken.py"}
     assert all(r.arquivo in arquivos for r in raizes)
+
+
+def test_velopack_so_no_dono():
+    """A capacidade "Velopack" (atualizador novo, 23/11/2026; pedido da gerente: "o dono único do `import velopack` é
+    `core/conversa_com_o_velopack.py`"): o `import velopack` e o `from velopack import ...` são acusados em qualquer
+    arquivo do programa, menos no dono. Sem a linha da capacidade em `_MODULOS` ou sem o dono em `DONOS`, este teste
+    falha (a primeira acusação some, ou o dono passa a ser acusado)."""
+    arquivos = _programa(core_P_usa='"""Fora do dono."""\nimport velopack\nfrom velopack import App\n'
+                                    'import core.conversa_com_o_velopack\n',
+                         core_P_conversa_com_o_velopack='"""O dono."""\nimport velopack\n')
+    assert _conferir(arquivos) == ["core/usa.py:2: Velopack (import velopack)",
+                                   "core/usa.py:3: Velopack (from velopack import ...)"]

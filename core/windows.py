@@ -2563,7 +2563,6 @@ NOME_DA_PASTA_TROCADA = "current"       # a pasta que o Velopack troca a cada ve
 NOME_DO_MANIFESTO = "sq.version"        # o manifesto dela (locator.rs: ManifestPath = current\sq.version)
 DIREITOS_DE_MODIFICAR = 0x1301BF        # "Modificar" (M): ler, gravar, executar e apagar
 LIMITE_DA_LICENCA_DA_PASTA_S = 1800
-LIMITE_DO_VISUAL_C_S = 900
 LIMITE_DO_INNO_S = 900
 ESPERA_DO_INNO_S = 300                  # o desinstalador do Inno continua numa cópia dele depois de sair
 
@@ -2589,42 +2588,32 @@ def raiz_da_instalacao(exe: Path | str | None = None) -> Path:
     return raiz
 
 
-_SO_ADMINISTRADORES_MUDAM = {SID_SISTEMA, SID_ADMINISTRADORES, SID_INSTALADOR_CONFIAVEL, SID_PROPRIETARIO_CRIADOR}
-
-
 def instalar_visual_c_do_programa(pasta: Path) -> Resposta:
-    """O Visual C++ oficial que vem dentro do programa (`<pasta>\\instalar\\vc_redist.x64.exe`, D-727), em silêncio,
-    só se faltar; e CONFERE lendo de novo a versão no registro. A regra de "precisa?" e a leitura da versão do pacote
-    são as únicas do programa (`atualizacao.precisa_do_visual_c`, `atualizacao.versao_do_visual_c_do_pacote`).
-
-    Antes de rodar, confere que só o sistema e os administradores podem mudar o instalador: este passo roda com a
-    licença de administrador, e um arquivo que uma conta comum pudesse trocar seria rodado com essa licença. (A régua da
-    assinatura da Microsoft mora no `empacotar.py`, que o programa não importa: ver o ONDE-PAREI.) Sem o instalador no
-    pacote: deu certo, sem fazer nada (como antes)."""
+    """O Visual C++ oficial que vem dentro do programa (`<pasta>\\instalar\\vc_redist.x64.exe`, D-727), em silêncio, só
+    se faltar. A regra (precisa? qual versão o pacote traz? ficou instalado?) é a única do programa,
+    `atualizacao.instalar_visual_c_se_faltar`; aqui só entram a leitura do registro (`ler_versao_do_visual_c`) e o
+    rodar, com uma conferência antes: o instalador e a pasta dele só podem ser mudados pelo sistema e pelos
+    administradores (a regra da pasta segura, `problemas_da_pasta_segura`). Este passo roda com a licença de
+    administrador, e um arquivo que uma conta comum pudesse trocar seria rodado com essa licença. (A régua da
+    assinatura da Microsoft mora no `empacotar.py`, que o programa não importa: ver o ONDE-PAREI do atualizador novo.)"""
     import atualizacao
 
-    exe = Path(pasta) / atualizacao.PASTA_DO_QUE_SE_INSTALA / atualizacao.VC_REDIST_NOME
-    if not exe.is_file():
-        return _certo(f"o pacote não tem {exe.name}: nada a instalar")
-    do_pacote = atualizacao.versao_do_visual_c_do_pacote(Path(pasta)) or "0.0.0"
-    if not atualizacao.precisa_do_visual_c(ler_versao_do_visual_c(), do_pacote):
-        return _certo(f"o Visual C++ {do_pacote} (ou mais novo) já está instalado")
-    try:
-        quem = ler_licencas(exe).quem_grava() | ler_licencas(exe.parent).quem_grava()
-    except OSError as erro:
-        return _falhou("não deu para conferir quem pode mudar o instalador do Visual C++", repr(erro))
-    if quem - _SO_ADMINISTRADORES_MUDAM:
-        return _falhou("o instalador do Visual C++ pode ser trocado por uma conta comum: não foi rodado",
-                       f"{exe}: quem grava {sorted(quem)}")
-    feito = _rodar([exe, "/install", "/quiet", "/norestart"], LIMITE_DO_VISUAL_C_S)
-    codigo = feito.dados.get("codigo")
-    # 0 = instalou; 1638 = já havia uma mais nova; 3010 = instalou e pede reiniciar (Microsoft, códigos do instalador)
-    if codigo not in (0, 1638, 3010):
-        return _falhou("o Visual C++ não foi instalado", f"código {codigo}: {feito.motivo} {feito.detalhe}")
-    if atualizacao.precisa_do_visual_c(ler_versao_do_visual_c(), do_pacote):
-        return _falhou("o Visual C++ terminou, mas o Windows não mostra a versão instalada",
-                       f"código {codigo}; pedida {do_pacote}; lida {ler_versao_do_visual_c()}")
-    return _certo(f"Visual C++ {do_pacote} instalado (código {codigo})")
+    def rodar(comando: list[str], limite_s: int) -> tuple[int, str]:
+        """Confere quem pode mudar o instalador e roda; (código, o que disse)."""
+        exe = Path(comando[0])
+        try:
+            problemas = problemas_da_pasta_segura(ler_licencas(exe)) + problemas_da_pasta_segura(ler_licencas(exe.parent))
+        except OSError as erro:
+            return -1, f"não deu para conferir quem pode mudar o instalador ({erro})"
+        if problemas:
+            return -1, "o instalador pode ser trocado por quem não é administrador, e não foi rodado: " + "; ".join(problemas)
+        feito = _rodar(comando, limite_s)
+        codigo = feito.dados.get("codigo")
+        return (codigo if isinstance(codigo, int) else -1), f"{feito.motivo} {feito.detalhe}".strip()
+
+    if atualizacao.instalar_visual_c_se_faltar(Path(pasta), ler=ler_versao_do_visual_c, rodar=rodar):
+        return _certo("o Visual C++ está instalado")
+    return _falhou("o Visual C++ não ficou instalado (o registro da atualização diz por quê)")
 
 
 def tirar_instalacao_do_inno(raiz: Path, ler: Callable[[], dict | None] | None = None,

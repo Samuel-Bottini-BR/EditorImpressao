@@ -87,10 +87,11 @@ def main() -> int:
     # dos testes a distancia". So aparece uma vez; depois, da para por a senha
     # nas Configuracoes. So no programa instalado pelo instalador (D-728): pelo
     # codigo nao mostra nada e nao marca nada, com a mesma regra da atualizacao
-    # (atualizacao.instalado_pelo_velopack). Desde 17/11 (D-733, D-735), logo
-    # depois dela vem SEMPRE uma pergunta do Windows, que cria o ajudante da
-    # atualizacao (com a senha, os testes a distancia vao na mesma pergunta).
-    # Ver ui/testes_a_distancia_ui.py.
+    # (atualizacao.instalado_pelo_velopack). Desde o atualizador novo
+    # (23/11/2026, D-834) ela vem DEPOIS da janela aberta e nao pergunta nada
+    # ao Windows: a pergunta do Windows ja veio antes do brasao, em
+    # atender_linha_de_comando (la embaixo). A senha nao liga nada nesta versao
+    # (D-825). Ver ui/testes_a_distancia_ui.py.
     from ui.testes_a_distancia_ui import primeira_vez_se_preciso
 
     primeira_vez_se_preciso(janela)
@@ -98,11 +99,12 @@ def main() -> int:
     if len(sys.argv) > 1 and sys.argv[1].lower().endswith(".pdf"):
         janela.abrir_livro(sys.argv[1])
 
-    # Atualizacao (etapa 3 da frente do Kaique): manda o ajudante procurar a
-    # versao nova (D-732, "quando o programa e aberto") e liga o aviso da versao
-    # nova e o da atualizacao que falhou (D-715, D-719, D-720). Vem DEPOIS da
-    # primeira abertura de proposito: na primeira vez, o ajudante nasce nela.
-    # So no programa instalado pelo Velopack; pelo codigo nao faz nada. Ver
+    # Atualizacao (atualizador novo, 23/11/2026): liga a janela ao executor
+    # da atualizacao desta abertura (atualizacao.da_abertura), que ja comecou
+    # em atender_linha_de_comando e procura a versao nova por tras (D-732);
+    # daqui em diante o aviso da versao nova (D-715, D-720, D-835) e o da
+    # atualizacao que falhou (D-719, D-778) aparecem nesta janela. So no
+    # programa instalado pelo Velopack; pelo codigo nao faz nada. Ver
     # ui/aviso_de_atualizacao.py.
     from ui.aviso_de_atualizacao import ligar_na_janela
 
@@ -152,12 +154,14 @@ if __name__ == "__main__":
         from core.ocr_diagnostico import linha_de_comando
 
         raise SystemExit(linha_de_comando(sys.argv[2:]))
-    # Atualizacao pela internet (Velopack; etapa 3 da frente do Kaique): os
-    # ganchos de instalar/desinstalar, os modos sem janela (o ajudante procura
-    # a versao nova, conferir a versao nova, preparar o computador dentro da
-    # pergunta do Windows) e, no programa instalado, a troca antes da janela
-    # quando ha versao nova esperando do "Depois" (D-734). Pelo codigo e sem
-    # argumento nosso nao faz nada. Ver atualizacao.py.
+    # Atualizacao pela internet (Velopack; atualizador novo, 23/11/2026): os
+    # ganchos de instalar/desinstalar, o teste rapido, e no programa instalado
+    # a abertura da atualizacao ANTES do brasao e da janela: a pergunta do
+    # Windows quando a pasta do programa ainda nao aceita gravacao (D-806,
+    # D-834), e a conferencia da versao nova quando o Velopack reabre o
+    # programa depois de trocar (D-718; na reabertura sem janela do "Sim" ao
+    # fechar, sai sem abrir nada). Pelo codigo e sem argumento do Velopack nao
+    # faz nada. Ver atualizacao.py.
     from atualizacao import atender_linha_de_comando
 
     codigo = atender_linha_de_comando(sys.argv)
