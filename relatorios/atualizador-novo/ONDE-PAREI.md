@@ -1,3 +1,119 @@
+# Volta 3, segunda parte: as respostas do Samuel (D-847 a D-853) (24/11/2026)
+
+Pedido da gerente de 24/11 (depois da rodada verde do GitHub de `04dd0cd4`, 45449425841): conferir a D-848, fazer a
+D-851 conferindo de verdade, e procurar caminho morto da volta antiga (D-853). Mesmo ramo e worktree. Não abri agente
+nem janela; nada instalado; nada no programa do Samuel, no `C:\ProgramData` nem em tarefa do Windows.
+
+**Situação: feito; testes passando no meu PC; juiz local do porteiro: CONFERIDO; mutações: 100 acusadas, 0 sobreviventes.
+Falta a rodada do GitHub (é da gerente).**
+
+## Decisões e como cumpri
+
+| Decisão (palavras dele) | O que fiz | Prova |
+|---|---|---|
+| D-847 "1 — sim, os nove motivos." | nada a mudar (os textos já eram esses) | `test_m3_todo_motivo_tem_o_texto_e_nenhum_tem_codigo` |
+| D-848 "2 — sim, a frase de 18/11." | conferido: no "Reiniciar agora" com o pacote trocado já aparece a frase 2 da D-778, com o título "Atualização", nos dois caminhos (antes de fechar, e depois de fechar, pela reabertura). Nada a consertar: os testes passam em `04dd0cd4` e aqui | `tests/test_atualizador_d851.py::test_d848_*` (2); mutação N32 (trocar pela frase da D-845) acusada |
+| D-849 "3 — sim, abre normalmente." | nada a mudar (já era assim desde a volta 3) | `test_m7a_...` |
+| D-850 "4 — sim, deixar para depois." | nada mudado | — |
+| D-851 "5 — não: a última versão boa deve ser guardada copiando o pacote que já está na pasta packages\ do programa (o instalador e cada troca deixam ele lá), sem internet; baixar só se o arquivo não estiver lá. O agente confere isso, não supõe." | conferido no código do Velopack e de verdade (abaixo). **Cada troca deixa o pacote lá; o nosso instalador (.msi) NÃO deixa.** A guarda copia de `packages\` (sem internet; a assinatura é a guardada quando a versão foi conferida); só se o pacote não está lá, baixa pelo Velopack (o índice e a assinatura publicados; o Velopack confere a soma) e então a mesma cópia conferida. Saiu o ramo "sem o pacote, nem testa" da regra | `test_atualizador_d851.py::test_d851_*` (4; 3 falham em `04dd0cd4`: `volta3b-testes-no-codigo-antigo.txt`); mutações N29-N31 |
+| D-852 "Arquivo da assinatura da última boa: é dado, não peça. Aprovado." | nada a mudar | — |
+| D-853 (o crescimento; a volta antiga por download ao lado da nova) | procurado: não sobrou (abaixo) | — |
+
+## A leitura do Velopack para a D-851 (§11.12 ponto 6), com a fonte, e o que rodei de verdade
+
+Fonte: o clone da etiqueta `1.2.161` (commit `92d6a1c`) na minha pasta de rascunho (só lido).
+
+- **O `Setup.exe` deixa o pacote completo em `packages\`**, com o nome `<id>-<versão>-full.nupkg`:
+  `bins/src/commands/install.rs` 199-218 ("Copying nupkg to packages directory", `pkg.copy_bundle_to_file(&nupkg_path)`),
+  o nome em `lib-rust/src/locator.rs` 199-203 (`get_ideal_local_nupkg_path`). **Só lido** (não é o nosso instalador).
+- **O `.msi` (o nosso instalador, D-723) NÃO deixa:** o vpk monta o .msi com a pasta portátil (`Update.exe`,
+  `current\`, o atalho, `.msi-installed`; `vpk/Velopack.Packaging.Windows/Commands/WindowsPackCommandRunner.cs`
+  230-243) e o modelo do .msi só declara `packages` vazia (`Msi/Templates/MsiTemplate.hbs` 18-20) e inclui os arquivos
+  dessa pasta (173). **Rodado:** as tabelas de um .msi de prova montado pelo vpk de verdade com as nossas opções, e as
+  do NOSSO .msi da 1.1.0 (`EditorImpressao-arquivos\prova-atualizador-4\estado-1.1.0\v1.1.0\`, só lido): 586
+  arquivos, nenhum em `packages\`, nenhum `.nupkg`.
+- **Cada troca deixa o pacote novo e o velho sai:** o `download_updates` grava `<FileName>` do índice (o
+  `<id>-<versão>-full.nupkg`) em `packages\` e apaga os outros `.nupkg` e `.partial` (`manager.rs` 405-481); a troca
+  (`apply_windows_impl.rs` 47-...) não mexe em `packages\` (só apaga um pacote estragado, 52, 57, 145); a abertura
+  guarda o da versão atual e o esperando (`app.rs` 160-245). **Rodado:** a biblioteca de verdade baixou a 1.0.1 para
+  `packages\` e apagou a 1.0.0; o `Update.exe` de verdade (`apply --silent --norestart`, numa instalação portátil
+  minha: sem janela, sem registro do Windows, sem atalho) trocou e deixou a 1.0.1 em `packages\`; o "pendente"
+  depois da troca é nada. Não rodei a abertura do programa trocado (o `App.run`): só lido.
+- **Pacote de diferença (delta):** se houvesse, o Velopack monta o completo a partir dele e grava com o nome do
+  completo (`manager.rs` 486-535 e 459). Mas o nosso publicar não faz delta (`empacotar.py` 1353, `--delta None`,
+  D-789): todo download é do completo. **Só lido.**
+- Saída inteira: `volta3-provas/prova_packages-resultado.txt` (o script: `prova_packages.py`).
+
+## O que o programa faz agora (a guarda da última boa)
+
+1. O pacote da versão que passou está em `packages\` (o caso de toda troca): copia para `ultima-boa\` somando, sem
+   internet; a assinatura é a guardada quando a versão foi conferida (antes de baixar). Se a soma da cópia não é a que a
+   assinatura afirma: não guarda (o pedaço copiado é apagado), o registro diz, a última boa continua a de antes, e a
+   próxima abertura testa e tenta de novo.
+2. Não está (o caso do .msi, na primeira abertura): lê o índice e a assinatura publicados da versão, confere a
+   assinatura, pede ao Velopack para baixar (ele confere tamanho e soma) e faz a cópia do passo 1. Precisa de internet.
+   Sem internet, ou com a assinatura errada: não guarda, o registro diz por quê.
+3. **O "tentar de novo por trás a cada abertura" continua só para o caso 2 sem internet** (e para os casos raros de
+   pacote ou assinatura que não conferem). Depois de uma troca ele não acontece (o pacote está lá e a assinatura foi
+   guardada). Como a procura de versão nova também precisa de internet e vem DEPOIS da guarda na mesma abertura, a
+   primeira vez que houver internet para atualizar, a guarda acontece antes.
+
+## A conferência do crescimento (D-853)
+
+- **Não sobrou caminho da volta antiga por download.** A volta só lê `ultima-boa\` (`_voltar`). A leitura do índice
+  publicado mora agora num lugar só, `_baixar_a_que_roda` (o caso 2 da D-851, que é caminho vivo). Procurei todo nome
+  definido em `atualizacao.py`, `core/fases_da_atualizacao.py` e `core/conversa_com_o_velopack.py` que o programa não
+  usa: só `fases.TIPOS_DE_EVENTO` (a lista que a tabela exaustiva dos testes usa; existe desde a volta 1).
+- `tests/test_velopack_de_verdade.py::test_a_volta_baixa_a_anterior_e_o_velopack_confere_a_soma`: o nome é da volta
+  antiga, mas ele prova a biblioteca baixando de uma fonte com índice e conferindo a soma, que é o caso 2 da D-851. Não é
+  caminho morto; não mexi nele.
+- **Tamanho (linhas de código, sem comentário, sem docstring e sem linha em branco):**
+
+| Arquivo | `012c849c` (antes da volta 3) | `04dd0cd4` (volta 3) | agora |
+|---|---|---|---|
+| `atualizacao.py` | 660 | 806 | 832 |
+| `core/fases_da_atualizacao.py` | 358 | 410 | 405 |
+| `core/conversa_com_o_velopack.py` | 64 | 70 | 70 |
+| total | 1082 | 1286 (+18,9%) | 1307 (+20,8%) |
+
+  O que entrou agora: o download do caso 2 (+26 em `atualizacao.py`); o que saiu: o ramo "sem o pacote, nem testa"
+  (-5 na regra).
+
+## Testes e mutações
+
+- Um arquivo por vez: `test_atualizador_d851` 6, `test_atualizador_volta3` 36, `test_fases_da_atualizacao` 2171,
+  `test_atualizador_novo` 35, `test_atualizador_volta2` 32, `test_decisoes_atualizacao` 42; os 15 arquivos do atualizador
+  juntos: na conferência sem mutação das mutações (abaixo).
+- Juiz local do porteiro (de `obra-juncao`): `PORTEIRO: CONFERIDO`.
+- Mutações (`volta3-provas/mutacoes_volta3.py`, com o arquivo novo na lista e N29 a N32): na rodada inteira, de novo, depois das mudanças: os 15 arquivos juntos passam sem mutação (2510 casos); 100 acusadas, 0 sobreviveram, 7 saíram com o desenho, 0 erros (as N29 a N32 da D-851 e da D-848 incluídas)
+  (`volta3-provas/mutacoes_volta3-resultado.txt`).
+- Lista da D-836: seção "Volta 3, segunda parte".
+
+## Ressalvas
+
+1. **A premissa "o instalador deixa o pacote lá" não vale para o nosso instalador (.msi).** Por isso, na primeira
+   abertura depois de instalar, guardar a última boa precisa de internet (o download de uns 460 MB). Isso já estava na
+   resposta dele ("baixar só se o arquivo não estiver lá").
+2. **Espaço no disco:** depois do download do caso 2, o Velopack deixa o pacote em `packages\` (é o da versão que roda)
+   e a cópia fica em `ultima-boa\`: uns 920 MB no total. Depois de cada troca é igual (o pacote da versão nova em
+   `packages\` e a cópia dela). Ver a pergunta 1.
+3. A troca de verdade pelo `Update.exe` foi rodada numa instalação portátil minha, com um programa de prova (não o nosso
+   pacote de 460 MB); a do programa de verdade, só na prova à vista.
+4. O vpk pode ter deixado arquivos dele na pasta temporária da conta (o WiX) ao montar o .msi de prova; fora do projeto,
+   não apaguei.
+
+## Perguntas para o Samuel (§11.13)
+
+**1. O espaço da cópia de segurança no notebook.** É a cópia da última versão boa que o programa guarda para voltar
+sozinho em segundos (a que o senhor aprovou). O programa de atualização (o Velopack) já guarda o arquivo da versão que
+está rodando na pasta dele, e a nossa cópia fica ao lado: são dois arquivos iguais de uns 460 MB, uns 920 MB no
+total. Existe um jeito do Windows de ter o mesmo arquivo com dois nomes sem ocupar o dobro (um "atalho de arquivo" do
+disco): os 460 MB da nossa cópia deixariam de ser gastos, e se o Velopack apagar o dele na próxima troca, a nossa
+continua inteira. Situação: hoje é cópia; o atalho de arquivo seria um trabalho novo, pequeno, só no lugar que guarda.
+**O que o senhor escolhe:** (A) deixar a cópia (sugestão: já testado, mais simples); (B) trocar pelo atalho de arquivo
+(economiza uns 460 MB; precisa de teste novo). Só comentário também vale. Nada do que já funciona muda com (A).
+
+
 # Emenda do Fable (volta 3): a verdade vem do disco, a volta é o pacote guardado (24/11/2026)
 
 Implementador novo (D-815). Pedido da gerente de 24/11: aplicar ao atualizador novo a emenda do desenho escrita pelo

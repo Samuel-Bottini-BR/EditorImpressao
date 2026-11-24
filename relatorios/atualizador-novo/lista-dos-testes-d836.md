@@ -208,3 +208,11 @@ LOCALAPPDATA (leve 1: dois testes escreviam no registro de verdade do PC); nenhu
 | `tests/ajudante_do_atualizador.py` | mudado | a `Prova` ganhou `ultima_boa` e `pendente`; o Velopack de mentira copia da pasta (como a fonte de pasta do Velopack, conferindo a soma) e falha sem a fonte (como sem internet); a peça do Windows de mentira usa a leitura de verdade `caminho_conferido`; a fixture `programdata_de_prova` passou a trocar também o LOCALAPPDATA (as frases "já vistas" vazavam de um teste para o seguinte: achado ao rodar os 14 arquivos juntos nas mutações) |
 | `tests/test_atualizador_volta3.py` (36) | novos | um por achado do segundo "quem tenta quebrar" (G1, M1 a M9, L1 a L4) e pela D-844, mais os três que a rodada de mutações pediu (N26, N27, N28); 23 dos 31 primeiros falham no código de `012c849c` pelo comportamento (`volta3-testes-no-codigo-antigo.txt`); os 8 do M9 passam lá (as proteções existiam; faltava o teste: a prova é a rodada de mutações) |
 | `tests/test_atualizador_volta3_de_verdade.py` (5) | novos | o Velopack de verdade (a volta pela pasta da última boa sem índice e sem SHA1; o pendente), o `icacls` de verdade numa pasta de prova com o bilhete e o registro dentro, a recusa do arquivo ligado e do atalho |
+
+## Volta 3, segunda parte (24/11/2026): as respostas do Samuel (D-847 a D-853)
+
+| Arquivo :: teste | O que aconteceu | Por quê (a decisão) |
+|---|---|---|
+| `tests/test_fases_da_atualizacao.py` (o evento `abriu_sem_ultima_boa_sem_pacote` e a linha dele) | saiu | D-851 ("baixar só se o arquivo não estiver lá"): sem o pacote em `packages`, a regra não pula mais o teste (o executor baixa o pacote); o evento deixou de existir porque o campo `pacote_da_versao` saiu do `Abriu`. Teste da volta 3 (primeira parte), nenhum de antes |
+| `tests/test_atualizador_d851.py` (6) | novos | D-848 (2: a frase 2 nos dois caminhos do "Reiniciar agora"; passam em `04dd0cd4`, nada a consertar) e D-851 (4: copiar de `packages` sem internet e sem baixar; baixar só se não estiver lá; o baixado sem a assinatura certa não é guardado; sem o pacote e sem internet, tenta na próxima). 3 falham em `04dd0cd4` (`volta3b-testes-no-codigo-antigo.txt`) |
+| `relatorios/.../volta3-provas/mutacoes_volta3.py` | mudado | o arquivo novo na lista de testes; as mutações N29 a N32 (D-851 e D-848) |

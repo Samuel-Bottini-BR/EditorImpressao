@@ -911,6 +911,33 @@ LOCALAPPDATA (leve 1: dois testes escreviam no registro de verdade do PC); nenhu
 </tr>
 </tbody>
 </table>
-<p class="rodape">Editor de Impressão &middot; gerado em 24/11/2026 às 13:28</p>
+<h2>Volta 3, segunda parte (24/11/2026): as respostas do Samuel (D-847 a D-853)</h2>
+<table>
+<thead>
+<tr>
+<th>Arquivo :: teste</th>
+<th>O que aconteceu</th>
+<th>Por quê (a decisão)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tests/test_fases_da_atualizacao.py</code> (o evento <code>abriu_sem_ultima_boa_sem_pacote</code> e a linha dele)</td>
+<td>saiu</td>
+<td>D-851 ("baixar só se o arquivo não estiver lá"): sem o pacote em <code>packages</code>, a regra não pula mais o teste (o executor baixa o pacote); o evento deixou de existir porque o campo <code>pacote_da_versao</code> saiu do <code>Abriu</code>. Teste da volta 3 (primeira parte), nenhum de antes</td>
+</tr>
+<tr>
+<td><code>tests/test_atualizador_d851.py</code> (6)</td>
+<td>novos</td>
+<td>D-848 (2: a frase 2 nos dois caminhos do "Reiniciar agora"; passam em <code>04dd0cd4</code>, nada a consertar) e D-851 (4: copiar de <code>packages</code> sem internet e sem baixar; baixar só se não estiver lá; o baixado sem a assinatura certa não é guardado; sem o pacote e sem internet, tenta na próxima). 3 falham em <code>04dd0cd4</code> (<code>volta3b-testes-no-codigo-antigo.txt</code>)</td>
+</tr>
+<tr>
+<td><code>relatorios/.../volta3-provas/mutacoes_volta3.py</code></td>
+<td>mudado</td>
+<td>o arquivo novo na lista de testes; as mutações N29 a N32 (D-851 e D-848)</td>
+</tr>
+</tbody>
+</table>
+<p class="rodape">Editor de Impressão &middot; gerado em 24/11/2026 às 15:31</p>
 </body>
 </html>
