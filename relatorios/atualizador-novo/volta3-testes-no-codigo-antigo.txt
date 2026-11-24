@@ -1,0 +1,581 @@
+Volta 3 do atualizador novo (24/11/2026): tests/test_atualizador_volta3.py rodado no codigo de 012c849c
+(git archive 012c849c numa pasta de rascunho, com so este arquivo de teste copiado por cima; os caminhos
+absolutos abaixo sao dessa pasta). Os 8 que passam la sao os do M9: as protecoes existiam, faltava o teste que
+as acusa (a prova deles e a rodada de mutacoes).
+
+FFFFFFFFFFFFFFFF........FFFFFFF                                          [100%]
+================================== FAILURES ===================================
+__ test_g1_a_volta_interrompida_e_refeita_na_abertura_seguinte_sem_a_frase_1 __
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_g1_a_volta_interrompida_e0')
+
+    def test_g1_a_volta_interrompida_e_refeita_na_abertura_seguinte_sem_a_frase_1(tmp_path):
+        """G1 do segundo "quem tenta quebrar" (24/11/2026, grave): a versão nova não passa no teste rápido, a volta
+        começa e o processo morre no meio (o notebook desligou). Antes: a falha "fica na anterior" já estava anotada e a
+        troca em andamento apagada; a abertura seguinte abria a versão estragada com a frase (1). Agora (a emenda do Fable,
+        A): o disco ainda diz "rodando a nova, última boa a anterior": a abertura seguinte roda o teste de novo, ANTES da
+        janela, e refaz a volta; a frase (1) não aparece (ela é derivada, só depois de voltar). D-718, D-769, D-839."""
+        p = Prova(tmp_path, teste=(False, "código 1"))
+        _guardar_a_mao(p, ANTERIOR)
+    
+        def morre(*a, **k):
+            raise Morreu()
+    
+        p.vp.pacote_da_versao = morre                  # o primeiro passo da volta: o processo morre aqui
+        with pytest.raises(Morreu):
+            p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL)
+        segunda = _outra_abertura(p, teste=(False, "código 1"))
+        saida = segunda.abrir([])                      # o atalho: sem a linha de comando da reabertura
+        tela = _na_tela(segunda)
+>       assert saida == 0, "a abertura seguinte refaz a volta e sai (o Velopack abre a anterior)"
+E       AssertionError: a abertura seguinte refaz a volta e sai (o Velopack abre a anterior)
+E       assert None == 0
+
+tests\test_atualizador_volta3.py:94: AssertionError
+____________________ test_g1_a_frase_1_so_depois_de_voltar ____________________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_g1_a_frase_1_so_depois_de0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000013918A429E0>
+
+    def test_g1_a_frase_1_so_depois_de_voltar(tmp_path, monkeypatch):
+        """G1, o outro lado: rodando a anterior (a última boa), com a versão nova reprovada, a frase (1) aparece uma vez
+        (derivada do que existe, nunca anotada antes)."""
+        monkeypatch.setattr(versao, "VERSAO", ANTERIOR)
+        p = Prova(tmp_path, publicar_nova=False)
+        _guardar_a_mao(p, ANTERIOR)
+        atualizacao.gravar_estado({"reprovadas": [ATUAL], "nao_tentar": [ATUAL]})
+        p.abrir()
+        p.ligar_a_tela()
+>       assert [e.tipo for e in p.tela if isinstance(e, fases.MostrarFalha)] == [fases.FALHA_TESTE]
+E       AssertionError: assert [] == ['teste']
+E         
+E         Right contains one more item: 'teste'
+E         Use -v to get more diff
+
+tests\test_atualizador_volta3.py:108: AssertionError
+__________ test_m1_a_troca_interrompida_nao_e_falha_e_o_aviso_volta ___________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_m1_a_troca_interrompida_n0')
+
+    def test_m1_a_troca_interrompida_nao_e_falha_e_o_aviso_volta(tmp_path):
+        """M1 (24/11/2026): "Sim" ao fechar, a troca é pedida e o notebook desliga antes de o Velopack trocar. Antes: a
+        abertura seguinte dizia "A atualização não deu certo..." e a versão ia para "não tentar" (nunca mais chegava).
+        Agora: a troca que não aconteceu não é falha de versão: a abertura seguinte é a comum e o aviso da versão nova
+        volta (D-769: "nada se perde e a troca tenta de novo depois")."""
+        p = _ate_o_aviso(tmp_path)
+        p.atual.evento(fases.Escolheu(False))
+        p.atual.evento(fases.Fechando())
+        p.atual.evento(fases.RespondeuAoFechar(True))
+        assert "trocar" in p.vp.nomes()                # pedida; o Velopack "morre" antes de trocar
+        segunda = _outra_abertura(p)
+        segunda.abrir([])
+        tela = _na_tela(segunda)
+>       assert [type(e).__name__ for e in tela] == ["MostrarVersaoNova"]
+E       AssertionError: assert ['MostrarFalha'] == ['MostrarVersaoNova']
+E         
+E         At index 0 diff: 'MostrarFalha' != 'MostrarVersaoNova'
+E         Use -v to get more diff
+
+tests\test_atualizador_volta3.py:128: AssertionError
+___________ test_m2_a_conferencia_do_reiniciar_agora_roda_por_tras ____________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_m2_a_conferencia_do_reini0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000139382A8D10>
+
+    def test_m2_a_conferencia_do_reiniciar_agora_roda_por_tras(tmp_path, monkeypatch):
+        """M2 (24/11/2026): o clique em "Reiniciar agora" voltava só depois da soma do pacote inteiro (~460 MB, até 8 s no
+        disco frio), no fio da tela: a janela ficava parada. Agora a conferência roda por trás (o fio que já existe) e o
+        clique volta logo; a janela fecha quando ela termina. (CLAUDE.md §3: "Interface nunca congela.")"""
+        p = _ate_o_aviso(tmp_path)
+        liberar = threading.Event()
+        original = assinatura.soma_sha256
+    
+        def soma_demorada(arquivo):
+            liberar.wait(5)
+            return original(arquivo)
+    
+        monkeypatch.setattr(assinatura, "soma_sha256", soma_demorada)
+        p.atual._por_tras = atualizacao._por_tras      # o fio de trás de verdade
+        tela = _na_tela(p.atual)
+        comeco = time.monotonic()
+        p.atual.evento(fases.Escolheu(True))
+        demorou = time.monotonic() - comeco
+        liberar.set()
+        fim = time.monotonic() + 5
+        while not any(isinstance(e, fases.FecharJanela) for e in tela) and time.monotonic() < fim:
+            time.sleep(0.01)
+>       assert demorou < 1.0, f"o clique ficou {demorou:.1f} s parado na conferência"
+E       AssertionError: o clique ficou 5.0 s parado na conferência
+E       assert 5.012075700011337 < 1.0
+
+tests\test_atualizador_volta3.py:158: AssertionError
+___ test_m3_o_reiniciar_agora_que_nao_pode_responde_com_o_motivo[sem_lista] ___
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_m3_o_reiniciar_agora_que_0')
+porque = 'sem_lista'
+
+    @pytest.mark.parametrize("porque", ["sem_lista", "pacote_sumiu", "motor"])
+    def test_m3_o_reiniciar_agora_que_nao_pode_responde_com_o_motivo(tmp_path, porque):
+        """M3 (24/11/2026): fora "outra janela aberta", todo "não pode trocar agora" ia para "Depois" sem nada na tela.
+        Agora (D-845: "Não deu para atualizar agora: [motivo]. Tente ao fechar o programa."): a frase, com o motivo em
+        português, e a pergunta vem ao fechar. (Os casos são nomeados por texto para o teste ser coletado também no código
+        de antes, onde as chaves dos motivos não existem.)"""
+        motivo = getattr(fases, {"sem_lista": "MOTIVO_SEM_LISTA", "pacote_sumiu": "MOTIVO_PACOTE_SUMIU",
+                                 "motor": "MOTIVO_MOTOR"}[porque], porque)
+        p = _ate_o_aviso(tmp_path)
+        if porque == "sem_lista":
+            p.win.outras = None
+        elif porque == "pacote_sumiu":
+            (p.raiz / "packages" / f"{PACOTE}-{NOVA}-full.nupkg").unlink()
+        else:
+            p.motor["no_lugar"] = False
+        tela = _na_tela(p.atual)
+        p.atual.evento(fases.Escolheu(True))
+        falhas = [e for e in tela if isinstance(e, fases.MostrarFalha)]
+>       assert len(falhas) == 1 and falhas[0].tipo == fases.NAO_DEU_AGORA and falhas[0].motivo_da_tela == motivo
+E       assert (0 == 1)
+E        +  where 0 = len([])
+
+tests\test_atualizador_volta3.py:184: AssertionError
+_ test_m3_o_reiniciar_agora_que_nao_pode_responde_com_o_motivo[pacote_sumiu] __
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_m3_o_reiniciar_agora_que_1')
+porque = 'pacote_sumiu'
+
+    @pytest.mark.parametrize("porque", ["sem_lista", "pacote_sumiu", "motor"])
+    def test_m3_o_reiniciar_agora_que_nao_pode_responde_com_o_motivo(tmp_path, porque):
+        """M3 (24/11/2026): fora "outra janela aberta", todo "não pode trocar agora" ia para "Depois" sem nada na tela.
+        Agora (D-845: "Não deu para atualizar agora: [motivo]. Tente ao fechar o programa."): a frase, com o motivo em
+        português, e a pergunta vem ao fechar. (Os casos são nomeados por texto para o teste ser coletado também no código
+        de antes, onde as chaves dos motivos não existem.)"""
+        motivo = getattr(fases, {"sem_lista": "MOTIVO_SEM_LISTA", "pacote_sumiu": "MOTIVO_PACOTE_SUMIU",
+                                 "motor": "MOTIVO_MOTOR"}[porque], porque)
+        p = _ate_o_aviso(tmp_path)
+        if porque == "sem_lista":
+            p.win.outras = None
+        elif porque == "pacote_sumiu":
+            (p.raiz / "packages" / f"{PACOTE}-{NOVA}-full.nupkg").unlink()
+        else:
+            p.motor["no_lugar"] = False
+        tela = _na_tela(p.atual)
+        p.atual.evento(fases.Escolheu(True))
+        falhas = [e for e in tela if isinstance(e, fases.MostrarFalha)]
+>       assert len(falhas) == 1 and falhas[0].tipo == fases.NAO_DEU_AGORA and falhas[0].motivo_da_tela == motivo
+E       assert (0 == 1)
+E        +  where 0 = len([])
+
+tests\test_atualizador_volta3.py:184: AssertionError
+_____ test_m3_o_reiniciar_agora_que_nao_pode_responde_com_o_motivo[motor] _____
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_m3_o_reiniciar_agora_que_2')
+porque = 'motor'
+
+    @pytest.mark.parametrize("porque", ["sem_lista", "pacote_sumiu", "motor"])
+    def test_m3_o_reiniciar_agora_que_nao_pode_responde_com_o_motivo(tmp_path, porque):
+        """M3 (24/11/2026): fora "outra janela aberta", todo "não pode trocar agora" ia para "Depois" sem nada na tela.
+        Agora (D-845: "Não deu para atualizar agora: [motivo]. Tente ao fechar o programa."): a frase, com o motivo em
+        português, e a pergunta vem ao fechar. (Os casos são nomeados por texto para o teste ser coletado também no código
+        de antes, onde as chaves dos motivos não existem.)"""
+        motivo = getattr(fases, {"sem_lista": "MOTIVO_SEM_LISTA", "pacote_sumiu": "MOTIVO_PACOTE_SUMIU",
+                                 "motor": "MOTIVO_MOTOR"}[porque], porque)
+        p = _ate_o_aviso(tmp_path)
+        if porque == "sem_lista":
+            p.win.outras = None
+        elif porque == "pacote_sumiu":
+            (p.raiz / "packages" / f"{PACOTE}-{NOVA}-full.nupkg").unlink()
+        else:
+            p.motor["no_lugar"] = False
+        tela = _na_tela(p.atual)
+        p.atual.evento(fases.Escolheu(True))
+        falhas = [e for e in tela if isinstance(e, fases.MostrarFalha)]
+>       assert len(falhas) == 1 and falhas[0].tipo == fases.NAO_DEU_AGORA and falhas[0].motivo_da_tela == motivo
+E       assert (0 == 1)
+E        +  where 0 = len([])
+
+tests\test_atualizador_volta3.py:184: AssertionError
+_____________ test_m3_todo_motivo_tem_o_texto_e_nenhum_tem_codigo _____________
+
+    def test_m3_todo_motivo_tem_o_texto_e_nenhum_tem_codigo():
+        """D-845 e §11.13 (nenhuma palavra de dentro na tela): toda chave de motivo da regra tem o texto em português; nenhum
+        texto tem número de decisão nem nome de arquivo; a frase montada termina com o pedido da D-845."""
+>       assert set(atualizacao.MOTIVOS_DA_TELA) == set(fases.MOTIVOS)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'atualizacao' has no attribute 'MOTIVOS_DA_TELA'
+
+tests\test_atualizador_volta3.py:193: AttributeError
+___________ test_m4_o_bilhete_que_nao_grava_nao_para_a_atualizacao ____________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_m4_o_bilhete_que_nao_grav0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000013938469040>
+
+    def test_m4_o_bilhete_que_nao_grava_nao_para_a_atualizacao(tmp_path, monkeypatch):
+        """M4 (24/11/2026): com o `estado.json` nascido de uma abertura com licença de administrador, a conta comum não
+        conseguia regravá-lo, e toda abertura dava "nenhuma versão é procurada", calada. Agora (a emenda do Fable): a
+        atualização não depende do bilhete; ela continua (procura, anuncia) e o registro diz o que não gravou."""
+        monkeypatch.setattr(atualizacao, "gravar_estado", lambda estado: False)
+        p = Prova(tmp_path)
+        p.abrir()
+        p.ligar_a_tela()
+>       assert "procurar" in p.vp.nomes() and "MostrarVersaoNova" in p.tipos_na_tela()
+E       AssertionError: assert ('procurar' in [])
+E        +  where [] = nomes()
+E        +    where nomes = <tests.ajudante_do_atualizador.VelopackFalso object at 0x0000013938440450>.nomes
+E        +      where <tests.ajudante_do_atualizador.VelopackFalso object at 0x0000013938440450> = <tests.ajudante_do_atualizador.Prova object at 0x00000139382AACF0>.vp
+
+tests\test_atualizador_volta3.py:213: AssertionError
+______ test_m4_a_pergunta_unica_da_a_licenca_tambem_a_pasta_do_registro _______
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_m4_a_pergunta_unica_da_a_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000013918AC4210>
+
+    @no_windows
+    def test_m4_a_pergunta_unica_da_a_licenca_tambem_a_pasta_do_registro(tmp_path, monkeypatch):
+        """M4, a causa: a pasta do registro e do bilhete (`%ProgramData%\\EditorImpressao\\atualizacao`) ganha
+        Usuários: Modificar NO MESMO PASSO da pergunta única, pela MESMA função da peça (`dar_licenca_aos_usuarios`), depois
+        da raiz (é a raiz que decide o "preparado?"). Antes, só a raiz."""
+        pedidas = []
+        raiz = tmp_path / "raiz"
+        (raiz / "current").mkdir(parents=True)
+        monkeypatch.setattr(windows, "raiz_da_instalacao", lambda exe=None: raiz)
+        monkeypatch.setattr(windows, "dar_licenca_aos_usuarios",
+                            lambda pasta, conferir_dentro=None: pedidas.append((Path(pasta), conferir_dentro))
+                            or windows.Resposta(windows.DEU_CERTO))
+        monkeypatch.setattr(windows, "pasta_de_dados_comum", lambda: tmp_path / "ProgramDataDoWindows", raising=False)
+        r = windows._fazer_passo({"tipo": "dar_licenca_aos_usuarios", "dados": {}, "descricao": "x"}, None)
+        assert r.deu_certo
+>       assert [p for p, _ in pedidas] == [raiz, tmp_path / "ProgramDataDoWindows" / "EditorImpressao" / "atualizacao"]
+E       AssertionError: assert [WindowsPath(...da_a_0/raiz')] == [WindowsPath(...atualizacao')]
+E         
+E         Right contains one more item: WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_m4_a_pergunta_unica_da_a_0/ProgramDataDoWindows/EditorImpressao/atualizacao')
+E         Use -v to get more diff
+
+tests\test_atualizador_volta3.py:231: AssertionError
+________ test_m5_o_bilhete_preso_nao_impede_a_troca_do_reiniciar_agora ________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_m5_o_bilhete_preso_nao_im0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000139382DE270>
+
+    def test_m5_o_bilhete_preso_nao_impede_a_troca_do_reiniciar_agora(tmp_path, monkeypatch):
+        """M5 (24/11/2026): com o `estado.json` preso por outro processo, o "Reiniciar agora" passava na conferência, a
+        janela fechava, a anotação da troca não gravava e o programa era reaberto sem trocar. Agora nada é anotado antes de
+        trocar: a troca é pedida."""
+        p = _ate_o_aviso(tmp_path)
+        monkeypatch.setattr(atualizacao, "gravar_estado", lambda estado: False)
+        p.atual.ligar_a_tela(lambda ef: isinstance(ef, fases.FecharJanela) and p.atual.evento(fases.JanelaFechou(True)))
+        p.atual.evento(fases.Escolheu(True))
+>       assert [c[:2] for c in p.vp.chamadas if c[0] == "trocar"] == [("trocar", NOVA)]
+E       AssertionError: assert [] == [('trocar', '9.9.0')]
+E         
+E         Right contains one more item: ('trocar', '9.9.0')
+E         Use -v to get more diff
+
+tests\test_atualizador_volta3.py:247: AssertionError
+________ test_m5_outra_janela_aberta_nos_segundos_do_fechar_nao_reabre ________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_m5_outra_janela_aberta_no0')
+
+    def test_m5_outra_janela_aberta_nos_segundos_do_fechar_nao_reabre(tmp_path):
+        """M5, a outra parte: outra janela do programa abriu nos segundos do fechar; a segunda conferência a vê e a troca
+        não é pedida. Antes, o programa era reaberto e o Kaique ficava com DUAS janelas. Agora não reabre (a outra janela
+        já está aberta e mostra o aviso)."""
+        p = _ate_o_aviso(tmp_path)
+    
+        def tela(ef):
+            if isinstance(ef, fases.FecharJanela):
+                p.win.outras = [(9, str(p.raiz / "current" / "EditorImpressao.exe"))]   # abriu enquanto fechava
+                p.atual.evento(fases.JanelaFechou(True))
+    
+        p.atual.ligar_a_tela(tela)
+        p.atual.evento(fases.Escolheu(True))
+>       assert "trocar" not in p.vp.nomes() and p.win.reaberturas == []
+E       AssertionError: assert ('trocar' not in ['procurar', 'baixar'] and [['D:\\progra...nal-de-vida']] == []
+E        +  where ['procurar', 'baixar'] = nomes()
+E        +    where nomes = <tests.ajudante_do_atualizador.VelopackFalso object at 0x000001393846BD40>.nomes
+E        +      where <tests.ajudante_do_atualizador.VelopackFalso object at 0x000001393846BD40> = <tests.ajudante_do_atualizador.Prova object at 0x0000013938442150>.vp
+E         
+E         Left contains one more item: ['D:\\programas\\EditorImpressao\\.venv\\Scripts\\python.exe', '--sinal-de-vida', 'D:\\programas\\EditorImpressao\\saida_teste\\bt-v3\\antigo\\test_m5_outra_janela_aberta_no0\\troca\\sinal-de-vida']
+E         Use -v to get more diff)
+
+tests\test_atualizador_volta3.py:264: AssertionError
+_________ test_m6_a_versao_que_pede_motor_novo_mostra_a_frase_uma_vez _________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_m6_a_versao_que_pede_moto0')
+
+    def test_m6_a_versao_que_pede_motor_novo_mostra_a_frase_uma_vez(tmp_path):
+        """M6 e D-843 (Samuel, 24/11/2026: "vamos fazer b e colocamos isso no plano"): a versão que pede um motor do
+        Kraken que não está no lugar não é anunciada nem trocada, e a janela mostra uma vez "Esta versão precisa de um
+        motor novo. Avise o Samuel."; a abertura seguinte não mostra de novo. Antes: nada na tela, para sempre."""
+        p = Prova(tmp_path / "a", motores={NOVA: 7}, motores_no_lugar={1})
+        p.abrir()
+        p.ligar_a_tela()
+>       assert [(type(e).__name__, getattr(e, "tipo", "")) for e in p.tela] == [("MostrarFalha", "motor")]
+E       AssertionError: assert [] == [('MostrarFalha', 'motor')]
+E         
+E         Right contains one more item: ('MostrarFalha', 'motor')
+E         Use -v to get more diff
+
+tests\test_atualizador_volta3.py:278: AssertionError
+_______ test_m7a_o_update_exe_que_nao_da_para_ler_e_nao_deu_para_saber ________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_m7a_o_update_exe_que_nao_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000013938492D50>
+
+    @no_windows
+    def test_m7a_o_update_exe_que_nao_da_para_ler_e_nao_deu_para_saber(tmp_path, monkeypatch):
+        """M7 (a) (24/11/2026): um `Update.exe` de outro programa, de outra conta, cujo caminho não dá para ler, contava
+        como "o atualizador desta instalação está rodando": o programa saía calado a cada clique no atalho. Agora é "não
+        deu para saber" (None): a abertura segue. O desta instalação, com o caminho lido: True."""
+        alheio = [(5, "Update.exe" + windows.SEM_CAMINHO)] if hasattr(windows, "SEM_CAMINHO") else \
+            [(5, "Update.exe (o caminho não deu para ler)")]
+        monkeypatch.setattr(windows, "programas_rodando_de", lambda pasta, menos_a_familia_de=None, nomes=None: alheio)
+>       assert windows.atualizador_do_velopack_rodando(tmp_path) is None
+E       AssertionError: assert True is None
+E        +  where True = <function atualizador_do_velopack_rodando at 0x0000013918A62CF0>(WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_m7a_o_update_exe_que_nao_0'))
+E        +    where <function atualizador_do_velopack_rodando at 0x0000013918A62CF0> = windows.atualizador_do_velopack_rodando
+
+tests\test_atualizador_volta3.py:299: AssertionError
+____________ test_m7b_o_processo_sem_caminho_nao_e_a_outra_janela _____________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_m7b_o_processo_sem_caminh0')
+
+    def test_m7b_o_processo_sem_caminho_nao_e_a_outra_janela(tmp_path):
+        """M7 (b): um processo de outro programa com o nome de um da pasta (o `tesseract.exe`), sem caminho legível, dava
+        "Feche a outra janela do programa..." sem outra janela nenhuma. Agora é "não deu para conferir": a frase da D-845
+        com o motivo, nunca a da outra janela."""
+        p = _ate_o_aviso(tmp_path, outras=[(5, "tesseract.exe (o caminho não deu para ler)")])
+        c = p.atual.conferencia_da_troca(p.atual._achada)
+>       assert c.pode is False and c.outra_janela is False
+E       AssertionError: assert (False is False and True is False)
+E        +  where False = TrocaConferida(pode=False, motivo='há outra janela do programa aberta: tesseract.exe (o caminho não deu para ler)', recusada=False, outra_janela=True).pode
+E        +  and   True = TrocaConferida(pode=False, motivo='há outra janela do programa aberta: tesseract.exe (o caminho não deu para ler)', recusada=False, outra_janela=True).outra_janela
+
+tests\test_atualizador_volta3.py:311: AssertionError
+__________ test_m8_a_caixa_da_outra_janela_tem_o_titulo_atualizacao ___________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_m8_a_caixa_da_outra_janel0')
+
+    def test_m8_a_caixa_da_outra_janela_tem_o_titulo_atualizacao(tmp_path):
+        """M8 e D-846 (Samuel, 24/11/2026: "ok"): a caixa "Feche a outra janela do programa e clique de novo." tem o título
+        "Atualização" (antes, "Versão nova do programa", sem decisão dele). Pela ponte da tela de verdade."""
+        from PySide6.QtWidgets import QApplication, QWidget
+    
+        from ui import aviso_de_atualizacao as aviso
+    
+        QApplication.instance() or QApplication([])
+        p = Prova(tmp_path, outras=[(7, r"C:\Program Files\EditorImpressaoPrograma\current\EditorImpressao.exe")])
+        p.abrir()
+        avisos, respostas = [], [True, False]
+        pai = QWidget()
+        ponte = aviso.PonteDaTela(pai, p.atual, perguntar=lambda j, t, x, sim, nao: respostas.pop(0),
+                                  avisar=lambda j, t, x, icone=None: avisos.append((t, x)))
+        p.atual.ligar_a_tela(ponte.receber)
+>       assert avisos == [("Atualização", "Feche a outra janela do programa e clique de novo.")]
+E       AssertionError: assert [('Versão nov...ue de novo.')] == [('Atualizaçã...ue de novo.')]
+E         
+E         At index 0 diff: ('Versão nova do programa', 'Feche a outra janela do programa e clique de novo.') != ('Atualização', 'Feche a outra janela do programa e clique de novo.')
+E         Use -v to get more diff
+
+tests\test_atualizador_volta3.py:333: AssertionError
+___________ test_l1_nenhum_teste_escreve_no_programdata_de_verdade ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001393823CEC0>
+
+    def test_l1_nenhum_teste_escreve_no_programdata_de_verdade(monkeypatch):
+        """Leve 1 (24/11/2026): dois testes da primeira abertura escreviam no registro de VERDADE do PC
+        (`C:\\ProgramData\\EditorImpressao\\atualizacao\\atualizacao.log`: 16 linhas achadas). Agora a configuração comum
+        dos testes (`tests/conftest.py`) troca o PROGRAMDATA para a pasta da rodada, como já fazia com o LOCALAPPDATA:
+        sem nenhuma fixture, o registro não está no ProgramData de verdade."""
+        monkeypatch.undo()                                 # sem a fixture deste arquivo: só o que vale para todo teste
+        real = os.environ.get("EDITOR_IMPRESSAO_PROGRAMDATA_REAL") or "C:\\ProgramData"
+        registro = atualizacao.caminho_do_registro().resolve()
+>       assert not str(registro).lower().startswith(str(Path(real).resolve()).lower() + os.sep)
+E       AssertionError: assert not True
+E        +  where True = <built-in method startswith of str object at 0x00000139384453E0>(('c:\\programdata' + '\\'))
+E        +    where <built-in method startswith of str object at 0x00000139384453E0> = 'c:\\programdata\\editorimpressao\\atualizacao\\atualizacao.log'.startswith
+E        +      where 'c:\\programdata\\editorimpressao\\atualizacao\\atualizacao.log' = <built-in method lower of str object at 0x0000013938445300>()
+E        +        where <built-in method lower of str object at 0x0000013938445300> = 'C:\\ProgramData\\EditorImpressao\\atualizacao\\atualizacao.log'.lower
+E        +          where 'C:\\ProgramData\\EditorImpressao\\atualizacao\\atualizacao.log' = str(WindowsPath('C:/ProgramData/EditorImpressao/atualizacao/atualizacao.log'))
+E        +    and   'c:\\programdata' = <built-in method lower of str object at 0x0000013938459F70>()
+E        +      where <built-in method lower of str object at 0x0000013938459F70> = 'C:\\ProgramData'.lower
+E        +        where 'C:\\ProgramData' = str(WindowsPath('C:/ProgramData'))
+E        +          where WindowsPath('C:/ProgramData') = resolve()
+E        +            where resolve = WindowsPath('C:/ProgramData').resolve
+E        +              where WindowsPath('C:/ProgramData') = Path('C:\\ProgramData')
+E        +    and   '\\' = os.sep
+
+tests\test_atualizador_volta3.py:401: AssertionError
+_________________ test_l2_o_laco_da_d841_nao_empilha_chamadas _________________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_l2_o_laco_da_d841_nao_emp0')
+
+    def test_l2_o_laco_da_d841_nao_empilha_chamadas(tmp_path):
+        """Leve 2 (24/11/2026): cada "Reiniciar agora" com a outra janela aberta abria a caixa seguinte POR DENTRO da
+        anterior; no clique 142 o Python parava por profundidade e o aviso deixava de voltar. Agora a conferência roda por
+        trás e a caixa seguinte chega pela fila do Qt, depois de a anterior terminar: 200 cliques, o aviso volta todos."""
+        from PySide6.QtWidgets import QApplication, QWidget
+    
+        from ui import aviso_de_atualizacao as aviso
+    
+        app = QApplication.instance() or QApplication([])
+        p = Prova(tmp_path, outras=[(7, r"C:\Program Files\EditorImpressaoPrograma\current\EditorImpressao.exe")])
+        p.abrir()
+        p.atual._por_tras = atualizacao._por_tras          # o fio de trás de verdade
+        contas = {"avisos": 0, "profundidade": 0}
+    
+        def perguntar(j, t, x, sim, nao):
+            import inspect
+    
+            contas["avisos"] += 1
+            contas["profundidade"] = max(contas["profundidade"], len(inspect.stack(0)))
+            return contas["avisos"] < 200                 # "Reiniciar agora" 199 vezes, então "Depois"
+    
+        pai = QWidget()
+        ponte = aviso.PonteDaTela(pai, p.atual, perguntar=perguntar, avisar=lambda *a, **k: None)
+        p.atual.ligar_a_tela(ponte.receber)
+        fim = time.monotonic() + 60
+        while contas["avisos"] < 200 and time.monotonic() < fim:
+            app.processEvents()
+            time.sleep(0.001)
+>       assert contas["avisos"] == 200
+E       assert 138 == 200
+
+tests\test_atualizador_volta3.py:433: AssertionError
+---------------------------- Captured stderr call -----------------------------
+Traceback (most recent call last):
+  File "C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\9fb2a36a-bf39-4004-8699-2ad21c149ca2\scratchpad\antigo\ui\aviso_de_atualizacao.py", line 67, in _mostrar
+    reiniciar = self._perguntar(self.janela, atualizacao.TITULO_DA_VERSAO_NOVA,
+  File "C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\9fb2a36a-bf39-4004-8699-2ad21c149ca2\scratchpad\antigo\tests\test_atualizador_volta3.py", line 423, in perguntar
+    contas["profundidade"] = max(contas["profundidade"], len(inspect.stack(0)))
+  File "C:\Users\fotog\AppData\Local\Python\pythoncore-3.14-64\Lib\inspect.py", line 1661, in stack
+    return getouterframes(sys._getframe(1), context)
+  File "C:\Users\fotog\AppData\Local\Python\pythoncore-3.14-64\Lib\inspect.py", line 1636, in getouterframes
+    traceback_info = getframeinfo(frame, context)
+  File "C:\Users\fotog\AppData\Local\Python\pythoncore-3.14-64\Lib\inspect.py", line 1576, in getframeinfo
+    if istraceback(frame):
+RecursionError: maximum recursion depth exceeded
+_________ test_l3_um_erro_fora_do_previsto_na_troca_reabre_o_programa _________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_l3_um_erro_fora_do_previs0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000013938446DD0>
+
+    def test_l3_um_erro_fora_do_previsto_na_troca_reabre_o_programa(tmp_path, monkeypatch):
+        """Leve 3 (24/11/2026): uma exceção fora do previsto dentro da troca era engolida sem `TrocaPedida`, e o
+        "Reiniciar agora" fechava sem reabrir. Agora ela vira "não pedida" e o programa é reaberto (com a frase)."""
+        p = _ate_o_aviso(tmp_path)
+        conferencias = {"n": 0}
+        original = p.atual.conferencia_da_troca
+    
+        def segunda_quebra(v):
+            conferencias["n"] += 1
+            if conferencias["n"] == 2:                    # a segunda, dentro da troca, depois de a janela fechar
+                raise ValueError("fora do previsto")
+            return original(v)
+    
+        monkeypatch.setattr(p.atual, "conferencia_da_troca", segunda_quebra)
+        p.atual.ligar_a_tela(lambda ef: isinstance(ef, fases.FecharJanela) and p.atual.evento(fases.JanelaFechou(True)))
+        p.atual.evento(fases.Escolheu(True))
+>       assert len(p.win.reaberturas) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+E        +    where [] = <tests.ajudante_do_atualizador.WindowsFalso object at 0x0000013918621180>.reaberturas
+E        +      where <tests.ajudante_do_atualizador.WindowsFalso object at 0x0000013918621180> = <tests.ajudante_do_atualizador.Prova object at 0x0000013918620E10>.win
+
+tests\test_atualizador_volta3.py:453: AssertionError
+_______________ test_l4_a_abertura_comum_nao_regrava_o_bilhete ________________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_l4_a_abertura_comum_nao_r0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000013938447A10>
+
+    def test_l4_a_abertura_comum_nao_regrava_o_bilhete(tmp_path, monkeypatch):
+        """Leve 4 (24/11/2026): toda abertura lia e regravava o `estado.json` inteiro, sem tranca entre processos (o atalho
+        e a reabertura sem janela podiam desfazer a anotação um do outro). Agora a abertura só LÊ o bilhete; ele só é
+        escrito quando há o que anotar (uma reprovação, uma frase), e a anotação da troca em andamento não existe mais."""
+        gravadas = []
+        monkeypatch.setattr(atualizacao, "gravar_estado", lambda estado: gravadas.append(dict(estado)) or True)
+        p = Prova(tmp_path)
+        p.abrir()
+        p.atual.evento(fases.Escolheu(False))
+        p.atual.evento(fases.Fechando())
+        p.atual.evento(fases.RespondeuAoFechar(True))
+>       assert gravadas == []
+E       AssertionError: assert [{}, {'tentan...4T12:43:54'}}] == []
+E         
+E         Left contains 2 more items, first extra item: {}
+E         Use -v to get more diff
+
+tests\test_atualizador_volta3.py:467: AssertionError
+___________________ test_d844_a_volta_funciona_sem_internet ___________________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_d844_a_volta_funciona_sem0')
+
+    def test_d844_a_volta_funciona_sem_internet(tmp_path):
+        """D-844 (Samuel, 24/11/2026: "ok"): a versão nova reprovada volta para a anterior pelo pacote guardado, sem a
+        fonte (sem internet). Antes, a volta buscava a assinatura, o índice e o pacote da anterior na internet."""
+        p = Prova(tmp_path, teste=(False, "código 1"))
+        _guardar_a_mao(p, ANTERIOR)
+        p.atual.fonte = atualizacao.Fonte(str(tmp_path / "sem-internet"))
+>       assert p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL) == 0
+E       AssertionError: assert None == 0
+E        +  where None = abrir('--conferir-a-versao-nova', '0.1.0', '1.1.0')
+E        +    where abrir = <tests.ajudante_do_atualizador.Prova object at 0x00000139186E6850>.abrir
+E        +    and   '--conferir-a-versao-nova' = atualizacao.ARG_CONFERIR_NOVA
+
+tests\test_atualizador_volta3.py:480: AssertionError
+_______ test_d844_guardar_a_ultima_boa_confere_a_soma_e_troca_a_antiga ________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_d844_guardar_a_ultima_boa0')
+
+    def test_d844_guardar_a_ultima_boa_confere_a_soma_e_troca_a_antiga(tmp_path):
+        """D-844: o pacote da versão que passou é copiado de `packages` com a soma conferida contra a assinatura; a
+        antiga sai; a cópia trocada no meio não vira a última boa."""
+>       p = Prova(tmp_path, publicar_nova=False, ultima_boa=ANTERIOR)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: Prova.__init__() got an unexpected keyword argument 'ultima_boa'
+
+tests\test_atualizador_volta3.py:487: TypeError
+___________________ test_o_bilhete_so_guarda_as_duas_coisas ___________________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v3/antigo/test_o_bilhete_so_guarda_as_du0')
+
+    def test_o_bilhete_so_guarda_as_duas_coisas(tmp_path):
+        """O sinal de gambiarra da emenda ("o estado.json voltando a decidir qualquer coisa além de 'não tentar' e 'frase
+        uma vez"): depois de um ciclo inteiro (reprovar, frase guardada, as chaves velhas no arquivo), só as duas chaves."""
+        atualizacao.gravar_estado({"nao_tentar": ["0.0.1"], "falha": {"tipo": "troca"}, "tentando": {"de": "a"}})
+>       atualizacao.reprovar("9.9.9", "prova")
+        ^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'atualizacao' has no attribute 'reprovar'
+
+tests\test_atualizador_volta3.py:503: AttributeError
+=========================== short test summary info ===========================
+FAILED tests/test_atualizador_volta3.py::test_g1_a_volta_interrompida_e_refeita_na_abertura_seguinte_sem_a_frase_1
+FAILED tests/test_atualizador_volta3.py::test_g1_a_frase_1_so_depois_de_voltar
+FAILED tests/test_atualizador_volta3.py::test_m1_a_troca_interrompida_nao_e_falha_e_o_aviso_volta
+FAILED tests/test_atualizador_volta3.py::test_m2_a_conferencia_do_reiniciar_agora_roda_por_tras
+FAILED tests/test_atualizador_volta3.py::test_m3_o_reiniciar_agora_que_nao_pode_responde_com_o_motivo[sem_lista]
+FAILED tests/test_atualizador_volta3.py::test_m3_o_reiniciar_agora_que_nao_pode_responde_com_o_motivo[pacote_sumiu]
+FAILED tests/test_atualizador_volta3.py::test_m3_o_reiniciar_agora_que_nao_pode_responde_com_o_motivo[motor]
+FAILED tests/test_atualizador_volta3.py::test_m3_todo_motivo_tem_o_texto_e_nenhum_tem_codigo
+FAILED tests/test_atualizador_volta3.py::test_m4_o_bilhete_que_nao_grava_nao_para_a_atualizacao
+FAILED tests/test_atualizador_volta3.py::test_m4_a_pergunta_unica_da_a_licenca_tambem_a_pasta_do_registro
+FAILED tests/test_atualizador_volta3.py::test_m5_o_bilhete_preso_nao_impede_a_troca_do_reiniciar_agora
+FAILED tests/test_atualizador_volta3.py::test_m5_outra_janela_aberta_nos_segundos_do_fechar_nao_reabre
+FAILED tests/test_atualizador_volta3.py::test_m6_a_versao_que_pede_motor_novo_mostra_a_frase_uma_vez
+FAILED tests/test_atualizador_volta3.py::test_m7a_o_update_exe_que_nao_da_para_ler_e_nao_deu_para_saber
+FAILED tests/test_atualizador_volta3.py::test_m7b_o_processo_sem_caminho_nao_e_a_outra_janela
+FAILED tests/test_atualizador_volta3.py::test_m8_a_caixa_da_outra_janela_tem_o_titulo_atualizacao
+FAILED tests/test_atualizador_volta3.py::test_l1_nenhum_teste_escreve_no_programdata_de_verdade
+FAILED tests/test_atualizador_volta3.py::test_l2_o_laco_da_d841_nao_empilha_chamadas
+FAILED tests/test_atualizador_volta3.py::test_l3_um_erro_fora_do_previsto_na_troca_reabre_o_programa
+FAILED tests/test_atualizador_volta3.py::test_l4_a_abertura_comum_nao_regrava_o_bilhete
+FAILED tests/test_atualizador_volta3.py::test_d844_a_volta_funciona_sem_internet
+FAILED tests/test_atualizador_volta3.py::test_d844_guardar_a_ultima_boa_confere_a_soma_e_troca_a_antiga
+FAILED tests/test_atualizador_volta3.py::test_o_bilhete_so_guarda_as_duas_coisas
+PASSED tests/test_atualizador_volta3.py::test_m9_v9_o_registro_so_diz_reaberto_com_o_sinal_de_vida
+PASSED tests/test_atualizador_volta3.py::test_m9_v10_o_pacote_sem_o_motor_exigido_nao_e_anunciado
+PASSED tests/test_atualizador_volta3.py::test_m9_v11_o_pacote_sem_o_motor_exigido_nao_e_trocado
+PASSED tests/test_atualizador_volta3.py::test_m9_v13_o_numero_do_motor_tem_de_ser_numero_de_verdade[2]
+PASSED tests/test_atualizador_volta3.py::test_m9_v13_o_numero_do_motor_tem_de_ser_numero_de_verdade[True]
+PASSED tests/test_atualizador_volta3.py::test_m9_v13_o_numero_do_motor_tem_de_ser_numero_de_verdade[2.0]
+PASSED tests/test_atualizador_volta3.py::test_m9_v13_o_numero_do_motor_tem_de_ser_numero_de_verdade[None]
+PASSED tests/test_atualizador_volta3.py::test_m9_v13_o_numero_do_motor_tem_de_ser_numero_de_verdade[numero4]
+23 failed, 8 passed in 72.61s (0:01:12)
