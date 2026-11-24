@@ -134,3 +134,22 @@ Confirmados: um UAC só (D-733); procura só ao abrir (D-732/D-740); "mandar de 
 
 1. **"a"** — "Depois" entra ao fechar, com o aviso "Atualizar agora?" ao fechar (D-769/D-794), já nesta entrega. O adiamento da D-824 para esses dois itens cai.
 2. **"pode ser velopack, deixamos para mudar isso mais para frente"** — a janelinha da troca é a tela de progresso do próprio Velopack. Texto e brasão nossos ficam para depois.
+
+## Plano do atualizador novo — parecer do Fable e respostas do Samuel (23/11/2026, 23:27–23:42)
+
+Plano lido: `relatorios/atualizador-novo/plano-do-atualizador-novo.md` (seções 1, 3, 4, 5, 7, 10, 11, 12 e ressalvas por inteiro; 2 por amostra; 6, 8, 9 não lidas). **Parecer: liberar para código**, com as respostas abaixo e duas observações.
+
+**Pontos em que o plano foi além do pedido, corretamente:** apagar a tarefa SYSTEM antiga *antes* de dar Modificar a Usuários (senão qualquer conta trocaria o `.exe` que roda como sistema); "preparado?" = teste de gravar na raiz, o mesmo do Velopack, sem anotação; volta à anterior pela biblioteca, sem `Update.exe` à mão; máquina de estados pura com tabela exaustiva e 13 proteções cada uma com teste que falha ao ser desligada; D-736 deixada para a entrega dos testes à distância, com o lugar pronto.
+
+**Observações para a gerente antes do "pode":**
+1. Passo 4 (licença): um caminho só, o provado no experimento (`icacls /grant ... /T` pela peça), não `SetNamedSecurityInfoW` com o provado de reserva. Com a resposta à pergunta 6, a K03 passa a permitir só essa função da peça, só para acrescentar.
+2. Ressalva 7 é risco de entrega: conferir **antes** de mandar o `.msi` se a conta do Kaique é administradora. Se for padrão, o único UAC pede senha de administrador que ele não tem — ou o Samuel está presente na primeira abertura, ou a conta vira administrador antes.
+
+**Respostas do Samuel às perguntas do plano (seção 12):**
+- Pergunta 1 (ordem na primeira abertura): **"sim"** — a pergunta do Windows antes da senha dos testes.
+- Pergunta 2 (textos): **"B"** — pergunta ao fechar curta ("Quer atualizar o programa agora, ao fechar?", botões "Sim"/"Não"). Para o aviso de versão nova, não escolheu entre A e B; o Fable sugere B ("você pode atualizar quando fechar o programa"), por casar com a pergunta curta.
+- Pergunta 3 (ícone perto do relógio): já respondida às 20:48 — janelinha do Velopack; ícone para a lista de espera.
+- Pergunta 4 (avisos de falha): já decidida em 18/11 (D-778) — as três frases entram.
+- Pergunta 5 (testes antigos): **"Não quero [ver antes], mas quero que ele passe a lista para você verificar"** — a lista teste por teste (apagado / adaptado / passou a cobrar o que vale hoje, com a decisão que cada um protege) vem na entrega e é conferida pelo Fable antes do "quem tenta quebrar".
+- Pergunta 6 (porteiro e licença): opção (1) — só a função da peça, só para acrescentar.
+- Pergunta 7 (limpeza do PC do Samuel): opção (1) — desinstalar pelo Windows; a gerente lista o que sobrou; o Samuel aprova o que apagar.
