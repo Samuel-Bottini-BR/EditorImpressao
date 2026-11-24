@@ -10,6 +10,24 @@ da gerente): a rodada do GitHub, a revisão do Fable da lista dos testes, quem t
 Samuel.** Dois testes fora do atualizador quebram por causa da lista de exceções que diminuiu (ver "Perguntas para a
 gerente"). Último commit: ver a mensagem de entrega.
 
+## Os testes no meu PC (um arquivo por vez; a pasta temporária do pytest no D:, ver o bug de baixo)
+
+- Os 64 arquivos `tests/test_decisoes*.py`: **921 passaram, 5 pulados**; 1 falhou uma vez
+  (`test_decisoes_desfazer_pagina.py::test_d621_cada_etapa_sozinha_volta_so_ela_so_nesta_pagina[marcar]`, os pontos da
+  gravura marcada) e passou nas três vezes seguintes (sozinho e no arquivo inteiro): intermitente, longe do atualizador
+  (ver "Bugs para a Lista de bugs").
+- Os novos: `test_fases_da_atualizacao.py` 807, `test_atualizador_novo.py` 35, `test_windows_preparo_do_computador.py`
+  19 + 1 pulado (o de verdade; rodado à parte com `EDITOR_PROVA_DO_WINDOWS=1`: passou), `test_velopack_de_verdade.py` 3,
+  `test_porteiro_licenca_que_acrescenta.py` 14.
+- Os dos arquivos que toquei ou que os usam: `test_trava_windows.py` 42 + 3 pulados (as pendências), `test_windows_peca.py`
+  68 + 3 pulados, `test_windows_janela_de_prova.py` 10, `test_conferencias_codigo.py` 122, `test_conferencias_excecoes.py`
+  14, `test_publicar_versao.py` 125, `test_publicar_motor.py` 12, `test_empacotar.py` 43, `test_ocr_kraken.py` 28 + 5,
+  `test_ocr_diagnostico.py` 6, `test_ocr_comparar.py` 16 + 23, `test_pasta_das_ferramentas.py` 17, `test_promessas.py`
+  270 + 1 esperado, `test_nome_do_pacote.py` 5.
+- **Falham:** `test_conferencias_pacote.py`, 2 de 26 (ver "Perguntas para a gerente").
+- O porteiro (`python -m regras_dos_agentes porteiro`): "nada novo (4981 arquivos lidos; a lista deixa 135 lugares)".
+- As mutações: 20 de 20 acusadas (seção de baixo).
+
 ## O desenho, em uma frase
 
 O único ato com licença é dar à pasta do programa a licença de Modificar para Usuários, uma vez, na primeira abertura,
@@ -308,6 +326,10 @@ Antes dela, a limpeza do PC do Samuel (D-838, com a gerente) e quem tenta quebra
 - 24/11/2026, `tests/test_decisoes_desinstalar.py` e `tests/test_decisoes_desinstalar_pasta.py`: neste PC, com a pasta
   temporária do pytest no C: (o padrão), 24 + 5 testes falham com "o comando cita o disco C: (caminho não trocado)";
   com `--basetemp` no D: todos passam. Não impede a tarefa; não consertei.
+
+- 24/11/2026, `tests/test_decisoes_desfazer_pagina.py::test_d621_cada_etapa_sozinha_volta_so_ela_so_nesta_pagina[marcar]`:
+  falhou 1 vez em 4 (os pontos da gravura marcada saíram 0,163/0,170 em vez de 0,2/0,2); passou sozinho e no arquivo
+  inteiro nas outras três. Não mexe em nada do atualizador; não consertei.
 
 ## Perguntas para a gerente
 
