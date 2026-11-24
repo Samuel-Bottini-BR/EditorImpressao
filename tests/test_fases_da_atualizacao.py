@@ -52,6 +52,12 @@ EVENTOS = {
     "abriu_velha_sem_janela": f.Abriu(**{**COMUM, "versao": "1.3.0"}, troca_de="1.1.0", troca_para="1.2.0",
                                       sem_janela=True),
     "abriu_sem_janela_sem_troca": f.Abriu(**COMUM, sem_janela=True),
+    # Volta 2 (G1): a troca anotada ainda acontecendo, ou sem saber; (M4) o estado que não grava.
+    "abriu_troca_em_curso": f.Abriu(**COMUM, troca_de="1.1.0", troca_para="1.2.0", troca_em_curso=True),
+    "abriu_troca_sem_saber": f.Abriu(**COMUM, troca_de="1.1.0", troca_para="1.2.0", troca_em_curso=None),
+    "abriu_volta_em_curso": f.Abriu(**{**COMUM, "versao": "1.2.0"}, troca_de="1.2.0", troca_para="1.1.0",
+                                    troca_volta=True, troca_em_curso=True),
+    "abriu_estado_nao_grava": f.Abriu(**COMUM, estado_grava=False),
     "lic_comecou": f.LicencaRespondida("comecou"),
     "lic_nao": f.LicencaRespondida("disse_nao"),
     "lic_falhou": f.LicencaRespondida("falhou", "o Windows não abriu"),
@@ -70,6 +76,10 @@ EVENTOS = {
     "ass_nao": f.Assinatura(False, "não confere"),
     "baixou_ok": f.Baixou(True),
     "baixou_nao": f.Baixou(False, "disco cheio"),
+    "baixou_sem_o_motor_da_nova": f.Baixou(True, motor_da_nova=False),
+    "conferida_pode": f.TrocaConferida(True),
+    "conferida_nao": f.TrocaConferida(False, "outra janela aberta"),
+    "conferida_recusada": f.TrocaConferida(False, "a soma não confere", recusada=True),
     "reiniciar": f.Escolheu(True),
     "depois": f.Escolheu(False),
     "fechou": f.JanelaFechou(True),
@@ -150,6 +160,14 @@ ESPERADO = {
                                             nao_tentar=("1.3.0",), sem_janela=True),
     (F.INICIO, "abriu_sem_janela_sem_troca"): E(F.PARADO, [R, ("Sair", 0)], versao="1.1.0", nao_tentar=("1.3.0",),
                                                 sem_janela=True),
+    # Volta 2, G1 (D-828 (1), D-770): a troca ainda acontecendo (o clique no atalho no meio dela): nada anotado, sai.
+    (F.INICIO, "abriu_troca_em_curso"): E(F.PARADO, [R, ("Sair", 0)], versao="1.1.0", nao_tentar=("1.3.0",)),
+    (F.INICIO, "abriu_volta_em_curso"): E(F.PARADO, [R, ("Sair", 0)], versao="1.2.0", nao_tentar=("1.3.0",)),
+    # Sem saber se ainda acontece: nada anotado, a abertura segue.
+    (F.INICIO, "abriu_troca_sem_saber"): E(F.MOTOR, [R, ("GarantirMotor",)], versao="1.1.0", nao_tentar=("1.3.0",)),
+    # Volta 2, M4: o estado que não grava fica no estado (a procura é barrada depois do motor).
+    (F.INICIO, "abriu_estado_nao_grava"): E(F.MOTOR, [("GarantirMotor",)], versao="1.1.0", nao_tentar=("1.3.0",),
+                                            estado_grava=False),
     # A resposta à pergunta do Windows (D-741: depois do "Não", nada; a pergunta volta na próxima abertura).
     (F.SEM_LICENCA, "lic_comecou"): E(F.PREPARANDO, [("EsperarPreparo",)]),
     (F.SEM_LICENCA, "lic_nao"): E(F.PARADO, [R]),
@@ -177,13 +195,22 @@ ESPERADO = {
     # D-715/D-720: baixada, o aviso.
     (F.BAIXANDO, "baixou_ok"): E(F.PRONTA, [("MostrarVersaoNova", "1.2.0")]),
     (F.BAIXANDO, "baixou_nao"): E(F.PARADO, [R]),
-    (F.PRONTA, "reiniciar"): E(F.FECHANDO, [("FecharJanela",)]),
+    # Volta 2, M2 (D-833): sem o motor que a versão nova pede, ela não é anunciada.
+    (F.BAIXANDO, "baixou_sem_o_motor_da_nova"): E(F.PARADO, [R]),
+    # Volta 2, M1: "Reiniciar agora" confere ANTES de fechar; sem poder, a janela fica aberta.
+    (F.PRONTA, "reiniciar"): E(F.CONFERINDO_TROCA, [("ConferirTroca",)]),
+    (F.CONFERINDO_TROCA, "conferida_pode"): E(F.FECHANDO, [("FecharJanela",)]),
+    (F.CONFERINDO_TROCA, "conferida_nao"): E(F.DEPOIS, [R]),
+    (F.CONFERINDO_TROCA, "conferida_recusada"): E(F.PARADO, [("AnotarFalha", "recusada", "1.1.0", "1.2.0"),
+                                                             ("MostrarFalha", "recusada", "recusada-1.2.0")],
+                                                  nao_tentar=("1.2.0", "1.3.0")),
     (F.PRONTA, "depois"): E(F.DEPOIS, [R]),
     # D-769/D-794/D-831: ao fechar com versão pronta, a pergunta.
     (F.PRONTA, "fechando"): E(F.PERGUNTANDO, [("PerguntarAoFechar",)]),
     (F.DEPOIS, "fechando"): E(F.PERGUNTANDO, [("PerguntarAoFechar",)]),
     # D-720/D-828: a troca só depois de a janela fechar (gravando).
-    (F.FECHANDO, "fechou"): E(F.TROCANDO, [("Trocar", "1.1.0", "1.2.0", f.REABRIR_COM_JANELA)]),
+    (F.FECHANDO, "fechou"): E(F.TROCANDO, [("Trocar", "1.1.0", "1.2.0", f.REABRIR_COM_JANELA)],
+                              trocando_com_janela=True),
     (F.FECHANDO, "nao_fechou"): E(F.DEPOIS, [R]),
     # D-769: com o "Sim" ao fechar, nada abre na tela depois (só a conferência, sem janela).
     (F.PERGUNTANDO, "sim"): E(F.TROCANDO, [("Trocar", "1.1.0", "1.2.0", f.REABRIR_SEM_JANELA)]),
@@ -275,3 +302,21 @@ def test_a_regra_nao_fala_com_o_mundo_de_fora():
         elif isinstance(no, ast.Call) and getattr(no.func, "id", "") in ("open", "__import__", "exec", "eval"):
             importados.add(no.func.id)
     assert importados <= {"__future__", "dataclasses", "enum", "typing"}, importados
+
+
+def test_m1_a_troca_do_reiniciar_que_nao_foi_pedida_reabre_o_programa():
+    """Volta 2, achado M1: depois de a janela fechar no "Reiniciar agora", a troca que não pôde ser pedida (o Velopack
+    recusou, ou a conferência mudou nos segundos do fechar) reabre o programa; no "Sim" ao fechar, não (ia fechar)."""
+    com = replace(BASE, fase=F.TROCANDO, trocando_com_janela=True)
+    assert forma(f.proxima_fase(com, EVENTOS["troca_nao"])[1]) == [R, ("ReabrirOPrograma",)]
+    assert forma(f.proxima_fase(com, EVENTOS["troca_recusada"])[1]) == [("AnotarFalha", "recusada", "1.1.0", "1.2.0"),
+                                                                       ("ReabrirOPrograma",)]
+    assert forma(f.proxima_fase(BASE.__class__(**{**BASE.__dict__, "fase": F.TROCANDO}), EVENTOS["troca_nao"])[1]) == [R]
+
+
+def test_m4_sem_o_estado_gravando_nada_e_procurado():
+    """Volta 2, achado M4: com o estado que não grava, o motor no lugar não leva à procura (a versão que falhasse não
+    ficaria em "não tentar")."""
+    antes = replace(BASE, fase=F.MOTOR, estado_grava=False)
+    depois, efeitos = f.proxima_fase(antes, EVENTOS["motor_ok"])
+    assert depois.fase is F.PARADO and forma(efeitos) == [R]

@@ -23,7 +23,9 @@ docs/plano/DECISOES.md):
   D-731, pergunta (a) do relatorio da construcao (pedido da gerente,
          17/11/2026): a tarefa "desfazer" existe SEMPRE, e nao so quando os
          testes foram ligados. A pergunta do Windows da primeira abertura
-         (D-733/D-735; atualizacao.preparar_como_administrador) a cria com o
+         (D-733/D-735; o antigo --preparar-o-computador, que saiu com o
+         atualizador novo em 23/11/2026: hoje ninguem a cria na primeira
+         abertura, e ela so nasce quando os testes sao ligados) a criava com o
          plano curto (`plano_de_desfazer(testes_ligados=False)`: so as nossas
          tarefas); o `ligar` a refaz com o plano inteiro. Nos dois, o desfazer
          apaga tambem a tarefa da atualizacao ("Procurar versao nova") e a si
@@ -381,8 +383,8 @@ def plano_de_preparar_o_desfazer() -> list[Passo]:
     desfazer inteiro o apaga), a tarefa ja tem o plano inteiro e fica como
     esta. Assim, a pergunta da primeira abertura que volta depois de um "Nao"
     (D-741), com os testes ja ligados pelas Configuracoes, nao estraga o desfazer.
-    Quem chama: `preparar_o_desfazer` (atualizacao.preparar_como_administrador,
-    --preparar-o-computador, ja como administrador).
+    Quem chama: `preparar_o_desfazer` (era o --preparar-o-computador do
+    atualizador antigo, que saiu em 23/11/2026; hoje ninguem do programa chama).
     """
     return [
         Passo("Criar e proteger a pasta do desfazer", _comando_criar_e_proteger_a_pasta()),
@@ -826,9 +828,10 @@ def mandar_desfazer() -> Resultado:
 def preparar_o_desfazer() -> Resultado:
     """Cria a tarefa "desfazer" na primeira abertura, mesmo sem os testes ligados (D-731, pergunta (a)).
 
-    Quem chama: atualizacao.preparar_como_administrador (--preparar-o-computador),
-    que ja roda como administrador dentro da pergunta do Windows da primeira
-    abertura (D-733/D-735): por isso nenhuma pergunta a mais. Os passos sao
+    Quem chamava: o --preparar-o-computador do atualizador antigo, que rodava
+    como administrador dentro da pergunta do Windows da primeira abertura
+    (D-733/D-735). Saiu com o atualizador novo (23/11/2026): hoje ninguem do
+    programa chama; fica para a entrega dos testes a distancia decidir. Os passos sao
     `plano_de_preparar_o_desfazer` (um lugar so). Nunca levanta.
     """
     try:

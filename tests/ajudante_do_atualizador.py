@@ -57,16 +57,34 @@ class WindowsFalso:
 
     DISSE_NAO = windows.DISSE_NAO
 
-    def __init__(self, licenca: str = "disse_nao", depois_do_sim=None, outras=None):
+    def __init__(self, licenca: str = "disse_nao", depois_do_sim=None, outras=None, troca_em_curso=False,
+                 pasta_de_troca: Path | None = None):
         self.licenca, self.depois_do_sim, self.outras = licenca, depois_do_sim, [] if outras is None else outras
+        self.troca_em_curso = troca_em_curso        # o que "o atualizador do Velopack está rodando?" responde
         self.pedidos: list[list[str]] = []
         self.perguntas_de_processos: list = []
+        self.reaberturas: list[list[str]] = []
+        self._pasta_de_troca = pasta_de_troca
+
+    def atualizador_do_velopack_rodando(self, raiz):
+        return self.troca_em_curso
+
+    def criar_pasta_de_troca(self):
+        self._pasta_de_troca.mkdir(parents=True, exist_ok=True)
+        return self._pasta_de_troca
+
+    def apagar_pasta_de_troca(self, pasta):
+        return True
+
+    def lancar_solto(self, comando, sinal, espera_s=30):
+        self.reaberturas.append([str(c) for c in comando])
+        return windows.Resposta(windows.DEU_CERTO)
 
     def comecar_pedido_de_licenca(self, passos):
         self.pedidos.append([p.tipo for p in passos])
         return PedidoFalso(self.licenca, self.depois_do_sim)
 
-    def programas_rodando_de(self, pasta, menos_a_familia_de=None):
+    def programas_rodando_de(self, pasta, menos_a_familia_de=None, nomes=None):
         self.perguntas_de_processos.append((Path(pasta), menos_a_familia_de))
         return self.outras
 
@@ -109,6 +127,21 @@ class VelopackFalso:
 # A montagem de cada prova
 # ---------------------------------------------------------------------------------------------------------------------
 
+def pacote_de_prova(texto: str, motor: int | None = 1) -> bytes:
+    """Um pacote (.nupkg) de prova: um zip com o `motor-exigido.json` dentro (o motor que a versão pede), como o
+    publicar põe (volta 2, M2). `motor=None`: sem o arquivo."""
+    import io
+    import zipfile
+
+    dados = io.BytesIO()
+    with zipfile.ZipFile(dados, "w") as z:
+        z.writestr("lib/app/leia.txt", texto)
+        if motor is not None:
+            z.writestr(getattr(atualizacao, "CAMINHO_DO_MOTOR_EXIGIDO_NO_PACOTE", "lib/app/motor-exigido.json"),
+                       json.dumps({"versao": motor}))
+    return dados.getvalue()
+
+
 def _publicar(fonte: Path, v: str, conteudo: bytes, chave: bytes = CHAVE) -> conversa.VersaoDoVelopack:
     """Põe na pasta da fonte a assinatura (com `chave`) e o índice de uma versão; devolve o que o Velopack acharia."""
     nome = f"{PACOTE}-{v}-full.nupkg"
@@ -129,22 +162,36 @@ class Prova:
 
     def __init__(self, tmp: Path, *, grava: bool = True, licenca: str = "disse_nao", motor: bool = True,
                  teste=(True, ""), outras=None, chave_da_nova: bytes = CHAVE, publicar_nova: bool = True,
-                 erro_ao_procurar: str = ""):
+                 erro_ao_procurar: str = "", motores: dict | None = None, motores_no_lugar: set | None = None,
+                 troca_em_curso=False, estado_grava=None):
+        """`motores`: o motor que cada versão pede (padrão: 1 nas duas). `motores_no_lugar`: os motores que estão no
+        lugar (padrão: todos, ou nenhum com `motor=False`). `troca_em_curso`: o que a peça responde sobre o
+        atualizador do Velopack. `estado_grava`: o teste de gravar o estado (padrão: o de verdade)."""
         self.raiz, self.fonte_pasta = tmp / "raiz", tmp / "fonte"
         (self.raiz / "current").mkdir(parents=True)
         self.grava = {"agora": grava}
         self.motor = {"no_lugar": motor}
-        conteudos = {NOVA: b"pacote da versao nova", ANTERIOR: b"pacote da versao anterior"}
+        motores = {NOVA: 1, ANTERIOR: 1, **(motores or {})}
+        self.motores_no_lugar = motores_no_lugar
+        conteudos = {NOVA: pacote_de_prova("pacote da versao nova", motores[NOVA]),
+                     ANTERIOR: pacote_de_prova("pacote da versao anterior", motores[ANTERIOR])}
         nova = _publicar(self.fonte_pasta, NOVA, conteudos[NOVA], chave_da_nova) if publicar_nova else None
         _publicar(self.fonte_pasta, ANTERIOR, conteudos[ANTERIOR])
-        self.win = WindowsFalso(licenca, depois_do_sim=lambda: self.grava.update(agora=True), outras=outras)
+        self.win = WindowsFalso(licenca, depois_do_sim=lambda: self.grava.update(agora=True), outras=outras,
+                                troca_em_curso=troca_em_curso, pasta_de_troca=tmp / "troca")
         self.vp = VelopackFalso(self.raiz, nova, erro_ao_procurar, conteudos)
         self.tela: list = []
         self.atual = atualizacao.Atualizacao(
             windows=self.win, velopack=self.vp, raiz=self.raiz, fonte=atualizacao.Fonte(str(self.fonte_pasta)),
             por_tras=lambda trabalho: trabalho(), pasta_grava=lambda raiz: self.grava["agora"],
-            garantir_motor=lambda: self.motor["no_lugar"], motor_no_lugar=lambda: self.motor["no_lugar"],
-            teste=lambda: teste, chave_publica=PUBLICA)
+            garantir_motor=lambda: self.motor["no_lugar"], motor_no_lugar=self._motor_no_lugar,
+            teste=lambda: teste, chave_publica=PUBLICA,
+            **({} if estado_grava is None else {"estado_grava": estado_grava}))
+
+    def _motor_no_lugar(self, versao_do_motor=None):
+        if self.motores_no_lugar is not None:
+            return versao_do_motor in self.motores_no_lugar
+        return self.motor["no_lugar"]
 
     def abrir(self, *argumentos: str):
         saida = self.atual.abrir(list(argumentos))
