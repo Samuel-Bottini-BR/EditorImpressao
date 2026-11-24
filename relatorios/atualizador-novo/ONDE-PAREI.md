@@ -1,3 +1,221 @@
+# Volta 2: os achados do quem tenta quebrar (24/11/2026)
+
+Implementador. Pedido da gerente de 24/11 (D-815, segunda e última volta), sobre o relatório
+`relatorios/atualizador-novo/quem-tenta-quebrar-1/relatorio.md` (commit `3065d828`): 1 grave, 5 médios, 12 leves.
+Regra desta volta: para cada achado, a CAUSA, a regra que decide e todos os caminhos que chegam nela, antes do conserto;
+o conserto muda a regra num lugar só. Li o relatório inteiro, as provas (`test_qtq_provas.py`, `mutacoes_qtq.py`,
+`prova_porteiro_k03.py`) e, de novo, o Velopack 1.2.161 nas linhas que ele cita. Não abri agente nem janela.
+
+**Situação: consertados G1, M1, M2, M3, M4 e os leves 2, 3 (com teste), 4 (só o texto; a decisão vai em pergunta), 6 e
+7. O leve 1 (a frase da falha "troca") precisa de frase nova: PAREI e está em "Perguntas para o Samuel". M5 não é
+comigo. Os leves 5 (= M3), 8, 9, 10, 11 e 12: anotados abaixo com o porquê.** Último commit: ver a mensagem de entrega.
+
+## Os testes de cada achado: falham no código de antes, passam agora
+
+`tests/test_atualizador_volta2.py` (32 testes). Rodado com os arquivos do programa de `cd4b8414` no lugar (e devolvidos
+depois): **20 falham** (`relatorios/atualizador-novo/volta2-testes-no-codigo-antigo.txt`); os 12 que passam lá são os
+do M3 (as proteções já existiam; os testes provam que desligá-las é acusado) e um de "nada mudou" (o G1 no caso em que a
+troca acabou). No código de agora: **32 passam**.
+
+As mutações: as minhas (`mutacoes.py`, agora 32 com as da volta 2) **32 de 32 acusadas**; as 17 dele, de novo, com os
+arquivos de teste do atualizador mais os da volta 2 (`mutacoes_qtq_no_lugar.py`, a mesma lista importada do arquivo
+dele): **0 de 17 sobreviveram** (`mutacoes_qtq_no_lugar-resultado.txt`; a Q4 com o trecho do código novo, porque a linha dela mudou com o conserto do M2).
+
+---
+
+## G1 — abrir pelo atalho no meio da troca anotava uma falha que não houve
+
+- **Causa:** a regra lia "roda a versão de antes, com uma troca anotada" como "a troca não aconteceu", sem separar "a
+  troca ainda está acontecendo". O dado do disco (`tentando`) não prova o fim da troca.
+- **Como saber se a troca está em curso, com a fonte (Velopack 1.2.161):** o atualizador do Velopack (`<raiz>\Update.exe`)
+  é aberto pelo pedido da troca e vive até reabrir o programa: espera o programa sair (`util_common.rs` 14-26), mostra a
+  janelinha e abre o pacote, fecha à força o que roda da pasta e renomeia (`apply_windows_impl.rs` 134-176), reabre
+  (`apply.rs` 47-75: na falha também, com os mesmos argumentos) e sai. O atalho só abre o `Update.exe start`, que abre
+  `current\` e volta logo (`stub.rs` 32-39; `start_windows_impl.rs` 111-133: `spawn` e fim, sem esperar). Logo:
+  **o atualizador do Velopack desta instalação rodando = a troca em curso.** A tranca `.velopack_lock` não serve sozinha:
+  ela só é pega depois da espera pelo programa (`apply_windows_impl.rs`, depois do teste de elevação), e o clique no
+  meio da espera passaria. A linha de comando da reabertura (`--conferir-a-versao-nova`) só chega depois de a troca
+  acabar (`apply.rs` 47-75), então quem a tem nem pergunta.
+- **A regra:** `core/fases_da_atualizacao.py`, `_ao_abrir` (o lugar único de "o que a abertura faz com uma troca anotada").
+- **Os caminhos que chegam nela:** toda abertura do programa instalado (`atender_linha_de_comando` → `Atualizacao.abrir`
+  → `Abriu`), com a troca vinda da linha de comando (o Velopack reabriu) ou da anotação do disco (o atalho; ou o
+  Velopack que não reabriu); e as duas trocas (normal e volta).
+- **O conserto (num lugar só):** `Abriu` ganha `troca_em_curso` (True / False / None), que o executor lê pela peça do
+  Windows (`windows.atualizador_do_velopack_rodando`, nova, pela lista de processos de sempre) só quando a troca veio do
+  disco e a versão que roda é a de antes. Na regra, antes de concluir "não aconteceu": em curso → nada anotado, sai sem
+  janela (o Velopack fecharia esta à força; o Velopack reabre a nova no "Reiniciar agora"); sem saber → nada anotado, a
+  abertura segue e a próxima decide; parado → como antes (falha "troca"). Vale para a troca e para a volta.
+- **Testes:** `test_g1_abrir_pelo_atalho_no_meio_da_troca_nao_anota_falha_e_sai_sem_janela` (era o `test_A`),
+  `test_g1_sem_saber_se_a_troca_acontece_nada_e_anotado` (era o `test_A2`), `test_g1_a_troca_que_acabou_sem_trocar_
+  continua_sendo_falha` (o que já funcionava), e na tabela da regra `abriu_troca_em_curso`, `abriu_volta_em_curso`,
+  `abriu_troca_sem_saber`.
+- **O que fica de fora (a D-770 é de depois, D-828):** no "Sim" ao fechar, o clique no atalho no meio da troca não abre
+  nada no fim (a D-769: nada abre; o clique se perde e o Kaique clica de novo depois da janelinha do Velopack). A D-770
+  ("o programa abre sozinho no fim") continua "para depois", como a D-828 diz.
+
+## M1 — "Reiniciar agora" fechava antes de conferir; se não pudesse trocar, o programa sumia calado
+
+- **Causa:** a conferência da troca (o pacote, o motor, outra janela) só existia DENTRO do pedido (`trocar_para`), e o
+  "Reiniciar agora" fechava a janela antes de chegar nele. Nada reabria o programa quando o pedido falhava depois.
+- **A regra:** a conferência única da troca, agora uma função só (`Atualizacao.conferir_troca`), usada antes de fechar e
+  de novo dentro de `trocar_para`; e, na regra, o que fazer quando a troca do "Reiniciar agora" não é pedida.
+- **Os caminhos:** "Reiniciar agora" (`Escolheu(True)`), "Sim" ao fechar (`RespondeuAoFechar(True)`) e a volta
+  (`Voltar`); os três chegam a `trocar_para`, que chama `conferir_troca`.
+- **O conserto:** "Reiniciar agora" → fase nova `CONFERINDO_TROCA` → efeito `ConferirTroca` → `TrocaConferida`: pode →
+  fecha a janela e troca; não pode → a janela continua aberta e vira "Depois" (a pergunta vem ao fechar); recusada (a
+  soma) → a falha "recusada" com a frase 2. O que só falha DEPOIS de fechar (o Velopack recusou o pedido, ou a
+  conferência mudou nos segundos do fechar) → efeito `ReabrirOPrograma`: o programa é aberto de novo pela peça do
+  Windows (`lancar_solto`, que só dá certo com o sinal de vida do programa aberto: `--sinal-de-vida`, atendido antes de
+  tudo em `atender_linha_de_comando`). Nenhuma frase nova, nenhum botão novo. No "Sim" ao fechar o programa ia fechar
+  mesmo: só fica anotado, e o aviso volta na próxima abertura (como antes).
+- **Testes:** `test_m1_reiniciar_agora_que_nao_pode_trocar_nao_fecha_a_janela` (era o `test_B` e o `test_E`),
+  `test_m1_a_troca_que_falha_depois_de_fechar_reabre_o_programa`, `test_m1_o_sinal_de_vida_e_dado_antes_de_tudo`, e na
+  tabela `conferida_pode`/`conferida_nao`/`conferida_recusada` e `test_m1_a_troca_do_reiniciar_que_nao_foi_pedida_
+  reabre_o_programa`.
+- **Pergunta (o que o Kaique vê):** com outra janela do programa aberta, o "Reiniciar agora" agora não fecha nada e não
+  diz nada (a pergunta vem ao fechar). Está em "Perguntas para o Samuel" (se quer uma frase ali).
+
+## M2 — a volta conferia o motor da versão que falhou; ninguém lia o `motor-exigido.json`
+
+- **Causa:** "o motor está no lugar" respondia sempre pelo motor que O PROGRAMA QUE RODA pede (`VERSAO_DO_MOTOR` deste
+  `.exe`), e não pelo da versão que vai entrar. O pacote de cada versão traz o `motor-exigido.json`, e nada o lia.
+- **A regra:** `motor_esta_no_lugar(raiz, versao_do_motor)` (a única do "motor no lugar", agora por versão de motor) e
+  `motor_exigido_pelo_pacote(arquivo)` (a única leitura do `motor-exigido.json`, de dentro do pacote já conferido pela
+  soma assinada).
+- **Os caminhos:** antes de anunciar (depois de baixar a versão nova: `Baixou(motor_da_nova)`), antes de trocar
+  (`conferir_troca`: o "Reiniciar agora", o "Sim" ao fechar e a volta), e na abertura (`GarantirMotor`: o motor que o
+  programa que roda pede, que ele mesmo precisa; não mudou).
+- **O conserto:** anunciar e trocar perguntam pelo motor da versão QUE ENTRA (lido do pacote dela). Pacote sem o arquivo
+  ou estragado: não se sabe, não troca. A volta para a anterior pergunta pelo motor da anterior (que continua na pasta
+  dele: `garantir_o_motor` nunca apaga outra versão de motor).
+- **Testes:** `test_m2_a_volta_confere_o_motor_da_anterior_e_volta` (era o `test_C`),
+  `test_m2_a_versao_nova_sem_o_motor_dela_nao_e_anunciada`, `test_m2_o_motor_exigido_e_lido_de_dentro_do_pacote` (e o
+  nome de dentro do pacote igual ao do `empacotar.py`), e na tabela `baixou_sem_o_motor_da_nova`.
+
+## M3 — nove proteções que nenhum teste acusava (Q1-Q5, Q7, Q8, Q14, Q15)
+
+- **Causa:** os testes do motor do conserto 4 (`tests/test_atualizador_4.py` do `atualizador-4`), que o plano dizia
+  trazer, não vieram; e as outras proteções só tinham a peça de mentira em volta.
+- **O conserto:** um teste para cada uma, em `tests/test_atualizador_volta2.py`: Q1 `test_q1_conserto4_sem_espaco_nao_
+  comeca`; Q2 `test_q2_conserto4_motor_estragado_nunca_fica_com_o_nome_final`; Q3 `test_q3_conserto4_o_motor_do_
+  instalador_vai_para_o_lugar_dele`; Q4 `test_q4_conserto4_o_motor_no_lugar_e_a_mesma_conferencia`; Q5 `test_q5_a_
+  pasta_que_existe_e_nao_aceita_gravacao_nao_conta_como_preparada` (a pasta do sistema, de verdade; pulado com a licença
+  de administrador ligada); Q7 `test_q7_a_licenca_tem_de_chegar_ao_arquivo_de_dentro`; Q8 `test_q8_o_visual_c_que_uma_
+  conta_comum_pode_trocar_nao_roda`; Q14 `test_q14_sem_a_lista_de_processos_nao_troca`; Q15 `test_q15_o_processo_cujo_
+  caminho_nao_da_para_ler_conta` (o "System" de verdade). Do conserto 4 vieram também `motor_estragado_no_lugar_e_
+  trocado`, `sem_o_arquivo_e_sem_o_motor_diz_e_nao_finge` e os 2 do médio 1 (o arquivo do motor estragado de qualquer
+  jeito). Não vieram os que cobravam o ajudante (`rodar_ao_ligar`, `procurar_e_preparar`), que saiu: o "sem motor nada
+  anunciado nem trocado" está nos testes do M2 e do 4a/4b.
+- **Prova:** as 17 dele, de novo (acima).
+
+## M4 — o estado que não gravava: a troca era pedida mesmo assim, e a falha sumia
+
+- **Causa:** `gravar_estado` devolvia se gravou, mas `anotar_tentativa`, `anotar_falha`, `anotar_ok` e
+  `apagar_tentativa` não olhavam, e `trocar_para` não olhava `anotar_tentativa`.
+- **A regra:** "a atualização só anda se o que ela precisa anotar fica anotado": `estado_aceita_gravacao` (o teste de
+  gravar o estado, pela gravação única) na abertura, e o resultado de `anotar_tentativa` em `trocar_para`.
+- **Os caminhos:** a procura (só depois do motor, na regra), toda troca (`trocar_para`), toda falha (`anotar_falha`).
+- **O conserto:** a abertura lê se o estado grava (`Abriu.estado_grava`); sem gravar, nada é procurado (na regra, um
+  lugar só, depois do motor). `trocar_para` não pede a troca se a anotação não gravou. As quatro funções devolvem se
+  gravaram, e o registro diz quando não. (O registro que cai no `erros.log` quando o `atualizacao.log` não aceita é
+  como sempre foi; ver o leve 6.)
+- **Testes:** `test_m4_com_o_estado_que_nao_grava_nada_e_procurado_nem_trocado` (era o `test_F`) e, na regra,
+  `abriu_estado_nao_grava` e `test_m4_sem_o_estado_gravando_nada_e_procurado`.
+
+## M5 — não é comigo (a gerente leva ao Samuel antes da entrega dos testes à distância). Nada mudou por ele.
+
+## Os leves
+
+1. **A frase da falha "troca" diz "voltou".** Precisa de frase nova (a D-778 não tem uma para "não trocou"): **PAREI**,
+   pergunta para o Samuel abaixo. Até a resposta, fica a frase (1); o teste `test_leve1_a_frase_da_troca_espera_a_
+   resposta_do_samuel` existe para a troca não entrar calada.
+2. **A exceção da K03 mais larga que a D-837 — consertado.** Causa: a exceção aceitava a ferramenta em qualquer linha da
+   função, com qualquer pedido; a busca por linha não via a palavra escrita em pedaços; e ninguém olhava quem chama a
+   função. Regra: `k03` do porteiro (uma função). Conserto: na função da exceção só passa a LINHA DO EXPERIMENTO
+   (`LINHA_DA_LICENCA_QUE_SO_ACRESCENTA`); qualquer outro pedido de licença ali é acusado; os textos escritos em pedaços
+   ("ica" "cls", "a" + "b") são juntados e buscados em todo arquivo do programa (sem contar as docstrings); a função só
+   pode ser chamada por `_fazer_passo` da peça. E a leitura de volta (`problemas_da_licenca_dos_usuarios`) passou a
+   recusar qualquer linha a mais (Todos com Controle total, Usuários com Controle total). Testes:
+   `test_leve2_o_porteiro_acusa_o_que_a_d837_nao_deixa` (os 4 casos da prova dele que passavam),
+   `test_leve2_uma_licenca_a_mais_na_pasta_e_acusada`. A prova dele (`prova_porteiro_k03.py`) agora acusa os 5 casos (o
+   "controle" dele também, porque não é a linha do experimento escrita igual).
+3. **A família pelo número de quem abriu, sem a hora — consertado.** `familia_de` só aceita como filho quem nasceu
+   depois do pai (`GetProcessTimes`, lido junto com o caminho). Teste: `test_leve3_a_familia_respeita_a_hora_em_que_cada_
+   um_nasceu`.
+4. **"Nenhum PowerShell" não era verdade.** O texto do `atualizacao.py` foi corrigido. O PowerShell que sobra é o da
+   peça para LER a tarefa do ajudante antigo no passo 1 (`windows.apagar_tarefa` → `ler_tarefa`, pelo COM do Agendador,
+   que separa "não existe" de "acesso negado" pelo número do Windows). Tirá-lo pede trocar a leitura de tarefas da peça
+   (que os testes à distância também usam) por outra que não separa os dois casos: **PAREI**, pergunta abaixo.
+5. = M3 (Q5): consertado com o teste.
+6. **A afirmação do ONDE-PAREI sobre o `atualizacao.log` velho estava errada** (é da conta do Samuel, não do sistema):
+   corrigida na seção do código (ver lá).
+7. **Comentários que citavam o que saiu — consertado** (`core/testes_a_distancia.py`, só comentários; teste
+   `test_os_comentarios_do_desfazer_nao_citam_o_que_saiu`).
+8. **A corrida entre o aviso e o fechar:** risco sem prova. Não mexi: a regra já não pergunta ao fechar enquanto baixa
+   (`Fechando` em BAIXANDO não faz nada); o que sobra é o aviso, que vem por sinal, chegar depois de a janela fechar.
+   Consertar pede mudar quem marca a falha como vista (a tela), sem prova de que acontece; fica para a prova à vista.
+9. **Sem o "Sim", sem o motor do Kraken:** é a D-749 (o motor só vai para o lugar com a pasta aceitando gravação); era
+   igual no `atualizador-4`. Não mexi.
+10. **Falha que nunca passa vira pergunta a cada abertura, sem aviso:** é a D-749 ("a pergunta volta"); uma frase nova
+    seria decisão do Samuel. Não mexi (anotado para a prova à vista).
+11. **Aberto "como administrador" conta como preparado:** risco sem prova; o teste de gravar é o mesmo que o Velopack
+    usa. Não mexi.
+12. **Segundos sem nada na tela depois da troca:** ressalva 3 do plano; medir na prova à vista. Não mexi.
+
+## Caminho → função, o que mudou na volta 2
+
+| Caminho | Antes | Agora |
+|---|---|---|
+| "Reiniciar agora" | `Escolheu` → `FecharJanela` → `Trocar` | `Escolheu` → `ConferirTroca` (`conferir_troca`) → `FecharJanela` → `Trocar` (`trocar_para`, que confere de novo) → se falhar, `ReabrirOPrograma` |
+| A abertura com troca anotada | `Abriu` → falha "troca" | `Abriu(troca_em_curso)` → em curso: sai; sem saber: segue; parado: falha "troca" |
+| Anunciar a versão nova | `Baixou` → aviso | `Baixou(motor_da_nova)` → sem o motor dela: nada |
+| O motor antes de trocar | o motor do programa que roda | o motor que o pacote da versão que entra pede |
+| Anotar | sem olhar se gravou | sem gravar: nada procurado; a troca não é pedida |
+
+## O que já estava escolhido e testado, e o que mudou (§11.8)
+
+Nenhum teste fora do atualizador mudou. Mudaram testes desta entrega (os meus, de 23/11), porque a regra que eles
+descrevem mudou com os consertos: a tabela de `tests/test_fases_da_atualizacao.py` (linhas novas e as do "Reiniciar
+agora"), a amostra da K03 em `tests/test_porteiro_licenca_que_acrescenta.py` (a linha do experimento escrita igual) e o
+ajudante das provas (os pacotes de prova passaram a ter o `motor-exigido.json`; a peça de mentira ganhou o que a peça
+nova tem). Tudo na lista da D-836.
+
+## Perguntas para o Samuel (§11.13)
+
+**Pergunta A — A frase quando a versão nova não chegou a entrar**
+- *Do que se trata:* a janelinha de aviso que aparece quando a atualização não deu certo. Hoje há três frases (você
+  escolheu em 18/11). Num caso que existe de verdade nenhuma serve: o Windows não deixou trocar a versão (um arquivo
+  do programa estava preso, por exemplo pelo antivírus) e o programa ficou na versão de antes, funcionando.
+- *O que acontece hoje:* aparece "A atualização não deu certo. O programa voltou para a versão anterior e continua
+  funcionando. Avise o Samuel." Mas o programa não voltou: ele nunca saiu da versão de antes. É escolha minha de agente,
+  feita sem perguntar; não é defeito do programa.
+- *O que você escolhe:* (1) **sugestão:** uma frase própria para esse caso: "A atualização não deu certo. O programa
+  continua na versão de antes e funcionando. Avise o Samuel."; (2) outra frase sua; (3) não mostrar nada nesse caso
+  (fica só no registro que eu leio de longe); (4) só comentário.
+- *O que muda no que já funciona:* só essa frase, nesse caso. As outras três ficam iguais. Situação: na versão de teste,
+  esperando a sua resposta; até lá fica a frase de hoje.
+
+**Pergunta B — "Reiniciar agora" com outra janela do programa aberta**
+- *Do que se trata:* o aviso "Reiniciar agora / Depois" quando chega versão nova. Se houver OUTRA janela do programa
+  aberta (o Kaique abriu duas vezes), a troca não pode acontecer (o atualizador fecharia a outra à força, com o trabalho
+  dela).
+- *O que acontece agora (depois deste conserto):* o "Reiniciar agora" não fecha nada e não diz nada; o programa continua
+  aberto, e ao fechar vem a pergunta "Atualizar agora?". Antes do conserto, o programa fechava e sumia.
+- *O que você escolhe:* (1) **sugestão:** fica assim, sem frase (nada novo na tela); (2) uma frase curta ao clicar,
+  como "Feche a outra janela do programa e clique de novo."; (3) só comentário.
+- *Situação:* na versão de teste.
+
+**Pergunta C (para a gerente decidir se leva ao Samuel) — o PowerShell do passo 1**
+- *Do que se trata:* na primeira abertura, a pergunta do Windows apaga a tarefa antiga do atualizador (só existe no seu
+  PC). Para saber se ela existe, a peça do Windows usa o PowerShell do próprio Windows.
+- *O risco:* num computador que bloqueia o PowerShell, esse passo falharia sempre, e a pergunta voltaria a cada abertura.
+  O notebook do Kaique não bloqueia (os testes à distância também usam o PowerShell).
+- *O que você escolhe:* (1) **sugestão:** fica como está, e a prova à vista confere no notebook; (2) trocar a leitura da
+  tarefa por outra ferramenta do Windows que não separa "não existe" de "sem licença para ler" (mudaria a peça que os
+  testes à distância usam); (3) só comentário.
+
+---
+
 # Atualizador novo: o código (23 e 24/11/2026)
 
 Implementador. Ramo `atualizador-novo-2026-11-23`, worktree `.claude/worktrees/atualizador-novo`. Pedido da gerente de
@@ -198,7 +416,7 @@ arquivo não aceitar, o `erros.log`); na tela, só as frases combinadas; nada d�
 **Os restos do PC do Samuel (o experimento já desfeito, pela gerente):** a tarefa `\EditorImpressao\Procurar versao
 nova` (desativada) é apagada pelo passo 1 da pergunta; se o Windows a rodar antes disso, o programa novo (como o
 sistema) só anota e sai. O `estado.json.antes-do-experimento` não é lido (o nome é outro). A pasta
-`C:\ProgramData\EditorImpressao\atualizacao\` é do sistema: a conta comum consegue CRIAR arquivo novo nela (a licença
+`C:\ProgramData\EditorImpressao\atualizacao\` (o `atualizacao.log` velho é da conta do Samuel, conferido por quem tentou quebrar; eu tinha escrito "do sistema", errado): a conta comum consegue CRIAR arquivo novo nela (a licença
 de fábrica do ProgramData), então o `estado.json` novo nasce; o `atualizacao.log` velho (do sistema) não aceita
 acréscimo, e as linhas vão para o `erros.log` (ressalva). A tarefa "Desfazer testes a distancia" não é tocada.
 

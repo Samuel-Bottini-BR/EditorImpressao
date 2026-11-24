@@ -139,3 +139,14 @@ ponta `fda954aa` (o plano).
 Os dois continuam cobrando o que cobravam: com o pacote sem a seção dos lugares, o primeiro falha; com o pacote sem a
 lista das funções de outros passos, o segundo falha (conferido trocando o `regras_dos_agentes/montar_pacote.py` numa
 cópia de trabalho e devolvendo o arquivo depois). Os 26 do arquivo passam.
+
+
+## Volta 2 (24/11/2026): os achados de quem tentou quebrar
+
+| Arquivo :: teste | O que aconteceu | Por quê |
+|---|---|---|
+| `tests/test_atualizador_volta2.py` (32) | novos | um por achado (G1, M1, M2, M4, leves 2, 3, 7) e um por mutação que sobrevivia (Q1-Q5, Q7, Q8, Q14, Q15); 20 falham no código de `cd4b8414` |
+| `tests/test_atualizador_volta2.py::test_q1..q4`, `motor_estragado_no_lugar...`, `sem_o_arquivo...`, `volta2_medio1...` | vindos do conserto 4 do `atualizador-4` (`tests/test_atualizador_4.py`), pelo caminho novo | D-833 ("o que foi feito no conserto 4 passa para o desenho novo"); os que cobravam o ajudante (`rodar_ao_ligar`, `procurar_e_preparar`) não vieram: o "sem motor nada anunciado nem trocado" está no M2 e na 4a/4b |
+| `tests/test_fases_da_atualizacao.py` (a tabela) | mudado pelo conserto | a regra mudou: o "Reiniciar agora" passa pela fase nova (conferir antes de fechar, M1) e guarda `trocando_com_janela`; linhas novas para a troca em curso (G1), o estado que não grava (M4), o motor da versão nova (M2) e a conferência; mais 2 testes (M1, M4) |
+| `tests/test_porteiro_licenca_que_acrescenta.py` (a amostra `CERTO` e duas linhas dela) | mudado pelo conserto | a K03 passou a aceitar só a linha do experimento escrita igual (leve 2); a amostra passou a ser essa linha; o que os testes cobram não mudou |
+| `tests/ajudante_do_atualizador.py` | mudado | os pacotes de prova passaram a ter o `motor-exigido.json` (M2); a peça do Windows de mentira ganhou o que a de verdade ganhou (a troca em curso, abrir de novo) |

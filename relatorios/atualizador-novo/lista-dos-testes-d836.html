@@ -639,6 +639,43 @@ ponta <code>fda954aa</code> (o plano).</p>
 <p>Os dois continuam cobrando o que cobravam: com o pacote sem a seção dos lugares, o primeiro falha; com o pacote sem a
 lista das funções de outros passos, o segundo falha (conferido trocando o <code>regras_dos_agentes/montar_pacote.py</code> numa
 cópia de trabalho e devolvendo o arquivo depois). Os 26 do arquivo passam.</p>
-<p class="rodape">Editor de Impressão &middot; gerado em 24/11/2026 às 07:25</p>
+<h2>Volta 2 (24/11/2026): os achados de quem tentou quebrar</h2>
+<table>
+<thead>
+<tr>
+<th>Arquivo :: teste</th>
+<th>O que aconteceu</th>
+<th>Por quê</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tests/test_atualizador_volta2.py</code> (32)</td>
+<td>novos</td>
+<td>um por achado (G1, M1, M2, M4, leves 2, 3, 7) e um por mutação que sobrevivia (Q1-Q5, Q7, Q8, Q14, Q15); 20 falham no código de <code>cd4b8414</code></td>
+</tr>
+<tr>
+<td><code>tests/test_atualizador_volta2.py::test_q1..q4</code>, <code>motor_estragado_no_lugar...</code>, <code>sem_o_arquivo...</code>, <code>volta2_medio1...</code></td>
+<td>vindos do conserto 4 do <code>atualizador-4</code> (<code>tests/test_atualizador_4.py</code>), pelo caminho novo</td>
+<td>D-833 ("o que foi feito no conserto 4 passa para o desenho novo"); os que cobravam o ajudante (<code>rodar_ao_ligar</code>, <code>procurar_e_preparar</code>) não vieram: o "sem motor nada anunciado nem trocado" está no M2 e na 4a/4b</td>
+</tr>
+<tr>
+<td><code>tests/test_fases_da_atualizacao.py</code> (a tabela)</td>
+<td>mudado pelo conserto</td>
+<td>a regra mudou: o "Reiniciar agora" passa pela fase nova (conferir antes de fechar, M1) e guarda <code>trocando_com_janela</code>; linhas novas para a troca em curso (G1), o estado que não grava (M4), o motor da versão nova (M2) e a conferência; mais 2 testes (M1, M4)</td>
+</tr>
+<tr>
+<td><code>tests/test_porteiro_licenca_que_acrescenta.py</code> (a amostra <code>CERTO</code> e duas linhas dela)</td>
+<td>mudado pelo conserto</td>
+<td>a K03 passou a aceitar só a linha do experimento escrita igual (leve 2); a amostra passou a ser essa linha; o que os testes cobram não mudou</td>
+</tr>
+<tr>
+<td><code>tests/ajudante_do_atualizador.py</code></td>
+<td>mudado</td>
+<td>os pacotes de prova passaram a ter o <code>motor-exigido.json</code> (M2); a peça do Windows de mentira ganhou o que a de verdade ganhou (a troca em curso, abrir de novo)</td>
+</tr>
+</tbody>
+</table>
+<p class="rodape">Editor de Impressão &middot; gerado em 24/11/2026 às 09:09</p>
 </body>
 </html>
