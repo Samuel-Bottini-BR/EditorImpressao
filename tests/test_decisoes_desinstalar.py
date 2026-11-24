@@ -201,42 +201,38 @@ def get_local_user(descricao: str | None, sid: str = "S-1-5-21-111-1001") -> str
 
 def test_d731_desinstalar_manda_rodar_a_tarefa_desfazer(dados, monkeypatch):
     """D-731 (17/11/2026): ao desinstalar (instalação de verdade), o gancho manda rodar a tarefa "desfazer" dos
-    testes à distância, sem pedir licença de administrador e sem esperar. A tarefa da atualização continua sendo
-    apagada como antes. Falha no código de antes: o gancho só apagava a tarefa da atualização."""
+    testes à distância, sem pedir licença de administrador e sem esperar. Adaptado pela D-836 (atualizador novo,
+    23/11/2026): a "tarefa da atualização" (o ajudante) não existe mais, então o gancho não tenta apagá-la; o atualizador
+    novo não põe nada no Windows."""
     falso = ExecutorDeMentira(aplicar_proibido=True)
     monkeypatch.setattr(td, "_executor", falso)
-    apagadas = []
-    monkeypatch.setattr(atualizacao, "apagar_tarefa", lambda *a, **k: apagadas.append(1) or True)
 
     atualizacao.ao_desinstalar("1.2.0", portatil=lambda: False)
 
     assert falso.tarefas, "o gancho de desinstalar não mandou rodar a tarefa desfazer (D-731)"
     assert falso.tarefas == [td.nome_da_tarefa_do_desfazer()]
     assert falso.chamadas == [], "nenhuma pergunta de administrador no gancho"
-    assert apagadas == [1], "a tarefa da atualização continua sendo apagada (D-714)"
+    assert not hasattr(atualizacao, "apagar_tarefa"), "o ajudante saiu: não há tarefa da atualização a apagar"
 
 
 def test_d731_desinstalar_o_portatil_nao_manda_nada(dados, monkeypatch):
-    """D-723 e D-731 (17/11/2026): o pacote portátil do ensaio nunca mexe no Windows, nem ao desinstalar."""
+    """D-723 e D-731 (17/11/2026): o pacote portátil do ensaio nunca mexe no Windows, nem ao desinstalar (adaptado
+    pela D-836: sem a tarefa da atualização para vigiar)."""
     falso = ExecutorDeMentira(aplicar_proibido=True)
     monkeypatch.setattr(td, "_executor", falso)
-    monkeypatch.setattr(atualizacao, "apagar_tarefa", lambda *a, **k: pytest.fail("apagou a tarefa"))
     atualizacao.ao_desinstalar("1.2.0", portatil=lambda: True)
     assert falso.tarefas == [] and falso.chamadas == []
 
 
 def test_d731_desinstalar_sem_a_tarefa_nao_quebra(dados, monkeypatch):
-    """D-731 (17/11/2026): se os testes à distância nunca foram ligados, a tarefa não existe: o gancho anota e
-    segue (apaga a tarefa da atualização mesmo assim), sem erro."""
+    """D-731 (17/11/2026): se os testes à distância nunca foram ligados, a tarefa não existe: o gancho anota e segue,
+    sem erro (adaptado pela D-836: sem a tarefa da atualização para apagar)."""
     class SemTarefa(ExecutorDeMentira):
         def rodar_a_tarefa(self, nome):
             raise OSError("ERRO: O sistema não pode encontrar o arquivo especificado.")
 
     monkeypatch.setattr(td, "_executor", SemTarefa(aplicar_proibido=True))
-    apagadas = []
-    monkeypatch.setattr(atualizacao, "apagar_tarefa", lambda *a, **k: apagadas.append(1) or True)
     atualizacao.ao_desinstalar("1.2.0", portatil=lambda: False)
-    assert apagadas == [1]
     assert "desfazer" in atualizacao.caminho_do_registro().read_text(encoding="utf-8")
 
 
@@ -741,51 +737,6 @@ _AGENDADOR_DE_MENTIRA = "\n".join([
     "    return $pasta }",
     "  return $agenda }",
 ])
-
-
-@precisa_do_powershell
-def test_d731a_sem_os_testes_ligados_desinstalar_apaga_a_tarefa_da_atualizacao(maquina, monkeypatch):
-    """D-731 ("o notebook fica como era antes de instalar"), pergunta (a) do relatório da construção (17/11/2026).
-    Defeito: a tarefa "desfazer" só nascia quando os testes à distância eram ligados, e o gancho de desinstalar,
-    sem administrador, não consegue apagar a tarefa da atualização ("Procurar versao nova"): ela ficava no
-    Windows. Agora a pergunta do Windows da primeira abertura (--preparar-o-computador) cria SEMPRE a tarefa
-    "desfazer", com o plano curto; desinstalar manda rodá-la, e ela apaga a tarefa da atualização e a si mesma.
-    Falha no código de antes: a primeira abertura não criava a tarefa "desfazer"."""
-    falso = ExecutorDaPrimeiraAbertura()
-    monkeypatch.setattr(td, "_executor", falso)
-    criadas = []
-    monkeypatch.setattr(atualizacao, "criar_tarefa", lambda *a, **k: criadas.append("ajudante") or True)
-
-    # 1. a primeira abertura, dentro da pergunta do Windows, sem a senha dos testes
-    assert atualizacao.preparar_como_administrador(_GerenteInstalado(), preparar=lambda g: None) == 0
-    assert criadas == ["ajudante"]
-    assert falso.ja_como_administrador, "a primeira abertura não criou a tarefa desfazer (D-731, pergunta (a))"
-    assert falso.chamadas == [], "nenhuma pergunta do Windows a mais: já roda como administrador"
-    passos = falso.ja_como_administrador[0]
-    script = _script_gravado(o_passo(passos, "FromBase64String"))
-    assert script == td.montar_script(td.plano_de_desfazer(testes_ligados=False),
-                                      td.caminho_do_registro_do_desfazer(), continuar_depois_de_erro=True)
-
-    # 2. desinstalar: o gancho só manda rodar a tarefa desfazer
-    monkeypatch.setattr(atualizacao, "apagar_tarefa", lambda *a, **k: False)  # sem administrador, falha
-    atualizacao.ao_desinstalar("1.2.0", portatil=lambda: False)
-    assert falso.tarefas == [td.nome_da_tarefa_do_desfazer()]
-
-    # 3. a tarefa roda o script gravado: apaga a tarefa da atualização e a si mesma, e nada dos testes.
-    # D-750 (17/11/2026): e a pasta vazia do Agendador, só com o Agendador de mentira; sem ele, recusado.
-    with pytest.raises(AssertionError, match="COM"):
-        rodar_no_windows_de_mentira(script, maquina, anotar=("Unregister-ScheduledTask",))
-    codigo, linhas, erro = rodar_no_windows_de_mentira(script, maquina, anotar=("Unregister-ScheduledTask",),
-                                                       trocas={"New-Object": _AGENDADOR_DE_MENTIRA})
-    assert codigo == 0, erro
-    apagadas = " | ".join(chamou(linhas, "Unregister-ScheduledTask"))
-    nome, pasta = _tarefa_da_atualizacao()
-    assert f"-TaskName {nome} -TaskPath {pasta}" in apagadas, "a tarefa da atualização tem de sair"
-    assert f"-TaskName {td.NOME_DA_TAREFA_DO_DESFAZER} -TaskPath {pasta}" in apagadas, "e o desfazer, a si mesmo"
-    assert f"CHAMOU DeleteFolder {td.PASTA_DAS_TAREFAS}" in linhas, "e a pasta vazia do Agendador (D-731, D-750)"
-    for dos_testes in ("Set-Service", "Stop-Service", "Remove-LocalUser", "Remove-WindowsCapability",
-                       "NetFirewallRule", td.SSHD_CONFIG):
-        assert dos_testes not in script, f"sem os testes ligados, o desfazer não mexe em {dos_testes}"
 
 
 @precisa_do_powershell
