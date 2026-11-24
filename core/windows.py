@@ -1957,8 +1957,19 @@ def programas_rodando_de(pasta: Path | str, menos_a_familia_de: int | None = Non
             if _dentro_de(caminho, pastas):
                 achados.append((pid, caminho))
         elif nome.lower() in nomes:
-            achados.append((pid, f"{nome} (o caminho não deu para ler)"))
+            achados.append((pid, f"{nome}{SEM_CAMINHO}"))
     return achados
+
+
+# O fim do texto de um processo que `programas_rodando_de` contou só pelo nome (o caminho não deu para ler). Um lugar
+# só: `caminho_conferido` é a única leitura (volta 3, M7: "não deu para conferir" nunca é "é dele", nem "não é").
+SEM_CAMINHO = " (o caminho não deu para ler)"
+
+
+def caminho_conferido(caminho: str) -> bool:
+    """O processo achado por `programas_rodando_de` teve o caminho LIDO (está de fato na pasta)? False = só o nome bateu
+    (o caminho não deu para ler: outra conta, um processo protegido do Windows)."""
+    return not str(caminho).endswith(SEM_CAMINHO)
 
 
 NOME_DO_ATUALIZADOR_DO_VELOPACK = "Update.exe"
@@ -1974,14 +1985,16 @@ def atualizador_do_velopack_rodando(raiz: Path | str) -> bool | None:
     a troca está acontecendo, e quem abre o programa pelo atalho nesse tempo abre a versão de antes (o atalho só chama
     `Update.exe start`, que abre `current\\` sem esperar nem olhar a tranca: `stub.rs` 32-39,
     `start_windows_impl.rs` 111-133; o `start` volta logo depois de abrir o programa). Um processo de nome
-    `Update.exe` cujo caminho não deu para ler conta como rodando (nunca se dá como parado o que não deu para
-    conferir)."""
+    `Update.exe` cujo caminho não deu para ler (o de outro programa, de outra conta) é "não deu para saber" (None),
+    nunca "rodando" nem "parado" (volta 3, M7: contado como rodando, ele fazia o programa sair calado a cada clique
+    no atalho enquanto rodasse). O caminho lido e igual ao desta instalação: True."""
     alvo = os.path.normcase(os.path.normpath(str(Path(raiz) / NOME_DO_ATUALIZADOR_DO_VELOPACK)))
     achados = programas_rodando_de(raiz, nomes={NOME_DO_ATUALIZADOR_DO_VELOPACK.lower()})
     if achados is None:
         return None
-    return any(os.path.normcase(os.path.normpath(c)) == alvo or c.endswith("(o caminho não deu para ler)")
-               for _, c in achados)
+    if any(caminho_conferido(c) and os.path.normcase(os.path.normpath(c)) == alvo for _, c in achados):
+        return True
+    return None if any(not caminho_conferido(c) for _, c in achados) else False
 
 
 def numero_deste_processo() -> int:
@@ -2599,7 +2612,17 @@ def _fazer_passo(passo: dict, segredo: str | None) -> Resposta:
             return instalar_visual_c_do_programa(raiz / NOME_DA_PASTA_TROCADA)
         if tipo == "tirar_instalacao_do_inno":
             return tirar_instalacao_do_inno(raiz)
-        return dar_licenca_aos_usuarios(raiz)
+        # A licença, no mesmo passo, para as duas pastas (volta 3, emenda do Fable): primeiro a raiz (é ela que decide
+        # o "preparado?", D-749); depois a do registro e do bilhete no ProgramData (sem ela o programa continua
+        # atualizando: o passo diz que falhou, o registro diz por quê, e a raiz já grava).
+        da_raiz = dar_licenca_aos_usuarios(raiz, raiz / NOME_DA_PASTA_TROCADA / NOME_DO_MANIFESTO)
+        if not da_raiz.deu_certo:
+            return da_raiz
+        try:
+            do_registro = pasta_da_atualizacao_no_programdata()
+        except OSError as erro:
+            return _falhou("a pasta do registro da atualização não deu para preparar", repr(erro))
+        return dar_licenca_aos_usuarios(do_registro, do_registro / "atualizacao.log")
     if d["com_segredo"] and segredo is None:
         return _falhou("o script precisa do segredo e ele não veio")
     return rodar_powershell(d["texto"], d["limite_s"], segredo if d["com_segredo"] else None)
@@ -2749,49 +2772,115 @@ def usuarios_modificam(licencas: Licencas) -> bool:
                and (li.mascara & DIREITOS_DE_MODIFICAR) == DIREITOS_DE_MODIFICAR for li in licencas.lista)
 
 
-def dar_licenca_aos_usuarios(raiz: Path) -> Resposta:
-    """A ÚNICA mudança de licença de pasta do programa (D-837; o porteiro, K03, só deixa esta função): ACRESCENTA a
-    Usuários (`S-1-5-32-545`) a licença de Modificar na `raiz`, passando para todos os arquivos e pastas de dentro, e
-    CONFERE lendo de volta. É o jeito provado no experimento de 23/11/2026 (com ele, a conta comum trocou a versão sem
-    pergunta do Windows): o `icacls "<raiz>" /grant "*S-1-5-32-545:(OI)(CI)M" /T`, pelo caminho inteiro da pasta do
-    sistema. Nunca tira herança, nunca troca dono, nunca apaga nem nega linha (o porteiro barra `/inheritance`,
-    `/setowner`, `/remove`, `/deny` até aqui dentro).
+def ligacoes_dentro(pasta: Path) -> list[str]:
+    """O que há dentro de `pasta` (ela inclusive) que leva para outro lugar: atalho (junção ou link simbólico) ou
+    arquivo ligado a outro (`st_nlink` > 1, o mesmo arquivo com dois nomes). Lista vazia = nada. Não entra em atalho.
+    Para quê (volta 3): a licença que só acrescenta passa para tudo o que está dentro (`/T`); um arquivo ligado a outro
+    de fora da pasta (um do sistema) receberia a licença junto. Numa pasta que uma conta comum pôde criar antes do
+    preparo (a do `%ProgramData%`), isso seria um jeito de ganhar a licença sobre o arquivo de outro."""
+    if e_atalho(pasta):
+        return [str(pasta)]
+    achados: list[str] = []
+    for raiz_local, pastas, arquivos in os.walk(pasta, followlinks=False):
+        for nome in list(pastas):
+            caminho = Path(raiz_local) / nome
+            if e_atalho(caminho):
+                achados.append(str(caminho))
+                pastas.remove(nome)
+        for nome in arquivos:
+            caminho = Path(raiz_local) / nome
+            try:
+                info = os.lstat(caminho)
+            except OSError:
+                continue
+            if e_atalho(caminho) or info.st_nlink != 1:
+                achados.append(str(caminho))
+    return achados
+
+
+def dar_licenca_aos_usuarios(pasta: Path, conferir_dentro: Path | None = None) -> Resposta:
+    """A ÚNICA mudança de licença de pasta do programa (D-837; o porteiro, K03, só deixa esta função, e só chamada por
+    `_fazer_passo`): ACRESCENTA a Usuários (`S-1-5-32-545`) a licença de Modificar na `pasta`, passando para todos os
+    arquivos e pastas de dentro, e CONFERE lendo de volta. Usada para duas pastas, no mesmo passo da pergunta única
+    (volta 3, emenda do Fable): a raiz da instalação e a pasta do registro e do bilhete
+    (`%ProgramData%\\EditorImpressao\\atualizacao`, para a conta comum continuar gravando nela mesmo quando os arquivos
+    nasceram de uma abertura com licença de administrador: volta 3, M4). É o jeito provado no experimento de
+    23/11/2026: o `icacls "<pasta>" /grant "*S-1-5-32-545:(OI)(CI)M" /T`, pelo caminho inteiro da pasta do sistema.
+    Nunca tira herança, nunca troca dono, nunca apaga nem nega linha (o porteiro barra `/inheritance`, `/setowner`,
+    `/remove`, `/deny` até aqui dentro).
 
     O que a ferramenta faz (Microsoft Learn, icacls): "/grant[:r] <sid>:<perm>" acrescenta (sem o ":r", "permissions
     are added to any previously granted explicit permissions"); "(OI)" passa para os arquivos, "(CI)" para as pastas;
     "M" é Modificar; "/t" faz o mesmo em todos os arquivos e pastas de dentro; sem "/c" para no primeiro erro (o código
-    de saída diz). O código de saída não decide: decide a leitura de volta (a raiz, pela regra
-    `problemas_da_licenca_dos_usuarios`, e o manifesto de `current`, que tem de deixar Usuários modificar), e quem pediu
-    ainda testa de verdade se a pasta aceita gravação (`atualizacao.pasta_aceita_gravacao`). Se a leitura não confere,
-    FALHOU, e o que já foi acrescentado fica (tirar licença aqui é proibido); a pergunta volta na próxima abertura."""
-    raiz = Path(raiz)
-    if not raiz.is_dir() or e_atalho(raiz):
-        return _falhou("a pasta do programa não existe ou é um atalho", str(raiz))
+    de saída diz). O código de saída não decide: decide a leitura de volta (a pasta, pela regra
+    `problemas_da_licenca_dos_usuarios`, e `conferir_dentro`, um arquivo de dentro que tem de deixar Usuários
+    modificar), e quem pediu ainda testa de verdade se a pasta aceita gravação (`atualizacao.pasta_aceita_gravacao`).
+    ANTES, recusa a pasta que é um atalho ou que tem dentro um atalho ou um arquivo ligado a outro (`ligacoes_dentro`).
+    Se a leitura não confere, FALHOU, e o que já foi acrescentado fica (tirar licença aqui é proibido)."""
+    pasta = Path(pasta)
+    if not pasta.is_dir() or e_atalho(pasta):
+        return _falhou("a pasta não existe ou é um atalho", str(pasta))
+    ligacoes = ligacoes_dentro(pasta)
+    if ligacoes:
+        return _falhou("a pasta tem dentro um atalho ou um arquivo ligado a outro lugar: a licença não foi dada",
+                       "; ".join(ligacoes[:20]))
     try:
-        antes = ler_licencas(raiz)
+        antes = ler_licencas(pasta)
     except OSError as erro:
-        return _falhou("não deu para ler a licença da pasta do programa", repr(erro))
+        return _falhou("não deu para ler a licença da pasta", repr(erro))
     try:
         ferramenta = pasta_do_sistema() / "icacls.exe"
     except OSError as erro:
         return _falhou("não deu para achar a ferramenta do Windows", repr(erro))
-    feito = _rodar([ferramenta, raiz, "/grant", f"*{SID_USUARIOS}:(OI)(CI)M", "/T"], LIMITE_DA_LICENCA_DA_PASTA_S)
+    feito = _rodar([ferramenta, pasta, "/grant", f"*{SID_USUARIOS}:(OI)(CI)M", "/T"], LIMITE_DA_LICENCA_DA_PASTA_S)
     try:
-        depois = ler_licencas(raiz)
+        depois = ler_licencas(pasta)
     except OSError as erro:
-        return _falhou("não deu para ler a licença da pasta do programa depois de mudar", repr(erro))
+        return _falhou("não deu para ler a licença da pasta depois de mudar", repr(erro))
     problemas = problemas_da_licenca_dos_usuarios(antes, depois)
-    manifesto = raiz / NOME_DA_PASTA_TROCADA / NOME_DO_MANIFESTO
-    if manifesto.is_file():
+    if conferir_dentro is not None and Path(conferir_dentro).is_file():
         try:
-            if not usuarios_modificam(ler_licencas(manifesto)):
-                problemas.append(f"o arquivo {manifesto.name} de dentro não ficou com a licença")
+            if not usuarios_modificam(ler_licencas(conferir_dentro)):
+                problemas.append(f"o arquivo {Path(conferir_dentro).name} de dentro não ficou com a licença")
         except OSError as erro:
-            problemas.append(f"não deu para ler a licença de {manifesto.name} ({erro})")
+            problemas.append(f"não deu para ler a licença de {Path(conferir_dentro).name} ({erro})")
     if problemas:
-        return _falhou("a licença da pasta do programa não ficou como pedido: " + "; ".join(problemas),
+        return _falhou(f"a licença de {pasta} não ficou como pedido: " + "; ".join(problemas),
                        f"{feito.desfecho}: {feito.detalhe} {feito.dados.get('saida', '')}"[-4000:])
-    return _certo("as contas do computador podem atualizar a pasta do programa", saida=feito.dados.get("saida", ""))
+    return _certo(f"as contas do computador podem gravar em {pasta}", saida=feito.dados.get("saida", ""))
+
+
+_PASTA_DE_DADOS_COMUM = "62ab5d82-fdc1-4dc3-a9dd-070d1d495d97"   # FOLDERID_ProgramData
+NOMES_DA_PASTA_DA_ATUALIZACAO = ("EditorImpressao", "atualizacao")   # os mesmos de atualizacao.pasta_do_estado
+
+
+def pasta_de_dados_comum() -> Path:
+    """O %ProgramData% (C:\\ProgramData), perguntado ao Windows (não às variáveis de ambiente, que a conta pode mudar:
+    o lado com licença nunca usa um caminho que venha da conta que pediu)."""
+    w = _win()
+    guid = _GUID.from_buffer_copy(uuid.UUID(_PASTA_DE_DADOS_COMUM).bytes_le)
+    saida = wintypes.LPWSTR()
+    resultado = w.shell32.SHGetKnownFolderPath(ctypes.byref(guid), 0, None, ctypes.byref(saida))
+    try:
+        if resultado != 0 or not saida.value:
+            raise OSError(f"o Windows não disse onde fica o ProgramData (0x{resultado & 0xFFFFFFFF:08X})")
+        return Path(saida.value)
+    finally:
+        w.ole32.CoTaskMemFree(ctypes.cast(saida, ctypes.c_void_p))
+
+
+def pasta_da_atualizacao_no_programdata(base: Path | None = None) -> Path:
+    """`<ProgramData>\\EditorImpressao\\atualizacao`, criada se faltar, conferida: nem ela nem a de cima são atalho.
+    Levanta OSError. `base` só muda nos testes (o padrão é o que o Windows diz)."""
+    base = Path(base) if base is not None else pasta_de_dados_comum()
+    mae = base / NOMES_DA_PASTA_DA_ATUALIZACAO[0]
+    pasta = mae / NOMES_DA_PASTA_DA_ATUALIZACAO[1]
+    if e_atalho(mae) or e_atalho(pasta):
+        raise OSError(f"a pasta do registro da atualização é um atalho para outro lugar ({pasta})")
+    pasta.mkdir(parents=True, exist_ok=True)
+    if e_atalho(mae) or e_atalho(pasta):
+        raise OSError(f"a pasta do registro da atualização é um atalho para outro lugar ({pasta})")
+    return pasta
 
 
 # ---------------------------------------------------------------------------------------------------------------------

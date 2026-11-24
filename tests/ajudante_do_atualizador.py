@@ -64,10 +64,15 @@ class WindowsFalso:
         self.pedidos: list[list[str]] = []
         self.perguntas_de_processos: list = []
         self.reaberturas: list[list[str]] = []
+        self.perguntas_do_atualizador: list[Path] = []
+        self.reabrir_da_certo = True
         self._pasta_de_troca = pasta_de_troca
 
     def atualizador_do_velopack_rodando(self, raiz):
+        self.perguntas_do_atualizador.append(Path(raiz))
         return self.troca_em_curso
+
+    caminho_conferido = staticmethod(windows.caminho_conferido)      # a leitura de verdade (volta 3, M7)
 
     def criar_pasta_de_troca(self):
         self._pasta_de_troca.mkdir(parents=True, exist_ok=True)
@@ -78,7 +83,7 @@ class WindowsFalso:
 
     def lancar_solto(self, comando, sinal, espera_s=30):
         self.reaberturas.append([str(c) for c in comando])
-        return windows.Resposta(windows.DEU_CERTO)
+        return windows.Resposta(windows.DEU_CERTO if self.reabrir_da_certo else windows.FALHOU, "sem sinal de vida")
 
     def comecar_pedido_de_licenca(self, passos):
         self.pedidos.append([p.tipo for p in passos])
@@ -95,10 +100,13 @@ class WindowsFalso:
 class VelopackFalso:
     """A peça do Velopack de mentira: anota cada chamada; `baixar` põe o pacote em <raiz>\\packages, como o Velopack."""
 
-    def __init__(self, raiz: Path, publicada=None, erro_ao_procurar: str = "", conteudo: dict | None = None):
+    def __init__(self, raiz: Path, publicada=None, erro_ao_procurar: str = "", conteudo: dict | None = None,
+                 pendente: str = ""):
         self.raiz, self.publicada, self.erro = raiz, publicada, erro_ao_procurar
         self.conteudo = conteudo or {}
         self.chamadas: list[tuple] = []
+        self.versao_pendente = pendente
+        self.trocar_levanta: Exception | None = None
 
     def procurar(self, endereco):
         self.chamadas.append(("procurar",))
@@ -106,10 +114,26 @@ class VelopackFalso:
             raise conversa.ErroDoVelopack(self.erro)
         return self.publicada
 
+    def pendente(self, endereco):
+        self.chamadas.append(("pendente",))
+        return self.versao_pendente
+
     def baixar(self, endereco, v):
-        self.chamadas.append(("baixar", v.versao))
+        """Como o Velopack: se o arquivo já está em `packages`, nada (manager.rs 413-416); com uma PASTA de endereço
+        (a fonte de pasta, a volta pela última boa), copia de lá e confere tamanho e soma (sources/file.rs, manager.rs
+        537-561); senão "baixa" o conteúdo publicado."""
+        self.chamadas.append(("baixar", v.versao, str(endereco)))
         destino = self.raiz / "packages" / v.arquivo
         destino.parent.mkdir(parents=True, exist_ok=True)
+        if destino.exists():
+            return
+        local = Path(str(endereco)) / v.arquivo
+        if local.is_file():
+            dados = local.read_bytes()
+            if len(dados) != v.tamanho or hashlib.sha256(dados).hexdigest() != v.sha256.lower():
+                raise conversa.ErroDoVelopack("o pacote da pasta não confere (tamanho ou soma)")
+            destino.write_bytes(dados)
+            return
         destino.write_bytes(self.conteudo[v.versao])
 
     def pacote_da_versao(self, pacote, v, arquivo, sha256, sha1, tamanho):
@@ -118,6 +142,8 @@ class VelopackFalso:
 
     def trocar(self, endereco, v, reabrir, argumentos):
         self.chamadas.append(("trocar", v.versao, reabrir, tuple(argumentos)))
+        if self.trocar_levanta is not None:
+            raise self.trocar_levanta
 
     def nomes(self):
         return [c[0] for c in self.chamadas]
@@ -163,10 +189,11 @@ class Prova:
     def __init__(self, tmp: Path, *, grava: bool = True, licenca: str = "disse_nao", motor: bool = True,
                  teste=(True, ""), outras=None, chave_da_nova: bytes = CHAVE, publicar_nova: bool = True,
                  erro_ao_procurar: str = "", motores: dict | None = None, motores_no_lugar: set | None = None,
-                 troca_em_curso=False, estado_grava=None):
+                 troca_em_curso=False, ultima_boa: str | None = None, pendente: str = ""):
         """`motores`: o motor que cada versão pede (padrão: 1 nas duas). `motores_no_lugar`: os motores que estão no
         lugar (padrão: todos, ou nenhum com `motor=False`). `troca_em_curso`: o que a peça responde sobre o
-        atualizador do Velopack. `estado_grava`: o teste de gravar o estado (padrão: o de verdade)."""
+        atualizador do Velopack. `ultima_boa` (volta 3): a versão (ANTERIOR ou a ATUAL) cujo pacote e assinatura já
+        estão guardados em `<raiz>\ultima-boa` (None = nenhuma). `pendente`: o que o Velopack diz que está esperando."""
         self.raiz, self.fonte_pasta = tmp / "raiz", tmp / "fonte"
         (self.raiz / "current").mkdir(parents=True)
         self.grava = {"agora": grava}
@@ -179,14 +206,40 @@ class Prova:
         _publicar(self.fonte_pasta, ANTERIOR, conteudos[ANTERIOR])
         self.win = WindowsFalso(licenca, depois_do_sim=lambda: self.grava.update(agora=True), outras=outras,
                                 troca_em_curso=troca_em_curso, pasta_de_troca=tmp / "troca")
-        self.vp = VelopackFalso(self.raiz, nova, erro_ao_procurar, conteudos)
+        self.vp = VelopackFalso(self.raiz, nova, erro_ao_procurar, conteudos, pendente)
+        self.conteudos = conteudos
+        if ultima_boa is not None:
+            self.guardar(ultima_boa)
         self.tela: list = []
         self.atual = atualizacao.Atualizacao(
             windows=self.win, velopack=self.vp, raiz=self.raiz, fonte=atualizacao.Fonte(str(self.fonte_pasta)),
             por_tras=lambda trabalho: trabalho(), pasta_grava=lambda raiz: self.grava["agora"],
             garantir_motor=lambda: self.motor["no_lugar"], motor_no_lugar=self._motor_no_lugar,
-            teste=lambda: teste, chave_publica=PUBLICA,
-            **({} if estado_grava is None else {"estado_grava": estado_grava}))
+            teste=lambda: teste, chave_publica=PUBLICA)
+
+    def conteudo_de(self, v: str) -> bytes:
+        """O pacote de prova de uma versão (a ATUAL ganha um, se ainda não tem)."""
+        if v not in self.conteudos:
+            self.conteudos[v] = pacote_de_prova(f"pacote da versao {v}")
+            _publicar(self.fonte_pasta, v, self.conteudos[v])
+        return self.conteudos[v]
+
+    def guardar(self, v: str) -> Path:
+        """Põe em `<raiz>\ultima-boa` o pacote e a assinatura da versão `v`, como `guardar_ultima_boa` deixa."""
+        pasta = atualizacao.pasta_da_ultima_boa(self.raiz)
+        pasta.mkdir(parents=True, exist_ok=True)
+        conteudo = self.conteudo_de(v)
+        (pasta / atualizacao.nome_do_pacote(v)).write_bytes(conteudo)
+        nome = assinatura.nome_do_arquivo_da_assinatura(PACOTE, v)
+        (pasta / nome).write_bytes((self.fonte_pasta / nome).read_bytes())
+        return pasta
+
+    def pacote_em_packages(self, v: str) -> Path:
+        """Põe o pacote da versão `v` em `<raiz>\packages`, como o Velopack deixa o da versão que roda."""
+        destino = self.raiz / "packages" / atualizacao.nome_do_pacote(v)
+        destino.parent.mkdir(parents=True, exist_ok=True)
+        destino.write_bytes(self.conteudo_de(v))
+        return destino
 
     def _motor_no_lugar(self, versao_do_motor=None):
         if self.motores_no_lugar is not None:

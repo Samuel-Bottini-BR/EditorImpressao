@@ -19,9 +19,15 @@ repositório do Velopack; a seção "Leitura das peças de fora" do ONDE-PAREI t
   (`verify_package_checksum`, `manager.rs` 537-561), dá o nome final, tira o `Update.exe` novo de dentro do pacote e
   apaga os pacotes velhos de `packages\\`. ATENÇÃO: se o arquivo final já existe, NÃO baixa nem confere nada
   (`manager.rs` 413-416). Por isso quem troca confere a soma assinada do arquivo antes (`atualizacao.trocar_para`).
-- `pacote_da_versao`: monta, sem rede, o pedido de uma versão escolhida por nós (a anterior, na volta):
-  `VelopackAsset` e `UpdateInfo` se montam pelo Python (`__init__.pyi`). Ao baixar, o Velopack acha o arquivo pelo
-  nome em todos os "Releases" lidos (`sources/github.rs` 129-138) ou na pasta (`sources/file.rs` 37-48).
+- `pendente`: `get_update_pending_restart` (manager.rs 272-281): o pacote completo mais novo de `packages\\` que é
+  maior que a versão que roda; só disco.
+- `pacote_da_versao`: monta, sem rede, o pedido de uma versão escolhida por nós (a última boa, na volta):
+  `VelopackAsset` e `UpdateInfo` se montam pelo Python (`__init__.pyi`). Na volta (volta 3, D-844) o endereço do
+  `baixar` é a pasta da última boa: o Velopack copia o arquivo de lá (`sources/file.rs` 37-48) e confere tamanho e
+  soma, sem internet.
+- O pacote da versão que roda fica em `packages\\`: a abertura (`VelopackApp.run`) apaga os outros e guarda o da
+  versão atual e o que está esperando (`app.rs`, `cleanup_old_packages_from_list`); o instalador põe o primeiro
+  (`bins/src/commands/install.rs`, "Copying nupkg to packages directory"). É dali que a última boa é copiada.
 - `trocar`: `wait_exit_then_apply_updates` (`manager.rs` 602-675): confere que o pacote está em `packages\\` e abre o
   atualizador do Velopack com `apply --package <arquivo> --waitPid <este processo>` (e `--norestart` se não for para
   reabrir; os `argumentos` vão depois de `--`) e VOLTA LOGO. O atualizador espera este processo sair (no máximo 60 s,
@@ -125,8 +131,24 @@ def baixar(endereco: str, versao: VersaoDoVelopack, localizador=None) -> None:
         raise ErroDoVelopack(f"baixar a {versao.versao}: {type(erro).__name__}: {erro}") from erro
 
 
+def pendente(endereco: str, localizador=None) -> str:
+    """A versão baixada que espera a troca ("" = nenhuma): `get_update_pending_restart` (manager.rs 272-281: o pacote
+    completo mais novo de `packages\\` cuja versão é maior que a que roda). Volta 3 (emenda do Fable): é uma das três
+    coisas que a abertura olha, no lugar de uma anotação nossa. Não usa a rede. Levanta `ErroDoVelopack`."""
+    try:
+        achado = _gerente(endereco, localizador=localizador).get_update_pending_restart()
+    except Exception as erro:  # noqa: BLE001
+        raise ErroDoVelopack(f"ler o pacote esperando: {type(erro).__name__}: {erro}") from erro
+    return "" if achado is None else str(achado.Version)
+
+
 def pacote_da_versao(pacote: str, versao: str, arquivo: str, sha256: str, sha1: str, tamanho: int) -> VersaoDoVelopack:
-    """O pedido de uma versão escolhida por nós (a anterior, na volta), montado sem rede. Levanta `ErroDoVelopack`."""
+    """O pedido de uma versão escolhida por nós (a última boa, na volta), montado sem rede. Levanta `ErroDoVelopack`.
+    Na volta (volta 3, D-844), `baixar` recebe como endereço a PASTA da última boa: o Velopack usa a fonte de pasta
+    (`sources/file.rs` 37-48: `download_release_entry` copia `<pasta>\\<arquivo>` para `packages\\<arquivo>.partial`),
+    confere o tamanho e a soma SHA256 deste pedido (manager.rs 537-561; com a SHA256 preenchida, a SHA1 não é olhada)
+    e dá o nome final; sem internet. Se `packages\\<arquivo>` já existe, não copia nem confere (manager.rs 413-416): a
+    conferência única da troca soma o arquivo de novo."""
     try:
         vp = _velopack()
         alvo = vp.VelopackAsset(pacote, versao, "Full", arquivo, sha1 or "", sha256, int(tamanho), "", "")

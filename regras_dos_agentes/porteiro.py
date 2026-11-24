@@ -324,7 +324,10 @@ LICENCA_QUE_SO_ACRESCENTA = (PECA_UNICA_DO_WINDOWS, "dar_licenca_aos_usuarios")
 # Volta 2 (leve 2 de quem tentou quebrar): na função da exceção, a única licença que pode ser pedida é a do experimento,
 # escrita deste jeito, numa linha só (qualquer outra conta, outro direito ou outro jeito de escrever é acusado); a
 # função só pode ser chamada pelo despachante dos passos da peça (`_fazer_passo`, com a raiz que a peça calcula).
-LINHA_DA_LICENCA_QUE_SO_ACRESCENTA = ('feito = _rodar([ferramenta, raiz, "/grant", f"*{SID_USUARIOS}:(OI)(CI)M", "/T"], '
+# Volta 3 (emenda do Fable): a mesma função serve às duas pastas do passo da pergunta única (a raiz da instalação e a
+# do registro no ProgramData), por isso a linha fala da `pasta` que ela recebe; nada mais muda (a ferramenta, a conta,
+# o direito, o "/T" e quem pode chamar continuam os mesmos).
+LINHA_DA_LICENCA_QUE_SO_ACRESCENTA = ('feito = _rodar([ferramenta, pasta, "/grant", f"*{SID_USUARIOS}:(OI)(CI)M", "/T"], '
                                       'LIMITE_DA_LICENCA_DA_PASTA_S)')
 QUEM_PODE_CHAMAR_A_LICENCA_QUE_SO_ACRESCENTA = (PECA_UNICA_DO_WINDOWS, "_fazer_passo")
 _CHAMA_A_LICENCA = re.compile(r"(?<!\w)dar_licenca_aos_usuarios\s*\(")

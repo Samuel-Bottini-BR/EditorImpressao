@@ -15,6 +15,11 @@ O que aparece (decisões do Samuel, palavras combinadas, textos em `atualizacao.
 - D-840: "Reiniciar agora" com outra janela do programa aberta: "Feche a outra janela do programa e clique de novo."
   (`atualizacao.FRASE_DA_OUTRA_JANELA`); nada fecha, e o aviso "Reiniciar agora" / "Depois" aparece de novo
   (D-841): fechada a outra janela, o clique troca; "Depois" leva à pergunta ao fechar.
+- D-845/D-846 (volta 3): qualquer outro "Reiniciar agora" que não pôde: "Não deu para atualizar agora: [motivo]. Tente
+  ao fechar o programa.", na caixa de título "Atualização"; D-843: "Esta versão precisa de um motor novo. Avise o
+  Samuel." (uma vez).
+- Volta 3, M2: depois do "Reiniciar agora", a conferência do pacote roda por trás; a janela continua respondendo e
+  fecha quando ela termina (o FecharJanela chega por esta ponte, no fio da tela).
 
 COMO LIGA. main.py chama `ligar_na_janela(janela)` uma vez, depois de abrir a janela; e o fechar da janela principal
 (`ui/janela_principal.py`, `closeEvent`) chama `ao_fechar(janela)` depois de gravar o trabalho e parar as tarefas.
@@ -79,14 +84,12 @@ class PonteDaTela(QObject):
                 self.janela.hide()        # a conferência do pacote leva uns segundos: a janela não fica parada na tela
             self.atual.evento(fases.RespondeuAoFechar(sim))
         elif isinstance(ef, fases.MostrarFalha):
+            # Todas as frases (as falhas da D-778/D-839/D-843 e a resposta ao "Reiniciar agora" que não pôde: D-840,
+            # D-845) numa caixa só, com o título "Atualização" (D-846); o texto vem da escolha única
+            # (`atualizacao.frase_da_falha`). Depois da frase da outra janela, a regra manda o aviso da versão nova de
+            # novo (D-841), pelo mesmo MostrarVersaoNova.
             self._avisar(self.janela, atualizacao.TITULO_DA_FALHA,
-                         atualizacao.FRASES_DA_FALHA.get(ef.tipo, atualizacao.FRASE_DA_FALHA),
-                         icone=QMessageBox.Information)
-        elif isinstance(ef, fases.PedirParaFecharAOutraJanela):
-            # D-840: o "Reiniciar agora" não trocou porque há outra janela do programa aberta; esta continua aberta.
-            # Logo depois a regra manda o aviso da versão nova de novo (D-841), pelo mesmo MostrarVersaoNova.
-            self._avisar(self.janela, atualizacao.TITULO_DA_VERSAO_NOVA, atualizacao.FRASE_DA_OUTRA_JANELA,
-                         icone=QMessageBox.Information)
+                         atualizacao.frase_da_falha(ef.tipo, ef.motivo_da_tela), icone=QMessageBox.Information)
 
     def ao_fechar(self) -> None:
         """O Kaique fechou o programa (o trabalho já foi gravado)."""

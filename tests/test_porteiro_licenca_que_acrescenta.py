@@ -37,10 +37,10 @@ CERTO = py('''
     """A peça."""
 
 
-    def dar_licenca_aos_usuarios(raiz):
+    def dar_licenca_aos_usuarios(pasta):
         """Acrescenta."""
         ferramenta = pasta_do_sistema() / "icacls.exe"
-        feito = _rodar([ferramenta, raiz, "/grant", f"*{SID_USUARIOS}:(OI)(CI)M", "/T"], LIMITE_DA_LICENCA_DA_PASTA_S)
+        feito = _rodar([ferramenta, pasta, "/grant", f"*{SID_USUARIOS}:(OI)(CI)M", "/T"], LIMITE_DA_LICENCA_DA_PASTA_S)
 ''')
 
 
