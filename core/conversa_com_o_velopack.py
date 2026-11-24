@@ -29,7 +29,8 @@ repositório do Velopack; a seção "Leitura das peças de fora" do ONDE-PAREI t
   versão atual e o que está esperando (`app.rs`, `cleanup_old_packages_from_list`). O `Setup.exe` põe o primeiro
   (`bins/src/commands/install.rs`, "Copying nupkg to packages directory"); o .msi, o NOSSO instalador, não põe nada em
   `packages\\` (o .msi instala a pasta portátil: `WindowsPackCommandRunner.cs` 230-243; lido nas tabelas do nosso .msi
-  da 1.1.0). É dali que a última boa é copiada; sem ele lá, o executor o baixa antes (D-851).
+  da 1.1.0). É dali que a última boa é copiada; sem ele lá, nada é baixado (D-857: a primeira versão do .msi não tem
+  volta automática).
 - `trocar`: `wait_exit_then_apply_updates` (`manager.rs` 602-675): confere que o pacote está em `packages\\` e abre o
   atualizador do Velopack com `apply --package <arquivo> --waitPid <este processo>` (e `--norestart` se não for para
   reabrir; os `argumentos` vão depois de `--`) e VOLTA LOGO. O atualizador espera este processo sair (no máximo 60 s,

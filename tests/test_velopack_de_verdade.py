@@ -8,7 +8,8 @@ conferidos pelo próprio Velopack; um pedido com a soma errada é recusado por e
 abre o atualizador do Velopack, que mexe na pasta e reabre o programa; só na prova à vista com o Samuel (D-767, D-785).
 
 O que isto prova: que a peça monta o `UpdateInfo`/`VelopackAsset` do jeito que a biblioteca aceita, e que a biblioteca
-confere o que baixa (o que a volta para a anterior usa). O que NÃO prova: o GitHub (a fonte aqui é uma pasta), a
+confere o que baixa (o que a volta para a anterior usa: desde a volta 3, a "fonte de pasta" da volta é a pasta da
+última boa, `ultima-boa\\`, sem índice nenhum: `test_atualizador_volta3_de_verdade.py`). O que NÃO prova: o GitHub (a fonte aqui é uma pasta), a
 troca, a janelinha.
 """
 

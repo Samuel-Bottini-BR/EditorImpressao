@@ -298,7 +298,9 @@ def test_d718_teste_que_falha_volta_para_a_anterior_assinada(tmp_path):
     assert saida == 0
     assert p.vp.nomes() == ["pacote_da_versao", "baixar", "trocar"]
     assert p.vp.chamadas[1] == ("baixar", ANTERIOR, str(atualizacao.pasta_da_ultima_boa(p.raiz)))
-    assert p.vp.chamadas[-1] == ("trocar", ANTERIOR, True, (atualizacao.ARG_FONTE, str(p.fonte_pasta)))
+    # volta 4 (D-855, D-836): o pedido da volta leva a marca `--voltando <de> <para>`
+    assert p.vp.chamadas[-1] == ("trocar", ANTERIOR, True, (atualizacao.ARG_VOLTANDO, ATUAL, ANTERIOR,
+                                                           atualizacao.ARG_FONTE, str(p.fonte_pasta)))
     assert _estado() == {"reprovadas": [ATUAL]}
 
 
@@ -488,13 +490,6 @@ def test_d832_a_troca_usa_a_janelinha_do_velopack(monkeypatch):
     pedidos.clear()
     conversa.atender_ganchos(print, print, print)
     assert ("set_auto_apply_on_startup", (False,)) in pedidos
-
-
-def test_o_indice_publicado_tem_o_nome_do_empacotar():
-    """O nome do índice que a volta lê é o mesmo que o publicar põe (o programa não importa o empacotar.py)."""
-    import empacotar
-
-    assert atualizacao.NOME_DO_INDICE_PUBLICADO == empacotar.NOME_DO_INDICE
 
 
 def test_o_teste_de_gravar_cria_e_apaga(tmp_path):

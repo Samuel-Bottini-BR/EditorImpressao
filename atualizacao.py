@@ -37,10 +37,14 @@ CAMINHO -> FUNÇÃO (§11.12; volta 3, emenda do Fable: a abertura deriva o esta
                                     RespondeuAoFechar -> Trocar
     a troca (qualquer caminho)      efeito Trocar e a volta -> trocar_para (a ÚNICA; confere a soma assinada do
                                     arquivo baixado, o motor e se há outra janela aberta) -> conversa_com_o_velopack.trocar
-    a versão que ainda não passou   Abriu(versão != última boa) -> RodarTesteRapido -> TesteRapido -> passou:
-                                    GuardarUltimaBoa -> guardar_ultima_boa (a ÚNICA que guarda o pacote); não passou:
-                                    Reprovar -> reprovar (a ÚNICA que põe em "não tentar") + Voltar
+    a versão que ainda não passou   Abriu(_precisa_do_teste: não é a última boa, nem aprovada, nem sem volta, nem a
+                                    primeira do .msi) -> RodarTesteRapido -> TesteRapido -> passou: MarcarAprovada ->
+                                    marcar (a ÚNICA escrita das marcas) + GuardarUltimaBoa -> guardar_ultima_boa (a
+                                    ÚNICA que guarda o pacote; o espaço por espaco_livre_basta, a mesma conta do motor);
+                                    não passou: Reprovar -> reprovar (a ÚNICA que põe em "não tentar") + Voltar, ou,
+                                    sem última boa, MarcarSemVolta + a frase (3)
     a volta para a anterior         efeito Voltar -> Atualizacao._voltar (o pacote guardado, sem internet) -> trocar_para
+                                    (com `--voltando`); reaberta a que falhou: MarcarSemVolta + a frase (3), sem teste
     uma frase na tela               efeito MostrarFalha -> ui -> frase_da_falha (a ÚNICA escolha do texto); sem janela,
                                     GuardarFrase -> guardar_frase (no bilhete, para a próxima abertura)
     o bilhete (estado.json)         mudar_o_bilhete (a ÚNICA escrita; só "reprovadas" e "frase")
@@ -79,6 +83,7 @@ REPOSITORIO = "https://github.com/Samuel-Bottini-BR/EditorImpressao"
 ARG_TESTE_RAPIDO = "--teste-rapido"            # a versão instalada abre? (num processo à parte, sem janela)
 ARG_CONFERIR_NOVA = "--conferir-a-versao-nova"  # reaberto pelo Velopack: <de> <para> vêm logo depois
 ARG_SEM_JANELA = "--sem-janela"                # a reabertura do "Sim" ao fechar: só confere, nada na tela (D-769)
+ARG_VOLTANDO = "--voltando"                    # a reabertura do pedido de VOLTA: <de> <para> vêm logo depois (D-855)
 ARG_FONTE = "--fonte"                          # só o ensaio e os testes: as versões vêm de uma pasta
 # O argumento com que o ajudante antigo (uma tarefa do Windows que rodava como o sistema, até 23/11/2026) chamava o
 # programa. Só para ser reconhecido: se uma tarefa antiga sobrar num computador, o programa novo anota e sai.
@@ -87,10 +92,6 @@ ARG_PROCURAR = "--procurar-atualizacao"
 # apaga sozinho a tarefa antiga do ajudante, se achar"), porque ele rodava como o sistema um programa da pasta que
 # passa a aceitar gravação de Usuários. O desfazer dos testes à distância (core/testes_a_distancia.py) também o apaga.
 NOME_DA_TAREFA = "EditorImpressao\\Procurar versao nova"
-
-# O índice que o publicar põe em cada versão (o mesmo de empacotar.NOME_DO_INDICE; o programa não importa o
-# empacotar.py, e um teste cobra que os dois são iguais).
-NOME_DO_INDICE_PUBLICADO = "releases.win.json"
 
 # O Visual C++ oficial que vai DENTRO do pacote (D-727), posto pelo empacotar.py em <programa>\\instalar\\.
 PASTA_DO_QUE_SE_INSTALA = "instalar"
@@ -144,7 +145,9 @@ MOTIVOS_DA_TELA = {
     fases.MOTIVO_NAO_FECHOU: "o programa não conseguiu fechar",
     fases.MOTIVO_ATUALIZADOR: "o atualizador do programa não começou",
     fases.MOTIVO_ERRO: "aconteceu um erro inesperado",
-    fases.MOTIVO_OUTRA_JANELA: "há outra janela do programa aberta",     # (usa a frase da D-840, nunca esta)
+    # D-864 (Samuel, 24/11/2026): o "Sim" ao fechar com outra janela aberta, mostrado na abertura seguinte. (No
+    # "Reiniciar agora", a outra janela tem a frase da D-840: `frase_da_falha`.)
+    fases.MOTIVO_HAVIA_OUTRA_JANELA: "havia outra janela do programa aberta",
 }
 # Qual frase para cada tipo (a regra num lugar só; a tela só chama `frase_da_falha`).
 FRASES_DA_FALHA = {fases.FALHA_TESTE: FRASE_DA_FALHA, fases.FALHA_TROCA: FRASE_DA_FALHA_SEM_TROCA,
@@ -296,9 +299,12 @@ def frase_do_bilhete(estado: dict) -> tuple[str, str, str] | None:
 # dele. A volta para a anterior usa esse pacote: segundos, sem internet (D-844). A última boa é DERIVADA desta pasta
 # (`ler_ultima_boa`): a versão mais nova que tem ali o pacote E a assinatura. Mora na raiz da instalação (a pasta que os
 # Usuários podem modificar depois do preparo; o desinstalador do Velopack apaga a raiz inteira, com ela). Quem escreve
-# nela: só `guardar_ultima_boa` (o pacote) e `conferir_assinatura_do` (a assinatura da versão que está chegando, guardada
-# ao conferir, para guardar o pacote dela depois não precisar de internet). Arriscado: dar o nome final ao pacote antes
-# de conferir a soma (uma cópia pela metade viraria a "última boa").
+# nela: `guardar_ultima_boa` (o pacote e a assinatura dele, a assinatura POR ÚLTIMO), `conferir_assinatura_do` (a
+# assinatura da versão que está chegando, com o nome `.assinatura.chegando`, para guardar o pacote dela depois não
+# precisar de internet, D-852) e `marcar` (as marcas da volta 4: `.aprovada`, D-856, e `.sem-volta`, D-863). As marcas são
+# dado no disco, como a assinatura: dizem um fato da versão; o bilhete (`estado.json`) continua só com reprovadas e
+# frase. Arriscado: dar o nome final ao pacote ou à assinatura antes de conferir a soma (uma cópia pela metade viraria a
+# "última boa").
 
 PASTA_DA_ULTIMA_BOA = "ultima-boa"
 
@@ -313,14 +319,42 @@ def pasta_da_ultima_boa(raiz: Path) -> Path:
     return Path(raiz) / PASTA_DA_ULTIMA_BOA
 
 
+# As marcas de uma versão (volta 4), no nome "<id>-<versão>.<marca>". Um lugar só.
+MARCA_APROVADA = "aprovada"      # passou no teste rápido: não é testada de novo (D-856)
+MARCA_SEM_VOLTA = "sem-volta"    # a volta dela foi tentada e não deu: não testa nem volta de novo (D-863)
+
+
+def _nome_da_marca(marca: str, versao_da_marca: str) -> str:
+    """O nome do arquivo de uma marca."""
+    return f"{versao.ID_DO_PACOTE}-{versao_da_marca}.{marca}"
+
+
+def tem_marca(raiz: Path, marca: str, versao_da_marca: str) -> bool:
+    """A versão tem a marca no disco? Nunca levanta (sem a pasta: não tem)."""
+    return (pasta_da_ultima_boa(raiz) / _nome_da_marca(marca, versao_da_marca)).is_file()
+
+
+def marcar(raiz: Path, marca: str, versao_da_marca: str) -> bool:
+    """Põe a marca no disco (a ÚNICA escrita das marcas). Devolve se ficou; se não ficou (disco cheio, sem licença),
+    registra: a abertura seguinte faz de novo o que a marca evitaria (testar), nada pior."""
+    try:
+        pasta = pasta_da_ultima_boa(raiz)
+        pasta.mkdir(parents=True, exist_ok=True)
+        _gravar_texto_inteiro(pasta / _nome_da_marca(marca, versao_da_marca), _agora())
+        return True
+    except OSError as erro:
+        registrar(f"a marca \"{marca}\" da versão {versao_da_marca} não ficou no disco: {erro}")
+        return False
+
+
 def _versao_do_nome(nome: str) -> str:
     """A versão escrita no nome de um arquivo da pasta da última boa ("<id>-<v>-full.nupkg", "<id>-<v>.assinatura",
-    com ou sem ".chegando"/".gravando"); "" se não é de lá."""
+    as marcas, com ou sem ".chegando"/".gravando"); "" se não é de lá."""
     prefixo = f"{versao.ID_DO_PACOTE}-"
     if not nome.startswith(prefixo):
         return ""
     resto = nome[len(prefixo):]
-    for fim in ("-full.nupkg", ".assinatura"):
+    for fim in ("-full.nupkg", ".assinatura", "." + MARCA_APROVADA, "." + MARCA_SEM_VOLTA):
         if fim in resto:
             v = resto.split(fim)[0]
             return v if fases._numeros(v) else ""
@@ -341,16 +375,8 @@ def ler_ultima_boa(raiz: Path) -> str:
 
 def _gravar_texto_inteiro(caminho: Path, texto: str) -> None:
     """Grava um texto pequeno de uma vez (provisório + troca), BYTE POR BYTE como veio (em UTF-8, sem trocar o fim de
-    linha: gravado como texto, o Windows troca cada "
-" por "
-
-", e uma assinatura publicada com "
-
-" virava
-    "
-
-
-" e deixava de ser lida; achado pela mutação N27 da volta 3). Levanta OSError."""
+    linha: gravado como texto, o Windows troca cada fim de linha "LF" por "CR LF", e uma assinatura publicada com "CR LF"
+    virava "CR CR LF" e deixava de ser lida; achado pela mutação N27 da volta 3). Levanta OSError."""
     provisorio = caminho.with_name(caminho.name + ".gravando")
     provisorio.write_bytes(texto.encode("utf-8"))
     provisorio.replace(caminho)
@@ -362,40 +388,61 @@ def _ler_texto(caminho: Path) -> str:
     return caminho.read_bytes().decode("utf-8", errors="replace")
 
 
-def _copiar_somando(origem: Path, destino: Path) -> str:
-    """Copia `origem` para `destino` e devolve a soma SHA256 do que foi lido (uma leitura só). Levanta OSError."""
-    import hashlib
-
-    soma = hashlib.sha256()
-    with origem.open("rb") as de, destino.open("wb") as para:
-        while True:
-            pedaco = de.read(4 * 1024 * 1024)
-            if not pedaco:
-                break
-            soma.update(pedaco)
-            para.write(pedaco)
-    return soma.hexdigest()
+def nome_da_assinatura_que_chega(versao_que_chega: str) -> str:
+    """O nome da assinatura de uma versão que está chegando (guardada ao ser conferida; volta 4, leve 1): diferente do
+    nome da assinatura da última boa, que só nasce DEPOIS de o pacote ficar conferido no lugar (`ler_ultima_boa` olha o
+    pacote e a assinatura; com a assinatura por último, a pasta nunca diz "a última boa é a nova" antes da hora)."""
+    return assinatura.nome_do_arquivo_da_assinatura(versao.ID_DO_PACOTE, versao_que_chega) + ".chegando"
 
 
-def guardar_ultima_boa(raiz: Path, versao_boa: str, fonte: "Fonte", chave_publica: str | None = None) -> str | None:
-    """Guarda o pacote da versão que passou no teste rápido como a última boa (D-844). None = guardado e conferido;
-    senão, o motivo. Nunca levanta.
+def assinatura_guardada(raiz: Path, versao_da_assinatura: str) -> str | None:
+    """O texto da assinatura de uma versão guardado na pasta da última boa (a da última boa, ou a da versão que está
+    chegando), ou None. A ÚNICA leitura dela."""
+    pasta = pasta_da_ultima_boa(raiz)
+    for nome in (assinatura.nome_do_arquivo_da_assinatura(versao.ID_DO_PACOTE, versao_da_assinatura),
+                 nome_da_assinatura_que_chega(versao_da_assinatura)):
+        try:
+            return _ler_texto(pasta / nome)
+        except OSError:
+            continue
+    return None
+
+
+def espaco_livre_basta(pasta: Path, precisa: int, livre: Callable[[Path], int] | None = None) -> tuple[bool, int]:
+    """O disco de `pasta` tem `precisa` bytes livres? (cabe, quantos tem). A ÚNICA conta de espaço do programa
+    instalado: o motor do Kraken (`garantir_o_motor`) e a última boa (`guardar_ultima_boa`, D-856) a usam; quem chama
+    soma a folga (`FOLGA_DO_MOTOR_BYTES`). `livre` (os bytes livres de um caminho) só muda nos testes. Levanta OSError
+    se o Windows não disser."""
+    import shutil
+
+    tem = (livre or (lambda caminho: shutil.disk_usage(caminho).free))(pasta)
+    return tem >= precisa, tem
+
+
+def guardar_ultima_boa(raiz: Path, versao_boa: str, fonte: "Fonte", chave_publica: str | None = None,
+                       livre: Callable[[Path], int] | None = None) -> str | None:
+    """Guarda o pacote da versão que passou no teste rápido como a última boa (D-844, D-851 mudada pela D-857). None =
+    guardado e conferido; senão, o motivo (a última boa de antes continua valendo). Nunca levanta.
     1. O pacote vem de `<raiz>\\packages\\` (o Velopack baixa a versão nova para lá, manager.rs 405-481, a troca não o
-       apaga, e a abertura guarda o da versão atual: app.rs, `cleanup_old_packages_from_list`). O .msi NÃO o põe lá
-       (conferido nas tabelas do nosso .msi): nesse caso quem chama baixa antes (`Atualizacao._baixar_a_que_roda`).
-    2. A assinatura: a guardada ao conferir (em `ultima-boa\\`) ou, sem ela, a publicada (a fonte). Tem de ser do
+       apaga, e a abertura guarda o da versão atual: app.rs, `cleanup_old_packages_from_list`). Sem ele lá, NÃO baixa
+       (D-857: "sem baixar 460 MB"; a primeira versão do .msi nem chega aqui, porque não é testada).
+    2. A assinatura: a guardada ao conferir (`assinatura_guardada`) ou, sem ela, a publicada (a fonte). Tem de ser do
        Samuel e afirmar este pacote.
-    3. Copia para `<nome>.chegando` somando; só com a soma assinada dá o nome final (uma troca de nome no mesmo disco).
-    4. Só então apaga os arquivos das outras versões (menos a assinatura de uma mais nova, que está chegando)."""
+    3. O espaço: o tamanho do pacote mais a folga, pela conta única (`espaco_livre_basta`, D-856). Sem espaço, não
+       copia nada.
+    4. Tira do caminho o pacote que estiver no nome final (leve 1); se não der, para sem mexer em nada.
+    5. Copia para `<nome>.chegando` somando (`assinatura.soma_sha256`, a conta única da soma, leve 5); só com a soma
+       assinada dá o nome final; e só então grava a assinatura da última boa (POR ÚLTIMO: sem ela, a pasta não diz que
+       esta é a última boa).
+    6. Por fim apaga os arquivos das versões MAIS VELHAS (os desta e das mais novas, que estão chegando, ficam)."""
     pasta = pasta_da_ultima_boa(raiz)
     nome = nome_do_pacote(versao_boa)
     nome_da_assinatura = assinatura.nome_do_arquivo_da_assinatura(versao.ID_DO_PACOTE, versao_boa)
     origem = Path(raiz) / "packages" / nome
     if not origem.is_file():
-        return f"o pacote da {versao_boa} não está em {origem.parent}"
-    try:
-        texto = _ler_texto(pasta / nome_da_assinatura)
-    except OSError:
+        return f"o pacote da {versao_boa} não está em {origem.parent}: a última boa de antes continua"
+    texto = assinatura_guardada(raiz, versao_boa)
+    if texto is None:
         try:
             texto = fonte.ler(versao_boa, nome_da_assinatura).decode("utf-8", errors="replace")
         except OSError as erro:
@@ -411,11 +458,17 @@ def guardar_ultima_boa(raiz: Path, versao_boa: str, fonte: "Fonte", chave_public
     chegando = pasta / (nome + ".chegando")
     try:
         pasta.mkdir(parents=True, exist_ok=True)
-        _gravar_texto_inteiro(pasta / nome_da_assinatura, texto)
-        if _copiar_somando(origem, chegando) != soma_assinada:
+        precisa = origem.stat().st_size + FOLGA_DO_MOTOR_BYTES
+        cabe, tem = espaco_livre_basta(pasta, precisa, livre)
+        if not cabe:
+            return (f"falta espaço para guardar a {versao_boa} (precisa de {precisa // 2**20} MB, tem {tem // 2**20} "
+                    "MB): a última boa de antes continua")
+        (pasta / nome).unlink(missing_ok=True)
+        if assinatura.soma_sha256(origem, copiar_para=chegando) != soma_assinada:
             chegando.unlink(missing_ok=True)
             return "a cópia do pacote não tem a soma assinada pelo Samuel"
         os.replace(chegando, pasta / nome)
+        _gravar_texto_inteiro(pasta / nome_da_assinatura, texto)
     except OSError as erro:
         try:
             chegando.unlink(missing_ok=True)
@@ -423,14 +476,17 @@ def guardar_ultima_boa(raiz: Path, versao_boa: str, fonte: "Fonte", chave_public
             pass
         return f"não consegui guardar o pacote ({erro})"
     for outro in list(pasta.iterdir()):
-        if outro.name in (nome, nome_da_assinatura):
-            continue
-        if outro.name.endswith(".assinatura") and fases._mais_nova(_versao_do_nome(outro.name), versao_boa):
-            continue                                   # a assinatura de uma versão mais nova, que está chegando
+        v = _versao_do_nome(outro.name)
+        if v and (v == versao_boa or fases._mais_nova(v, versao_boa)):
+            continue                     # desta versão (o pacote, a assinatura, as marcas) e das que estão chegando
         try:
             outro.unlink()
         except OSError:
             pass
+    try:
+        (pasta / nome_da_assinatura_que_chega(versao_boa)).unlink(missing_ok=True)
+    except OSError:
+        pass
     return None
 
 
@@ -461,14 +517,25 @@ class Fonte:
         return str(Path(self.endereco) / nome)
 
     def ler(self, versao_do_arquivo: str, nome: str, limite: int = 1_000_000) -> bytes:
-        """Lê um arquivo pequeno publicado (a assinatura, o índice). Levanta OSError se não achar."""
+        """Lê um arquivo pequeno publicado (a assinatura). Levanta `FileNotFoundError` se o arquivo NÃO EXISTE na
+        versão publicada (o GitHub respondeu 404; na pasta, a pasta existe e o arquivo não), e outro `OSError` se não
+        deu para perguntar (sem internet, o GitHub fora do ar; a pasta da fonte que nem existe). Volta 4: só o
+        primeiro é "a versão não tem a assinatura" (a frase 2)."""
         endereco = self.endereco_do_arquivo(versao_do_arquivo, nome)
         if not self.e_github:
+            if not Path(self.endereco).is_dir():
+                raise ConnectionError(f"a fonte {self.endereco} não está acessível")
             return Path(endereco).read_bytes()[:limite]
+        import urllib.error
         import urllib.request
 
-        with urllib.request.urlopen(endereco, timeout=60) as resposta:
-            return resposta.read(limite)
+        try:
+            with urllib.request.urlopen(endereco, timeout=60) as resposta:
+                return resposta.read(limite)
+        except urllib.error.HTTPError as erro:
+            if erro.code == 404:
+                raise FileNotFoundError(f"{nome} não está publicado na versão {versao_do_arquivo}") from erro
+            raise
 
 
 def fonte_da_linha(argumentos: list[str], de_teste: Callable[[], "Fonte | None"] | None = None) -> Fonte:
@@ -779,8 +846,8 @@ def garantir_o_motor(raiz: Path | None = None, pacote: Path | None = None,
         with zipfile.ZipFile(arquivo) as z:
             precisa = sum(i.file_size for i in z.infolist()) + FOLGA_DO_MOTOR_BYTES
             destino.parent.mkdir(parents=True, exist_ok=True)
-            tem = (livre or (lambda p: shutil.disk_usage(p).free))(destino.parent)
-            if tem < precisa:
+            cabe, tem = espaco_livre_basta(destino.parent, precisa, livre)
+            if not cabe:
                 registrar(f"motor do Kraken: falta espaço em {destino.parent} (precisa de {precisa // 2**20} MB, "
                           f"tem {tem // 2**20} MB); tento de novo depois")
                 return False
@@ -811,8 +878,11 @@ def conferir_assinatura_do(fonte: Fonte, alvo, chave_publica: str | None = None,
                            guardar_em: Path | None = None) -> str | None:
     """None se a versão `alvo` tem a assinatura certa do Samuel; senão, o motivo (D-724). `alvo`: o que o Velopack vai
     baixar (`conversa_com_o_velopack.VersaoDoVelopack`, ou um objeto com PackageId/Version/FileName/SHA256).
-    `guardar_em` (volta 3): a pasta da última boa; com a assinatura certa, ela é guardada ali, para a versão nova virar a
-    última boa depois do teste sem precisar de internet (`guardar_ultima_boa`). Não guardar não muda a resposta."""
+    `guardar_em` (volta 3): a pasta da última boa; com a assinatura certa, ela é guardada ali (como "a que chega",
+    `nome_da_assinatura_que_chega`), para a versão nova virar a última boa depois do teste sem precisar de internet
+    (`guardar_ultima_boa`). Não guardar não muda a resposta. Levanta OSError quando não deu para ler a assinatura por
+    falta de resposta (sem internet: volta 4, não é "recusada"); a assinatura que não existe na versão publicada é
+    "recusada" (devolve o motivo)."""
     pacote = getattr(alvo, "pacote", None) or alvo.PackageId
     v = getattr(alvo, "versao", None) or alvo.Version
     arquivo = getattr(alvo, "arquivo", None) or alvo.FileName
@@ -820,13 +890,13 @@ def conferir_assinatura_do(fonte: Fonte, alvo, chave_publica: str | None = None,
     nome = assinatura.nome_do_arquivo_da_assinatura(pacote, v)
     try:
         texto = fonte.ler(v, nome).decode("utf-8", errors="replace")
-    except OSError as erro:
+    except FileNotFoundError as erro:
         return f"não achei a assinatura da versão {v} ({erro})"
     motivo = assinatura.conferir_versao(texto, assinatura.VersaoAssinada(pacote, v, arquivo, sha), chave_publica)
     if motivo is None and guardar_em is not None:
         try:
             Path(guardar_em).mkdir(parents=True, exist_ok=True)
-            _gravar_texto_inteiro(Path(guardar_em) / nome, texto)
+            _gravar_texto_inteiro(Path(guardar_em) / (nome + ".chegando"), texto)
         except OSError as erro:
             registrar(f"a assinatura da {v} não ficou guardada (guardar a versão depois vai precisar de internet): "
                       f"{erro}")
@@ -955,13 +1025,17 @@ class Atualizacao:
         elif isinstance(ef, fases.Procurar):
             self._procurar()
         elif isinstance(ef, fases.ConferirAssinatura):
-            self._conferir_assinatura()
+            self._conferir_assinatura_guardada(ef.versao) if ef.guardada else self._conferir_assinatura()
         elif isinstance(ef, fases.Baixar):
             self._baixar()
         elif isinstance(ef, fases.Trocar):
             self._trocar(ef)
         elif isinstance(ef, fases.RodarTesteRapido):
-            self._na_linha_ou_por_tras(ef.antes_da_janela, self._testar)
+            self._testar()                       # sempre nesta linha, antes da janela (volta 4)
+        elif isinstance(ef, fases.MarcarAprovada):
+            marcar(self.raiz, MARCA_APROVADA, ef.versao)
+        elif isinstance(ef, fases.MarcarSemVolta):
+            marcar(self.raiz, MARCA_SEM_VOLTA, ef.versao)
         elif isinstance(ef, fases.GuardarUltimaBoa):
             self._na_linha_ou_por_tras(not ef.por_tras, lambda: self._guardar(ef.versao))
         elif isinstance(ef, fases.Reprovar):
@@ -1055,10 +1129,40 @@ class Atualizacao:
         """A assinatura do Samuel na versão achada, ANTES de baixar (D-724). A soma assinada fica guardada para a
         conferência de antes da troca (`trocar_para`), e a assinatura, na pasta da última boa (volta 3: para guardar
         esta versão depois do teste, sem internet)."""
-        motivo = conferir_assinatura_do(self.fonte, self._achada, self._chave, guardar_em=pasta_da_ultima_boa(self.raiz))
+        try:
+            motivo = conferir_assinatura_do(self.fonte, self._achada, self._chave,
+                                            guardar_em=pasta_da_ultima_boa(self.raiz))
+        except OSError as erro:
+            self.evento(fases.Assinatura(False, str(erro) or type(erro).__name__, sem_rede=True))
+            return
         if motivo is None:
             self._somas_assinadas[self._achada.versao] = self._achada.sha256
         self.evento(fases.Assinatura(motivo is None, motivo or ""))
+
+    def _conferir_assinatura_guardada(self, v: str) -> None:
+        """D-859: o pacote que já chegou e espera a troca (sem internet), pela assinatura guardada quando ele foi
+        conferido: a assinatura tem de ser do Samuel e afirmar o pacote de `packages\\`; o pedido ao Velopack é
+        montado a partir dele (o `baixar` seguinte não baixa nada: o arquivo já está lá, manager.rs 413-416)."""
+        nome = nome_do_pacote(v)
+        texto = assinatura_guardada(self.raiz, v)
+        lido = assinatura.ler_assinatura(texto) if texto else None
+        if lido is None:
+            self.evento(fases.Assinatura(False, f"sem a assinatura guardada da {v}", sem_rede=True))
+            return
+        sha256 = lido[0].sha256.lower()
+        motivo = assinatura.conferir_versao(texto, assinatura.VersaoAssinada(versao.ID_DO_PACOTE, v, nome, sha256),
+                                            self._chave)
+        if motivo is not None:
+            self.evento(fases.Assinatura(False, motivo))
+            return
+        try:
+            tamanho = (self.raiz / "packages" / nome).stat().st_size
+            self._achada = self.velopack.pacote_da_versao(versao.ID_DO_PACOTE, v, nome, sha256, "", tamanho)
+        except Exception as erro:  # noqa: BLE001
+            self.evento(fases.Assinatura(False, f"o pacote esperando da {v} não deu para ler: {erro}", sem_rede=True))
+            return
+        self._somas_assinadas[v] = sha256
+        self.evento(fases.Assinatura(True))
 
     def _baixar(self) -> None:
         """Baixa a versão achada (o Velopack confere tamanho e soma) e diz se o motor que ela pede está no lugar
@@ -1077,50 +1181,11 @@ class Atualizacao:
         self.evento(fases.TesteRapido(passou, detalhe))
 
     def _guardar(self, versao_boa: str) -> None:
-        """Guarda o pacote da versão que passou no teste como a última boa (D-844), e o resultado como evento.
-
-        D-851 (Samuel, 24/11/2026): "a última versão boa deve ser guardada copiando o pacote que já está na pasta
-        packages\\ do programa [...] sem internet; baixar só se o arquivo não estiver lá." Conferido (volta 3, segunda
-        parte; `volta3-provas/prova_packages-resultado.txt`): depois de cada troca o pacote da versão que roda está em
-        `packages\\` (o Velopack o baixa para lá e a troca não o apaga); depois do .msi, NÃO está (o .msi não tem
-        arquivo nenhum em `packages\\`: lido nas tabelas do nosso .msi da 1.1.0). Então: se está lá, só a cópia
-        conferida (`guardar_ultima_boa`, sem internet); se não está, baixa pelo Velopack (`_baixar_a_que_roda`) e
-        então a mesma cópia conferida."""
-        motivo = None
-        if not (self.raiz / "packages" / nome_do_pacote(versao_boa)).is_file():
-            motivo = self._baixar_a_que_roda(versao_boa)
-        if motivo is None:
-            motivo = guardar_ultima_boa(self.raiz, versao_boa, self.fonte, self._chave)
+        """Guarda o pacote da versão que passou no teste como a última boa (D-844, D-857), e o resultado como evento.
+        Copia de `packages\\`, sem internet e sem baixar (`guardar_ultima_boa`); a marca de aprovada já foi posta antes
+        (D-856): se não der para guardar, a última boa de antes continua e nada se repete."""
+        motivo = guardar_ultima_boa(self.raiz, versao_boa, self.fonte, self._chave)
         self.evento(fases.UltimaBoaGuardada(motivo is None, motivo or ""))
-
-    def _baixar_a_que_roda(self, v: str) -> str | None:
-        """Baixa para `packages\\` o pacote da versão que roda, quando ele não está lá (D-851; o caso do .msi). None =
-        baixado; senão, o motivo. O tamanho e a soma vêm do índice publicado da versão (`releases.win.json`, como o
-        publicar põe ao lado do pacote); a assinatura do Samuel tem de afirmar esse pacote (D-724) e fica guardada na
-        pasta da última boa; o Velopack confere o tamanho e a soma do que baixou (manager.rs 537-561). Precisa de
-        internet: sem ela, nada é guardado e a próxima abertura tenta de novo (o teste roda de novo, por trás)."""
-        nome = nome_do_pacote(v)
-        try:
-            indice = json.loads(self.fonte.ler(v, NOME_DO_INDICE_PUBLICADO).decode("utf-8-sig"))
-        except (OSError, ValueError) as erro:
-            return f"o pacote da {v} não está em packages e o índice publicado não deu para ler ({erro})"
-        itens = [a for a in (indice.get("Assets") or []) if isinstance(a, dict) and a.get("FileName") == nome]
-        if not itens:
-            return f"o pacote da {v} não está em packages e o índice publicado não tem {nome}"
-        item = itens[0]
-        try:
-            alvo = self.velopack.pacote_da_versao(versao.ID_DO_PACOTE, v, nome, str(item.get("SHA256") or ""),
-                                                  str(item.get("SHA1") or ""), int(item.get("Size") or 0))
-        except Exception as erro:  # noqa: BLE001
-            return f"não deu para montar o pedido da {v}: {erro}"
-        motivo = conferir_assinatura_do(self.fonte, alvo, self._chave, guardar_em=pasta_da_ultima_boa(self.raiz))
-        if motivo is not None:
-            return f"o pacote publicado da {v} não tem a assinatura certa: {motivo}"
-        try:
-            self.velopack.baixar(self.fonte.endereco, alvo)
-        except Exception as erro:  # noqa: BLE001
-            return f"não consegui baixar o pacote da {v}: {erro}"
-        return None
 
     def _trocar(self, ef) -> None:
         """O efeito Trocar: pela troca única (`trocar_para`). Um erro fora do previsto lá dentro vira "não pedida"
@@ -1193,12 +1258,16 @@ class Atualizacao:
         (`conversa_com_o_velopack.trocar`). Nada é anotado antes (volta 3: a abertura seguinte olha o disco; o bilhete
         não decide a troca). O programa reaberto recebe `--conferir-a-versao-nova <de> <para>` (e `--sem-janela` no
         "Sim" ao fechar): se o Velopack não trocar, ele reabre a versão de antes com esse mesmo pedido (apply.rs
-        56-60), e é assim que ela sabe que a troca não aconteceu (a frase da D-839). Na volta, nada (abre a anterior
-        como uma abertura comum)."""
+        56-60), e é assim que ela sabe que a troca não aconteceu (a frase da D-839). Na volta, `--voltando <de> <para>`
+        (D-855): reaberta a que falhou, ela sabe que a volta não aconteceu e não tenta de novo."""
         c = self.conferencia_da_troca(v)
         if not c.pode:
             return fases.TrocaPedida(False, c.motivo, c.recusada, c.outra_janela, c.motivo_da_tela)
-        argumentos = [] if volta else [ARG_CONFERIR_NOVA, de, para] + ([ARG_SEM_JANELA] if sem_janela else [])
+        # O pedido leva a marca de qual troca é (o Velopack reabre com ela, dando certo ou não: apply.rs 47-75): a
+        # troca normal (`--conferir-a-versao-nova`, D-839) ou a volta (`--voltando`, D-855: a reaberta não testa de
+        # novo; nunca há laço).
+        argumentos = ([ARG_VOLTANDO, de, para] if volta else
+                      [ARG_CONFERIR_NOVA, de, para] + ([ARG_SEM_JANELA] if sem_janela else []))
         argumentos += _argumentos_da_fonte(self.fonte)
         try:
             self.velopack.trocar(self.fonte.endereco, v, reabrir, argumentos)
@@ -1278,10 +1347,13 @@ class Atualizacao:
         código de saída quando este processo sai sem janela, ou None para o programa abrir normalmente."""
         bilhete = ler_estado()
         de = para = ""
-        if ARG_CONFERIR_NOVA in argumentos:
-            i = argumentos.index(ARG_CONFERIR_NOVA)
-            if len(argumentos) > i + 2:
-                de, para = argumentos[i + 1], argumentos[i + 2]
+        voltando = ARG_VOLTANDO in argumentos
+        for marca_da_linha in (ARG_CONFERIR_NOVA, ARG_VOLTANDO):
+            if marca_da_linha in argumentos:
+                i = argumentos.index(marca_da_linha)
+                if len(argumentos) > i + 2:
+                    de, para = argumentos[i + 1], argumentos[i + 2]
+        reaberto = ARG_CONFERIR_NOVA in argumentos or voltando
         conta_de_testes, portatil = e_a_conta_de_testes(), e_portatil(self.raiz)
         fora = conta_de_testes or portatil
         grava = False if fora else self._pasta_grava(self.raiz)
@@ -1289,13 +1361,17 @@ class Atualizacao:
         # Sem a licença na pasta nenhuma troca nossa acontece (o Velopack pediria licença): nem se pergunta.
         pendente = self._pendente() if grava else ""
         em_curso: bool | None = False
-        if not fora and ARG_CONFERIR_NOVA not in argumentos and (pendente or (ultima and versao.VERSAO != ultima)):
+        if not fora and not reaberto and (pendente or (ultima and versao.VERSAO != ultima)):
             # Volta 2, G1: o atualizador do Velopack roda do pedido da troca até reabrir; o clique no atalho nesse
             # tempo abre a versão de antes (ou a nova antes da conferência). A reabertura dele traz o pedido na linha
             # de comando e não pergunta (o atualizador que a abriu ainda pode estar saindo).
             em_curso = self.windows.atualizador_do_velopack_rodando(self.raiz)
         self.evento(fases.Abriu(instalado=True, conta_de_testes=conta_de_testes, portatil=portatil,
                                 pasta_grava=grava, versao=versao.VERSAO, ultima_boa=ultima,
+                                aprovada=tem_marca(self.raiz, MARCA_APROVADA, versao.VERSAO),
+                                sem_volta=tem_marca(self.raiz, MARCA_SEM_VOLTA, versao.VERSAO),
+                                pacote_da_versao=(self.raiz / "packages" / nome_do_pacote(versao.VERSAO)).is_file(),
+                                reaberto_voltando=voltando,
                                 nao_tentar=reprovadas_do_bilhete(bilhete), pendente=pendente,
                                 troca_em_curso=em_curso, reaberto_de=de, reaberto_para=para,
                                 sem_janela=ARG_SEM_JANELA in argumentos, frase_guardada=frase_do_bilhete(bilhete)))

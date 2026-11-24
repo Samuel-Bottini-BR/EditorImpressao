@@ -179,7 +179,7 @@ def _publicar(fonte: Path, v: str, conteudo: bytes, chave: bytes = CHAVE) -> con
     fonte.mkdir(parents=True, exist_ok=True)
     (fonte / assinatura.nome_do_arquivo_da_assinatura(PACOTE, v)).write_text(
         assinatura.escrever_assinatura(chave, assinatura.VersaoAssinada(PACOTE, v, nome, sha)), encoding="utf-8")
-    indice = fonte / atualizacao.NOME_DO_INDICE_PUBLICADO
+    indice = fonte / "releases.win.json"                  # o índice que o publicar põe (só para a fonte de prova)
     lido = json.loads(indice.read_text(encoding="utf-8")) if indice.exists() else {"Assets": []}
     lido["Assets"].append({"PackageId": PACOTE, "Version": v, "Type": "Full", "FileName": nome, "SHA1": "",
                            "SHA256": sha, "Size": len(conteudo)})

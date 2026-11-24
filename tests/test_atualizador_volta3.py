@@ -114,11 +114,15 @@ def test_g_a_guarda_interrompida_nao_vira_ultima_boa(tmp_path, monkeypatch):
     p = Prova(tmp_path, publicar_nova=False, ultima_boa=ANTERIOR)
     p.pacote_em_packages(ATUAL)
 
-    def copia_que_morre(origem, destino):
-        destino.write_bytes(origem.read_bytes()[:10])
+    def copia_que_morre(origem, copiar_para=None):
+        if copiar_para is None:
+            return original(origem)
+        Path(copiar_para).write_bytes(Path(origem).read_bytes()[:10])
         raise Morreu()
 
-    monkeypatch.setattr(atualizacao, "_copiar_somando", copia_que_morre)
+    original = assinatura.soma_sha256
+    # volta 4 (leve 5, D-836): a cópia somada é a conta única da soma (`assinatura.soma_sha256(copiar_para=...)`)
+    monkeypatch.setattr(assinatura, "soma_sha256", copia_que_morre)
     with pytest.raises(Morreu):
         atualizacao.guardar_ultima_boa(p.raiz, ATUAL, p.atual.fonte, PUBLICA)
     assert atualizacao.ler_ultima_boa(p.raiz) == ANTERIOR

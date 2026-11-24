@@ -6,7 +6,8 @@
   [...] sem internet; baixar só se o arquivo não estiver lá. O agente confere isso, não supõe."): a guarda copia de
   `packages\\` sem internet; só baixa se o pacote não estiver lá. Conferido de verdade
   (`relatorios/atualizador-novo/volta3-provas/prova_packages-resultado.txt`): depois de cada troca ele está lá; depois
-  do .msi, NÃO está (o nosso .msi não tem arquivo em `packages\\`): é o caso em que se baixa.
+  do .msi, NÃO está (o nosso .msi não tem arquivo em `packages\\`). Volta 4: a D-857 mudou a D-851 ("sem baixar 460 MB na
+  primeira abertura"); sem o pacote lá, nada é baixado (tests/test_atualizador_volta4.py).
 
 Só a borda é de mentira (`tests/ajudante_do_atualizador.py`).
 """
@@ -101,38 +102,5 @@ def test_d851_com_o_pacote_em_packages_guarda_sem_internet_e_sem_baixar(tmp_path
     assert "baixar" not in p.vp.nomes()
 
 
-def test_d851_sem_o_pacote_em_packages_baixa_e_guarda(tmp_path):
-    """D-851 ("baixar só se o arquivo não estiver lá"): a primeira abertura depois do .msi (que não põe nada em
-    `packages`): o pacote da versão que roda é baixado pelo Velopack, conferido contra a assinatura do Samuel, e
-    guardado como a última boa."""
-    p = Prova(tmp_path, publicar_nova=False)
-    p.conteudo_de(ATUAL)                                    # publicada, mas não está em packages
-    p.abrir()
-    assert [c[:2] for c in p.vp.chamadas if c[0] == "baixar"] == [("baixar", ATUAL)]
-    assert atualizacao.ler_ultima_boa(p.raiz) == ATUAL
-
-
-def test_d851_o_pacote_publicado_sem_a_assinatura_certa_nao_e_baixado_nem_guardado(tmp_path):
-    """D-851 e D-724: o pacote da versão que roda, publicado com outra assinatura, não é baixado nem guardado; o
-    registro diz por quê, e nada vira a última boa."""
-    p = Prova(tmp_path, publicar_nova=False)
-    conteudo = p.conteudo_de(ATUAL)
-    _publicar(p.fonte_pasta, ATUAL, conteudo, OUTRA_CHAVE)
-    p.abrir()
-    assert "baixar" not in p.vp.nomes() and atualizacao.ler_ultima_boa(p.raiz) == ""
-    assert "não tem a assinatura certa" in _registro()
-
-
-def test_d851_sem_o_pacote_e_sem_internet_tenta_na_proxima_abertura(tmp_path):
-    """D-851: sem o pacote em `packages` e sem internet, nada é guardado (o registro diz); a próxima abertura testa e
-    tenta guardar de novo (por trás, com a janela aberta). É o único caso em que o teste se repete."""
-    p = Prova(tmp_path, publicar_nova=False)
-    _sem_internet(p, tmp_path)
-    p.abrir()
-    assert atualizacao.ler_ultima_boa(p.raiz) == "" and "não está em packages" in _registro()
-    assert "o teste roda de novo na próxima abertura" in _registro()
-    # a abertura seguinte, sem a última boa no disco: o teste de novo, por trás (a regra; o disco é o mesmo)
-    seguinte, efeitos = fases.proxima_fase(fases.Estado(), fases.Abriu(
-        instalado=True, conta_de_testes=False, portatil=False, pasta_grava=True, versao=ATUAL,
-        ultima_boa=atualizacao.ler_ultima_boa(p.raiz)))
-    assert seguinte.fase is fases.Fase.CONFERINDO_NOVA and efeitos == [fases.RodarTesteRapido(antes_da_janela=False)]
+# Volta 4 (D-857, lista da D-836): os três testes do "baixar só se o arquivo não estiver lá" saíram junto com o
+# download (a D-851 foi mudada pela D-857: sem baixar nada); o que vale hoje está em tests/test_atualizador_volta4.py.
