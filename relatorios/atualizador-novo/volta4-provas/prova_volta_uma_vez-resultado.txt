@@ -1,0 +1,125 @@
+{
+ "vpk 1.1.0": 0,
+ "vpk 1.2.0": 0,
+ "A. a volta recusada pelo Windows (um arquivo preso), com --voltando": {
+  "codigo do Update.exe": 1,
+  "versao em current depois": "1.2.0",
+  "o Velopack abriu o programa (o registro do programa de prova, com os ganchos)": [
+   {
+    "versao": "1.2.0",
+    "args": [
+     "--veloapp-obsolete",
+     "1.2.0"
+    ]
+   },
+   {
+    "versao": "1.2.0",
+    "args": [
+     "--voltando",
+     "1.2.0",
+     "1.1.0"
+    ]
+   }
+  ],
+  "a reabertura (sem os ganchos)": {
+   "versao": "1.2.0",
+   "args": [
+    "--voltando",
+    "1.2.0",
+    "1.1.0"
+   ]
+  }
+ },
+ "B1. o executor reaberto com o que o Velopack passou": {
+  "versao que roda": "1.2.0",
+  "linha de comando": [
+   "--voltando",
+   "1.2.0",
+   "1.1.0"
+  ],
+  "saida": null,
+  "testes rapidos rodados": 0,
+  "pedidos ao Velopack": [
+   "procurar"
+  ],
+  "frases na tela": [
+   "A atualização não deu certo e o programa não conseguiu voltar sozinho. Não desinstale nada. Avise o Samuel."
+  ],
+  "marca de sem volta no disco": true
+ },
+ "B2. a abertura seguinte, pelo atalho": {
+  "versao que roda": "1.2.0",
+  "linha de comando": [],
+  "saida": null,
+  "testes rapidos rodados": 0,
+  "pedidos ao Velopack": [
+   "procurar"
+  ],
+  "frases na tela": [],
+  "marca de sem volta no disco": true
+ },
+ "B3. e a outra seguinte": {
+  "versao que roda": "1.2.0",
+  "linha de comando": [],
+  "saida": null,
+  "testes rapidos rodados": 0,
+  "pedidos ao Velopack": [
+   "procurar"
+  ],
+  "frases na tela": [],
+  "marca de sem volta no disco": true
+ },
+ "C. a mesma volta sem nada preso": {
+  "codigo do Update.exe": 0,
+  "versao em current depois": "1.1.0",
+  "o Velopack abriu o programa (o registro do programa de prova, com os ganchos)": [
+   {
+    "versao": "1.2.0",
+    "args": [
+     "--veloapp-obsolete",
+     "1.2.0"
+    ]
+   },
+   {
+    "versao": "1.1.0",
+    "args": [
+     "--veloapp-updated",
+     "1.1.0"
+    ]
+   },
+   {
+    "versao": "1.1.0",
+    "args": [
+     "--voltando",
+     "1.2.0",
+     "1.1.0"
+    ]
+   }
+  ],
+  "a reabertura (sem os ganchos)": {
+   "versao": "1.1.0",
+   "args": [
+    "--voltando",
+    "1.2.0",
+    "1.1.0"
+   ]
+  }
+ },
+ "C1. o executor na anterior, reaberto com o que o Velopack passou": {
+  "versao que roda": "1.1.0",
+  "linha de comando": [
+   "--voltando",
+   "1.2.0",
+   "1.1.0"
+  ],
+  "saida": null,
+  "testes rapidos rodados": 0,
+  "pedidos ao Velopack": [
+   "procurar"
+  ],
+  "frases na tela": [
+   "A atualização não deu certo. O programa voltou para a versão anterior e continua funcionando. Avise o Samuel."
+  ],
+  "marca de sem volta no disco": false
+ }
+}
