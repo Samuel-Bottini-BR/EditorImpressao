@@ -1,3 +1,34 @@
+# Emenda do Fable (volta 3): a verdade vem do disco, a volta é o pacote guardado (24/11/2026)
+
+Implementador novo (D-815). Pedido da gerente de 24/11: aplicar ao atualizador novo a emenda do desenho escrita pelo
+Fable depois do segundo "quem tenta quebrar" (`relatorios/para-o-fable-2026-11-23/resposta-do-fable.md`, seção
+"Emenda ao desenho do atualizador") e consertar os achados de `quem-tenta-quebrar-2/relatorio.md`. Ramo
+`atualizador-novo-2026-11-23`, a partir de `012c849c`. Não abri agente nem janela.
+
+**Situação: em andamento.** (Esta seção é preenchida passo a passo; se o trabalho parar no meio, o que está escrito
+aqui diz até onde foi.)
+
+## Decisões que esta tarefa precisa cumprir
+
+- D-843 (M6), à emenda: "vamos fazer b e colocamos isso no plano" — versão que pede motor do Kraken que não está no
+  lugar: mostra uma vez "Esta versão precisa de um motor novo. Avise o Samuel." e registra; não anuncia nem troca. O
+  download do motor NÃO é desta entrega.
+- D-844, chat 24/11, "ok" (1): guardar o pacote da última versão que passou no teste rápido (~460 MB); a volta usa esse
+  pacote: segundos, sem internet.
+- D-845, "ok" (2): todo "não deu" do "Reiniciar agora": "Não deu para atualizar agora: [motivo]. Tente ao fechar o
+  programa." (a frase da D-840/D-841, outra janela aberta, continua).
+- D-846, "ok" (3): o título dessa caixa: "Atualização".
+- D-842: nenhum item aberto entra na prova sem a decisão do Samuel; todo achado do relatório 2 é consertado aqui ou vai
+  a "Perguntas para o Samuel" com o porquê.
+- D-839 ("sim"): troca recusada pelo Windows → "A atualização não deu certo. O programa continua na versão de antes e
+  funcionando. Avise o Samuel.", nunca a (1). D-840/D-841 ("sim"; "1, desde que seja a volta à fase 'pronta', sem
+  espera nem peça nova"). D-718/D-719/D-778 (a volta, o aviso uma vez, as três frases). D-769 ("Se o notebook desligar
+  no meio, nada se perde e a troca tenta de novo depois"). D-732 (só ao abrir). D-733/D-741/D-749/D-806/D-834 (uma
+  pergunta do Windows, antes da janela; preparação pela metade conta como não feita). D-790/D-833 (motor tudo ou nada).
+  D-837 (a única licença: `icacls ... /grant "*S-1-5-32-545:(OI)(CI)M" /T` pela peça). D-831/D-835 (o "Depois" ao
+  fechar, os textos). D-832 (a janelinha do Velopack). D-836 (a lista dos testes que mudam). D-767, D-811 a D-813,
+  D-827 (prova de verdade; cada proteção com o teste que a acusa). §11.7, §11.8, §11.12, §11.13.
+
 # Volta 2b: as frases D-839 e D-840 (24/11/2026)
 
 Implementador. Pedido da gerente de 24/11: pôr no atualizador novo as duas frases que o Samuel decidiu (respostas às
