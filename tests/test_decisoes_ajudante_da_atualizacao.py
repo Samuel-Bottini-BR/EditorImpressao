@@ -1,5 +1,12 @@
 """Provas do ajudante da atualizacao: D-732 a D-736 e o achado B1 (17/11/2026).
 
+ATUALIZADOR NOVO (23/11/2026, D-830; D-836 para os testes): o ajudante (a tarefa que rodava como o sistema), os
+scripts do PowerShell, a marca de "computador preparado" e a janelinha nossa SAIRAM. As provas que cobravam essas peças
+saíram com elas; as que cobravam decisões que continuam passaram a chamar o caminho novo (o executor de verdade, com
+só a borda de mentira, tests/ajudante_do_atualizador.py); as das decisões que o Samuel mudou (D-769/D-794/D-831: o
+"Depois" entra ao fechar; D-832: a janelinha é a do Velopack; D-825: a senha não liga nada) cobram o que vale hoje.
+A lista teste por teste: relatorios/atualizador-novo/lista-dos-testes-d836.md. O texto abaixo é o de 17/11.
+
 Decisoes do Samuel provadas aqui (docs/plano/DECISOES.md), sem tocar o Windows:
 o schtasks, o PowerShell escondido e a pergunta do Windows sao trocados por
 pecas de mentira que so anotam o que SERIA feito.
@@ -77,263 +84,69 @@ def _proibido(*_a, **_k):
 # D-732 / D-733: o ajudante nao roda ao ligar; a conta comum manda rodar
 # ---------------------------------------------------------------------------
 
-def test_d732_o_ajudante_nao_roda_mais_ao_ligar_o_computador():
-    """D-732 (17/11/2026): "não, faz quando o programa é aberto". A tarefa nao tem hora para rodar."""
-    xml = atualizacao.xml_da_tarefa(EXE)
-    assert "<BootTrigger>" not in xml and "<Triggers>" not in xml and "LogonTrigger" not in xml
-    assert "<AllowStartOnDemand>true</AllowStartOnDemand>" in xml
-    # o resto da etapa 3 continua: como o sistema, prioridade baixa, sem janela
-    assert "<UserId>S-1-5-18</UserId>" in xml and "<Priority>7</Priority>" in xml
-    assert f"<Arguments>{atualizacao.ARG_PROCURAR}</Arguments>" in xml
+def test_b1_ao_instalar_e_ao_atualizar_nao_criam_a_tarefa(monkeypatch):
+    """B1 (16/11/2026) (adaptado pela D-836): os ganchos do .msi rodam sem administrador; nenhum deles pede nada ao
+    Windows (no desenho novo não há tarefa nenhuma a criar)."""
+    from core import windows
 
-
-def test_d733_a_conta_comum_pode_mandar_rodar_mas_nao_mudar_o_ajudante():
-    """D-733 (17/11/2026): a conta do Kaique (e a de testes) manda rodar; so administrador muda."""
-    xml = atualizacao.xml_da_tarefa(EXE)
-    sddl = re.search(r"<SecurityDescriptor>(.*?)</SecurityDescriptor>", xml).group(1)
-    regras = re.findall(r"\(A;;(\w+);;;(\w+)\)", sddl)
-    assert ("GRGX", "AU") in regras, "as contas que entraram no Windows leem e mandam rodar"
-    assert dict((quem, direito) for direito, quem in regras) == {"BA": "FA", "SY": "FA", "AU": "GRGX"}
-
-
-def test_d732_ao_abrir_o_programa_manda_o_ajudante_procurar():
-    """D-732 (17/11/2026): abrir o programa chama o ajudante (sem pergunta: schtasks /Run)."""
-    pedidos = []
-    chamou = atualizacao.procurar_ao_abrir(rodar=lambda c, tempo=120: pedidos.append(c) or (0, ""),
-                                           conta_de_testes=lambda: False, portatil=lambda: False)
-    assert chamou and pedidos == [["schtasks", "/Run", "/TN", atualizacao.NOME_DA_TAREFA]]
-    assert not any("runas" in " ".join(p).lower() for p in pedidos)
-
-
-def test_d732_a_janela_aberta_chama_o_ajudante_e_liga_o_aviso(monkeypatch):
-    """D-732 (17/11/2026): o main.py chama ligar_na_janela uma vez; ela procura e liga o vigia."""
-    pytest.importorskip("PySide6")
-    from PySide6.QtWidgets import QApplication, QWidget
-
-    from ui import aviso_de_atualizacao as aviso
-
-    QApplication.instance() or QApplication([])
-    monkeypatch.setattr(atualizacao, "marcar_programa_aberto", lambda: None)
-    procurou = []
-    janela = QWidget()
-    vigia = aviso.ligar_na_janela(janela, instalado=lambda: True, conta_de_testes=lambda: False,
-                                  procurar=lambda: procurou.append(1) or True)
-    assert procurou == [1] and vigia is not None
-    vigia.relogio.stop()
-
-
-def test_b1_ao_instalar_e_ao_atualizar_nao_criam_a_tarefa():
-    """B1 (achado de 16/11/2026; conserto de 17/11/2026, D-733): os ganchos do .msi
-    rodam SEM administrador, e criar a tarefa ali sempre falharia. Teste de
-    reversao: no codigo antigo ao_instalar chamava criar_tarefa e rodar_tarefa_agora."""
-    pedidos = []
-    original = (atualizacao.criar_tarefa, atualizacao.rodar_tarefa_agora, atualizacao._rodar)
-    try:
-        atualizacao.criar_tarefa = lambda *a, **k: pedidos.append("criar") or True
-        atualizacao.rodar_tarefa_agora = lambda *a, **k: pedidos.append("rodar") or True
-        atualizacao._rodar = lambda *a, **k: pedidos.append("comando") or (0, "")
-        atualizacao.ao_instalar("1.2.0", portatil=lambda: False)
-        atualizacao.ao_atualizar("1.2.0", portatil=lambda: False)
-    finally:
-        atualizacao.criar_tarefa, atualizacao.rodar_tarefa_agora, atualizacao._rodar = original
-    assert pedidos == [], "os ganchos do instalador não pedem nada que precise de administrador"
-
-
-def test_d733_depois_de_trocar_o_ajudante_e_refeito_como_o_sistema():
-    """D-733 / B1 (17/11/2026): refazer o ajudante saiu do gancho de atualizar e foi para
-    o --conferir-a-versao-nova (roda como SYSTEM), so se a versao nova passou."""
-    criou = []
-    fonte = atualizacao.Fonte("x")
-    assert atualizacao.conferir_e_refazer_o_ajudante(fonte, "1.2.0", conferir=lambda f, v: 0,
-                                                     criar=lambda: criou.append(1) or True,
-                                                     portatil=lambda: False) == 0
-    assert criou == [1]
-    assert atualizacao.conferir_e_refazer_o_ajudante(fonte, "1.2.0", conferir=lambda f, v: 1,
-                                                     criar=_proibido, portatil=lambda: False) == 1
-    atualizacao.conferir_e_refazer_o_ajudante(fonte, "1.2.0", conferir=lambda f, v: 0,
-                                              criar=_proibido, portatil=lambda: True)
+    for nome in ("comecar_pedido_de_licenca", "pedir_licenca", "criar_tarefa", "rodar_tarefa", "apagar_tarefa"):
+        monkeypatch.setattr(windows, nome, _proibido)
+    atualizacao.ao_instalar("1.2.0")
+    atualizacao.ao_atualizar("1.2.0")
 
 
 # ---------------------------------------------------------------------------
 # D-733 / D-735: a pergunta do Windows da primeira abertura
 # ---------------------------------------------------------------------------
 
-def _passo_de_preparo(passos):
-    return [p for p in passos if atualizacao.ARG_PREPARAR in p.comando]
+def test_d735_sem_a_senha_a_pergunta_do_windows_aparece_assim_mesmo(fake, monkeypatch, tmp_path):
+    """D-735 (adaptado pela D-836): a pergunta do Windows não depende da senha: com a pasta sem a licença ela aparece
+    na abertura, tenha a janela da senha aparecido ou não."""
+    p = _prova(tmp_path, grava=False)
+    p.abrir()
+    assert len(p.win.pedidos) == 1
+    assert fake.chamadas == []
 
 
-def test_d733_com_a_senha_preparo_e_testes_numa_pergunta_so(fake):
-    """D-733 (17/11/2026): o ajudante, o Visual C++, o Inno e a senha dos testes, numa pergunta so."""
-    resultado = atualizacao.preparar_na_primeira_abertura("segredo")
-    assert resultado.ok and len(fake.chamadas) == 1, "uma pergunta do Windows só"
-    passos, senha = fake.chamadas[0]
-    assert senha == "segredo"
-    assert len(_passo_de_preparo(passos)) == 1 and passos[0] is _passo_de_preparo(passos)[0]
-    # os passos dos testes sao EXATAMENTE os de core.testes_a_distancia (a funcao de sempre, sem mudanca)
-    assert [p.comando for p in passos[1:]] == [p.comando for p in td.plano_de_ligar()]
-    assert td.esta_pronto() and td.esta_ligado()
-    assert td.executor_atual() is fake, "a peça de sempre volta para o lugar"
-
-
-def test_d735_sem_a_senha_a_pergunta_do_windows_aparece_assim_mesmo(fake):
-    """D-735 (17/11/2026): sem a senha, so o preparo; a pergunta do Windows aparece."""
-    resultado = atualizacao.preparar_na_primeira_abertura("")
-    assert resultado.ok and len(fake.chamadas) == 1
-    passos, senha = fake.chamadas[0]
-    assert senha == "" and passos == _passo_de_preparo(passos) and len(passos) == 1
-    assert not td.esta_pronto(), "sem senha, os testes à distância não ligam (D-721)"
-
-
-def test_d735_agora_nao_na_senha_nao_pula_a_pergunta_do_windows(fake, monkeypatch):
-    """D-735 (17/11/2026): "Agora não" na janela da senha -> a pergunta do Windows aparece,
-    e o aviso "Sem a senha..." de sempre tambem. Falha no codigo de 16/11 (nada era perguntado)."""
-    pytest.importorskip("PySide6")
+def test_d735_agora_nao_na_senha_nao_pula_a_pergunta_do_windows(fake, monkeypatch, tmp_path):
+    """D-735 (adaptado pela D-836; D-834: a pergunta vem ANTES da janela, a senha depois): "Agora não" na janela da
+    senha mostra o aviso "Sem a senha..." de sempre e não toca o Windows; a pergunta do Windows é a da abertura, que já
+    aconteceu (e volta enquanto a pasta não aceitar gravação)."""
     import ui.testes_a_distancia_ui as tdui
 
     avisos = []
     monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: "")
-    monkeypatch.setattr(tdui.perguntas, "avisar", lambda pai, titulo, texto, **k: avisos.append(texto))
+    monkeypatch.setattr(tdui.perguntas, "avisar", lambda *a, **k: avisos.append(a[2]))
+    p = _prova(tmp_path, grava=False)
+    p.abrir()
     tdui.primeira_vez_se_preciso(None, instalado=lambda: True, conta_de_testes=lambda: False)
-    assert len(fake.chamadas) == 1 and _passo_de_preparo(fake.chamadas[0][0])
-    assert avisos and "Sem a senha" in avisos[0]
-    assert td.senha_ja_perguntada() and not td.esta_pronto()
-    tdui.primeira_vez_se_preciso(None, instalado=lambda: True, conta_de_testes=lambda: False)
-    assert len(fake.chamadas) == 1, "na segunda abertura não pergunta de novo"
+    assert len(p.win.pedidos) == 1 and fake.chamadas == []
+    assert avisos and "senha" in avisos[0].lower()
 
 
-def test_d735_com_a_opcao_desligada_a_pergunta_do_windows_aparece(fake, monkeypatch):
-    """D-735 (17/11/2026): "aparece sempre": opcao dos testes desligada -> sem janela da senha,
-    mas com a pergunta do Windows (o ajudante da atualizacao nasce)."""
-    pytest.importorskip("PySide6")
+def test_d735_com_a_opcao_desligada_a_pergunta_do_windows_aparece(fake, monkeypatch, tmp_path):
+    """D-735 (adaptado pela D-836): com a opção dos testes desligada não há janela da senha, e a pergunta do Windows da
+    abertura aparece do mesmo jeito."""
     import ui.testes_a_distancia_ui as tdui
 
-    configuracoes.escrever(td.CHAVE_LIGADO, False)
-    monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: pytest.fail("pediu a senha"))
-    monkeypatch.setattr(tdui.perguntas, "avisar", lambda *a, **k: pytest.fail("avisou"))
+    monkeypatch.setattr(td, "esta_ligado", lambda: False)
+    monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: pytest.fail("a janela da senha apareceu"))
+    p = _prova(tmp_path, grava=False)
+    p.abrir()
     tdui.primeira_vez_se_preciso(None, instalado=lambda: True, conta_de_testes=lambda: False)
-    assert len(fake.chamadas) == 1 and _passo_de_preparo(fake.chamadas[0][0])
+    assert len(p.win.pedidos) == 1
 
 
-def test_d733_disse_nao_fica_anotado_e_nada_quebra(monkeypatch):
-    """D-733 (17/11/2026): "Nao" na pergunta do Windows -> anotado no registro; nada quebra."""
-    monkeypatch.setattr(td, "_executor", FakeExecutor(cancelado=True))
-    resultado = atualizacao.preparar_na_primeira_abertura("")
-    assert resultado.cancelado
-    assert "disse \"Não\"" in atualizacao.caminho_do_registro().read_text(encoding="utf-8")
-
-
-def test_d733_o_passo_de_preparar_roda_este_exe_escondido_e_nao_para_a_pergunta():
-    """D-733 (17/11/2026): o passo roda <exe> --preparar-o-computador e espera; nunca a senha."""
-    passo = atualizacao.passo_de_preparar_o_computador(EXE)
-    assert f"'{EXE}'" in passo.comando and f"'{atualizacao.ARG_PREPARAR}'" in passo.comando
-    assert "-Wait" in passo.comando and "-WindowStyle Hidden" in passo.comando
-    assert passo.comando.startswith("try {") and passo.comando.endswith("catch { }")
-    assert not passo.precisa_senha and td.VARIAVEL_DA_SENHA not in passo.comando
-
-
-def test_d733_o_modo_preparar_cria_o_ajudante_e_prepara_o_computador():
-    """D-733 (17/11/2026): dentro da pergunta: o ajudante, o Visual C++ e o Inno (a regra de sempre)."""
-
-    class Gerente:
-        def get_is_portable(self):
-            return False
-
-    feito = []
-    assert atualizacao.preparar_como_administrador(Gerente(), criar=lambda: feito.append("ajudante") or True,
-                                                   preparar=lambda g: feito.append("vc e inno")) == 0
-    assert feito == ["ajudante", "vc e inno"]
-    # no pacote portatil do ensaio, nada
-    assert atualizacao.preparar_como_administrador(Gerente(), criar=_proibido, preparar=_proibido,
-                                                   portatil=lambda g: True) == 0
-
-
-def test_d733_a_linha_de_comando_atende_o_preparar(monkeypatch):
-    """D-733 (17/11/2026): --preparar-o-computador e um modo escondido (sem janela)."""
-    monkeypatch.setattr(atualizacao, "_rodar_o_velopack", lambda: None)
-    monkeypatch.setattr(atualizacao, "preparar_como_administrador", lambda: 7)
-    assert atualizacao.atender_linha_de_comando(["EditorImpressao.exe", atualizacao.ARG_PREPARAR]) == 7
+def test_d733_disse_nao_fica_anotado_e_nada_quebra(tmp_path):
+    """D-733 (adaptado pela D-836): "Não" à pergunta do Windows → anotado no registro; a janela abre (nada quebra)."""
+    p = _prova(tmp_path, grava=False, licenca="disse_nao")
+    assert p.abrir() is None
+    assert "disse Não" in atualizacao.caminho_do_registro().read_text(encoding="utf-8")
 
 
 # ---------------------------------------------------------------------------
 # D-733 / D-734: "Reiniciar agora" e "Depois" sem pergunta do Windows
 # ---------------------------------------------------------------------------
-
-def _script(lancados):
-    assert len(lancados) == 1
-    return lancados[0]
-
-
-def test_d733_reiniciar_agora_chama_o_ajudante_e_nao_pede_licenca():
-    """D-733 (17/11/2026): nenhuma pergunta por atualizacao. O "Reiniciar agora" nao usa mais o
-    apply_updates_and_restart do Velopack (que pedia "Deseja permitir...?")."""
-    lancados = []
-    assert atualizacao.aplicar_agora_e_reabrir(
-        trocar=lambda: atualizacao.trocar_e_reabrir(lancar=lancados.append, exe=EXE, pid=4321))
-    script = _script(lancados)
-    assert "Wait-Process -Id 4321" in script, "espera a janela sair (gravou o trabalho)"
-    assert f"'{atualizacao.NOME_DA_TAREFA}'" in script and "'/Run'" in script
-    assert f"Start-Process -FilePath '{EXE}' -ArgumentList '{atualizacao.ARG_DEPOIS_DA_TROCA}'" in script
-    assert not re.search(r"runas|-Verb", script, re.I), "nada pede administrador"
-    assert script.index("Wait-Process") < script.index("schtasks") < script.index("Start-Process")
-    assert ".apply_updates_and_restart(" not in Path(atualizacao.__file__).read_text(encoding="utf-8")
-
-
-def test_d733_o_script_escondido_vai_codificado_e_solto(monkeypatch):
-    """D-733 (17/11/2026): o PowerShell vai escondido, solto (sobrevive ao programa), sem arquivo."""
-    abertos = []
-    monkeypatch.setattr(atualizacao.subprocess, "Popen", lambda comando, **k: abertos.append((comando, k)))
-    atualizacao._lancar_escondido("Start-Sleep 1")
-    comando, k = abertos[0]
-    assert comando[:1] == ["powershell.exe"] and "-WindowStyle" in comando and "Hidden" in comando
-    texto = base64.b64decode(comando[comando.index("-EncodedCommand") + 1]).decode("utf-16-le")
-    assert texto == "Start-Sleep 1"
-    assert k["creationflags"] & getattr(atualizacao.subprocess, "DETACHED_PROCESS", 0x8)
-
-
-def _pendente():
-    return {"fase": "pendente", "nova": "1.2.0", "anterior": "1.1.0"}
-
-
-def test_d734_depois_a_versao_entra_na_proxima_abertura_antes_da_janela():
-    """D-734 (17/11/2026): com "Depois", ao abrir de novo a troca comeca antes da janela."""
-    trocou = []
-    comum = dict(instalado=lambda: True, conta_de_testes=lambda: False, portatil=lambda: False,
-                 versao_atual=lambda: "1.1.0", trocar=lambda: trocou.append(1) or True)
-    assert atualizacao.trocar_antes_de_abrir([], ler=_pendente, **comum) is True and trocou == [1]
-    # reaberto pela troca: abre normalmente (nunca fica reabrindo sem fim)
-    assert atualizacao.trocar_antes_de_abrir([atualizacao.ARG_DEPOIS_DA_TROCA], ler=_pendente, **comum) is False
-    # nada esperando: abre normalmente
-    assert atualizacao.trocar_antes_de_abrir([], ler=lambda: {}, **comum) is False
-    # versao ja falhou: abre normalmente
-    assert atualizacao.trocar_antes_de_abrir(
-        [], ler=lambda: {"fase": "falhou", "id": "teste-1.2.0"}, **comum) is False
-    assert trocou == [1]
-
-
-def test_d734_a_linha_de_comando_sai_sem_janela_quando_a_troca_comecou(monkeypatch):
-    """D-734 (17/11/2026): a "espera curta antes da janela": o programa sai e volta trocado."""
-    monkeypatch.setattr(atualizacao, "instalado_pelo_velopack", lambda: True)
-    monkeypatch.setattr(atualizacao, "_rodar_o_velopack", lambda: None)
-    monkeypatch.setattr(atualizacao, "trocar_antes_de_abrir", lambda argumentos: True)
-    assert atualizacao.atender_linha_de_comando(["EditorImpressao.exe"]) == 0
-    monkeypatch.setattr(atualizacao, "trocar_antes_de_abrir", lambda argumentos: False)
-    assert atualizacao.atender_linha_de_comando(["EditorImpressao.exe"]) is None
-
-    def quebra(argumentos):
-        raise RuntimeError("Velopack fora do ar")
-
-    monkeypatch.setattr(atualizacao, "trocar_antes_de_abrir", quebra)
-    assert atualizacao.atender_linha_de_comando(["EditorImpressao.exe"]) is None, "um erro aqui nunca impede abrir"
-
-
-def test_d734_o_aviso_diz_que_entra_na_proxima_abertura_e_fechar_nao_troca():
-    """D-734 (17/11/2026): o texto do aviso fala da proxima abertura, nao do computador ligar;
-    e nada no fechar da janela chama a troca."""
-    assert "próxima vez que você abrir o programa" in atualizacao.FRASE_DA_VERSAO_NOVA
-    assert "computador ligar" not in atualizacao.FRASE_DA_VERSAO_NOVA
-    janela = (RAIZ / "ui" / "janela_principal.py").read_text(encoding="utf-8")
-    assert "atualizacao" not in janela, "o fechar da janela não troca nada"
-
 
 # ---------------------------------------------------------------------------
 # D-736: testes a distancia
@@ -348,51 +161,12 @@ def test_d736_a_conta_de_testes_e_reconhecida_pelo_nome_fixo(monkeypatch):
     assert atualizacao.e_a_conta_de_testes()
 
 
-def test_d736_aberto_por_teste_a_distancia_nao_procura_nem_troca(monkeypatch):
-    """D-736 (17/11/2026): na conta de testes nada de atualizacao roda sozinho."""
-    pytest.importorskip("PySide6")
-    from PySide6.QtWidgets import QApplication, QWidget
-
-    import ui.testes_a_distancia_ui as tdui
-    from ui import aviso_de_atualizacao as aviso
-
-    QApplication.instance() or QApplication([])
+def test_d736_aberto_por_teste_a_distancia_nao_procura_nem_troca(tmp_path, monkeypatch):
+    """D-736 (adaptado pela D-836): na conta de testes nada de atualização roda (nem a pergunta, nem a procura)."""
     monkeypatch.setenv("USERNAME", td.NOME_DA_CONTA)
-    assert atualizacao.procurar_ao_abrir(rodar=_proibido, portatil=lambda: False) is False
-    assert atualizacao.trocar_antes_de_abrir([], instalado=lambda: True, portatil=lambda: False,
-                                             ler=_pendente, versao_atual=lambda: "1.1.0",
-                                             trocar=_proibido) is False
-    marcou = []
-    monkeypatch.setattr(atualizacao, "marcar_programa_aberto", lambda: marcou.append(1))
-    assert aviso.ligar_na_janela(QWidget(), instalado=lambda: True, procurar=_proibido) is None
-    assert marcou == [1], "a marca de programa aberto fica: o ajudante não troca no meio de um teste"
-    monkeypatch.setattr(tdui, "perguntar_senha", _proibido)
-    monkeypatch.setattr(atualizacao, "preparar_na_primeira_abertura", _proibido)
-    tdui.primeira_vez_se_preciso(None, instalado=lambda: True)
-    assert not td.senha_ja_perguntada()
-
-
-def test_d736_o_samuel_manda_atualizar_de_longe_pelo_mesmo_ajudante():
-    """D-736 (17/11/2026): o comando de longe chama o MESMO ajudante (mesma assinatura e volta),
-    pela conta de testes, que a tarefa deixa mandar rodar (AU)."""
-    comando = atualizacao.comando_de_longe_para_atualizar("notebook-do-kaique")
-    assert comando == ('ssh EditorTestes@notebook-do-kaique schtasks /Run /TN '
-                       '"EditorImpressao\\Procurar versao nova"')
-    assert atualizacao.comando_de_rodar_a_tarefa()[-1] == atualizacao.NOME_DA_TAREFA
-    assert "(A;;GRGX;;;AU)" in atualizacao.xml_da_tarefa(EXE)
-    assert "atualizacao.log" in atualizacao.comando_de_longe_para_ler_o_registro("notebook-do-kaique")
-
-
-def test_regra_num_lugar_so_todos_os_caminhos_chamam_o_ajudante_pelo_mesmo_comando():
-    """CLAUDE.md §11.12 (17/11/2026): abrir, trocar, rodar agora e o comando de longe usam
-    comando_de_rodar_a_tarefa; nenhum escreve o schtasks /Run por conta propria."""
-    pedidos = []
-    rodar = lambda c, tempo=120: pedidos.append(c) or (0, "")  # noqa: E731
-    atualizacao.procurar_ao_abrir(rodar=rodar, conta_de_testes=lambda: False, portatil=lambda: False)
-    atualizacao.rodar_tarefa_agora(rodar=rodar)
-    assert pedidos == [atualizacao.comando_de_rodar_a_tarefa()] * 2
-    texto = Path(atualizacao.__file__).read_text(encoding="utf-8")
-    assert texto.count('"/Run"') == 1, "o schtasks /Run está escrito num lugar só"
+    p = _prova(tmp_path, grava=False)
+    p.abrir()
+    assert p.win.pedidos == [] and p.vp.chamadas == []
 
 
 # ---------------------------------------------------------------------------
@@ -440,127 +214,70 @@ def test_etapa5_arquivo_de_conta_comum_e_ignorado(tmp_path):
 
 
 def test_etapa5_pela_fonte_de_teste_a_assinatura_e_conferida_igual(tmp_path):
-    """17/11/2026 / D-724: a versao de mentira assinada por outra chave e recusada antes de baixar."""
-    import assinatura
+    """17/11/2026 / D-724 (adaptado pela D-836): pela fonte de teste, a versão assinada por outra chave é recusada
+    antes de baixar, como pelo GitHub."""
+    from tests.ajudante_do_atualizador import OUTRA_CHAVE
 
-    class Pacote:
-        PackageId, Version, SHA256 = "EditorImpressao", "9.9.9", "ab" * 32
-        FileName = "EditorImpressao-9.9.9-full.nupkg"
-
-    class Gerente:
-        baixou = False
-
-        def get_current_version(self):
-            return "1.0.0"
-
-        def check_for_updates(self):
-            return type("Info", (), {"TargetFullRelease": Pacote()})()
-
-        def download_updates(self, info):
-            Gerente.baixou = True
-
-    servidor = tmp_path / "servidor"
-    servidor.mkdir()
-    v = assinatura.VersaoAssinada(Pacote.PackageId, Pacote.Version, Pacote.FileName, Pacote.SHA256)
-    (servidor / assinatura.nome_do_arquivo_da_assinatura(Pacote.PackageId, Pacote.Version)).write_text(
-        assinatura.escrever_assinatura(bytes(range(1, 33)), v), encoding="utf-8")
-    _arquivo_da_fonte(servidor)
-    fonte = atualizacao.fonte_de_teste(dono=lambda p: ADMIN)
-    assert atualizacao.procurar_e_preparar(Gerente(), fonte, lambda: False) == "recusada"
-    assert not Gerente.baixou
+    p = _prova(tmp_path, chave_da_nova=OUTRA_CHAVE)
+    p.abrir()
+    assert "baixar" not in p.vp.nomes()
 
 
 # ---------------------------------------------------------------------------
 # D-741 (Samuel, 17/11/2026: "Sim"): depois de um "Nao", a pergunta do Windows volta a cada abertura
 # ---------------------------------------------------------------------------
 
-class ExecutorQueResponde(FakeExecutor):
-    """A pergunta do Windows de mentira, respondida em sequencia (True = "Sim", False = "Nao")."""
+def test_d741_nao_a_pergunta_volta_na_proxima_abertura_e_sim_ela_nao_volta_mais(tmp_path):
+    """D-741 ("Sim") (adaptado pela D-836: o "preparado?" passou a ser o teste de gravar na pasta do programa, D-825):
+    "Não" → abrir de novo → a pergunta volta; "Não" de novo → volta de novo; "Sim" (a pasta passa a aceitar gravação)
+    → nunca mais."""
+    from tests.ajudante_do_atualizador import Prova
 
-    def __init__(self, respostas: list[bool]) -> None:
-        super().__init__()
-        self.respostas = list(respostas)
-
-    def aplicar(self, passos, senha):
-        self.chamadas.append((list(passos), senha))
-        if self.respostas.pop(0):
-            return td.Resultado(True, passos=passos)
-        return td.Resultado(False, cancelado=True, passos=passos)
-
-
-def _abrir(tdui, conta_de_testes=False):
-    tdui.primeira_vez_se_preciso(None, instalado=lambda: True, conta_de_testes=lambda: conta_de_testes)
-
-
-def test_d741_nao_a_pergunta_volta_na_proxima_abertura_e_sim_ela_nao_volta_mais(monkeypatch):
-    """D-741 (Samuel, 17/11/2026: "Sim"): "Nao" a pergunta do Windows da primeira abertura -> abrir de novo -> a
-    pergunta volta (so ela: a janela da senha nao, D-721); "Nao" de novo -> volta de novo; "Sim" -> nunca mais.
-    Teste de reversao: no codigo de antes (relatorio da D-732, pergunta aberta 1) ela nao voltava: depois do
-    "Nao", o ajudante da atualizacao nunca nascia e a versao nova nunca entrava."""
-    pytest.importorskip("PySide6")
-    import ui.testes_a_distancia_ui as tdui
-
-    windows = ExecutorQueResponde([False, False, True])
-    monkeypatch.setattr(td, "_executor", windows)
-    senhas = []
-    monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: senhas.append(1) or "")
-    monkeypatch.setattr(tdui.perguntas, "avisar", lambda *a, **k: None)
-
-    _abrir(tdui)                                    # 1a abertura: a senha ("Agora não") e a pergunta: "Não"
-    assert len(windows.chamadas) == 1 and senhas == [1]
-    _abrir(tdui)                                    # 2a abertura: a pergunta volta, sem a janela da senha
-    assert len(windows.chamadas) == 2, "D-741: depois do \"Não\", a pergunta do Windows volta ao abrir de novo"
-    assert senhas == [1], "a janela da senha não volta (D-721: a senha vai nas Configurações)"
-    assert _passo_de_preparo(windows.chamadas[1][0]) and windows.chamadas[1][1] == ""
-    _abrir(tdui)                                    # 3a abertura: volta de novo; agora "Sim"
-    assert len(windows.chamadas) == 3
-    _abrir(tdui)                                    # depois do "Sim": nunca mais
-    _abrir(tdui)
-    assert len(windows.chamadas) == 3, "D-741: depois do \"Sim\", a pergunta nunca mais aparece"
-    assert not atualizacao.falta_a_pergunta_do_windows()
+    p = _prova(tmp_path, grava=False, licenca="disse_nao")
+    for _ in range(2):
+        p.atual = atualizacao.Atualizacao(windows=p.win, velopack=p.vp, raiz=p.raiz, fonte=p.atual.fonte,
+                                          por_tras=lambda t: t(), pasta_grava=lambda r: p.grava["agora"],
+                                          garantir_motor=lambda: True, motor_no_lugar=lambda: True,
+                                          chave_publica=p.atual._chave)
+        p.abrir()
+    assert len(p.win.pedidos) == 2
+    p.win.licenca = "comecou"
+    p.atual = atualizacao.Atualizacao(windows=p.win, velopack=p.vp, raiz=p.raiz, fonte=p.atual.fonte,
+                                      por_tras=lambda t: t(), pasta_grava=lambda r: p.grava["agora"],
+                                      garantir_motor=lambda: True, motor_no_lugar=lambda: True,
+                                      chave_publica=p.atual._chave)
+    p.abrir()
+    assert len(p.win.pedidos) == 3 and p.grava["agora"] is True
+    q = Prova(tmp_path / "depois", grava=True)
+    q.win = p.win
+    q.atual.windows = p.win
+    q.abrir()
+    assert len(p.win.pedidos) == 3, "com a pasta aceitando gravação, a pergunta não volta"
 
 
-def test_d741_sim_na_primeira_abertura_nao_volta_mais(fake, monkeypatch):
-    """D-741 (17/11/2026): "Sim" ja na primeira abertura -> a pergunta nunca mais aparece."""
-    pytest.importorskip("PySide6")
-    import ui.testes_a_distancia_ui as tdui
+def test_d741_sim_na_primeira_abertura_nao_volta_mais(tmp_path):
+    """D-741 (adaptado pela D-836): "Sim" já na primeira abertura → a pasta aceita gravação → nas aberturas seguintes,
+    nenhuma pergunta."""
+    from tests.ajudante_do_atualizador import Prova
 
-    monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: "segredo")
-    monkeypatch.setattr(tdui.perguntas, "avisar", lambda *a, **k: None)
-    _abrir(tdui)
-    assert len(fake.chamadas) == 1
-    _abrir(tdui)
-    assert len(fake.chamadas) == 1
-    assert not atualizacao.falta_a_pergunta_do_windows()
-
-
-def test_d741_na_conta_de_testes_nada_pergunta_mesmo_depois_de_um_nao(monkeypatch):
-    """D-741 e D-736 (17/11/2026): na conta de testes, nada pergunta, nem a pergunta que ficou do "Nao"."""
-    pytest.importorskip("PySide6")
-    import ui.testes_a_distancia_ui as tdui
-
-    windows = ExecutorQueResponde([False])
-    monkeypatch.setattr(td, "_executor", windows)
-    monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: "")
-    monkeypatch.setattr(tdui.perguntas, "avisar", lambda *a, **k: None)
-    _abrir(tdui)
-    assert atualizacao.falta_a_pergunta_do_windows()
-    monkeypatch.setattr(atualizacao, "preparar_na_primeira_abertura", _proibido)
-    _abrir(tdui, conta_de_testes=True)
-    tdui.primeira_vez_se_preciso(None, instalado=lambda: False, conta_de_testes=lambda: False)  # pelo código
-    assert len(windows.chamadas) == 1
+    p = _prova(tmp_path, grava=False, licenca="comecou")
+    p.abrir()
+    assert len(p.win.pedidos) == 1 and p.grava["agora"]
+    q = Prova(tmp_path / "seguinte", grava=True)
+    q.abrir()
+    assert q.win.pedidos == []
 
 
-def test_d741_a_marca_e_de_fabrica_falsa_e_gravada_so_pelo_sim(monkeypatch):
-    """D-741 (17/11/2026): a regra unica (falta_a_pergunta_do_windows) nasce "falta"; "Nao" nao a muda."""
-    assert configuracoes.PADROES[atualizacao.CHAVE_PERGUNTA_DO_WINDOWS_RESPONDIDA] is False
-    monkeypatch.setattr(td, "_executor", FakeExecutor(cancelado=True))
-    atualizacao.preparar_na_primeira_abertura("")
-    assert atualizacao.falta_a_pergunta_do_windows()
-    assert "volta na próxima abertura" in atualizacao.caminho_do_registro().read_text(encoding="utf-8")
-    monkeypatch.setattr(td, "_executor", FakeExecutor())
-    atualizacao.preparar_na_primeira_abertura("")
-    assert not atualizacao.falta_a_pergunta_do_windows()
+def test_d741_na_conta_de_testes_nada_pergunta_mesmo_depois_de_um_nao(tmp_path, monkeypatch):
+    """D-741/D-736 (adaptado pela D-836): depois de um "Não" na conta do Kaique, a conta de testes não pergunta nada."""
+    p = _prova(tmp_path, grava=False, licenca="disse_nao")
+    p.abrir()
+    monkeypatch.setenv("USERNAME", td.NOME_DA_CONTA)
+    from tests.ajudante_do_atualizador import Prova
+
+    q = Prova(tmp_path / "testes", grava=False)
+    q.abrir()
+    assert q.win.pedidos == []
 
 
 # ---------------------------------------------------------------------------
@@ -586,136 +303,109 @@ function New-Object { param([string]$TypeName, [object[]]$ArgumentList)
 """
 
 
-def _powershell():
-    import shutil
-    import sys
+def _prova(tmp_path, **kw):
+    """Uma abertura do programa instalado pelo caminho novo (o executor de verdade, só a borda de mentira:
+    tests/ajudante_do_atualizador.py)."""
+    from tests.ajudante_do_atualizador import Prova
 
-    caminho = shutil.which("powershell")
-    if sys.platform != "win32" or not caminho:
-        pytest.skip("a janelinha de mentira usa o powershell.exe")
-    return caminho
+    return Prova(tmp_path, **kw)
 
 
-def test_d742_a_janelinha_aparece_durante_a_espera_e_some_quando_o_programa_abre(tmp_path):
-    """D-742 (Samuel, 17/11/2026: "Sim"): na abertura em que a versao nova entra (D-734), uma janelinha com o
-    texto exato "Atualizando o programa, espere um pouco..." fica na tela enquanto a troca acontece e some quando
-    o programa abre (a marca de "programa aberto" aparece). Sem botao nenhum. Offscreen: a janela do Windows
-    Forms e trocada por uma de mentira que so anota; nada aparece na tela. Falha no codigo de antes (nao havia
-    janelinha)."""
-    import ctypes
-    import subprocess
-    import threading
-    import time
-    import uuid
-
-    powershell = _powershell()
-    marca = f"Local\\EditorImpressao-teste-{uuid.uuid4().hex}"
-    script = tmp_path / "janelinha.ps1"
-    script.write_text(_JANELA_DE_MENTIRA + "\n" + atualizacao.script_da_janelinha(marca=marca, limite_s=60),
-                      encoding="utf-8-sig")
-    processo = subprocess.Popen([powershell, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
-                                 "-File", str(script)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                text=True, encoding="utf-8", errors="replace")
-    linhas: list[str] = []
-    leitor = threading.Thread(target=lambda: linhas.extend(l.rstrip() for l in processo.stdout), daemon=True)
-    leitor.start()
-    handle = None
-    try:
-        limite = time.monotonic() + 60
-        while "MOSTROU" not in linhas and time.monotonic() < limite and processo.poll() is None:
-            time.sleep(0.1)
-        assert "MOSTROU" in linhas, f"a janelinha não apareceu: {linhas}"
-        time.sleep(1.5)  # a troca ainda acontecendo: a janelinha continua
-        assert processo.poll() is None and not any(l.startswith("FECHOU") for l in linhas), \
-            "a janelinha sumiu antes de o programa abrir"
-        handle = ctypes.windll.kernel32.CreateMutexW(None, False, marca)  # o programa abriu
-        assert handle
-        processo.wait(timeout=30)
-        leitor.join(timeout=10)
-    finally:
-        if processo.poll() is None:
-            processo.kill()
-        if handle:
-            ctypes.windll.kernel32.CloseHandle(handle)
-    fechou = [l for l in linhas if l.startswith("FECHOU")]
-    assert fechou, f"a janelinha não sumiu quando o programa abriu: {linhas}"
-    assert linhas.index("MOSTROU") < linhas.index(fechou[0])
-    assert f"TEXTO {atualizacao.TEXTO_DA_JANELINHA}" in linhas
-    assert "ControlBox=False" in fechou[0] and "TopMost=True" in fechou[0] and "Titulo=[]" in fechou[0]
-    assert not any("Button" in l for l in linhas), "a janelinha não tem botão"
+def test_d732_ao_abrir_o_programa_procura_a_versao_nova(tmp_path):
+    """D-732 ("não, faz quando o programa é aberto") (adaptado pela D-836; era
+    `test_d732_ao_abrir_o_programa_manda_o_ajudante_procurar`): abrir o programa instalado procura a versão nova, sem
+    pergunta do Windows (a pasta já aceita gravação) e sem ajudante."""
+    p = _prova(tmp_path)
+    p.abrir()
+    assert p.win.pedidos == [] and p.vp.nomes()[0] == "procurar"
 
 
-def test_d742_o_texto_e_o_combinado_e_a_janelinha_nao_tem_botao():
-    """D-742 (17/11/2026): o texto palavra por palavra; nenhum botao; some sozinha (marca do programa aberto)."""
-    assert atualizacao.TEXTO_DA_JANELINHA == "Atualizando o programa, espere um pouco..."
-    texto = atualizacao.script_da_janelinha()
-    assert "Button" not in texto and "$janela.ControlBox = $false" in texto
-    assert f"'{atualizacao.MARCA_DE_ABERTO}'" in texto, "some quando o programa marca que abriu"
-    assert "ShowDialog" not in texto, "não prende ninguém: a troca segue sem esperar a janelinha"
+def test_d732_a_janela_aberta_liga_o_aviso(tmp_path):
+    """D-732 (adaptado pela D-836; era `test_d732_a_janela_aberta_chama_o_ajudante_e_liga_o_aviso`): o main.py chama
+    `ligar_na_janela` uma vez; ela liga a janela ao executor desta abertura, e o aviso que esperava chega."""
+    from PySide6.QtWidgets import QApplication, QWidget
+
+    from ui import aviso_de_atualizacao as aviso
+
+    QApplication.instance() or QApplication([])
+    p = _prova(tmp_path, publicar_nova=False)
+    p.abrir()
+    janela = QWidget()
+    ponte = aviso.ligar_na_janela(janela, atual=p.atual)
+    assert ponte is not None and janela._ponte_da_atualizacao is ponte
+    assert p.atual._tela == ponte.receber
+    assert aviso.ligar_na_janela(QWidget()) is None, "sem executor desta abertura (pelo código), nada liga"
 
 
-def test_d742_a_janelinha_so_na_abertura_depois_do_depois_e_a_troca_fica_igual():
-    """D-742 (17/11/2026): a janelinha so entra na abertura depois do "Depois" (D-734). Ela abre ANTES da
-    espera, numa linha de execucao separada, e a troca, a volta (D-718) e a reabertura ficam iguais, letra por
-    letra. O "Reiniciar agora" (D-720) fica como era: nenhuma outra tela muda."""
-    sem = atualizacao.script_de_trocar_e_reabrir(EXE, 4321, Path("C:/x/estado.json"))
-    com = atualizacao.script_de_trocar_e_reabrir(EXE, 4321, Path("C:/x/estado.json"), janelinha=True)
-    assert atualizacao.TEXTO_DA_JANELINHA not in sem
-    inicio, fim = atualizacao._linhas_da_janelinha()
-    linhas_sem = sem.split("\n")
-    assert com == "\n".join([linhas_sem[0], *inicio, *linhas_sem[1:], *fim])
-    assert "'STA'" in inicio[0] and "BeginInvoke" in inicio[-1], "abre e segue sem esperar"
-    assert com.index("BeginInvoke") < com.index("Wait-Process") < com.index("Start-Process") < com.index("EndInvoke")
+def test_d733_com_a_senha_nada_dos_testes_vai_na_pergunta(fake, monkeypatch, tmp_path):
+    """Era `test_d733_com_a_senha_preparo_e_testes_numa_pergunta_so`. A decisão mudou (D-825, opção B: "ok"; D-834):
+    a senha digitada NÃO liga os testes nesta versão, e a pergunta do Windows é a da abertura, antes da janela, só com
+    os passos do preparo. Cobra o que vale hoje (D-836): com a senha, a janela da senha não chama o Windows nem os
+    testes à distância; a pergunta da abertura leva só os quatro passos do preparo."""
+    import ui.testes_a_distancia_ui as tdui
+
+    monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: "a senha do Samuel")
+    tdui.primeira_vez_se_preciso(None, instalado=lambda: True, conta_de_testes=lambda: False)
+    assert fake.chamadas == []
+    p = _prova(tmp_path, grava=False)
+    p.abrir()
+    assert p.win.pedidos == [["apagar_tarefa", "instalar_visual_c", "tirar_instalacao_do_inno",
+                              "dar_licenca_aos_usuarios"]]
 
 
-def test_d742_quem_pede_a_janelinha(monkeypatch):
-    """D-742 (17/11/2026): trocar_antes_de_abrir (o "Depois") pede a janelinha; o "Reiniciar agora" nao."""
-    de_verdade = atualizacao.trocar_e_reabrir
-    pedidos = []
-    monkeypatch.setattr(atualizacao, "trocar_e_reabrir", lambda **k: pedidos.append(k) or True)
-    assert atualizacao.trocar_antes_de_abrir([], instalado=lambda: True, conta_de_testes=lambda: False,
-                                             portatil=lambda: False, ler=_pendente, versao_atual=lambda: "1.1.0")
-    assert atualizacao.aplicar_agora_e_reabrir()
-    assert pedidos == [{"janelinha": True}, {}]
-    lancados = []
-    assert de_verdade(lancar=lancados.append, exe=EXE, pid=1, janelinha=True)
-    assert atualizacao.TEXTO_DA_JANELINHA in lancados[0]
+def test_d733_reiniciar_agora_nao_pede_licenca(tmp_path):
+    """D-733 ("nenhuma pergunta por atualização") (adaptado pela D-836; era
+    `test_d733_reiniciar_agora_chama_o_ajudante_e_nao_pede_licenca`): o "Reiniciar agora" troca pelo Velopack, na
+    conta de quem abriu, sem nenhuma pergunta do Windows (a pasta aceita gravação)."""
+    from core import fases_da_atualizacao as fases
+    from tests.ajudante_do_atualizador import _ate_o_aviso
+
+    p = _ate_o_aviso(tmp_path)
+    p.atual.ligar_a_tela(lambda ef: isinstance(ef, fases.FecharJanela) and p.atual.evento(fases.JanelaFechou(True)))
+    p.atual.evento(fases.Escolheu(True))
+    assert "trocar" in p.vp.nomes() and p.win.pedidos == []
 
 
-def test_d742_o_script_com_a_janelinha_e_powershell_sem_erro_de_escrita(tmp_path):
-    """D-742 (17/11/2026): o script da troca com a janelinha passa pelo leitor do PowerShell (so le o texto)."""
-    import subprocess
+def test_d734_depois_a_versao_entra_ao_fechar(tmp_path):
+    """Era `test_d734_depois_a_versao_entra_na_proxima_abertura_antes_da_janela`. A decisão mudou (D-769 "b", D-794,
+    D-831 "a"): com "Depois", a versão entra AO FECHAR. Cobra o que vale hoje (D-836): a abertura seguinte não troca
+    antes da janela; fechar com "Sim" troca."""
+    from core import fases_da_atualizacao as fases
+    from tests.ajudante_do_atualizador import _ate_o_aviso
 
-    powershell = _powershell()
-    for nome, texto in {"troca": atualizacao.script_de_trocar_e_reabrir(EXE, 1, Path("C:/x/e.json"), janelinha=True),
-                        "janelinha": atualizacao.script_da_janelinha()}.items():
-        arquivo = tmp_path / f"{nome}.ps1"
-        arquivo.write_text(texto, encoding="utf-8-sig")
-        ler = ("$e = $null; [System.Management.Automation.Language.Parser]::ParseFile('" + str(arquivo)
-               + "', [ref]$null, [ref]$e) | Out-Null; $e | ForEach-Object { $_.Message }")
-        feito = subprocess.run([powershell, "-NoProfile", "-NonInteractive", "-Command", ler],
-                               capture_output=True, text=True, timeout=120)
-        assert feito.returncode == 0 and not feito.stdout.strip(), f"{nome}: {feito.stdout} {feito.stderr}"
+    p = _ate_o_aviso(tmp_path)
+    p.atual.evento(fases.Escolheu(False))
+    assert "trocar" not in p.vp.nomes()
+    p.atual.evento(fases.Fechando())
+    p.atual.evento(fases.RespondeuAoFechar(True))
+    assert "trocar" in p.vp.nomes()
 
 
-def test_d742_se_o_programa_ja_abriu_a_janelinha_nem_aparece(tmp_path):
-    """D-742 (17/11/2026): se o programa ja abriu enquanto a janelinha se montava, ela nem aparece (nada pisca
-    na tela). Offscreen, com a janela de mentira."""
-    import ctypes
-    import subprocess
-    import uuid
+def test_d734_a_abertura_nunca_troca_antes_da_janela(tmp_path):
+    """Era `test_d734_a_linha_de_comando_sai_sem_janela_quando_a_troca_comecou`. A decisão mudou (D-769/D-794): uma
+    versão baixada e esperando não é trocada na abertura (nem pelo Velopack: a troca automática na abertura fica
+    desligada). Cobra o que vale hoje (D-836): abrir com uma versão já baixada mostra o aviso e não troca."""
+    p = _prova(tmp_path)
+    assert p.abrir() is None
+    assert "trocar" not in p.vp.nomes()
 
-    powershell = _powershell()
-    marca = f"Local\EditorImpressao-teste-{uuid.uuid4().hex}"
-    handle = ctypes.windll.kernel32.CreateMutexW(None, False, marca)
-    try:
-        script = tmp_path / "janelinha.ps1"
-        script.write_text(_JANELA_DE_MENTIRA + "\n" + atualizacao.script_da_janelinha(marca=marca, limite_s=60),
-                          encoding="utf-8-sig")
-        feito = subprocess.run([powershell, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
-                                "-File", str(script)], capture_output=True, text=True, timeout=120,
-                               encoding="utf-8", errors="replace")
-    finally:
-        ctypes.windll.kernel32.CloseHandle(handle)
-    linhas = feito.stdout.splitlines()
-    assert "MOSTROU" not in linhas and any(l.startswith("FECHOU") for l in linhas), linhas
+
+def test_d734_o_aviso_diz_que_atualiza_ao_fechar(tmp_path):
+    """Era `test_d734_o_aviso_diz_que_entra_na_proxima_abertura_e_fechar_nao_troca`. A decisão mudou (D-835, "B"):
+    o aviso diz "Se escolher "Depois", você pode atualizar quando fechar o programa.", e fechar pergunta. Cobra o que
+    vale hoje (D-836)."""
+    assert atualizacao.FRASE_DA_VERSAO_NOVA.endswith(
+        "Se escolher \"Depois\", você pode atualizar quando fechar o programa.")
+    assert "próxima vez que você abrir" not in atualizacao.FRASE_DA_VERSAO_NOVA
+
+
+def test_d742_a_janelinha_da_troca_e_a_do_velopack():
+    """Era `test_d742_a_janelinha_aparece_durante_a_espera_e_some_quando_o_programa_abre` (e os outros cinco da
+    janelinha nossa). A decisão mudou (D-832, "pode ser velopack, deixamos para mudar isso mais para frente"): a
+    janelinha da troca é a do próprio Velopack. Cobra o que vale hoje (D-836): a janelinha nossa e o texto dela não
+    existem mais no programa (a troca pede a do Velopack: `tests/test_atualizador_novo.py::test_d832_...`)."""
+    assert not hasattr(atualizacao, "TEXTO_DA_JANELINHA") and not hasattr(atualizacao, "script_da_janelinha")
+    programa = [RAIZ / "atualizacao.py", RAIZ / "core" / "conversa_com_o_velopack.py",
+                RAIZ / "ui" / "aviso_de_atualizacao.py", RAIZ / "ui" / "brasao_girando.py"]
+    for arquivo in programa:
+        assert "Atualizando o programa, espere um pouco" not in arquivo.read_text(encoding="utf-8"), arquivo.name
