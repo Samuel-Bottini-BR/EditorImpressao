@@ -65,3 +65,10 @@ continuam (D-778 (2), D-839, D-845/D-847/D-858/D-864, D-846, D-854, D-856, D-857
   a caixa de mentira; processo só se termina pelo identificador do próprio `Popen` ou por um grupo criado na hora.
 - Regra para os próximos: quem testa não fecha processo que não criou.
 - Rodando: as mutações numa cópia nova (`saida_teste\qtq5\mut`, `git archive 0d9cac4e`), sem guarda.
+
+## Onde estou (fim)
+- Feito: as mutações (36; Q3 e Q7 sobreviveram: o médio M2), os testes um por vez (79 arquivos, 3504 passaram, 13
+  pulados, nenhum falhou), o relatório nos três formatos (`relatorio.md/.html/.pdf`).
+- Achados: 0 graves, 2 médios (M1: a D-839 na segunda vez, já existia em `aba7b844`; M2: duas proteções sem teste),
+  1 leve (duas frases sem tela). Os dois incidentes na seção própria do relatório.
+- O registro de verdade não mudou (16110 bytes, 24/11 16:38, a mesma soma). O ramo: só esta pasta mudou.
