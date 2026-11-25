@@ -58,6 +58,38 @@ aparece uma vez por recusa, nunca a cada abertura.
 mostra a frase da D-839 uma vez (antes da janela, pela caixa do Windows, D-868) e o aviso da versão nova volta, como na
 primeira. No livro (PDF): nada muda.
 
+
+## A segunda rodada: o que fiz e a prova (D-877)
+
+- **O conserto, num lugar só:** `fases.id_do_acontecimento(tipo, versão, momento)`, a conta única do nome de uma frase
+  de acontecimento. Usada pela D-839 da abertura reaberta (`_frase(..., momento=e.momento)`) e pelo `guardar_frase` do
+  bilhete (que antes fazia a mesma conta à mão). O momento entra na regra pelo `Abriu.momento`, lido pelo executor
+  na abertura (`_agora()`); a regra continua sem relógio. As frases de estado (a 2 na procura, a do motor) e a da
+  reprovada continuam com `id_da_falha` (uma vez por versão), como a tabela de "Antes de mexer" explica.
+- **Caminho → função:** a D-839 com janela → `_frases_ao_abrir` → `_frase` → `id_do_acontecimento`; a D-839 sem
+  janela e toda frase do bilhete → `guardar_frase` → `id_do_acontecimento`; mostrar uma vez → `_para_a_tela`
+  (`ler_vistos`/`gravar_visto`), sem mudança.
+- **Teste de reversão (§4.7):** `tests/test_decisoes_atualizacao_volta5.py::test_d877_cada_recusa_do_windows_avisa_uma_vez_e_nao_se_repete`
+  (o caso L1 do quinto: duas aberturas reabertas com `--conferir-a-versao-nova 7.0.0 7.0.1` na 7.0.0, na mesma conta, e
+  depois uma pelo atalho; só a caixa de mentira). No código de `0d9cac4e` ele FALHA pelo comportamento (`[[frase], [],
+  []]`: a segunda recusa não dizia nada; saída em `volta5-testes-no-codigo-antigo.txt`, parte 4); no novo passa
+  (`[[frase], [frase], []]`: cada recusa avisa uma vez, e a abertura pelo atalho não repete).
+- **Mutações (D-827):** V23 (o nome sem o momento) e V24 (a abertura não manda o momento): as duas ACUSADAS pelo teste
+  da D-877 (`volta5-provas/mutacoes_volta5-resultado-V23-V24.txt`; a linha sem mutação: nenhum teste falhou).
+- **Testes, um arquivo por vez:** os 12 arquivos do atualizador (todos passam: `test_decisoes_atualizacao_volta5` 23,
+  `test_atualizador_volta5` 21, `test_fases_da_atualizacao` 2255, e os outros 9) e os `tests/test_decisoes*.py`
+  (ver "Os testes da segunda rodada", abaixo).
+- **Nenhum teste antigo mudou.** A tabela da regra continua com o nome `troca-1.2.0` (o `Abriu` dela não traz momento).
+- **Não mexi** no M2 nem no leve do quinto (D-877: "ficam para depois, com os testes à distância").
+- **Tamanho:** os três arquivos do atualizador, de 1352 para 1357 linhas de código (+5: a função do nome do acontecimento e o campo do momento).
+- Nenhuma caixa nem janela de verdade; nenhum processo fechado; nada escrito em `C:\ProgramData\EditorImpressao`, em
+  `%LOCALAPPDATA%\EditorImpressao` nem na instalação do Samuel (a cópia de `0d9cac4e` para o teste no código antigo
+  está em `saida_teste\v5\d877-antigo\`, ignorada pelo git).
+
+### Os testes da segunda rodada
+
+RODADA_D877
+
 # Volta 5 — a volta automática sai da primeira entrega (25/11/2026)
 
 Implementador novo (D-815: as voltas 3 e 4 foram de outro agente). Pedido da gerente de 25/11, depois de o Samuel ler
@@ -267,7 +299,7 @@ pela caixa do Windows** (D-868). **muda na volta 5** (hoje: esperava a janela).
 | desliga antes de trocar o nome de `current` | nada mudou; a próxima abertura roda a versão de antes e mostra o aviso (com ou sem internet, D-859) | o aviso de novo | o pacote esperando |
 | desliga entre as duas trocas de nome | o defeito do Velopack (`apply_windows_impl.rs` 174-176): o atalho não abre; reinstalar resolve (D-865: para depois) | o atalho não abre o programa | `current` faltando |
 | desliga depois de trocar, antes de reabrir | a próxima abertura roda a nova, sem a marca de aprovada: o teste antes da janela | segundos sem nada, e o programa (ou a caixa da linha 7) | — |
-| Windows nega (arquivo preso) | o Velopack tenta 10 vezes, desiste e reabre a de antes com o pedido (`apply.rs` 47-75); ela mostra a frase da D-839; o aviso volta | a caixa do Windows com a frase da D-839, antes da janela; depois do OK, a janela e o aviso. **muda na volta 5** (D-868; hoje esperava a janela). No "Sim" ao fechar: na abertura seguinte | o pacote esperando |
+| Windows nega (arquivo preso) | o Velopack tenta 10 vezes, desiste e reabre a de antes com o pedido (`apply.rs` 47-75); ela mostra a frase da D-839; o aviso volta. **A cada recusa** (D-877, segunda rodada): o nome da frase leva o momento da abertura reaberta, então uma segunda recusa para a mesma versão avisa de novo; a abertura seguinte pelo atalho (sem o pedido) não mostra nada | a caixa do Windows com a frase da D-839, antes da janela, **uma vez por recusa**; depois do OK, a janela e o aviso. **muda na volta 5** (D-868; hoje esperava a janela; D-877: a segunda recusa da mesma versão não dizia nada). No "Sim" ao fechar: na abertura seguinte (o nome já levava a hora) | o pacote esperando |
 | disco cheio (o Velopack não abre o pacote) | igual ao "Windows nega" (lido, não rodado) | igual | o pacote esperando |
 | sem internet | não se aplica | — | — |
 | clique repetido (o atalho durante a troca) | a abertura vê o atualizador do Velopack rodando e sai sem janela (G1 da volta 2) | nada: o clique se perde | nada |

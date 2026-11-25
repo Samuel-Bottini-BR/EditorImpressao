@@ -81,3 +81,12 @@ FAILED tests/test_atualizador_volta5.py::test_leve1_a_guarda_que_falha_nao_diz_q
 FAILED tests/test_atualizador_volta5.py::test_leve2_o_pacote_esperando_nao_diz_que_esta_baixando
 2 failed, 19 deselected in 1.23s
 (No codigo novo os dois passam: test_atualizador_volta5.py inteiro, 21 passed.)
+
+## 4. Segunda rodada (D-877): o teste da segunda recusa do Windows no codigo de 0d9cac4e (copia git archive em saida_teste/v5/d877-antigo)
+E       AssertionError: assert [['A atualiza...el.'], [], []] == [['A atualiza...Samuel.'], []]
+E         
+E         At index 1 diff: [] != ['A atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel.']
+E         Use -v to get more diff
+FAILED tests/test_decisoes_atualizacao_volta5.py::test_d877_cada_recusa_do_windows_avisa_uma_vez_e_nao_se_repete
+1 failed, 22 deselected in 2.23s
+(No codigo novo: 1 passed.)

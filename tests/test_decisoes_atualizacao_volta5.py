@@ -442,3 +442,27 @@ def test_d871_nenhum_teste_pede_a_volta_e_o_aviso_e_a_prova(tmp_path):
     win, a = _executor(p, teste=_Conta(passa=False))
     a.abrir([atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL])
     assert win.caixas == [(TITULO, TEXTO_D868)]
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# D-877: a segunda recusa do Windows para a mesma versão também avisa
+# ---------------------------------------------------------------------------------------------------------------------
+
+def test_d877_cada_recusa_do_windows_avisa_uma_vez_e_nao_se_repete(tmp_path, monkeypatch):
+    """D-877 (Samuel, 25/11/2026: "Conserta agora só o aviso da segunda recusa do Windows (M1)"; o M1 do quinto "quem
+    tenta quebrar", o caso L1): o Windows não deixa trocar da 7.0.0 para a 7.0.1, e o Velopack reabre a 7.0.0 com o
+    pedido. Na primeira recusa aparece a frase da D-839; numa SEGUNDA recusa para a mesma versão (outro momento), ela
+    aparece de novo (no código de `0d9cac4e` a segunda não dizia nada: o nome da frase não tinha o momento). E ela nunca
+    se repete sozinha: a abertura seguinte pelo atalho (sem o pedido) não mostra nada (§11.8)."""
+    frase = "A atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel."
+    monkeypatch.setattr(versao, "VERSAO", "7.0.0")
+    p = Prova(tmp_path, publicar_nova=False)
+    horas = iter(["2026-11-25T10:00:00", "2026-11-26T09:30:00", "2026-11-26T09:31:00"])
+    monkeypatch.setattr(atualizacao, "_agora", lambda: next(horas))
+    caixas = []
+    for argumentos in ([atualizacao.ARG_CONFERIR_NOVA, "7.0.0", "7.0.1"], [atualizacao.ARG_CONFERIR_NOVA, "7.0.0", "7.0.1"],
+                       []):
+        win, a = _executor(p)
+        a.abrir(argumentos)
+        caixas.append([t for _, t in win.caixas] + _frases_na_janela(a))
+    assert caixas == [[frase], [frase], []]

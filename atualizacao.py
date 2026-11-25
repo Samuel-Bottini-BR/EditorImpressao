@@ -285,7 +285,7 @@ def reprovar(versao_reprovada: str, motivo: str) -> bool:
 def guardar_frase(tipo: str, versao_da_frase: str, motivo_da_tela: str = "") -> bool:
     """Guarda no bilhete a frase a mostrar uma vez na próxima abertura (o processo que a viu não tinha janela). O nome
     leva a hora: a mesma frase de novo, noutro dia, aparece de novo."""
-    return guardar_frase_pelo_nome(tipo, f"{fases.id_da_falha(tipo, versao_da_frase)}-{_agora()}", motivo_da_tela)
+    return guardar_frase_pelo_nome(tipo, fases.id_do_acontecimento(tipo, versao_da_frase, _agora()), motivo_da_tela)
 
 
 def guardar_frase_pelo_nome(tipo: str, nome: str, motivo_da_tela: str = "") -> bool:
@@ -1406,7 +1406,8 @@ class Atualizacao:
                                 pacote_da_versao=(self.raiz / "packages" / nome_do_pacote(versao.VERSAO)).is_file(),
                                 nao_tentar=reprovadas_do_bilhete(bilhete), pendente=pendente,
                                 troca_em_curso=em_curso, reaberto_de=de, reaberto_para=para,
-                                sem_janela=ARG_SEM_JANELA in argumentos, frase_guardada=frase_do_bilhete(bilhete)))
+                                sem_janela=ARG_SEM_JANELA in argumentos, frase_guardada=frase_do_bilhete(bilhete),
+                                momento=_agora()))
         return self.saida
 
 

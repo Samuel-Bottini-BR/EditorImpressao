@@ -1,11 +1,11 @@
 """Mutações da volta 5 do atualizador novo (25/11/2026): cada proteção nova ou consertada desta volta, desligada uma de
-cada vez, tem de ser acusada por algum teste (D-811 a D-813, D-827).
+cada vez, tem de ser acusada por algum teste (D-811 a D-813, D-827). Segunda rodada (D-877): V23 e V24.
 
 Roda NO LUGAR (o primeiro argumento é a pasta do ramo). Cada mutação: troca o trecho (que tem de aparecer uma vez só),
 roda os arquivos de teste do atualizador UM POR VEZ (regra de 19/10), na ordem da lista, e para no primeiro que acusa;
 devolve o arquivo como estava num `finally` (depois, `git status` tem de estar limpo). "SOBREVIVEU" = nenhum teste
 falhou. A primeira linha é a rodada SEM mutação (tem de dar "nenhum teste falhou" em todos).
-Uso: python mutacoes_volta5.py <pasta do ramo>
+Uso: python mutacoes_volta5.py <pasta do ramo> [V23 V24 ...]  (sem nomes: todas)
 """
 from __future__ import annotations
 
@@ -88,6 +88,11 @@ MUTACOES = [
     ("V22", "leve 2: o pacote esperando volta a dizer 'publicada [...]: baixando'", F,
      "                     \"baixar\" if estado.pendente == estado.nova else",
      "                     \"baixar\" if False else"),
+    ("V23", "D-877: a frase de um acontecimento sem o momento no nome (a segunda recusa do Windows some)", F,
+     "    return [MostrarFalha(tipo, id_do_acontecimento(tipo, versao, momento), motivo_da_tela)]",
+     "    return [MostrarFalha(tipo, id_da_falha(tipo, versao), motivo_da_tela)]"),
+    ("V24", "D-877: a abertura não manda o momento à regra", A,
+     "                                momento=_agora()))", "                                momento=\"\"))"),
     ("V20", "a frase da reprovada não é mostrada (só reprovada no bilhete)", F,
      "        efeitos += _frase(reprovada, FALHA_REPROVADA, estado.nova)\n", ""),
 ]
@@ -109,7 +114,10 @@ def rodar_os_testes() -> str:
 def main() -> None:
     saida = [f"SEM MUTACAO: {rodar_os_testes()}"]
     print(saida[-1], flush=True)
+    so = set(sys.argv[2:])                 # os nomes pedidos (nenhum = todas)
     for nome, porque, arq, trecho, troca in MUTACOES:
+        if so and nome not in so:
+            continue
         caminho = RAIZ / arq
         original = caminho.read_bytes()
         texto = original.decode("utf-8").replace("\r\n", "\n")
@@ -127,7 +135,7 @@ def main() -> None:
     status = subprocess.run(["git", "-C", str(RAIZ), "status", "--short", "--", A, W, F], capture_output=True,
                             text=True).stdout
     saida.append(f"git status dos arquivos mexidos depois: {status.strip() or 'limpo'}")
-    Path(__file__).with_name("mutacoes_volta5-resultado.txt").write_text("\n".join(saida) + "\n", encoding="utf-8")
+    Path(__file__).with_name("mutacoes_volta5-resultado" + ("-" + "-".join(sorted(so)) if so else "") + ".txt").write_text("\n".join(saida) + "\n", encoding="utf-8")
     print(saida[-1])
 
 

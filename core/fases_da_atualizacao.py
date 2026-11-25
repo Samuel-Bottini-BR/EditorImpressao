@@ -148,8 +148,18 @@ REABRIR_SEM_JANELA = "sem_janela"      # "Sim" ao fechar: só o teste rápido, s
 
 def id_da_falha(tipo: str, versao: str) -> str:
     """O nome de uma frase mostrada ao abrir (a tela mostra cada uma uma vez só, pelo nome). Lugar único. A frase
-    guardada no bilhete acrescenta a hora depois (`atualizacao.guardar_frase`: "<tipo>-<versão>-<hora>")."""
+    de um acontecimento acrescenta o momento (`id_do_acontecimento`: "<tipo>-<versão>-<hora>")."""
     return f"{tipo}-{versao}"
+
+
+def id_do_acontecimento(tipo: str, versao: str, momento: str) -> str:
+    """O nome da frase de um ACONTECIMENTO, que pode acontecer de novo (uma troca que o Windows não deixou, um "Sim"
+    ao fechar que não trocou): `id_da_falha` mais o momento, para cada vez ser um aviso novo (a tela mostra um nome uma
+    vez só por conta). A ÚNICA conta disso (volta 5, segunda rodada, D-877: sem o momento, a segunda recusa do Windows
+    para a mesma versão não dizia nada). A frase de um ESTADO que a abertura encontra de novo a cada vez (a versão sem a
+    assinatura, o motor que falta) NÃO usa esta função: com o momento, ela se repetiria a cada abertura. Sem momento
+    (os testes da tabela da regra), o nome é o de `id_da_falha`."""
+    return f"{id_da_falha(tipo, versao)}-{momento}" if momento else id_da_falha(tipo, versao)
 
 
 def versao_da_falha(tipo: str, nome: str) -> str:
@@ -199,7 +209,8 @@ class Abriu:
     (True / False / None = não deu para saber); só é perguntado quando há troca possível e o programa não foi reaberto
     por ele. `reaberto_de`/`reaberto_para`: o pedido com que o Velopack reabriu o programa (a linha de comando).
     `sem_janela`: a reabertura do "Sim" ao fechar. `frase_guardada`: (tipo, nome, motivo) da frase que o bilhete guarda
-    para mostrar uma vez."""
+    para mostrar uma vez. `momento`: a hora desta abertura (o executor a lê na hora; entra no nome da frase de um
+    acontecimento, `id_do_acontecimento`, D-877)."""
 
     instalado: bool
     conta_de_testes: bool
@@ -216,6 +227,7 @@ class Abriu:
     reaberto_para: str = ""
     sem_janela: bool = False
     frase_guardada: tuple[str, str, str] | None = None
+    momento: str = ""
 
 
 @dataclass(frozen=True)
@@ -530,13 +542,15 @@ def _ignorado(estado: Estado, evento: Evento) -> tuple[Estado, list[Efeito]]:
     return estado, [Registrar(f"{type(evento).__name__} na fase {estado.fase.value}: nada a fazer")]
 
 
-def _frase(estado: Estado, tipo: str, versao: str, motivo_da_tela: str = "") -> list[Efeito]:
+def _frase(estado: Estado, tipo: str, versao: str, motivo_da_tela: str = "", momento: str = "") -> list[Efeito]:
     """Uma frase de falha desta abertura: mostrada uma vez por nome (na caixa da janela, ou, se a janela ainda não
     existe, na caixa do Windows: a escolha do lugar é do executor, D-868); na reabertura sem janela (o "Sim" ao fechar,
-    D-769: nada aparece na tela), guardada no bilhete para a próxima abertura (um lugar só para essa escolha)."""
+    D-769: nada aparece na tela), guardada no bilhete para a próxima abertura (um lugar só para essa escolha).
+    `momento`: a frase é de um acontecimento que pode se repetir (D-877): o nome leva o momento
+    (`id_do_acontecimento`); no bilhete, `guardar_frase` põe o momento dele pela mesma função."""
     if estado.sem_janela:
         return [GuardarFrase(tipo, versao, motivo_da_tela)]
-    return [MostrarFalha(tipo, id_da_falha(tipo, versao), motivo_da_tela)]
+    return [MostrarFalha(tipo, id_do_acontecimento(tipo, versao, momento), motivo_da_tela)]
 
 
 def _frase_guardada_vale(tipo: str, nome: str, versao_que_roda: str) -> bool:
@@ -565,8 +579,12 @@ def _frases_ao_abrir(novo: Estado, e: Abriu) -> list[Efeito]:
     (Volta 5: a frase (1), "voltou para a versão anterior", saiu com a volta automática, D-867.)"""
     efeitos: list[Efeito] = []
     if e.reaberto_para and e.versao == e.reaberto_de and _mais_nova(e.reaberto_para, e.versao):
+        # D-877: cada recusa do Windows é um acontecimento novo (o Velopack reabre a de antes UMA vez por recusa, com
+        # o pedido na linha de comando; a abertura seguinte pelo atalho não tem o pedido): o nome leva o momento desta
+        # abertura, e a frase aparece uma vez por recusa, nunca a cada abertura.
         efeitos += [Registrar(f"o Velopack não trocou para a {e.reaberto_para} e reabriu a {e.versao}: o aviso volta "
-                              "quando ela for achada de novo")] + _frase(novo, FALHA_TROCA, e.reaberto_para)
+                              "quando ela for achada de novo")] + _frase(novo, FALHA_TROCA, e.reaberto_para,
+                                                                          momento=e.momento)
     if e.frase_guardada and e.frase_guardada[0] in TIPOS_DE_FALHA and not novo.sem_janela:
         tipo, nome, motivo = e.frase_guardada
         if _frase_guardada_vale(tipo, nome, e.versao):
