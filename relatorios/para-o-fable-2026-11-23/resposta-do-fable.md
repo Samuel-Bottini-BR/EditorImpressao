@@ -202,3 +202,27 @@ Mais: **M3** — o "Sim" ao fechar que não pode trocar ganha a mesma frase do "
 **Antes de uma linha de código (volta 4, mesmo escritor, a segunda dele):** a tabela passos × jeitos de dar errado — passos: procurar, baixar, conferir, trocar, testar, guardar, voltar; jeitos: desliga no meio, Windows nega, disco cheio, sem internet, clique repetido, arquivo some, sem licença — com "o que o Kaique vê" em cada casinha. É a outra metade das colunas do teste exaustivo da máquina de estados. O "quem tenta quebrar" 4 confere a tabela contra o código.
 
 Previsão do Fable: a rodada 4 ainda acha coisa pequena (frases, tempos). Grave e médio, com as três regras, não deveria.
+
+## Depois do quarto "quem tenta quebrar" — a volta automática sai da primeira entrega (25/11/2026, 09:38)
+
+Relatório lido (`quem-tenta-quebrar-4/relatorio.md`: 1 grave, 6 médios). As três regras funcionam no que miravam; os achados estão, de novo, todos na volta automática (o grave: a frase (3) depende da janela do programa, que é justamente o que a versão reprovada não abre; e a marca "sem volta" é gravada antes de a frase ser vista). Três rodadas seguidas com os defeitos na mesma funcionalidade: o custo dela não cabe na primeira entrega. O Fable reconhece que duas das peças (última boa, "uma vez só") foram emendas suas.
+
+**Decisão do Samuel (09:34, por voz): opção A** — "é melhor a opção A; os aplicativos geralmente usam isso; a resposta fica para o Windows dar e não para o aplicativo".
+
+### O que muda (volta 5, escritor novo — regra D-815)
+
+1. **Sai a volta automática** desta entrega: a marca "sem volta", o "uma vez só", a segunda tentativa, o pedido `--voltando`, a fase de volta. A tabela perde a linha "Voltar" inteira.
+2. **O teste rápido fica.** Se reprovar: a versão vai para "reprovadas" (bilhete) e aparece a frase **pela caixa do próprio Windows, pela peça (`MessageBoxW`)**, nunca pela janela do programa: "A versão nova não funcionou. Não desinstale nada. Avise o Samuel." Depois, o programa tenta abrir mesmo assim. **Toda frase do atualizador que pode aparecer antes da janela existir passa a ter esse caminho.**
+3. **A última boa continua sendo guardada** (copiada de `packages\` depois de cada troca que passa no teste; sem internet; a primeira versão instalada não tem). Nada automático depende dela: é para a volta manual do Samuel (reinstalar, ou por SSH quando os testes à distância vierem).
+4. Consertar o que sobra: **M1** (a frase "havia outra janela" não pode aparecer depois de a troca ter dado certo), **M2** (`Update.exe` que some: frase própria, sem "tente ao fechar", e o pacote é oferecido de novo quando ele voltar), **M5** (os dois testes).
+5. Os testes da volta automática saem com ela; a D-718 fica no Livro como "decidida, adiada para depois da entrega", com a prova de que o programa **avisa** quando a versão nova falha.
+
+### Fila pós-entrega (ordem a confirmar com o Samuel)
+1. Download do motor do Kraken pela internet (já decidido como primeiro).
+2. Volta automática (D-718), com a última boa que já existe.
+3. Estrutura do programa (refatorações 1–3) e os remendos.
+
+### Por que não se viu antes (registro, não regra)
+Ninguém questionou o pedido, só o jeito de cumprir; cada peça era o mínimo honesto para "volta sozinho", então a regra contra remendos não pegava; o contador de ciclos parou no quinto em vez de no décimo. A pergunta que faltou no terceiro ciclo, e que vale quando o contador disparar de novo: **os defeitos estão sempre na mesma funcionalidade? O que o Kaique perde se ela ficar para depois?**
+
+Contexto de mercado dado ao Samuel: Chrome, VS Code, Discord e os programas com Velopack/Squirrel não desfazem sozinhos uma versão ruim; testam antes, liberam em etapas e publicam a correção por cima. Volta automática é coisa de sistema operacional (Windows Update, Android A/B), onde não há como publicar nada se o sistema não sobe.
