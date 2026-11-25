@@ -1,0 +1,282 @@
+[
+ {
+  "grupo": "FUNDO",
+  "ação da vigia": "ok",
+  "caso": "fundo",
+  "abertura": "a1",
+  "tempo": [
+   [
+    1795630657.863,
+    "abrir"
+   ],
+   [
+    1795630657.915,
+    "a caixa vai aparecer (fio atualizacao)"
+   ],
+   [
+    1795630658.87,
+    "a janela abre (ligar_a_tela)"
+   ],
+   [
+    1795630658.87,
+    "ligar_a_tela voltou (a janela não esperou o OK)"
+   ],
+   [
+    1795630661.616,
+    "a caixa voltou: deu certo"
+   ]
+  ],
+  "a janela recebeu": [],
+  "vistos": [
+   "recusada-9.9.0"
+  ],
+  "bilhete": {
+   "frase": {
+    "tipo": "recusada",
+    "nome": "recusada-9.9.0",
+    "motivo": ""
+   }
+  },
+  "a vigia (a caixa lida do Windows)": []
+ },
+ {
+  "grupo": "MATAR",
+  "ação da vigia": "matar",
+  "caso": "reprovada",
+  "abertura": "a1",
+  "sem resultado (o processo morreu?)": "",
+  "código de saída": 9,
+  "a vigia (a caixa lida do Windows)": [
+   {
+    "apareceu": 1795630663.36,
+    "titulo": "Atualização",
+    "texto": [
+     "A versão nova não funcionou. Não desinstale nada. Avise o Samuel."
+    ],
+    "botoes": [
+     "OK"
+    ],
+    "fez": "matou o processo 5852: True",
+    "quando": 1795630663.36
+   }
+  ]
+ },
+ {
+  "grupo": "MATAR",
+  "ação da vigia": "ok",
+  "caso": "reprovada",
+  "abertura": "a2",
+  "tempo": [
+   [
+    1795630668.822,
+    "abrir"
+   ],
+   [
+    1795630669.198,
+    "a caixa vai aparecer (fio MainThread)"
+   ],
+   [
+    1795630669.802,
+    "a caixa voltou: deu certo"
+   ],
+   [
+    1795630670.06,
+    "a abertura voltou None: SÓ AGORA o programa tentaria abrir a janela"
+   ]
+  ],
+  "a janela recebeu": [],
+  "vistos": [
+   "reprovada-9.9.0"
+  ],
+  "bilhete": {
+   "reprovadas": [
+    "9.9.0"
+   ],
+   "frase": {
+    "tipo": "reprovada",
+    "nome": "reprovada-9.9.0",
+    "motivo": ""
+   }
+  },
+  "a vigia (a caixa lida do Windows)": [
+   {
+    "apareceu": 1795630669.784,
+    "titulo": "Atualização",
+    "texto": [
+     "A versão nova não funcionou. Não desinstale nada. Avise o Samuel."
+    ],
+    "botoes": [
+     "OK"
+    ],
+    "fez": "clicou o botão 2 (OK)",
+    "quando": 1795630669.784
+   }
+  ]
+ },
+ {
+  "grupo": "MATAR",
+  "ação da vigia": "ok",
+  "caso": "reprovada",
+  "abertura": "a3",
+  "tempo": [
+   [
+    1795630672.032,
+    "abrir"
+   ],
+   [
+    1795630672.067,
+    "a abertura voltou None: SÓ AGORA o programa tentaria abrir a janela"
+   ]
+  ],
+  "a janela recebeu": [],
+  "vistos": [
+   "reprovada-9.9.0"
+  ],
+  "bilhete": {
+   "reprovadas": [
+    "9.9.0"
+   ],
+   "frase": {
+    "tipo": "reprovada",
+    "nome": "reprovada-9.9.0",
+    "motivo": ""
+   }
+  },
+  "a vigia (a caixa lida do Windows)": []
+ },
+ {
+  "grupo": "FECHAR_X",
+  "ação da vigia": "fechar_x",
+  "caso": "reprovada",
+  "abertura": "a1",
+  "tempo": [
+   [
+    1795630674.298,
+    "abrir"
+   ],
+   [
+    1795630674.599,
+    "a caixa vai aparecer (fio MainThread)"
+   ],
+   [
+    1795630675.161,
+    "a caixa voltou: deu certo"
+   ],
+   [
+    1795630675.213,
+    "a abertura voltou None: SÓ AGORA o programa tentaria abrir a janela"
+   ]
+  ],
+  "a janela recebeu": [],
+  "vistos": [
+   "reprovada-9.9.0"
+  ],
+  "bilhete": {
+   "reprovadas": [
+    "9.9.0"
+   ],
+   "frase": {
+    "tipo": "reprovada",
+    "nome": "reprovada-9.9.0",
+    "motivo": ""
+   }
+  },
+  "a vigia (a caixa lida do Windows)": [
+   {
+    "apareceu": 1795630675.148,
+    "titulo": "Atualização",
+    "texto": [
+     "A versão nova não funcionou. Não desinstale nada. Avise o Samuel."
+    ],
+    "botoes": [
+     "OK"
+    ],
+    "fez": "fechou pelo X (WM_CLOSE)",
+    "quando": 1795630675.149
+   }
+  ]
+ },
+ {
+  "grupo": "FECHAR_X",
+  "ação da vigia": "ok",
+  "caso": "reprovada",
+  "abertura": "a2",
+  "tempo": [
+   [
+    1795630676.98,
+    "abrir"
+   ],
+   [
+    1795630677.007,
+    "a abertura voltou None: SÓ AGORA o programa tentaria abrir a janela"
+   ]
+  ],
+  "a janela recebeu": [],
+  "vistos": [
+   "reprovada-9.9.0"
+  ],
+  "bilhete": {
+   "reprovadas": [
+    "9.9.0"
+   ],
+   "frase": {
+    "tipo": "reprovada",
+    "nome": "reprovada-9.9.0",
+    "motivo": ""
+   }
+  },
+  "a vigia (a caixa lida do Windows)": []
+ },
+ {
+  "grupo": "ESPERA",
+  "ação da vigia": "espera",
+  "caso": "reprovada",
+  "abertura": "a1",
+  "tempo": [
+   [
+    1795630678.914,
+    "abrir"
+   ],
+   [
+    1795630679.142,
+    "a caixa vai aparecer (fio MainThread)"
+   ],
+   [
+    1795630685.653,
+    "a caixa voltou: deu certo"
+   ],
+   [
+    1795630685.655,
+    "a abertura voltou None: SÓ AGORA o programa tentaria abrir a janela"
+   ]
+  ],
+  "a janela recebeu": [],
+  "vistos": [
+   "reprovada-9.9.0"
+  ],
+  "bilhete": {
+   "reprovadas": [
+    "9.9.0"
+   ],
+   "frase": {
+    "tipo": "reprovada",
+    "nome": "reprovada-9.9.0",
+    "motivo": ""
+   }
+  },
+  "a vigia (a caixa lida do Windows)": [
+   {
+    "apareceu": 1795630679.643,
+    "titulo": "Atualização",
+    "texto": [
+     "A versão nova não funcionou. Não desinstale nada. Avise o Samuel."
+    ],
+    "botoes": [
+     "OK"
+    ],
+    "fez": "clicou o botão 2 (OK)",
+    "quando": 1795630685.643
+   }
+  ]
+ }
+]
