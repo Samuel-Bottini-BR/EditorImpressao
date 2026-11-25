@@ -75,3 +75,9 @@ ERROR tests/test_fases_da_atualizacao.py - TypeError: Estado.__init__() got a...
 1 error in 0.32s
 
 (O test_fases_da_atualizacao.py de aba7b844 nem carrega no codigo novo: a tabela dele monta o estado com o campo 'anterior', que saiu com a volta, D-867. A tabela adaptada, linha por linha, esta na lista da D-836.)
+
+## 3. Depois da resposta do Samuel (25/11): os dois testes dos leves 1 e 2 (as frases do registro), no codigo antigo (aba7b844)
+FAILED tests/test_atualizador_volta5.py::test_leve1_a_guarda_que_falha_nao_diz_que_o_teste_roda_de_novo
+FAILED tests/test_atualizador_volta5.py::test_leve2_o_pacote_esperando_nao_diz_que_esta_baixando
+2 failed, 19 deselected in 1.23s
+(No codigo novo os dois passam: test_atualizador_volta5.py inteiro, 21 passed.)

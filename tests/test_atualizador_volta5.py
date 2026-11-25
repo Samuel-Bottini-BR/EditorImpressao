@@ -249,3 +249,36 @@ def test_m2_o_atualizador_no_lugar_e_o_da_raiz(tmp_path):
     (tmp_path / "Update.exe").unlink()
     (tmp_path / "Update.exe").mkdir()                               # uma pasta com o nome não é o atualizador
     assert atualizacao.tem_o_atualizador(tmp_path) is False
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Os leves 1 e 2 do quarto "quem tenta quebrar": o registro diz o que acontece (Samuel, 25/11/2026: "Conserta as três
+# frases do registro agora")
+# ---------------------------------------------------------------------------------------------------------------------
+
+def _registros(efeitos) -> list[str]:
+    return [ef.texto for ef in efeitos if isinstance(ef, fases.Registrar)]
+
+
+def test_leve1_a_guarda_que_falha_nao_diz_que_o_teste_roda_de_novo():
+    """Leve 1: desde a D-856 a versão aprovada não é testada de novo; o registro da guarda que falha dizia "o teste
+    roda de novo na próxima abertura". Agora diz que a última boa de antes continua e a versão não é testada de novo.
+    No código de antes: a frase antiga."""
+    antes = fases.Estado(fase=fases.Fase.GUARDANDO, versao="1.2.0", nova="1.2.0")
+    _, efeitos = fases.proxima_fase(antes, fases.UltimaBoaGuardada(False, "falta espaço"))
+    textos = _registros(efeitos)
+    assert not [t for t in textos if "roda de novo" in t]
+    assert [t for t in textos if "não é testada de novo" in t]
+
+
+def test_leve2_o_pacote_esperando_nao_diz_que_esta_baixando():
+    """Leve 2: sem internet, o pacote esperando (já no computador, D-859) é oferecido pela assinatura guardada; o
+    registro dizia "publicada e assinada pelo Samuel: baixando", e ali nada é baixado nem lido da publicação. Com a
+    versão achada na publicação e ainda não baixada, a frase de sempre. No código de antes: a frase de sempre nos dois."""
+    esperando = fases.Estado(fase=fases.Fase.CONFERINDO, versao="1.1.0", nova="1.2.0", pendente="1.2.0")
+    textos = _registros(fases.proxima_fase(esperando, fases.Assinatura(True))[1])
+    assert textos and not [t for t in textos if "publicada" in t or "baixando" in t]
+    assert [t for t in textos if "já está no computador" in t]
+    publicada = fases.Estado(fase=fases.Fase.CONFERINDO, versao="1.1.0", nova="1.2.0")
+    assert _registros(fases.proxima_fase(publicada, fases.Assinatura(True))[1]) == [
+        "versão 1.2.0 publicada e assinada pelo Samuel: baixando"]

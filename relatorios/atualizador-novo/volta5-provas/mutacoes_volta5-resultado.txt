@@ -1,7 +1,7 @@
 SEM MUTACAO: nenhum teste falhou
 V1 (D-868: a frase de antes da janela volta para a fila da janela): ACUSADA por tests/test_decisoes_atualizacao_volta5.py: FAILED tests/test_decisoes_atualizacao_volta5.py::test_d868_a_versao_reprovada_mostra_a_caixa_do_windows_e_depois_abre[primeira_depois_do_msi]
 V2 (a frase da caixa conta como vista mesmo sem o OK): ACUSADA por tests/test_atualizador_volta5.py: FAILED tests/test_atualizador_volta5.py::test_a_frase_que_a_caixa_nao_mostrou_fica_para_a_proxima_abertura
-V3 (a frase que a caixa não mostrou não é guardada para a próxima abertura): ACUSADA por tests/test_atualizador_volta5.py: FAILED tests/test_atualizador_volta5.py::test_a_frase_que_a_caixa_nao_mostrou_fica_para_a_proxima_abertura
+V3 (a frase da caixa não é guardada antes de aparecer (se a caixa não aparece, ou se o programa morre com ela na tela, a frase se perde)): ACUSADA por tests/test_atualizador_volta5.py: FAILED tests/test_atualizador_volta5.py::test_a_frase_que_a_caixa_nao_mostrou_fica_para_a_proxima_abertura
 V4 (a caixa é chamada sem área de trabalho à vista): ACUSADA por tests/test_atualizador_volta5.py: FAILED tests/test_atualizador_volta5.py::test_a_caixa_nao_e_chamada_sem_area_de_trabalho_a_vista
 V5 (qualquer volta da caixa (não só o OK) conta como 'viu'): ACUSADA por tests/test_atualizador_volta5.py: FAILED tests/test_atualizador_volta5.py::test_a_caixa_so_conta_o_ok[2-False]
 V6 (a reprovada é testada de novo em toda abertura): ACUSADA por tests/test_decisoes_atualizacao_volta5.py: FAILED tests/test_decisoes_atualizacao_volta5.py::test_d868_a_reprovada_nao_e_testada_de_novo_e_a_caixa_nao_se_repete
@@ -18,5 +18,8 @@ V16 (M5/X18: a assinatura guardada do pacote esperando não é conferida): ACUSA
 V17 (a caixa do Windows com outro texto que não o da escolha única): ACUSADA por tests/test_decisoes_atualizacao_volta5.py: FAILED tests/test_decisoes_atualizacao_volta5.py::test_d868_a_versao_reprovada_mostra_a_caixa_do_windows_e_depois_abre[primeira_depois_do_msi]
 V18 (a caixa do Windows com outro título): ACUSADA por tests/test_decisoes_atualizacao_volta5.py: FAILED tests/test_decisoes_atualizacao_volta5.py::test_d868_a_versao_reprovada_mostra_a_caixa_do_windows_e_depois_abre[primeira_depois_do_msi]
 V19 (a frase da D-868 com outras palavras): ACUSADA por tests/test_decisoes_atualizacao_volta5.py: FAILED tests/test_decisoes_atualizacao_volta5.py::test_d868_a_versao_reprovada_mostra_a_caixa_do_windows_e_depois_abre[primeira_depois_do_msi]
+V21 (leve 1: o registro da guarda que falha volta a dizer que o teste roda de novo): ACUSADA por tests/test_atualizador_volta5.py: FAILED tests/test_atualizador_volta5.py::test_leve1_a_guarda_que_falha_nao_diz_que_o_teste_roda_de_novo
+V22 (leve 2: o pacote esperando volta a dizer 'publicada [...]: baixando'): ACUSADA por tests/test_atualizador_volta5.py: FAILED tests/test_atualizador_volta5.py::test_leve2_o_pacote_esperando_nao_diz_que_esta_baixando
 V20 (a frase da reprovada não é mostrada (só reprovada no bilhete)): ACUSADA por tests/test_decisoes_atualizacao_volta5.py: FAILED tests/test_decisoes_atualizacao_volta5.py::test_d868_a_versao_reprovada_mostra_a_caixa_do_windows_e_depois_abre[primeira_depois_do_msi]
-git status dos arquivos mexidos depois: limpo
+git status dos arquivos mexidos depois: M atualizacao.py
+ M core/fases_da_atualizacao.py

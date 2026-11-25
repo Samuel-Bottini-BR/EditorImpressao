@@ -311,6 +311,11 @@ continuam na caixa da janela.
 
 ## Perguntas para o Samuel (§11.13; a gerente leva à Central)
 
+**RESPONDIDA em 25/11/2026 (recado da gerente, palavras dele coladas do recado do Fable): "Fica a A."** A frase que já
+estava construída fica: "Não deu para atualizar: o atualizador do programa sumiu do computador. O programa continua
+funcionando. Avise o Samuel." (`atualizacao.FRASE_SEM_ATUALIZADOR`; o comentário dela passou a dizer que é a escolha
+dele). O texto da pergunta, como foi entregue:
+
 **1. A frase de quando o atualizador do programa some do computador.**
 
 Do que se trata: é a caixa "Atualização" que aparece quando o Kaique clica **"Reiniciar agora"** no aviso da versão
@@ -388,14 +393,24 @@ faz a mesma busca pela árvore do código.
 | M5 (X11, X18 sem teste) | **Dois testes** (três casos); mutações acusadas |
 | M6 (a marca de "sem volta" que não grava) | **Saiu com a volta** |
 
-Os leves (o Samuel ainda não decidiu; não mexi, menos o que mudou sozinho):
-1. o registro "o teste roda de novo na próxima abertura" na guarda que falha: **ficou** (texto só do registro; não mexi);
-2. "versão ... publicada e assinada pelo Samuel: baixando" para o pacote esperando sem internet: **ficou**;
-3. o texto velho da tabela ("o nome final é tirado do caminho"): **mudou** sozinho: a tabela da volta 5, refeita, descreve
-   o que o código faz ("a assinatura só no fim, a regra do leve 1");
-4. o `.chegando` que sobra depois da guarda morta: **ficou**;
-5. a outra conta de espaço (`configuracoes.espaco_livre_mb`): **ficou** (não é do atualizador);
-6. o título e as duas primeiras frases do aviso da versão nova fora do Livro: **ficou**.
+Os leves. Palavras do Samuel (25/11/2026, pela gerente): "Conserta as três frases do registro agora; os outros
+pequenos ficam para depois. As frases do aviso de versão nova ficam como estão. Anotar: `configuracoes.espaco_livre_mb`
+é código morto — apagar depois da entrega, e rodar um caça-código-morto no programa inteiro na arrumação."
+1. o registro "o teste roda de novo na próxima abertura" na guarda que falha: **consertado** (só o texto): agora "a
+   última boa de antes continua, e a versão não é testada de novo (já está aprovada)" (`fases.proxima_fase`,
+   `UltimaBoaGuardada`). Teste `test_atualizador_volta5::test_leve1_*` (falha em `aba7b844`); mutação V21;
+2. "versão ... publicada e assinada pelo Samuel: baixando" para o pacote esperando: **consertado** (só o texto): com o
+   pacote da versão já no computador, o registro diz "a versão X tem a assinatura do Samuel e o pacote dela já está no
+   computador: nada a baixar"; a versão achada na publicação e ainda não baixada continua com a frase de sempre.
+   Teste `test_atualizador_volta5::test_leve2_*` (falha em `aba7b844`); mutação V22. Nenhum teste antigo cobrava as
+   frases antigas do registro: nenhum teste mudou por isso;
+3. o texto velho da tabela ("o nome final é tirado do caminho"): **conferido**: a casinha "Guardar × o nome final preso"
+   da tabela da volta 5 diz "a assinatura só no fim (a regra do leve 1); nada é dado como guardado", que é o que
+   `guardar_ultima_boa` faz (o pacote conferido vai para o nome final e só então a assinatura é gravada, por último);
+4. o `.chegando` que sobra depois da guarda morta: **ficou** (para depois);
+5. `configuracoes.espaco_livre_mb`: **ficou**; é código morto e será apagado depois da entrega (congelamento da D-765),
+   com um caça-código-morto no programa inteiro na arrumação;
+6. o título e as duas primeiras frases do aviso da versão nova: **ficam como estão** (palavra dele).
 
 ## Caminho → função (§11.12)
 
@@ -457,7 +472,7 @@ pelo disco, não pelo texto do erro); volta (o aviso de novo: EXECUTADO com a bi
   a frase própria e a janela continua; fechar: nada; a abertura seguinte sem ele: nada (a biblioteca recusa: "Update.exe
   does not exist"); ele volta: o aviso de novo (a biblioteca procura, o pacote já baixado é reaproveitado); "Sim" ao
   fechar sem ele: a troca não é pedida e a frase própria aparece na abertura seguinte, pela caixa.
-- **Executado:** as 20 mutações desta volta (`mutacoes_volta5-resultado.txt`: todas acusadas; a primeira linha, sem
+- **Executado:** as 22 mutações desta volta (as 20 primeiras e as dos leves 1 e 2, rodadas todas de novo no código final) (`mutacoes_volta5-resultado.txt`: todas acusadas; a primeira linha, sem
   mutação, nenhum teste falhou; `git status` limpo depois); os testes novos no código antigo e os antigos no novo
   (`volta5-testes-no-codigo-antigo.txt`); os testes, um arquivo por vez (abaixo).
 - **Só lido:** a documentação da Microsoft da caixa (a seção da leitura); o código do Velopack que cito (`locator.rs`
@@ -469,9 +484,9 @@ pelo disco, não pelo texto do erro); volta (o aviso de novo: EXECUTADO com a bi
 | Arquivo | `aba7b844` | agora |
 |---|---|---|
 | `atualizacao.py` | 878 | 867 |
-| `core/fases_da_atualizacao.py` | 432 | 413 |
+| `core/fases_da_atualizacao.py` | 432 | 415 |
 | `core/conversa_com_o_velopack.py` | 70 | 70 |
-| total dos três | 1380 | **1350 (menos 30, −2,2%)** |
+| total dos três | 1380 | **1352 (menos 28, −2,0%)** |
 | `core/windows.py` (a peça; a caixa entrou nela) | 2083 | 2127 (+44: as constantes, a estrutura, duas funções, três declarações) |
 
 Encolheu menos do que a volta saiu porque entraram a caixa do Windows no executor (a escolha do lugar, a guarda da
@@ -479,7 +494,8 @@ frase), a regra da frase velha (M1), a conferência do `Update.exe` (M2) e a fra
 
 ## Perguntas para a gerente (não são para o Samuel; decido nada sozinho nelas)
 
-1. **A abertura ainda lista os nomes da pasta da última boa** (`ler_ultima_boa`), só para saber se a versão que roda é
+1. **RESPONDIDA pela gerente em 25/11: "deixe como está. Ela só decide quem é testado, e mudar isso mexeria em testes
+   antigos (§11.8)."** Fica como está. O texto da pergunta: **A abertura ainda lista os nomes da pasta da última boa** (`ler_ultima_boa`), só para saber se a versão que roda é
    a última boa (a regra de quem é testado, D-856/D-857, de antes). Nada volta para ela nem lê o pacote. O pedido dizia
    "nada automático lê dela"; tirar essa leitura (decidir só pela marca de aprovada e pelo pacote em `packages`) daria o
    mesmo resultado nas instalações de verdade, mas muda a regra de quem é testado nas montagens de prova de uns 20
@@ -554,12 +570,45 @@ frase), a regra da frase velha (M1), a conferência do `Update.exe` (M2) e a fra
 
 ## Os testes (um arquivo por vez, a pasta temporária no D:)
 
-RODADA_AQUI
+Rodados no meu PC, um arquivo por vez, a pasta temporária no D: (`volta5-provas/rodar_testes.sh`):
+- **A rodada larga** (os arquivos do atualizador, da peça do Windows, do porteiro e da trava, e os **64
+  `tests/test_decisoes*.py`**): **80 arquivos, 3511 passaram, 13 pulados, nenhum falhou.** Ela começou antes de três
+  mudanças pequenas desta volta (a frase guardada antes da caixa, os leves 1 e 2 do registro, comentários); por isso
+  rodei de novo, no código final, todos os arquivos que importam o atualizador:
+- **A rodada final dos arquivos tocados** (21 arquivos, todos passam):
+
+```
+tests/test_atualizador_volta5.py | 21 passed, 1 warning in 4.22s
+tests/test_decisoes_atualizacao_volta5.py | 22 passed, 1 warning in 5.54s
+tests/test_atualizador_volta4.py | 18 passed in 2.77s
+tests/test_fases_da_atualizacao.py | 2255 passed in 3.60s
+tests/test_atualizador_d851.py | 3 passed in 0.97s
+tests/test_atualizador_novo.py | 31 passed in 14.99s
+tests/test_atualizador_volta2.py | 31 passed in 2.66s
+tests/test_atualizador_volta3.py | 32 passed in 6.30s
+tests/test_atualizador_volta3_de_verdade.py | 4 passed, 1 skipped in 1.36s
+tests/test_decisoes_atualizacao.py | 38 passed in 4.49s
+tests/test_decisoes_ajudante_da_atualizacao.py | 22 passed in 2.89s
+tests/test_velopack_de_verdade.py | 3 passed in 0.78s
+tests/test_windows_preparo_do_computador.py | 19 passed, 1 skipped in 3.82s
+tests/test_porteiro_licenca_que_acrescenta.py | 14 passed in 2.23s
+tests/test_trava_windows.py | 42 passed, 3 skipped in 8.31s
+tests/test_assinatura.py | 16 passed in 0.77s
+tests/test_windows_peca.py | 68 passed, 3 skipped in 59.76s
+tests/test_decisoes_desinstalar.py | 45 passed in 27.13s
+tests/test_decisoes_testes_a_distancia.py | 13 passed in 0.90s
+tests/test_decisoes_brasao.py | 20 passed in 13.11s
+tests/test_decisoes_preparo_d749.py | 3 passed in 0.92s
+```
+- O porteiro local (`python -m regras_dos_agentes porteiro`): "nada novo (5092 arquivos lidos)", saída 0.
+- O conjunto inteiro e o `teste_botoes.py` ficam com a rodada do GitHub (da gerente). O formulário de entrega
+  (`regras_dos_agentes entrega`) pede o pacote do pedido da gerente, que eu não tenho: não rodei.
 
 ## Onde estou
 
-Feito e no ramo (commits `90748bac`, `590eef24`, `5f988f17`, `2b5ab642`, `8ccffd53`, `a3d5349b` e os desta entrega).
-Falta: a rodada do GitHub e a prova à vista (da gerente), e a resposta do Samuel à frase do M2.
+Feito e no ramo (commits `90748bac`, `590eef24`, `5f988f17`, `2b5ab642`, `8ccffd53`, `a3d5349b`, `2873bc96` e o
+das respostas de 25/11). A frase do M2 foi respondida ("Fica a A"); os leves 1 e 2 consertados (só o texto do registro).
+Falta: a rodada do GitHub e a prova à vista (da gerente).
 
 # Volta 4 — o código (24/11/2026)
 

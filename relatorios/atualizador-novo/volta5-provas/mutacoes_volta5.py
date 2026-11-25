@@ -82,6 +82,12 @@ MUTACOES = [
     ("V19", "a frase da D-868 com outras palavras", A,
      "FRASE_DA_VERSAO_REPROVADA = \"A versão nova não funcionou. Não desinstale nada. Avise o Samuel.\"",
      "FRASE_DA_VERSAO_REPROVADA = \"A versão nova não funcionou. Avise o Samuel.\""),
+    ("V21", "leve 1: o registro da guarda que falha volta a dizer que o teste roda de novo", F,
+     "\"boa de antes continua, e a versão não é testada de novo (já está aprovada)\"",
+     "\"boa de antes continua; o teste roda de novo na próxima abertura\""),
+    ("V22", "leve 2: o pacote esperando volta a dizer 'publicada [...]: baixando'", F,
+     "                     \"baixar\" if estado.pendente == estado.nova else",
+     "                     \"baixar\" if False else"),
     ("V20", "a frase da reprovada não é mostrada (só reprovada no bilhete)", F,
      "        efeitos += _frase(reprovada, FALHA_REPROVADA, estado.nova)\n", ""),
 ]

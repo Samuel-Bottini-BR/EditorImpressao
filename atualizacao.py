@@ -43,7 +43,8 @@ CAMINHO -> FUNÇÃO (§11.12; volta 3, emenda do Fable: a abertura deriva o esta
                                     marcar (a ÚNICA escrita das marcas) + GuardarUltimaBoa -> guardar_ultima_boa (a
                                     ÚNICA que guarda o pacote; o espaço por espaco_livre_basta, a mesma conta do motor);
                                     não passou: Reprovar -> reprovar (a ÚNICA que põe em "não tentar") + MostrarFalha
-                                    (a frase da D-868) e a abertura segue (volta 5: nada volta sozinho, D-867)
+                                    (a frase da D-868); a atualização para nesta abertura e o programa abre (volta 5:
+                                    nada volta sozinho, D-867)
     uma frase na tela               efeito MostrarFalha -> Atualizacao._para_a_tela (a ÚNICA escolha do lugar): com a
                                     janela aberta, ui -> frase_da_falha (a ÚNICA escolha do texto); sem a janela ainda,
                                     _na_caixa_do_windows -> core.windows.mostrar_caixa_do_windows (D-868); sem janela
@@ -136,8 +137,8 @@ FRASE_DA_OUTRA_JANELA = "Feche a outra janela do programa e clique de novo."
 # D-845 (Samuel, 24/11/2026: "ok"): todo outro "não deu" do "Reiniciar agora", com o motivo em português simples.
 FRASE_NAO_DEU_AGORA = "Não deu para atualizar agora: {motivo}. Tente ao fechar o programa."
 # Volta 5, M2 do quarto "quem tenta quebrar" (D-870: "frase própria, sem 'tente ao fechar'"): o atualizador do Velopack
-# (`Update.exe`) sumiu do computador (um antivírus o pôs de lado). AS PALAVRAS AINDA NÃO SÃO DO SAMUEL: é a primeira das
-# três sugestões do implementador ("Perguntas para o Samuel" do ONDE-PAREI da volta 5). Trocar o texto é só aqui.
+# (`Update.exe`) sumiu do computador (um antivírus o pôs de lado). Palavras escolhidas pelo Samuel em 25/11/2026 ("Fica a
+# A", a primeira das três sugestões do ONDE-PAREI da volta 5). Trocar o texto é só aqui.
 FRASE_SEM_ATUALIZADOR = ("Não deu para atualizar: o atualizador do programa sumiu do computador. O programa continua "
                          "funcionando. Avise o Samuel.")
 # Os motivos (texto de tela que o Samuel ainda não aprovou palavra por palavra: estão em "Perguntas para o Samuel" do

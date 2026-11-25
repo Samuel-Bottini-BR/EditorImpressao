@@ -531,8 +531,9 @@ def _ignorado(estado: Estado, evento: Evento) -> tuple[Estado, list[Efeito]]:
 
 
 def _frase(estado: Estado, tipo: str, versao: str, motivo_da_tela: str = "") -> list[Efeito]:
-    """Uma frase de falha desta abertura: na janela, uma vez por nome; sem janela, guardada no bilhete para a próxima
-    abertura com janela (um lugar só para essa escolha)."""
+    """Uma frase de falha desta abertura: mostrada uma vez por nome (na caixa da janela, ou, se a janela ainda não
+    existe, na caixa do Windows: a escolha do lugar é do executor, D-868); na reabertura sem janela (o "Sim" ao fechar,
+    D-769: nada aparece na tela), guardada no bilhete para a próxima abertura (um lugar só para essa escolha)."""
     if estado.sem_janela:
         return [GuardarFrase(tipo, versao, motivo_da_tela)]
     return [MostrarFalha(tipo, id_da_falha(tipo, versao), motivo_da_tela)]
@@ -670,8 +671,8 @@ def proxima_fase(estado: Estado, evento: Evento) -> tuple[Estado, list[Efeito]]:
     if isinstance(e, UltimaBoaGuardada) and f is Fase.GUARDANDO:
         efeitos: list[Efeito] = [Registrar(
             f"a versão {estado.nova} passou no teste rápido e está guardada como a última boa" if e.certa else
-            f"a versão {estado.nova} passou no teste rápido, mas o pacote dela não foi guardado ({e.motivo}): o teste "
-            "roda de novo na próxima abertura")]
+            f"a versão {estado.nova} passou no teste rápido, mas o pacote dela não foi guardado ({e.motivo}): a última "
+            "boa de antes continua, e a versão não é testada de novo (já está aprovada)")]
         if estado.sem_janela:
             return replace(estado, fase=Fase.PARADO), efeitos + [Sair(0)]
         return replace(estado, fase=Fase.MOTOR), efeitos + [GarantirMotor()]
@@ -704,8 +705,13 @@ def proxima_fase(estado: Estado, evento: Evento) -> tuple[Estado, list[Efeito]]:
 
     if isinstance(e, Assinatura) and f is Fase.CONFERINDO:
         if e.certa:
-            return replace(estado, fase=Fase.BAIXANDO), [
-                Registrar(f"versão {estado.nova} publicada e assinada pelo Samuel: baixando"), Baixar(estado.nova)]
+            # Volta 5 (leve 2 do quarto "quem tenta quebrar"): com o pacote da versão já no computador (o pacote
+            # esperando, D-859), nada é baixado nem lido da publicação (o Velopack não baixa o que já está lá,
+            # manager.rs 413-416); o registro diz isso, e não "publicada [...]: baixando". Só o texto muda.
+            texto = (f"a versão {estado.nova} tem a assinatura do Samuel e o pacote dela já está no computador: nada a "
+                     "baixar" if estado.pendente == estado.nova else
+                     f"versão {estado.nova} publicada e assinada pelo Samuel: baixando")
+            return replace(estado, fase=Fase.BAIXANDO), [Registrar(texto), Baixar(estado.nova)]
         if e.sem_rede:
             # Volta 4: a rede que não respondeu não é a assinatura recusada (a frase 2 seria falsa).
             return replace(estado, fase=Fase.PARADO), [Registrar(
