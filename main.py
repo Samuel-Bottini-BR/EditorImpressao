@@ -102,10 +102,12 @@ def main() -> int:
     # Atualizacao (atualizador novo, 23/11/2026): liga a janela ao executor
     # da atualizacao desta abertura (atualizacao.da_abertura), que ja comecou
     # em atender_linha_de_comando e procura a versao nova por tras (D-732);
-    # daqui em diante o aviso da versao nova (D-715, D-720, D-835) e o da
-    # atualizacao que falhou (D-719, D-778) aparecem nesta janela. So no
-    # programa instalado pelo Velopack; pelo codigo nao faz nada. Ver
-    # ui/aviso_de_atualizacao.py.
+    # daqui em diante o aviso da versao nova (D-715, D-720, D-835) e as
+    # frases da atualizacao aparecem nesta janela. As frases que chegaram
+    # ANTES de a janela existir ja apareceram na caixa do proprio Windows
+    # (volta 5, D-868: atualizacao.Atualizacao._para_a_tela), porque a janela
+    # de uma versao estragada pode nem abrir. So no programa instalado pelo
+    # Velopack; pelo codigo nao faz nada. Ver ui/aviso_de_atualizacao.py.
     from ui.aviso_de_atualizacao import ligar_na_janela
 
     ligar_na_janela(janela)

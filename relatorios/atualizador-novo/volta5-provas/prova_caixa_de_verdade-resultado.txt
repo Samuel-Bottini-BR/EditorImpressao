@@ -1,0 +1,289 @@
+[
+ {
+  "caso": "A",
+  "grupo": "A",
+  "abertura": "primeira",
+  "testes rápidos rodados": 1,
+  "pedidos ao Velopack": [],
+  "área de trabalho à vista (a peça leu)": true,
+  "linha do tempo": [
+   [
+    1795617596.182,
+    "o programa abriu (antes da janela)"
+   ],
+   [
+    1795617596.253,
+    "a caixa do Windows vai aparecer"
+   ],
+   [
+    1795617597.506,
+    "a caixa do Windows voltou: deu certo"
+   ],
+   [
+    1795617597.508,
+    "a atualização terminou a abertura: None (None = o programa abre a janela)"
+   ],
+   [
+    1795617599.392,
+    "main.main() começa (o programa tenta abrir)"
+   ],
+   [
+    1795617601.255,
+    "o processo do programa termina"
+   ]
+  ],
+  "o main.main() parou com": "ModuleNotFoundError: import of ui.janela_principal halted; None in sys.modules",
+  "caixas do programa (Qt, anotadas)": [
+   "[Um momento] Aconteceu um problema inesperado, mas o programa continua funcionando."
+  ],
+  "frases vistas nesta conta": [
+   "reprovada-1.2.0"
+  ],
+  "bilhete": {
+   "reprovadas": [
+    "1.2.0"
+   ]
+  },
+  "caixas do Windows achadas na área de trabalho de prova (lidas da própria caixa)": [
+   {
+    "quando": 1795617596.8194978,
+    "titulo": "Atualização",
+    "texto": [
+     "A versão nova não funcionou. Não desinstale nada. Avise o Samuel."
+    ],
+    "botoes": [
+     "OK"
+    ],
+    "print": "A-primeira-caixa-1.png (415x159, PrintWindow=ok)",
+    "clicou": "o botão 2",
+    "clicado_em": 1795617597.444463
+   }
+  ]
+ },
+ {
+  "caso": "A",
+  "grupo": "A",
+  "abertura": "seguinte",
+  "testes rápidos rodados": 0,
+  "pedidos ao Velopack": [
+   "procurar"
+  ],
+  "área de trabalho à vista (a peça leu)": true,
+  "linha do tempo": [
+   [
+    1795617602.55,
+    "o programa abriu (antes da janela)"
+   ],
+   [
+    1795617602.575,
+    "a atualização terminou a abertura: None (None = o programa abre a janela)"
+   ],
+   [
+    1795617602.685,
+    "main.main() começa (o programa tenta abrir)"
+   ],
+   [
+    1795617602.893,
+    "o processo do programa termina"
+   ]
+  ],
+  "o main.main() parou com": "ModuleNotFoundError: import of ui.janela_principal halted; None in sys.modules",
+  "caixas do programa (Qt, anotadas)": [
+   "[Um momento] Aconteceu um problema inesperado, mas o programa continua funcionando."
+  ],
+  "frases vistas nesta conta": [
+   "reprovada-1.2.0"
+  ],
+  "bilhete": {
+   "reprovadas": [
+    "1.2.0"
+   ]
+  },
+  "caixas do Windows achadas na área de trabalho de prova (lidas da própria caixa)": []
+ },
+ {
+  "caso": "B",
+  "grupo": "B",
+  "abertura": "primeira",
+  "testes rápidos rodados": 1,
+  "pedidos ao Velopack": [],
+  "área de trabalho à vista (a peça leu)": true,
+  "linha do tempo": [
+   [
+    1795617604.035,
+    "o programa abriu (antes da janela)"
+   ],
+   [
+    1795617604.043,
+    "a caixa do Windows vai aparecer"
+   ],
+   [
+    1795617604.684,
+    "a caixa do Windows voltou: deu certo"
+   ],
+   [
+    1795617604.686,
+    "a atualização terminou a abertura: None (None = o programa abre a janela)"
+   ],
+   [
+    1795617604.939,
+    "main.main() começa (o programa tenta abrir)"
+   ],
+   [
+    1795617613.115,
+    "a janela do programa abriu: JanelaPrincipal"
+   ],
+   [
+    1795617613.706,
+    "o processo do programa termina"
+   ]
+  ],
+  "o main.main() parou com": "",
+  "caixas do programa (Qt, anotadas)": [],
+  "frases vistas nesta conta": [
+   "reprovada-1.2.0"
+  ],
+  "bilhete": {
+   "reprovadas": [
+    "1.2.0"
+   ]
+  },
+  "caixas do Windows achadas na área de trabalho de prova (lidas da própria caixa)": [
+   {
+    "quando": 1795617604.6477592,
+    "titulo": "Atualização",
+    "texto": [
+     "A versão nova não funcionou. Não desinstale nada. Avise o Samuel."
+    ],
+    "botoes": [
+     "OK"
+    ],
+    "print": "B-primeira-caixa-1.png (415x159, PrintWindow=ok)",
+    "clicou": "o botão 2",
+    "clicado_em": 1795617604.6746435
+   }
+  ]
+ },
+ {
+  "caso": "C",
+  "grupo": "C",
+  "abertura": "primeira",
+  "testes rápidos rodados": 1,
+  "pedidos ao Velopack": [],
+  "área de trabalho à vista (a peça leu)": false,
+  "linha do tempo": [
+   [
+    1795617615.1,
+    "o programa abriu (antes da janela)"
+   ],
+   [
+    1795617615.11,
+    "a caixa do Windows vai aparecer"
+   ],
+   [
+    1795617615.111,
+    "a caixa do Windows voltou: falhou não há área de trabalho à vista: a caixa do Windows não foi mostrada"
+   ],
+   [
+    1795617615.116,
+    "a atualização terminou a abertura: None (None = o programa abre a janela)"
+   ],
+   [
+    1795617615.267,
+    "main.main() começa (o programa tenta abrir)"
+   ],
+   [
+    1795617615.983,
+    "a janela do programa abriu: JanelaPrincipal"
+   ],
+   [
+    1795617616.491,
+    "o processo do programa termina"
+   ]
+  ],
+  "o main.main() parou com": "",
+  "caixas do programa (Qt, anotadas)": [],
+  "frases vistas nesta conta": [],
+  "bilhete": {
+   "reprovadas": [
+    "1.2.0"
+   ],
+   "frase": {
+    "tipo": "reprovada",
+    "nome": "reprovada-1.2.0",
+    "motivo": ""
+   }
+  },
+  "caixas do Windows achadas na área de trabalho de prova (lidas da própria caixa)": []
+ },
+ {
+  "caso": "B",
+  "grupo": "C",
+  "abertura": "seguinte",
+  "testes rápidos rodados": 0,
+  "pedidos ao Velopack": [
+   "procurar"
+  ],
+  "área de trabalho à vista (a peça leu)": true,
+  "linha do tempo": [
+   [
+    1795617617.623,
+    "o programa abriu (antes da janela)"
+   ],
+   [
+    1795617617.628,
+    "a caixa do Windows vai aparecer"
+   ],
+   [
+    1795617618.142,
+    "a caixa do Windows voltou: deu certo"
+   ],
+   [
+    1795617618.149,
+    "a atualização terminou a abertura: None (None = o programa abre a janela)"
+   ],
+   [
+    1795617618.254,
+    "main.main() começa (o programa tenta abrir)"
+   ],
+   [
+    1795617619.04,
+    "a janela do programa abriu: JanelaPrincipal"
+   ],
+   [
+    1795617619.534,
+    "o processo do programa termina"
+   ]
+  ],
+  "o main.main() parou com": "",
+  "caixas do programa (Qt, anotadas)": [],
+  "frases vistas nesta conta": [
+   "reprovada-1.2.0"
+  ],
+  "bilhete": {
+   "reprovadas": [
+    "1.2.0"
+   ],
+   "frase": {
+    "tipo": "reprovada",
+    "nome": "reprovada-1.2.0",
+    "motivo": ""
+   }
+  },
+  "caixas do Windows achadas na área de trabalho de prova (lidas da própria caixa)": [
+   {
+    "quando": 1795617618.1260853,
+    "titulo": "Atualização",
+    "texto": [
+     "A versão nova não funcionou. Não desinstale nada. Avise o Samuel."
+    ],
+    "botoes": [
+     "OK"
+    ],
+    "print": "C-seguinte-caixa-1.png (415x159, PrintWindow=ok)",
+    "clicou": "o botão 2",
+    "clicado_em": 1795617618.1341782
+   }
+  ]
+ }
+]
