@@ -1,28 +1,32 @@
 [
  {
   "grupo": "FUNDO",
-  "ação da vigia": "ok",
+  "ação da vigia": "espera",
   "caso": "fundo",
   "abertura": "a1",
   "tempo": [
    [
-    1795630657.863,
+    1795630899.762,
+    "as áreas de trabalho deste processo, conferidas: {'principal': 'EditorProvaQtq5', 'fio_novo': 'EditorProvaQtq5'}"
+   ],
+   [
+    1795630900.365,
     "abrir"
    ],
    [
-    1795630657.915,
+    1795630900.399,
     "a caixa vai aparecer (fio atualizacao)"
    ],
    [
-    1795630658.87,
+    1795630901.37,
     "a janela abre (ligar_a_tela)"
    ],
    [
-    1795630658.87,
+    1795630901.37,
     "ligar_a_tela voltou (a janela não esperou o OK)"
    ],
    [
-    1795630661.616,
+    1795630907.014,
     "a caixa voltou: deu certo"
    ]
   ],
@@ -37,18 +41,33 @@
     "motivo": ""
    }
   },
-  "a vigia (a caixa lida do Windows)": []
+  "código de saída": 0,
+  "a vigia (a caixa lida do Windows, na área separada)": [
+   {
+    "apareceu": 1795630901.002,
+    "titulo": "Atualização",
+    "texto": [
+     "Chegou uma versão nova, mas ela não foi instalada porque não tem a assinatura do Samuel. O programa continua funcionando. Avise o Samuel."
+    ],
+    "botoes": [
+     "OK"
+    ],
+    "fez": "clicou o botão 2 (OK)",
+    "quando": 1795630907.003
+   }
+  ],
+  "a guarda da tela do Samuel": "nenhuma janela dos processos da prova na tela normal"
  },
  {
   "grupo": "MATAR",
   "ação da vigia": "matar",
   "caso": "reprovada",
   "abertura": "a1",
-  "sem resultado (o processo morreu?)": "",
+  "sem resultado (o processo morreu?)": true,
   "código de saída": 9,
-  "a vigia (a caixa lida do Windows)": [
+  "a vigia (a caixa lida do Windows, na área separada)": [
    {
-    "apareceu": 1795630663.36,
+    "apareceu": 1795630908.548,
     "titulo": "Atualização",
     "texto": [
      "A versão nova não funcionou. Não desinstale nada. Avise o Samuel."
@@ -56,10 +75,11 @@
     "botoes": [
      "OK"
     ],
-    "fez": "matou o processo 5852: True",
-    "quando": 1795630663.36
+    "fez": "matou o processo 2092: True",
+    "quando": 1795630908.548
    }
-  ]
+  ],
+  "a guarda da tela do Samuel": "nenhuma janela dos processos da prova na tela normal"
  },
  {
   "grupo": "MATAR",
@@ -68,19 +88,23 @@
   "abertura": "a2",
   "tempo": [
    [
-    1795630668.822,
+    1795630908.922,
+    "as áreas de trabalho deste processo, conferidas: {'principal': 'EditorProvaQtq5', 'fio_novo': 'EditorProvaQtq5'}"
+   ],
+   [
+    1795630909.564,
     "abrir"
    ],
    [
-    1795630669.198,
+    1795630909.592,
     "a caixa vai aparecer (fio MainThread)"
    ],
    [
-    1795630669.802,
+    1795630910.17,
     "a caixa voltou: deu certo"
    ],
    [
-    1795630670.06,
+    1795630910.18,
     "a abertura voltou None: SÓ AGORA o programa tentaria abrir a janela"
    ]
   ],
@@ -98,9 +122,10 @@
     "motivo": ""
    }
   },
-  "a vigia (a caixa lida do Windows)": [
+  "código de saída": 0,
+  "a vigia (a caixa lida do Windows, na área separada)": [
    {
-    "apareceu": 1795630669.784,
+    "apareceu": 1795630910.162,
     "titulo": "Atualização",
     "texto": [
      "A versão nova não funcionou. Não desinstale nada. Avise o Samuel."
@@ -109,9 +134,10 @@
      "OK"
     ],
     "fez": "clicou o botão 2 (OK)",
-    "quando": 1795630669.784
+    "quando": 1795630910.162
    }
-  ]
+  ],
+  "a guarda da tela do Samuel": "nenhuma janela dos processos da prova na tela normal"
  },
  {
   "grupo": "MATAR",
@@ -120,11 +146,15 @@
   "abertura": "a3",
   "tempo": [
    [
-    1795630672.032,
+    1795630910.54,
+    "as áreas de trabalho deste processo, conferidas: {'principal': 'EditorProvaQtq5', 'fio_novo': 'EditorProvaQtq5'}"
+   ],
+   [
+    1795630911.048,
     "abrir"
    ],
    [
-    1795630672.067,
+    1795630911.054,
     "a abertura voltou None: SÓ AGORA o programa tentaria abrir a janela"
    ]
   ],
@@ -142,7 +172,9 @@
     "motivo": ""
    }
   },
-  "a vigia (a caixa lida do Windows)": []
+  "código de saída": 0,
+  "a vigia (a caixa lida do Windows, na área separada)": [],
+  "a guarda da tela do Samuel": "nenhuma janela dos processos da prova na tela normal"
  },
  {
   "grupo": "FECHAR_X",
@@ -151,19 +183,23 @@
   "abertura": "a1",
   "tempo": [
    [
-    1795630674.298,
+    1795630911.368,
+    "as áreas de trabalho deste processo, conferidas: {'principal': 'EditorProvaQtq5', 'fio_novo': 'EditorProvaQtq5'}"
+   ],
+   [
+    1795630911.912,
     "abrir"
    ],
    [
-    1795630674.599,
+    1795630911.923,
     "a caixa vai aparecer (fio MainThread)"
    ],
    [
-    1795630675.161,
+    1795630912.415,
     "a caixa voltou: deu certo"
    ],
    [
-    1795630675.213,
+    1795630912.446,
     "a abertura voltou None: SÓ AGORA o programa tentaria abrir a janela"
    ]
   ],
@@ -181,9 +217,10 @@
     "motivo": ""
    }
   },
-  "a vigia (a caixa lida do Windows)": [
+  "código de saída": 0,
+  "a vigia (a caixa lida do Windows, na área separada)": [
    {
-    "apareceu": 1795630675.148,
+    "apareceu": 1795630912.407,
     "titulo": "Atualização",
     "texto": [
      "A versão nova não funcionou. Não desinstale nada. Avise o Samuel."
@@ -192,9 +229,10 @@
      "OK"
     ],
     "fez": "fechou pelo X (WM_CLOSE)",
-    "quando": 1795630675.149
+    "quando": 1795630912.407
    }
-  ]
+  ],
+  "a guarda da tela do Samuel": "nenhuma janela dos processos da prova na tela normal"
  },
  {
   "grupo": "FECHAR_X",
@@ -203,11 +241,15 @@
   "abertura": "a2",
   "tempo": [
    [
-    1795630676.98,
+    1795630912.769,
+    "as áreas de trabalho deste processo, conferidas: {'principal': 'EditorProvaQtq5', 'fio_novo': 'EditorProvaQtq5'}"
+   ],
+   [
+    1795630913.292,
     "abrir"
    ],
    [
-    1795630677.007,
+    1795630913.297,
     "a abertura voltou None: SÓ AGORA o programa tentaria abrir a janela"
    ]
   ],
@@ -225,7 +267,9 @@
     "motivo": ""
    }
   },
-  "a vigia (a caixa lida do Windows)": []
+  "código de saída": 0,
+  "a vigia (a caixa lida do Windows, na área separada)": [],
+  "a guarda da tela do Samuel": "nenhuma janela dos processos da prova na tela normal"
  },
  {
   "grupo": "ESPERA",
@@ -234,19 +278,23 @@
   "abertura": "a1",
   "tempo": [
    [
-    1795630678.914,
+    1795630913.603,
+    "as áreas de trabalho deste processo, conferidas: {'principal': 'EditorProvaQtq5', 'fio_novo': 'EditorProvaQtq5'}"
+   ],
+   [
+    1795630914.231,
     "abrir"
    ],
    [
-    1795630679.142,
+    1795630914.256,
     "a caixa vai aparecer (fio MainThread)"
    ],
    [
-    1795630685.653,
+    1795630920.857,
     "a caixa voltou: deu certo"
    ],
    [
-    1795630685.655,
+    1795630920.859,
     "a abertura voltou None: SÓ AGORA o programa tentaria abrir a janela"
    ]
   ],
@@ -264,9 +312,10 @@
     "motivo": ""
    }
   },
-  "a vigia (a caixa lida do Windows)": [
+  "código de saída": 0,
+  "a vigia (a caixa lida do Windows, na área separada)": [
    {
-    "apareceu": 1795630679.643,
+    "apareceu": 1795630914.848,
     "titulo": "Atualização",
     "texto": [
      "A versão nova não funcionou. Não desinstale nada. Avise o Samuel."
@@ -275,8 +324,9 @@
      "OK"
     ],
     "fez": "clicou o botão 2 (OK)",
-    "quando": 1795630685.643
+    "quando": 1795630920.848
    }
-  ]
+  ],
+  "a guarda da tela do Samuel": "nenhuma janela dos processos da prova na tela normal"
  }
 ]
