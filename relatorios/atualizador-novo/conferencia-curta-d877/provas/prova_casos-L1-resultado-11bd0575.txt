@@ -1,0 +1,105 @@
+{
+ "codigo": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo",
+ "L1 a troca que o Velopack não fez, duas vezes para a mesma versão": [
+  {
+   "vez": 1,
+   "o Kaique viu": [
+    "CAIXA DO WINDOWS: A atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel."
+   ]
+  },
+  {
+   "vez": 2,
+   "o Kaique viu": []
+  }
+ ],
+ "L2 marca .sem-volta velha no disco": {
+  "ultima boa lida": "0.1.0",
+  "fase": "pronta",
+  "pedidos ao Velopack": [
+   "procurar",
+   "baixar"
+  ],
+  "o Kaique viu": [
+   "JANELA: MostrarVersaoNova"
+  ]
+ },
+ "L3 a reprovada e depois": [
+  {
+   "abertura": "1 (reaberta depois da troca)",
+   "fase": "parado",
+   "pedidos ao Velopack": [],
+   "o Kaique viu antes da janela": [
+    "CAIXA DO WINDOWS: A versão nova não funcionou. Não desinstale nada. Avise o Samuel."
+   ],
+   "reprovadas": [
+    "9.9.0"
+   ]
+  },
+  {
+   "abertura": "2 (pelo atalho)",
+   "testes rodados": 0,
+   "fase": "parado",
+   "pedidos ao Velopack": [
+    "procurar"
+   ],
+   "o Kaique viu": []
+  },
+  {
+   "abertura": "3 (a correção 9.9.1 publicada)",
+   "fase": "pronta",
+   "pedidos ao Velopack": [
+    "procurar",
+    "baixar"
+   ],
+   "o Kaique viu": [
+    "JANELA: MostrarVersaoNova"
+   ]
+  },
+  {
+   "abertura": "4 (na 9.9.1)",
+   "fase": "parado",
+   "o Kaique viu": []
+  }
+ ],
+ "L4 reprovada depois do Sim ao fechar": [
+  {
+   "abertura": "reaberta sem janela (o Sim ao fechar)",
+   "saída": 0,
+   "o Kaique viu": [],
+   "frase no bilhete": {
+    "tipo": "reprovada",
+    "nome": "reprovada-9.9.0-2026-11-25T16:57:58",
+    "motivo": ""
+   }
+  },
+  {
+   "abertura": "2 (pelo atalho)",
+   "o Kaique viu": [
+    "CAIXA DO WINDOWS: A versão nova não funcionou. Não desinstale nada. Avise o Samuel."
+   ],
+   "fase": "parado"
+  },
+  {
+   "abertura": "3 (pelo atalho)",
+   "o Kaique viu": [],
+   "fase": "parado"
+  }
+ ],
+ "L5 duas frases, a caixa sem tela": {
+  "tentadas sem tela": [
+   "A atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel.",
+   "Não deu para atualizar agora: havia outra janela do programa aberta. Tente ao fechar o programa."
+  ],
+  "a abertura seguinte com tela viu": [
+   "CAIXA DO WINDOWS: Não deu para atualizar agora: havia outra janela do programa aberta. Tente ao fechar o programa."
+  ]
+ },
+ "L6 M1 pelo Reiniciar agora da abertura seguinte": {
+  "frase guardada pelo Sim": {
+   "tipo": "nao_deu_agora",
+   "nome": "nao_deu_agora-9.9.0-2026-11-25T16:57:58",
+   "motivo": "havia_outra_janela"
+  },
+  "na nova o Kaique viu": []
+ }
+}

@@ -1,0 +1,108 @@
+{
+ "A guardar_frase": [
+  [
+   "nome guardado",
+   {
+    "tipo": "nao_deu_agora",
+    "nome": "nao_deu_agora-7.0.1-2026-11-01T10:00:00",
+    "motivo": "havia_outra_janela"
+   }
+  ],
+  [
+   "abertura 1 atalho",
+   [
+    "CAIXA: Não deu para atualizar agora: havia outra janela do programa aberta. Tente ao fechar o programa."
+   ]
+  ],
+  [
+   "abertura 2 atalho",
+   []
+  ],
+  [
+   "nome guardado noutro dia",
+   {
+    "tipo": "nao_deu_agora",
+    "nome": "nao_deu_agora-7.0.1-2026-11-02T10:00:00",
+    "motivo": "havia_outra_janela"
+   }
+  ],
+  [
+   "abertura 3 atalho",
+   [
+    "CAIXA: Não deu para atualizar agora: havia outra janela do programa aberta. Tente ao fechar o programa."
+   ]
+  ],
+  [
+   "abertura 4 atalho",
+   []
+  ]
+ ],
+ "B recusa sem janela": [
+  [
+   "reabertura sem janela viu",
+   []
+  ],
+  [
+   "bilhete",
+   {
+    "tipo": "troca",
+    "nome": "troca-7.0.1-2026-11-03T10:00:00",
+    "motivo": ""
+   }
+  ],
+  [
+   "atalho 1",
+   [
+    "CAIXA: A atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel."
+   ]
+  ],
+  [
+   "atalho 2",
+   []
+  ]
+ ],
+ "C assinatura recusada": [
+  [
+   "abertura 1",
+   [
+    "CAIXA: Chegou uma versão nova, mas ela não foi instalada porque não tem a assinatura do Samuel. O programa continua funcionando. Avise o Samuel."
+   ]
+  ],
+  [
+   "abertura 2",
+   []
+  ],
+  [
+   "abertura 3",
+   []
+  ],
+  [
+   "vistos",
+   [
+    "recusada-9.9.0"
+   ]
+  ]
+ ],
+ "D motor": [
+  [
+   "abertura 1",
+   [
+    "CAIXA: Esta versão precisa de um motor novo. Avise o Samuel."
+   ]
+  ],
+  [
+   "abertura 2",
+   []
+  ],
+  [
+   "abertura 3",
+   []
+  ],
+  [
+   "vistos",
+   [
+    "motor-9.9.0"
+   ]
+  ]
+ ]
+}

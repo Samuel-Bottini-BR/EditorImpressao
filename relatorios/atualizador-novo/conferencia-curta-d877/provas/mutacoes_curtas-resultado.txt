@@ -1,0 +1,9 @@
+SEM MUTACAO: nenhum teste falhou
+V23 (D-877: a frase de um acontecimento sem o momento no nome (a segunda recusa do Windows some)): ACUSADA por tests/test_decisoes_atualizacao_volta5.py: FAILED tests/test_decisoes_atualizacao_volta5.py::test_d877_cada_recusa_do_windows_avisa_uma_vez_e_nao_se_repete
+V24 (D-877: a abertura não manda o momento à regra): ACUSADA por tests/test_decisoes_atualizacao_volta5.py: FAILED tests/test_decisoes_atualizacao_volta5.py::test_d877_cada_recusa_do_windows_avisa_uma_vez_e_nao_se_repete
+C1 (minha: o momento so com o dia (duas recusas no mesmo dia viram uma)): SOBREVIVEU
+C2 (minha: o momento fixo): ACUSADA por tests/test_decisoes_atualizacao_volta5.py: FAILED tests/test_decisoes_atualizacao_volta5.py::test_d877_cada_recusa_do_windows_avisa_uma_vez_e_nao_se_repete
+C3 (minha: guardar_frase sem a hora (a frase guardada nao se repete noutro dia)): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_m7_q9_a_mesma_frase_noutro_dia_aparece_de_novo
+C4 (minha: guardar_frase volta a conta a mao (equivalente: mesmo nome)): SOBREVIVEU
+C5 (minha: id_do_acontecimento sempre poe o tracinho, mesmo sem momento): ACUSADA por tests/test_atualizador_volta5.py: FAILED tests/test_atualizador_volta5.py::test_a_frase_que_a_caixa_nao_mostrou_fica_para_a_proxima_abertura
+git status dos arquivos mexidos depois: limpo

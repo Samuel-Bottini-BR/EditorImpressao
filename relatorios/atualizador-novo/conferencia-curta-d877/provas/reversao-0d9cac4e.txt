@@ -1,0 +1,34 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______ test_d877_cada_recusa_do_windows_avisa_uma_vez_e_nao_se_repete ________
+
+tmp_path = WindowsPath('C:/Users/fotog/AppData/Local/Temp/claude/b9ca076ad002e817/9fb2a36a-bf39-4004-8699-2ad21c149ca2/scratchpad/pt-antigo2/test_d877_cada_recusa_do_windo0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000202A0DD7820>
+
+    def test_d877_cada_recusa_do_windows_avisa_uma_vez_e_nao_se_repete(tmp_path, monkeypatch):
+        """D-877 (Samuel, 25/11/2026: "Conserta agora só o aviso da segunda recusa do Windows (M1)"; o M1 do quinto "quem
+        tenta quebrar", o caso L1): o Windows não deixa trocar da 7.0.0 para a 7.0.1, e o Velopack reabre a 7.0.0 com o
+        pedido. Na primeira recusa aparece a frase da D-839; numa SEGUNDA recusa para a mesma versão (outro momento), ela
+        aparece de novo (no código de `0d9cac4e` a segunda não dizia nada: o nome da frase não tinha o momento). E ela nunca
+        se repete sozinha: a abertura seguinte pelo atalho (sem o pedido) não mostra nada (§11.8)."""
+        frase = "A atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel."
+        monkeypatch.setattr(versao, "VERSAO", "7.0.0")
+        p = Prova(tmp_path, publicar_nova=False)
+        horas = iter(["2026-11-25T10:00:00", "2026-11-26T09:30:00", "2026-11-26T09:31:00"])
+        monkeypatch.setattr(atualizacao, "_agora", lambda: next(horas))
+        caixas = []
+        for argumentos in ([atualizacao.ARG_CONFERIR_NOVA, "7.0.0", "7.0.1"], [atualizacao.ARG_CONFERIR_NOVA, "7.0.0", "7.0.1"],
+                           []):
+            win, a = _executor(p)
+            a.abrir(argumentos)
+            caixas.append([t for _, t in win.caixas] + _frases_na_janela(a))
+>       assert caixas == [[frase], [frase], []]
+E       AssertionError: assert [['A atualiza...el.'], [], []] == [['A atualiza...Samuel.'], []]
+E         
+E         At index 1 diff: [] != ['A atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel.']
+E         Use -v to get more diff
+
+tests\test_decisoes_atualizacao_volta5.py:468: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_decisoes_atualizacao_volta5.py::test_d877_cada_recusa_do_windows_avisa_uma_vez_e_nao_se_repete
+1 failed in 0.60s
