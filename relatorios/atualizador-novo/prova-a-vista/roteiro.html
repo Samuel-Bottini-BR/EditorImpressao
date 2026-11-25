@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prova à vista do atualizador: o roteiro</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Prova à vista do atualizador: o roteiro</h1>
+<p>Preparado em 25/11/2026 para a prova no PC do Samuel. <strong>Nada disto foi feito ainda na tela dele</strong>: é o plano, passo a
+passo. A gerente pilota; o Samuel olha e clica "Sim" ou "Não" quando a gerente pedir.</p>
+<h2>Para o Samuel: o que vai acontecer</h2>
+<p><strong>O que é.</strong> É o teste do jeito novo de o Editor de Impressão se atualizar sozinho pela internet, feito no seu
+computador, com o programa instalado de verdade (como o Kaique vai ter). As versões novas vêm de uma pasta do seu
+computador que faz o papel da internet. Elas são versões de verdade do programa, montadas hoje, com números de prova
+(1.9.0 a 1.9.6), e nunca vão ao GitHub nem ao Kaique.</p>
+<p><strong>O que você faz.</strong> Olha a tela e clica onde a gerente pedir. Nas perguntas do Windows ("Deseja permitir que este
+aplicativo faça alterações no seu dispositivo?"), a gerente diz antes se é "Sim" ou "Não". Dessas perguntas, a foto é
+do seu celular: o Windows não deixa tirar print delas.</p>
+<p><strong>Quantas perguntas do Windows: 5 durante a prova</strong> (passo 0: 1; passo 1: 3; passo 11: 1), <strong>e mais 1 depois</strong>, na
+limpeza, se você disser que pode apagar o que sobrou. Do passo 2 ao 10, nenhuma: é o que a prova quer mostrar.</p>
+<p><strong>Quanto tempo: de 1h30 a 2h.</strong> A instalação leva uns 3 minutos; cada troca de versão, de 1 a 3 minutos.</p>
+<p><strong>Seus projetos.</strong> A pasta dos seus projetos não é apagada nem mexida pela prova: a gerente tira uma "foto" dela antes
+e confere depois. O programa instalado usa a mesma pasta de dados do seu atalho de sempre, como sempre: ele grava ali o
+que grava ao abrir e fechar (as configurações, a lista de avisos já vistos).</p>
+<p><strong>Duas coisas que você vai ver e que já estão decididas para depois da entrega</strong> (você decidiu hoje, 25/11, que ficam
+para depois):
+- na versão quebrada de propósito (passo 4), depois da caixa certa aparece também a caixa de sempre do programa, "Um
+  momento — Aconteceu um problema inesperado, mas o programa continua funcionando.", e o programa fecha. Essa frase não
+  é verdade nesse caso; está na lista de depois;
+- a janelinha da troca é a do próprio Velopack (o texto é dele), como você decidiu em 23/11.</p>
+<p><strong>Uma coisa que não aparece nesta prova:</strong> a janela da senha dos testes à distância. Ela só aparece uma vez por conta
+do Windows, e a sua conta já a viu em 22/11. No notebook do Kaique ela aparece uma vez, e ele clica "Agora não".</p>
+<h2>Um passo do plano que não dá para fazer como estava escrito</h2>
+<p><strong>O passo 6 do plano</strong> ("fechar a janela das versões no meio do download") <strong>não dá para fazer com o programa de
+hoje.</strong> O plano de 18/11 dizia que as versões viriam de uma janelinha visível, que faz o papel da internet, e que
+fechá-la no meio do download seria "a internet caindo". O programa novo só sabe ler as versões de prova de uma
+<strong>pasta</strong> (não de uma janela): de uma pasta, o download é uma cópia de segundos, e não há o que fechar no meio.
+<strong>No lugar dele</strong>, o roteiro traz o passo 6 de outro jeito: a pasta das versões "para de responder" (como sem
+internet), com e sem a versão nova já baixada. A pergunta sobre isso está no fim ("Perguntas para você").</p>
+<h2>Como cada passo está escrito</h2>
+<p>Cada passo diz: <strong>para que serve</strong>; <strong>a gerente faz</strong> (os comandos, já escritos); <strong>você clica</strong>; <strong>tem que aparecer</strong>
+(as palavras exatas combinadas com você); <strong>conferido por fora</strong> (o que a gerente lê no disco e no Windows, sem mudar
+nada); <strong>o print</strong>. O número da decisão vai no fim, entre parênteses, só para consulta.</p>
+<p>Os comandos da gerente usam sempre os caminhos inteiros (nada depende de uma variável de antes). Os quatro que mais se
+repetem:</p>
+<ul>
+<li><strong>conferir por fora</strong>: <code>&amp; "D:\programas\EditorImpressao\.venv\Scripts\python.exe" "D:\programas\EditorImpressao\.claude\worktrees\atualizador-novo\relatorios\atualizador-novo\prova-a-vista\conferir_instalacao.py"</code></li>
+<li><strong>publicar uma versão</strong> (passa do "estoque" para a pasta das versões publicadas): <code>&amp; "D:\programas\EditorImpressao\.venv\Scripts\python.exe" "D:\programas\EditorImpressao\.claude\worktrees\atualizador-novo\relatorios\atualizador-novo\prova-a-vista\fonte_da_prova.py" liberar 1.9.1</code></li>
+<li><strong>pôr de lado / de volta</strong>: <code>... por_de_lado.py &lt;comando&gt;</code> (mesmo começo)</li>
+<li><strong>print</strong>: <code>... tirar_print.py &lt;nome&gt;</code> (mesmo começo)</li>
+</ul>
+<p>Abaixo, <code>PY</code> quer dizer <code>&amp; "D:\programas\EditorImpressao\.venv\Scripts\python.exe"</code> e <code>P\</code> quer dizer a pasta
+<code>D:\programas\EditorImpressao\.claude\worktrees\atualizador-novo\relatorios\atualizador-novo\prova-a-vista\</code>.</p>
+<hr />
+<h2>Passo 0 — Antes de começar (5 min; 1 pergunta do Windows)</h2>
+<p><strong>Para que serve:</strong> conferir que o computador está limpo, ligar a vigia (que anota a hora de cada janela, para as
+medidas) e criar o arquivo que aponta o programa para a pasta das versões de prova.</p>
+<p><strong>A gerente faz:</strong>
+1. <code>PY P\conferir_instalacao.py</code> → tem de dizer "não está instalado", "nenhuma entrada Editor de Impressão" e
+   "fonte-de-teste.txt: não existe".
+2. <code>PY P\fonte_da_prova.py estado</code> → "servida: v1.9.0" (só ela) e "a fonte oferece: 1.9.0".
+3. <code>PY P\projetos_antes_e_depois.py tirar antes</code> (a foto da sua pasta de projetos).
+4. A vigia, por trás (a ferramenta com "rodar por trás"): <code>PY P\vigiar_janelas.py 10800</code>.
+5. O arquivo da fonte de teste, com licença (é aqui a pergunta do Windows):
+   <code>Start-Process powershell.exe -Verb RunAs -Wait -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-File','D:\programas\EditorImpressao\.claude\worktrees\atualizador-novo\relatorios\atualizador-novo\prova-a-vista\criar_fonte_de_teste.ps1'</code>
+6. <code>PY P\conferir_instalacao.py</code> de novo.</p>
+<p><strong>Você clica:</strong> "Sim" na pergunta do Windows (ela diz "Windows PowerShell"). Uma janela azul do PowerShell aparece e
+some sozinha.</p>
+<p><strong>Tem que aparecer:</strong> nada no programa (ele ainda não está instalado).</p>
+<p><strong>Conferido por fora:</strong> o passo 6 diz <code>fonte-de-teste.txt: "C:\EditorImpressaoProva\prova-a-vista-25-11\fonte"; dono
+S-1-5-32-544</code>. O registro <code>C:\EditorImpressaoProva\prova-a-vista-25-11\registros\criar_fonte_de_teste.txt</code> diz
+"confere: True". Se o dono não for S-1-5-32-544, <strong>parar</strong>: o programa ignoraria o arquivo e procuraria no GitHub.</p>
+<p><strong>Print:</strong> foto do celular da pergunta do Windows (<code>p00-pergunta-powershell</code>).</p>
+<hr />
+<h2>Passo 1 — Instalar e abrir pela primeira vez (10 min; 3 perguntas do Windows)</h2>
+<p><strong>Para que serve:</strong> ver a instalação de verdade e a primeira abertura: a pergunta do Windows vem logo depois do clique
+no atalho, antes da janela; com "Não", o programa abre e a pergunta volta da próxima vez; com "Sim", ela nunca mais
+aparece.</p>
+<p><strong>A gerente faz:</strong>
+1. Abre o instalador (como um clique duplo, sem licença): <code>Start-Process "C:\EditorImpressaoProva\prova-a-vista-25-11\servida\v1.9.0\EditorImpressaoPrograma-1.9.0-win.msi"</code>
+2. Depois do "Não" (abaixo): <code>PY P\conferir_instalacao.py</code>.
+3. Depois do "Sim": espera 2 minutos (o motor de achar texto é posto no lugar, por trás) e <code>PY P\conferir_instalacao.py</code>.</p>
+<p><strong>Você clica:</strong>
+1. No instalador: os botões de seguir até "Instalar"; "Sim" na pergunta do Windows (a 1ª deste passo). <strong>No fim,
+   desmarque a caixinha de abrir o programa</strong> e clique em "Concluir". (Assim o programa abre pelo atalho, que é o que
+   se quer ver. Se ela ficar marcada, o programa abre sozinho: se a pergunta do Windows aparecer, siga igual; se não
+   aparecer, feche o programa e siga do item 2: nesse caso ele pode ter aberto com a licença do instalador, e a
+   pergunta vem na abertura seguinte.)
+2. Clique duplo no atalho <strong>"Editor de Impressão"</strong> da Área de Trabalho. A pergunta do Windows aparece logo, antes do
+   brasão e da janela (a 2ª). Ela mostra "EditorImpressao.exe" e "Editor: Desconhecido". Clique <strong>"Não"</strong>.
+3. O programa abre normalmente. Feche-o (o X).
+4. Clique duplo no atalho de novo. A pergunta aparece de novo (a 3ª). Clique <strong>"Sim"</strong>.
+5. O programa abre. Feche-o e abra de novo: <strong>nenhuma pergunta</strong>.</p>
+<p><strong>Tem que aparecer:</strong> a pergunta do Windows antes de qualquer janela do programa, nas duas primeiras aberturas; a
+janela do programa abre nas duas (com "Não" também); na terceira abertura, nada do Windows.</p>
+<p><strong>Conferido por fora:</strong>
+- depois do "Não": "licença da pasta do programa: Usuários: ler e executar (herdada)" e "a pasta aceita gravação desta
+  conta agora: False"; nada no registro diz "procurei";
+- depois do "Sim": "Usuários: modificar (própria)" na pasta do programa e "(herdada)" em <code>current\EditorImpressao.exe</code>;
+  "aceita gravação: True"; "motor do Kraken no lugar (conferido): True"; <code>packages\: (vazia)</code> e <code>ultima-boa\: (não
+  existe)</code> (a primeira versão do instalador não baixa nada e não tem "última boa"); no registro, "procurei: nenhuma
+  versão nova (esta é a 1.9.0)";
+- "Programas e Recursos: Editor de Impressão 1.9.0".
+- O Editor antigo de 01/09 e o ajudante antigo <strong>já não estão no seu PC</strong> (conferido em 25/11: nem a pasta, nem a
+  entrada em Programas e Recursos, nem a tarefa do Windows): nada a tirar; o registro não diz que tirou nada.</p>
+<p><strong>Print:</strong> foto do celular das três perguntas (<code>p01a-instalador</code>, <code>p01b-pergunta-nao</code>, <code>p01c-pergunta-sim</code>); print do
+programa aberto depois do "Não" (<code>p01d-abriu-com-nao</code>).</p>
+<p>(D-733, D-735, D-741, D-805, D-806, D-834, D-837, D-857, D-788)</p>
+<hr />
+<h2>Passo 2 — Uma versão nova, "Reiniciar agora" (5 min)</h2>
+<p><strong>Para que serve:</strong> a atualização mais comum: abre, aparece o aviso, "Reiniciar agora", a janelinha do Velopack, e o
+programa volta já na versão nova. Ela é testada uma vez, ganha a marca de aprovada, e o pacote dela é guardado como
+"última boa", copiado do próprio computador, sem internet.</p>
+<p><strong>A gerente faz:</strong>
+1. <code>PY P\fonte_da_prova.py liberar 1.9.1</code> (tem de terminar com "conferido: tudo certo").
+2. Quando o aviso aparecer e ANTES do seu clique: <code>PY P\fonte_da_prova.py sem-resposta</code> (a "internet" cai: assim se vê
+   que a guarda da última boa não precisa dela).
+3. Depois que o programa voltar: <code>PY P\fonte_da_prova.py com-resposta</code> e <code>PY P\conferir_instalacao.py</code>.</p>
+<p><strong>Você clica:</strong> abre o programa pelo atalho; espera o aviso (alguns segundos); clica <strong>"Reiniciar agora"</strong>.</p>
+<p><strong>Tem que aparecer:</strong>
+- o aviso, título <strong>"Versão nova do programa"</strong>, com: "Chegou uma versão nova do Editor de Impressão." / "Salve o seu
+  trabalho e reinicie o programa para usar a versão nova." / "Se escolher "Depois", você pode atualizar quando fechar o
+  programa." e os botões <strong>"Reiniciar agora"</strong> e <strong>"Depois"</strong>;
+- a janela fecha; aparece a janelinha do Velopack (algo como "Atualizando para a versão 1.9.1..."); ela some; alguns
+  segundos sem nada (o teste rápido da versão nova); a janela do programa abre.</p>
+<p><strong>Conferido por fora:</strong> "versão em current\sq.version: 1.9.1"; <code>ultima-boa\</code> com o pacote 1.9.1, a assinatura e a marca
+<code>.aprovada</code>; no registro, "a versão 1.9.1 passou no teste rápido e está guardada como a última boa". "Programas e
+Recursos" continua dizendo 1.9.0 (é esperado: o Velopack não consegue mudar esse número sem licença; visto no
+experimento de 23/11). Feche e abra de novo: na vigia, <strong>nenhum</strong> processo com <code>--teste-rapido</code> (a aprovada não é
+testada de novo).</p>
+<p><strong>Print:</strong> o aviso (<code>p02a-aviso</code>), a janelinha do Velopack (<code>p02b-janelinha</code>).</p>
+<p>(D-715, D-720, D-875, D-832, D-856, D-869, D-851, D-854)</p>
+<hr />
+<h2>Passo 3 — Outra versão, pelo "Depois" (8 min)</h2>
+<p><strong>Para que serve:</strong> o caminho do "Depois": a pergunta ao fechar; com "Não", nada troca e o aviso volta na próxima
+abertura; com "Sim", a troca acontece com o programa fechado e a próxima abertura já vem na versão nova, sem espera.</p>
+<p><strong>A gerente faz:</strong> <code>PY P\fonte_da_prova.py liberar 1.9.2</code>. Depois de cada fechar, <code>PY P\conferir_instalacao.py</code>.</p>
+<p><strong>Você clica:</strong>
+1. Abre pelo atalho; aviso; <strong>"Depois"</strong>. Feche o programa (o X).
+2. Aparece <strong>"Atualizar agora?"</strong>. Clique <strong>"Não"</strong>. O programa fecha.
+3. Abre de novo: o aviso volta. <strong>"Depois"</strong>. Feche.
+4. "Atualizar agora?": <strong>"Sim"</strong>. O programa fecha; aparece a janelinha do Velopack; ela some e <strong>nada mais abre</strong> (é
+   assim: depois do "Sim" o programa não aparece sozinho).
+5. Quando a gerente disser (a vigia mostra o fim da conferência por trás), abra pelo atalho: a janela abre direto.</p>
+<p><strong>Tem que aparecer:</strong> a pergunta com o título <strong>"Atualizar agora?"</strong>, o texto <strong>"Quer atualizar o programa agora, ao
+fechar?"</strong> e os botões <strong>"Sim"</strong> e <strong>"Não"</strong>; depois do "Não", o aviso de novo; depois do "Sim", só a janelinha do
+Velopack.</p>
+<p><strong>Conferido por fora:</strong> depois do "Não": "current\sq.version: 1.9.1" e o pacote 1.9.2 em <code>packages\</code> (baixado,
+esperando). Depois do "Sim": "1.9.2"; na vigia, o processo com <code>--conferir-a-versao-nova 1.9.1 1.9.2 --sem-janela</code>
+começou e terminou sem janela; <code>ultima-boa\</code> com a 1.9.2.</p>
+<p><strong>Print:</strong> "Atualizar agora?" (<code>p03a-ao-fechar</code>), o aviso de novo depois do "Não" (<code>p03b-aviso-volta</code>).</p>
+<p>(D-769, D-794, D-831, D-835)</p>
+<hr />
+<h2>Passo 4 — Uma versão que não funciona, e a volta à mão (15 min)</h2>
+<p><strong>Para que serve:</strong> ver o que o Kaique vê quando uma versão nova sai com defeito: a caixa do próprio Windows avisando,
+o programa tentando abrir assim mesmo, e a versão com defeito não sendo testada de novo. E provar como você volta à
+mão para a versão boa, e que a correção publicada por cima é oferecida.</p>
+<p><strong>A versão com defeito (1.9.3):</strong> foi montada <strong>sem um arquivo do programa</strong> (<code>ui\tela_final.py</code>), de propósito: a
+janela principal não consegue abrir. É o mesmo tipo de defeito do instalador que saiu sem os modelos em 25/09: o
+pacote passa por todas as conferências do publicar (elas olham os modelos, as peças e o Visual C++, não o código), e
+só o teste rápido no computador pega. Não estraga nada: os projetos não são tocados.</p>
+<p><strong>A gerente faz:</strong> <code>PY P\fonte_da_prova.py liberar 1.9.3</code>.</p>
+<p><strong>Você clica:</strong>
+1. Abre pelo atalho; aviso; <strong>"Reiniciar agora"</strong>. A janelinha do Velopack; alguns segundos sem nada.
+2. Aparece uma caixa do Windows, título <strong>"Atualização"</strong>: <strong>"A versão nova não funcionou. Não desinstale nada. Avise o
+   Samuel."</strong> e o botão OK. Clique <strong>OK</strong>.
+3. O programa tenta abrir: aparece a caixa <strong>"Um momento — Aconteceu um problema inesperado, mas o programa continua
+   funcionando."</strong> (é a que fica para depois). Clique no botão dela. O programa fecha.
+4. Abre pelo atalho de novo: <strong>só a caixa "Um momento"</strong> (a do Windows não aparece de novo, e a versão não é testada
+   de novo). Clique e o programa fecha.</p>
+<p><strong>A volta à mão (você só olha; nenhuma pergunta do Windows):</strong>
+1. <code>PY P\conferir_instalacao.py 20 --somar</code> → "a última boa: 1.9.2" e "o pacote da última boa confere com a assinatura
+   do Samuel: SIM".
+2. Copiar o pacote guardado para fora da pasta do programa (o Velopack apaga o pacote que ele não consegue abrir; a
+   cópia protege o guardado):
+   <code>New-Item -ItemType Directory -Force "C:\EditorImpressaoProva\prova-a-vista-25-11\volta-a-mao" | Out-Null; Copy-Item "C:\Program Files\EditorImpressaoPrograma\ultima-boa\EditorImpressaoPrograma-1.9.2-full.nupkg" "C:\EditorImpressaoProva\prova-a-vista-25-11\volta-a-mao\"</code>
+3. Pedir ao próprio Velopack que troque para ela, sem reabrir:
+   <code>Start-Process -Wait "C:\Program Files\EditorImpressaoPrograma\Update.exe" -ArgumentList 'apply','--norestart','--package','"C:\EditorImpressaoProva\prova-a-vista-25-11\volta-a-mao\EditorImpressaoPrograma-1.9.2-full.nupkg"'</code>
+   (a janelinha do Velopack aparece e some).
+4. <code>PY P\conferir_instalacao.py</code> → "current\sq.version: 1.9.2".
+5. <strong>Você:</strong> abre pelo atalho: a 1.9.2 abre normalmente, sem teste e sem aviso (a 1.9.3 não é oferecida de novo).
+6. A correção: <code>PY P\fonte_da_prova.py liberar 1.9.4</code>. <strong>Você:</strong> fecha, abre; o aviso; <strong>"Reiniciar agora"</strong>; a
+   janelinha; abre na 1.9.4.</p>
+<p>Por que <code>--norestart</code> e o atalho depois: se o Velopack reabrisse o programa sozinho, o programa podia ver o Velopack
+ainda saindo e fechar sem mostrar nada (a regra que protege o clique no atalho durante uma troca). Com o atalho depois,
+não há essa dúvida.</p>
+<p><strong>Tem que aparecer:</strong> a caixa do Windows, palavra por palavra; depois dela, a tentativa de abrir; na abertura seguinte,
+nenhuma caixa do Windows.</p>
+<p><strong>Conferido por fora:</strong> depois do OK: "current\sq.version: 1.9.3"; bilhete "reprovadas ['1.9.3']"; frases vistas com
+<code>reprovada-1.9.3</code>; <code>ultima-boa\</code> ainda com a 1.9.2; no registro, "teste rápido da versão instalada: erro ao abrir:
+ModuleNotFoundError: No module named 'ui.tela_final'" e nada pedido ao Velopack. Na abertura seguinte, nenhum
+<code>--teste-rapido</code> na vigia. Depois da volta à mão: 1.9.2; depois da correção: 1.9.4 e <code>ultima-boa\</code> com a 1.9.4.</p>
+<p><strong>Print:</strong> a caixa do Windows (<code>p04a-caixa-do-windows</code>), a caixa "Um momento" (<code>p04b-um-momento</code>), a janelinha da volta
+à mão (<code>p04c-volta-a-mao</code>), a 1.9.2 aberta (<code>p04d-de-volta</code>), o aviso da 1.9.4 (<code>p04e-correcao</code>).</p>
+<p>(D-867, D-868, D-869, D-871, D-857, D-881)</p>
+<hr />
+<h2>Passo 5 — Uma versão com a assinatura falsa (3 min)</h2>
+<p><strong>Para que serve:</strong> uma versão publicada sem a sua assinatura (como se alguém de fora tivesse posto uma versão no
+lugar) não é instalada, e o Kaique é avisado uma vez.</p>
+<p><strong>A versão (1.9.5):</strong> montada normal; depois, a assinatura dela foi trocada por uma feita com outra chave (a sua
+verdadeira está guardada fora da pasta das versões).</p>
+<p><strong>A gerente faz:</strong> <code>PY P\fonte_da_prova.py liberar 1.9.5</code>; depois, <code>PY P\conferir_instalacao.py</code>.</p>
+<p><strong>Você clica:</strong> abre pelo atalho; espera uns segundos; aparece uma caixa; <strong>OK</strong>. Fecha e abre de novo: nada.</p>
+<p><strong>Tem que aparecer:</strong> título <strong>"Atualização"</strong>, <strong>"Chegou uma versão nova, mas ela não foi instalada porque não tem a
+assinatura do Samuel. O programa continua funcionando. Avise o Samuel."</strong>; nenhum aviso de versão nova; na abertura
+seguinte, nada.</p>
+<p><strong>Conferido por fora:</strong> a 1.9.5 <strong>não</strong> está em <code>packages\</code> (nem foi baixada); frases vistas com <code>recusada-1.9.5</code>; no
+registro, "assinatura recusada".</p>
+<p><strong>Print:</strong> a caixa (<code>p05-assinatura-falsa</code>).</p>
+<p>(D-724, D-778 frase 2, D-848)</p>
+<hr />
+<h2>Passo 7 — O motor de achar texto fora do lugar (4 min)</h2>
+<p>(Antes do 6, porque usa a versão 1.9.6 antes de ela ser baixada.)</p>
+<p><strong>Para que serve:</strong> sem o motor no lugar, nenhuma versão nova é anunciada nem trocada.</p>
+<p><strong>A gerente faz:</strong> com o programa <strong>fechado</strong>: <code>PY P\por_de_lado.py motor-de-lado</code>; <code>PY P\fonte_da_prova.py liberar
+1.9.6</code>. Depois da sua abertura: espera 1 minuto e <code>PY P\conferir_instalacao.py</code>. No fim: programa fechado e <code>PY
+P\por_de_lado.py motor-de-volta</code>.</p>
+<p><strong>Você clica:</strong> abre pelo atalho; trabalha um minuto; <strong>nenhum aviso</strong>; fecha (nenhuma pergunta ao fechar).</p>
+<p><strong>Conferido por fora:</strong> no registro, "o motor do Kraken não está no lugar (...): nenhuma versão é procurada nem
+anunciada"; a 1.9.6 não está em <code>packages\</code>. (Funciona assim só depois de uma troca: na versão do instalador, o motor
+seria posto de novo do arquivo que vem junto.)</p>
+<p><strong>Print:</strong> o programa aberto sem aviso (<code>p07-sem-motor</code>).</p>
+<p>(D-833, D-790)</p>
+<hr />
+<h2>Passo 6 — A "internet" que para de responder (6 min) — no lugar do passo 6 do plano</h2>
+<p><strong>Para que serve:</strong> com a versão nova já baixada, mesmo sem resposta da internet, o aviso volta (o programa usa o que
+já chegou). Sem nada baixado, sem resposta: nada na tela, nada quebrado.</p>
+<p><strong>A gerente faz:</strong> (motor de volta) nada antes da 1ª abertura. Depois do 1º fechar: <code>PY P\fonte_da_prova.py
+sem-resposta</code>. No fim: <code>PY P\fonte_da_prova.py com-resposta</code>.</p>
+<p><strong>Você clica:</strong>
+1. Abre pelo atalho; o aviso da 1.9.6 (agora baixada); <strong>"Depois"</strong>; fecha; "Atualizar agora?": <strong>"Não"</strong>.
+2. Abre de novo (a "internet" parou): <strong>o aviso aparece mesmo assim</strong>; <strong>"Depois"</strong>; fecha; <strong>"Não"</strong>.</p>
+<p><strong>Conferido por fora:</strong> no registro, "não consegui procurar a versão nova (...); a 1.9.6 já está baixada" e "a versão
+1.9.6 tem a assinatura do Samuel e o pacote dela já está no computador: nada a baixar".</p>
+<p><strong>Print:</strong> o aviso sem resposta da "internet" (<code>p06-aviso-sem-internet</code>).</p>
+<p>(D-859; o passo do plano: D-773, ver "Perguntas para você")</p>
+<hr />
+<h2>Passo 9 — O atualizador posto de lado (5 min)</h2>
+<p><strong>Para que serve:</strong> quando um antivírus põe de lado o atualizador do programa (<code>Update.exe</code>), "Reiniciar agora" diz o
+que houve, a janela não fecha; quando ele volta, o aviso volta.</p>
+<p><strong>A gerente faz:</strong> com o aviso na tela e ANTES do seu clique: <code>PY P\por_de_lado.py atualizador-de-lado</code>. Depois do seu
+fechar: <code>PY P\por_de_lado.py atualizador-de-volta</code>.</p>
+<p><strong>Você clica:</strong> abre; o aviso; (a gerente põe de lado); <strong>"Reiniciar agora"</strong>; a caixa; <strong>OK</strong>; a janela continua
+aberta; fecha (o X): <strong>nenhuma pergunta</strong>. (A gerente põe de volta.) Abre de novo: o aviso volta.</p>
+<p><strong>Tem que aparecer:</strong> título <strong>"Atualização"</strong>, <strong>"Não deu para atualizar: o atualizador do programa sumiu do
+computador. O programa continua funcionando. Avise o Samuel."</strong></p>
+<p><strong>Print:</strong> a caixa (<code>p09a-sem-atualizador</code>), o aviso de volta (<code>p09b-aviso-volta</code>).</p>
+<p>(D-870, D-873)</p>
+<hr />
+<h2>Passo 10 — O Windows recusando a troca, duas vezes (8 min)</h2>
+<p><strong>Para que serve:</strong> quando o Windows não deixa trocar (um arquivo preso por outro programa), o programa volta na versão
+de antes e avisa; e avisa de novo na segunda vez.</p>
+<p><strong>Como se "prende":</strong> um processo da gerente entra na pasta <code>current</code> do programa e fica nela; o Windows não deixa
+trocar o nome de uma pasta em uso (o mesmo erro da prova de 22/11). Ninguém é fechado à força: o processo sai sozinho
+quando a gerente manda soltar.</p>
+<p><strong>A gerente faz:</strong> com o aviso na tela: por trás, <code>PY P\por_de_lado.py segurar-a-pasta 900</code>; confere com <code>PY
+P\por_de_lado.py estado</code> ("SEGURADA"). Depois das duas recusas: <code>PY P\por_de_lado.py soltar</code>.</p>
+<p><strong>Você clica:</strong>
+1. <strong>"Reiniciar agora"</strong>. A janela fecha; a janelinha do Velopack (cerca de 1 minuto: ele tenta 10 vezes); ela some.
+2. Aparece a caixa do Windows, título <strong>"Atualização"</strong>: <strong>"A atualização não deu certo. O programa continua na versão
+   de antes e funcionando. Avise o Samuel."</strong> → <strong>OK</strong>. A janela abre na 1.9.4, e o aviso aparece de novo.
+3. <strong>"Reiniciar agora"</strong> outra vez: a mesma coisa, <strong>a mesma caixa de novo</strong>. <strong>OK</strong>.</p>
+<p><strong>Conferido por fora:</strong> "current\sq.version: 1.9.4" depois de cada recusa; frases vistas com dois nomes <code>troca-1.9.6-...</code>
+(um por recusa).</p>
+<p><strong>Print:</strong> a caixa da 1ª recusa (<code>p10a-recusa-1</code>), a da 2ª (<code>p10b-recusa-2</code>).</p>
+<p>(D-839, D-877)</p>
+<hr />
+<h2>Passo 8 — Um clique no atalho durante a troca (3 min)</h2>
+<p><strong>Para que serve:</strong> se o Kaique clicar no atalho enquanto a janelinha do Velopack está na tela, a troca termina do
+mesmo jeito.</p>
+<p><strong>A gerente faz:</strong> (a pasta já solta, passo 10) nada; depois, <code>PY P\conferir_instalacao.py</code>.</p>
+<p><strong>Você clica:</strong> <strong>"Reiniciar agora"</strong>; com a janelinha do Velopack na tela, <strong>clique duplo no atalho</strong>; nada abre; a
+janelinha some; a janela abre na versão nova.</p>
+<p><strong>Conferido por fora:</strong> "current\sq.version: 1.9.6"; na vigia, o processo do seu clique começou e terminou sem janela;
+<code>ultima-boa\</code> com a 1.9.6.</p>
+<p><strong>Print:</strong> a janelinha com o clique (<code>p08-clique-durante</code>).</p>
+<p>(D-770 na parte do clique; D-832)</p>
+<hr />
+<h2>Passo 11 — Desinstalar (5 min; 1 pergunta do Windows)</h2>
+<p><strong>Para que serve:</strong> o desinstalar tira a pasta inteira do programa (com o motor, os pacotes e a última boa) e deixa os
+seus projetos.</p>
+<p><strong>A gerente faz:</strong> com o programa fechado, abre "Configurações &gt; Aplicativos &gt; Aplicativos instalados", acha "Editor de
+Impressão" e clica "Desinstalar". Depois: <code>PY P\conferir_instalacao.py</code>, <code>PY P\projetos_antes_e_depois.py tirar
+depois</code> e <code>PY P\projetos_antes_e_depois.py comparar antes depois</code>.</p>
+<p><strong>Você clica:</strong> "Sim" na pergunta do Windows.</p>
+<p><strong>Conferido por fora:</strong> "não está instalado" (a pasta <code>C:\Program Files\EditorImpressaoPrograma</code> sumiu inteira);
+"nenhuma entrada Editor de Impressão"; os atalhos sumiram; a comparação diz <strong>"DENTRO DE projetos\: NADA MUDOU, nada
+sumiu"</strong> (fora de <code>projetos\</code>, mudam só o que o programa sempre grava: as configurações e as frases vistas).</p>
+<p><strong>Print:</strong> foto da pergunta (<code>p11a-pergunta</code>), a lista de aplicativos sem o Editor (<code>p11b-desinstalado</code>).</p>
+<p>(D-788, D-729, D-882)</p>
+<hr />
+<h2>Passo 12 — As medidas (lidas da vigia, sem mais nada na tela)</h2>
+<p><strong>A gerente faz:</strong> <code>PY P\vigiar_janelas.py</code> já parou? Se não: cria <code>C:\EditorImpressaoProva\prova-a-vista-25-11\registros\parar-a-vigia</code>. Lê o registro
+<code>C:\EditorImpressaoProva\prova-a-vista-25-11\registros\vigia-&lt;data&gt;-&lt;hora&gt;.txt</code>.</p>
+<ul>
+<li><strong>Quanto a abertura leva:</strong> de "PROCESSO COMEÇOU ... EditorImpressao.exe" (o do clique) até "JANELA APARECEU" da
+  janela principal. Medir em três aberturas: (a) sem versão nova (passo 2, depois da troca: o atualizador só olha);
+  (b) com a versão nova sendo procurada e baixada por trás (passo 2, a primeira); (c) a abertura logo depois do "Sim"
+  (passo 1, item 5, com o motor ainda sendo posto no lugar por trás). Se (a), (b) e (c) derem parecido, o atualizador não
+  atrasa a janela.</li>
+<li><strong>Os segundos sem nada na tela depois da troca:</strong> de "JANELA SUMIU" da janelinha do Velopack até "JANELA APARECEU"
+  da janela do programa (passos 2, 4 e 8). É o teste rápido.</li>
+</ul>
+<hr />
+<h2>O que fica no seu PC depois da prova, e como limpar</h2>
+<table>
+<thead>
+<tr>
+<th>O que</th>
+<th>Onde</th>
+<th>Tamanho</th>
+<th>Como limpar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>as versões de prova (estoque, publicadas, a fonte, a volta à mão, os registros, os prints)</td>
+<td><code>C:\EditorImpressaoProva\prova-a-vista-25-11\</code></td>
+<td>uns 5 GB (a fonte não ocupa: são os mesmos arquivos)</td>
+<td>apagar a pasta, com o seu "sim" (sem pergunta do Windows)</td>
+</tr>
+<tr>
+<td>a cópia de trabalho que montou as versões</td>
+<td><code>D:\programas\EditorImpressao\.claude\worktrees\prova-a-vista-montagem\</code></td>
+<td>uns 3 GB (com a cópia dos modelos, sem junção)</td>
+<td><code>git worktree remove --force</code> pela gerente (não há junção dentro)</td>
+</tr>
+<tr>
+<td>o arquivo da fonte de teste e o registro da atualização</td>
+<td><code>C:\ProgramData\EditorImpressao\</code></td>
+<td>pequeno</td>
+<td>apagar a pasta, <strong>com licença</strong> (1 pergunta do Windows), com o seu "sim"</td>
+</tr>
+<tr>
+<td>o registro do próprio Velopack</td>
+<td><code>%LOCALAPPDATA%\velopack\</code></td>
+<td>pequeno</td>
+<td>apagar, com o seu "sim"</td>
+</tr>
+<tr>
+<td>as frases já vistas e a pasta da reabertura, dentro da sua pasta de dados</td>
+<td><code>%LOCALAPPDATA%\EditorImpressao\atualizacao-avisos-vistos.json</code> e <code>troca\</code></td>
+<td>pequeno</td>
+<td><strong>não se mexe</strong> sem você pedir (é a pasta dos projetos; D-882)</td>
+</tr>
+<tr>
+<td>o rascunho do publicar</td>
+<td><code>%LOCALAPPDATA%\EditorImpressao-publicar\rascunho\</code></td>
+<td>o publicar apaga o dele (conferido em cada versão)</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>sobras de provas antigas (não são desta prova)</td>
+<td><code>C:\EditorImpressaoProva\versoes</code>, <code>versoes 2</code>, <code>versoes 3</code>, <code>servida</code> e os <code>.log</code>; <code>%LOCALAPPDATA%\EditorImpressao\troca\</code> (de 23/11)</td>
+<td>uns 3,5 GB</td>
+<td>já estavam antes; só com o seu "sim"</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Perguntas para você</h2>
+<h3>1. O passo da "internet caindo no meio do download"</h3>
+<p><strong>Do que se trata.</strong> No plano de 18/11 você escolheu que, nas provas, as versões viessem de uma janelinha visível no
+seu PC, que faz o papel da internet: "fechar a janela prova a internet caindo no meio" (a opção A daquele dia).</p>
+<p><strong>O que acontece hoje.</strong> O programa novo só sabe ler as versões de prova de uma <strong>pasta</strong> do computador, não dessa
+janelinha. De uma pasta, o download é uma cópia de 2 a 5 segundos: não dá para "cortar a internet" no meio. Isso não é
+defeito que o Kaique veria (no notebook dele as versões vêm do GitHub pela internet de verdade): é a ferramenta de
+prova que não encaixa no programa novo. Foi achado agora, na preparação.</p>
+<p><strong>O que acontece no caso de verdade</strong> (lido no código do Velopack, não provado): se a internet cair no meio, o pedaço
+baixado fica guardado com outro nome, nada aparece na tela, e a próxima abertura baixa de novo.</p>
+<p><strong>O que você escolhe:</strong>
+- <strong>A (sugestão): fazer a prova sem esse passo.</strong> No lugar dele, o passo 6 deste roteiro ("a internet para de
+  responder", com e sem a versão já baixada). A queda no meio do download fica para ser provada junto com os testes à
+  distância, que já estão na fila de depois da entrega. Nada do que já funciona muda.
+- <strong>B: mudar o programa</strong> para ele também saber ler a janelinha nas provas. É código novo no programa: precisa da
+  rodada de testes, de quem tenta quebrar (curto) e de montar as versões de novo (cerca de 1 hora de máquina). A prova
+  fica para depois disso.
+- Só comentário também vale.</p>
+<p><strong>Situação:</strong> achado na preparação; nada mudou no programa.</p>
+<hr />
+<p><em>Preparação: os comandos marcados "rodado antes" no ONDE-PAREI da preparação foram rodados numa pasta de ensaio, sem
+nada na sua tela. Os que só rodam na prova estão listados lá também.</em></p>
+<p class="rodape">Editor de Impressão &middot; gerado em 25/11/2026 às 18:03</p>
+</body>
+</html>

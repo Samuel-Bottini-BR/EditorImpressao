@@ -63,13 +63,88 @@ O código do programa não muda (nenhuma linha fora de `relatorios/atualizador-n
 | a fonte com índice e arquivos desencontrados | `fonte_da_prova.py` grava o índice por último e confere arquivo por arquivo depois de cada mudança |
 | o `segurar-a-pasta` ficar preso | ele sai sozinho no tempo dado (padrão 15 min) ou com `soltar`; ninguém é fechado à força |
 
+## A leitura das peças de fora que a prova usa (§11.12 ponto 6)
+
+| Peça e caso | O que ela faz | Fonte |
+|---|---|---|
+| Velopack, fonte de PASTA: procurar | lê `<pasta>\releases.win.json` (`read_to_string`); se não lê, erro | `src/lib-rust/src/sources/file.rs` 28-35 (1.2.161, `92d6a1c`) |
+| Velopack, fonte de PASTA: baixar | `std::fs::copy(<pasta>\<arquivo>, ...)`: uma cópia só, sem pedaços; não dá para "cortar no meio" | `file.rs` 37-48 |
+| `Update.exe apply --package <arquivo>` (a volta à mão) | não olha se a versão é mais velha: aplica o pacote dado; se não consegue abrir o pacote, APAGA o arquivo ("to prevent update loop") e para; com `--norestart`, não reabre | `src/bins/src/commands/apply.rs` 24-75; `apply_windows_impl.rs` 47-57; `update.rs` 20-25, 261-266. Provado de verdade no experimento de 23/11 (1.1.2 → 1.1.1, mais velha, pela biblioteca, que chama este mesmo `apply --package`) |
+| `Update.exe apply`, a troca recusada | tenta trocar o nome de `current` 10 vezes, 1 s entre elas; se não dá, reabre a de antes com os mesmos argumentos; **não mostra caixa de erro dele** (o aviso é só o nosso) | `apply_windows_impl.rs` 158-163; `apply.rs` 56-60; `update.rs` 216-220 |
+| `Update.exe apply`, quem é fechado à força | só o que roda **de dentro** da pasta do programa (pelo caminho do programa); o `python.exe` da gerente que segura a pasta roda do `D:` e não é fechado | `apply_windows_impl.rs` 159; `core.windows.programas_rodando_de` (a mesma pergunta) |
+| o atalho (`Update.exe start`) | abre `current\EditorImpressao.exe` com a pasta de trabalho `current`, sem olhar a tranca | `start_windows_impl.rs` 111-133 |
+| a janelinha da troca | é a do Velopack (`show_apply_progress`: título e texto do próprio Velopack, na língua dele) | `src/l18n/src/progress.rs` 89-94 |
+| o .msi do Velopack, fim da instalação | a caixinha de abrir o programa vem marcada; palpite (lido, não provado): abre o programa SEM licença quando o .msi foi aberto sem licença (`Impersonate="yes"`, ação imediata); a prova de 22/11 viu que, com o .msi aberto COM licença, o programa abre com licença (e aí não haveria pergunta). Por isso o roteiro manda abrir o .msi sem licença e desmarcar a caixinha; a desinstalação roda o gancho na conta da pessoa e a limpeza da pasta como o sistema | `src/vpk/Velopack.Packaging.Windows/Msi/Templates/MsiTemplate.hbs` 124-125, 199-235, 272-274 |
+| o Windows, pasta de trabalho de outro processo | trocar o nome de uma pasta que é a pasta de trabalho de outro processo dá o erro 32 | **executado** no ensaio B (abaixo) e visto na prova de 22/11 |
+| o Windows, arquivo criado com licença | o dono é o grupo Administradores (S-1-5-32-544) | **não executado** (precisa da pergunta do Windows): o `criar_fonte_de_teste.ps1` lê o dono depois de criar e diz "confere: True/False"; se der False, a prova para |
+
 ## O que rodei antes e o que só roda na prova
 
-(preenchido no fim)
+**Rodado antes (25/11, nada na tela do Samuel, nenhuma licença, nada na instalação dele):**
+
+| O quê | Como | Resultado |
+|---|---|---|
+| montar e publicar as 7 versões e o motor | `montar_as_versoes.py` (o publicar de verdade, `--pasta`) | ver "As versões montadas" |
+| a fonte: `liberar`, `tirar`, `sem-resposta`, `com-resposta`, `refazer`, `conferir`, `estado` | ensaio A, com publicações pequenas de mentira numa pasta de ensaio | passou |
+| `por_de_lado`: o atualizador e o motor de lado e de volta; `segurar-a-pasta` e `soltar` | ensaio B, numa "instalação" de ensaio; o segurar num processo aberto pelo ensaio | passou; **enquanto segura, trocar o nome de `current` dá o erro 32** ("O arquivo já está sendo usado por outro processo"); solto, deixa |
+| a vigia: processo que começa e termina; parar pelo arquivo | ensaio C, com uma cópia do `ping.exe` rodando de dentro da "instalação" de ensaio, sem janela | passou |
+| a vigia: ler as janelas visíveis | chamada da leitura, imprimindo só a contagem (18 janelas, nada anotado) | funciona; **não testada com uma janela do programa** (não há) |
+| `criar_fonte_de_teste.ps1` | numa pasta de ensaio, SEM licença | o arquivo sai certo (o programa o lê: com o dono Administradores a fonte vale; com o dono da conta comum, é ignorado, como deve). O dono certo só sai com a licença: **só na prova** |
+| `conferir_instalacao.py` | antes de instalar | "não está instalado", nenhuma entrada, sem fonte de teste |
+| `projetos_antes_e_depois.py` | `tirar` duas vezes e `comparar` | "NADA MUDOU" |
+| a biblioteca do Velopack de verdade lendo a fonte de verdade (procurar, assinatura certa e falsa, baixar, pendente, sem resposta) e o `--somar` | ensaio D | ver "O ensaio D" |
+
+**Só roda na prova (precisa da tela, da pergunta do Windows ou da instalação de verdade):** criar o fonte-de-teste com
+licença; instalar e desinstalar; todo clique no programa; a troca de verdade pelo `Update.exe` (a janelinha, a recusa, o
+clique no atalho no meio); a volta à mão com `Update.exe apply` (lida no código e provada no experimento de 23/11 pela
+biblioteca, mas não por este comando: fazê-la antes poria a janelinha do Velopack e atalhos na tela do Samuel); o
+`tirar_print.py` (tira print da tela dele); os comandos de `por_de_lado` e `fonte_da_prova` na instalação de verdade
+(o mesmo código do ensaio, outros caminhos).
 
 ## Perguntas para o Samuel (§11.13; a gerente leva à Central)
 
-(preenchido no fim)
+### 1. O passo da "internet caindo no meio do download"
+
+**Do que se trata.** É um passo da prova à vista do jeito novo de o programa se atualizar. No plano de 18/11 você
+escolheu que, nas provas, as versões viessem de uma janelinha visível no seu PC, que faz o papel da internet: "fechar
+a janela prova a internet caindo no meio" (opção A daquele dia).
+
+**O que acontece hoje.** O programa novo só sabe ler as versões de prova de uma **pasta** do computador, não dessa
+janelinha (o programa aceita o GitHub, para o Kaique, ou uma pasta, para as provas). De uma pasta, o download é uma
+cópia de 2 a 5 segundos: não dá para "cortar a internet" no meio. Não é defeito que o Kaique veria (no notebook dele as
+versões vêm do GitHub, pela internet de verdade): é a ferramenta de prova que não encaixa no programa novo. Achado
+agora, na preparação.
+
+**O que acontece no caso de verdade** (lido no código do Velopack, não provado): o pedaço baixado fica guardado com
+outro nome, nada aparece na tela, e a próxima abertura baixa de novo.
+
+**O que você escolhe:**
+- **A (sugestão): fazer a prova sem esse passo.** No lugar dele, o passo 6 do roteiro: a pasta das versões "para de
+  responder" (como sem internet), com e sem a versão nova já baixada (com ela baixada, o aviso aparece mesmo assim). A
+  queda no meio do download fica para ser provada com os testes à distância, que já estão na fila de depois da entrega.
+  Nada do que já funciona muda.
+- **B: mudar o programa** para ele também saber ler a janelinha nas provas. É código novo no programa: precisa da
+  rodada de testes, de quem tenta quebrar (curto) e de montar as versões de novo (cerca de 1 hora de máquina). A prova
+  fica para depois disso.
+- Só comentário também vale.
+
+**De onde veio:** a sua escolha de 18/11 (as versões servidas por uma janela visível); o programa novo de 23/11 ficou
+só com a pasta. **Situação:** achado na preparação; nada mudou no programa; a prova pode começar com a A.
+
+## Bugs para a Lista de bugs (não impedem a prova; não consertei)
+
+- 25/11/2026, `core/ocr_kraken.py`, linha 56 (o texto do topo do arquivo): o caminho `<raiz da instalação>\motor-kraken\<VERSAO_DO_MOTOR>`
+  está num texto sem o `r` de "cru", e o Python 3.14 avisa a cada importação: `SyntaxWarning: "\m" is an invalid escape
+  sequence`. Hoje é só aviso (aparece no terminal do publicar e dos scripts); a documentação do Python diz que um dia
+  vira erro. Visto ao montar as versões (`C:\EditorImpressaoProva\prova-a-vista-25-11\registros\`).
+
+## Ideias para a Lista de espera
+
+- A peça do Windows (`core/windows.py`) não tem "quais janelas estão abertas e de quem"; a vigia da prova pede isso
+  direto ao Windows (`vigiar_janelas.py`). Se outras provas precisarem, vale pôr na peça.
+- O `publicar_versao_kaique.py --pasta` grava uma subpasta por versão, e o programa lê uma pasta "plana": hoje quem junta
+  é o `fonte_da_prova.py` desta prova. Se as provas continuarem por pasta, o publicar (ou o servidor) podia ter o modo
+  "pasta plana" num lugar só.
 
 ## Onde estou
 

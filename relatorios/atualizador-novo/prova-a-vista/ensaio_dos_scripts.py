@@ -173,6 +173,8 @@ def parte_c() -> None:
 def parte_d() -> None:
     """A biblioteca do Velopack de verdade lendo a fonte de verdade (ver o topo)."""
     print("D. o Velopack de verdade lendo a fonte da prova", flush=True)
+    # nada do ensaio grava no ProgramData de verdade (o registro da atualização): trocado aqui dentro, conferido
+    os.environ["PROGRAMDATA"] = str(ENSAIO / "D-ProgramData")
     sys.path.insert(0, str(AQUI))
     import prova_comum as comum
 
@@ -181,6 +183,8 @@ def parte_d() -> None:
 
     import atualizacao
     from core import conversa_com_o_velopack as conversa
+
+    assert str(atualizacao.pasta_do_estado()).startswith(str(ENSAIO)), atualizacao.pasta_do_estado()
 
     def fonte(*argumentos: str) -> str:
         r = subprocess.run([str(PYTHON), str(AQUI / "fonte_da_prova.py"), *argumentos], capture_output=True,
@@ -216,12 +220,33 @@ def parte_d() -> None:
             cobra(baixado.is_file() and baixado.stat().st_size == achada.tamanho,
                   f"o Velopack baixou a 1.9.1 da fonte ({time.time() - inicio:.1f} s, tamanho e soma conferidos por ele)")
             cobra(conversa.pendente(endereco, loc) == "1.9.1", "o Velopack diz: a 1.9.1 espera a troca")
+            # o --somar do conferir_instalacao (o 1º passo da volta à mão), numa "última boa" de ensaio
+            boa = raiz / atualizacao.PASTA_DA_ULTIMA_BOA
+            boa.mkdir()
+            os.link(baixado, boa / baixado.name)
+            nome_ass = f"EditorImpressaoPrograma-1.9.1.assinatura"
+            shutil.copy2(comum.FONTE / nome_ass, boa / nome_ass)
+            r = subprocess.run([str(PYTHON), str(AQUI / "conferir_instalacao.py"), "1", "--somar"], capture_output=True,
+                               text=True, encoding="utf-8", errors="replace", timeout=300, creationflags=SEM_JANELA,
+                               env=_ambiente(comum.BASE, raiz))
+            cobra("a última boa (lida como o programa lê): 1.9.1" in r.stdout and
+                  "confere com a assinatura do Samuel: SIM" in r.stdout, "--somar: a última boa 1.9.1 confere (SIM)")
         print("    " + fonte("liberar", "1.9.5"))
         achada = conversa.procurar(endereco, loc)
         cobra(achada is not None and achada.versao == "1.9.5", f"com a 1.9.5 servida, acha {achada and achada.versao}")
         if achada is not None:
             motivo = atualizacao.conferir_assinatura_do(atualizacao.Fonte(endereco), achada)
             cobra(motivo is not None, f"a assinatura da 1.9.5 é RECUSADA: {motivo}")
+            # o --somar com a falsa: a pasta diria "1.9.5", e a conferência tem de dizer NÃO
+            boa = raiz / atualizacao.PASTA_DA_ULTIMA_BOA
+            if boa.is_dir():
+                os.link(comum.FONTE / achada.arquivo, boa / achada.arquivo)
+                shutil.copy2(comum.FONTE / "EditorImpressaoPrograma-1.9.5.assinatura",
+                             boa / "EditorImpressaoPrograma-1.9.5.assinatura")
+                r = subprocess.run([str(PYTHON), str(AQUI / "conferir_instalacao.py"), "1", "--somar"],
+                                   capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=300,
+                                   creationflags=SEM_JANELA, env=_ambiente(comum.BASE, raiz))
+                cobra("confere com a assinatura do Samuel: NÃO" in r.stdout, "--somar: a 1.9.5 falsa NÃO confere")
         print("    " + fonte("sem-resposta"))
         try:
             conversa.procurar(endereco, loc)

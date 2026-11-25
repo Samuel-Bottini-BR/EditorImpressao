@@ -25,9 +25,11 @@ que grava ao abrir e fechar (as configurações, a lista de avisos já vistos).
 
 **Duas coisas que você vai ver e que já estão decididas para depois da entrega** (você decidiu hoje, 25/11, que ficam
 para depois):
+
 - na versão quebrada de propósito (passo 4), depois da caixa certa aparece também a caixa de sempre do programa, "Um
   momento — Aconteceu um problema inesperado, mas o programa continua funcionando.", e o programa fecha. Essa frase não
   é verdade nesse caso; está na lista de depois;
+
 - a janelinha da troca é a do próprio Velopack (o texto é dele), como você decidiu em 23/11.
 
 **Uma coisa que não aparece nesta prova:** a janela da senha dos testes à distância. Ela só aparece uma vez por conta
@@ -41,6 +43,14 @@ fechá-la no meio do download seria "a internet caindo". O programa novo só sab
 **pasta** (não de uma janela): de uma pasta, o download é uma cópia de segundos, e não há o que fechar no meio.
 **No lugar dele**, o roteiro traz o passo 6 de outro jeito: a pasta das versões "para de responder" (como sem
 internet), com e sem a versão nova já baixada. A pergunta sobre isso está no fim ("Perguntas para você").
+
+**Outras coisas do plano de 23/11 que mudaram por decisões suas depois dele** (não são passos que faltam):
+
+- a volta sozinha para a versão anterior saiu desta entrega (você decidiu em 25/11): no passo 4 nada volta sozinho;
+  aparece a caixa do Windows, e a volta é à mão, com o pacote guardado;
+- tirar o Editor antigo de 01/09 na primeira abertura: ele já não está no seu PC (conferido em 25/11), então não há o
+  que mostrar; no notebook do Kaique, o instalador antigo de 28/10 sai nessa mesma pergunta do Windows;
+- o motor de achar texto novo pela internet ficou para depois da entrega: nenhum passo testa um motor novo.
 
 ## Como cada passo está escrito
 
@@ -67,6 +77,7 @@ Abaixo, `PY` quer dizer `& "D:\programas\EditorImpressao\.venv\Scripts\python.ex
 medidas) e criar o arquivo que aponta o programa para a pasta das versões de prova.
 
 **A gerente faz:**
+
 1. `PY P\conferir_instalacao.py` → tem de dizer "não está instalado", "nenhuma entrada Editor de Impressão" e
    "fonte-de-teste.txt: não existe".
 2. `PY P\fonte_da_prova.py estado` → "servida: v1.9.0" (só ela) e "a fonte oferece: 1.9.0".
@@ -96,14 +107,18 @@ no atalho, antes da janela; com "Não", o programa abre e a pergunta volta da pr
 aparece.
 
 **A gerente faz:**
+
 1. Abre o instalador (como um clique duplo, sem licença): `Start-Process "C:\EditorImpressaoProva\prova-a-vista-25-11\servida\v1.9.0\EditorImpressaoPrograma-1.9.0-win.msi"`
 2. Depois do "Não" (abaixo): `PY P\conferir_instalacao.py`.
 3. Depois do "Sim": espera 2 minutos (o motor de achar texto é posto no lugar, por trás) e `PY P\conferir_instalacao.py`.
 
 **Você clica:**
+
 1. No instalador: os botões de seguir até "Instalar"; "Sim" na pergunta do Windows (a 1ª deste passo). **No fim,
    desmarque a caixinha de abrir o programa** e clique em "Concluir". (Assim o programa abre pelo atalho, que é o que
-   se quer ver. Se a caixinha ficar marcada, nada de errado acontece: o programa abre como se fosse pelo atalho.)
+   se quer ver. Se ela ficar marcada, o programa abre sozinho: se a pergunta do Windows aparecer, siga igual; se não
+   aparecer, feche o programa e siga do item 2: nesse caso ele pode ter aberto com a licença do instalador, e a
+   pergunta vem na abertura seguinte.)
 2. Clique duplo no atalho **"Editor de Impressão"** da Área de Trabalho. A pergunta do Windows aparece logo, antes do
    brasão e da janela (a 2ª). Ela mostra "EditorImpressao.exe" e "Editor: Desconhecido". Clique **"Não"**.
 3. O programa abre normalmente. Feche-o (o X).
@@ -114,12 +129,17 @@ aparece.
 janela do programa abre nas duas (com "Não" também); na terceira abertura, nada do Windows.
 
 **Conferido por fora:**
-- depois do "Não": "licença da pasta do programa: Usuários: ler e executar (herdada)" e "a pasta aceita gravação desta
-  conta agora: False"; nada no registro diz "procurei";
+
+- depois do "Não": na licença da pasta, Usuários sem "modificar" (só a herdada de Arquivos de Programas) e "a pasta
+  aceita gravação desta conta agora: False"; no registro, "a pessoa disse Não à pergunta do Windows: nada foi mudado e
+  nada é procurado; a pergunta volta na próxima abertura";
+
 - depois do "Sim": "Usuários: modificar (própria)" na pasta do programa e "(herdada)" em `current\EditorImpressao.exe`;
   "aceita gravação: True"; "motor do Kraken no lugar (conferido): True"; `packages\: (vazia)` e `ultima-boa\: (não
-  existe)` (a primeira versão do instalador não baixa nada e não tem "última boa"); no registro, "procurei: nenhuma
-  versão nova (esta é a 1.9.0)";
+  existe)` (a primeira versão do instalador não baixa nada e não tem "última boa"); no registro, "o computador está
+  preparado: a pasta do programa aceita gravação", "motor do Kraken 1 posto em ..." e "procurei: nenhuma versão nova
+  (esta é a 1.9.0)";
+
 - "Programas e Recursos: Editor de Impressão 1.9.0".
 - O Editor antigo de 01/09 e o ajudante antigo **já não estão no seu PC** (conferido em 25/11: nem a pasta, nem a
   entrada em Programas e Recursos, nem a tarefa do Windows): nada a tirar; o registro não diz que tirou nada.
@@ -138,6 +158,7 @@ programa volta já na versão nova. Ela é testada uma vez, ganha a marca de apr
 "última boa", copiado do próprio computador, sem internet.
 
 **A gerente faz:**
+
 1. `PY P\fonte_da_prova.py liberar 1.9.1` (tem de terminar com "conferido: tudo certo").
 2. Quando o aviso aparecer e ANTES do seu clique: `PY P\fonte_da_prova.py sem-resposta` (a "internet" cai: assim se vê
    que a guarda da última boa não precisa dela).
@@ -146,9 +167,11 @@ programa volta já na versão nova. Ela é testada uma vez, ganha a marca de apr
 **Você clica:** abre o programa pelo atalho; espera o aviso (alguns segundos); clica **"Reiniciar agora"**.
 
 **Tem que aparecer:**
+
 - o aviso, título **"Versão nova do programa"**, com: "Chegou uma versão nova do Editor de Impressão." / "Salve o seu
   trabalho e reinicie o programa para usar a versão nova." / "Se escolher "Depois", você pode atualizar quando fechar o
   programa." e os botões **"Reiniciar agora"** e **"Depois"**;
+
 - a janela fecha; aparece a janelinha do Velopack (algo como "Atualizando para a versão 1.9.1..."); ela some; alguns
   segundos sem nada (o teste rápido da versão nova); a janela do programa abre.
 
@@ -172,6 +195,7 @@ abertura; com "Sim", a troca acontece com o programa fechado e a próxima abertu
 **A gerente faz:** `PY P\fonte_da_prova.py liberar 1.9.2`. Depois de cada fechar, `PY P\conferir_instalacao.py`.
 
 **Você clica:**
+
 1. Abre pelo atalho; aviso; **"Depois"**. Feche o programa (o X).
 2. Aparece **"Atualizar agora?"**. Clique **"Não"**. O programa fecha.
 3. Abre de novo: o aviso volta. **"Depois"**. Feche.
@@ -207,6 +231,7 @@ só o teste rápido no computador pega. Não estraga nada: os projetos não são
 **A gerente faz:** `PY P\fonte_da_prova.py liberar 1.9.3`.
 
 **Você clica:**
+
 1. Abre pelo atalho; aviso; **"Reiniciar agora"**. A janelinha do Velopack; alguns segundos sem nada.
 2. Aparece uma caixa do Windows, título **"Atualização"**: **"A versão nova não funcionou. Não desinstale nada. Avise o
    Samuel."** e o botão OK. Clique **OK**.
@@ -216,6 +241,7 @@ só o teste rápido no computador pega. Não estraga nada: os projetos não são
    de novo). Clique e o programa fecha.
 
 **A volta à mão (você só olha; nenhuma pergunta do Windows):**
+
 1. `PY P\conferir_instalacao.py 20 --somar` → "a última boa: 1.9.2" e "o pacote da última boa confere com a assinatura
    do Samuel: SIM".
 2. Copiar o pacote guardado para fora da pasta do programa (o Velopack apaga o pacote que ele não consegue abrir; a
@@ -304,6 +330,7 @@ já chegou). Sem nada baixado, sem resposta: nada na tela, nada quebrado.
 sem-resposta`. No fim: `PY P\fonte_da_prova.py com-resposta`.
 
 **Você clica:**
+
 1. Abre pelo atalho; o aviso da 1.9.6 (agora baixada); **"Depois"**; fecha; "Atualizar agora?": **"Não"**.
 2. Abre de novo (a "internet" parou): **o aviso aparece mesmo assim**; **"Depois"**; fecha; **"Não"**.
 
@@ -349,6 +376,7 @@ quando a gerente manda soltar.
 P\por_de_lado.py estado` ("SEGURADA"). Depois das duas recusas: `PY P\por_de_lado.py soltar`.
 
 **Você clica:**
+
 1. **"Reiniciar agora"**. A janela fecha; a janelinha do Velopack (cerca de 1 minuto: ele tenta 10 vezes); ela some.
 2. Aparece a caixa do Windows, título **"Atualização"**: **"A atualização não deu certo. O programa continua na versão
    de antes e funcionando. Avise o Samuel."** → **OK**. A janela abre na 1.9.4, e o aviso aparece de novo.
@@ -413,10 +441,23 @@ sumiu"** (fora de `projetos\`, mudam só o que o programa sempre grava: as confi
   (b) com a versão nova sendo procurada e baixada por trás (passo 2, a primeira); (c) a abertura logo depois do "Sim"
   (passo 1, item 5, com o motor ainda sendo posto no lugar por trás). Se (a), (b) e (c) derem parecido, o atualizador não
   atrasa a janela.
+
 - **Os segundos sem nada na tela depois da troca:** de "JANELA SUMIU" da janelinha do Velopack até "JANELA APARECEU"
   da janela do programa (passos 2, 4 e 8). É o teste rápido.
 
 ---
+
+## Se algo sair diferente no meio
+
+- **Uma pergunta do Windows aparece entre os passos 2 e 10:** clicar **"Não"** e parar. Quer dizer que a pasta do
+  programa perdeu a licença de Usuários (ou o Velopack está pedindo licença para trocar): é defeito, e o print e o
+  `conferir_instalacao.py` contam o porquê.
+- **O que não apareceu:** antes de repetir, `conferir_instalacao.py` (o fim do registro diz o que o programa decidiu) e
+  a vigia (o que abriu e fechou).
+- **Pôr tudo de volta no lugar a qualquer momento:** `PY P\por_de_lado.py estado` (e `atualizador-de-volta`,
+  `motor-de-volta`, `soltar`, conforme ele disser); `PY P\fonte_da_prova.py com-resposta`.
+- **Parar a prova de vez:** fechar o programa e seguir do passo 11 (desinstalar). Nada fica pela metade: as versões de
+  prova estão fora da pasta do programa, e o desinstalar leva a pasta inteira.
 
 ## O que fica no seu PC depois da prova, e como limpar
 
@@ -448,12 +489,15 @@ prova que não encaixa no programa novo. Foi achado agora, na preparação.
 baixado fica guardado com outro nome, nada aparece na tela, e a próxima abertura baixa de novo.
 
 **O que você escolhe:**
+
 - **A (sugestão): fazer a prova sem esse passo.** No lugar dele, o passo 6 deste roteiro ("a internet para de
   responder", com e sem a versão já baixada). A queda no meio do download fica para ser provada junto com os testes à
   distância, que já estão na fila de depois da entrega. Nada do que já funciona muda.
+
 - **B: mudar o programa** para ele também saber ler a janelinha nas provas. É código novo no programa: precisa da
   rodada de testes, de quem tenta quebrar (curto) e de montar as versões de novo (cerca de 1 hora de máquina). A prova
   fica para depois disso.
+
 - Só comentário também vale.
 
 **Situação:** achado na preparação; nada mudou no programa.
