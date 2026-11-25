@@ -88,7 +88,12 @@ primeira. No livro (PDF): nada muda.
 
 ### Os testes da segunda rodada
 
-RODADA_D877
+- Os 12 arquivos do atualizador: todos passam (`saida_teste/v5/d877-tocados.txt`).
+- Os 65 `tests/test_decisoes*.py`, um por vez: 947 passaram, 5 pulados, **1 falhou uma vez**:
+  `tests/test_decisoes_so_as_letras.py` (o filtro "Só as letras", que esta rodada não toca: nenhuma linha de
+  `core/filtros.py` nem de `ui/` mudou desde `aba7b844`, e o arquivo não importa o atualizador). Rodado de novo três
+  vezes, sozinho: 5 de 5 passaram nas três. Parece o teste de tempo/carga do PC ocupado (a rodada pesada estava no
+  fim); não guardei a linha da falha da primeira vez. Fica como ressalva para a rodada do GitHub conferir.
 
 # Volta 5 — a volta automática sai da primeira entrega (25/11/2026)
 
