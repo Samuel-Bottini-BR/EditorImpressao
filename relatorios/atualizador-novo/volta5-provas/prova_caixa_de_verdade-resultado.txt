@@ -8,27 +8,27 @@
   "área de trabalho à vista (a peça leu)": true,
   "linha do tempo": [
    [
-    1795617596.182,
+    1795618062.504,
     "o programa abriu (antes da janela)"
    ],
    [
-    1795617596.253,
+    1795618062.515,
     "a caixa do Windows vai aparecer"
    ],
    [
-    1795617597.506,
+    1795618063.22,
     "a caixa do Windows voltou: deu certo"
    ],
    [
-    1795617597.508,
+    1795618063.222,
     "a atualização terminou a abertura: None (None = o programa abre a janela)"
    ],
    [
-    1795617599.392,
+    1795618063.334,
     "main.main() começa (o programa tenta abrir)"
    ],
    [
-    1795617601.255,
+    1795618063.401,
     "o processo do programa termina"
    ]
   ],
@@ -42,11 +42,16 @@
   "bilhete": {
    "reprovadas": [
     "1.2.0"
-   ]
+   ],
+   "frase": {
+    "tipo": "reprovada",
+    "nome": "reprovada-1.2.0",
+    "motivo": ""
+   }
   },
   "caixas do Windows achadas na área de trabalho de prova (lidas da própria caixa)": [
    {
-    "quando": 1795617596.8194978,
+    "quando": 1795618063.1014075,
     "titulo": "Atualização",
     "texto": [
      "A versão nova não funcionou. Não desinstale nada. Avise o Samuel."
@@ -56,7 +61,7 @@
     ],
     "print": "A-primeira-caixa-1.png (415x159, PrintWindow=ok)",
     "clicou": "o botão 2",
-    "clicado_em": 1795617597.444463
+    "clicado_em": 1795618063.212789
    }
   ]
  },
@@ -71,19 +76,19 @@
   "área de trabalho à vista (a peça leu)": true,
   "linha do tempo": [
    [
-    1795617602.55,
+    1795618064.352,
     "o programa abriu (antes da janela)"
    ],
    [
-    1795617602.575,
+    1795618064.358,
     "a atualização terminou a abertura: None (None = o programa abre a janela)"
    ],
    [
-    1795617602.685,
+    1795618064.473,
     "main.main() começa (o programa tenta abrir)"
    ],
    [
-    1795617602.893,
+    1795618064.542,
     "o processo do programa termina"
    ]
   ],
@@ -97,7 +102,12 @@
   "bilhete": {
    "reprovadas": [
     "1.2.0"
-   ]
+   ],
+   "frase": {
+    "tipo": "reprovada",
+    "nome": "reprovada-1.2.0",
+    "motivo": ""
+   }
   },
   "caixas do Windows achadas na área de trabalho de prova (lidas da própria caixa)": []
  },
@@ -110,31 +120,31 @@
   "área de trabalho à vista (a peça leu)": true,
   "linha do tempo": [
    [
-    1795617604.035,
+    1795618065.656,
     "o programa abriu (antes da janela)"
    ],
    [
-    1795617604.043,
+    1795618065.669,
     "a caixa do Windows vai aparecer"
    ],
    [
-    1795617604.684,
+    1795618066.128,
     "a caixa do Windows voltou: deu certo"
    ],
    [
-    1795617604.686,
+    1795618066.131,
     "a atualização terminou a abertura: None (None = o programa abre a janela)"
    ],
    [
-    1795617604.939,
+    1795618066.253,
     "main.main() começa (o programa tenta abrir)"
    ],
    [
-    1795617613.115,
+    1795618067.237,
     "a janela do programa abriu: JanelaPrincipal"
    ],
    [
-    1795617613.706,
+    1795618067.732,
     "o processo do programa termina"
    ]
   ],
@@ -146,11 +156,16 @@
   "bilhete": {
    "reprovadas": [
     "1.2.0"
-   ]
+   ],
+   "frase": {
+    "tipo": "reprovada",
+    "nome": "reprovada-1.2.0",
+    "motivo": ""
+   }
   },
   "caixas do Windows achadas na área de trabalho de prova (lidas da própria caixa)": [
    {
-    "quando": 1795617604.6477592,
+    "quando": 1795618066.106977,
     "titulo": "Atualização",
     "texto": [
      "A versão nova não funcionou. Não desinstale nada. Avise o Samuel."
@@ -160,7 +175,7 @@
     ],
     "print": "B-primeira-caixa-1.png (415x159, PrintWindow=ok)",
     "clicou": "o botão 2",
-    "clicado_em": 1795617604.6746435
+    "clicado_em": 1795618066.1173956
    }
   ]
  },
@@ -173,31 +188,31 @@
   "área de trabalho à vista (a peça leu)": false,
   "linha do tempo": [
    [
-    1795617615.1,
+    1795618069.033,
     "o programa abriu (antes da janela)"
    ],
    [
-    1795617615.11,
+    1795618069.044,
     "a caixa do Windows vai aparecer"
    ],
    [
-    1795617615.111,
+    1795618069.046,
     "a caixa do Windows voltou: falhou não há área de trabalho à vista: a caixa do Windows não foi mostrada"
    ],
    [
-    1795617615.116,
+    1795618069.048,
     "a atualização terminou a abertura: None (None = o programa abre a janela)"
    ],
    [
-    1795617615.267,
+    1795618069.171,
     "main.main() começa (o programa tenta abrir)"
    ],
    [
-    1795617615.983,
+    1795618069.955,
     "a janela do programa abriu: JanelaPrincipal"
    ],
    [
-    1795617616.491,
+    1795618070.446,
     "o processo do programa termina"
    ]
   ],
@@ -227,31 +242,31 @@
   "área de trabalho à vista (a peça leu)": true,
   "linha do tempo": [
    [
-    1795617617.623,
+    1795618071.422,
     "o programa abriu (antes da janela)"
    ],
    [
-    1795617617.628,
+    1795618071.435,
     "a caixa do Windows vai aparecer"
    ],
    [
-    1795617618.142,
+    1795618071.978,
     "a caixa do Windows voltou: deu certo"
    ],
    [
-    1795617618.149,
+    1795618071.981,
     "a atualização terminou a abertura: None (None = o programa abre a janela)"
    ],
    [
-    1795617618.254,
+    1795618072.113,
     "main.main() começa (o programa tenta abrir)"
    ],
    [
-    1795617619.04,
+    1795618072.848,
     "a janela do programa abriu: JanelaPrincipal"
    ],
    [
-    1795617619.534,
+    1795618073.356,
     "o processo do programa termina"
    ]
   ],
@@ -272,7 +287,7 @@
   },
   "caixas do Windows achadas na área de trabalho de prova (lidas da própria caixa)": [
    {
-    "quando": 1795617618.1260853,
+    "quando": 1795618071.9572754,
     "titulo": "Atualização",
     "texto": [
      "A versão nova não funcionou. Não desinstale nada. Avise o Samuel."
@@ -282,7 +297,7 @@
     ],
     "print": "C-seguinte-caixa-1.png (415x159, PrintWindow=ok)",
     "clicou": "o botão 2",
-    "clicado_em": 1795617618.1341782
+    "clicado_em": 1795618071.9697666
    }
   ]
  }

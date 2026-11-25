@@ -6,7 +6,7 @@ partir de `aba7b844`. Não abri agente. Nenhuma janela na tela do Samuel: as pro
 de trabalho separada (ver "As provas de verdade"). Nada escrito em `C:\ProgramData\EditorImpressao`, em
 `%LOCALAPPDATA%\EditorImpressao` nem na instalação do Samuel.
 
-**Situação: ver o fim desta seção ("Onde estou").**
+**Situação: entregue à gerente (a rodada do GitHub é dela). Ver "Onde estou", no fim desta seção.**
 
 ## Decisões que esta tarefa precisa cumprir (§11.3)
 
@@ -223,12 +223,12 @@ mesmo fato que o bilhete já guarda).
 | Jeito | O programa faz | O Kaique vê | Fica no disco |
 |---|---|---|---|
 | passou | a marca de aprovada; a guarda; nenhuma abertura seguinte testa (D-856) | nada (a janela abre) | `aprovada-<versão>` |
-| **não passou** (falta uma peça; a janela da versão nem abre) | **reprovada no bilhete; a caixa do Windows com a frase da D-868, palavra por palavra; depois do OK, o programa tenta abrir assim mesmo** (o motor e a procura seguem, para uma correção publicada ser oferecida se a janela abrir). Nada é pedido ao Velopack, nada volta. **muda na volta 5** (D-867, D-868; hoje: a volta pela última boa, ou a frase (3) presa na fila da janela: o G1) | a caixa do Windows "A versão nova não funcionou. Não desinstale nada. Avise o Samuel."; depois do OK, a janela da versão nova, ou, se ela não abre, a caixa de sempre do programa ("Um momento") e o programa fecha | a reprovação no bilhete; o "visto" da caixa na pasta da conta |
+| **não passou** (falta uma peça; a janela da versão nem abre) | **reprovada no bilhete; a frase guardada; a caixa do Windows com a frase da D-868, palavra por palavra; depois do OK, o programa tenta abrir assim mesmo.** A atualização para nesta abertura (D-857 "e para"; D-867 "nada é pedido ao Velopack"): nada é procurado, nada volta. (Corrigido depois do commit da tabela: eu tinha escrito "o motor e a procura seguem"; ver "Como cumpri".) **muda na volta 5** (D-867, D-868; hoje: a volta pela última boa, ou a frase (3) presa na fila da janela: o G1) | a caixa do Windows "A versão nova não funcionou. Não desinstale nada. Avise o Samuel."; depois do OK, a janela da versão nova, ou, se ela não abre, a caixa de sempre do programa ("Um momento") e o programa fecha | a reprovação no bilhete; o "visto" da caixa na pasta da conta |
 | não passou, depois do "Sim" ao fechar (reaberto sem janela) | reprovada; a frase guardada no bilhete; sai (nada abre na tela, D-769) | nada na hora; na próxima abertura, a caixa do Windows com a frase da D-868, antes de tudo | a reprovação e a frase |
-| a abertura seguinte à reprovação | não testa (reprovada), não mostra a caixa (já vista), tenta abrir; a correção publicada é oferecida se a janela abrir | nada além do que a versão faz ao abrir | — |
+| a abertura seguinte à reprovação | não testa (reprovada), não mostra a caixa (já vista), tenta abrir; a procura volta: a correção publicada é oferecida se a janela abrir | nada além do que a versão faz ao abrir | — |
 | a caixa não pode aparecer (nenhuma área de trabalho à vista: o programa aberto por uma conexão de longe; ou o Windows recusou) | não chama a caixa quando não há área de trabalho à vista (o Windows a criaria numa tela que ninguém vê, e a abertura ficaria parada esperando um OK que nunca vem); registra; a frase fica guardada para a próxima abertura e não conta como vista. **muda na volta 5** | nada agora; na próxima abertura com a tela à vista, a caixa | a frase no bilhete |
 | desliga no meio | nada anotado; a próxima abertura testa de novo | segundos sem nada na tela, de novo na próxima | nada |
-| desliga com a caixa na tela (antes do OK) | a reprovação já está gravada; a frase não conta como vista | na próxima abertura: sem teste, a caixa de novo | a reprovação |
+| desliga com a caixa na tela (antes do OK) | a reprovação e a frase já estão no bilhete (a frase é guardada ANTES de a caixa aparecer); ela não conta como vista | na próxima abertura: sem teste, a caixa de novo | a reprovação e a frase |
 | Windows nega (o antivírus não deixa o teste rodar) | conta como "não passou" | como "não passou" | a reprovação |
 | disco cheio | a reprovação, se não couber, não fica: a próxima abertura testa de novo (segundos); a caixa não se repete se o "visto" gravou | segundos sem nada a cada abertura, só enquanto o disco estiver cheio | nada |
 | sem internet | não se aplica (local) | — | — |
@@ -341,7 +341,225 @@ próxima vez que ele abrir o programa, numa caixa do Windows antes da janela.
 De onde veio: pedido seu de 25/11 (a frase própria); as palavras são sugestão do agente. Situação: construída com a A,
 na versão de teste, esperando a sua escolha.
 
-**Onde estou:** a tabela (commit `590eef24`), a leitura da caixa e o código (commit `5f988f17`) feitos; os testes antigos do atualizador passam no código novo. A pergunta da frase do M2 está escrita acima. Próximo: os testes novos, as mutações, as provas de verdade.
+## Como cumpri cada decisão (com o teste ou a prova)
+
+| Decisão (palavras dele) | O que fiz | Prova |
+|---|---|---|
+| D-867 "Tirar a volta automática: a marca "sem volta", o "uma vez só", a segunda tentativa, o `--voltando`, a fase de volta. A tabela perde a linha "Voltar"." | Saíram: `ARG_VOLTANDO` e a leitura dele na abertura; a fase `VOLTANDO`; o evento `VoltaPedida`; os efeitos `Voltar` e `MarcarSemVolta`; a marca `.sem-volta` (`MARCA_SEM_VOLTA`, e o nome dela em `_versao_do_nome`); `Atualizacao._voltar`; `_volta_que_nao_deu`; `trocar_para(volta=...)`; `Abriu.sem_volta`, `Abriu.reaberto_voltando`; `Estado.anterior` ("para onde a volta vai"); as frases (1) e (3) (`FRASE_DA_FALHA`, `FRASE_DA_FALHA_SEM_VOLTA`, `FALHA_TESTE`, `FALHA_VOLTA`, a frase (1) derivada); o `permitir_voltar` da peça do Velopack (ele só era lido pelo `check_for_updates`, `manager.rs` 294). A tabela perdeu a linha "Voltar" (commit `590eef24`) | `test_decisoes_atualizacao_volta5::test_d867_nada_da_volta_automatica_sobrou_no_programa` e `::test_d867_a_reprovada_nao_pede_nada_ao_velopack`; a busca abaixo ("O que saiu") |
+| D-868 "Se reprovar: versão vai para "reprovadas" e a frase aparece pela caixa do Windows, pela peça (`MessageBoxW`), nunca pela janela do programa [...] Depois o programa tenta abrir assim mesmo. Toda frase que pode aparecer antes da janela existir usa esse caminho." | A caixa é a peça `core.windows.mostrar_caixa_do_windows` (só ela chama `MessageBoxW`). O lugar único que escolhe ONDE uma frase aparece é `Atualizacao._para_a_tela`: sem a janela ainda, toda frase vai para a caixa do Windows na hora; com a janela, para a janela. A reprovação vem antes da caixa; depois do OK a abertura devolve None e o `main.py` abre o programa | de verdade: `volta5-provas/prova_caixa_de_verdade-resultado.txt` e os prints `A-primeira-caixa-1.png`, `B-primeira-caixa-1.png`, `C-seguinte-caixa-1.png`; testes: `test_d868_*` (8 casos) em `test_decisoes_atualizacao_volta5.py` |
+| D-869 "A última boa continua sendo guardada (de `packages\`, sem internet), mas nada automático depende dela" | A guarda (`guardar_ultima_boa`, a marca de aprovada, o espaço) não mudou; nenhum caminho pede volta nem lê o pacote guardado. A abertura ainda lista os NOMES da pasta para saber se a versão que roda é a última boa (regra de quem é testado, D-856/D-857, sem mudança): ver "Perguntas para a gerente" | `test_d869_a_ultima_boa_continua_guardada_e_a_reprovada_nao_mexe_nela`; os testes da guarda de antes passam sem mudança |
+| D-870 M1 "frase 'outra janela' depois da troca certa" | `fases._frase_guardada_vale` (lugar único): a frase guardada sobre uma troca para a versão X só aparece enquanto a que roda é mais velha que X | `test_d870_m1_*`; `test_atualizador_volta5::test_m1_*` (8 casos); a tabela da regra (`abriu_frase_guardada_velha`) |
+| D-870 M2 "`Update.exe` que some: frase própria, sem 'tente ao fechar', e oferecer de novo quando voltar" | `tem_o_atualizador` (lugar único) na conferência única da troca e no pedido da troca; a frase própria (`FRASE_SEM_ATUALIZADOR`, a minha sugestão A até o Samuel escolher) pela escolha única do texto (`frase_da_falha`); no "Reiniciar agora", PARADO (fechar não pergunta) | de verdade, com a biblioteca do Velopack: `volta5-provas/prova_update_exe_volta-resultado.txt` (passos 2 a 7: a frase própria, nada ao fechar, nada enquanto ele falta, e o aviso de novo quando ele volta); testes `test_d870_m2_*` (5) |
+| D-870 M5 "os dois testes" | X11: o 404 do GitHub; X18: a assinatura guardada do pacote esperando | `test_d870_m5_x11_*`, `test_d870_m5_x18_*` (2); mutações V15 e V16 acusadas |
+| D-871 "Os testes da volta automática saem com ela [...] com a prova de que o programa avisa quando a versão nova falha" | Os testes da volta saíram pela lista da D-836 (seção "Volta 5", nos três formatos); a prova do aviso é a D-868 | `test_d871_nenhum_teste_pede_a_volta_e_o_aviso_e_a_prova`; `lista-dos-testes-d836.md/.html/.pdf` |
+| As que continuam (§11.8): D-778 (2), D-839, D-845/D-858/D-864 e os nove motivos, D-846, D-854, D-856, D-857, D-859, D-840/D-841, D-848/D-849, o bilhete, a peça do Velopack, a K03 | Nenhuma mudou de palavra nem de comportamento; só o lugar das frases de antes da janela (D-868). A D-857 "e para" continua: a reprovada não procura nem pede nada nesta abertura | os testes antigos delas passam (`volta5-testes-no-codigo-antigo.txt`, parte 2, e a rodada de agora); `test_d839_d867_*`, `test_d857_d868_*` |
+
+**Uma correção na tabela das falhas, depois do commit dela:** na casinha "Testar × não passou" eu tinha escrito "o motor
+e a procura seguem". Ao escrever os testes, li de novo a D-857 ("aparece a frase [...] e para") e a prova da D-867 no
+Livro ("versão reprovada → nada é pedido ao Velopack"): a atualização PARA nesta abertura (o programa abre); a procura
+volta nas aberturas seguintes. O código e a tabela acima seguem isso. Também acrescentei a guarda da frase ANTES de a
+caixa aparecer (a casinha "desliga com a caixa na tela" prometia a caixa de novo na abertura seguinte, e o primeiro
+código não cumpria: a versão reprovada não é testada de novo, então nada a traria de volta).
+
+## O que saiu (D-867), e a busca que prova
+
+Saiu: `ARG_VOLTANDO`, `MARCA_SEM_VOLTA`, `MarcarSemVolta`, `Voltar`, `VoltaPedida`, `Fase.VOLTANDO`, `_voltar`,
+`_volta_que_nao_deu`, `Abriu.sem_volta`, `Abriu.reaberto_voltando`, `Estado.anterior`, `trocar_para(volta=)`,
+`FRASE_DA_FALHA` (1), `FRASE_DA_FALHA_SEM_VOLTA` (3), `FALHA_TESTE`, `FALHA_VOLTA`, a frase (1) derivada, `permitir_voltar`.
+Ficou de propósito: `pacote_da_versao` da peça do Velopack (o pacote esperando, D-859, também o usa) e
+`ler_ultima_boa` (a regra de quem é testado).
+
+A busca (25/11, em todos os `.py` do programa, fora de `tests/`, `relatorios/`, `.claude/`, `docs/`, `memoria/`,
+`regras_dos_agentes/`):
+`git ls-files '*.py' | grep -v -E "^(tests|relatorios|\.claude|docs|memoria|regras_dos_agentes|terceiros|velhos)/" | xargs grep -n -E "\-\-voltando|ARG_VOLTANDO|sem-volta|MARCA_SEM_VOLTA|MarcarSemVolta|VoltaPedida|Fase\.VOLTANDO|VOLTANDO =|_volta_que_nao_deu|def _voltar|reaberto_voltando|sem_volta|FALHA_VOLTA|FALHA_TESTE|FRASE_DA_FALHA_SEM_VOLTA|FRASE_DA_FALHA\b|permitir_voltar|não conseguiu voltar sozinho|voltou para a versão anterior e continua"`
+achou só `core/filtros.py:2505 def _voltar(pequeno...)` e quatro `_voltar_*` da tela (`ui/tela_conferir.py`,
+`ui/tela_inicio.py`), que não têm nada com a atualização. O teste `test_d867_nada_da_volta_automatica_sobrou_no_programa`
+faz a mesma busca pela árvore do código.
+
+## Os achados do quarto "quem tenta quebrar"
+
+| Achado | O que aconteceu |
+|---|---|
+| G1 (a frase (3) presa na fila da janela que não abre) | **Virou a caixa do Windows** (D-868). Executado de verdade: caso A da `prova_caixa_de_verdade` (a janela da versão não abre: a caixa aparece e é vista ANTES do `main.main()`; depois vem a caixa de sempre "Um momento" e o programa fecha) |
+| M1 | **Consertado** (`_frase_guardada_vale`) |
+| M2 | **Consertado** (`tem_o_atualizador`, a frase própria, PARADO); executado com o Velopack de verdade |
+| M3 (a volta que não pôde ser pedida vira "sem volta") | **Saiu com a volta** (não há volta nem marca) |
+| M4 (a volta depois do "Sim" tenta duas vezes) | **Saiu com a volta** |
+| M5 (X11, X18 sem teste) | **Dois testes** (três casos); mutações acusadas |
+| M6 (a marca de "sem volta" que não grava) | **Saiu com a volta** |
+
+Os leves (o Samuel ainda não decidiu; não mexi, menos o que mudou sozinho):
+1. o registro "o teste roda de novo na próxima abertura" na guarda que falha: **ficou** (texto só do registro; não mexi);
+2. "versão ... publicada e assinada pelo Samuel: baixando" para o pacote esperando sem internet: **ficou**;
+3. o texto velho da tabela ("o nome final é tirado do caminho"): **mudou** sozinho: a tabela da volta 5, refeita, descreve
+   o que o código faz ("a assinatura só no fim, a regra do leve 1");
+4. o `.chegando` que sobra depois da guarda morta: **ficou**;
+5. a outra conta de espaço (`configuracoes.espaco_livre_mb`): **ficou** (não é do atualizador);
+6. o título e as duas primeiras frases do aviso da versão nova fora do Livro: **ficou**.
+
+## Caminho → função (§11.12)
+
+| Caminho | A função que ele usa |
+|---|---|
+| a frase da versão reprovada, na abertura que testou | `fases.proxima_fase(TesteRapido)` → `MostrarFalha(reprovada)` → `Atualizacao._para_a_tela` → `_na_caixa_do_windows` → `_caixa_do_windows` → `core.windows.mostrar_caixa_do_windows` (`area_de_trabalho_a_vista`, `MessageBoxW`) |
+| a frase da D-839 (o Velopack reabriu a de antes) | `fases._frases_ao_abrir` → `MostrarFalha` → `_para_a_tela` → (sem janela ainda) a caixa do Windows |
+| a frase guardada no bilhete (qualquer tipo) | `ler_estado` → `frase_do_bilhete` → `Abriu.frase_guardada` → `fases._frases_ao_abrir` → `_frase_guardada_vale` → `MostrarFalha` → `_para_a_tela` → a caixa do Windows |
+| a (2) e a do motor, quando a procura e o download terminam antes de a janela abrir | `proxima_fase(Assinatura/Baixou)` → `MostrarFalha` → `_para_a_tela` → a caixa do Windows |
+| as mesmas, depois de a janela abrir; as respostas aos cliques (D-840, D-845, a 2, o M2) | `_para_a_tela` → `ui.aviso_de_atualizacao.PonteDaTela` (a caixa da janela) |
+| o texto de TODA frase (nas duas caixas) | `atualizacao.frase_da_falha` (o título `TITULO_DA_FALHA`) |
+| a frase sem janela nenhuma (a reabertura do "Sim" ao fechar) | `fases._frase` → `GuardarFrase` → `guardar_frase` → `guardar_frase_pelo_nome` → `mudar_o_bilhete` |
+| a frase que vai para a caixa do Windows (guardada antes; vista só depois do OK) | `_na_caixa_do_windows` → `guardar_frase_pelo_nome` → `mudar_o_bilhete`; o OK → `gravar_visto` |
+| a versão precisa do teste? | `fases.precisa_do_teste` (pela abertura, `_precisa_do_teste`) |
+| a reprovação | `Reprovar` → `atualizacao.reprovar` (a única) |
+| o `Update.exe` no lugar? | `atualizacao.tem_o_atualizador` ← `conferencia_da_troca` (antes de fechar) e `trocar_para` (o pedido que falhou) |
+| a troca ("Reiniciar agora", "Sim" ao fechar) | `trocar_para` → `conferencia_da_troca` → `conversa_com_o_velopack.trocar` (a volta não passa mais aqui: saiu) |
+| a guarda da última boa | sem mudança: `GuardarUltimaBoa` → `guardar_ultima_boa` |
+
+A prova de que os caminhos dão o mesmo resultado: `test_d868_toda_frase_de_antes_da_janela_vai_pela_caixa_do_windows`
+(os quatro caminhos de antes da janela, cada um com as palavras de sempre, na caixa do Windows, e a janela não recebe
+de novo), `test_d868_com_a_janela_aberta_a_frase_vai_para_a_janela` (o caminho da janela),
+`test_d870_m2_*` (o `Update.exe` pelos dois caminhos da troca) e `test_os_caminhos_da_troca_passam_pela_mesma_conferencia`.
+
+## A lista das falhas (§11.12 ponto 3) das peças novas
+
+A tabela inteira, casinha por casinha, está no começo desta volta. As da caixa do Windows:
+- sem área de trabalho à vista (o programa aberto de longe; uma estação sem tela): a peça não chama a caixa, `FALHOU`;
+  a frase já está no bilhete e aparece na próxima abertura com tela (EXECUTADO: caso C);
+- não deu para ler a estação: igual (`FALHOU`, sem chamar a caixa);
+- o Windows não mostra a caixa (a volta zero): `FALHOU` com o erro; a frase fica no bilhete;
+- a pessoa não clica: a abertura espera (é o que a D-868 pede: a frase, e DEPOIS o programa abre); a caixa fica em
+  cima de tudo (`MB_TOPMOST`);
+- a tela bloqueada: a caixa espera na área de trabalho dele até ele voltar;
+- o notebook desliga com a caixa na tela: a reprovação e a frase já estão no bilhete; a abertura seguinte mostra a
+  caixa (teste `test_o_programa_que_morre_com_a_caixa_na_tela_mostra_a_frase_na_abertura_seguinte`);
+- o bilhete não grava (disco cheio): a caixa aparece mesmo assim; se a reprovação não gravou, a próxima abertura testa
+  de novo (segundos) e não mostra a caixa de novo se o "visto" gravou;
+- a pasta da conta não grava o "visto": a caixa aparece de novo na abertura seguinte (a frase está no bilhete).
+As do `Update.exe`: ele some antes de achar a versão (nada na tela; a procura falha como sem internet; quando ele volta,
+o aviso); some entre o download e o clique (a frase própria, nada fecha); some nos segundos do pedido (a frase própria,
+pelo disco, não pelo texto do erro); volta (o aviso de novo: EXECUTADO com a biblioteca de verdade).
+
+## O que rodei de verdade (D-767) e o que só li
+
+- **Executado, a caixa do Windows de verdade** (`volta5-provas/prova_caixa_de_verdade.py`, saída e três prints), numa
+  área de trabalho separada criada pela prova (`CreateDesktopW`), que ninguém vê; o "programa" (um processo à parte,
+  como o de verdade) entrou nela antes de qualquer janela; o executor, a regra, o disco e a caixa (`MessageBoxW` pela
+  peça) de verdade; o `main.main()` de verdade com o Qt fora da tela:
+  - A (a janela da versão não abre): 1 teste; a caixa "Atualização" / "A versão nova não funcionou. Não desinstale nada.
+    Avise o Samuel." / OK, lida da própria caixa; a reprovação no bilhete antes dela; o OK; SÓ ENTÃO o `main.main()`
+    começa, a janela não abre e aparece a caixa de sempre "Um momento"; nada pedido ao Velopack. A abertura seguinte:
+    0 testes, nenhuma caixa, a procura roda;
+  - B (a janela abre): a caixa, o OK, e a janela principal abre (`JanelaPrincipal`);
+  - C (uma estação de janelas sem tela, criada pela prova): a peça leu "sem área de trabalho à vista" e NÃO chamou a
+    caixa; a frase ficou no bilhete; o programa abriu; a abertura seguinte, com tela: a caixa, uma vez.
+- **Executado, o `Update.exe` que some e volta** (`volta5-provas/prova_update_exe_volta.py`), com a biblioteca do
+  Velopack 1.2.161 de verdade numa instalação de prova minha: o aviso; o `Update.exe` posto de lado; "Reiniciar agora":
+  a frase própria e a janela continua; fechar: nada; a abertura seguinte sem ele: nada (a biblioteca recusa: "Update.exe
+  does not exist"); ele volta: o aviso de novo (a biblioteca procura, o pacote já baixado é reaproveitado); "Sim" ao
+  fechar sem ele: a troca não é pedida e a frase própria aparece na abertura seguinte, pela caixa.
+- **Executado:** as 20 mutações desta volta (`mutacoes_volta5-resultado.txt`: todas acusadas; a primeira linha, sem
+  mutação, nenhum teste falhou; `git status` limpo depois); os testes novos no código antigo e os antigos no novo
+  (`volta5-testes-no-codigo-antigo.txt`); os testes, um arquivo por vez (abaixo).
+- **Só lido:** a documentação da Microsoft da caixa (a seção da leitura); o código do Velopack que cito (`locator.rs`
+  114-117, 152-176, 372; `manager.rs` 294, 413-416, 463), do clone `1.2.161` que já estava na pasta de rascunho desta
+  sessão. A caixa na tela de verdade do Kaique (o tamanho, a posição) só a prova à vista mostra.
+
+## Tamanho (linhas de código, sem comentário, docstring nem linha em branco; `volta5-provas/contar_linhas.py`)
+
+| Arquivo | `aba7b844` | agora |
+|---|---|---|
+| `atualizacao.py` | 878 | 867 |
+| `core/fases_da_atualizacao.py` | 432 | 413 |
+| `core/conversa_com_o_velopack.py` | 70 | 70 |
+| total dos três | 1380 | **1350 (menos 30, −2,2%)** |
+| `core/windows.py` (a peça; a caixa entrou nela) | 2083 | 2127 (+44: as constantes, a estrutura, duas funções, três declarações) |
+
+Encolheu menos do que a volta saiu porque entraram a caixa do Windows no executor (a escolha do lugar, a guarda da
+frase), a regra da frase velha (M1), a conferência do `Update.exe` (M2) e a frase própria.
+
+## Perguntas para a gerente (não são para o Samuel; decido nada sozinho nelas)
+
+1. **A abertura ainda lista os nomes da pasta da última boa** (`ler_ultima_boa`), só para saber se a versão que roda é
+   a última boa (a regra de quem é testado, D-856/D-857, de antes). Nada volta para ela nem lê o pacote. O pedido dizia
+   "nada automático lê dela"; tirar essa leitura (decidir só pela marca de aprovada e pelo pacote em `packages`) daria o
+   mesmo resultado nas instalações de verdade, mas muda a regra de quem é testado nas montagens de prova de uns 20
+   testes antigos que não são da volta (a regra de 03/11 manda não mudar teste antigo). Não fiz. Se a gerente quiser,
+   é uma mudança pequena, numa função só (`fases.precisa_do_teste`), com a lista dos testes afetados.
+2. **"Tenta abrir assim mesmo" e o "e para" da D-857.** Li as duas juntas: a versão reprovada para a atualização
+   nesta abertura (não procura, não baixa, não pede nada ao Velopack: a prova da D-867 no Livro diz "versão reprovada →
+   nada é pedido ao Velopack") e o programa abre; nas aberturas seguintes a procura volta, e uma correção publicada é
+   oferecida (se a janela abrir). Se a gerente ler diferente (procurar já na mesma abertura), é uma linha.
+3. **A reprovação depois do "Sim" ao fechar** (a versão nova é testada sem janela, D-769: nada abre na tela): a caixa
+   só aparece na próxima vez que o Kaique abrir o programa, antes de tudo. Mostrar a caixa na hora apareceria do nada,
+   com o programa já fechado; mantive a D-769.
+4. **Não tive como avisar no meio** que a pergunta da frase do M2 estava escrita (só tenho a entrega final): ela está
+   no ONDE-PAREI desde o commit `2b5ab642`.
+
+## Ressalvas
+
+1. A caixa de verdade rodou numa área de trabalho separada, com o `python.exe` da `.venv` (não o programa empacotado de
+   460 MB) e o Qt fora da tela; o tamanho e a posição da caixa na tela do Kaique, e se ela vem para a frente
+   (`MB_SETFOREGROUND` pode ser recusado pelo Windows; aí ela fica em cima, `MB_TOPMOST`, e o botão pisca), só a prova à
+   vista mostra.
+2. O OK foi clicado pela prova com a mensagem do botão (`WM_COMMAND`); o botão da caixa com só o OK tem o número 2, e a
+   caixa voltou como OK (`IDOK`), como a documentação diz para essa caixa.
+3. Quando a janela da versão estragada não abre, depois da caixa da D-868 o Kaique ainda vê a caixa de sempre do
+   programa, "Aconteceu um problema inesperado, mas o programa continua funcionando.", e o programa fecha: essa frase
+   não é verdade nesse caso. Não é do atualizador (é o `main.py`, a rede de segurança de sempre) e não mexi: está em
+   "Bugs para a Lista de bugs".
+4. Uma versão reprovada cuja janela não abre nunca chega a receber a correção sozinha: o processo fecha antes de a
+   procura terminar. É o efeito da opção A ("a resposta fica para o Windows dar"): o Samuel reinstala ou publica e o
+   Kaique reinstala; a última boa está guardada para isso (D-869).
+5. Enquanto o `Update.exe` falta, as aberturas seguintes não dizem nada (a biblioteca do Velopack nem começa; tratado
+   como sem internet). O Kaique viu a frase própria uma vez, no clique. Mostrar uma frase a cada abertura nesse caso
+   seria coisa nova: está em "Ideias".
+6. A guarda da frase no bilhete antes da caixa sobrescreve uma frase guardada que ainda não foi vista, se as duas
+   chegarem na mesma abertura (a da D-839 e uma do "Sim" ao fechar, por exemplo); as duas aparecem nessa abertura, mas
+   se o notebook desligar entre as duas caixas, a primeira se perde. É a D-850 (duas frases no bilhete), deixada para
+   depois pelo Samuel; não mexi.
+7. As provas da caixa e os testes pedem os nomes `MessageBoxW`, `CreateDesktopW` etc. direto no `ctypes` dentro de
+   `relatorios/` (como as provas dos quem tenta quebrar): é ferramenta de prova, não o programa (o porteiro não olha
+   `relatorios/`).
+8. Rodei os testes, as mutações e as provas no meu PC um arquivo por vez; o conjunto inteiro e o `teste_botoes.py` ficam
+   com a rodada do GitHub (é da gerente). Uma vez, sem mutação nenhuma, o teste de tempo
+   `test_windows_peca.py::test_o_programa_nasce_parado...` já tinha falhado em voltas de antes com o PC ocupado (o leve 7
+   do terceiro); nesta rodada, ver abaixo.
+
+## Ideias para a Lista de espera
+
+- Com o `Update.exe` faltando, a abertura poderia avisar uma vez (a frase própria) mesmo sem clique, para a atualização
+  não ficar parada calada até ele voltar (hoje só o clique avisa).
+- A caixa "Um momento" do programa, quando a janela nem abre, poderia dizer outra coisa (não "continua funcionando").
+
+## Bugs para a Lista de bugs
+
+- 25/11/2026, `main.py` (a rede de segurança `tratar`, `sys.excepthook`): quando a janela principal não abre (um módulo
+  que falta na versão), a caixa diz "Aconteceu um problema inesperado, mas o programa continua funcionando." e o
+  programa fecha em seguida. Visto executando (`volta5-provas/prova_caixa_de_verdade-resultado.txt`, casos A). Já
+  existia antes desta volta (o G1 do quarto mostra o mesmo).
+
+## O que criei fora da pasta do projeto (não apaguei nada fora)
+
+- Arquivos de edição e anotações na pasta de rascunho desta sessão
+  (`C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\9fb2a36a-bf39-4004-8699-2ad21c149ca2\scratchpad\`:
+  `edita_*.py`, `conserta_teste_decisoes.py`, `arruma_prova.py`, `tira_g1.py`, `ws.py`, `v5_*.md`, `d836_volta5.md`).
+- Objetos do Windows que somem sozinhos: a área de trabalho de prova "EditorProvaVolta5" (fechada no fim da prova) e uma
+  estação de janelas sem nome no processo do caso C (some com o processo). Nada no registro do Windows, nada instalado.
+- Conferido só lendo: `%LOCALAPPDATA%\velopack` sem nada novo nas últimas 3 horas; o
+  `C:\ProgramData\EditorImpressao\atualizacao\atualizacao.log` com a última gravação em 24/11 16:38 (antes desta volta);
+  `%LOCALAPPDATA%\EditorImpressao` sem nada novo meu. O PROGRAMDATA e o LOCALAPPDATA das provas foram trocados dentro
+  do Python e conferidos com `assert`.
+- Dentro do projeto: `saida_teste\v5\` (cópias `git archive`, as pastas temporárias dos testes e das provas; ignorada
+  pelo git; sem junções).
+
+## Os testes (um arquivo por vez, a pasta temporária no D:)
+
+RODADA_AQUI
+
+## Onde estou
+
+Feito e no ramo (commits `90748bac`, `590eef24`, `5f988f17`, `2b5ab642`, `8ccffd53`, `a3d5349b` e os desta entrega).
+Falta: a rodada do GitHub e a prova à vista (da gerente), e a resposta do Samuel à frase do M2.
 
 # Volta 4 — o código (24/11/2026)
 

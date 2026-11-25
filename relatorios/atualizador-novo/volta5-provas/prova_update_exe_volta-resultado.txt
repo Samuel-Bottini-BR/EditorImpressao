@@ -51,7 +51,7 @@
   "bilhete": {
    "frase": {
     "tipo": "nao_deu_agora",
-    "nome": "nao_deu_agora-1.2.0-2026-11-25T10:32:31",
+    "nome": "nao_deu_agora-1.2.0-2026-11-25T10:47:59",
     "motivo": "sem_atualizador"
    }
   }
@@ -63,14 +63,14 @@
   "tela": []
  },
  "8. o registro (as últimas linhas)": [
-  "2026-11-25T10:32:31 | versão 1.1.0 | versão 1.2.0 publicada e assinada pelo Samuel: baixando",
-  "2026-11-25T10:32:31 | versão 1.1.0 | \"Reiniciar agora\": a troca não pode ser pedida (o atualizador do Velopack não está em D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\v5\\update-exe\\instalado)",
-  "2026-11-25T10:32:31 | versão 1.1.0 | não deu para saber se há versão baixada esperando: ler o pacote esperando: RuntimeError: This application is not properly installed: Update.exe does not exist in the expected path (D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\v5\\update-exe\\instalado\\Update.exe)",
-  "2026-11-25T10:32:31 | versão 1.1.0 | não consegui procurar a versão nova: procurar: RuntimeError: This application is not properly installed: Update.exe does not exist in the expected path (D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\v5\\update-exe\\instalado\\Update.exe)",
-  "2026-11-25T10:32:31 | versão 1.1.0 | versão 1.2.0 publicada e assinada pelo Samuel: baixando",
-  "2026-11-25T10:32:31 | versão 1.1.0 | versão 1.2.0 pronta; o Kaique escolheu \"Depois\": a pergunta vem ao fechar",
-  "2026-11-25T10:32:31 | versão 1.1.0 | a troca para a 1.2.0 não foi pedida (o atualizador do Velopack não está em D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\v5\\update-exe\\instalado); fica para a próxima abertura",
-  "2026-11-25T10:32:31 | versão 1.1.0 | não deu para saber se há versão baixada esperando: ler o pacote esperando: RuntimeError: This application is not properly installed: Update.exe does not exist in the expected path (D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\v5\\update-exe\\instalado\\Update.exe)",
-  "2026-11-25T10:32:31 | versão 1.1.0 | não consegui procurar a versão nova: procurar: RuntimeError: This application is not properly installed: Update.exe does not exist in the expected path (D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\v5\\update-exe\\instalado\\Update.exe)"
+  "2026-11-25T10:47:59 | versão 1.1.0 | versão 1.2.0 publicada e assinada pelo Samuel: baixando",
+  "2026-11-25T10:47:59 | versão 1.1.0 | \"Reiniciar agora\": a troca não pode ser pedida (o atualizador do Velopack não está em D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\v5\\update-exe\\instalado)",
+  "2026-11-25T10:47:59 | versão 1.1.0 | não deu para saber se há versão baixada esperando: ler o pacote esperando: RuntimeError: This application is not properly installed: Update.exe does not exist in the expected path (D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\v5\\update-exe\\instalado\\Update.exe)",
+  "2026-11-25T10:47:59 | versão 1.1.0 | não consegui procurar a versão nova: procurar: RuntimeError: This application is not properly installed: Update.exe does not exist in the expected path (D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\v5\\update-exe\\instalado\\Update.exe)",
+  "2026-11-25T10:47:59 | versão 1.1.0 | versão 1.2.0 publicada e assinada pelo Samuel: baixando",
+  "2026-11-25T10:47:59 | versão 1.1.0 | versão 1.2.0 pronta; o Kaique escolheu \"Depois\": a pergunta vem ao fechar",
+  "2026-11-25T10:47:59 | versão 1.1.0 | a troca para a 1.2.0 não foi pedida (o atualizador do Velopack não está em D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\v5\\update-exe\\instalado); fica para a próxima abertura",
+  "2026-11-25T10:47:59 | versão 1.1.0 | não deu para saber se há versão baixada esperando: ler o pacote esperando: RuntimeError: This application is not properly installed: Update.exe does not exist in the expected path (D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\v5\\update-exe\\instalado\\Update.exe)",
+  "2026-11-25T10:48:00 | versão 1.1.0 | não consegui procurar a versão nova: procurar: RuntimeError: This application is not properly installed: Update.exe does not exist in the expected path (D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\v5\\update-exe\\instalado\\Update.exe)"
  ]
 }

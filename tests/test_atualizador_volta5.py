@@ -156,6 +156,34 @@ def test_a_frase_que_a_caixa_nao_mostrou_fica_para_a_proxima_abertura(tmp_path):
     assert win3.caixas == []
 
 
+class _Desligou(BaseException):
+    """O programa morreu com a caixa na tela (o notebook desligou antes do OK)."""
+
+
+def test_o_programa_que_morre_com_a_caixa_na_tela_mostra_a_frase_na_abertura_seguinte(tmp_path):
+    """A tabela das falhas da volta 5 ("desliga com a caixa na tela"): a reprovação já está no bilhete e a versão não
+    é testada de novo; por isso a frase é guardada ANTES de a caixa aparecer. O notebook desliga antes do OK: a
+    abertura seguinte mostra a caixa (uma vez). Desligar a guarda de antes da caixa faz este teste falhar."""
+    p = Prova(tmp_path, publicar_nova=False)
+    p.pacote_em_packages(ATUAL)
+    win = _Win(True, pasta_de_troca=tmp_path / "troca")
+
+    def morre(titulo, texto):
+        raise _Desligou()
+
+    win.mostrar_caixa_do_windows = morre
+    a = atualizacao.Atualizacao(
+        windows=win, velopack=p.vp, raiz=p.raiz, fonte=p.atual.fonte, por_tras=lambda trabalho: trabalho(),
+        pasta_grava=lambda raiz: True, garantir_motor=lambda: True, motor_no_lugar=lambda m=None: True,
+        teste=lambda: (False, "de prova"), chave_publica=PUBLICA)
+    with pytest.raises(_Desligou):
+        a.abrir([atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL])
+    win2, _ = _abrir(p, aparece=True)
+    assert win2.caixas == [("Atualização", TEXTO_D868)]
+    win3, _ = _abrir(p, aparece=True)
+    assert win3.caixas == []
+
+
 # ---------------------------------------------------------------------------------------------------------------------
 # A frase guardada que deixou de ser verdade (M1), na regra
 # ---------------------------------------------------------------------------------------------------------------------

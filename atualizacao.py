@@ -288,8 +288,8 @@ def guardar_frase(tipo: str, versao_da_frase: str, motivo_da_tela: str = "") -> 
 
 
 def guardar_frase_pelo_nome(tipo: str, nome: str, motivo_da_tela: str = "") -> bool:
-    """A ÚNICA escrita da frase no bilhete: `guardar_frase` (a frase nova) e a frase que a caixa do Windows não pôde
-    mostrar (volta 5: ela fica para a próxima abertura com o MESMO nome, para não aparecer duas vezes depois)."""
+    """A ÚNICA escrita da frase no bilhete: `guardar_frase` (a frase nova) e a frase que vai para a caixa do Windows,
+    guardada antes de aparecer (volta 5: com o MESMO nome, para não aparecer de novo depois de vista)."""
     gravou = mudar_o_bilhete(lambda b: b.update(frase={"tipo": tipo, "nome": nome, "motivo": motivo_da_tela}))
     if not gravou:
         registrar(f"a frase \"{nome}\" não ficou guardada para a próxima abertura")
@@ -1134,17 +1134,19 @@ class Atualizacao:
 
     def _na_caixa_do_windows(self, ef) -> None:
         """A frase na caixa do Windows (antes de a janela existir). Só conta como vista depois do OK (§11.12 ponto 2:
-        nada dá como feito o que não conferiu). Se a caixa não pôde aparecer (nenhuma área de trabalho à vista, ou o
-        Windows recusou), a frase fica guardada no bilhete, com o mesmo nome, para a próxima abertura, e o registro diz
-        por quê; a abertura segue (o programa tenta abrir)."""
+        nada dá como feito o que não conferiu). A frase é guardada no bilhete, com o mesmo nome, ANTES de a caixa
+        aparecer: se a caixa não puder aparecer (nenhuma área de trabalho à vista, ou o Windows recusou), ou se o
+        programa morrer com ela na tela (o notebook desligou antes do OK), a próxima abertura a mostra (a versão
+        reprovada não é testada de novo, então nada mais a traria de volta). Depois do OK, o "visto" impede que ela
+        volte. A abertura segue em todos os casos (o programa tenta abrir)."""
+        if not ef.sempre:
+            guardar_frase_pelo_nome(ef.tipo, ef.nome, ef.motivo_da_tela)
         if self._caixa(ef):
             if not ef.sempre:
                 gravar_visto(ef.nome)
             return
         registrar(f"a frase \"{ef.nome or ef.tipo}\" não apareceu (a caixa do Windows não pôde ser mostrada): fica "
                   "guardada para a próxima abertura")
-        if not ef.sempre:
-            guardar_frase_pelo_nome(ef.tipo, ef.nome, ef.motivo_da_tela)
 
     def _caixa_do_windows(self, ef) -> bool:
         """A caixa de verdade, pela peça do Windows (`mostrar_caixa_do_windows`): o título "Atualização" (D-846) e o

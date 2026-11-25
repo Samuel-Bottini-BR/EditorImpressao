@@ -29,7 +29,8 @@ MUTACOES = [
     ("V2", "a frase da caixa conta como vista mesmo sem o OK", A,
      "        if self._caixa(ef):\n            if not ef.sempre:",
      "        self._caixa(ef)\n        if True:\n            if not ef.sempre:"),
-    ("V3", "a frase que a caixa não mostrou não é guardada para a próxima abertura", A,
+    ("V3", "a frase da caixa não é guardada antes de aparecer (se a caixa não aparece, ou se o programa morre com ela "
+           "na tela, a frase se perde)", A,
      "        if not ef.sempre:\n            guardar_frase_pelo_nome(ef.tipo, ef.nome, ef.motivo_da_tela)",
      "        if not ef.sempre:\n            pass"),
     ("V4", "a caixa é chamada sem área de trabalho à vista", W,

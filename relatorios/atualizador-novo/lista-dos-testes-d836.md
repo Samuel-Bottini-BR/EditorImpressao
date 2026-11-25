@@ -240,3 +240,49 @@ LOCALAPPDATA (leve 1: dois testes escreviam no registro de verdade do PC); nenhu
 | `tests/ajudante_do_atualizador.py` | mudado (uma linha) | o nome do índice da fonte de prova escrito à mão |
 | `tests/test_atualizador_volta4.py` (20) | novos | D-855 (2), D-863 (1), D-856 (2), D-857 (3), D-858/D-864 (1), D-859 (1), a rede na assinatura (1), M7 Q1, Q2, Q9, Q13 (4), L1 (3), a cópia interrompida (1), L5 (1); dos 17 primeiros, 14 falham em `1d01aaf9` (`volta4-testes-no-codigo-antigo.txt`); os 3 que passam lá são do M7 (as proteções existiam; faltava o teste: a prova é a rodada de mutações); os 3 que a rodada de mutações pediu (P17, P18, N4) falham lá também, os dois do L1 pelo comportamento (a pasta passava a dizer a nova) e o da cópia interrompida por outro motivo (lá a cópia era outra função) |
 | `relatorios/.../volta3-provas/mutacoes_volta3.py` | mudado | o arquivo novo na lista; as 14 do terceiro "quem tenta quebrar"; os trechos que mudaram de lugar (V5, Q6, N1, N3, N23, N27 e outros); N29 a N31 saíram com o download; P1 a P18 novas |
+
+## Volta 5 (25/11/2026): a volta automática sai da primeira entrega (D-867 a D-871)
+
+Palavras do Samuel (D-871): "Os testes da volta automática saem com ela. A D-718 fica no Livro como 'adiada para depois
+da entrega', com a prova de que o programa **avisa** quando a versão nova falha." Os que cobravam decisões que
+mudaram nesta volta (D-868: a frase de antes da janela vai pela caixa do Windows; D-857: a "frase (3)" dela passa a ser
+a da D-868) cobram o que vale hoje. Nenhum teste de fora do atualizador mudou.
+
+| Arquivo :: teste | O que aconteceu | Por quê (a decisão) / quem substitui |
+|---|---|---|
+| `tests/test_atualizador_novo.py::test_d718_teste_que_falha_volta_para_a_anterior_assinada` | saiu | D-867 (a volta pela última boa); D-718 adiada (D-871). Substituto: `test_decisoes_atualizacao_volta5::test_d868_a_versao_reprovada_mostra_a_caixa_do_windows_e_depois_abre` e `::test_d867_a_reprovada_nao_pede_nada_ao_velopack` |
+| `::test_protecao_11_a_volta_sem_a_assinatura_nao_troca_e_avisa_com_a_frase_3` | saiu | D-867 (a volta e a frase 3). A D-724 (só pacote assinado) continua cobrada pelos testes da troca e por `test_decisoes_atualizacao_volta5::test_d870_m5_x18_*` |
+| `::test_d719_a_falha_vai_para_a_janela_uma_vez_so_nesta_conta` | saiu | a frase (1) derivada saiu (D-867; D-719 adiada). O "uma vez só" da frase nova: `test_decisoes_atualizacao_volta5::test_d868_a_reprovada_nao_e_testada_de_novo_e_a_caixa_nao_se_repete` |
+| `::test_d835_e_d778_os_textos_da_tela_palavra_por_palavra` | vale hoje | D-867/D-868: o dicionário das frases perde "teste" (1) e "volta" (3) e ganha "reprovada" (D-868); as outras palavra por palavra como antes |
+| `::test_os_tres_caminhos_da_troca_passam_pela_mesma_conferencia` | adaptado (nome novo: `test_os_caminhos_da_troca_passam_pela_mesma_conferencia`) | §11.12: o "Reiniciar agora" e o "Sim" ao fechar continuam chegando a `trocar_para`; o terceiro caminho (a volta) saiu (D-867), e a reprovada não pede troca |
+| `tests/test_atualizador_volta2.py::test_m2_a_volta_confere_o_motor_da_anterior_e_volta` | saiu | D-867 (a volta); a parte da D-790 "a volta acha o motor antigo" fica com a D-718 adiada. A D-833 (o motor da versão nova) continua cobrada pelos testes do motor |
+| `::test_m4_com_o_estado_que_nao_grava_a_atualizacao_continua_e_o_registro_diz` | adaptado | a metade da volta ("a volta é pedida mesmo sem o bilhete gravar") virou "nada é pedido ao Velopack" (D-867) e a abertura volta para o programa abrir (D-868); o registro continua dizendo que a reprovação não ficou gravada |
+| `::test_leve1_a_frase_da_troca_espera_a_resposta_do_samuel` | vale hoje (uma linha saiu) | a linha que cobrava a frase (1) saiu (D-867); a da D-839 fica |
+| `tests/test_atualizador_volta3.py::test_g1_a_volta_interrompida_e_refeita_na_abertura_seguinte_sem_a_frase_1` | saiu | D-867 (a volta interrompida e refeita) |
+| `::test_g1_a_frase_1_nunca_antes_de_voltar` | saiu | D-867 (a frase 1). No código novo ele passava sem provar nada (a frase que ele procurava não existe mais) |
+| `::test_g1_a_frase_1_so_depois_de_voltar` | saiu | D-867 (a frase 1) |
+| `::test_d844_a_volta_funciona_sem_internet` | saiu | a volta da D-844 adiada (D-867, D-869); a guarda sem internet continua cobrada (`test_atualizador_d851`, `test_atualizador_volta4::test_d857_*`) |
+| `tests/test_atualizador_volta4.py::test_d855_o_pedido_da_volta_leva_a_marca` | saiu | D-867 (o `--voltando`) |
+| `::test_d855_d863_a_volta_que_o_windows_nao_deixou_mostra_a_frase_3_e_nunca_mais_tenta` | saiu | D-867 (a marca de "sem volta" e a frase 3) |
+| `::test_d857_sem_ultima_boa_a_versao_que_falha_mostra_a_frase_3_e_para` | vale hoje (nome novo: `test_d857_d868_sem_ultima_boa_a_versao_que_falha_mostra_a_frase_e_para`) | D-857 com a D-868: a frase da D-868 no lugar da (3); "e para" continua (nada é procurado nesta abertura) |
+| `::test_d858_d864_sim_ao_fechar_com_outra_janela_mostra_a_frase_na_abertura_seguinte` | vale hoje | D-868: a frase da abertura seguinte vem antes da janela, então aparece na caixa do Windows (o teste olha a caixa e confere que a janela não a recebe); as palavras da D-864 iguais |
+| a constante `ARG_VOLTANDO` escrita no topo de `test_atualizador_volta4.py` | saiu | D-867 |
+| `tests/test_decisoes_atualizacao.py::test_os_textos_do_aviso_sem_emoji_e_com_acento` | vale hoje | a frase (1) saiu da lista dos textos (D-867); entraram a da D-868 e a própria do M2 |
+| `::test_d719_a_frase_da_falha_e_a_combinada` | saiu | D-719 adiada com a D-718 (D-867) |
+| `::test_d719_a_falha_aparece_na_tela_uma_vez_so` | saiu | a frase (1) derivada saiu (D-867); o "uma vez só": `test_decisoes_atualizacao_volta5::test_d868_a_reprovada_nao_e_testada_de_novo_e_a_caixa_nao_se_repete` |
+| `::test_d718_versao_nova_que_nao_passa_no_teste_volta_para_a_anterior` | saiu | D-718 adiada (D-871). A prova de hoje: `test_decisoes_atualizacao_volta5::test_d871_nenhum_teste_pede_a_volta_e_o_aviso_e_a_prova` |
+| `::test_d718_a_volta_so_aceita_o_pacote_assinado` | saiu | D-867 (a volta). No código novo ele passava sem provar nada (nenhuma volta é pedida). A D-724 continua cobrada |
+| `::test_d839_a_troca_que_nao_aconteceu_diz_que_continua_na_versao_de_antes` (os dois caminhos) | vale hoje | D-868: a frase da D-839 vem antes da janela: o teste a confere na caixa do Windows, pelo caminho de verdade do executor (`caixa_de_verdade=True`); as palavras iguais |
+| `::test_d839_as_tres_frases_da_d778_continuam_iguais` | vale hoje (nome novo: `test_d839_d867_a_frase_2_continua_e_as_frases_1_e_3_sairam`) | D-867: "as frases (1) e (3) da D-778 deixam de aparecer nesta entrega"; a (2) e a da D-839 palavra por palavra; a (1) e a (3) não existem mais |
+| `tests/test_fases_da_atualizacao.py` (a tabela) | adaptado | saíram a fase VOLTANDO, os eventos `volta_ok`, `volta_nao`, `abriu_nova_sem_volta`, `abriu_volta_feita`, `abriu_volta_recusada` e as linhas deles (D-867); o campo `anterior` saiu do estado e do `A` da abertura comum (só servia à volta); `abriu_depois_da_volta` fica e passa a cobrar que a frase (1) NÃO aparece; `(CONFERINDO_NOVA, teste_nao)`: reprovada, a frase da D-868 e PARADO (era a volta); `(GUARDANDO, guardada_ok)` sem o `anterior`. Novos: `abriu_nova_reprovada` (não testa de novo), `abriu_frase_guardada_velha` e `abriu_frase_da_reprovada` (M1), `conferida_sem_atualizador` e `troca_sem_atualizador` (M2) |
+| `::test_d857_sem_ultima_boa_o_teste_que_falha_mostra_a_frase_3_e_para` | vale hoje (nome novo: `test_d857_d868_sem_ultima_boa_o_teste_que_falha_mostra_a_frase_e_para`) | D-857 com a D-868 |
+| `::test_d769_na_reabertura_sem_janela_nada_abre` (o caso `teste_nao`) | vale hoje | sem janela, a reprovada guarda a frase da D-868 e sai; era a volta sem reabrir (D-867) |
+| `::test_d769_sem_janela_guardada_ou_volta_que_falha_sai` | adaptado | a metade "a volta que não deu" saiu (D-867); a guarda sem janela fica |
+| `::test_as_falhas_tem_nome_unico_por_tipo_e_versao` | vale hoje | os tipos de frase: saíram "teste" e "volta", entrou "reprovada" |
+| `::test_preparado_rodando_a_ultima_boa_vai_ao_motor` | adaptado | o campo `anterior` saiu do estado |
+| `tests/ajudante_do_atualizador.py` | mudado | a caixa do Windows de mentira (`WindowsFalso.mostrar_caixa_do_windows`, anota); a raiz de prova com o `Update.exe` (como toda instalação; a conferência da troca olha, M2); a frase de antes da janela anotada em `tela` (o que o Kaique vê) e, com `caixa_de_verdade=True`, pelo caminho de verdade |
+| `tests/test_decisoes_atualizacao_volta5.py` (22) | novos | D-867 (2), D-868 (8), D-869 (1), D-870 M1 (1), M2 (5), M5 X11 (1) e X18 (2), D-871 (1) |
+| `tests/test_atualizador_volta5.py` (18) | novos | a caixa do Windows na peça (4 + 1 de que só a peça a chama), a caixa que não apareceu (1), a regra da frase guardada que deixou de ser verdade (8 + 1), o `Update.exe` num lugar só (2) |
+| `relatorios/.../volta5-provas/mutacoes_volta5.py` | novo | as 20 proteções desta volta, cada uma acusada (`mutacoes_volta5-resultado.txt`) |
+
+Conferido de verdade (`relatorios/atualizador-novo/volta5-testes-no-codigo-antigo.txt`, parte 2): os arquivos de teste de `aba7b844`, rodados no código novo (com o ajudante novo), falham exatamente nos testes desta tabela marcados "saiu" ou "vale hoje" (menos os dois que passavam sem provar nada, ditos acima); a tabela antiga do `test_fases_da_atualizacao.py` nem carrega (o campo `anterior` saiu).
