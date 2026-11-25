@@ -21,16 +21,15 @@ repositório do Velopack; a seção "Leitura das peças de fora" do ONDE-PAREI t
   (`manager.rs` 413-416). Por isso quem troca confere a soma assinada do arquivo antes (`atualizacao.trocar_para`).
 - `pendente`: `get_update_pending_restart` (manager.rs 272-281): o pacote completo mais novo de `packages\\` que é
   maior que a versão que roda; só disco.
-- `pacote_da_versao`: monta, sem rede, o pedido de uma versão escolhida por nós (a última boa, na volta):
-  `VelopackAsset` e `UpdateInfo` se montam pelo Python (`__init__.pyi`). Na volta (volta 3, D-844) o endereço do
-  `baixar` é a pasta da última boa: o Velopack copia o arquivo de lá (`sources/file.rs` 37-48) e confere tamanho e
-  soma, sem internet.
+- `pacote_da_versao`: monta, sem rede, o pedido de uma versão escolhida por nós (o pacote esperando, sem internet,
+  D-859): `VelopackAsset` e `UpdateInfo` se montam pelo Python (`__init__.pyi`). (Volta 5: a volta pela última boa, que
+  também o usava, saiu com a volta automática, D-867.)
 - O pacote da versão que roda fica em `packages\\`: a abertura (`VelopackApp.run`) apaga os outros e guarda o da
   versão atual e o que está esperando (`app.rs`, `cleanup_old_packages_from_list`). O `Setup.exe` põe o primeiro
   (`bins/src/commands/install.rs`, "Copying nupkg to packages directory"); o .msi, o NOSSO instalador, não põe nada em
   `packages\\` (o .msi instala a pasta portátil: `WindowsPackCommandRunner.cs` 230-243; lido nas tabelas do nosso .msi
-  da 1.1.0). É dali que a última boa é copiada; sem ele lá, nada é baixado (D-857: a primeira versão do .msi não tem
-  volta automática).
+  da 1.1.0). É dali que a última boa é copiada; sem ele lá, nada é baixado (D-857: a primeira versão do .msi não é
+  testada nem guardada).
 - `trocar`: `wait_exit_then_apply_updates` (`manager.rs` 602-675): confere que o pacote está em `packages\\` e abre o
   atualizador do Velopack com `apply --package <arquivo> --waitPid <este processo>` (e `--norestart` se não for para
   reabrir; os `argumentos` vão depois de `--`) e VOLTA LOGO. O atualizador espera este processo sair (no máximo 60 s,
@@ -86,12 +85,16 @@ def _fonte(endereco: str):
     return str(endereco)
 
 
-def _gerente(endereco: str, permitir_voltar: bool = False, localizador=None):
-    """O `UpdateManager` para esta fonte (lugar único). `permitir_voltar`: aceitar versão mais velha (a volta).
-    `localizador`: onde está a instalação (um `velopack.VelopackLocatorConfig`); None = a deste programa, achada pelo
-    próprio Velopack. Só as provas passam um (a instalação de prova numa pasta)."""
+def _gerente(endereco: str, localizador=None):
+    """O `UpdateManager` para esta fonte (lugar único). `localizador`: onde está a instalação (um
+    `velopack.VelopackLocatorConfig`); None = a deste programa, achada pelo próprio Velopack. Só as provas passam um (a
+    instalação de prova numa pasta). Sem o `Update.exe` no lugar, a biblioteca nem cria o gerente (`locator.rs` 114-117:
+    "Update.exe does not exist in the expected path"): é o que `atualizacao.tem_o_atualizador` confere antes da troca.
+    Volta 5: o "aceitar versão mais velha" (`AllowVersionDowngrade`) saiu com a volta automática (D-867); ele só era
+    lido por `check_for_updates` (`manager.rs` 294), e baixar e trocar nunca o olharam, então tirá-lo não muda nada do
+    que fica."""
     vp = _velopack()
-    opcoes = vp.UpdateOptions(AllowVersionDowngrade=permitir_voltar, MaximumDeltasBeforeFallback=10)
+    opcoes = vp.UpdateOptions(AllowVersionDowngrade=False, MaximumDeltasBeforeFallback=10)
     return vp.UpdateManager(_fonte(endereco), opcoes, localizador)
 
 
@@ -129,7 +132,7 @@ def procurar(endereco: str, localizador=None) -> VersaoDoVelopack | None:
 def baixar(endereco: str, versao: VersaoDoVelopack, localizador=None) -> None:
     """Baixa a versão para `packages\\` (o Velopack confere tamanho e soma). Levanta `ErroDoVelopack`."""
     try:
-        _gerente(endereco, permitir_voltar=True, localizador=localizador).download_updates(versao.pedido)
+        _gerente(endereco, localizador=localizador).download_updates(versao.pedido)
     except Exception as erro:  # noqa: BLE001
         raise ErroDoVelopack(f"baixar a {versao.versao}: {type(erro).__name__}: {erro}") from erro
 
@@ -146,12 +149,9 @@ def pendente(endereco: str, localizador=None) -> str:
 
 
 def pacote_da_versao(pacote: str, versao: str, arquivo: str, sha256: str, sha1: str, tamanho: int) -> VersaoDoVelopack:
-    """O pedido de uma versão escolhida por nós (a última boa, na volta), montado sem rede. Levanta `ErroDoVelopack`.
-    Na volta (volta 3, D-844), `baixar` recebe como endereço a PASTA da última boa: o Velopack usa a fonte de pasta
-    (`sources/file.rs` 37-48: `download_release_entry` copia `<pasta>\\<arquivo>` para `packages\\<arquivo>.partial`),
-    confere o tamanho e a soma SHA256 deste pedido (manager.rs 537-561; com a SHA256 preenchida, a SHA1 não é olhada)
-    e dá o nome final; sem internet. Se `packages\\<arquivo>` já existe, não copia nem confere (manager.rs 413-416): a
-    conferência única da troca soma o arquivo de novo."""
+    """O pedido de uma versão escolhida por nós, montado sem rede (o pacote esperando, sem internet, D-859: o arquivo
+    já está em `packages\\`). Levanta `ErroDoVelopack`. Se `packages\\<arquivo>` já existe, o `baixar` seguinte não
+    copia nem confere (manager.rs 413-416): a conferência única da troca soma o arquivo de novo."""
     try:
         vp = _velopack()
         alvo = vp.VelopackAsset(pacote, versao, "Full", arquivo, sha1 or "", sha256, int(tamanho), "", "")
@@ -167,7 +167,7 @@ def trocar(endereco: str, versao: VersaoDoVelopack, reabrir: bool, argumentos: l
     (nunca `silent`, D-832). Só `atualizacao.trocar_para` chama esta (depois da conferência única). Levanta
     `ErroDoVelopack` (o pacote não está em `packages\\`, o atualizador não abriu)."""
     try:
-        _gerente(endereco, permitir_voltar=True).wait_exit_then_apply_updates(
+        _gerente(endereco).wait_exit_then_apply_updates(
             versao.pedido, silent=False, restart=bool(reabrir), restart_args=[str(a) for a in argumentos])
     except Exception as erro:  # noqa: BLE001
         raise ErroDoVelopack(f"trocar para a {versao.versao}: {type(erro).__name__}: {erro}") from erro

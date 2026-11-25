@@ -73,28 +73,6 @@ def _na_tela(atual) -> list:
 # G1: a volta interrompida no meio deixava o Kaique na versão estragada com a frase "voltou para a versão anterior"
 # ---------------------------------------------------------------------------------------------------------------------
 
-def test_g1_a_volta_interrompida_e_refeita_na_abertura_seguinte_sem_a_frase_1(tmp_path):
-    """G1 do segundo "quem tenta quebrar" (24/11/2026, grave): a versão nova não passa no teste rápido, a volta
-    começa e o processo morre no meio (o notebook desligou). Antes: a falha "fica na anterior" já estava anotada e a
-    troca em andamento apagada; a abertura seguinte abria a versão estragada com a frase (1). Agora (a emenda do Fable,
-    A): o disco ainda diz "rodando a nova, última boa a anterior": a abertura seguinte roda o teste de novo, ANTES da
-    janela, e refaz a volta; a frase (1) não aparece (ela é derivada, só depois de voltar). D-718, D-769, D-839."""
-    p = Prova(tmp_path, teste=(False, "código 1"))
-    _guardar_a_mao(p, ANTERIOR)
-
-    def morre(*a, **k):
-        raise Morreu()
-
-    p.vp.pacote_da_versao = morre                  # o primeiro passo da volta: o processo morre aqui
-    with pytest.raises(Morreu):
-        p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL)
-    segunda = _outra_abertura(p, teste=(False, "código 1"))
-    saida = segunda.abrir([])                      # o atalho: sem a linha de comando da reabertura
-    tela = _na_tela(segunda)
-    assert saida == 0, "a abertura seguinte refaz a volta e sai (o Velopack abre a anterior)"
-    assert [c[:2] for c in segunda.velopack.chamadas if c[0] == "trocar"] == [("trocar", ANTERIOR)]
-    assert not [e for e in tela if isinstance(e, fases.MostrarFalha) and e.tipo == fases.FALHA_TESTE]
-
 
 def test_g1_a_frase_1_nunca_antes_de_voltar(tmp_path, monkeypatch):
     """G1: rodando uma versão que ainda não passou no teste (não é a última boa), a frase (1) não aparece, mesmo com
@@ -126,18 +104,6 @@ def test_g_a_guarda_interrompida_nao_vira_ultima_boa(tmp_path, monkeypatch):
     with pytest.raises(Morreu):
         atualizacao.guardar_ultima_boa(p.raiz, ATUAL, p.atual.fonte, PUBLICA)
     assert atualizacao.ler_ultima_boa(p.raiz) == ANTERIOR
-
-
-def test_g1_a_frase_1_so_depois_de_voltar(tmp_path, monkeypatch):
-    """G1, o outro lado: rodando a anterior (a última boa), com a versão nova reprovada, a frase (1) aparece uma vez
-    (derivada do que existe, nunca anotada antes)."""
-    monkeypatch.setattr(versao, "VERSAO", ANTERIOR)
-    p = Prova(tmp_path, publicar_nova=False)
-    _guardar_a_mao(p, ANTERIOR)
-    atualizacao.gravar_estado({"reprovadas": [ATUAL], "nao_tentar": [ATUAL]})
-    p.abrir()
-    p.ligar_a_tela()
-    assert [e.tipo for e in p.tela if isinstance(e, fases.MostrarFalha)] == [fases.FALHA_TESTE]
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -506,15 +472,6 @@ def test_l4_a_abertura_comum_nao_regrava_o_bilhete(tmp_path, monkeypatch):
 # ---------------------------------------------------------------------------------------------------------------------
 # B (D-844): a volta pelo pacote guardado, sem internet; e o bilhete só com as duas chaves
 # ---------------------------------------------------------------------------------------------------------------------
-
-def test_d844_a_volta_funciona_sem_internet(tmp_path):
-    """D-844 (Samuel, 24/11/2026: "ok"): a versão nova reprovada volta para a anterior pelo pacote guardado, sem a
-    fonte (sem internet). Antes, a volta buscava a assinatura, o índice e o pacote da anterior na internet."""
-    p = Prova(tmp_path, teste=(False, "código 1"))
-    _guardar_a_mao(p, ANTERIOR)
-    p.atual.fonte = atualizacao.Fonte(str(tmp_path / "sem-internet"))
-    assert p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL) == 0
-    assert [c[:2] for c in p.vp.chamadas if c[0] == "trocar"] == [("trocar", ANTERIOR)]
 
 
 def test_d844_guardar_a_ultima_boa_confere_a_soma_e_troca_a_antiga(tmp_path):

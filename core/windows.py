@@ -7,7 +7,9 @@ O QUE É
     arquivo (`ler_assinatura_digital`, desde o passo 2, para o publicar), e abrir um programa num grupo do Windows que
     fecha junto tudo o que ele abrir (`abrir_em_grupo`, passo 2, para a vigia do espaço do publicar), com o laço único
     de rodar, olhar a vigia e fechar (`rodar_em_grupo`, passo 2, volta 4: o vpk e o gh), e pedir ao Windows que grave
-    um arquivo no disco (`gravar_no_disco`, passo 2, volta 4). O porteiro (`regras_dos_agentes`,
+    um arquivo no disco (`gravar_no_disco`, passo 2, volta 4), e mostrar a caixa do próprio Windows, para a frase da
+    atualização que aparece antes de a janela do programa existir (`mostrar_caixa_do_windows`, volta 5 do atualizador
+    novo, D-868). O porteiro (`regras_dos_agentes`,
     conferência K01) só deixa essa conversa acontecer aqui. Quem usa hoje: o `main.py` (a entrada do trabalho de
     administrador), a janela de prova, os testes e, desde o passo 2, o `empacotar.py` (o vpk pelo laço único, a
     assinatura digital do Visual C++ e a gravação no disco) e o `publicar_versao_kaique.py` (o gh pelo laço único). O
@@ -348,6 +350,13 @@ class _PROCESSENTRY32W(ctypes.Structure):
                 ("pcPriClassBase", wintypes.LONG), ("dwFlags", wintypes.DWORD), ("szExeFile", wintypes.WCHAR * 260)]
 
 
+class _USEROBJECTFLAGS(ctypes.Structure):
+    """As bandeiras de uma estação de janelas (USEROBJECTFLAGS, winuser.h): `dwFlags` tem `WSF_VISIBLE` quando a
+    estação tem tela à vista (volta 5 do atualizador novo, a caixa do Windows)."""
+
+    _fields_ = [("fInherit", wintypes.BOOL), ("fReserved", wintypes.BOOL), ("dwFlags", wintypes.DWORD)]
+
+
 class _Bibliotecas:
     """As funções do Windows que a peça usa, com os tipos certos e `use_last_error=True` (o erro de cada chamada
     fica guardado e é lido por `_ler_erro`, nunca um erro velho de outra chamada)."""
@@ -417,6 +426,10 @@ class _Bibliotecas:
             (u.ShowWindow, [wintypes.HWND, ctypes.c_int], wintypes.BOOL),
             (u.SetForegroundWindow, [wintypes.HWND], wintypes.BOOL),
             (u.GetForegroundWindow, [], wintypes.HWND),
+            (u.GetProcessWindowStation, [], wintypes.HANDLE),
+            (u.GetUserObjectInformationW, [wintypes.HANDLE, ctypes.c_int, P, wintypes.DWORD,
+                                           ctypes.POINTER(wintypes.DWORD)], wintypes.BOOL),
+            (u.MessageBoxW, [wintypes.HWND, wintypes.LPCWSTR, wintypes.LPCWSTR, wintypes.UINT], ctypes.c_int),
             (o.CoInitializeEx, [P, wintypes.DWORD], ctypes.c_long),
             (o.CoUninitialize, [], None),
             (o.CoTaskMemFree, [P], None),
@@ -2070,6 +2083,77 @@ def trazer_para_a_frente(janela: int | None) -> bool:
         u.ShowWindow(janela, 9)                                        # SW_RESTORE
     u.SetForegroundWindow(janela)
     return u.GetForegroundWindow() == janela
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# A caixa do Windows (volta 5 do atualizador novo, 25/11/2026; D-868)
+# ---------------------------------------------------------------------------------------------------------------------
+# Para quê: a frase da atualização que aparece ANTES de a janela do programa existir (a versão nova que não passou no
+# teste rápido; a frase guardada para a abertura seguinte) não pode esperar a janela: se a janela da versão estragada
+# não abre, a frase nunca apareceria (o G1 do quarto "quem tenta quebrar"). Palavras do Samuel (D-868): "a frase
+# aparece pela caixa do Windows, pela peça (`MessageBoxW`), nunca pela janela do programa". Esta é a ÚNICA chamada da
+# caixa do Windows no programa; quem mostra a frase é o executor da atualização (`atualizacao.Atualizacao._para_a_tela`).
+# O que a caixa faz em cada caso, com a fonte (a documentação da Microsoft), está no ONDE-PAREI da volta 5
+# (`relatorios/atualizador-novo/ONDE-PAREI.md`, "A leitura antes de usar a peça de fora: a caixa do Windows").
+# Arriscado: tirar a conferência da área de trabalho à vista (numa sessão sem tela, a caixa nasce onde ninguém vê e a
+# linha que a chamou fica parada para sempre esperando o OK); contar como "viu" outra volta que não seja o OK.
+
+_UOI_FLAGS = 1                      # GetUserObjectInformationW: as bandeiras do objeto (USEROBJECTFLAGS)
+_WSF_VISIBLE = 0x0001               # "a estação de janelas tem superfícies de tela visíveis"
+_MB_OK = 0x00000000                 # só o botão OK
+_MB_ICONINFORMATION = 0x00000040    # o ícone "i" (o mesmo das caixas da janela: QMessageBox.Information)
+_MB_SETFOREGROUND = 0x00010000      # o Windows tenta pôr a caixa na frente (SetForegroundWindow)
+_MB_TOPMOST = 0x00040000            # a caixa fica acima das outras janelas (WS_EX_TOPMOST)
+_IDOK = 1                           # a volta da caixa quando a pessoa clica OK (ou aperta ESC, com só o OK)
+
+
+def area_de_trabalho_a_vista() -> bool | None:
+    """A estação de janelas DESTE processo tem tela à vista (`WSF_VISIBLE`)? True, False, ou None (não deu para ler).
+    Só lê. É o jeito que a Microsoft documenta ("Interactive Services": GetProcessWindowStation e
+    GetUserObjectInformation com o atributo WSF_VISIBLE). False é, por exemplo, o programa aberto por uma conexão de
+    longe ou por um serviço: a caixa nasceria numa tela que ninguém vê. O identificador que GetProcessWindowStation
+    devolve não se fecha (documentação dela)."""
+    try:
+        u = _win().user32
+        estacao = u.GetProcessWindowStation()
+        if not estacao:
+            return None
+        bandeiras = _USEROBJECTFLAGS()
+        precisou = wintypes.DWORD(0)
+        if not u.GetUserObjectInformationW(estacao, _UOI_FLAGS, ctypes.byref(bandeiras), ctypes.sizeof(bandeiras),
+                                           ctypes.byref(precisou)):
+            return None
+        return bool(bandeiras.dwFlags & _WSF_VISIBLE)
+    except OSError:
+        return None
+
+
+def mostrar_caixa_do_windows(titulo: str, texto: str) -> Resposta:
+    """Mostra a caixa do próprio Windows (`MessageBoxW`, sem janela dona, só o OK) e ESPERA o OK; devolve `DEU_CERTO`
+    só quando a pessoa clicou OK (a volta `IDOK`). Nunca levanta.
+    - Sem área de trabalho à vista (`area_de_trabalho_a_vista` não é True): NÃO chama a caixa e devolve `FALHOU`
+      (quem chamou guarda a frase para depois).
+    - A caixa que o Windows não mostrou (a volta zero): `FALHOU`, com o número do erro (`_ler_erro`, logo depois da
+      chamada).
+    Trava só a linha que chama, até o OK (a caixa é modal: "o sistema não devolve o controle [...] até a caixa ser
+    fechada"). `MB_TOPMOST` a deixa acima das outras janelas; `MB_SETFOREGROUND` pede a frente (o Windows pode
+    recusar e piscar o botão na barra de tarefas)."""
+    a_vista = area_de_trabalho_a_vista()
+    if a_vista is not True:
+        return _falhou("não há área de trabalho à vista: a caixa do Windows não foi mostrada" if a_vista is False
+                       else "não deu para saber se há área de trabalho à vista: a caixa do Windows não foi mostrada",
+                       "WSF_VISIBLE ausente" if a_vista is False else "GetUserObjectInformationW falhou")
+    try:
+        volta = _win().user32.MessageBoxW(None, str(texto), str(titulo),
+                                          _MB_OK | _MB_ICONINFORMATION | _MB_SETFOREGROUND | _MB_TOPMOST)
+        erro = _ler_erro()
+    except OSError as e:
+        return _falhou("a caixa do Windows não abriu", str(e))
+    if volta == _IDOK:
+        return _certo()
+    if volta == 0:
+        return _falhou("o Windows não mostrou a caixa", f"MessageBoxW devolveu 0 (erro {erro})")
+    return _falhou("a caixa do Windows fechou sem o OK", f"MessageBoxW devolveu {volta}")
 
 
 # ---------------------------------------------------------------------------------------------------------------------

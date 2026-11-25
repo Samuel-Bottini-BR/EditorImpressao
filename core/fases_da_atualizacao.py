@@ -11,27 +11,25 @@ e quem faz alguma coisa (perguntar ao Windows, procurar, baixar, trocar, mostrar
 novo. Assim a decisão "o que vem agora" está num lugar só e é testada inteira, par por par
 (`tests/test_fases_da_atualizacao.py` passa por todas as fases com todos os eventos).
 
-A VERDADE VEM DO DISCO (emenda do Fable, A). A cada abertura o executor olha três coisas que existem e as manda no
-`Abriu`: (1) a versão que roda; (2) a "última boa", a última versão que passou no teste rápido, guardada com o pacote
-dela (`ultima_boa`); (3) se há pacote baixado esperando a troca (`pendente`, o que o Velopack diz). Daí:
-    - rodando uma versão que não é a última boa e que não tem a marca de "aprovada" nem a de "sem volta": ela ainda
-      não passou no teste; o teste rápido roda NESTA abertura, antes da janela. Passou: ganha a marca de aprovada e não
-      é testada de novo (volta 4, D-856); o pacote dela é guardado como a última boa, se couber. Não passou: volta para
-      a última boa, pelo pacote guardado (segundos, sem internet; D-844), UMA vez (D-855). Uma volta interrompida antes
-      de ser pedida (o notebook desligou) é refeita na abertura seguinte, porque o disco ainda diz "rodando a nova,
-      última boa a de antes" (G1 da volta 2).
-    - a volta leva a marca `--voltando <de> <para>` (D-855): reaberta a de antes, a frase (1); reaberta a que falhou (o
-      Windows não deixou trocar), a marca de "sem volta" no disco, a frase (3), e a abertura segue sem testar. Com a
-      marca de "sem volta" nenhuma abertura testa nem volta de novo (D-863); volta ao normal com a próxima atualização.
+A VERDADE VEM DO DISCO (emenda do Fable, A). A cada abertura o executor olha o que existe e manda no `Abriu`: (1) a
+versão que roda; (2) a "última boa", a última versão que passou no teste rápido, guardada com o pacote dela
+(`ultima_boa`; só os nomes da pasta); (3) as marcas do disco e se o pacote da versão que roda está em `packages\\`;
+(4) se há pacote baixado esperando a troca (`pendente`, o que o Velopack diz). Daí:
+    - rodando uma versão que ainda não passou nem falhou no teste rápido (`precisa_do_teste`): o teste roda NESTA
+      abertura, antes da janela. Passou: ganha a marca de aprovada e não é testada de novo (volta 4, D-856); o pacote
+      dela é guardado como a última boa, se couber. Não passou (volta 5, D-868): vai para as reprovadas, a frase da
+      D-868 aparece (antes da janela: pela caixa do Windows, escolhido pelo executor), e a abertura segue como sempre
+      (o programa tenta abrir assim mesmo). Nada volta sozinho: a volta automática saiu da primeira entrega (D-867); a
+      última boa continua guardada para a volta à mão do Samuel (D-869). A reprovada não é testada de novo.
     - a primeira versão instalada (sem última boa e sem o pacote dela em `packages\\`, que o .msi não põe) não é
-      testada, nada é baixado, não há volta (D-857). Sem última boa mas com o pacote (uma atualização entrou), testa;
-      não passou: a frase (3) e para.
+      testada e nada é baixado (D-857).
     - sem internet, o pacote esperando (`pendente`) é oferecido pela assinatura guardada quando ele foi conferido
       (volta 4, D-859).
     - troca que não aconteceu (desligou, arquivo preso, o Windows recusou) NÃO é falha de versão: o pacote continua
-      esperando e o aviso volta (M1). Só o teste rápido reprovado põe uma versão em "não tentar".
-    - a frase (1) "voltou para a versão anterior" é DERIVADA: rodando igual à última boa e há reprovação de uma versão
-      mais nova. Nunca é anotada antes de acontecer (G1).
+      esperando e o aviso volta (M1 da volta 3). Só o teste rápido reprovado põe uma versão em "não tentar".
+    - a frase guardada no bilhete sobre uma troca que não aconteceu só aparece se a versão que roda ainda é mais velha
+      que a da frase (volta 5, M1 do quarto "quem tenta quebrar": se a troca aconteceu depois, a frase deixou de ser
+      verdade). `_frase_guardada_vale`.
 O bilhete (`estado.json`) guarda só "versões reprovadas" (`nao_tentar` aqui) e "frase a mostrar uma vez" (para quando
 o processo que a viu não tem janela). Nada mais decide nada.
 
@@ -42,11 +40,10 @@ AS FASES (`Fase`), na ordem em que costumam acontecer numa abertura do programa 
                     antes da janela (D-806, D-834); espera a resposta.
     PREPARANDO      a pessoa disse "Sim": o trabalho com licença (o ajudante antigo sai, o Visual C++, a instalação
                     antiga do Inno, a licença da pasta) roda por trás, com a janela já aberta.
-    CONFERINDO_NOVA o teste rápido da versão que roda, que ainda não é a última boa nem foi aprovada (D-718), sempre
-                    antes da janela (volta 4: o teste por trás, com a janela aberta, saiu).
+    CONFERINDO_NOVA o teste rápido da versão que roda, que ainda não passou nem falhou nele, sempre antes da janela
+                    (volta 4: o teste por trás, com a janela aberta, saiu).
     GUARDANDO       passou no teste: a marca de aprovada e o pacote dela guardado como a nova última boa, se couber
-                    (D-844, D-856).
-    VOLTANDO        não passou: a volta para a última boa, pelo pacote guardado (D-718, D-844).
+                    (D-844, D-856). Não passou: nada a guardar; a abertura segue (volta 5, D-868).
     MOTOR           o motor do Kraken: sem ele no lugar, nada é anunciado (D-790, D-833).
     PROCURANDO      perguntando ao Velopack se há versão nova (só ao abrir, D-732).
     CONFERINDO      a assinatura do Samuel na versão achada, antes de baixar (D-724).
@@ -54,8 +51,10 @@ AS FASES (`Fase`), na ordem em que costumam acontecer numa abertura do programa 
     PRONTA          baixada; o aviso "Reiniciar agora" / "Depois" está na tela (D-715, D-720).
     CONFERINDO_TROCA "Reiniciar agora": a conferência única da troca (o pacote, o motor da versão nova, outra janela
                     aberta) roda POR TRÁS, com a janela respondendo (volta 3, M2); a janela fecha quando ela termina.
-                    Não pode: com outra janela aberta, a frase da D-840 e o aviso de novo (D-841); por qualquer outro
-                    motivo, a frase da D-845 com o motivo (M3), e a pergunta vem ao fechar.
+                    Não pode: com outra janela aberta, a frase da D-840 e o aviso de novo (D-841); sem o atualizador do
+                    Velopack (`Update.exe`), a frase própria e nada mais (volta 5, M2: fechar não pergunta, porque não
+                    há como trocar); por qualquer outro motivo, a frase da D-845 com o motivo (M3), e a pergunta vem
+                    ao fechar.
     DEPOIS          escolheu "Depois" (ou o "Reiniciar agora" não pôde): ao fechar, "Atualizar agora?" (D-831, D-835).
     FECHANDO        a conferência deixou: a janela fecha pelo caminho de sempre (grava o trabalho).
     PERGUNTANDO     a pergunta "Atualizar agora?" ao fechar está na tela.
@@ -78,8 +77,8 @@ Arriscado: qualquer transição. Cada uma protege uma decisão do Samuel e tem o
 sem mudar o teste faz o teste falhar (é para isso que ele existe). Em especial: (1) sem licença, `PedirLicenca` e nunca
 `Procurar` (sem a licença, o Velopack pediria licença em toda troca, o jeito 2 que ele recusou); (2) `Baixar` só depois
 de `Assinatura(certa)`; (3) `Trocar` só depois de a janela fechar ou do "Sim" ao fechar; (4) só o teste rápido reprovado
-põe a versão em `nao_tentar` (`Reprovar`); (5) na conta de testes, `FORA`; (6) a volta só antes da janela, uma vez
-(D-855, D-863); (7) a versão aprovada não é testada de novo (D-856).
+põe a versão em `nao_tentar` (`Reprovar`); (5) na conta de testes, `FORA`; (6) a versão aprovada, e a reprovada, não
+são testadas de novo (D-856; volta 5); (7) nenhuma transição pede volta ao Velopack (D-867: a volta automática saiu).
 """
 
 from __future__ import annotations
@@ -98,7 +97,6 @@ class Fase(str, Enum):
     PREPARANDO = "preparando"
     CONFERINDO_NOVA = "conferindo_nova"
     GUARDANDO = "guardando"
-    VOLTANDO = "voltando"
     MOTOR = "motor"
     PROCURANDO = "procurando"
     CONFERINDO = "conferindo"
@@ -112,19 +110,23 @@ class Fase(str, Enum):
     PARADO = "parado"
 
 
-# Os tipos de frase da tela (um lugar só: o executor escolhe o texto por eles, `atualizacao.frase_da_falha`).
-FALHA_TESTE = "teste"          # a versão nova não passou no teste rápido e o programa voltou (frase 1, derivada)
+# Os tipos de frase da tela (um lugar só: o executor escolhe o texto por eles, `atualizacao.frase_da_falha`). Volta 5:
+# saíram o "teste" (a frase 1, "voltou para a versão anterior") e o "volta" (a frase 3), com a volta automática (D-867);
+# entrou o "reprovada" (D-868).
+FALHA_REPROVADA = "reprovada"  # a versão nova não passou no teste rápido (a frase da D-868)
 FALHA_TROCA = "troca"          # o Velopack não conseguiu trocar e reabriu a versão de antes (a frase da D-839)
 FALHA_RECUSADA = "recusada"    # a versão não tem a assinatura do Samuel (frase 2)
-FALHA_VOLTA = "volta"          # a versão nova falhou e a volta para a anterior não deu certo (frase 3)
 FALHA_MOTOR = "motor"          # a versão nova pede um motor do Kraken que não está no lugar (D-843)
 NAO_DEU_AGORA = "nao_deu_agora"  # o "Reiniciar agora" não pôde trocar (D-840 com outra janela; D-845 com o motivo)
-TIPOS_DE_FALHA = (FALHA_TESTE, FALHA_TROCA, FALHA_RECUSADA, FALHA_VOLTA, FALHA_MOTOR, NAO_DEU_AGORA)
+TIPOS_DE_FALHA = (FALHA_REPROVADA, FALHA_TROCA, FALHA_RECUSADA, FALHA_MOTOR, NAO_DEU_AGORA)
 
 # Os motivos do "Não deu para atualizar agora: [motivo]" (D-845). Só a chave mora aqui; o texto em português, em
 # `atualizacao.MOTIVOS_DA_TELA` (a tela só lê de lá). O da outra janela, em resposta ao clique, tem a frase dele (D-840) e
-# não entra em `MOTIVOS`; o da outra janela no "Sim" ao fechar, mostrado na abertura seguinte, é o da D-864.
+# não entra em `MOTIVOS`; o da outra janela no "Sim" ao fechar, mostrado na abertura seguinte, é o da D-864. O do
+# atualizador do Velopack que sumiu (volta 5, M2) também tem a frase própria, sem "Tente ao fechar o programa"
+# (`atualizacao.FRASE_SEM_ATUALIZADOR`), e não entra em `MOTIVOS`.
 MOTIVO_OUTRA_JANELA = "outra_janela"
+MOTIVO_SEM_ATUALIZADOR = "sem_atualizador"
 MOTIVO_HAVIA_OUTRA_JANELA = "havia_outra_janela"
 MOTIVO_SEM_VERSAO = "sem_versao"
 MOTIVO_PACOTE_SUMIU = "pacote_sumiu"
@@ -144,8 +146,19 @@ REABRIR_SEM_JANELA = "sem_janela"      # "Sim" ao fechar: só o teste rápido, s
 
 
 def id_da_falha(tipo: str, versao: str) -> str:
-    """O nome de uma frase mostrada ao abrir (a tela mostra cada uma uma vez só, pelo nome). Lugar único."""
+    """O nome de uma frase mostrada ao abrir (a tela mostra cada uma uma vez só, pelo nome). Lugar único. A frase
+    guardada no bilhete acrescenta a hora depois (`atualizacao.guardar_frase`: "<tipo>-<versão>-<hora>")."""
     return f"{tipo}-{versao}"
+
+
+def versao_da_falha(tipo: str, nome: str) -> str:
+    """A versão de que uma frase fala, lida do nome dela (o par de `id_da_falha`: "<tipo>-<versão>[-<hora>]"); "" se o
+    nome não é desse jeito. Lugar único (volta 5, M1)."""
+    prefixo = f"{tipo}-"
+    if not nome.startswith(prefixo):
+        return ""
+    v = nome[len(prefixo):].split("-")[0]
+    return v if _numeros(v) else ""
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -155,15 +168,13 @@ def id_da_falha(tipo: str, versao: str) -> str:
 @dataclass(frozen=True)
 class Estado:
     """Onde a atualização está nesta abertura: a fase, a versão que roda (`versao`), a nova achada ou a que está sendo
-    conferida (`nova`), a última boa guardada (`anterior`: para onde a volta vai; "" = nenhuma), as versões reprovadas
-    no teste (`nao_tentar`), o pacote esperando (`pendente`, D-859), se este processo é a reabertura sem janela
-    (`sem_janela`) e se a troca em andamento é a do "Reiniciar agora" (`trocando_com_janela`). Nada aqui vai para o
-    disco por si."""
+    conferida (`nova`), as versões reprovadas no teste (`nao_tentar`), o pacote esperando (`pendente`, D-859), se este
+    processo é a reabertura sem janela (`sem_janela`) e se a troca em andamento é a do "Reiniciar agora"
+    (`trocando_com_janela`). Nada aqui vai para o disco por si. (Volta 5: saiu o `anterior`, "para onde a volta vai".)"""
 
     fase: Fase = Fase.INICIO
     versao: str = ""
     nova: str = ""
-    anterior: str = ""
     nao_tentar: tuple[str, ...] = ()
     pendente: str = ""
     sem_janela: bool = False
@@ -179,11 +190,10 @@ class Abriu:
     """O programa abriu. O que o executor leu do disco e do Windows AGORA (nunca de uma anotação):
     `instalado`: pelo instalador do Velopack (pelo código é False). `pasta_grava`: a conta que abriu consegue gravar na
     pasta do programa (o "preparado?", D-741). `versao`: a que roda. `ultima_boa`: a última que passou no teste, com o
-    pacote guardado ("" = nenhuma). `aprovada`: a versão que roda tem a marca de aprovada no teste (D-856).
-    `sem_volta`: a versão que roda tem a marca de "a volta já foi tentada e não deu" (D-863). `pacote_da_versao`: o
-    pacote da versão que roda está em `packages\\` (depois do .msi não está: é a primeira versão instalada, D-857).
-    `reaberto_voltando`: o pedido da reabertura era a volta (`--voltando`, D-855). `nao_tentar`: as reprovadas no
-    teste (do bilhete). `pendente`: a versão baixada
+    pacote guardado ("" = nenhuma; só para saber se a versão que roda já passou: nada volta para ela, D-869).
+    `aprovada`: a versão que roda tem a marca de aprovada no teste (D-856). `pacote_da_versao`: o pacote da versão que
+    roda está em `packages\\` (depois do .msi não está: é a primeira versão instalada, D-857). `nao_tentar`: as
+    reprovadas no teste (do bilhete). `pendente`: a versão baixada
     esperando a troca, pelo Velopack ("" = nenhuma). `troca_em_curso`: o atualizador do Velopack está rodando agora
     (True / False / None = não deu para saber); só é perguntado quando há troca possível e o programa não foi reaberto
     por ele. `reaberto_de`/`reaberto_para`: o pedido com que o Velopack reabriu o programa (a linha de comando).
@@ -197,14 +207,12 @@ class Abriu:
     versao: str
     ultima_boa: str = ""
     aprovada: bool = False
-    sem_volta: bool = False
     pacote_da_versao: bool = True
     nao_tentar: tuple[str, ...] = ()
     pendente: str = ""
     troca_em_curso: bool | None = False
     reaberto_de: str = ""
     reaberto_para: str = ""
-    reaberto_voltando: bool = False
     sem_janela: bool = False
     frase_guardada: tuple[str, str, str] | None = None
 
@@ -333,20 +341,10 @@ class UltimaBoaGuardada:
     motivo: str = ""
 
 
-@dataclass(frozen=True)
-class VoltaPedida:
-    """A volta para a última boa: o pacote guardado conferido e a troca pedida (`certa`), ou não deu (sem o pacote
-    guardado, a soma não confere, o Velopack não aceitou)."""
-
-    certa: bool
-    motivo: str = ""
-
-
 Evento = Union[Abriu, LicencaRespondida, PreparoTerminou, MotorConferido, Procurou, Assinatura, Baixou, Escolheu,
-               JanelaFechou, Fechando, RespondeuAoFechar, TrocaPedida, TesteRapido, UltimaBoaGuardada, VoltaPedida,
-               TrocaConferida]
+               JanelaFechou, Fechando, RespondeuAoFechar, TrocaPedida, TesteRapido, UltimaBoaGuardada, TrocaConferida]
 TIPOS_DE_EVENTO = (Abriu, LicencaRespondida, PreparoTerminou, MotorConferido, Procurou, Assinatura, Baixou, Escolheu,
-                   JanelaFechou, Fechando, RespondeuAoFechar, TrocaPedida, TesteRapido, UltimaBoaGuardada, VoltaPedida,
+                   JanelaFechou, Fechando, RespondeuAoFechar, TrocaPedida, TesteRapido, UltimaBoaGuardada,
                    TrocaConferida)
 
 
@@ -432,14 +430,6 @@ class MarcarAprovada:
 
 
 @dataclass(frozen=True)
-class MarcarSemVolta:
-    """A marca de "a volta desta versão foi tentada e não deu" no disco (D-863): nenhuma abertura testa nem volta de
-    novo; volta ao normal com a próxima atualização."""
-
-    versao: str
-
-
-@dataclass(frozen=True)
 class GuardarUltimaBoa:
     """Guardar o pacote da versão `versao` (que passou no teste) como a última boa, conferido pela soma assinada
     (D-844). `por_tras`: com a janela abrindo (na reabertura sem janela, nesta linha, antes de sair)."""
@@ -457,19 +447,11 @@ class Reprovar:
 
 
 @dataclass(frozen=True)
-class Voltar:
-    """Voltar de `de` para `para` (a última boa), pelo pacote guardado, e pedir a troca. `reabrir`: o Velopack abre a
-    anterior com a janela depois (False na reabertura sem janela: nada abre na tela)."""
-
-    de: str
-    para: str
-    reabrir: bool
-
-
-@dataclass(frozen=True)
 class MostrarFalha:
-    """Mostrar na janela a frase do `tipo` (`TIPOS_DE_FALHA`), com o `motivo_da_tela` quando é o "não deu agora".
-    `sempre`: é a resposta a um clique e aparece toda vez; senão, uma vez por `nome`, nesta conta (D-719)."""
+    """Mostrar a frase do `tipo` (`TIPOS_DE_FALHA`), com o `motivo_da_tela` quando é o "não deu agora". `sempre`: é a
+    resposta a um clique e aparece toda vez; senão, uma vez por `nome`, nesta conta (D-719). ONDE ela aparece não é
+    regra daqui: o executor a põe na caixa da janela, ou, se a janela ainda não existe, na caixa do Windows (volta 5,
+    D-868: `atualizacao.Atualizacao._para_a_tela`)."""
 
     tipo: str
     nome: str = ""
@@ -515,8 +497,7 @@ class Sair:
 
 
 Efeito = Union[PedirLicenca, EsperarPreparo, GarantirMotor, Procurar, ConferirAssinatura, Baixar, MostrarVersaoNova,
-               FecharJanela, PerguntarAoFechar, Trocar, RodarTesteRapido, MarcarAprovada, MarcarSemVolta,
-               GuardarUltimaBoa, Reprovar, Voltar,
+               FecharJanela, PerguntarAoFechar, Trocar, RodarTesteRapido, MarcarAprovada, GuardarUltimaBoa, Reprovar,
                MostrarFalha, GuardarFrase, Registrar, Sair, ConferirTroca, ReabrirOPrograma]
 
 
@@ -556,44 +537,67 @@ def _frase(estado: Estado, tipo: str, versao: str, motivo_da_tela: str = "") -> 
     return [MostrarFalha(tipo, id_da_falha(tipo, versao), motivo_da_tela)]
 
 
+def _frase_guardada_vale(tipo: str, nome: str, versao_que_roda: str) -> bool:
+    """A frase guardada no bilhete ainda é verdade? A ÚNICA regra disso (volta 5, M1 do quarto "quem tenta quebrar").
+    A versão de que ela fala vem do nome (`versao_da_falha`).
+    - A frase da versão reprovada (D-868) fala da versão que roda: vale enquanto a que roda não é mais nova que ela.
+    - Todas as outras falam de uma troca para a versão da frase que não aconteceu (o "Sim" ao fechar que não trocou,
+      D-858/D-864; o pacote trocado, D-848; a troca que o Velopack não fez, D-839; o atualizador que sumiu, M2): valem
+      só enquanto a que roda é mais velha que ela. Se a troca aconteceu depois (o "Sim" da outra janela, o "Reiniciar
+      agora" da abertura seguinte), a frase deixou de ser verdade e não aparece.
+    Sem a versão no nome (um nome de outro jeito): vale (na dúvida, a frase aparece; esconder uma frase verdadeira seria
+    pior)."""
+    v = versao_da_falha(tipo, nome)
+    if not v:
+        return True
+    if tipo == FALHA_REPROVADA:
+        return not _mais_nova(versao_que_roda, v)
+    return _mais_nova(v, versao_que_roda)
+
+
 def _frases_ao_abrir(novo: Estado, e: Abriu) -> list[Efeito]:
     """As frases que esta abertura mostra, todas derivadas do que existe (nada anotado antes de acontecer):
     - a troca que o Velopack não fez: ele reabre a versão de antes com o pedido de troca (apply.rs 56-60): a frase da
       D-839 (não é falha de versão: nada vai para "não tentar", e o aviso volta);
-    - a (1) "voltou para a versão anterior": rodando a última boa, e há uma versão mais nova reprovada no teste
-      (a mais nova delas dá o nome, para aparecer uma vez por versão reprovada);
-    - a frase que o bilhete guarda (de um processo que não tinha janela).
-    A volta que o Windows não deixou (reaberta com `--voltando`) é tratada em `_ao_abrir` (ela também marca o disco)."""
+    - a frase que o bilhete guarda (de um processo que não tinha janela), se ainda é verdade (`_frase_guardada_vale`).
+    (Volta 5: a frase (1), "voltou para a versão anterior", saiu com a volta automática, D-867.)"""
     efeitos: list[Efeito] = []
-    if e.reaberto_para and not e.reaberto_voltando and e.versao == e.reaberto_de and \
-            _mais_nova(e.reaberto_para, e.versao):
+    if e.reaberto_para and e.versao == e.reaberto_de and _mais_nova(e.reaberto_para, e.versao):
         efeitos += [Registrar(f"o Velopack não trocou para a {e.reaberto_para} e reabriu a {e.versao}: o aviso volta "
                               "quando ela for achada de novo")] + _frase(novo, FALHA_TROCA, e.reaberto_para)
-    reprovadas_mais_novas = [v for v in e.nao_tentar if _mais_nova(v, e.versao)]
-    if e.ultima_boa and e.versao == e.ultima_boa and reprovadas_mais_novas and not novo.sem_janela:
-        mais_nova = max(reprovadas_mais_novas, key=_numeros)
-        efeitos.append(MostrarFalha(FALHA_TESTE, id_da_falha(FALHA_TESTE, mais_nova)))
     if e.frase_guardada and e.frase_guardada[0] in TIPOS_DE_FALHA and not novo.sem_janela:
         tipo, nome, motivo = e.frase_guardada
-        efeitos.append(MostrarFalha(tipo, nome, motivo))
+        if _frase_guardada_vale(tipo, nome, e.versao):
+            efeitos.append(MostrarFalha(tipo, nome, motivo))
+        else:
+            efeitos.append(Registrar(f"a frase guardada \"{nome}\" deixou de ser verdade (a versão que roda é a "
+                                     f"{e.versao}): não aparece"))
     return efeitos
 
 
-def _precisa_do_teste(e: Abriu) -> bool:
-    """A versão que roda precisa do teste rápido? A ÚNICA regra disso (volta 4): não é a última boa, não foi aprovada
-    (D-856), não tem a marca de "sem volta" (D-863), e não é a primeira versão instalada (sem última boa e sem o pacote
-    dela em `packages\\`: D-857)."""
-    if e.versao == e.ultima_boa or e.aprovada or e.sem_volta:
+def precisa_do_teste(versao: str, ultima_boa: str, aprovada: bool, pacote_da_versao: bool,
+                     nao_tentar: tuple[str, ...]) -> bool:
+    """A versão que roda precisa do teste rápido? A ÚNICA regra disso (a regra a chama pela abertura; o executor, para
+    saber se uma troca pode estar acontecendo). Não precisa se: é a última boa ou tem a marca de aprovada (já passou,
+    D-856); já foi reprovada (volta 5: o teste daria o mesmo, e a frase da D-868 já foi dada; a marca de "sem volta"
+    da volta 4 saiu, D-867); ou é a primeira versão instalada (sem última boa e sem o pacote dela em `packages\\`,
+    D-857)."""
+    if versao == ultima_boa or aprovada or versao in nao_tentar:
         return False
-    return bool(e.ultima_boa) or e.pacote_da_versao
+    return bool(ultima_boa) or pacote_da_versao
+
+
+def _precisa_do_teste(e: Abriu) -> bool:
+    """`precisa_do_teste` com o que a abertura leu."""
+    return precisa_do_teste(e.versao, e.ultima_boa, e.aprovada, e.pacote_da_versao, tuple(e.nao_tentar))
 
 
 def _ao_abrir(estado: Estado, e: Abriu) -> tuple[Estado, list[Efeito]]:
     """`Abriu` (só na fase INICIO): a verdade vem do disco (ver o topo)."""
     if not e.instalado or e.conta_de_testes or e.portatil:
         return replace(estado, fase=Fase.FORA, versao=e.versao), []
-    novo = replace(estado, versao=e.versao, anterior=e.ultima_boa, nao_tentar=tuple(e.nao_tentar),
-                   pendente=e.pendente, sem_janela=e.sem_janela)
+    novo = replace(estado, versao=e.versao, nao_tentar=tuple(e.nao_tentar), pendente=e.pendente,
+                   sem_janela=e.sem_janela)
     antes: list[Efeito] = []
     if e.troca_em_curso:
         # Volta 2, achado G1 (D-828 (1), D-770): o atualizador do Velopack está rodando (o clique no atalho no meio da
@@ -602,15 +606,6 @@ def _ao_abrir(estado: Estado, e: Abriu) -> tuple[Estado, list[Efeito]]:
             "o atualizador do Velopack está rodando (a troca está acontecendo agora): saio sem janela"), Sair(0)]
     if e.troca_em_curso is None:
         antes.append(Registrar("não deu para saber se a troca está acontecendo agora: a abertura segue"))
-    if e.reaberto_voltando and e.reaberto_de and e.versao == e.reaberto_de:
-        # Volta 4, G1 do terceiro "quem tenta quebrar" (D-855, D-863): a volta foi pedida e o Windows não deixou trocar
-        # (o Velopack reabre a que falhou com o mesmo pedido). Uma vez só: a marca de "sem volta", a frase (3), e a
-        # abertura segue sem testar; nenhuma abertura seguinte tenta de novo.
-        antes += [Registrar(f"a volta da {e.versao} para a {e.reaberto_para} não aconteceu (o Velopack reabriu a "
-                            f"{e.versao}): não tento de novo"), MarcarSemVolta(e.versao)]
-        antes += _frase(novo, FALHA_VOLTA, e.versao)
-        novo = replace(novo, fase=Fase.MOTOR)
-        return novo, antes + _frases_ao_abrir(novo, e) + [GarantirMotor()]
     antes += _frases_ao_abrir(novo, e)
     if not e.pasta_grava:
         if e.sem_janela:
@@ -618,21 +613,12 @@ def _ao_abrir(estado: Estado, e: Abriu) -> tuple[Estado, list[Efeito]]:
                                                                        "gravação: nada a fazer"), Sair(0)]
         return replace(novo, fase=Fase.SEM_LICENCA), antes + [PedirLicenca()]
     if _precisa_do_teste(e):
-        # A versão que roda não passou no teste: o teste antes da janela (D-718). Vale para a reabertura depois da troca
-        # e para qualquer abertura em que a troca aconteceu sem a reabertura (desligou no meio, a volta interrompida).
+        # A versão que roda ainda não passou nem falhou no teste: o teste antes da janela. Vale para a reabertura depois
+        # da troca e para qualquer abertura em que a troca aconteceu sem a reabertura (desligou no meio).
         return replace(novo, fase=Fase.CONFERINDO_NOVA, nova=e.versao), antes + [RodarTesteRapido()]
     if e.sem_janela:
         return replace(novo, fase=Fase.PARADO), antes + [Registrar("reaberto sem janela sem nada a conferir"), Sair(0)]
     return replace(novo, fase=Fase.MOTOR), antes + [GarantirMotor()]
-
-
-def _volta_que_nao_deu(estado: Estado, motivo: str) -> tuple[Estado, list[Efeito]]:
-    """A volta que não aconteceu nesta abertura (sem última boa para voltar, ou a volta não pôde ser pedida): a marca de
-    "sem volta" (nenhuma abertura testa nem volta de novo, D-863), a frase (3) e para (D-857). Um lugar só."""
-    efeitos: list[Efeito] = [Registrar(motivo), MarcarSemVolta(estado.nova)] + _frase(estado, FALHA_VOLTA, estado.nova)
-    if estado.sem_janela:
-        return replace(estado, fase=Fase.PARADO), efeitos + [Sair(0)]
-    return replace(estado, fase=Fase.PARADO), efeitos
 
 
 def proxima_fase(estado: Estado, evento: Evento) -> tuple[Estado, list[Efeito]]:
@@ -669,30 +655,25 @@ def proxima_fase(estado: Estado, evento: Evento) -> tuple[Estado, list[Efeito]]:
             # D-856: a marca de aprovada ANTES de guardar (se a cópia não couber, a versão não é testada de novo).
             return replace(estado, fase=Fase.GUARDANDO), [
                 MarcarAprovada(estado.nova), GuardarUltimaBoa(estado.nova, por_tras=not estado.sem_janela)]
-        motivo = f"a versão {estado.nova} não passou no teste rápido ({e.detalhe})"
+        # Volta 5 (D-867, D-868): nada volta sozinho. A versão vai para as reprovadas (não é testada nem oferecida de
+        # novo), a frase da D-868 aparece (antes da janela, pela caixa do Windows; sem janela, guardada para a próxima
+        # abertura), e a abertura segue como sempre: o programa tenta abrir assim mesmo, com o motor e a procura (uma
+        # correção publicada é oferecida se a janela abrir). Nenhum pedido ao Velopack.
         reprovada = replace(estado, nao_tentar=_com_mais(estado.nao_tentar, estado.nova))
-        if estado.anterior and estado.anterior != estado.nova:
-            return (replace(reprovada, fase=Fase.VOLTANDO),
-                    [Reprovar(estado.nova, motivo), Voltar(estado.nova, estado.anterior, reabrir=not estado.sem_janela)])
-        # D-857: sem última boa para voltar, a frase (3) e para.
-        fase_nova, efeitos = _volta_que_nao_deu(reprovada, f"{motivo}; não há versão guardada para voltar")
-        return fase_nova, [Reprovar(estado.nova, motivo)] + efeitos
+        efeitos = [Reprovar(estado.nova, f"a versão {estado.nova} não passou no teste rápido ({e.detalhe})")]
+        efeitos += _frase(reprovada, FALHA_REPROVADA, estado.nova)
+        if estado.sem_janela:
+            return replace(reprovada, fase=Fase.PARADO), efeitos + [Sair(0)]
+        return replace(reprovada, fase=Fase.MOTOR), efeitos + [GarantirMotor()]
 
     if isinstance(e, UltimaBoaGuardada) and f is Fase.GUARDANDO:
         efeitos: list[Efeito] = [Registrar(
             f"a versão {estado.nova} passou no teste rápido e está guardada como a última boa" if e.certa else
             f"a versão {estado.nova} passou no teste rápido, mas o pacote dela não foi guardado ({e.motivo}): o teste "
             "roda de novo na próxima abertura")]
-        novo = replace(estado, anterior=estado.nova) if e.certa else estado
         if estado.sem_janela:
-            return replace(novo, fase=Fase.PARADO), efeitos + [Sair(0)]
-        return replace(novo, fase=Fase.MOTOR), efeitos + [GarantirMotor()]
-
-    if isinstance(e, VoltaPedida) and f is Fase.VOLTANDO:
-        if e.certa:
-            return replace(estado, fase=Fase.PARADO), [Registrar(
-                f"a volta para a {estado.anterior} foi pedida ao Velopack; o programa sai e ele troca"), Sair(0)]
-        return _volta_que_nao_deu(estado, f"a volta para a {estado.anterior} não deu certo ({e.motivo})")
+            return replace(estado, fase=Fase.PARADO), efeitos + [Sair(0)]
+        return replace(estado, fase=Fase.MOTOR), efeitos + [GarantirMotor()]
 
     if isinstance(e, MotorConferido) and f is Fase.MOTOR:
         if e.no_lugar:
@@ -767,6 +748,13 @@ def proxima_fase(estado: Estado, evento: Evento) -> tuple[Estado, list[Efeito]]:
                           "outra janela e o aviso de novo"),
                 MostrarFalha(NAO_DEU_AGORA, motivo_da_tela=MOTIVO_OUTRA_JANELA, sempre=True),
                 MostrarVersaoNova(estado.nova)]
+        if e.motivo_da_tela == MOTIVO_SEM_ATUALIZADOR:
+            # Volta 5, M2 do quarto "quem tenta quebrar" (D-870): sem o atualizador do Velopack não há como trocar. A
+            # frase própria (sem "Tente ao fechar o programa"), e nada mais: fechar não pergunta (a pergunta levaria à
+            # mesma falha). Quando ele voltar, a abertura seguinte acha a versão (ou o pacote esperando) e o aviso volta.
+            return replace(estado, fase=Fase.PARADO), [
+                Registrar(f"\"Reiniciar agora\": a troca não pode ser pedida ({e.motivo})"),
+                MostrarFalha(NAO_DEU_AGORA, motivo_da_tela=MOTIVO_SEM_ATUALIZADOR, sempre=True)]
         # D-845: qualquer outro "não pode agora": a frase com o motivo; a janela continua aberta e a pergunta vem ao
         # fechar (o clique nunca fica sem resposta).
         return replace(estado, fase=Fase.DEPOIS), [

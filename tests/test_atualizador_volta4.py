@@ -28,7 +28,6 @@ from tests.ajudante_do_atualizador import (ANTERIOR, ATUAL, NOVA, PACOTE, PUBLIC
                                           _ate_o_aviso, _estado, _registro, programdata_de_prova)
 
 RAIZ_DO_REPOSITORIO = Path(__file__).resolve().parent.parent
-ARG_VOLTANDO = "--voltando"            # escrito aqui: o código de antes não tem a constante
 
 
 @pytest.fixture(autouse=True)
@@ -75,36 +74,6 @@ def _na_tela(atual) -> list:
 # ---------------------------------------------------------------------------------------------------------------------
 # Regra 1 (D-855, D-863): a volta tenta uma vez e nunca fica em laço
 # ---------------------------------------------------------------------------------------------------------------------
-
-def test_d855_o_pedido_da_volta_leva_a_marca(tmp_path):
-    """D-855 ("o pedido de volta leva marca (`--voltando de para`, como a D-839)"): a volta pede ao Velopack a troca
-    para a última boa com `--voltando <de> <para>`, para a versão reaberta saber o que aconteceu. Em `1d01aaf9` o
-    pedido ia sem argumento nenhum (o G1 do terceiro "quem tenta quebrar")."""
-    p = Prova(tmp_path, teste=(False, "código 1"))
-    _guardar_a_mao(p, ANTERIOR)
-    assert p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL) == 0
-    troca = [c for c in p.vp.chamadas if c[0] == "trocar"][-1]
-    assert troca[1] == ANTERIOR and troca[3][:3] == (ARG_VOLTANDO, ATUAL, ANTERIOR)
-
-
-def test_d855_d863_a_volta_que_o_windows_nao_deixou_mostra_a_frase_3_e_nunca_mais_tenta(tmp_path):
-    """G1 do terceiro "quem tenta quebrar" (grave): o Windows não deixou a volta (um arquivo preso) e o Velopack reabriu
-    a versão que falhou com o pedido. Ela NÃO testa de novo (D-855), mostra a frase (3) da D-778 e abre; e nenhuma
-    abertura seguinte testa nem tenta voltar (D-863: "não tenta voltar de novo nas aberturas seguintes. Abre a versão
-    que está"). Em `1d01aaf9`: testava, pedia a volta de novo e saía, sem frase (o laço)."""
-    p = Prova(tmp_path, teste=(False, "código 1"))
-    _guardar_a_mao(p, ANTERIOR)
-    atualizacao.gravar_estado({"reprovadas": [ATUAL]})
-    teste = ContaDoTeste(passa=False)
-    reaberta = _outra_abertura(p, teste)
-    saida = reaberta.abrir([ARG_VOLTANDO, ATUAL, ANTERIOR])
-    tela = _na_tela(reaberta)
-    assert saida is None and teste.vezes == 0
-    assert [e.tipo for e in tela if isinstance(e, fases.MostrarFalha)] == [fases.FALHA_VOLTA]
-    seguinte_teste = ContaDoTeste(passa=False)
-    seguinte = _outra_abertura(p, seguinte_teste)
-    assert seguinte.abrir([]) is None
-    assert seguinte_teste.vezes == 0 and "trocar" not in seguinte.velopack.nomes()
 
 
 def test_d863_a_volta_que_nem_pode_ser_pedida_tambem_nao_se_repete(tmp_path):
@@ -178,17 +147,19 @@ def test_d857_a_primeira_versao_do_msi_nao_e_testada_nem_baixa_nada(tmp_path):
     assert atualizacao.ler_ultima_boa(p.raiz) == ""
 
 
-def test_d857_sem_ultima_boa_a_versao_que_falha_mostra_a_frase_3_e_para(tmp_path):
+def test_d857_d868_sem_ultima_boa_a_versao_que_falha_mostra_a_frase_e_abre(tmp_path):
     """D-857 ("Sem última boa, a atualização acontece assim mesmo; se a versão nova falhar no teste, aparece a frase
-    (3) da D-778 e para."): a primeira atualização depois do .msi (o pacote dela em `packages`, nenhuma última boa)
-    falha no teste: a frase (3), nada é procurado, e a versão fica reprovada. Em `1d01aaf9`: nada na tela e a procura
-    seguia (o M2)."""
+    (3) da D-778 e para.") com a D-868 (25/11/2026: a "frase (3)" da D-857 passa a ser a da D-868, "Depois o programa
+    tenta abrir assim mesmo"): a primeira atualização depois do .msi (o pacote dela em `packages`, nenhuma última boa)
+    falha no teste: a frase da D-868, a versão fica reprovada, e a abertura segue (o motor e a procura). Era
+    `test_d857_sem_ultima_boa_a_versao_que_falha_mostra_a_frase_3_e_para` (lista da D-836, volta 5)."""
     p = Prova(tmp_path, teste=(False, "código 1"))
     p.pacote_em_packages(ATUAL)
-    p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL)
+    assert p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL) is None
     p.ligar_a_tela()
-    assert [e.tipo for e in p.tela if isinstance(e, fases.MostrarFalha)] == [fases.FALHA_VOLTA]
-    assert "procurar" not in p.vp.nomes() and ATUAL in (_estado().get("reprovadas") or [])
+    assert [e.tipo for e in p.tela if isinstance(e, fases.MostrarFalha)] == [fases.FALHA_REPROVADA]
+    assert "procurar" in p.vp.nomes() and ATUAL in (_estado().get("reprovadas") or [])
+    assert "trocar" not in p.vp.nomes()
 
 
 def test_d857_sem_o_pacote_em_packages_nada_e_baixado_e_a_anterior_vale(tmp_path):
@@ -216,10 +187,10 @@ def test_d858_d864_sim_ao_fechar_com_outra_janela_mostra_a_frase_na_abertura_seg
     assert "trocar" not in p.vp.nomes()
     seguinte = _outra_abertura(p, ContaDoTeste(passa=True))
     seguinte.abrir([])
-    frases = [atualizacao.frase_da_falha(e.tipo, e.motivo_da_tela) for e in _na_tela(seguinte)
-              if isinstance(e, fases.MostrarFalha)]
-    assert frases == ["Não deu para atualizar agora: havia outra janela do programa aberta. Tente ao fechar o "
-                      "programa."]
+    # Volta 5 (D-868, lista da D-836): a frase da abertura seguinte vem antes da janela: pela caixa do Windows.
+    assert [texto for _, texto in p.win.caixas] == [
+        "Não deu para atualizar agora: havia outra janela do programa aberta. Tente ao fechar o programa."]
+    assert not [e for e in _na_tela(seguinte) if isinstance(e, fases.MostrarFalha)]
 
 
 # ---------------------------------------------------------------------------------------------------------------------

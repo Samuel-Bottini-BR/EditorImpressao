@@ -1,8 +1,8 @@
 """As peças de mentira e a montagem das provas do atualizador novo (23/11/2026), num lugar só para os arquivos de teste
 que as usam (`tests/test_atualizador_novo.py` e as provas antigas adaptadas pela D-836).
 
-O que é de mentira (D-767): só a borda. `WindowsFalso` (a pergunta do Windows e a lista de processos) e `VelopackFalso`
-(procurar, baixar, trocar) só ANOTAM o que lhes pediram e devolvem o que a prova manda. A regra, o executor, o disco
+O que é de mentira (D-767): só a borda. `WindowsFalso` (a pergunta do Windows, a lista de processos e a caixa do
+Windows) e `VelopackFalso` (procurar, baixar, trocar) só ANOTAM o que lhes pediram e devolvem o que a prova manda. A regra, o executor, o disco
 (numa pasta de prova), as assinaturas (com uma chave de prova) e as somas são os de verdade. `Prova` monta uma abertura
 do programa instalado numa pasta de prova. Quem usa precisa trocar o PROGRAMDATA por uma pasta de prova (a fixture
 `programdata_de_prova` daqui, que cada arquivo liga com `autouse`).
@@ -67,6 +67,16 @@ class WindowsFalso:
         self.perguntas_do_atualizador: list[Path] = []
         self.reabrir_da_certo = True
         self._pasta_de_troca = pasta_de_troca
+        self.caixas: list[tuple[str, str]] = []     # volta 5 (D-868): o (título, texto) de cada caixa do Windows
+        self.caixa_aparece = True                    # False: como sem área de trabalho à vista (a peça devolve FALHOU)
+
+    def mostrar_caixa_do_windows(self, titulo, texto):
+        """A caixa do Windows de mentira: anota o título e o texto e devolve como se a pessoa tivesse clicado OK (ou
+        FALHOU, com `caixa_aparece=False`)."""
+        self.caixas.append((titulo, texto))
+        if self.caixa_aparece:
+            return windows.Resposta(windows.DEU_CERTO)
+        return windows.Resposta(windows.FALHOU, "não há área de trabalho à vista (de prova)")
 
     def atualizador_do_velopack_rodando(self, raiz):
         self.perguntas_do_atualizador.append(Path(raiz))
@@ -193,13 +203,20 @@ class Prova:
     def __init__(self, tmp: Path, *, grava: bool = True, licenca: str = "disse_nao", motor: bool = True,
                  teste=(True, ""), outras=None, chave_da_nova: bytes = CHAVE, publicar_nova: bool = True,
                  erro_ao_procurar: str = "", motores: dict | None = None, motores_no_lugar: set | None = None,
-                 troca_em_curso=False, ultima_boa: str | None = None, pendente: str = ""):
+                 troca_em_curso=False, ultima_boa: str | None = None, pendente: str = "",
+                 caixa_de_verdade: bool = False):
         """`motores`: o motor que cada versão pede (padrão: 1 nas duas). `motores_no_lugar`: os motores que estão no
         lugar (padrão: todos, ou nenhum com `motor=False`). `troca_em_curso`: o que a peça responde sobre o
         atualizador do Velopack. `ultima_boa` (volta 3): a versão (ANTERIOR ou a ATUAL) cujo pacote e assinatura já
-        estão guardados em `<raiz>/ultima-boa` (None = nenhuma). `pendente`: o que o Velopack diz que está esperando."""
+        estão guardados em `<raiz>/ultima-boa` (None = nenhuma). `pendente`: o que o Velopack diz que está esperando.
+        Volta 5: a raiz tem o `Update.exe` (como toda instalação; a conferência da troca olha, M2). A frase que aparece
+        antes de a janela existir vai para a caixa do Windows (D-868); por padrão a prova a anota em `tela` também (o
+        que o Kaique VÊ), para as provas antigas que só olham "a frase apareceu". `caixa_de_verdade=True`: o executor
+        usa o caminho de verdade da caixa (`_caixa_do_windows`, que chama `WindowsFalso.mostrar_caixa_do_windows`), e a
+        frase de antes da janela NÃO vai para `tela` (as provas da D-868 olham `win.caixas`)."""
         self.raiz, self.fonte_pasta = tmp / "raiz", tmp / "fonte"
         (self.raiz / "current").mkdir(parents=True)
+        (self.raiz / windows.NOME_DO_ATUALIZADOR_DO_VELOPACK).write_bytes(b"MZ")
         self.grava = {"agora": grava}
         self.motor = {"no_lugar": motor}
         motores = {NOVA: 1, ANTERIOR: 1, **(motores or {})}
@@ -219,7 +236,8 @@ class Prova:
             windows=self.win, velopack=self.vp, raiz=self.raiz, fonte=atualizacao.Fonte(str(self.fonte_pasta)),
             por_tras=lambda trabalho: trabalho(), pasta_grava=lambda raiz: self.grava["agora"],
             garantir_motor=lambda: self.motor["no_lugar"], motor_no_lugar=self._motor_no_lugar,
-            teste=lambda: teste, chave_publica=PUBLICA)
+            teste=lambda: teste, chave_publica=PUBLICA,
+            caixa=None if caixa_de_verdade else (lambda ef: self.tela.append(ef) or True))
 
     def conteudo_de(self, v: str) -> bytes:
         """O pacote de prova de uma versão (a ATUAL ganha um, se ainda não tem)."""

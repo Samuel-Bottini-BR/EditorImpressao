@@ -7,6 +7,12 @@ não está nela é "não faz sentido aqui": fica na mesma fase e só anota (o `F
 transição sem mudar esta tabela faz o teste falhar: é para isso que ela existe. Cada linha diz a decisão do Samuel que
 protege.
 
+Mudou na volta 5 (lista da D-836, seção "Volta 5"): a volta automática saiu da primeira entrega (D-867): saíram a fase
+VOLTANDO, o evento `VoltaPedida`, os efeitos `Voltar` e `MarcarSemVolta`, a marca de "sem volta" e o `--voltando` da
+abertura, a frase (1) derivada e o campo `anterior` do estado. A versão que não passa no teste rápido fica reprovada,
+mostra a frase da D-868 e a abertura segue (D-868); a reprovada não é testada de novo; o "Reiniciar agora" sem o
+atualizador do Velopack tem a frase própria e para (M2); a frase guardada que deixou de ser verdade não aparece (M1).
+
 Mudou na volta 4 (lista da D-836): a abertura recebe também as marcas de "aprovada" (D-856) e de "sem volta" (D-863),
 se o pacote da versão está em `packages\\` (a primeira versão do .msi, D-857) e se a reabertura é a da volta
 (`--voltando`, D-855); o teste só antes da janela; o pacote esperando sem internet (D-859); o "Sim" ao fechar que não
@@ -35,7 +41,7 @@ from core import fases_da_atualizacao as f
 RAIZ = Path(__file__).resolve().parent.parent
 
 # O estado de partida de cada fase (menos INICIO, que parte do estado vazio).
-BASE = f.Estado(versao="1.1.0", nova="1.2.0", anterior="1.0.0", nao_tentar=("1.3.0",))
+BASE = f.Estado(versao="1.1.0", nova="1.2.0", nao_tentar=("1.3.0",))
 # A abertura comum: rodando a última boa, com uma reprovada MAIS VELHA (não dá a frase 1).
 COMUM = dict(instalado=True, conta_de_testes=False, portatil=False, pasta_grava=True, versao="1.1.0",
              ultima_boa="1.1.0", nao_tentar=("1.0.5",))
@@ -48,7 +54,8 @@ EVENTOS = {
     "abriu_portatil": f.Abriu(**{**COMUM, "portatil": True}),
     "abriu_sem_licenca": f.Abriu(**{**COMUM, "pasta_grava": False}),
     "abriu_com_licenca": f.Abriu(**COMUM),
-    # A frase (1), derivada: rodando a última boa, com uma versão mais nova reprovada no teste.
+    # Era a frase (1), derivada (rodando a última boa, com uma versão mais nova reprovada no teste). Volta 5 (D-867):
+    # ela saiu; o evento fica para provar que o antigo saiu (nenhuma frase).
     "abriu_depois_da_volta": f.Abriu(**{**COMUM, "nao_tentar": ("1.0.5", "1.2.0")}),
     "abriu_depois_da_volta_sem_janela": f.Abriu(**{**COMUM, "nao_tentar": ("1.0.5", "1.2.0")}, sem_janela=True),
     # A versão que roda não é a última boa: o teste antes da janela (pela reabertura ou pelo atalho, tanto faz).
@@ -64,14 +71,10 @@ EVENTOS = {
     "abriu_sem_ultima_boa": f.Abriu(**{**COMUM, "ultima_boa": ""}),
     # Volta 4 (D-857): a primeira versão do .msi (sem última boa e sem o pacote dela em packages): nada.
     "abriu_primeira_do_msi": f.Abriu(**{**COMUM, "ultima_boa": ""}, pacote_da_versao=False),
-    # Volta 4 (D-856, D-863): as marcas no disco: aprovada não testa; sem volta não testa nem volta.
+    # Volta 4 (D-856): a marca de aprovada no disco: não testa.
     "abriu_nova_aprovada": f.Abriu(**NOVA, aprovada=True),
-    "abriu_nova_sem_volta": f.Abriu(**NOVA, sem_volta=True),
-    # Volta 4 (D-855): a reabertura da volta: deu certo (rodando a anterior) ou o Windows não deixou (rodando a nova).
-    "abriu_volta_feita": f.Abriu(**{**COMUM, "nao_tentar": ("1.0.5", "1.2.0")}, reaberto_de="1.2.0",
-                                 reaberto_para="1.1.0", reaberto_voltando=True),
-    "abriu_volta_recusada": f.Abriu(**{**NOVA, "nao_tentar": ("1.0.5", "1.2.0")}, reaberto_de="1.2.0",
-                                    reaberto_para="1.1.0", reaberto_voltando=True),
+    # Volta 5 (D-868): a versão que roda já foi reprovada: não testa de novo (a marca de "sem volta" saiu).
+    "abriu_nova_reprovada": f.Abriu(**{**NOVA, "nao_tentar": ("1.0.5", "1.2.0")}),
     "abriu_sem_janela_sem_nada": f.Abriu(**COMUM, sem_janela=True),
     # Volta 2, G1: o atualizador do Velopack rodando (o clique no atalho no meio da troca), ou sem saber.
     "abriu_troca_em_curso": f.Abriu(**NOVA, troca_em_curso=True),
@@ -79,6 +82,11 @@ EVENTOS = {
     # A frase que o bilhete guarda (de um processo sem janela).
     "abriu_frase_guardada": f.Abriu(**COMUM, frase_guardada=("nao_deu_agora", "nao_deu_agora-1.2.0-x", "motor")),
     "abriu_frase_estranha": f.Abriu(**COMUM, frase_guardada=("outra", "x", "")),
+    # Volta 5, M1: a frase guardada sobre a troca para a 1.1.0, e a versão que roda já é a 1.1.0 (a troca aconteceu
+    # depois): ela deixou de ser verdade. E a da versão reprovada, guardada pela reabertura sem janela: aparece.
+    "abriu_frase_guardada_velha": f.Abriu(**COMUM, frase_guardada=("nao_deu_agora", "nao_deu_agora-1.1.0-x",
+                                                                   "havia_outra_janela")),
+    "abriu_frase_da_reprovada": f.Abriu(**COMUM, frase_guardada=("reprovada", "reprovada-1.1.0-x", "")),
     "lic_comecou": f.LicencaRespondida("comecou"),
     "lic_nao": f.LicencaRespondida("disse_nao"),
     "lic_falhou": f.LicencaRespondida("falhou", "o Windows não abriu"),
@@ -88,8 +96,6 @@ EVENTOS = {
     "teste_nao": f.TesteRapido(False, "código 1"),
     "guardada_ok": f.UltimaBoaGuardada(True),
     "guardada_nao": f.UltimaBoaGuardada(False, "sem o pacote"),
-    "volta_ok": f.VoltaPedida(True),
-    "volta_nao": f.VoltaPedida(False, "sem o pacote guardado"),
     "motor_ok": f.MotorConferido(True),
     "motor_nao": f.MotorConferido(False, "sem o arquivo"),
     "proc_erro": f.Procurou(None, "sem internet"),
@@ -111,6 +117,8 @@ EVENTOS = {
     "conferida_recusada": f.TrocaConferida(False, "a soma não confere", recusada=True),
     "conferida_outra_janela": f.TrocaConferida(False, "há outra janela do programa aberta", outra_janela=True,
                                                motivo_da_tela=f.MOTIVO_OUTRA_JANELA),
+    # Volta 5, M2: o atualizador do Velopack (Update.exe) não está no lugar.
+    "conferida_sem_atualizador": f.TrocaConferida(False, "sem o Update.exe", motivo_da_tela=f.MOTIVO_SEM_ATUALIZADOR),
     "reiniciar": f.Escolheu(True),
     "depois": f.Escolheu(False),
     "fechou": f.JanelaFechou(True),
@@ -123,6 +131,7 @@ EVENTOS = {
     "troca_nao": f.TrocaPedida(False, "o atualizador não abriu", motivo_da_tela=f.MOTIVO_ATUALIZADOR),
     "troca_outra_janela": f.TrocaPedida(False, "outra janela", outra_janela=True,
                                         motivo_da_tela=f.MOTIVO_OUTRA_JANELA),
+    "troca_sem_atualizador": f.TrocaPedida(False, "o Update.exe sumiu", motivo_da_tela=f.MOTIVO_SEM_ATUALIZADOR),
 }
 
 R = ("Registrar",)            # uma linha no registro (o texto não importa aqui)
@@ -147,7 +156,7 @@ def E(fase, efeitos, **muda):
 
 
 F = f.Fase
-A = dict(versao="1.1.0", anterior="1.1.0", nao_tentar=("1.0.5",))       # o que a abertura comum põe no estado
+A = dict(versao="1.1.0", nao_tentar=("1.0.5",))       # o que a abertura comum põe no estado
 ESPERADO = {
     # A abertura (só no começo). D-728/D-736/D-741: pelo código, portátil e na conta de testes, nada.
     (F.INICIO, "abriu_codigo"): E(F.FORA, [], versao="1.1.0"),
@@ -156,10 +165,9 @@ ESPERADO = {
     # D-735/D-741/D-806/D-834: sem a licença na pasta, a pergunta do Windows, e nada é procurado.
     (F.INICIO, "abriu_sem_licenca"): E(F.SEM_LICENCA, [("PedirLicenca",)], **A),
     (F.INICIO, "abriu_com_licenca"): E(F.MOTOR, [("GarantirMotor",)], **A),
-    # D-718/D-778 e volta 3 (G1): a frase (1) é derivada, uma vez por versão reprovada; sem janela, nada (a próxima
-    # abertura com janela deriva de novo).
-    (F.INICIO, "abriu_depois_da_volta"): E(F.MOTOR, [("MostrarFalha", "teste", "teste-1.2.0", "", False),
-                                                     ("GarantirMotor",)], **{**A, "nao_tentar": ("1.0.5", "1.2.0")}),
+    # Volta 5 (D-867): a frase (1) saiu com a volta automática: rodando a última boa, com uma mais nova reprovada,
+    # nenhuma frase (era "teste-1.2.0").
+    (F.INICIO, "abriu_depois_da_volta"): E(F.MOTOR, [("GarantirMotor",)], **{**A, "nao_tentar": ("1.0.5", "1.2.0")}),
     (F.INICIO, "abriu_depois_da_volta_sem_janela"): E(F.PARADO, [R, ("Sair", 0)],
                                                       **{**A, "nao_tentar": ("1.0.5", "1.2.0")}, sem_janela=True),
     # D-718 e volta 3 (A): a versão que roda não é a última boa: o teste rápido antes da janela, pela reabertura ou
@@ -170,16 +178,10 @@ ESPERADO = {
                                          nova="1.2.0"),
     (F.INICIO, "abriu_nova_sem_janela"): E(F.CONFERINDO_NOVA, [("RodarTesteRapido",)],
                                            **{**A, "versao": "1.2.0"}, nova="1.2.0", sem_janela=True),
-    # Volta 4 (D-856, D-863): com a marca de aprovada, ou com a de sem volta, nenhum teste: o motor e a procura.
+    # Volta 4 (D-856): com a marca de aprovada, nenhum teste: o motor e a procura. Volta 5 (D-868): a reprovada
+    # também não é testada de novo (e nenhuma frase: ela já foi dada na abertura que testou).
     (F.INICIO, "abriu_nova_aprovada"): E(F.MOTOR, [("GarantirMotor",)], **{**A, "versao": "1.2.0"}),
-    (F.INICIO, "abriu_nova_sem_volta"): E(F.MOTOR, [("GarantirMotor",)], **{**A, "versao": "1.2.0"}),
-    # Volta 4 (D-855): a volta deu certo: a frase (1), derivada; o Windows não deixou: a marca de sem volta, a frase
-    # (3), e a abertura segue sem testar (nunca há laço).
-    (F.INICIO, "abriu_volta_feita"): E(F.MOTOR, [("MostrarFalha", "teste", "teste-1.2.0", "", False),
-                                                 ("GarantirMotor",)], **{**A, "nao_tentar": ("1.0.5", "1.2.0")}),
-    (F.INICIO, "abriu_volta_recusada"): E(F.MOTOR, [R, ("MarcarSemVolta", "1.2.0"),
-                                                    ("MostrarFalha", "volta", "volta-1.2.0", "", False),
-                                                    ("GarantirMotor",)],
+    (F.INICIO, "abriu_nova_reprovada"): E(F.MOTOR, [("GarantirMotor",)],
                                           **{**A, "versao": "1.2.0", "nao_tentar": ("1.0.5", "1.2.0")}),
     (F.INICIO, "abriu_nova_sem_licenca"): E(F.SEM_LICENCA, [("PedirLicenca",)], **{**A, "versao": "1.2.0"}),
     # D-839 e volta 3 (M1): o Velopack não trocou e reabriu a de antes: a frase, e a versão NÃO vai para "não tentar".
@@ -189,9 +191,8 @@ ESPERADO = {
                                                                 ("Sair", 0)], **A, sem_janela=True),
     # Volta 4 (D-857): sem última boa, mas com o pacote da versão em packages (uma atualização entrou): o teste antes da
     # janela; a primeira versão do .msi (sem o pacote): nada é testado nem baixado.
-    (F.INICIO, "abriu_sem_ultima_boa"): E(F.CONFERINDO_NOVA, [("RodarTesteRapido",)], **{**A, "anterior": ""},
-                                          nova="1.1.0"),
-    (F.INICIO, "abriu_primeira_do_msi"): E(F.MOTOR, [("GarantirMotor",)], **{**A, "anterior": ""}),
+    (F.INICIO, "abriu_sem_ultima_boa"): E(F.CONFERINDO_NOVA, [("RodarTesteRapido",)], **A, nova="1.1.0"),
+    (F.INICIO, "abriu_primeira_do_msi"): E(F.MOTOR, [("GarantirMotor",)], **A),
     (F.INICIO, "abriu_sem_janela_sem_nada"): E(F.PARADO, [R, ("Sair", 0)], **A, sem_janela=True),
     # Volta 2, G1 (D-828 (1), D-770): o atualizador do Velopack rodando: nada feito, sai sem janela.
     (F.INICIO, "abriu_troca_em_curso"): E(F.PARADO, [R, ("Sair", 0)], **{**A, "versao": "1.2.0"}),
@@ -200,6 +201,10 @@ ESPERADO = {
     (F.INICIO, "abriu_frase_guardada"): E(F.MOTOR, [("MostrarFalha", "nao_deu_agora", "nao_deu_agora-1.2.0-x",
                                                      "motor", False), ("GarantirMotor",)], **A),
     (F.INICIO, "abriu_frase_estranha"): E(F.MOTOR, [("GarantirMotor",)], **A),
+    # Volta 5, M1: a frase sobre a troca para a versão que já roda não aparece (só o registro); a da reprovada, sim.
+    (F.INICIO, "abriu_frase_guardada_velha"): E(F.MOTOR, [R, ("GarantirMotor",)], **A),
+    (F.INICIO, "abriu_frase_da_reprovada"): E(F.MOTOR, [("MostrarFalha", "reprovada", "reprovada-1.1.0-x", "", False),
+                                                        ("GarantirMotor",)], **A),
     # A resposta à pergunta do Windows (D-741: depois do "Não", nada; a pergunta volta na próxima abertura).
     (F.SEM_LICENCA, "lic_comecou"): E(F.PREPARANDO, [("EsperarPreparo",)]),
     (F.SEM_LICENCA, "lic_nao"): E(F.PARADO, [R]),
@@ -208,17 +213,14 @@ ESPERADO = {
     # 4: o teste por trás saiu; se a versão precisar do teste, a próxima abertura o faz antes da janela).
     (F.PREPARANDO, "prep_ok"): E(F.MOTOR, [R, ("GarantirMotor",)]),
     (F.PREPARANDO, "prep_nao"): E(F.PARADO, [R]),
-    # D-718/D-844/D-856: passou, a marca de aprovada ANTES, e o pacote é guardado como a última boa; não passou, com a
-    # última boa: reprovada e a volta (uma vez, D-855).
+    # D-844/D-856: passou, a marca de aprovada ANTES, e o pacote é guardado como a última boa. Volta 5 (D-867, D-868):
+    # não passou: reprovada, a frase da D-868, e a abertura segue (o motor e a procura); nada é pedido ao Velopack.
     (F.CONFERINDO_NOVA, "teste_ok"): E(F.GUARDANDO, [("MarcarAprovada", "1.2.0"), ("GuardarUltimaBoa", "1.2.0", True)]),
-    (F.CONFERINDO_NOVA, "teste_nao"): E(F.VOLTANDO, [("Reprovar", "1.2.0"), ("Voltar", "1.2.0", "1.0.0", True)],
-                                        nao_tentar=("1.2.0", "1.3.0")),
-    (F.GUARDANDO, "guardada_ok"): E(F.MOTOR, [R, ("GarantirMotor",)], anterior="1.2.0"),
+    (F.CONFERINDO_NOVA, "teste_nao"): E(F.MOTOR, [("Reprovar", "1.2.0"),
+                                                  ("MostrarFalha", "reprovada", "reprovada-1.2.0", "", False),
+                                                  ("GarantirMotor",)], nao_tentar=("1.2.0", "1.3.0")),
+    (F.GUARDANDO, "guardada_ok"): E(F.MOTOR, [R, ("GarantirMotor",)]),
     (F.GUARDANDO, "guardada_nao"): E(F.MOTOR, [R, ("GarantirMotor",)]),
-    (F.VOLTANDO, "volta_ok"): E(F.PARADO, [R, ("Sair", 0)]),
-    # D-855/D-863: a volta que não pôde ser pedida: a marca de sem volta e a frase (3); nenhuma abertura tenta de novo.
-    (F.VOLTANDO, "volta_nao"): E(F.PARADO, [R, ("MarcarSemVolta", "1.2.0"),
-                                            ("MostrarFalha", "volta", "volta-1.2.0", "", False)]),
     # D-790/D-833: sem o motor, nada é procurado nem anunciado.
     (F.MOTOR, "motor_ok"): E(F.PROCURANDO, [("Procurar",)]),
     (F.MOTOR, "motor_nao"): E(F.PARADO, [R]),
@@ -254,6 +256,10 @@ ESPERADO = {
                                                                  ("MostrarVersaoNova", "1.2.0")]),
     (F.CONFERINDO_TROCA, "conferida_recusada"): E(F.PARADO, [R, ("MostrarFalha", "recusada", "recusada-1.2.0", "",
                                                                  True)]),
+    # Volta 5, M2 (D-870): sem o atualizador do Velopack, a frase própria em resposta ao clique, e PARADO: fechar não
+    # pergunta (não há como trocar).
+    (F.CONFERINDO_TROCA, "conferida_sem_atualizador"): E(F.PARADO, [R, ("MostrarFalha", "nao_deu_agora", "",
+                                                                        "sem_atualizador", True)]),
     (F.PRONTA, "depois"): E(F.DEPOIS, [R]),
     # D-769/D-794/D-831: ao fechar com versão pronta, a pergunta.
     (F.PRONTA, "fechando"): E(F.PERGUNTANDO, [("PerguntarAoFechar",)]),
@@ -272,6 +278,9 @@ ESPERADO = {
     (F.TROCANDO, "troca_nao"): E(F.PARADO, [R, ("GuardarFrase", "nao_deu_agora", "1.2.0", "atualizador")]),
     (F.TROCANDO, "troca_outra_janela"): E(F.PARADO, [R, ("GuardarFrase", "nao_deu_agora", "1.2.0",
                                                          "havia_outra_janela")]),
+    # Volta 5, M2: o "Sim" ao fechar sem o atualizador: a frase própria guardada para a abertura seguinte.
+    (F.TROCANDO, "troca_sem_atualizador"): E(F.PARADO, [R, ("GuardarFrase", "nao_deu_agora", "1.2.0",
+                                                            "sem_atualizador")]),
 }
 
 
@@ -318,14 +327,16 @@ def test_m1_so_o_teste_reprovado_poe_a_versao_em_nao_tentar(fase, nome):
             assert (fase, nome) == (f.Fase.CONFERINDO_NOVA, "teste_nao")
 
 
-def test_d857_sem_ultima_boa_o_teste_que_falha_mostra_a_frase_3_e_para():
-    """D-857: sem última boa para voltar (a primeira atualização depois do .msi), a versão que falha no teste fica
-    reprovada, ganha a marca de sem volta (não é testada de novo, D-863), a frase (3) e para (nada é procurado)."""
-    antes = replace(BASE, fase=F.CONFERINDO_NOVA, anterior="", nova="1.1.0")
+def test_d857_d868_sem_ultima_boa_o_teste_que_falha_mostra_a_frase_e_segue():
+    """D-857 com a D-868 (25/11/2026: a "frase (3)" da D-857 passa a ser a frase da D-868; "Depois o programa tenta
+    abrir assim mesmo"): a primeira atualização depois do .msi (sem última boa) que falha no teste fica reprovada,
+    mostra a frase da D-868 e a abertura segue. Nada de marca de "sem volta" (saiu, D-867). Era
+    `test_d857_sem_ultima_boa_o_teste_que_falha_mostra_a_frase_3_e_para` (lista da D-836, volta 5)."""
+    antes = replace(BASE, fase=F.CONFERINDO_NOVA, nova="1.1.0")
     depois, efeitos = f.proxima_fase(antes, EVENTOS["teste_nao"])
-    assert depois.fase is F.PARADO and depois.nao_tentar == ("1.1.0", "1.3.0")
-    assert forma(efeitos) == [("Reprovar", "1.1.0"), R, ("MarcarSemVolta", "1.1.0"),
-                              ("MostrarFalha", "volta", "volta-1.1.0", "", False)]
+    assert depois.fase is F.MOTOR and depois.nao_tentar == ("1.1.0", "1.3.0")
+    assert forma(efeitos) == [("Reprovar", "1.1.0"), ("MostrarFalha", "reprovada", "reprovada-1.1.0", "", False),
+                              ("GarantirMotor",)]
 
 
 def test_d859_sem_internet_o_pacote_esperando_e_oferecido():
@@ -343,24 +354,22 @@ def test_d859_sem_internet_o_pacote_esperando_e_oferecido():
 
 @pytest.mark.parametrize("nome, fase_nova, esperados", [
     ("teste_ok", F.GUARDANDO, [("MarcarAprovada", "1.2.0"), ("GuardarUltimaBoa", "1.2.0", False)]),
-    ("teste_nao", F.VOLTANDO, [("Reprovar", "1.2.0"), ("Voltar", "1.2.0", "1.0.0", False)]),
+    ("teste_nao", F.PARADO, [("Reprovar", "1.2.0"), ("GuardarFrase", "reprovada", "1.2.0", ""), ("Sair", 0)]),
 ])
 def test_d769_na_reabertura_sem_janela_nada_abre(nome, fase_nova, esperados):
     """D-769 (com "Depois", entra ao fechar; nada abre): na reabertura sem janela, a guarda é feita nesta linha (o
-    processo sai logo depois), e a volta é pedida sem reabrir."""
+    processo sai logo depois). Volta 5 (D-867, D-868): a que não passou fica reprovada e a frase da D-868 vai para o
+    bilhete (a próxima abertura a mostra, pela caixa do Windows); nada é pedido ao Velopack (era a volta sem
+    reabrir)."""
     antes = replace(BASE, fase=F.CONFERINDO_NOVA, sem_janela=True)
     depois, efeitos = f.proxima_fase(antes, EVENTOS[nome])
     assert depois.fase is fase_nova and forma(efeitos) == esperados
 
 
 def test_d769_sem_janela_guardada_ou_volta_que_falha_sai():
-    """Sem janela: guardada a última boa, sai; a volta que não deu guarda a frase (3) para a próxima abertura e sai."""
+    """Sem janela: guardada a última boa, sai. (Volta 5: a metade "a volta que não deu" saiu com a volta, D-867.)"""
     guardando = replace(BASE, fase=F.GUARDANDO, sem_janela=True)
     assert forma(f.proxima_fase(guardando, EVENTOS["guardada_ok"])[1]) == [R, ("Sair", 0)]
-    voltando = replace(BASE, fase=F.VOLTANDO, sem_janela=True)
-    depois, efeitos = f.proxima_fase(voltando, EVENTOS["volta_nao"])
-    assert depois.fase is F.PARADO and forma(efeitos) == [R, ("MarcarSemVolta", "1.2.0"),
-                                                          ("GuardarFrase", "volta", "1.2.0", ""), ("Sair", 0)]
 
 
 def test_um_evento_desconhecido_nunca_levanta():
@@ -373,7 +382,8 @@ def test_um_evento_desconhecido_nunca_levanta():
 def test_as_falhas_tem_nome_unico_por_tipo_e_versao():
     """O nome da frase (a tela mostra uma vez por nome) é o tipo e a versão."""
     assert f.id_da_falha("teste", "1.2.0") == "teste-1.2.0"
-    assert set(f.TIPOS_DE_FALHA) == {"teste", "troca", "recusada", "volta", "motor", "nao_deu_agora"}
+    # Volta 5 (D-867, D-868): saíram "teste" (a frase 1) e "volta" (a frase 3); entrou "reprovada".
+    assert set(f.TIPOS_DE_FALHA) == {"reprovada", "troca", "recusada", "motor", "nao_deu_agora"}
 
 
 def test_a_regra_nao_fala_com_o_mundo_de_fora():
@@ -406,7 +416,8 @@ def test_m1_m3_m5_a_troca_do_reiniciar_que_nao_foi_pedida_reabre_com_a_frase():
 
 
 def test_preparado_rodando_a_ultima_boa_vai_ao_motor():
-    """Depois do "Sim", rodando a última boa: o motor e a procura (sem teste)."""
-    antes = replace(BASE, fase=F.PREPARANDO, anterior="1.1.0")
+    """Depois do "Sim", rodando a última boa: o motor e a procura (sem teste). (Volta 5: o campo `anterior` saiu do
+    estado com a volta, D-867.)"""
+    antes = replace(BASE, fase=F.PREPARANDO)
     depois, efeitos = f.proxima_fase(antes, EVENTOS["prep_ok"])
     assert depois.fase is F.MOTOR and forma(efeitos) == [R, ("GarantirMotor",)]

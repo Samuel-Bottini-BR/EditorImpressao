@@ -205,7 +205,9 @@ def test_d720_reiniciar_agora_fecha_gravando_e_so_depois_troca(app, tmp_path):
 
 
 def test_os_textos_do_aviso_sem_emoji_e_com_acento():
-    for texto in (atualizacao.FRASE_DA_VERSAO_NOVA, atualizacao.FRASE_DA_FALHA, atualizacao.TITULO_DA_VERSAO_NOVA,
+    # Volta 5 (lista da D-836): a frase (1) da D-778 saiu (D-867); entram a da D-868 e a própria do M2.
+    for texto in (atualizacao.FRASE_DA_VERSAO_NOVA, atualizacao.FRASE_DA_VERSAO_REPROVADA,
+                  atualizacao.FRASE_SEM_ATUALIZADOR, atualizacao.TITULO_DA_VERSAO_NOVA,
                   atualizacao.BOTAO_REINICIAR, atualizacao.BOTAO_DEPOIS, atualizacao.TITULO_DA_FALHA):
         assert all(ord(c) < 0x2000 for c in texto), texto
     assert "versão" in atualizacao.FRASE_DA_VERSAO_NOVA
@@ -224,24 +226,6 @@ def test_pelo_codigo_o_aviso_nao_liga():
 # D-718 / D-719: a falha volta e avisa
 # ---------------------------------------------------------------------------
 
-def test_d719_a_frase_da_falha_e_a_combinada():
-    assert atualizacao.FRASE_DA_FALHA == ("A atualização não deu certo. O programa voltou para a versão anterior "
-                                          "e continua funcionando. Avise o Samuel.")
-
-
-def test_d719_a_falha_aparece_na_tela_uma_vez_so(app, tmp_path):
-    """D-719/D-778 (adaptado pela D-836): a falha aparece na janela com a frase do caso, uma vez só. Volta 3: a frase
-    (1) é derivada (rodando a última boa, com uma versão mais nova reprovada no teste), não anotada antes."""
-    from tests.ajudante_do_atualizador import ATUAL, NOVA, Prova
-
-    atualizacao.gravar_estado({"reprovadas": [NOVA]})
-    avisos = []
-    for pasta in ("a", "b"):
-        p = Prova(tmp_path / pasta, publicar_nova=False, ultima_boa=ATUAL)
-        p.abrir()
-        p.atual.ligar_a_tela(lambda ef: avisos.append(atualizacao.frase_da_falha(ef.tipo, ef.motivo_da_tela)))
-    assert avisos == [atualizacao.FRASE_DA_FALHA]
-
 
 def test_d719_o_erro_vai_para_o_registro_no_programdata(_programdata_de_mentira):
     """D-719 (adaptado pela D-836; volta 3: a função única que põe a versão em "não tentar" é `reprovar`): a falha
@@ -250,18 +234,6 @@ def test_d719_o_erro_vai_para_o_registro_no_programdata(_programdata_de_mentira)
     registro = _programdata_de_mentira / "EditorImpressao" / "atualizacao" / "atualizacao.log"
     assert registro == atualizacao.caminho_do_registro()
     assert "FALHOU no teste rápido a versão 1.2.0" in registro.read_text(encoding="utf-8")
-
-
-def test_d718_versao_nova_que_nao_passa_no_teste_volta_para_a_anterior(tmp_path):
-    """D-718 (adaptado pela D-836): a versão nova que não passa no teste rápido volta para a anterior (pedida ao
-    Velopack) e a versão fica reprovada (a janela da anterior deriva a frase 1 disso: volta 3). Volta 3 (D-844): a
-    anterior é a última boa guardada no computador."""
-    from tests.ajudante_do_atualizador import ANTERIOR, ATUAL, Prova
-
-    p = Prova(tmp_path, teste=(False, "quebrada"), ultima_boa=ANTERIOR)
-    assert p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL) == 0
-    assert [c for c in p.vp.chamadas if c[0] == "trocar"][0][1] == ANTERIOR
-    assert atualizacao.ler_estado()["reprovadas"] == [ATUAL]
 
 
 def test_d718_versao_nova_que_passa_no_teste_fica(tmp_path):
@@ -286,18 +258,6 @@ def test_d718_troca_desfeita_pelo_velopack_mostra_a_frase_e_nao_proibe_a_versao(
     p.ligar_a_tela()
     assert [getattr(e, "tipo", "") for e in p.tela] == [fases.FALHA_TROCA]
     assert "reprovadas" not in atualizacao.ler_estado()
-
-
-def test_d718_a_volta_so_aceita_o_pacote_assinado(tmp_path):
-    """D-718/D-724 (adaptado pela D-836): a anterior sem a assinatura do Samuel não é baixada nem trocada. Volta 3:
-    a assinatura que vale é a guardada com o pacote da última boa."""
-    from tests.ajudante_do_atualizador import ANTERIOR, ATUAL, OUTRA_CHAVE, Prova, _publicar
-
-    p = Prova(tmp_path, teste=(False, "quebrada"), ultima_boa=ANTERIOR)
-    pasta = atualizacao.pasta_da_ultima_boa(p.raiz)
-    _publicar(pasta, ANTERIOR, (pasta / atualizacao.nome_do_pacote(ANTERIOR)).read_bytes(), OUTRA_CHAVE)
-    p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL)
-    assert "baixar" not in p.vp.nomes() and "trocar" not in p.vp.nomes()
 
 
 # ---------------------------------------------------------------------------
@@ -595,37 +555,40 @@ def test_d839_a_troca_que_nao_aconteceu_diz_que_continua_na_versao_de_antes(app,
     frase é "A atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel.", e não
     a (1) da D-778 ("voltou para a versão anterior"). Os dois caminhos que chegam nela: a abertura com janela (o atalho,
     ou o Velopack que reabriu a de antes) e a reabertura sem janela do "Sim" ao fechar, que só anota e a frase aparece
-    na abertura seguinte. Falha no código de `63bd8546` (lá aparece a frase (1))."""
+    na abertura seguinte. Falha no código de `63bd8546` (lá aparece a frase (1)). Volta 5 (D-868, lista da D-836):
+    a frase vem antes da janela, então aparece pela caixa do Windows (o caminho de verdade do executor até a peça)."""
     from tests.ajudante_do_atualizador import Prova
 
     de, para = "7.0.0", "7.0.1" if caminho == "com_janela" else "7.0.2"   # versões só deste teste (os vistos)
     monkeypatch.setattr(versao, "VERSAO", de)
     if caminho == "com_janela":
-        p = Prova(tmp_path / "a", publicar_nova=False)
+        p = Prova(tmp_path / "a", publicar_nova=False, caixa_de_verdade=True)
         p.abrir(atualizacao.ARG_CONFERIR_NOVA, de, para)
     else:
         primeira = Prova(tmp_path / "a", publicar_nova=False)
         assert primeira.abrir(atualizacao.ARG_CONFERIR_NOVA, de, para, atualizacao.ARG_SEM_JANELA) == 0
         # volta 3 (D-836): a reabertura sem janela guarda a frase no bilhete; a próxima abertura com janela a mostra
         assert atualizacao.ler_estado()["frase"]["tipo"] == fases.FALHA_TROCA
-        p = Prova(tmp_path / "b", publicar_nova=False)
+        p = Prova(tmp_path / "b", publicar_nova=False, caixa_de_verdade=True)
         p.abrir()
     assert "reprovadas" not in atualizacao.ler_estado()         # volta 3, M1: não é falha de versão
-    avisos = []
-    _ponte_da_prova(app, p, [], avisos)
-    assert avisos == [(atualizacao.TITULO_DA_FALHA, FRASE_D839)]
+    assert p.win.caixas == [(atualizacao.TITULO_DA_FALHA, FRASE_D839)]
 
 
-def test_d839_as_tres_frases_da_d778_continuam_iguais():
-    """D-839: "As três da D-778 continuam iguais"; a (1) fica para a versão nova que entrou, falhou e voltou."""
-    assert atualizacao.FRASES_DA_FALHA[fases.FALHA_TESTE] == (
-        "A atualização não deu certo. O programa voltou para a versão anterior e continua funcionando. Avise o Samuel.")
+def test_d839_d867_a_frase_2_continua_e_as_frases_1_e_3_sairam():
+    """D-839 ("As três da D-778 continuam iguais") com a D-867 (25/11/2026: "as frases (1) e (3) da D-778 deixam de
+    aparecer nesta entrega"): a (2) e a da D-839 continuam palavra por palavra; a (1) e a (3) não existem mais no
+    programa. Era `test_d839_as_tres_frases_da_d778_continuam_iguais` (lista da D-836, volta 5)."""
     assert atualizacao.FRASES_DA_FALHA[fases.FALHA_RECUSADA] == (
         "Chegou uma versão nova, mas ela não foi instalada porque não tem a assinatura do Samuel. O programa continua "
         "funcionando. Avise o Samuel.")
-    assert atualizacao.FRASES_DA_FALHA[fases.FALHA_VOLTA] == (
-        "A atualização não deu certo e o programa não conseguiu voltar sozinho. Não desinstale nada. Avise o Samuel.")
     assert atualizacao.FRASES_DA_FALHA[fases.FALHA_TROCA] == FRASE_D839
+    textos = set(atualizacao.FRASES_DA_FALHA.values())
+    assert "A atualização não deu certo. O programa voltou para a versão anterior e continua funcionando. " \
+           "Avise o Samuel." not in textos
+    assert "A atualização não deu certo e o programa não conseguiu voltar sozinho. Não desinstale nada. " \
+           "Avise o Samuel." not in textos
+    assert not hasattr(fases, "FALHA_TESTE") and not hasattr(fases, "FALHA_VOLTA")
 
 
 def test_d840_reiniciar_agora_com_outra_janela_aberta_diz_para_fechar_e_nada_fecha(app, tmp_path):

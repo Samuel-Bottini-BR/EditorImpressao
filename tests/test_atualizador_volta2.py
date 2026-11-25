@@ -142,17 +142,6 @@ def test_m1_o_sinal_de_vida_e_dado_antes_de_tudo(tmp_path):
 # M2: o motor da versão que entra
 # ---------------------------------------------------------------------------------------------------------------------
 
-def test_m2_a_volta_confere_o_motor_da_anterior_e_volta(tmp_path, monkeypatch):
-    """Achado médio 2 (era `test_C`). D-833: "a versão nova só é anunciada com o motor DELA no lugar"; D-790: "a volta
-    para a versão anterior acha o motor antigo na pasta dele". A versão nova pede o motor 2 (fora do lugar) e falha no
-    teste rápido; a anterior pede o motor 1, que está no lugar: a volta acontece."""
-    monkeypatch.setattr(versao, "VERSAO", NOVA)
-    p = Prova(tmp_path, teste=(False, "falta o motor do Kraken"), motores={NOVA: 2, ANTERIOR: 1},
-              motores_no_lugar={1}, ultima_boa=ANTERIOR)
-    saida = p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, NOVA)
-    assert saida == 0 and p.vp.chamadas[-1][:2] == ("trocar", ANTERIOR)
-    assert _estado()["reprovadas"] == [NOVA]          # volta 3 (D-836): a reprovação, no lugar da falha anotada
-
 
 def test_m2_a_versao_nova_sem_o_motor_dela_nao_e_anunciada(tmp_path):
     """D-833: a versão nova que pede o motor 2 (fora do lugar) é baixada (é o download que diz o motor), mas não é
@@ -192,16 +181,17 @@ def test_m2_o_motor_exigido_e_lido_de_dentro_do_pacote(tmp_path):
 def test_m4_com_o_estado_que_nao_grava_a_atualizacao_continua_e_o_registro_diz(tmp_path, monkeypatch):
     """Achado médio 4. Volta 3 (D-836: era "nada é procurado nem trocado"; a emenda do Fable mudou: "Se não puder ser
     gravado, o programa continua atualizando e registra o motivo; nunca para calado"): com o estado.json recusando
-    gravação, a versão nova é procurada e anunciada, a volta acontece, e o registro diz que a reprovação não ficou
-    gravada. Nada da troca depende do bilhete."""
+    gravação, a versão nova é procurada e anunciada, e o registro diz que a reprovação não ficou gravada. Nada da troca
+    depende do bilhete. Volta 5 (lista da D-836): a volta saiu (D-867); a reprovada segue a abertura (D-868)."""
     monkeypatch.setattr(atualizacao, "gravar_estado", lambda estado: False)
     p = Prova(tmp_path / "a")
     p.abrir()
     assert p.vp.nomes() == ["procurar", "baixar"]
     monkeypatch.setattr(versao, "VERSAO", NOVA)
     q = Prova(tmp_path / "b", teste=(False, "código 1"), ultima_boa=ANTERIOR)
-    assert q.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, NOVA) == 0
-    assert "trocar" in q.vp.nomes(), "a volta é pedida mesmo sem o bilhete gravar"
+    assert q.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, NOVA) is None
+    assert "procurar" in q.vp.nomes(), "a abertura segue mesmo sem o bilhete gravar"
+    assert "trocar" not in q.vp.nomes()
     assert "NÃO ficou gravada" in _registro()
 
 
@@ -437,11 +427,10 @@ def test_leve1_a_frase_da_troca_espera_a_resposta_do_samuel():
     """Leve 1 (era `test_D`): a D-778 não tinha frase para "a troca não aconteceu e o programa continua na versão de
     antes". Até a resposta do Samuel, este teste cobrava a frase (1), para a mudança não entrar calada. Ele respondeu
     (D-839, chat 24/11/2026: "sim"): a frase nova entra aqui, palavra por palavra, e a (1) fica para a versão que entrou
-    e voltou. A prova pelo caminho inteiro (a regra, o executor e a ponte da tela) é
-    `test_decisoes_atualizacao::test_d839_*`."""
+    e voltou. A prova pelo caminho inteiro (a regra, o executor e a caixa) é `test_decisoes_atualizacao::test_d839_*`.
+    Volta 5 (lista da D-836): a (1) saiu com a volta automática (D-867); a linha que a cobrava saiu."""
     assert atualizacao.FRASES_DA_FALHA[fases.FALHA_TROCA] == (
         "A atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel.")
-    assert atualizacao.FRASES_DA_FALHA[fases.FALHA_TESTE] == atualizacao.FRASE_DA_FALHA
 
 
 def test_os_comentarios_do_desfazer_nao_citam_o_que_saiu():
