@@ -182,7 +182,7 @@ def test_m4_com_o_estado_que_nao_grava_a_atualizacao_continua_e_o_registro_diz(t
     """Achado médio 4. Volta 3 (D-836: era "nada é procurado nem trocado"; a emenda do Fable mudou: "Se não puder ser
     gravado, o programa continua atualizando e registra o motivo; nunca para calado"): com o estado.json recusando
     gravação, a versão nova é procurada e anunciada, e o registro diz que a reprovação não ficou gravada. Nada da troca
-    depende do bilhete. Volta 5 (lista da D-836): a volta saiu (D-867); a reprovada segue a abertura (D-868)."""
+    depende do bilhete. Volta 5 (lista da D-836): a volta saiu (D-867); a reprovada abre o programa (D-868)."""
     monkeypatch.setattr(atualizacao, "gravar_estado", lambda estado: False)
     p = Prova(tmp_path / "a")
     p.abrir()
@@ -190,8 +190,7 @@ def test_m4_com_o_estado_que_nao_grava_a_atualizacao_continua_e_o_registro_diz(t
     monkeypatch.setattr(versao, "VERSAO", NOVA)
     q = Prova(tmp_path / "b", teste=(False, "código 1"), ultima_boa=ANTERIOR)
     assert q.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, NOVA) is None
-    assert "procurar" in q.vp.nomes(), "a abertura segue mesmo sem o bilhete gravar"
-    assert "trocar" not in q.vp.nomes()
+    assert "trocar" not in q.vp.nomes(), "nada é pedido ao Velopack (D-867), com ou sem o bilhete"
     assert "NÃO ficou gravada" in _registro()
 
 

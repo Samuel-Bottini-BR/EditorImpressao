@@ -214,11 +214,12 @@ ESPERADO = {
     (F.PREPARANDO, "prep_ok"): E(F.MOTOR, [R, ("GarantirMotor",)]),
     (F.PREPARANDO, "prep_nao"): E(F.PARADO, [R]),
     # D-844/D-856: passou, a marca de aprovada ANTES, e o pacote é guardado como a última boa. Volta 5 (D-867, D-868):
-    # não passou: reprovada, a frase da D-868, e a abertura segue (o motor e a procura); nada é pedido ao Velopack.
+    # não passou: reprovada, a frase da D-868, e a atualização para nesta abertura (D-857 "e para"; D-867: nada é
+    # pedido ao Velopack); o programa abre assim mesmo.
     (F.CONFERINDO_NOVA, "teste_ok"): E(F.GUARDANDO, [("MarcarAprovada", "1.2.0"), ("GuardarUltimaBoa", "1.2.0", True)]),
-    (F.CONFERINDO_NOVA, "teste_nao"): E(F.MOTOR, [("Reprovar", "1.2.0"),
-                                                  ("MostrarFalha", "reprovada", "reprovada-1.2.0", "", False),
-                                                  ("GarantirMotor",)], nao_tentar=("1.2.0", "1.3.0")),
+    (F.CONFERINDO_NOVA, "teste_nao"): E(F.PARADO, [("Reprovar", "1.2.0"),
+                                                   ("MostrarFalha", "reprovada", "reprovada-1.2.0", "", False)],
+                                        nao_tentar=("1.2.0", "1.3.0")),
     (F.GUARDANDO, "guardada_ok"): E(F.MOTOR, [R, ("GarantirMotor",)]),
     (F.GUARDANDO, "guardada_nao"): E(F.MOTOR, [R, ("GarantirMotor",)]),
     # D-790/D-833: sem o motor, nada é procurado nem anunciado.
@@ -327,16 +328,15 @@ def test_m1_so_o_teste_reprovado_poe_a_versao_em_nao_tentar(fase, nome):
             assert (fase, nome) == (f.Fase.CONFERINDO_NOVA, "teste_nao")
 
 
-def test_d857_d868_sem_ultima_boa_o_teste_que_falha_mostra_a_frase_e_segue():
+def test_d857_d868_sem_ultima_boa_o_teste_que_falha_mostra_a_frase_e_para():
     """D-857 com a D-868 (25/11/2026: a "frase (3)" da D-857 passa a ser a frase da D-868; "Depois o programa tenta
     abrir assim mesmo"): a primeira atualização depois do .msi (sem última boa) que falha no teste fica reprovada,
-    mostra a frase da D-868 e a abertura segue. Nada de marca de "sem volta" (saiu, D-867). Era
-    `test_d857_sem_ultima_boa_o_teste_que_falha_mostra_a_frase_3_e_para` (lista da D-836, volta 5)."""
+    mostra a frase da D-868 e a atualização para nesta abertura (nada é procurado). Nada de marca de "sem volta"
+    (saiu, D-867). Era `test_d857_sem_ultima_boa_o_teste_que_falha_mostra_a_frase_3_e_para` (lista da D-836, volta 5)."""
     antes = replace(BASE, fase=F.CONFERINDO_NOVA, nova="1.1.0")
     depois, efeitos = f.proxima_fase(antes, EVENTOS["teste_nao"])
-    assert depois.fase is F.MOTOR and depois.nao_tentar == ("1.1.0", "1.3.0")
-    assert forma(efeitos) == [("Reprovar", "1.1.0"), ("MostrarFalha", "reprovada", "reprovada-1.1.0", "", False),
-                              ("GarantirMotor",)]
+    assert depois.fase is F.PARADO and depois.nao_tentar == ("1.1.0", "1.3.0")
+    assert forma(efeitos) == [("Reprovar", "1.1.0"), ("MostrarFalha", "reprovada", "reprovada-1.1.0", "", False)]
 
 
 def test_d859_sem_internet_o_pacote_esperando_e_oferecido():

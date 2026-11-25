@@ -70,20 +70,8 @@ def _na_tela(atual) -> list:
 
 
 # ---------------------------------------------------------------------------------------------------------------------
-# G1: a volta interrompida no meio deixava o Kaique na versão estragada com a frase "voltou para a versão anterior"
+# A guarda interrompida (os testes do G1, a volta interrompida e a frase 1, saíram com a volta na volta 5: D-871)
 # ---------------------------------------------------------------------------------------------------------------------
-
-
-def test_g1_a_frase_1_nunca_antes_de_voltar(tmp_path, monkeypatch):
-    """G1: rodando uma versão que ainda não passou no teste (não é a última boa), a frase (1) não aparece, mesmo com
-    uma versão mais nova reprovada no bilhete: ela só aparece rodando a última boa (o programa voltou de fato)."""
-    monkeypatch.setattr(versao, "VERSAO", "1.2.0")
-    p = Prova(tmp_path, publicar_nova=False, teste=(True, ""))
-    _guardar_a_mao(p, ANTERIOR)
-    atualizacao.gravar_estado({"reprovadas": ["1.3.0"], "nao_tentar": ["1.3.0"]})
-    p.abrir()
-    p.ligar_a_tela()
-    assert not [e for e in p.tela if isinstance(e, fases.MostrarFalha) and e.tipo == fases.FALHA_TESTE]
 
 
 def test_g_a_guarda_interrompida_nao_vira_ultima_boa(tmp_path, monkeypatch):

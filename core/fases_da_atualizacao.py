@@ -18,9 +18,10 @@ versão que roda; (2) a "última boa", a última versão que passou no teste rá
     - rodando uma versão que ainda não passou nem falhou no teste rápido (`precisa_do_teste`): o teste roda NESTA
       abertura, antes da janela. Passou: ganha a marca de aprovada e não é testada de novo (volta 4, D-856); o pacote
       dela é guardado como a última boa, se couber. Não passou (volta 5, D-868): vai para as reprovadas, a frase da
-      D-868 aparece (antes da janela: pela caixa do Windows, escolhido pelo executor), e a abertura segue como sempre
-      (o programa tenta abrir assim mesmo). Nada volta sozinho: a volta automática saiu da primeira entrega (D-867); a
-      última boa continua guardada para a volta à mão do Samuel (D-869). A reprovada não é testada de novo.
+      D-868 aparece (antes da janela: pela caixa do Windows, escolhido pelo executor), a atualização para nesta
+      abertura e o programa tenta abrir assim mesmo. Nada volta sozinho: a volta automática saiu da primeira entrega
+      (D-867); a última boa continua guardada para a volta à mão do Samuel (D-869). A reprovada não é testada de novo;
+      nas aberturas seguintes a procura roda (uma correção publicada é oferecida).
     - a primeira versão instalada (sem última boa e sem o pacote dela em `packages\\`, que o .msi não põe) não é
       testada e nada é baixado (D-857).
     - sem internet, o pacote esperando (`pendente`) é oferecido pela assinatura guardada quando ele foi conferido
@@ -43,7 +44,7 @@ AS FASES (`Fase`), na ordem em que costumam acontecer numa abertura do programa 
     CONFERINDO_NOVA o teste rápido da versão que roda, que ainda não passou nem falhou nele, sempre antes da janela
                     (volta 4: o teste por trás, com a janela aberta, saiu).
     GUARDANDO       passou no teste: a marca de aprovada e o pacote dela guardado como a nova última boa, se couber
-                    (D-844, D-856). Não passou: nada a guardar; a abertura segue (volta 5, D-868).
+                    (D-844, D-856). (Não passou: PARADO nesta abertura, com a frase da D-868; volta 5.)
     MOTOR           o motor do Kraken: sem ele no lugar, nada é anunciado (D-790, D-833).
     PROCURANDO      perguntando ao Velopack se há versão nova (só ao abrir, D-732).
     CONFERINDO      a assinatura do Samuel na versão achada, antes de baixar (D-724).
@@ -657,14 +658,14 @@ def proxima_fase(estado: Estado, evento: Evento) -> tuple[Estado, list[Efeito]]:
                 MarcarAprovada(estado.nova), GuardarUltimaBoa(estado.nova, por_tras=not estado.sem_janela)]
         # Volta 5 (D-867, D-868): nada volta sozinho. A versão vai para as reprovadas (não é testada nem oferecida de
         # novo), a frase da D-868 aparece (antes da janela, pela caixa do Windows; sem janela, guardada para a próxima
-        # abertura), e a abertura segue como sempre: o programa tenta abrir assim mesmo, com o motor e a procura (uma
-        # correção publicada é oferecida se a janela abrir). Nenhum pedido ao Velopack.
+        # abertura), e a atualização para NESTA abertura (D-857: "aparece a frase [...] e para"; D-867: "versão
+        # reprovada → nada é pedido ao Velopack"): o programa tenta abrir assim mesmo (o executor devolve None e o
+        # main.py abre a janela). Nas aberturas seguintes ela não é testada de novo e a procura volta a rodar: uma
+        # correção publicada é oferecida como qualquer versão nova, se a janela abrir.
         reprovada = replace(estado, nao_tentar=_com_mais(estado.nao_tentar, estado.nova))
         efeitos = [Reprovar(estado.nova, f"a versão {estado.nova} não passou no teste rápido ({e.detalhe})")]
         efeitos += _frase(reprovada, FALHA_REPROVADA, estado.nova)
-        if estado.sem_janela:
-            return replace(reprovada, fase=Fase.PARADO), efeitos + [Sair(0)]
-        return replace(reprovada, fase=Fase.MOTOR), efeitos + [GarantirMotor()]
+        return replace(reprovada, fase=Fase.PARADO), efeitos + ([Sair(0)] if estado.sem_janela else [])
 
     if isinstance(e, UltimaBoaGuardada) and f is Fase.GUARDANDO:
         efeitos: list[Efeito] = [Registrar(

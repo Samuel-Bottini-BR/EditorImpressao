@@ -147,19 +147,18 @@ def test_d857_a_primeira_versao_do_msi_nao_e_testada_nem_baixa_nada(tmp_path):
     assert atualizacao.ler_ultima_boa(p.raiz) == ""
 
 
-def test_d857_d868_sem_ultima_boa_a_versao_que_falha_mostra_a_frase_e_abre(tmp_path):
+def test_d857_d868_sem_ultima_boa_a_versao_que_falha_mostra_a_frase_e_para(tmp_path):
     """D-857 ("Sem última boa, a atualização acontece assim mesmo; se a versão nova falhar no teste, aparece a frase
     (3) da D-778 e para.") com a D-868 (25/11/2026: a "frase (3)" da D-857 passa a ser a da D-868, "Depois o programa
     tenta abrir assim mesmo"): a primeira atualização depois do .msi (o pacote dela em `packages`, nenhuma última boa)
-    falha no teste: a frase da D-868, a versão fica reprovada, e a abertura segue (o motor e a procura). Era
+    falha no teste: a frase da D-868, a versão fica reprovada, nada é procurado nesta abertura, e o programa abre. Era
     `test_d857_sem_ultima_boa_a_versao_que_falha_mostra_a_frase_3_e_para` (lista da D-836, volta 5)."""
     p = Prova(tmp_path, teste=(False, "código 1"))
     p.pacote_em_packages(ATUAL)
     assert p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL) is None
     p.ligar_a_tela()
     assert [e.tipo for e in p.tela if isinstance(e, fases.MostrarFalha)] == [fases.FALHA_REPROVADA]
-    assert "procurar" in p.vp.nomes() and ATUAL in (_estado().get("reprovadas") or [])
-    assert "trocar" not in p.vp.nomes()
+    assert "procurar" not in p.vp.nomes() and ATUAL in (_estado().get("reprovadas") or [])
 
 
 def test_d857_sem_o_pacote_em_packages_nada_e_baixado_e_a_anterior_vale(tmp_path):
