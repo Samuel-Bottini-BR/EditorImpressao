@@ -1,7 +1,10 @@
 """O "conferido por fora" da prova à vista do atualizador novo: lê, sem mudar nada, como está a instalação, o que o
 programa anotou e o que a fonte oferece. NÃO é parte do programa. SÓ LÊ (nenhuma licença, nenhuma janela).
 
-python conferir_instalacao.py [linhas do registro, padrão 15]
+python conferir_instalacao.py [linhas do registro, padrão 15] [--somar]
+
+--somar: confere também se o pacote guardado da última boa é o que o Samuel assinou (lê os 460 MB; uns segundos).
+É o primeiro passo da volta à mão.
 
 O que mostra, cada coisa lida agora do disco ou do Windows (pelas mesmas funções que o programa usa, nunca por conta
 própria: §11.12):
@@ -88,7 +91,8 @@ def _licenca(caminho: Path) -> str:
 
 def main(argumentos: list[str]) -> int:
     """Mostra tudo (ver o topo)."""
-    linhas = int(argumentos[0]) if argumentos else 15
+    numeros = [a for a in argumentos if a.isdigit()]
+    linhas = int(numeros[0]) if numeros else 15
     raiz = comum.PROGRAMA
     print(f"== {raiz}")
     if not raiz.is_dir():
@@ -108,7 +112,21 @@ def main(argumentos: list[str]) -> int:
             except OSError:
                 nomes = ["(não existe)"]
             print(f"   {pasta}\\: {', '.join(nomes) or '(vazia)'}")
-        print(f"   a última boa (lida como o programa lê): {atualizacao.ler_ultima_boa(raiz) or '(nenhuma)'}")
+        boa = atualizacao.ler_ultima_boa(raiz)
+        print(f"   a última boa (lida como o programa lê): {boa or '(nenhuma)'}")
+        if boa and "--somar" in argumentos:
+            # a conferência antes da volta à mão: o pacote guardado é o que o Samuel assinou? (a função de sempre)
+            import assinatura
+            import versao
+
+            pasta = atualizacao.pasta_da_ultima_boa(raiz)
+            nome = atualizacao.nome_do_pacote(boa)
+            texto = (pasta / assinatura.nome_do_arquivo_da_assinatura(versao.ID_DO_PACOTE, boa)).read_text(
+                encoding="utf-8")
+            motivo = assinatura.conferir_versao(texto, assinatura.VersaoAssinada(
+                versao.ID_DO_PACOTE, boa, nome, assinatura.soma_sha256(pasta / nome)))
+            print(f"   o pacote da última boa confere com a assinatura do Samuel: "
+                  f"{'SIM' if motivo is None else 'NÃO (' + motivo + ')'}")
     print(f"== Programas e Recursos: {'; '.join(_programas_e_recursos()) or '(nenhuma entrada Editor de Impressão)'}")
     print(f"== quem roda da pasta do programa: {windows.programas_rodando_de(raiz) if raiz.is_dir() else '-'}")
     fonte = comum.FONTE_DE_TESTE
