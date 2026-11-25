@@ -1,3 +1,63 @@
+# Volta 5, segunda rodada: a frase da segunda recusa do Windows (D-877, M1 do quinto "quem tenta quebrar") (25/11/2026)
+
+Pedido da gerente (a minha segunda rodada, a última pela D-815). Palavras do Samuel (D-877): "Conserta agora só o aviso
+da segunda recusa do Windows (M1). Os dois testes das proteções (M2) e o achado pequeno ficam para depois, com os
+testes à distância." A partir de `958cf552` (o relatório do quinto "quem tenta quebrar"; o código é o de `0d9cac4e`).
+Não mexo no M2 nem no leve. Só a caixa de mentira; nenhuma janela nem caixa de verdade.
+
+## Antes de mexer (§11.12)
+
+**O defeito (o M1 do quinto, executado por ele no caso L1 de `provas/prova_casos.py`).** O Kaique clica "Reiniciar
+agora"; o Windows não deixa trocar (um arquivo preso); o Velopack reabre a versão de antes com o pedido, e aparece "A
+atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel." (D-839). Na SEGUNDA
+recusa para a mesma versão (outro dia, ou na hora), nada aparece: um clique sem resposta.
+
+**A causa.** A frase da D-839 nasce na abertura reaberta pelo Velopack (`fases._frases_ao_abrir` → `fases._frase` →
+`MostrarFalha(tipo, id_da_falha(tipo, versão))`), com o nome `troca-<versão>`, SEM o momento. A tela mostra cada nome uma
+vez só por conta (`Atualizacao._para_a_tela` → `ler_vistos`/`gravar_visto`). A segunda recusa da mesma versão gera o
+mesmo nome, que já está nos "vistos": some. As frases guardadas no bilhete não têm o problema porque o nome delas leva
+a hora (`guardar_frase`: "a mesma frase de novo, noutro dia, aparece de novo").
+
+**A regra (como uma frase decide se "já foi vista").** O nome da frase é a chave: a tela mostra um nome uma vez por
+conta (`_para_a_tela`). Então o nome tem de dizer O QUE se avisa:
+- a frase de um **acontecimento** (algo que aconteceu agora e que pode acontecer de novo: uma troca recusada, um "Sim"
+  ao fechar que não trocou) tem de levar o **momento** no nome: cada vez é outro aviso;
+- a frase de um **estado** que a abertura encontra de novo a cada vez (a versão publicada sem a assinatura, a versão que
+  pede um motor que não está no lugar) leva só o tipo e a versão: uma vez por versão, senão ela se repetiria a cada
+  abertura (laço de avisos).
+
+**Os caminhos que usam `id_da_falha` / os "vistos"** (busca: `grep -n "id_da_falha\|ler_vistos\|gravar_visto"` em
+`atualizacao.py`, `core/fases_da_atualizacao.py`, `ui/`, `main.py`):
+
+| Caminho | O nome hoje | Acontecimento ou estado? | Tem o problema? |
+|---|---|---|---|
+| a D-839 na abertura reaberta pelo Velopack (`_frases_ao_abrir` → `_frase`) | `troca-<v>` | acontecimento (cada recusa do Windows) | **SIM: o M1** |
+| a D-839 na reabertura sem janela ("Sim" ao fechar) (`_frase` → `GuardarFrase` → `guardar_frase`) | `troca-<v>-<hora>` | acontecimento | não (já leva a hora) |
+| a da versão reprovada (`TesteRapido` → `_frase`) | `reprovada-<v>` | acontecimento, mas que só acontece UMA vez por versão (a reprovada não é testada de novo, D-868) | não (não se repete por construção). Fica como está |
+| a frase (2) da assinatura recusada na procura (`Assinatura` → `MostrarFalha(id_da_falha)`) | `recusada-<v>` | estado (a versão publicada continua sem a assinatura a cada abertura) | não: uma vez por versão é o certo (a tabela: "a frase (2), uma vez"); com o momento, ela se repetiria a cada abertura |
+| a do motor (`Baixou` → `MostrarFalha(id_da_falha)`) | `motor-<v>` | estado (a cada abertura) | não, pelo mesmo motivo (D-843: "uma vez") |
+| a (2) em resposta ao "Reiniciar agora" (`TrocaConferida(recusada)`, `sempre=True`) | `recusada-<v>` | resposta a um clique | não (`sempre`: aparece toda vez) |
+| as guardadas no bilhete (`guardar_frase`, `guardar_frase_pelo_nome`) | `<tipo>-<v>-<hora>` | acontecimento | não |
+| a frase que vai para a caixa do Windows (`_na_caixa_do_windows`) | o nome que veio | — | usa o nome que a regra deu |
+| a mesma frase na janela (`_para_a_tela` → `PonteDaTela`) | o nome que veio | — | idem |
+
+Só a D-839 da abertura reaberta tem o defeito. A da reprovada é um acontecimento também, mas não se repete; não mexo
+nela (o pedido: "Só conserte além do M1 se for a mesma regra").
+
+**O conserto, num lugar só.** Uma função na regra, `fases.id_do_acontecimento(tipo, versão, momento)` (o nome com o
+momento), usada pelos DOIS lugares que dão nome a um acontecimento: a D-839 da abertura reaberta (pelo `_frase`, com o
+momento da abertura) e o `guardar_frase` do bilhete (que hoje escreve a mesma conta à mão, `f"{id_da_falha(...)}-{_agora()}"`).
+O momento da abertura é um dado que o executor lê na hora e manda no `Abriu` (`momento`), como os outros; a regra
+continua sem relógio. Sem momento (os testes da tabela), o nome fica `troca-<v>`, como antes.
+
+**Sem laço (§11.8).** A D-839 só nasce na abertura que o Velopack reabriu com o pedido (a linha de comando), e cada
+reabertura dessas é uma recusa do Windows. A abertura seguinte pelo atalho não tem o pedido: nenhuma frase. Então ela
+aparece uma vez por recusa, nunca a cada abertura.
+
+**Como fica para quem usa (§11.9).** Antes: a segunda recusa para a mesma versão não dizia nada. Depois: cada recusa
+mostra a frase da D-839 uma vez (antes da janela, pela caixa do Windows, D-868) e o aviso da versão nova volta, como na
+primeira. No livro (PDF): nada muda.
+
 # Volta 5 — a volta automática sai da primeira entrega (25/11/2026)
 
 Implementador novo (D-815: as voltas 3 e 4 foram de outro agente). Pedido da gerente de 25/11, depois de o Samuel ler
