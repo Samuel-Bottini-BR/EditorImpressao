@@ -1,0 +1,38 @@
+{
+ "1. com a fonte: baixou, Não ao fechar": {
+  "packages": [
+   ".betaId",
+   ".velopack_lock",
+   "EditorImpressaoPrograma-1.2.0-full.nupkg"
+  ],
+  "ultima-boa": [
+   "EditorImpressaoPrograma-1.2.0.assinatura.chegando"
+  ],
+  "pendente pelo Velopack de verdade": "1.2.0"
+ },
+ "2. sem a fonte (sem internet), com a 1.2.0 esperando": {
+  "tela": [
+   "MostrarVersaoNova",
+   "PerguntarAoFechar"
+  ],
+  "a pergunta ao fechar veio": true,
+  "o Sim pediu a troca": [
+   "1.2.0",
+   [
+    "--conferir-a-versao-nova",
+    "1.1.0",
+    "1.2.0",
+    "--sem-janela",
+    "--fonte",
+    "D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\qtq4\\pacote-esperando\\fonte"
+   ]
+  ],
+  "registro (fim)": [
+   "    O sistema não pode encontrar o caminho especificado. (os error 3)); a 1.2.0 já está baixada",
+   "2026-11-24T21:23:59 | versão 1.1.0 | versão 1.2.0 publicada e assinada pelo Samuel: baixando",
+   "2026-11-24T21:24:00 | versão 1.1.0 | versão 1.2.0 pronta; o Kaique escolheu \"Depois\": a pergunta vem ao fechar",
+   "2026-11-24T21:24:00 | versão 1.1.0 | troca para a 1.2.0 pedida ao Velopack; o programa sai e ele troca"
+  ]
+ },
+ "3. GitHub sem internet: Fonte.ler": "URLError (sem rede, nada na tela): <urlopen error [WinError 10061] Nenhuma conexão pôde ser feita porque a máquina de destino as recusou ativamente>"
+}

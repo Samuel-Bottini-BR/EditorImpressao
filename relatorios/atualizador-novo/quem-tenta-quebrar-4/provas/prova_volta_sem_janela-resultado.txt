@@ -1,0 +1,80 @@
+{
+ "vpk 1.1.0": 0,
+ "vpk 1.2.0": 0,
+ "A. a volta da reabertura sem janela (--norestart), com um arquivo preso": {
+  "o pedido": [
+   "apply",
+   "--package",
+   "D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\qtq4\\volta-sem-janela\\instalado\\packages\\ProvaQ4-1.1.0-full.nupkg",
+   "--silent",
+   "--norestart",
+   "--root",
+   "D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\qtq4\\volta-sem-janela\\instalado",
+   "--packageDir",
+   "D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\qtq4\\volta-sem-janela\\instalado\\packages",
+   "--",
+   "--voltando",
+   "1.2.0",
+   "1.1.0"
+  ],
+  "codigo do Update.exe": 1,
+  "versao em current depois": "1.2.0",
+  "o Velopack abriu o programa (com os ganchos)": [
+   {
+    "versao": "1.2.0",
+    "args": [
+     "--veloapp-obsolete",
+     "1.2.0"
+    ]
+   }
+  ],
+  "a reabertura (sem os ganchos)": []
+ },
+ "B1. a reabertura sem janela da 1.2.0 (o Sim ao fechar): o teste falha": {
+  "versao que roda": "1.2.0",
+  "linha de comando": [
+   "--conferir-a-versao-nova",
+   "1.1.0",
+   "1.2.0",
+   "--sem-janela"
+  ],
+  "saida": 0,
+  "testes rapidos rodados ate aqui": 1,
+  "pedidos de troca ao Velopack (versao, reabrir, argumentos)": [
+   [
+    "1.1.0",
+    false,
+    [
+     "--voltando",
+     "1.2.0",
+     "1.1.0",
+     "--fonte",
+     "D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\qtq4\\volta-sem-janela\\sem-internet"
+    ]
+   ]
+  ],
+  "frases na tela": [],
+  "marca de sem volta no disco": false
+ },
+ "B2. a abertura seguinte, pelo atalho (o Velopack não reabriu nada em A)": {
+  "versao que roda": "1.2.0",
+  "linha de comando": [],
+  "saida": 0,
+  "testes rapidos rodados ate aqui": 2,
+  "pedidos de troca ao Velopack (versao, reabrir, argumentos)": [
+   [
+    "1.1.0",
+    true,
+    [
+     "--voltando",
+     "1.2.0",
+     "1.1.0",
+     "--fonte",
+     "D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\qtq4\\volta-sem-janela\\sem-internet"
+    ]
+   ]
+  ],
+  "frases na tela": [],
+  "marca de sem volta no disco": false
+ }
+}

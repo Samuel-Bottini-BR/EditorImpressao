@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quem tenta quebrar 4 — o atualizador novo</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Quem tenta quebrar, volta 4: o atualizador novo</h1>
+<p>24/11/2026. Quarto agente que tenta quebrar (D-775, D-862): não escrevi este código e não o conserto. Ramo
+<code>atualizador-novo-2026-11-23</code>, commit <code>5dfcdc9d</code> (o GitHub estava verde exatamente nesse commit, rodada 45520421089:
+conferido no registro da rodada, "TESTADO_SHA: 5dfcdc9d..."). Nada do programa nem dos testes do ramo foi mudado.
+Nenhuma janela na tela do Samuel, nenhuma pergunta do Windows, nada instalado, nada escrito em <code>C:\ProgramData\EditorImpressao</code>,
+em <code>%LOCALAPPDATA%\EditorImpressao</code> nem na instalação dele: em toda prova o PROGRAMDATA e o LOCALAPPDATA foram trocados
+DENTRO do Python e conferidos com <code>assert</code> antes de rodar. Tudo o que rodei está em <code>provas/</code> (o script e a saída de cada
+um).</p>
+<h2>Em uma frase</h2>
+<p><strong>NÃO ESTÁ PRONTO para a prova à vista.</strong> As três regras do Samuel funcionam no caminho para que foram feitas: a volta
+recusada pelo Windows não vira mais laço, a versão aprovada não é testada de novo, a primeira versão do instalador não
+baixa nada, sem internet o pacote que já chegou é oferecido (rodei com a biblioteca do Velopack de verdade), e todas as
+frases batem com o Livro, palavra por palavra. Mas achei <strong>1 grave e 6 médios</strong>. O grave: quando a versão nova está
+tão estragada que a janela dela não abre (é justamente o que o teste rápido reprova), a frase (3) "não desinstale nada,
+avise o Samuel" nunca aparece; o Kaique só vê "Aconteceu um problema inesperado, mas o programa continua funcionando." e
+o programa some; e, pela marca de "sem volta", nenhuma abertura seguinte tenta voltar. Pela D-862 ("Se achar médio,
+para e avisa"), <strong>tudo para aqui</strong> e o Samuel é avisado.</p>
+<h2>Como classifiquei (D-842)</h2>
+<ul>
+<li><strong>grave</strong>: o Kaique fica sem o programa, ou com o programa errado, e a tela não diz o que aconteceu.</li>
+<li><strong>médio</strong>: o Kaique veria (frase errada ou que falta, frase que promete o que não acontece, clique sem resposta,
+  segundos sem nada na tela, versão estragada sem volta), uma decisão do Livro que o código não cumpre, ou uma proteção
+  sem teste (D-827).</li>
+<li><strong>leve</strong>: só aparece lendo o código ou o registro; o Kaique nunca veria.</li>
+</ul>
+<p>Cada achado diz <strong>EXECUTADO</strong> (rodei neste Windows) ou <strong>LIDO</strong> (só li o código), e o que é de mentira em cada prova.</p>
+<h2>O que rodei de verdade neste Windows</h2>
+<table>
+<thead>
+<tr>
+<th>Prova (<code>provas/</code>)</th>
+<th>De verdade</th>
+<th>De mentira</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>prova_janela_que_nao_abre.py</code></td>
+<td>o <code>main.py</code> de verdade (o <code>main()</code> inteiro, com o Qt fora da tela), o executor, a regra, o disco (marcas, bilhete, "vistos"), a caixa "Aconteceu um problema inesperado" do próprio main.py</td>
+<td>a janela principal quebrada (o import dela falha, como numa versão que perdeu uma peça); as peças do Windows e do Velopack (só anotam); o teste rápido (falha)</td>
+</tr>
+<tr>
+<td><code>prova_frase_velha.py</code></td>
+<td>a regra, o executor, o disco, as assinaturas (chave de prova) e a <strong>lista de processos do Windows</strong>, com a "outra janela" sendo um processo de verdade aberto de dentro de <code>current\</code> (uma cópia do ping.exe, sem janela)</td>
+<td>o pedido ao Velopack (só anotado), o teste rápido</td>
+</tr>
+<tr>
+<td><code>prova_update_exe_some.py</code></td>
+<td>a <strong>biblioteca do Velopack 1.2.161 de verdade</strong> (o <code>UpdateManager</code> numa instalação de prova minha), a peça <code>conversa_com_o_velopack</code> (procurar, pendente, baixar, trocar), a lista de processos do Windows</td>
+<td>o reabrir do programa (só anotado: abriria o nosso .exe, que aqui não existe), o teste rápido</td>
+</tr>
+<tr>
+<td><code>prova_pacote_esperando.py</code></td>
+<td>a biblioteca do Velopack de verdade (<code>get_update_pending_restart</code>, <code>check_for_updates</code>, <code>download_updates</code> com o arquivo já no lugar), a falta de internet (a fonte que some; para o GitHub, um proxy que não existe, só neste processo)</td>
+<td>a lista de processos, o teste rápido</td>
+</tr>
+<tr>
+<td><code>prova_volta_sem_janela.py</code></td>
+<td>o <strong><code>vpk</code> 1.2.161 e o <code>Update.exe</code> de verdade</strong> (um programa de prova sem janela feito com o PyInstaller, a instalação portátil numa pasta minha, <code>--silent</code>), com o <code>--norestart</code> que a biblioteca põe quando não é para reabrir, e um arquivo de <code>current\</code> preso por outro processo</td>
+<td>o programa (é o de prova, não o nosso de 460 MB); depois, o executor com as peças de mentira</td>
+</tr>
+<tr>
+<td><code>prova_casinhas.py</code></td>
+<td>a regra, o executor, o disco, as assinaturas</td>
+<td>as peças do Windows e do Velopack, o teste rápido, o número de bytes livres (a conta é a de verdade)</td>
+</tr>
+<tr>
+<td><code>prova_guarda_morta.py</code></td>
+<td>a guarda de verdade copiando 300 MB, o processo <strong>morto à força</strong> (TerminateProcess) no meio da cópia, as aberturas seguintes</td>
+<td>as peças, o teste rápido</td>
+</tr>
+<tr>
+<td>o GitHub de verdade</td>
+<td><code>Fonte.padrao().ler(...)</code> de uma versão que não existe no GitHub do projeto: a resposta 404 de verdade</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>mutacoes_qtq4.py</code></td>
+<td>30 proteções desligadas uma a uma numa CÓPIA do ramo (<code>git archive</code>), com os 10 arquivos de teste do atualizador, um por vez</td>
+<td>—</td>
+</tr>
+<tr>
+<td>os testes do ramo</td>
+<td>83 arquivos, um por vez (os do atualizador, da peça do Windows, do porteiro, do publicar e das conferências, e os 64 <code>tests/test_decisoes*.py</code>)</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>Não rodei: o disco cheio de verdade (sem licença de administrador não dá para criar um disco pequeno; simulei o número
+de bytes livres), dois processos guardando ou anotando o bilhete ao mesmo tempo (são a D-850 e a (a) da D-866, que o
+Samuel deixou para depois; o terceiro "quem tenta quebrar" já rodou), e a troca com a janelinha do Velopack (só a prova
+à vista).</p>
+<hr />
+<h2>Achado grave</h2>
+<h3>G1. Se a janela da versão estragada não abre, a frase (3) nunca aparece, e o programa nunca mais tenta voltar</h3>
+<ul>
+<li><strong>O que o Kaique veria.</strong> A versão nova entrou e não passou no teste rápido. Ou o Windows não deixou voltar (um
+  arquivo preso, D-855), ou ainda não havia última boa (a primeira atualização depois do instalador, D-857). A regra
+  manda mostrar "A atualização não deu certo e o programa não conseguiu voltar sozinho. Não desinstale nada. Avise o
+  Samuel." e abrir a janela. Mas o teste rápido reprova exatamente a versão que não abre (ele importa a janela; um erro
+  nessa importação é "não passou"). Nesse caso a janela não abre, e a frase, que espera a janela numa fila, nunca é
+  mostrada. O Kaique vê só a caixa "Um momento — Aconteceu um problema inesperado, mas o programa continua funcionando."
+  (que não é verdade: o programa fecha em seguida). E toda abertura seguinte é igual: nada de frase, nada de volta.</li>
+<li><strong>EXECUTADO (<code>prova_janela_que_nao_abre.py</code>)</strong>, nos dois caminhos, cada abertura num processo à parte:</li>
+<li>A (a volta recusada; o Velopack reabriu a 1.2.0 com <code>--voltando 1.2.0 1.1.0</code>): a frase (3) ficou <strong>na fila da tela</strong>;
+    o <code>main.main()</code> parou na importação da janela; na tela, só "Aconteceu um problema inesperado, mas o programa continua
+    funcionando."; a marca de "sem volta" ficou no disco; nenhuma frase marcada como vista. A abertura seguinte, pelo
+    atalho: 0 testes, nenhum pedido de volta, a mesma caixa genérica. A última boa 1.1.0 continua guardada e nunca é usada.</li>
+<li>B (sem última boa, o pacote da 1.2.0 em <code>packages\</code>): o teste rodou e falhou, a frase (3) ficou na fila, a mesma
+    caixa genérica, a marca de "sem volta"; a abertura seguinte, a mesma coisa.</li>
+<li><strong>A causa.</strong> Duas coisas juntas: (1) toda frase da atualização só chega à tela por <code>ligar_na_janela</code>, chamada no fim do
+  <code>main()</code>, depois de a janela principal abrir; nenhuma frase tem caminho que não dependa dela; (2) a marca de "sem
+  volta" (D-863) é gravada no disco ANTES de a frase ser vista (<code>_ao_abrir</code> e <code>_volta_que_nao_deu</code>), e é ela que impede
+  as aberturas seguintes de tentar de novo. A tabela da volta 4 não tem a casinha "a versão que falhou não consegue abrir
+  a janela": diz, em "Voltar × Windows nega", "a frase (3), uma vez, e a janela (na versão que falhou)".</li>
+<li><strong>Por que grave.</strong> O Kaique fica sem o programa, a tela diz uma coisa falsa ("continua funcionando"), a frase que pede
+  "não desinstale nada" não aparece, e nada mais tenta resolver. Antes da volta 4, a volta recusada ao menos era tentada
+  de novo (em laço, o G1 do terceiro); agora a marca a desliga mesmo sem a frase ter sido vista. Quando acontece: uma
+  versão publicada com uma peça faltando que impede a janela de abrir (uma DLL ou um módulo que não foi para o pacote: o teste rápido acusa justamente isso, ao importar a janela) E (o
+  arquivo preso na volta OU a primeira atualização depois do instalador). A primeira atualização do Kaique é exatamente
+  o segundo caso.</li>
+<li><strong>Fere:</strong> D-855 ("mostra a frase (3) e abre"), D-857 ("aparece a frase (3) da D-778 e para"), D-778, D-842, CLAUDE.md
+  §11.12 pontos 2 e 3 (a marca dá como feito o que não aconteceu: "a frase foi mostrada").</li>
+</ul>
+<hr />
+<h2>Achados médios</h2>
+<h3>M1. A frase do "Sim" ao fechar aparece depois de a atualização ter dado certo</h3>
+<ul>
+<li><strong>O que o Kaique veria.</strong> É o caso da própria D-858: ele tem duas janelas do programa abertas, as duas com o aviso da
+  versão nova. Fecha a primeira e responde "Sim": não troca (há outra janela) e a frase fica guardada. Fecha a segunda e
+  responde "Sim": agora troca, e dá certo. Na abertura seguinte, <strong>já na versão nova</strong>, aparece "Não deu para atualizar
+  agora: havia outra janela do programa aberta. Tente ao fechar o programa." Ele vai tentar atualizar o que já está
+  atualizado.</li>
+<li><strong>EXECUTADO (<code>prova_frase_velha.py</code>)</strong>: a peça do Windows de verdade viu a "outra janela" (um processo de verdade em
+  <code>current\</code>); o "Sim" da primeira guardou a frase; o "Sim" da segunda pediu a troca; a reabertura sem janela da 1.2.0
+  passou no teste, marcou aprovada e guardou a última boa; a abertura seguinte, na 1.2.0, mostrou a frase acima.</li>
+<li><strong>A causa.</strong> A frase guardada no bilhete é mostrada na abertura seguinte sem olhar se ela ainda é verdade: o nome dela
+  traz a versão ("nao_deu_agora-1.2.0-..."), e a versão que roda já é a 1.2.0. É o contrário da emenda do Fable ("a
+  verdade vem do disco, não do bilhete"): aqui o bilhete diz e ninguém confere. A tabela ("Sim ao fechar × clique
+  repetido") só pensa no caso em que nada troca depois.</li>
+<li><strong>Fere:</strong> D-858/D-864 (a frase é para "o 'Sim' que não troca"), D-842 (frase errada), §11.12 ponto 2.</li>
+</ul>
+<h3>M2. O atualizador do Velopack que some: a frase manda "Tente ao fechar o programa" e fechar não pergunta nada; a atualização para de vez, calada</h3>
+<ul>
+<li><strong>O que o Kaique veria.</strong> Com a versão nova baixada e o aviso na tela, um antivírus põe de lado o <code>Update.exe</code> (o caso
+  que o terceiro achou). Ele clica "Reiniciar agora": a janela fecha (o trabalho é gravado) e abre de novo, com "Não deu
+  para atualizar agora: o atualizador do programa não começou. Tente ao fechar o programa." Ao fechar, <strong>nenhuma
+  pergunta</strong>. Nas aberturas seguintes, nada: nem aviso, nem frase. A atualização nunca mais chega, e nada diz isso.</li>
+<li><strong>EXECUTADO (<code>prova_update_exe_some.py</code>, a biblioteca do Velopack de verdade):</strong> com o <code>Update.exe</code> no lugar, achou,
+  conferiu, baixou e mostrou o aviso; apagado o <code>Update.exe</code>, o clique fechou a janela e pediu a reabertura; a biblioteca
+  recusou a troca ("This application is not properly installed: Update.exe does not exist"); a abertura reaberta mostrou
+  a frase acima, e o fechar não perguntou nada (fase "parado"); daí em diante <code>pendente</code> e <code>procurar</code> falham com o mesmo
+  erro, e a regra trata isso como "sem internet" (só o registro). <strong>LIDO:</strong> baixar de novo não traz o <code>Update.exe</code> de
+  volta: com o pacote já em <code>packages\</code>, o Velopack nem baixa nem tira o <code>Update.exe</code> de dentro dele (<code>manager.rs</code>
+  413-416, antes da linha 463 que o tira); e o <code>UpdateManager</code> nem chega a ser criado.</li>
+<li><strong>A causa.</strong> A conferência única da troca (<code>conferencia_da_troca</code>) confere o pacote, o motor e a outra janela, mas não o
+  <code>Update.exe</code>, que é a única coisa que a biblioteca exige para trocar: a janela fecha por nada. Depois, a frase promete
+  uma pergunta ao fechar que só existe com a versão pronta nesta abertura, e sem o <code>Update.exe</code> nenhuma abertura chega a
+  "pronta". Raro (precisa de o <code>Update.exe</code> sumir), mas o caso foi pedido por nome.</li>
+<li><strong>Fere:</strong> D-845 ("Tente ao fechar o programa" tem de levar a algum lugar), D-842 (frase que promete o que não
+  acontece), §11.12 ponto 3 (a falha "o Update.exe sumiu" pensada só até a primeira frase).</li>
+</ul>
+<h3>M3. A volta que não pôde ser pedida por um motivo de um instante vira "sem volta" para sempre</h3>
+<ul>
+<li><strong>O que o Kaique veria.</strong> A versão nova falhou no teste e há última boa guardada. Na hora de voltar, o Windows não deu
+  a lista de processos (um instante), ou o Kaique clicou duas vezes no atalho nos segundos sem nada na tela (o M1 que o
+  Samuel deixou para depois). A volta não é pedida, aparece a frase (3), e <strong>nenhuma abertura seguinte tenta voltar</strong>,
+  embora a última boa esteja lá e a volta fosse dar certo um segundo depois. Ele fica na versão estragada até a próxima
+  atualização.</li>
+<li><strong>EXECUTADO (<code>prova_casinhas.py</code>, C1 e C2):</strong> nos dois casos, a primeira abertura: 1 teste, nenhum pedido de volta, a
+  frase (3), a marca de "sem volta"; a segunda e a terceira aberturas, com um clique só e nada mais aberto: 0 testes,
+  nenhum pedido de volta, nada na tela; a última boa 0.1.0 continua no disco.</li>
+<li><strong>A causa.</strong> <code>_volta_que_nao_deu</code> põe a marca de "sem volta" para todo motivo, inclusive os que passam num instante. A
+  D-863 foi perguntada sobre o arquivo preso ("o arquivo preso pode já ter sido solto"); a extensão para "a volta que nem
+  pôde ser pedida" foi do implementador (está escrita no ONDE-PAREI, não escondida). Para os dois cliques, o efeito do
+  M1 deixado para depois mudou: o terceiro relatou "na próxima abertura (um clique só), a volta acontece e aparece a
+  frase (1)"; agora ela nunca acontece. O Samuel decidiu a D-861 com o efeito antigo.</li>
+<li><strong>O que precisa:</strong> a palavra do Samuel (a D-863 vale também para "a volta nem pôde ser pedida por um instante"?) e a
+  reconfirmação da D-861 com o efeito novo. Não é defeito de frase: a frase (3) é verdade.</li>
+</ul>
+<h3>M4. A volta pedida depois do "Sim" ao fechar tenta duas vezes, a primeira calada, e a tabela diz uma</h3>
+<ul>
+<li><strong>O que o Kaique veria.</strong> Fecha com "Sim", a versão nova entra e falha no teste (por trás, sem janela). A volta é pedida
+  sem reabrir (nada abre na tela, D-769). Se o Windows não deixa (um arquivo preso), o Velopack desiste e não reabre nada:
+  nada é marcado. Na próxima abertura pelo atalho, o teste roda de novo (segundos sem nada na tela) e a volta é pedida de
+  novo, agora reabrindo. Só então vem a frase (3), ou a (1). Não é laço, mas são duas tentativas e duas janelinhas do
+  atualizador, e a tabela ("Voltar × Windows nega") diz que "o Velopack reabre a que falhou com a marca".</li>
+<li><strong>EXECUTADO (<code>prova_volta_sem_janela.py</code>, o <code>Update.exe</code> de verdade):</strong> com <code>--norestart</code> e um arquivo de <code>current\</code>
+  preso, o Update.exe saiu com código 1, <code>current</code> ficou na 1.2.0, e <strong>nenhuma reabertura</strong> (só o gancho
+  <code>--veloapp-obsolete</code>). O executor: na reabertura sem janela, 1 teste e o pedido de volta com <code>reabrir=False</code>; na abertura
+  seguinte pelo atalho, mais 1 teste e outro pedido de volta, com <code>reabrir=True</code>. <strong>LIDO:</strong> <code>apply.rs</code> 57-60 (<code>if restart</code>).</li>
+<li><strong>A causa.</strong> A marca <code>--voltando</code> só serve se o Velopack reabrir o programa; no caminho sem janela ele não reabre.</li>
+<li><strong>Por que médio e não leve:</strong> o Kaique vê os segundos sem nada e a janelinha uma segunda vez, e a D-855 diz "tenta uma
+  vez". É o mais fraco dos médios: nenhuma frase errada, e a segunda tentativa pode até dar certo.</li>
+</ul>
+<h3>M5. Duas proteções sem teste (D-827)</h3>
+<p>Desligadas numa cópia, nenhum dos 10 arquivos de teste do atualizador reclamou (<code>mutacoes_qtq4-resultado.txt</code>):
+- <strong>X11 — o 404 do GitHub como "não existe".</strong> É o caminho de verdade da frase (2) no GitHub: uma versão publicada sem a
+  assinatura dá 404 e tem de mostrar "Chegou uma versão nova, mas ela não foi instalada porque não tem a assinatura do
+  Samuel...". Trocado o 404 por "sem rede", a frase some e a versão é procurada calada a cada abertura. EXECUTADO: o
+  GitHub de verdade responde 404 e o código de hoje dá <code>FileNotFoundError</code> (a frase 2), certo; mas o teste novo da
+  volta 4 (<code>test_a_rede_que_nao_responde_na_assinatura_nao_e_recusada</code>) só usa a fonte de pasta.
+- <strong>X18 — a assinatura guardada do pacote esperando (D-859) não ser conferida.</strong> Sem internet, o pacote esperando é
+  oferecido pela assinatura guardada em <code>ultima-boa\</code>, uma pasta que Usuários podem modificar (D-837). Sem a conferência
+  da chave do Samuel, um arquivo de assinatura posto por outra conta, com a soma de um pacote trocado, faria o programa
+  trocar para ele. É a D-724 ("só pacote assinado") no caminho novo, sem teste.</p>
+<p>As outras 27 foram acusadas (item 5); a X25 é equivalente (ver o item 2).</p>
+<h3>M6. A marca de "sem volta" que não consegue ser gravada: a cada abertura o teste e a janelinha do atualizador, sem frase</h3>
+<ul>
+<li><strong>O que o Kaique veria.</strong> A volta recusada pelo Windows (o caso da D-855), com a pasta da última boa não aceitando mais
+  arquivo nenhum. A primeira vez: a frase (3). Daí em diante, a cada abertura pelo atalho: segundos sem nada (o teste), a
+  janelinha do atualizador (a volta pedida de novo), o Velopack recusa e reabre, e <strong>nenhuma frase</strong> (a (3) já foi
+  "vista"). É o laço do G1 do terceiro, uma volta por abertura, enquanto a marca não grava.</li>
+<li><strong>EXECUTADO (<code>prova_casinhas.py</code>, C3):</strong> com o nome da marca ocupado (a gravação dela falha), três aberturas seguidas:
+  cada uma, 1 teste e 1 pedido de volta; a reabertura com <code>--voltando</code> mostrou a frase (3) só na primeira; marca nenhuma.</li>
+<li><strong>A causa.</strong> O "não tenta de novo" da D-863 depende de uma gravação que pode falhar, e a falha só vai para o registro
+  (<code>marcar</code>). A tabela ("Voltar × disco cheio") diz "a marca de sem volta, a frase (3), e abre; não tenta de novo".</li>
+<li><strong>Raro:</strong> no uso normal a pasta aceita gravação (licença de Usuários) e um arquivo pequeno costuma caber mesmo com o
+  disco cheio. Pus como médio porque o Kaique veria (D-842), não porque seja provável.</li>
+</ul>
+<hr />
+<h2>Achados leves (só aparecem no código ou no registro)</h2>
+<ol>
+<li><strong>O registro diz uma coisa que deixou de ser verdade.</strong> Quando a guarda não cabe, a linha é "...o teste roda de novo
+   na próxima abertura" (<code>fases_da_atualizacao.py</code>, <code>UltimaBoaGuardada</code>), mas desde a D-856 a versão aprovada não é
+   testada de novo (EXECUTADO, C4: a abertura seguinte não testou). Só a gerente lê.</li>
+<li><strong>Sem internet, o registro diz "versão 1.2.0 publicada e assinada pelo Samuel: baixando"</strong> para o pacote esperando
+   (EXECUTADO, <code>prova_pacote_esperando.py</code>); nada é baixado e nada foi lido da publicação.</li>
+<li><strong>A tabela ("Guardar × o nome final preso") descreve um passo que saiu</strong> no próprio commit <code>5dfcdc9d</code> ("o nome final é
+   tirado do caminho antes de copiar"). O comportamento continua certo (a assinatura por último; os testes <code>test_l1_*</code>
+   passam e a mutação P17/N4 do implementador foi acusada); só o texto ficou velho.</li>
+<li><strong>Depois de a guarda morrer no meio, sobra a cópia pela metade</strong> (<code>&lt;pacote&gt;.chegando</code>, até 460 MB) em <code>ultima-boa\</code> até
+   a guarda da versão seguinte (EXECUTADO, <code>prova_guarda_morta.py</code>: morto aos 64 MB, a última boa continuou a 1.1.0, a
+   marca de aprovada ficou, as duas aberturas seguintes não testaram nem copiaram, e os 68 MB ficaram). A pasta não fica
+   pela metade (a última boa de antes vale), por isso pus leve; é parecido com a (b) da D-866.</li>
+<li><strong>Outra conta de espaço no programa:</strong> <code>configuracoes.espaco_livre_mb</code> (de julho, a pasta de saída do PDF) também usa
+   <code>shutil.disk_usage</code>. Não é do atualizador nem desta volta; "só <code>espaco_livre_basta</code> mede o disco" vale para o
+   atualizador.</li>
+<li><strong>O título e as duas primeiras frases do aviso da versão nova</strong> ("Versão nova do programa", "Chegou uma versão nova do
+   Editor de Impressão.", "Salve o seu trabalho e reinicie o programa para usar a versão nova.") vêm de 16/11 e não estão
+   escritos no Livro (o terceiro já disse; continua para a gerente confirmar se o Samuel as viu).</li>
+</ol>
+<hr />
+<h2>Item 1: a tabela contra o código (D-862)</h2>
+<p><strong>74 casinhas</strong> (9 passos; 7 a 9 linhas cada). <strong>Rodei 13 delas, mais 1 que falta na tabela</strong> (marcadas abaixo), e
+<strong>li as outras 61</strong> no código e, onde a tabela cita, no código do Velopack.</p>
+<table>
+<thead>
+<tr>
+<th>Casinha</th>
+<th>Executado?</th>
+<th>Bate com a tabela?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Procurar × sem internet (o pacote esperando, D-859)</td>
+<td>EXECUTADO, Velopack de verdade</td>
+<td>sim: o aviso e a pergunta ao fechar vieram, e o "Sim" pediu a troca</td>
+</tr>
+<tr>
+<td>Conferir × sem internet (a fonte que some; o GitHub sem rede)</td>
+<td>EXECUTADO (C5; <code>URLError</code> de verdade)</td>
+<td>sim: nada na tela, só o registro</td>
+</tr>
+<tr>
+<td>Conferir × a assinatura que não existe (pasta; o GitHub 404 de verdade)</td>
+<td>EXECUTADO</td>
+<td>sim: a frase (2), uma vez</td>
+</tr>
+<tr>
+<td>"Reiniciar agora" × o atualizador não abre (o <code>Update.exe</code> sumiu)</td>
+<td>EXECUTADO, Velopack de verdade</td>
+<td>a parte escrita sim (a janela reabre com a frase); a frase promete o que não acontece: <strong>M2</strong></td>
+</tr>
+<tr>
+<td>"Sim" ao fechar × outra janela aberta</td>
+<td>EXECUTADO, lista de processos de verdade</td>
+<td>a frase guardada sim; <strong>depois</strong> dela a troca pode acontecer: <strong>M1</strong></td>
+</tr>
+<tr>
+<td>Testar × passou (a marca de aprovada)</td>
+<td>EXECUTADO (C4, guarda morta)</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Testar × clique repetido</td>
+<td>EXECUTADO (C1)</td>
+<td>o efeito mudou com a D-863: <strong>M3</strong></td>
+</tr>
+<tr>
+<td>Guardar × desliga no meio da cópia</td>
+<td>EXECUTADO (morto à força)</td>
+<td>sim (sobra o <code>.chegando</code>, como a tabela diz: leve 4)</td>
+</tr>
+<tr>
+<td>Guardar × disco cheio</td>
+<td>EXECUTADO (C4, bytes livres de prova)</td>
+<td>sim: não copia, a anterior vale, nada se repete</td>
+</tr>
+<tr>
+<td>Guardar × primeira versão instalada</td>
+<td>EXECUTADO (G1-B)</td>
+<td>sim: não testa, nada é baixado (0 pedidos ao Velopack)</td>
+</tr>
+<tr>
+<td>Voltar × Windows nega, com janela</td>
+<td>lido (a prova de verdade é a do implementador, que reli)</td>
+<td>sim, se a janela da versão abrir: <strong>G1</strong></td>
+</tr>
+<tr>
+<td>Voltar × Windows nega, depois do "Sim" ao fechar</td>
+<td>EXECUTADO, <code>Update.exe</code> de verdade</td>
+<td><strong>não</strong>: o Velopack não reabre: <strong>M4</strong></td>
+</tr>
+<tr>
+<td>Voltar × sem última boa</td>
+<td>EXECUTADO (G1-B)</td>
+<td>sim, se a janela abrir: <strong>G1</strong></td>
+</tr>
+<tr>
+<td>Voltar × disco cheio (a marca que não grava)</td>
+<td>EXECUTADO (C3)</td>
+<td><strong>não</strong>: tenta de novo a cada abertura: <strong>M6</strong></td>
+</tr>
+<tr>
+<td>Voltar × a lista do Windows que não veio</td>
+<td>EXECUTADO (C2)</td>
+<td>casinha que falta; vira "sem volta" para sempre: <strong>M3</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>As frases, palavra por palavra (EXECUTADO: o texto que a tela recebe comparado com o Livro):</strong> as três da D-778, a da
+D-839, a da D-840, a da D-843, a da D-864, o molde da D-845 com os nove motivos da D-847, o título "Atualização" da D-846
+e os textos da D-835: <strong>todos iguais</strong>.</p>
+<p><strong>O que fica no disco (lido e, nos casos acima, olhado):</strong> o que a tabela diz, menos o G1 (a marca de "sem volta" sem a
+frase vista), o M1 (a frase guardada que fica velha) e o M6 (a marca que não fica).</p>
+<p><strong>As casinhas que faltam na tabela:</strong> a versão que falhou não consegue abrir a janela (G1); a frase guardada que deixa
+de ser verdade antes de ser vista (M1); a volta do caminho sem janela (M4); a volta que não pôde ser pedida por um
+motivo de um instante (M3); a marca que não grava (M6); e, no "Reiniciar agora", o <code>Update.exe</code> que some (M2: está na
+tabela só até a primeira frase).</p>
+<h2>Item 2: as perguntas do Fable</h2>
+<ul>
+<li><strong>O <code>estado.json</code> decide alguma coisa além de "reprovadas" e "frase"? Não</strong> (LIDO, o arquivo inteiro): é lido num
+  lugar só (<code>abrir</code> → <code>reprovadas_do_bilhete</code>, <code>frase_do_bilhete</code>) e escrito num lugar só (<code>mudar_o_bilhete</code>), que joga
+  fora qualquer outra chave. As reprovadas decidem "não baixar/oferecer de novo" (também o pacote esperando) e a frase (1)
+  derivada. Mas a frase guardada é mostrada sem ser conferida contra o disco (M1): o bilhete não decide nada novo, porém
+  o que ele diz passa para a tela sem a conferência que a emenda pede.</li>
+<li><strong>As marcas novas viraram um juiz novo? Sim, as duas decidem</strong> (se a versão é testada, e por isso se volta). A de
+  aprovada é a que o Samuel e o Fable pediram por nome (D-856: "marca no disco (<code>aprovada-&lt;versao&gt;</code>, ao lado da última
+  boa)"): é o juiz combinado, num lugar só (<code>_precisa_do_teste</code>), e funciona (C4). A de "sem volta" é escolha do
+  implementador para cumprir a D-863 (o Samuel decidiu o comportamento, não o arquivo); é arquivo novo que decide, o
+  sinal que o Fable pediu para olhar. Ela é lida num lugar só e escrita num lugar só (<code>marcar</code>), não é gambiarra de
+  desvio; mas é ela que causa o G1 (gravada antes de a frase ser vista), o M3 (gravada para todo motivo) e o M6 (quando
+  não grava, nada a substitui). <strong>Opinião:</strong> precisa de uma memória para a D-863, e o lugar é razoável; o problema é
+  quando ela é escrita e o que ela supõe que já aconteceu.</li>
+<li><strong>Sobrou caminho morto? Não.</strong> Procurei todo nome de função dos três arquivos que o programa não chama: nenhum. O
+  download da última boa (<code>_baixar_a_que_roda</code>, o índice publicado) e o teste por trás (<code>antes_da_janela</code>,
+  <code>_depois_da_licenca</code>, <code>_com_antes</code>) saíram; o nome <code>antes_da_janela</code> só aparece num nome de teste antigo. A mutação X25
+  (tirar o "sem o pacote em packages, não guarda") é equivalente: sem o pacote, a guarda dá erro na mesma linha seguinte
+  e devolve o motivo; não há caminho de download para onde ela pudesse ir.</li>
+<li><strong>O que cresceu (+5,6%) é necessário? Sim</strong>, tudo vem de uma decisão: as duas marcas (D-856, D-863), a conta única do
+  espaço (D-856), a assinatura que chega com outro nome (o leve 1 do terceiro), o pacote esperando (D-859), a frase do
+  "Sim" ao fechar (D-858/D-864), a separação "não existe / sem rede" (achado do implementador, que tira uma frase (2)
+  falsa sem internet). Não achei nada a mais. Falta, isso sim, o que não cresceu: a conferência da frase guardada (M1) e
+  do <code>Update.exe</code> (M2).</li>
+</ul>
+<h2>Item 3: o ReabrirOPrograma e o <code>Update.exe</code> que some</h2>
+<ul>
+<li><strong>Um lugar só na regra</strong> (LIDO): a troca do "Reiniciar agora" que não pôde ser pedida depois de a janela fechar, sem
+  outra janela aberta (não mudou desde o terceiro). A peça que reabre (<code>lancar_solto</code>, com o sinal de vida) eu só li.</li>
+<li><strong>O <code>Update.exe</code> que some entre o download e o clique: EXECUTADO</strong> (<code>prova_update_exe_some.py</code>, M2). A reabertura
+  acontece e a frase aparece; o problema é o que vem depois (a pergunta ao fechar não vem, e a atualização para de vez).</li>
+</ul>
+<h2>Item 4: uma peça só (§11.12)</h2>
+<ul>
+<li><strong>Só <code>core/conversa_com_o_velopack.py</code> importa <code>velopack</code></strong> no programa (EXECUTADO: busca no código; fora dele só
+  testes e as minhas provas). <code>test_trava_windows.py</code> passa (42 + 3 pulados).</li>
+<li><strong>Só <code>espaco_livre_basta</code> mede o disco no atualizador</strong> (o motor e a guarda a chamam; só ela chama <code>disk_usage</code>). A
+  outra conta do programa é de julho e não é do atualizador (leve 5).</li>
+<li><strong>A soma de um arquivo é uma conta só</strong> (<code>assinatura.soma_sha256</code>, também para copiar): o leve 5 do terceiro está
+  consertado.</li>
+<li><strong>A K03 continua a aprovada da D-837:</strong> <code>core/windows.py</code> e <code>regras_dos_agentes/</code> não mudaram desde o terceiro (que a
+  conferiu); <code>test_porteiro_licenca_que_acrescenta.py</code> passa (14).</li>
+</ul>
+<h2>Item 5: proteções desligadas (D-811, D-827)</h2>
+<p>EXECUTADO (<code>provas/mutacoes_qtq4.py</code>, saída em <code>mutacoes_qtq4-resultado.txt</code>): numa cópia do commit feita com
+<code>git archive</code> (o ramo nunca foi mexido), 30 proteções que eu escolhi, uma de cada vez, com os 10 arquivos de teste do
+atualizador, um por vez. Sem mutação, os 10 passam na cópia (no arquivo de resultado, a linha "SEM MUTACAO" diz
+"SOBREVIVEU": nenhum teste falhou).
+- <strong>Acusadas (27):</strong> as duas marcas (não olhadas, não postas, não gravadas pelo executor, a de aprovada depois da guarda),
+  a reabertura com <code>--voltando</code> (não lida; sem a marca; a que deu certo virando "não conseguiu voltar"; testando de novo),
+  a volta sem <code>--voltando</code>, a primeira versão do .msi testada, a frase (3) sem última boa, a separação "sem rede" (na
+  regra, no executor, na fonte de pasta), o "Sim" ao fechar (sem frase, com a frase da D-840, com o texto da D-864
+  trocado, com o pacote trocado), o pacote esperando (não oferecido; oferecido reprovado), o espaço da guarda, e as
+  quatro do M7 do terceiro (Q1, Q2, Q9, Q13: as quatro agora acusadas; a D-860 está cumprida).
+- <strong>Sobreviveram (2, M5):</strong> X11 (o 404 do GitHub) e X18 (a assinatura guardada do pacote esperando).
+- <strong>Equivalente (1):</strong> X25 (explicada no item 2).</p>
+<h2>Item 6: o que já funcionava ao redor (§11.8)</h2>
+<p>EXECUTADO, um arquivo por vez, no ramo, com a pasta temporária no D: (<code>provas/testes-um-por-vez-resultado.txt</code>): <strong>83
+arquivos</strong> (os do atualizador, da peça do Windows, do porteiro, do publicar e das conferências, e os <strong>64
+<code>tests/test_decisoes*.py</code></strong>): <strong>3921 casos passaram, 13 pulados, nenhum falhou</strong>; só os 64 das decisões, 929 passaram e
+5 pulados. Do atualizador:
+<code>test_atualizador_volta4</code> 20, <code>test_fases_da_atualizacao</code> 2387, <code>test_atualizador_d851</code> 3, <code>test_atualizador_novo</code> 34,
+<code>test_atualizador_volta2</code> 32, <code>test_atualizador_volta3</code> 36, <code>test_atualizador_volta3_de_verdade</code> 4 (+1 pulado),
+<code>test_decisoes_atualizacao</code> 42, <code>test_decisoes_ajudante_da_atualizacao</code> 22, <code>test_velopack_de_verdade</code> 3: todos passam.
+Os testes que saíram ou mudaram nesta volta estão na lista da D-836 ("Volta 4"); conferi que cada um que saiu tem o seu
+substituto citado (os três do <code>test_atualizador_d851</code> pelos <code>test_d857_*</code>; o do índice publicado, porque o programa não o
+lê mais). O conjunto inteiro fica com a rodada do GitHub (verde em <code>5dfcdc9d</code>).</p>
+<h2>Os achados do terceiro "quem tenta quebrar", conferidos na causa</h2>
+<table>
+<thead>
+<tr>
+<th>Achado</th>
+<th>A causa de antes</th>
+<th>Hoje</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G1 a volta recusada em laço</td>
+<td>o pedido da volta ia sem marca</td>
+<td><strong>resolvido na causa</strong> no caminho com janela: <code>--voltando</code> (X20, X21 acusadas; a prova de verdade do implementador). No caminho sem janela não há laço, mas há duas tentativas (M4). Se a marca não grava, volta uma volta por abertura (M6)</td>
+</tr>
+<tr>
+<td>M1 dois cliques</td>
+<td>duas aberturas testando juntas</td>
+<td>deixado para depois (D-861); o efeito mudou: agora fica na versão estragada para sempre (M3)</td>
+</tr>
+<tr>
+<td>M2 sem última boa, falha calada</td>
+<td>"sem última boa" tratado como "nada a fazer"</td>
+<td><strong>resolvido na causa</strong> (D-857: a frase (3), a reprovação, X24 acusada), <strong>se a janela abrir</strong> (G1)</td>
+</tr>
+<tr>
+<td>M3 "Sim" ao fechar calado</td>
+<td>a D-845 só no "Reiniciar agora"</td>
+<td><strong>resolvido na causa</strong> (D-858/D-864, X13-X15 acusadas); a frase pode ficar velha (M1)</td>
+</tr>
+<tr>
+<td>M4 teste e cópia a cada abertura</td>
+<td>nenhuma memória de "passou"</td>
+<td><strong>resolvido na causa</strong> (D-856, X1, X6, X8, X19 acusadas; C4 e a guarda morta executados)</td>
+</tr>
+<tr>
+<td>M5 a premissa da D-851</td>
+<td>o download da guarda</td>
+<td><strong>resolvido na causa</strong> (D-857: o download saiu inteiro; nenhum caminho morto; X25 equivalente)</td>
+</tr>
+<tr>
+<td>M6 o pacote esperando</td>
+<td>a regra recebia e não usava</td>
+<td><strong>resolvido na causa</strong> (D-859, executado com o Velopack de verdade; X16, X17 acusadas), menos uma proteção sem teste (X18, M5)</td>
+</tr>
+<tr>
+<td>M7 quatro proteções sem teste</td>
+<td>—</td>
+<td><strong>resolvido</strong> (D-860: Q1, Q2, Q9, Q13 acusadas)</td>
+</tr>
+<tr>
+<td>leve 1 a assinatura antes do pacote</td>
+<td>a assinatura gravada no nome final antes da hora</td>
+<td>consertado (a assinatura por último; o texto da tabela ficou velho: leve 3)</td>
+</tr>
+<tr>
+<td>leve 4 sobras</td>
+<td>o <code>pendente</code> sem uso; o motivo da outra janela sem uso</td>
+<td>consertado (os dois passaram a ser usados)</td>
+</tr>
+<tr>
+<td>leve 5 a soma em dois lugares</td>
+<td>duas contas</td>
+<td>consertado (uma conta só)</td>
+</tr>
+<tr>
+<td>leves 2, 3, 6</td>
+<td>—</td>
+<td>deixados para depois (D-866)</td>
+</tr>
+<tr>
+<td>leve 7 testes de tempo</td>
+<td>—</td>
+<td>não é do atualizador; nesta rodada não falhou</td>
+</tr>
+</tbody>
+</table>
+<h2>O que precisa da palavra do Samuel (para a gerente levar à Central, no jeito do §11.13)</h2>
+<ol>
+<li><strong>G1</strong> e <strong>M1, M2, M4, M5, M6</strong>: consertar antes da prova, ou "deixo para depois", um por um (D-842).</li>
+<li><strong>M3</strong>: a regra "depois da frase (3), não tentar voltar de novo" vale também quando a volta nem pôde ser pedida por
+   um motivo de um instante (a lista do Windows, dois cliques)? E a D-861 (dois cliques, para depois) continua para
+   depois sabendo que agora ele fica na versão estragada até a próxima atualização?</li>
+</ol>
+<h2>O que eu fiz fora das minhas pastas (para a gerente saber)</h2>
+<ul>
+<li><strong>Nada escrito em <code>C:\ProgramData\EditorImpressao</code>, em <code>%LOCALAPPDATA%\EditorImpressao</code> nem na instalação do Samuel.</strong>
+  Toda prova trocou as variáveis dentro do Python e conferiu o caminho com <code>assert</code> antes de rodar.</li>
+<li><strong>Sobrou fora do projeto (não apaguei):</strong> <code>%LOCALAPPDATA%\velopack\velopack_ProvaQ4.log</code> (7 KB, o registro do
+  <code>Update.exe</code> do meu programa de prova <code>ProvaQ4</code>). O <code>vpk</code> mexeu na pasta <code>%LOCALAPPDATA%\velopack\velopack</code> às 21:25
+  (a dele; não olhei dentro). O PyInstaller e o <code>vpk</code> podem ter deixado arquivos na pasta temporária da conta (<code>%TEMP%</code>;
+  procurei pelos nomes de costume e não achei nada das últimas duas horas).</li>
+<li><strong>Conferido só lendo:</strong> o <code>C:\ProgramData\EditorImpressao\atualizacao\atualizacao.log</code> foi gravado pela última vez às
+  16:38:49 (as 7 linhas do erro do terceiro), antes do começo do meu trabalho (20:44).</li>
+<li><strong>Uma pergunta de verdade ao GitHub do projeto</strong> (<code>releases/download/v0.0.1/...assinatura</code>, um arquivo que não existe),
+  para ver a resposta 404 de verdade. Nenhum dado pessoal; o projeto é público e o programa faz essa mesma pergunta.</li>
+<li>O clone do Velopack que li é o que já estava na pasta de rascunho desta sessão (<code>vp\src</code>, etiqueta <code>1.2.161</code>, commit
+  <code>92d6a1c</code>), só lido.</li>
+<li>Dentro do projeto, só criei <code>saida_teste\qtq4\</code> e esta pasta do relatório. A <code>saida_teste\qtq4\</code> foi apagada no fim,
+  depois de tirar antes as 5 junções que um teste do ramo cria na pasta temporária (todas apontavam para dentro dela).</li>
+</ul>
+<h2>O que só a prova à vista pode mostrar</h2>
+<ul>
+<li>Quantos segundos ficam sem nada na tela na abertura que testa e volta, no notebook (copiar 460 MB para <code>packages\</code>, a
+  soma duas vezes, o teste): é nesse tempo que o segundo clique do M3 acontece.</li>
+<li>A janelinha do Velopack nas duas tentativas do M4.</li>
+</ul>
+<h2>A minha opinião, com as ressalvas</h2>
+<p>Este relatório está <strong>PRONTO PARA CONFERIR</strong>. Não é aprovação: só o Samuel marca.</p>
+<p>A minha opinião: <strong>o atualizador NÃO ESTÁ PRONTO para a prova à vista.</strong> As três regras do Samuel encolheram a volta
+como o Fable queria: nenhum laço no caminho com janela, nenhum teste repetido, nenhum download de 460 MB, nenhum caminho
+morto, e as frases batem todas com o Livro. O que achei não são remendos nem peças duplicadas; são casos que a tabela não
+pensou, quase todos em volta de <strong>quando</strong> uma frase ou uma marca vale:</p>
+<ul>
+<li>o G1: a frase (3) depende de a janela abrir, e a marca de "sem volta" é gravada antes de a frase ser vista;</li>
+<li>o M1: a frase guardada é mostrada sem conferir se ainda é verdade;</li>
+<li>o M2: a frase "Tente ao fechar" é mostrada quando fechar não vai perguntar nada;</li>
+<li>o M3 e o M6: a marca de "sem volta" para todo motivo, e nada no lugar dela quando ela não grava;</li>
+<li>o M4: a marca <code>--voltando</code> no caminho em que o Velopack não reabre;</li>
+<li>o M5: duas proteções sem teste, uma delas a que guarda a assinatura do Samuel no caminho novo.</li>
+</ul>
+<p>O Fable previu "coisa pequena (frases, tempos)". Achei frases, sim, mas uma delas é a que falta justamente no pior
+momento (G1).</p>
+<p><strong>Ressalvas minhas:</strong></p>
+<ol>
+<li>O G1 rodou com o <code>main.py</code> de verdade e a janela quebrada de propósito (o import dela falha); não com uma versão de
+   verdade publicada estragada. Que o teste rápido reprova exatamente o que impede a janela de abrir é leitura do
+   <code>teste_rapido</code> (ele importa a janela).</li>
+<li>O M1 e o M3 rodaram com o pedido ao Velopack de mentira (só anotado); a troca de verdade está nas provas da volta 4.</li>
+<li>O "disco cheio" foi simulado (o número de bytes livres; e, no M6, o nome da marca ocupado).</li>
+<li>As provas com o <code>Update.exe</code> usaram <code>--silent</code> (sem a janelinha) e um programa de prova, não o nosso de 460 MB.</li>
+<li>Rodei as mutações e a rodada dos testes ao mesmo tempo no mesmo PC; nenhuma falha apareceu, mas os testes de tempo
+   (leve 7 do terceiro) poderiam ter falhado por isso.</li>
+<li>A cópia das mutações não tem o git do ramo; por isso o <code>test_trava_windows.py</code> ficou fora delas (nenhuma mutação minha
+   é da trava; ele passa no ramo).</li>
+</ol>
+<p class="rodape">Editor de Impressão &middot; gerado em 24/11/2026 às 21:46</p>
+</body>
+</html>
