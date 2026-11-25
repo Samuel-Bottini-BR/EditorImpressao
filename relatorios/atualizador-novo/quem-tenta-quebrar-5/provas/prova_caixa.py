@@ -19,7 +19,11 @@ De verdade: a caixa (pela peça), a regra, o executor, o disco, o fio por trás 
 caixa (Velopack e lista de processos, do `tests/ajudante_do_atualizador.py`), o teste rápido (MATAR, FECHAR_X, ESPERA:
 "não passou"), a janela do programa (FUNDO: uma lista que anota o que a janela receberia).
 O PROGRAMDATA e o LOCALAPPDATA trocados DENTRO do Python do filho e conferidos com assert antes de tudo.
-Uso: python prova_caixa.py
+NÃO RODAR MAIS (gerente, 25/11/2026): depois dos dois incidentes (14:17, a caixa na tela do Samuel; 14:27, a guarda
+que fechou programas dele) nenhuma prova com caixa ou janela de verdade roda de novo. A guarda e o fechar processo
+foram TIRADOS deste arquivo depois da rodada; o resultado da rodada de 14:25 (com a guarda) está em
+prova_caixa-resultado.txt.
+Uso (desligado): python prova_caixa.py
 """
 from __future__ import annotations
 
@@ -59,7 +63,6 @@ u32.GetDlgCtrlID.argtypes = [wintypes.HWND]
 u32.PostMessageW.argtypes = [wintypes.HWND, wintypes.UINT, wintypes.WPARAM, wintypes.LPARAM]
 k32.OpenProcess.restype = wintypes.HANDLE
 k32.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
-k32.TerminateProcess.argtypes = [wintypes.HANDLE, wintypes.UINT]
 k32.CloseHandle.argtypes = [wintypes.HANDLE]
 
 
@@ -111,12 +114,10 @@ def _vigia(area, acao: str, achadas: list, parar: threading.Event) -> None:
             if acao == "espera":
                 time.sleep(6)
             if acao == "matar":
-                dono = wintypes.DWORD()
-                u32.GetWindowThreadProcessId(hwnd, ctypes.byref(dono))
-                h = k32.OpenProcess(0x0001, False, dono.value)          # PROCESS_TERMINATE
-                achada["fez"] = f"matou o processo {dono.value}: {bool(h and k32.TerminateProcess(h, 9))}"
-                if h:
-                    k32.CloseHandle(h)
+                # (Tirado depois do segundo incidente de 25/11: aqui o processo era fechado pelo número lido da
+                # janela. Regra da gerente: quem testa não fecha processo que não criou. O resultado da rodada de
+                # 14:25 está em prova_caixa-resultado.txt.)
+                achada["fez"] = "nada (a ação de fechar o processo foi tirada desta prova)"
             elif acao == "fechar_x":
                 u32.PostMessageW(hwnd, 0x0010, 0, 0)                     # WM_CLOSE (o X)
                 achada["fez"] = "fechou pelo X (WM_CLOSE)"
@@ -238,63 +239,6 @@ u32.EnumWindows.argtypes = [ENUM, wintypes.LPARAM]
 u32.IsWindowVisible.argtypes = [wintypes.HWND]
 
 
-def _familia(pid: int) -> set[int]:
-    """O processo `pid` e todos os que ele abriu (o python.exe da .venv abre o Python de verdade num filho)."""
-    snap = k32.CreateToolhelp32Snapshot(0x2, 0)
-    pais: dict[int, int] = {}
-    e = _PROCESSENTRY32W()
-    e.dwSize = ctypes.sizeof(e)
-    ok = k32.Process32FirstW(snap, ctypes.byref(e))
-    while ok:
-        pais[e.th32ProcessID] = e.th32ParentProcessID
-        ok = k32.Process32NextW(snap, ctypes.byref(e))
-    k32.CloseHandle(snap)
-    fam, mudou = {pid}, True
-    while mudou:
-        mudou = False
-        for filho_, pai in pais.items():
-            if pai in fam and filho_ not in fam:
-                fam.add(filho_)
-                mudou = True
-    return fam
-
-
-def _matar(pids: set[int]) -> None:
-    for pid in pids:
-        h = k32.OpenProcess(0x0001, False, pid)
-        if h:
-            k32.TerminateProcess(h, 99)
-            k32.CloseHandle(h)
-
-
-def _guarda_da_tela(pid: int, achou: list, parar: threading.Event) -> None:
-    """Na área de trabalho NORMAL (a tela do Samuel; este fio nunca muda de área): a cada 50 ms, toda janela de cima
-    dos processos da prova. Se aparecer UMA visível, mata a família inteira na hora e anota."""
-    anotou_invisivel = False
-    while not parar.is_set():
-        fam = _familia(pid)
-        janelas: list = []
-
-        def cada(hwnd, _):
-            dono = wintypes.DWORD()
-            u32.GetWindowThreadProcessId(hwnd, ctypes.byref(dono))
-            if dono.value in fam:
-                janelas.append((hwnd, bool(u32.IsWindowVisible(hwnd)), _texto(hwnd, u32.GetClassNameW),
-                                _texto(hwnd, u32.GetWindowTextW)))
-            return True
-
-        u32.EnumWindows(ENUM(cada), 0)
-        visiveis = [j for j in janelas if j[1]]
-        if visiveis:
-            _matar(fam)
-            achou.append({"JANELA NA TELA DO SAMUEL": [(c, t) for _, _, c, t in visiveis], "quando": time.time()})
-            return
-        if janelas and not anotou_invisivel:
-            achou.append({"invisível na área normal (só anotado)": [(c, t) for _, _, c, t in janelas]})
-            anotou_invisivel = True
-        time.sleep(0.05)
-
-
 def rodar(caso: str, acao: str, pasta: Path, area) -> dict:
     """Abre o "programa" já DENTRO da área separada (CreateProcessW com lpDesktop: vale para todos os fios dele e para
     os processos que ele abrir), com a guarda da tela normal e a vigia da área separada rodando."""
@@ -310,17 +254,12 @@ def rodar(caso: str, acao: str, pasta: Path, area) -> dict:
     assert ok, ctypes.get_last_error()
     achadas, guarda = [], []
     parar = threading.Event()
-    g = threading.Thread(target=_guarda_da_tela, args=(pi.dwProcessId, guarda, parar), daemon=True)
     v = threading.Thread(target=_vigia, args=(area, acao, achadas, parar), daemon=True)
-    g.start()
     v.start()
     k32.WaitForSingleObject(pi.hProcess, 90000)
     codigo = wintypes.DWORD()
     k32.GetExitCodeProcess(pi.hProcess, ctypes.byref(codigo))
-    if codigo.value == 259:                                   # STILL_ACTIVE: passou de 90 s
-        _matar(_familia(pi.dwProcessId))
     parar.set()
-    g.join(5)
     v.join(10)
     k32.CloseHandle(pi.hProcess)
     k32.CloseHandle(pi.hThread)
@@ -334,6 +273,8 @@ def rodar(caso: str, acao: str, pasta: Path, area) -> dict:
 
 
 def main(so: str = "") -> None:
+    raise SystemExit("Não rodar mais (gerente, 25/11/2026, depois dos dois incidentes): nenhuma prova com caixa ou "
+                     "janela de verdade, nem numa área separada. O resultado que vale é prova_caixa-resultado.txt.")
     if BASE.exists() and not so:
         shutil.rmtree(BASE)
     area = u32.CreateDesktopW(NOME_DA_AREA, None, None, 0, GENERIC_ALL, None)

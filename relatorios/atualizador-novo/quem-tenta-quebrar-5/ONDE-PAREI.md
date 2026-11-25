@@ -55,3 +55,13 @@ continuam (D-778 (2), D-839, D-845/D-847/D-858/D-864, D-846, D-854, D-856, D-857
 - Conserto para a próxima vez (não rodei): a família só pelo Job Object do Windows (o processo da prova nasce dentro de
   um grupo que fecha junto, como a peça `abrir_em_grupo` já faz), nunca pela lista de pais; e a guarda só fecha
   processos do grupo.
+
+## Depois do segundo incidente (ordens da gerente, 25/11)
+- O Samuel confirmou: o app do Claude também fechou às 14:27.
+- A ordem de "fechar tudo na hora" se aparecesse janela veio do pedido da gerente (depois do primeiro incidente); o
+  jeito de achar "os processos da prova" (a lista de quem abriu quem) foi meu, e foi ele que errou.
+- Regras daqui em diante: a guarda apagada (`rodar_escondido.py` apagado; a guarda e o fechar processo tirados do
+  `prova_caixa.py`, que agora se recusa a rodar); nenhuma prova com caixa ou janela de verdade; o que falta roda só com
+  a caixa de mentira; processo só se termina pelo identificador do próprio `Popen` ou por um grupo criado na hora.
+- Regra para os próximos: quem testa não fecha processo que não criou.
+- Rodando: as mutações numa cópia nova (`saida_teste\qtq5\mut`, `git archive 0d9cac4e`), sem guarda.
