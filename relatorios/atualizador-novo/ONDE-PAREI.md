@@ -1,3 +1,110 @@
+# Volta 5 — a volta automática sai da primeira entrega (25/11/2026)
+
+Implementador novo (D-815: as voltas 3 e 4 foram de outro agente). Pedido da gerente de 25/11, depois de o Samuel ler
+com o Fable o relatório do quarto "quem tenta quebrar" e decidir a opção A. Ramo `atualizador-novo-2026-11-23`, a
+partir de `aba7b844`. Não abri agente. Nenhuma janela na tela do Samuel: as provas com caixa de verdade rodam numa área
+de trabalho separada (ver "As provas de verdade"). Nada escrito em `C:\ProgramData\EditorImpressao`, em
+`%LOCALAPPDATA%\EditorImpressao` nem na instalação do Samuel.
+
+**Situação: ver o fim desta seção ("Onde estou").**
+
+## Decisões que esta tarefa precisa cumprir (§11.3)
+
+Palavras do Samuel (chat de 25/11/2026): "Li com o Fable o relatório do quem-tenta-quebrar 4. Decidi a **opção A: a
+volta automática sai da primeira entrega.**" Por voz, ao Fable: "é melhor a opção A; os aplicativos geralmente usam
+isso; a resposta fica para o Windows dar e não para o aplicativo".
+
+| Decisão | Palavras dele |
+|---|---|
+| D-867 | "1. Tirar a volta automática: a marca "sem volta", o "uma vez só", a segunda tentativa, o `--voltando`, a fase de volta. A tabela perde a linha "Voltar"." |
+| D-868 | "2. O teste rápido fica. Se reprovar: versão vai para "reprovadas" e a frase aparece **pela caixa do Windows, pela peça (`MessageBoxW`)**, nunca pela janela do programa: "A versão nova não funcionou. Não desinstale nada. Avise o Samuel." Depois o programa tenta abrir assim mesmo. Toda frase que pode aparecer antes da janela existir usa esse caminho." |
+| D-869 | "3. A última boa continua sendo guardada (de `packages\`, sem internet), mas nada automático depende dela — é para a volta manual." |
+| D-870 | "4. Consertar M1 (frase "outra janela" depois da troca certa), M2 (`Update.exe` que some: frase própria, sem "tente ao fechar", e oferecer de novo quando voltar) e M5 (os dois testes)." |
+| D-871 | "5. Os testes da volta automática saem com ela. A D-718 fica no Livro como "adiada para depois da entrega", com a prova de que o programa **avisa** quando a versão nova falha." |
+
+As que continuam e não podem mudar (§11.8), copiadas do Livro:
+- **D-778, frase (2):** "Chegou uma versão nova, mas ela não foi instalada porque não tem a assinatura do Samuel. O
+  programa continua funcionando. Avise o Samuel." (as (1) e (3) saem desta entrega: D-867, D-868).
+- **D-839:** "A atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel."
+- **D-845, D-858, D-864:** "Não deu para atualizar agora: [motivo]. Tente ao fechar o programa.", com os nove motivos da
+  D-847, o título "Atualização" (D-846), a mesma frase no "Sim" ao fechar (D-858) e o motivo "havia outra janela do
+  programa aberta" (D-864).
+- **D-854:** a cópia da última boa é uma cópia de verdade, ao lado do pacote do Velopack.
+- **D-856:** "Versão aprovada no teste rápido ganha uma marca no disco e **não é testada de novo**. [...] conferir espaço
+  antes de copiar, pela mesma função do motor." (a marca `aprovada-<versão>`; o espaço por `espaco_livre_basta`).
+- **D-857:** "A primeira versão instalada não tem volta automática. Sem baixar 460 MB na primeira abertura." A "frase
+  (3)" dela passa a ser a frase da D-868.
+- **D-859:** "a regra usa o 'pacote esperando'."
+- **D-840 / D-841:** "Feche a outra janela do programa e clique de novo." e o aviso de novo depois dela.
+- **D-848 / D-849:** a frase 2 no "Reiniciar agora" com o pacote sem a assinatura; o atualizador de outra conta que não
+  se consegue conferir: o programa abre normalmente.
+- O bilhete só com `CHAVES_DO_BILHETE = ("reprovadas", "frase")`, escrito só por `mudar_o_bilhete`;
+  `core/conversa_com_o_velopack.py` o único que importa `velopack`; a K03 (`dar_licenca_aos_usuarios`) sem mudança.
+- **Para depois, não mexidas:** D-850, D-861, D-865, D-866.
+
+Do Livro, sobre o que esta volta toca (lido de D-700 em diante): D-718 (volta sozinha: adiada, D-871), D-719 (a frase
+da volta: adiada com a D-718), D-724 (só pacote assinado), D-732 (procurar só ao abrir), D-769/D-794/D-831 ("Sim" ao
+fechar: nada abre na tela depois), D-806/D-834 (a pergunta do Windows antes da janela), D-833/D-843 (o motor), D-836
+(a lista dos testes antigos), D-844 (a guarda da última boa; a volta com ela, adiada), D-851 (copiar de `packages`, sem
+internet), D-852 (a assinatura guardada é dado).
+
+## O que já está escolhido e testado aqui (§11.8)
+
+Os arquivos que vou tocar: `atualizacao.py`, `core/fases_da_atualizacao.py`, `core/conversa_com_o_velopack.py`,
+`core/windows.py` (só uma função nova: a caixa), o comentário do `main.py`, e os testes do atualizador.
+- **Escolhido pelo Samuel e que fica igual:** todas as frases de cima, palavra por palavra; a assinatura antes de
+  baixar (D-724); a procura só ao abrir (D-732); "Reiniciar agora" confere por trás antes de fechar e, com outra janela,
+  a frase da D-840 e o aviso de novo (D-841); "Depois" leva à pergunta ao fechar (D-831, D-835); o "Sim" ao fechar não
+  abre nada na tela (D-769); o motor (D-833, D-843); a marca de aprovada e o espaço (D-856); a primeira versão do .msi
+  não é testada nem baixa nada (D-857); o pacote esperando sem internet (D-859); a guarda da última boa (D-844, D-851,
+  D-852, D-854); a pergunta do Windows antes da janela (D-806, D-834); o atualizador de outra conta (D-849).
+- **Testes que já existem e cobram isso** (todos passam em `aba7b844`, um arquivo por vez, rodados por mim antes de
+  mexer): `test_fases_da_atualizacao.py` (a regra inteira, 2387), `test_atualizador_novo.py`, `test_atualizador_volta2.py`,
+  `test_atualizador_volta3.py`, `test_atualizador_volta3_de_verdade.py`, `test_atualizador_volta4.py`,
+  `test_atualizador_d851.py`, `test_decisoes_atualizacao.py`, `test_decisoes_ajudante_da_atualizacao.py`,
+  `test_velopack_de_verdade.py`, `test_windows_peca.py`, `test_windows_preparo_do_computador.py`,
+  `test_trava_windows.py`, `test_porteiro_licenca_que_acrescenta.py` e os 64 `tests/test_decisoes*.py`.
+- **O que muda por decisão dele nesta volta (e só isso):** sai a volta (D-867) e os testes dela (D-871, pela lista da
+  D-836); a frase de antes da janela vai pela caixa do Windows (D-868); a frase guardada que deixou de ser verdade não
+  aparece (M1); o `Update.exe` que some tem frase própria (M2); dois testes novos (M5). Cada teste antigo que muda vai
+  na lista da D-836 com o porquê; nenhum muda só para passar.
+
+## Como fica para quem usa e no livro (§11.9)
+
+**Uma versão nova que não passa no teste rápido** (o caso que importa):
+- Antes (volta 4): o Kaique abria o programa, ficava uns segundos sem nada na tela (o teste), a janelinha do atualizador
+  aparecia e o programa voltava sozinho para a versão anterior, com "A atualização não deu certo. O programa voltou para
+  a versão anterior e continua funcionando. Avise o Samuel." na janela do programa. Se não desse para voltar, a frase
+  (3) esperava a janela do programa, e quando a janela da versão estragada não abria, ele via só "Aconteceu um problema
+  inesperado" (o G1).
+- Depois: ele abre o programa; uns segundos sem nada (o teste); aparece uma **caixa do próprio Windows**, título
+  "Atualização", com "A versão nova não funcionou. Não desinstale nada. Avise o Samuel." e o botão OK. Ele clica OK; o
+  programa tenta abrir na versão nova (a que falhou). Se ela abrir, ele trabalha nela; se não abrir, ele vê a caixa de
+  sempre do programa ("Um momento") e o programa fecha. Nas aberturas seguintes: nenhum teste, nenhuma caixa (ele já
+  viu), o programa tenta abrir. Nada volta sozinho: o Samuel resolve (publica a correção, que é oferecida como qualquer
+  versão nova se o programa abrir, ou reinstala à mão; a última boa continua guardada para ele).
+- Se ele tinha fechado com "Sim" (a versão nova é testada sem janela, D-769): nada aparece na hora; na próxima vez que
+  ele abrir, a mesma caixa do Windows, antes de tudo.
+
+**Duas janelas e o "Sim" ao fechar (M1):** antes, depois de a segunda janela trocar de verdade, a abertura seguinte (já
+na versão nova) dizia "Não deu para atualizar agora: havia outra janela do programa aberta. Tente ao fechar o
+programa." Depois: essa frase só aparece se a versão que roda ainda é a de antes.
+
+**O atualizador do Windows que some (M2):** antes, "Reiniciar agora" fechava a janela, reabria com "...o atualizador do
+programa não começou. Tente ao fechar o programa." e fechar não perguntava nada. Depois: ao clicar "Reiniciar agora",
+a janela não fecha e aparece a frase própria (a minha primeira sugestão, até o Samuel escolher; ver "Perguntas para o
+Samuel"). Fechar não pergunta nada (não há como trocar). Quando o atualizador voltar, a abertura seguinte mostra o
+aviso da versão nova de novo.
+
+**Toda frase da atualização que aparece antes da janela do programa existir** (a da troca que o Windows não deixou, a
+guardada do "Sim" ao fechar, a da versão reprovada, e a 2 e a do motor quando chegam antes de a janela abrir) passa a
+aparecer na caixa do Windows, com o mesmo título "Atualização" e as mesmas palavras; depois do OK, o programa abre.
+As que respondem a um clique ("Reiniciar agora") continuam na janela do programa, como hoje.
+
+**No livro (PDF):** nada muda. A atualização não toca no processamento nem no PDF.
+
+**Onde estou:** seções de cima escritas; a tabela das falhas da volta 5 vem no próximo commit, antes de qualquer código.
+
 # Volta 4 — o código (24/11/2026)
 
 Implementador (a minha segunda volta, a última pela D-815). "Pode" da gerente depois das respostas do Samuel (D-863 a
