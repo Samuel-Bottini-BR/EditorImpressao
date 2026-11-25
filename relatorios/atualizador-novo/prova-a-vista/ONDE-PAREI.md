@@ -5,7 +5,9 @@ clica "Sim" nas perguntas do Windows). **Só preparar:** montar as versões, esc
 tela dele. Não começar a prova. Ramo `atualizador-novo-2026-11-23`, a partir de `8e09e193`. Não abri outro agente.
 O código do programa não muda (nenhuma linha fora de `relatorios/atualizador-novo/prova-a-vista/`).
 
-**Situação: em andamento.** Ver "Onde estou", no fim.
+**Situação: PREPARADO.** As 7 versões e o motor estão montados e publicados numa pasta; o roteiro está pronto; os
+scripts da gerente foram ensaiados (A, B, C e D passaram). Falta a resposta do Samuel à pergunta 1 (o passo 6), e a
+prova. Ver "Onde estou", no fim.
 
 ## Decisões que a prova precisa mostrar (§11.3, copiadas do Livro)
 
@@ -50,6 +52,77 @@ O código do programa não muda (nenhuma linha fora de `relatorios/atualizador-n
   Windows quando a gerente pedir. Os projetos dele não são tocados pela preparação (conferido a cada versão montada);
   o programa instalado usa a mesma pasta de dados (`%LOCALAPPDATA%\EditorImpressao`) que o atalho dele, como sempre.
 - No livro (PDF): nada muda.
+
+## As versões montadas (rodado antes)
+
+Todas do commit `8e09e193` (a ficha de cada pacote diz o commit e "arquivos mudados sem commit": 1, o número; 2 na
+1.9.3), pelo publicar de verdade (`--pasta`), nunca no GitHub (conferido antes, só lendo: o GitHub do projeto não tem
+nenhuma publicação nem etiqueta, então os números 1.9.x não chocam com nada). Registros em
+`C:\EditorImpressaoProva\prova-a-vista-25-11\registros\`. A cópia de montagem voltou ao commit depois de cada uma
+(`git status` limpo, conferido pelo script). A pasta dos projetos do Samuel ficou igual antes e depois de cada publicar
+(conferido pelo script) e no fim da preparação (`projetos_antes_e_depois.py comparar ensaio1 fim-da-preparacao`: nada
+mudou).
+
+| Versão | Para quê | O que tem de diferente | Tempo |
+|---|---|---|---|
+| motor-kraken-1 | o motor que toda versão exige no destino | — | 9 min |
+| 1.9.0 | a instalada pelo .msi (passo 1) | com o .msi (787 MB) | 15 min |
+| 1.9.1 | "Reiniciar agora" (passo 2) | — | 6 min |
+| 1.9.2 | "Depois", "Não", "Sim" (passo 3) | — | 6 min |
+| 1.9.3 | a que não funciona (passo 4) | montada sem `ui	ela_final.py`: a janela não abre, o teste rápido acusa | 5 min |
+| 1.9.4 | a correção (passo 4) | — | 5 min |
+| 1.9.5 | assinatura falsa (passo 5) | assinatura trocada por uma de outra chave (a verdadeira em `assinatura-verdadeira-1.9.5\`); a conferência do programa diz "a assinatura não confere com a chave do Samuel" | 5 min |
+| 1.9.6 | motor, "sem resposta", atualizador de lado, arquivo preso, clique no meio (passos 6 a 10) | — | 6 min |
+
+Estado de começo da prova (deixado assim): `servida` só com a 1.9.0; `estoque` com a 1.9.1 a 1.9.6; a `fonte`
+oferece só a 1.9.0 ("conferido: tudo certo").
+
+## O ensaio D (rodado antes): a biblioteca do Velopack de verdade lendo a fonte de verdade
+
+Instalação de ensaio (só o manifesto 1.9.0 e um `Update.exe` de dois bytes; a troca nunca é pedida), o ProgramData
+trocado dentro do Python. Registro: `C:\EditorImpressaoProva\prova-a-vista-25-11\registros\ensaio-D.txt`. Tudo conferiu:
+- só a 1.9.0 servida: nada mais novo;
+- com a 1.9.1 servida: o Velopack acha a 1.9.1; a assinatura confere (a função do programa); o Velopack **baixa** a
+  1.9.1 da fonte em 1,1 s (tamanho e soma conferidos por ele); e diz "a 1.9.1 espera a troca";
+- `conferir_instalacao.py --somar` numa última boa de ensaio com a 1.9.1: "confere com a assinatura do Samuel: SIM";
+- com a 1.9.5 servida: o Velopack acha a 1.9.5; a assinatura é **recusada**; o `--somar` com ela diz "NÃO";
+- `sem-resposta`: procurar dá erro ("O sistema não pode encontrar o arquivo especificado"), como sem internet;
+- no fim, a `servida` voltou a ter só a 1.9.0.
+
+## O que criei fora da pasta do projeto
+
+| O quê | Tamanho | Observação |
+|---|---|---|
+| `C:\EditorImpressaoProva\prova-a-vista-25-11\` (estoque, servida, fonte, registros, a assinatura verdadeira da 1.9.5, `ensaio\fonte-de-teste\`) | 4,1 GB | a `fonte` são ligações do disco para os arquivos da `servida` (não ocupa espaço a mais). O C: ficou com 49 GB livres |
+| `%LOCALAPPDATA%\EditorImpressao-publicar
+ascunho\publicar-*` | 0 | cada publicar apagou o seu e conferiu ("rascunho do disco de dentro: apagado (conferido)") |
+
+Nada em `C:\ProgramData\EditorImpressao`, em `%LOCALAPPDATA%\EditorImpressao` (só lido), em `%LOCALAPPDATA%elopack`
+nem em `C:\Program Files` (conferido: nenhuma dessas pastas existe, menos a dos projetos, igual antes e depois).
+
+**Uma ressalva sobre apagar (regra de 29/09):** os ensaios A, B, C e D apagaram, no fim de cada um, a subpasta de
+ensaio que eles mesmos tinham criado segundos antes (`...\ensaio\A`, `B`, `C`, `D` e `D-ProgramData`: arquivos de
+mentira, uma cópia do `ping.exe` e, no D, uma cópia do pacote 1.9.1 baixada pelo Velopack). Estão fora da pasta do
+projeto. A regra diz "fora da pasta do projeto, nunca apague nada": eu devia ter deixado e listado. Não apaguei nada que
+não tivesse sido criado por esses scripts; o `ensaio\fonte-de-teste\` ficou.
+
+Dentro do projeto: a cópia de montagem `D:\programas\EditorImpressao\.claude\worktrees\prova-a-vista-montagem\`
+(2,7 GB, destacada em `8e09e193`, com uma CÓPIA de `modelos\`, sem junção; `build\` e `dist\` da montagem). Fica até a
+gerente decidir (`git worktree remove --force` a tira, sem junção dentro).
+
+## Como cumpri cada pedido
+
+| Pedido | Como |
+|---|---|
+| números que não chocam com o GitHub | `gh release list` e as etiquetas: nada publicado; usei 1.9.0 a 1.9.6 (longe da 1.1.0 do `versao.py` e da 1.1.x das provas antigas) |
+| tudo numa pasta, nunca no GitHub | `publicar_versao_kaique.py --pasta`; o programa lê pela `fonte` (ver "Perguntas" sobre a janela das versões) |
+| o .msi da primeira e as versões dos passos 2, 3, 4 (a que falha e a corrigida) e 5 | a tabela "As versões montadas" |
+| a chave e o disco | a chave confere com a do programa; o C: nunca abaixo de 20 GB (o script e o publicar conferem; ficou com 49 GB) |
+| o fonte-de-teste.txt: o que tem, onde, quem cria e como | roteiro, passo 0, e `criar_fonte_de_teste.ps1` (ensaiado sem licença; o dono certo só na prova) |
+| os comandos da gerente, rodados antes quando dá | roteiro; "O que rodei antes e o que só roda na prova" |
+| o que fica no PC e como limpar | roteiro, "O que fica no seu PC depois da prova" |
+| a volta à mão, e provar na prova | roteiro, passo 4 (lida no código do Velopack; o mesmo `apply --package` de uma versão mais velha funcionou no experimento de 23/11) |
+| nenhuma janela na tela do Samuel, nada fechado à força, nada instalado | nenhum programa com janela foi aberto; os processos que os ensaios abriram eram deles e saíram sozinhos; nada instalado |
 
 ## A lista das falhas desta preparação (§11.12 ponto 3)
 
@@ -153,3 +226,7 @@ só com a pasta. **Situação:** achado na preparação; nada mudou no programa;
 - 17:47 começou a montagem das versões (`montar_as_versoes.py`, por trás).
 - 17:53 o ensaio dos scripts A, B e C passou (`ensaio_dos_scripts.py`; registro em
   `C:\EditorImpressaoProva\prova-a-vista-25-11\registros\ensaio-ABC.txt`).
+- 18:45 as 7 versões e o motor prontos (`montar.txt`: "FIM", saída 0).
+- 18:50 `liberar 1.9.0` (o estado de começo da prova) e o ensaio D passou.
+- O roteiro gravado nos três formatos (`roteiro.md`, `.html`, `.pdf`).
+- **Falta:** a resposta do Samuel à pergunta 1 e a prova (da gerente).
