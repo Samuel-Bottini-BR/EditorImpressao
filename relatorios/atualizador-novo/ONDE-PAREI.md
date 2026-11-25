@@ -270,7 +270,78 @@ volta, e eu não fiz: está em "Perguntas para a gerente".
 | M5 duas proteções sem teste (X11, X18) | Conferir × 404; Procurar × sem internet com pacote esperando | **dois testes**, cada um falhando com a proteção desligada |
 | M6 a marca de "sem volta" que não grava | (era Voltar) | **saiu com a volta** |
 
-**Onde estou:** seções de cima e a tabela das falhas escritas, antes de qualquer código. Próximo: a leitura da caixa do Windows e o código.
+## A leitura antes de usar a peça de fora: a caixa do Windows (`MessageBoxW`) (§11.12, item 6)
+
+Lido em 25/11/2026 na documentação da Microsoft (as frases entre aspas são de lá, traduzidas por mim):
+- [MessageBoxW](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-messageboxw)
+- [About Dialog Boxes](https://learn.microsoft.com/en-us/windows/win32/dlgbox/about-dialog-boxes) (seções "Message
+  Boxes", "Modal Dialog Boxes", "Dialog Box Owner Window")
+- [Interactive Services](https://learn.microsoft.com/en-us/windows/win32/services/interactive-services) e
+  [USEROBJECTFLAGS](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-userobjectflags)
+- [SetForegroundWindow](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setforegroundwindow)
+  (o que o `MB_SETFOREGROUND` chama por dentro)
+
+| Caso que usamos | O que a peça de fora faz | Fonte | O que o nosso código faz |
+|---|---|---|---|
+| deu certo | devolve o número do botão clicado; com só o OK (`MB_OK`, 0x0), devolve `IDOK` (1). "Se há um botão OK e a pessoa aperta ESC, a volta é IDOK" | MessageBoxW, "Return value" | só `IDOK` conta como "a pessoa viu" (`DEU_CERTO`); então a frase é marcada vista |
+| falhou | "Se a função falha, a volta é zero. Para o erro, chame GetLastError" | MessageBoxW, "Return value" | zero vira `FALHOU` com o número do erro (lido por `_ler_erro`, `use_last_error=True`, como toda a peça); a frase NÃO conta como vista e fica guardada para a próxima abertura |
+| sem janela dona (`hWnd` nulo) | "a caixa não tem janela dona"; com `MB_APPLMODAL` (o padrão) e sem dona, nada é desativado ("quando uma caixa modal não tem dona, o sistema não desativa nenhuma outra janela do programa") | MessageBoxW, "hWnd"; About Dialog Boxes, "Owner Window" | sempre sem dona: a caixa só aparece quando a janela do programa ainda não existe |
+| aparece em cima? | `MB_TOPMOST` (0x40000): "criada com o estilo WS_EX_TOPMOST" (fica acima das janelas que não são "sempre em cima"); `MB_SETFOREGROUND` (0x10000): "o sistema chama SetForegroundWindow para a caixa"; mas "o sistema restringe quais processos podem tomar a frente" e, se não pode, "o Windows pisca o botão na barra de tarefas" | MessageBoxW, "uType"; SetForegroundWindow, "Remarks" | usamos `MB_OK | MB_ICONINFORMATION | MB_SETFOREGROUND | MB_TOPMOST`. O programa aberto pelo clique no atalho é "o processo que recebeu a última entrada" ou foi "aberto pelo processo da frente", então costuma poder tomar a frente; se não puder, a caixa fica em cima (TOPMOST) e o botão pisca. Ícone "i", o mesmo das caixas da janela (`QMessageBox.Information`) |
+| trava a linha? | "Uma caixa de mensagem é uma caixa de diálogo modal"; "o sistema não devolve o controle da função que cria a caixa até [ela ser fechada]"; para isso "o sistema começa o próprio laço de mensagens" | About Dialog Boxes, "Message Boxes" e "Modal Dialog Boxes" | trava só a linha que chama, até o OK. Na abertura (antes do Qt existir) é o que a D-868 pede: a caixa, o OK, e então o programa tenta abrir. Se a frase vem pela linha de trás (a procura que termina antes de a janela abrir), só essa linha espera; a janela abre normalmente e a caixa fica em cima dela |
+| sessão sem área de trabalho à vista | os serviços e os processos sem área de trabalho interativa usam uma "estação de janelas não interativa" e "não podem interagir com a pessoa"; o jeito de saber é "GetProcessWindowStation [...] e GetUserObjectInformation para ver se a estação tem o atributo WSF_VISIBLE" ("a estação tem superfícies de tela visíveis") | Interactive Services; USEROBJECTFLAGS | **antes de chamar a caixa**, a peça confere a estação do processo (`GetProcessWindowStation` + `GetUserObjectInformationW(UOI_FLAGS)`): sem `WSF_VISIBLE`, NÃO chama (uma caixa ali ninguém vê, e a abertura ficaria esperando um OK que nunca vem); devolve `FALHOU` ("nenhuma área de trabalho à vista"), e a frase fica guardada. Se nem der para ler a estação, também não chama (`FALHOU`) |
+| o `MB_SERVICE_NOTIFICATION` | mostra na área de trabalho ativa "mesmo sem ninguém logado", e "pode pôr conteúdo numa tela bloqueada" | MessageBoxW, "uType" | NÃO usamos: o programa do Kaique não é serviço; a caixa é da sessão dele |
+| a tela está bloqueada, ou a pessoa está noutra área de trabalho | a caixa é criada na área de trabalho da linha que chama; o `MB_DEFAULT_DESKTOP_ONLY` faz esperar "até a pessoa voltar à área de trabalho padrão" (não usamos) | MessageBoxW, "uType" | a caixa espera na área de trabalho do Kaique até ele voltar e clicar OK (é a área de trabalho dele: nada se perde) |
+| o texto | "se o texto tem mais de uma linha, separe com CR e/ou LF"; título nulo vira "Error" | MessageBoxW, "lpText", "lpCaption" | sempre título "Atualização" (D-846) e a frase numa linha; a função é a versão Unicode (`W`), com acento |
+
+**Onde mora:** `core/windows.py`, `mostrar_caixa_do_windows(titulo, texto) -> Resposta` (com `area_de_trabalho_a_vista()`,
+a conferência da estação). Ninguém mais chama `MessageBoxW` (a busca no fim desta seção prova). O executor da
+atualização a chama por um lugar só, `Atualizacao._para_a_tela`.
+
+**As frases do atualizador que podem aparecer antes de a janela do programa existir** (todas passam por esse lugar):
+1. a da versão reprovada no teste rápido (D-868), na abertura que testou;
+2. a da troca que o Windows não deixou (D-839), na versão de antes reaberta pelo Velopack;
+3. a frase guardada no bilhete, na abertura seguinte: a da D-845 com qualquer dos motivos (o "Sim" ao fechar que não
+   trocou, D-858/D-864; o programa reaberto depois do "Reiniciar agora" que não pôde pedir a troca); a (2) do "Sim" ao
+   fechar com o pacote trocado (D-848); a da D-839 e a da D-868 guardadas pela reabertura sem janela do "Sim" ao
+   fechar; a frase própria do `Update.exe` que sumiu (M2);
+4. a (2) da assinatura recusada e a do motor (D-843), quando a procura e o download (por trás) terminam antes de a
+   janela abrir (uma corrida: depende de quanto a janela demora).
+Nunca antes da janela: as respostas a um clique ("Reiniciar agora": D-840, D-845, a 2, a frase própria do M2), que
+continuam na caixa da janela.
+
+## Perguntas para o Samuel (§11.13; a gerente leva à Central)
+
+**1. A frase de quando o atualizador do programa some do computador.**
+
+Do que se trata: é a caixa "Atualização" que aparece quando o Kaique clica **"Reiniciar agora"** no aviso da versão
+nova (ou responde **"Sim"** ao fechar o programa) e o programa que faz a troca de versão (um arquivo do próprio
+programa, que um antivírus às vezes põe de lado) não está mais no computador.
+
+O que acontece hoje (antes desta volta): a janela fechava, reabria e dizia "Não deu para atualizar agora: o atualizador
+do programa não começou. Tente ao fechar o programa." Só que, ao fechar, nada era perguntado: a frase prometia o que
+não acontecia. Isso é **defeito do programa** (achado pelo agente que tenta quebrar, testado de verdade).
+
+O que muda (o senhor já decidiu em 25/11: "frase própria, sem 'tente ao fechar', e oferecer de novo quando voltar"):
+a janela não fecha, aparece a frase própria, fechar não pergunta nada, e quando o arquivo voltar (o antivírus devolver,
+ou o senhor reinstalar), a próxima vez que o Kaique abrir o programa o aviso da versão nova aparece de novo. Ele
+continua trabalhando normalmente o tempo todo. Nada do que já funciona muda.
+
+Onde aparece: só nesses dois cliques. No "Reiniciar agora", na hora, na caixa da janela; no "Sim" ao fechar, na
+próxima vez que ele abrir o programa, numa caixa do Windows antes da janela.
+
+**O que o senhor escolhe: as palavras da frase.** O programa já está montado com a A, que se troca num lugar só.
+- **A (sugestão):** "Não deu para atualizar: o atualizador do programa sumiu do computador. O programa continua
+  funcionando. Avise o Samuel." Diz o que houve e o que fazer; o Kaique só avisa.
+- **B:** "A versão nova não pode ser instalada agora porque falta o atualizador do programa no computador. O programa
+  continua funcionando. Avise o Samuel." Mais longa; fala da versão nova primeiro.
+- **C:** "Não deu para atualizar: falta no computador o atualizador do programa. Quando ele voltar, a versão nova
+  aparece de novo. Avise o Samuel." Diz também o que vai acontecer depois; não diz que o programa continua funcionando.
+- Só comentário também vale.
+
+De onde veio: pedido seu de 25/11 (a frase própria); as palavras são sugestão do agente. Situação: construída com a A,
+na versão de teste, esperando a sua escolha.
+
+**Onde estou:** a tabela (commit `590eef24`), a leitura da caixa e o código (commit `5f988f17`) feitos; os testes antigos do atualizador passam no código novo. A pergunta da frase do M2 está escrita acima. Próximo: os testes novos, as mutações, as provas de verdade.
 
 # Volta 4 — o código (24/11/2026)
 
