@@ -37,3 +37,21 @@ continuam (D-778 (2), D-839, D-845/D-847/D-858/D-864, D-846, D-854, D-856, D-857
   a abertura espera o OK (6 s); a frase que chega por trás aparece uma vez só e a janela não espera o OK (FUNDO).
 - Testes antigos mudados: todos na lista da D-836 (`provas/testes_mudados-resultado.txt`).
 - Falta: o `Update.exe` com o Velopack de verdade, as mutações, os testes um por vez, o relatório nos três formatos.
+
+## SEGUNDO INCIDENTE 25/11/2026 14:27:05 — a guarda da prova fechou à força programas do Samuel (culpa minha)
+- O quê: a rodada das mutações (`provas/mutacoes_qtq5.py`, pelo `provas/rodar_escondido.py`). A guarda da tela normal
+  achou janelas "da prova" que NÃO eram dela: "Claude" (Chrome_WidgetWin_1), o Explorador de Arquivos aberto em
+  "para-o-fable-2026-11-23", o ajudante do Narrador e a "Experiência de Entrada do Windows". E matou a "família"
+  inteira (TerminateProcess). Conferido às 14:29: o `explorer.exe` renasceu às 14:27:18 (o Windows o reabriu sozinho;
+  a janela do Explorador que estava aberta fechou); o `TextInputHost` renasceu às 14:27:30; os dois processos `claude`
+  de 23/11 continuam vivos (não sei se algum outro processo do Claude que tinha a janela foi fechado).
+- Por quê: `_familia()` junta "todo processo cujo pai está na família", lendo o número do pai na lista do Windows.
+  Esse número pode ser de um processo que já morreu e cujo número o Windows deu depois ao processo da prova; então
+  programas antigos (o Explorador e o que ele abriu) entraram na família. Faltou conferir a hora em que cada processo
+  nasceu (só conta como filho quem nasceu DEPOIS do pai). E a guarda mata sem conferir o caminho do programa.
+- Não sei a lista completa do que morreu: a guarda só anotou as janelas visíveis. Todo processo da família, com ou sem
+  janela, recebeu o TerminateProcess.
+- Parado: nada mais roda. A cópia das mutações (`saida_teste\qtq5\mut`) ficou como estava no meio; o ramo está limpo.
+- Conserto para a próxima vez (não rodei): a família só pelo Job Object do Windows (o processo da prova nasce dentro de
+  um grupo que fecha junto, como a peça `abrir_em_grupo` já faz), nunca pela lista de pais; e a guarda só fecha
+  processos do grupo.

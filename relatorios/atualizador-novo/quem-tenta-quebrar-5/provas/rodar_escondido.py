@@ -2,7 +2,7 @@
 separada ("EditorProvaQtq5", `CreateProcessW` com `lpDesktop`), e a guarda da tela normal ligada: se qualquer janela
 visível de um processo da prova aparecer na tela do Samuel, a prova inteira é morta na hora. Lição do incidente de
 25/11/2026 14:17 (a caixa que saiu de um fio por trás e apareceu na tela dele).
-Uso: python rodar_escondido.py <script.py> [argumentos...]   (o script grava o próprio resultado num arquivo)
+Uso: python rodar_escondido.py [--limite=<segundos>] <script.py> [argumentos...]   (o script grava o próprio resultado num arquivo)
 """
 from __future__ import annotations
 
@@ -23,6 +23,9 @@ spec.loader.exec_module(pc)
 
 def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8")
+    limite = 300
+    if sys.argv[1].startswith("--limite="):
+        limite = int(sys.argv.pop(1).split("=", 1)[1])
     area = pc.u32.CreateDesktopW(pc.NOME_DA_AREA, None, None, 0, pc.GENERIC_ALL, None)
     assert area, ctypes.get_last_error()
     si = pc._STARTUPINFOW()
@@ -37,7 +40,7 @@ def main() -> None:
         parar = threading.Event()
         g = threading.Thread(target=pc._guarda_da_tela, args=(pi.dwProcessId, guarda, parar), daemon=True)
         g.start()
-        pc.k32.WaitForSingleObject(pi.hProcess, 300000)
+        pc.k32.WaitForSingleObject(pi.hProcess, limite * 1000)
         codigo = wintypes.DWORD()
         pc.k32.GetExitCodeProcess(pi.hProcess, ctypes.byref(codigo))
         if codigo.value == 259:
