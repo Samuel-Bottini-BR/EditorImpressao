@@ -330,6 +330,66 @@ def test_l1_a_guarda_que_falha_nunca_faz_a_pasta_dizer_a_nova(tmp_path):
     assert atualizacao.ler_ultima_boa(p.raiz) == ANTERIOR
 
 
+def test_l1_com_o_nome_final_preso_a_pasta_nao_diz_a_nova(tmp_path):
+    """L1, o caso que o terceiro "quem tenta quebrar" EXECUTOU (G8): um arquivo velho no nome final, preso por outro
+    programa (aqui, aberto por este processo: o Windows não deixa pôr outro arquivo por cima). A cópia certa não consegue
+    o nome final; a guarda diz que não deu, a cópia some, e a pasta continua dizendo a anterior. Cobra a regra única
+    (a assinatura da última boa é gravada POR ÚLTIMO, depois do pacote no lugar): em `1d01aaf9` a pasta passava a dizer
+    a nova, com o pacote velho."""
+    p = Prova(tmp_path, publicar_nova=False, ultima_boa=ANTERIOR)
+    p.pacote_em_packages(ATUAL)                                             # o pacote certo
+    pasta = atualizacao.pasta_da_ultima_boa(p.raiz)
+    velho = pasta / f"{PACOTE}-{ATUAL}-full.nupkg"
+    velho.write_bytes(b"pacote velho")
+    with velho.open("rb"):                                                  # preso
+        motivo = atualizacao.guardar_ultima_boa(p.raiz, ATUAL, p.atual.fonte, PUBLICA)
+    assert motivo is not None and "não consegui guardar" in motivo
+    assert atualizacao.ler_ultima_boa(p.raiz) == ANTERIOR
+    assert not (pasta / assinatura.nome_do_arquivo_da_assinatura(PACOTE, ATUAL)).exists()
+    assert not list(pasta.glob("*.nupkg.chegando"))
+
+
+def test_l1_a_assinatura_que_chega_nao_faz_a_pasta_dizer_a_nova(tmp_path):
+    """L1 no outro passo que escreve na pasta: a conferência da versão que chega guarda a assinatura dela com OUTRO nome
+    (`.assinatura.chegando`). Com um arquivo velho no nome final do pacote dela, a pasta continua dizendo a anterior; e
+    a assinatura fica guardada para a guarda de depois (D-852)."""
+    p = Prova(tmp_path, ultima_boa=ANTERIOR)
+    pasta = atualizacao.pasta_da_ultima_boa(p.raiz)
+    (pasta / f"{PACOTE}-{NOVA}-full.nupkg").write_bytes(b"pacote velho")
+    import hashlib
+    from types import SimpleNamespace
+
+    alvo = SimpleNamespace(pacote=PACOTE, versao=NOVA, arquivo=f"{PACOTE}-{NOVA}-full.nupkg",
+                           sha256=hashlib.sha256(p.vp.conteudo[NOVA]).hexdigest())
+    assert atualizacao.conferir_assinatura_do(p.atual.fonte, alvo, PUBLICA, guardar_em=pasta) is None
+    assert atualizacao.ler_ultima_boa(p.raiz) == ANTERIOR
+    assert atualizacao.assinatura_guardada(p.raiz, NOVA) is not None
+
+
+def test_a_copia_interrompida_nunca_fica_com_o_nome_do_pacote(tmp_path, monkeypatch):
+    """A guarda interrompida no meio da cópia (desligou, o processo morreu) nunca deixa um pacote pela metade com o nome
+    do pacote (§11.12 ponto 3: nada pela metade com cara de pronto): a cópia vai para `<nome>.chegando` e só ganha o
+    nome com a soma conferida."""
+    p = Prova(tmp_path, publicar_nova=False, ultima_boa=ANTERIOR)
+    p.pacote_em_packages(ATUAL)
+
+    class Morreu(Exception):
+        pass
+
+    original = assinatura.soma_sha256
+
+    def copia_que_morre(origem, copiar_para=None):
+        if copiar_para is None:
+            return original(origem)
+        Path(copiar_para).write_bytes(Path(origem).read_bytes()[:10])
+        raise Morreu()
+
+    monkeypatch.setattr(assinatura, "soma_sha256", copia_que_morre)
+    with pytest.raises(Morreu):
+        atualizacao.guardar_ultima_boa(p.raiz, ATUAL, p.atual.fonte, PUBLICA)
+    assert not (atualizacao.pasta_da_ultima_boa(p.raiz) / f"{PACOTE}-{ATUAL}-full.nupkg").exists()
+
+
 def test_l5_a_soma_do_pacote_e_uma_conta_so(tmp_path):
     """L5 do terceiro "quem tenta quebrar" (§11.12): a soma SHA256 de um arquivo é calculada num lugar só
     (`assinatura.soma_sha256`); o `atualizacao.py` não tem a sua (lido pela árvore: não usa `hashlib`)."""

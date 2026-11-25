@@ -1,6 +1,25 @@
-== sem mutação: 2540 passed, 8 skipped in 73.47s (0:01:13)
-== as proteções novas da volta 3 (só N26, N27, N28)
-acusada     N26 D-844: a última boa sem a assinatura ao lado conta | 1 failed, 33 passed in 4.20s | FAILED tests/test_atualizador_volta3.py::test_n26_a_ultima_boa_e_o_pacote_com_a_assinatura_ao_lado
-acusada     N27 a assinatura da versão que chega não é guardada | 1 failed, 34 passed in 3.28s | FAILED tests/test_atualizador_volta3.py::test_n27_a_versao_nova_vira_a_ultima_boa_sem_internet
-acusada     N28 o pendente é perguntado sem a licença | 1 failed, 35 passed in 3.48s | FAILED tests/test_atualizador_volta3.py::test_n28_sem_a_licenca_nada_do_velopack_e_perguntado
-3 acusadas, 0 sobreviveram, 0 saíram com o desenho (com o porquê), 0 erros de mutação
+== sem mutação: 2742 passed, 8 skipped in 73.98s (0:01:13)
+== mutacoes.py (as do implementador)
+== mutacoes_qtq.py (as 17 do primeiro quem tenta quebrar)
+acusada     Q1 motor: sem a conferencia do espaco livre (no código novo: volta 4: o motor pergunta o espaço pela conta única (espaco_livre_basta)) | 1 failed, 2492 passed in 15.94s | FAILED tests/test_atualizador_volta2.py::test_q1_conserto4_sem_espaco_nao_comeca
+acusada     Q4 motor: 'esta no lugar' sempre sim (no código novo: a conferência pede o motor de uma versão (volta 2)) | 1 failed, 2496 passed in 13.92s | FAILED tests/test_atualizador_volta2.py::test_q4_conserto4_o_motor_no_lugar_e_a_mesma_conferencia
+acusada     Q5 preparado?: so olha se a pasta existe (como o os.access) | 1 failed, 2499 passed in 15.02s | FAILED tests/test_atualizador_volta2.py::test_q5_a_pasta_que_existe_e_nao_aceita_gravacao_nao_conta_como_preparada
+acusada     Q8 Visual C++: roda o instalador que uma conta comum pode trocar | 1 failed, 2501 passed in 14.76s | FAILED tests/test_atualizador_volta2.py::test_q8_o_visual_c_que_uma_conta_comum_pode_trocar_nao_roda
+acusada     Q13 raiz da instalacao: aceita fora de Arquivos de Programas | 1 failed, 2572 passed, 2 skipped in 16.25s | FAILED tests/test_windows_preparo_do_computador.py::test_a_raiz_da_instalacao_so_dentro_de_arquivos_de_programas
+== mutacoes_qtq2.py (as 26 V do segundo quem tenta quebrar)
+== mutacoes_qtq3.py (as 14 do terceiro quem tenta quebrar)
+acusada     Q1 a guarda apaga também a assinatura da versão mais nova que está chegando (no código novo: volta 4: a limpeza só apaga as versões mais velhas) | 1 failed, 11 passed in 2.50s | FAILED tests/test_atualizador_volta4.py::test_m7_q1_a_guarda_nao_apaga_a_assinatura_da_versao_que_esta_chegando
+acusada     Q4 D-839: a frase da troca recusada aparece também quando a troca deu certo (no código novo: volta 4: a mesma condição, separada da volta) | 1 failed, 6 passed in 1.77s | FAILED tests/test_atualizador_volta4.py::test_d857_sem_ultima_boa_a_versao_que_falha_mostra_a_frase_3_e_para
+acusada     Q5 a frase guardada é 'mostrada' na reabertura sem janela (e marcada vista sem ninguém ver) | 1 failed, 2731 passed, 8 skipped in 57.76s | FAILED tests/test_windows_peca.py::test_o_programa_nasce_parado_e_so_roda_dentro_do_grupo
+acusada     Q8 a versão sem assinatura conferida nesta abertura pode ser trocada | 1 failed, 2731 passed, 8 skipped in 58.84s | FAILED tests/test_windows_peca.py::test_o_programa_nasce_parado_e_so_roda_dentro_do_grupo
+acusada     Q13 a cópia com a soma errada deixa o .chegando (460 MB) no disco (no código novo: volta 4: a soma pela conta única) | 1 failed, 14 passed in 2.76s | FAILED tests/test_atualizador_volta4.py::test_m7_q13_a_copia_com_a_soma_errada_nao_fica_no_disco
+== as proteções novas da volta 3 (só Q4, Q5, Q8, Q1, Q13, N2, N3, N4, N26, N27, P8, P17, P18)
+acusada     N2 D-844: a volta pela pasta da última boa, sem internet | 1 failed, 2 passed in 1.48s | FAILED tests/test_atualizador_volta4.py::test_d863_a_volta_que_nem_pode_ser_pedida_tambem_nao_se_repete
+acusada     N3 D-844: a guarda confere a soma da cópia | 1 failed, 14 passed in 2.05s | FAILED tests/test_atualizador_volta4.py::test_m7_q13_a_copia_com_a_soma_errada_nao_fica_no_disco
+acusada     N4 a guarda copia para o nome provisório | 1 failed, 18 passed in 2.03s | FAILED tests/test_atualizador_volta4.py::test_a_copia_interrompida_nunca_fica_com_o_nome_do_pacote
+acusada     N26 D-844: a última boa sem a assinatura ao lado conta | 1 failed, 15 passed in 1.95s | FAILED tests/test_atualizador_volta4.py::test_l1_a_guarda_que_falha_nunca_faz_a_pasta_dizer_a_nova
+acusada     N27 a assinatura da versão que chega não é guardada | 1 failed, 9 passed in 1.79s | FAILED tests/test_atualizador_volta4.py::test_d859_sem_internet_o_pacote_ja_baixado_e_anunciado
+acusada     P8 D-856: a guarda não confere o espaço | 1 failed, 3 passed in 1.66s | FAILED tests/test_atualizador_volta4.py::test_d856_a_versao_aprovada_nao_e_testada_de_novo_e_sem_espaco_nada_e_copiado
+acusada     P17 L1: a assinatura da última boa antes do pacote conferido | 1 failed, 16 passed in 1.99s | FAILED tests/test_atualizador_volta4.py::test_l1_com_o_nome_final_preso_a_pasta_nao_diz_a_nova
+acusada     P18 a assinatura que chega fica com o nome da última boa | 1 failed, 17 passed in 2.19s | FAILED tests/test_atualizador_volta4.py::test_l1_a_assinatura_que_chega_nao_faz_a_pasta_dizer_a_nova
+18 acusadas, 0 sobreviveram, 0 saíram com o desenho (com o porquê), 0 erros de mutação

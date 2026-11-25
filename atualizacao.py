@@ -303,8 +303,11 @@ def frase_do_bilhete(estado: dict) -> tuple[str, str, str] | None:
 # assinatura da versão que está chegando, com o nome `.assinatura.chegando`, para guardar o pacote dela depois não
 # precisar de internet, D-852) e `marcar` (as marcas da volta 4: `.aprovada`, D-856, e `.sem-volta`, D-863). As marcas são
 # dado no disco, como a assinatura: dizem um fato da versão; o bilhete (`estado.json`) continua só com reprovadas e
-# frase. Arriscado: dar o nome final ao pacote ou à assinatura antes de conferir a soma (uma cópia pela metade viraria a
-# "última boa").
+# frase. A REGRA que faz a pasta nunca dizer uma última boa sem o pacote conferido (leve 1 do terceiro "quem tenta
+# quebrar"), num lugar só: o nome final da assinatura (`<id>-<v>.assinatura`) só é escrito por `guardar_ultima_boa`, e só
+# DEPOIS de o pacote conferido estar no nome final; toda outra assinatura que chega tem outro nome. Arriscado: gravar a
+# assinatura com o nome final em qualquer outro momento (um pacote velho ou pela metade no nome final viraria a "última
+# boa"); dar o nome final ao pacote antes de conferir a soma.
 
 PASTA_DA_ULTIMA_BOA = "ultima-boa"
 
@@ -430,11 +433,12 @@ def guardar_ultima_boa(raiz: Path, versao_boa: str, fonte: "Fonte", chave_public
        Samuel e afirmar este pacote.
     3. O espaço: o tamanho do pacote mais a folga, pela conta única (`espaco_livre_basta`, D-856). Sem espaço, não
        copia nada.
-    4. Tira do caminho o pacote que estiver no nome final (leve 1); se não der, para sem mexer em nada.
-    5. Copia para `<nome>.chegando` somando (`assinatura.soma_sha256`, a conta única da soma, leve 5); só com a soma
-       assinada dá o nome final; e só então grava a assinatura da última boa (POR ÚLTIMO: sem ela, a pasta não diz que
-       esta é a última boa).
-    6. Por fim apaga os arquivos das versões MAIS VELHAS (os desta e das mais novas, que estão chegando, ficam)."""
+    4. Copia para `<nome>.chegando` somando (`assinatura.soma_sha256`, a conta única da soma, leve 5): uma cópia
+       interrompida nunca fica com o nome do pacote; só com a soma assinada dá o nome final (por cima do que estiver
+       lá; se o Windows não deixar, para e apaga a cópia); e só então grava a assinatura da última boa (POR ÚLTIMO: a
+       regra do leve 1, no comentário de `PASTA_DA_ULTIMA_BOA`: sem ela, a pasta não diz que esta é a última boa, nem
+       com um pacote velho no nome final).
+    5. Por fim apaga os arquivos das versões MAIS VELHAS (os desta e das mais novas, que estão chegando, ficam)."""
     pasta = pasta_da_ultima_boa(raiz)
     nome = nome_do_pacote(versao_boa)
     nome_da_assinatura = assinatura.nome_do_arquivo_da_assinatura(versao.ID_DO_PACOTE, versao_boa)
@@ -463,7 +467,6 @@ def guardar_ultima_boa(raiz: Path, versao_boa: str, fonte: "Fonte", chave_public
         if not cabe:
             return (f"falta espaço para guardar a {versao_boa} (precisa de {precisa // 2**20} MB, tem {tem // 2**20} "
                     "MB): a última boa de antes continua")
-        (pasta / nome).unlink(missing_ok=True)
         if assinatura.soma_sha256(origem, copiar_para=chegando) != soma_assinada:
             chegando.unlink(missing_ok=True)
             return "a cópia do pacote não tem a soma assinada pelo Samuel"

@@ -938,6 +938,113 @@ LOCALAPPDATA (leve 1: dois testes escreviam no registro de verdade do PC); nenhu
 </tr>
 </tbody>
 </table>
-<p class="rodape">Editor de Impressão &middot; gerado em 24/11/2026 às 15:31</p>
+<h2>Volta 4 (24/11/2026): as três regras do Samuel (D-855 a D-860) e as respostas D-863 a D-866</h2>
+<table>
+<thead>
+<tr>
+<th>Arquivo :: teste</th>
+<th>O que aconteceu</th>
+<th>Por quê (a decisão)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tests/test_fases_da_atualizacao.py</code> (<code>abriu_nova</code>, <code>abriu_nova_reaberta</code>, <code>abriu_nova_sem_janela</code>, <code>abriu_sem_ultima_boa</code>)</td>
+<td>adaptado</td>
+<td>o campo <code>antes_da_janela</code> saiu do estado e do efeito <code>RodarTesteRapido</code>: o teste só roda antes da janela (D-857 tirou o teste por trás)</td>
+</tr>
+<tr>
+<td><code>::(PREPARANDO, prep_ok)</code></td>
+<td>adaptado</td>
+<td>D-857: depois da pergunta do Windows, o motor e a procura; o teste por trás saiu (a versão que precisar do teste o faz na abertura seguinte, antes da janela)</td>
+</tr>
+<tr>
+<td><code>::(CONFERINDO_NOVA, teste_ok)</code> e a versão sem janela dele</td>
+<td>adaptado</td>
+<td>D-856: a marca de aprovada antes da guarda</td>
+</tr>
+<tr>
+<td><code>::(CONFERINDO_NOVA, teste_nao)</code></td>
+<td>adaptado</td>
+<td>o teste só antes da janela: com a última boa, sempre a reprovação e a volta (antes: com a janela aberta, só o registro)</td>
+</tr>
+<tr>
+<td><code>::(VOLTANDO, volta_nao)</code> e o teste sem janela da volta que não deu</td>
+<td>adaptado</td>
+<td>D-863: a marca de "sem volta" junto da frase (3)</td>
+</tr>
+<tr>
+<td><code>::(PROCURANDO, proc_nova)</code></td>
+<td>adaptado (um campo)</td>
+<td>o <code>ConferirAssinatura</code> diz se a assinatura é a guardada (D-859)</td>
+</tr>
+<tr>
+<td><code>::(INICIO, abriu_troca_sem_saber)</code></td>
+<td>adaptado (um campo)</td>
+<td>o estado guarda o pacote esperando (D-859)</td>
+</tr>
+<tr>
+<td><code>::(TROCANDO, troca_recusada / troca_nao / troca_outra_janela)</code> e <code>test_..._troca_nao</code></td>
+<td>adaptado</td>
+<td>D-858 ("o 'Sim' ao fechar que não troca ganha a mesma frase") e D-864 (o motivo "havia outra janela do programa aberta"); antes, só o registro</td>
+</tr>
+<tr>
+<td><code>::test_d718_o_teste_antes_da_janela_que_falha_volta_pela_ultima_boa</code></td>
+<td>saiu (a mesma prova está na linha <code>teste_nao</code> da tabela)</td>
+<td>o campo <code>antes_da_janela</code> deixou de existir</td>
+</tr>
+<tr>
+<td><code>::test_sem_ultima_boa_o_teste_que_falha_nao_volta_e_segue</code></td>
+<td>trocado por <code>test_d857_sem_ultima_boa_o_teste_que_falha_mostra_a_frase_3_e_para</code></td>
+<td>D-857: "Sem última boa, a versão que falha no teste rápido mostra a frase (3) e para" (antes: seguia calada)</td>
+</tr>
+<tr>
+<td><code>::test_d859_sem_internet_o_pacote_esperando_e_oferecido</code>; os eventos <code>abriu_primeira_do_msi</code>, <code>abriu_nova_aprovada</code>, <code>abriu_nova_sem_volta</code>, <code>abriu_volta_feita</code>, <code>abriu_volta_recusada</code>, <code>ass_sem_rede</code> e as linhas deles</td>
+<td>novos</td>
+<td>D-855, D-856, D-857, D-859, D-863 e a rede que não responde na assinatura</td>
+</tr>
+<tr>
+<td><code>tests/test_atualizador_novo.py::test_d718_teste_que_falha_volta_para_a_anterior_assinada</code></td>
+<td>adaptado (uma linha)</td>
+<td>D-855: o pedido da volta leva <code>--voltando &lt;de&gt; &lt;para&gt;</code></td>
+</tr>
+<tr>
+<td><code>::test_o_indice_publicado_tem_o_nome_do_empacotar</code></td>
+<td>saiu</td>
+<td>o programa não lê mais o índice publicado (o download da D-851 saiu pela D-857); a fonte de prova põe o nome à mão (<code>tests/ajudante_do_atualizador.py</code>)</td>
+</tr>
+<tr>
+<td><code>tests/test_atualizador_volta3.py::test_g_a_guarda_interrompida_nao_vira_ultima_boa</code></td>
+<td>adaptado</td>
+<td>L5: a cópia somada passou a ser a conta única da soma (<code>assinatura.soma_sha256(copiar_para=...)</code>); a prova é a mesma (a cópia que morre no meio não vira última boa)</td>
+</tr>
+<tr>
+<td><code>tests/test_atualizador_d851.py</code> (3: baixa sem o pacote; o baixado sem a assinatura certa; sem o pacote e sem internet)</td>
+<td>saíram</td>
+<td>D-857 mudou a D-851: "Sem baixar 460 MB na primeira abertura"; o que vale hoje: <code>test_d857_*</code> de <code>tests/test_atualizador_volta4.py</code></td>
+</tr>
+<tr>
+<td><code>tests/test_velopack_de_verdade.py</code></td>
+<td>só o texto da docstring</td>
+<td>o índice da volta (saiu)</td>
+</tr>
+<tr>
+<td><code>tests/ajudante_do_atualizador.py</code></td>
+<td>mudado (uma linha)</td>
+<td>o nome do índice da fonte de prova escrito à mão</td>
+</tr>
+<tr>
+<td><code>tests/test_atualizador_volta4.py</code> (20)</td>
+<td>novos</td>
+<td>D-855 (2), D-863 (1), D-856 (2), D-857 (3), D-858/D-864 (1), D-859 (1), a rede na assinatura (1), M7 Q1, Q2, Q9, Q13 (4), L1 (3), a cópia interrompida (1), L5 (1); dos 17 primeiros, 14 falham em <code>1d01aaf9</code> (<code>volta4-testes-no-codigo-antigo.txt</code>); os 3 que passam lá são do M7 (as proteções existiam; faltava o teste: a prova é a rodada de mutações); os 3 que a rodada de mutações pediu (P17, P18, N4) falham lá também, os dois do L1 pelo comportamento (a pasta passava a dizer a nova) e o da cópia interrompida por outro motivo (lá a cópia era outra função)</td>
+</tr>
+<tr>
+<td><code>relatorios/.../volta3-provas/mutacoes_volta3.py</code></td>
+<td>mudado</td>
+<td>o arquivo novo na lista; as 14 do terceiro "quem tenta quebrar"; os trechos que mudaram de lugar (V5, Q6, N1, N3, N23, N27 e outros); N29 a N31 saíram com o download; P1 a P18 novas</td>
+</tr>
+</tbody>
+</table>
+<p class="rodape">Editor de Impressão &middot; gerado em 24/11/2026 às 20:41</p>
 </body>
 </html>

@@ -1,3 +1,138 @@
+# Volta 4 — o código (24/11/2026)
+
+Implementador (a minha segunda volta, a última pela D-815). "Pode" da gerente depois das respostas do Samuel (D-863 a
+D-866). A partir de `685785e8`. Não abri agente nem janela; nada instalado; nada escrito em `C:\ProgramData\EditorImpressao`,
+em `%LOCALAPPDATA%\EditorImpressao` nem na instalação do Samuel (o PROGRAMDATA e o LOCALAPPDATA das provas trocados
+dentro do Python).
+
+**Situação: feito; os testes dos arquivos tocados passam, um arquivo por vez; mutações: a rodada inteira 123 acusadas, 6 sobreviveram (explicadas abaixo; 3 delas pediram conserto e testes, feitos); a segunda rodada, 0 sobreviventes de verdade; o juiz local
+do porteiro: CONFERIDO. Falta a rodada do GitHub (é da gerente).**
+
+## As decisões e como cumpri
+
+| Decisão (palavras dele) | O que fiz | Prova |
+|---|---|---|
+| D-855 "A volta tenta uma vez e nunca fica em laço: o pedido de volta leva marca (`--voltando de para`...); a versão reaberta com a marca não testa de novo, mostra a frase (3) e abre." | `trocar_para(volta=True)` manda `--voltando <de> <para>` (a peça única do Velopack, `conversa_com_o_velopack.trocar`); a abertura reaberta com a marca: rodando a de que se voltava → não testa, a frase (3), abre | `test_atualizador_volta4.py::test_d855_*` (2); a tabela da regra (`abriu_volta_recusada`, `abriu_volta_feita`); de verdade: `volta4-provas/prova_volta_uma_vez-resultado.txt` |
+| D-863 (pergunta 1, a B) "não tenta voltar de novo nas aberturas seguintes. Abre a versão que está" | a marca `<id>-<versão>.sem-volta` em `ultima-boa\` (abaixo) | `test_d855_d863_*`, `test_d863_*`; a prova de verdade (B2, B3: nenhum teste, nenhum pedido de volta) |
+| D-856 "Versão aprovada no teste rápido ganha uma marca no disco e não é testada de novo. Se a cópia da última boa não couber, a anterior continua valendo; conferir espaço antes de copiar, pela mesma função do motor." | a marca `<id>-<versão>.aprovada`, posta ANTES da guarda; a guarda confere o espaço por `espaco_livre_basta`, a conta que saiu de dentro de `garantir_o_motor` (os dois a chamam; só ela chama o `disk_usage`) | `test_d856_*` (2); P6-P8 das mutações |
+| D-857 "A primeira versão instalada não tem volta automática. Sem baixar 460 MB na primeira abertura..." | a primeira versão = sem última boa e sem o pacote dela em `packages\` (o .msi não põe): não testa; sem última boa mas com o pacote: testa; falhou → a frase (3) e para (com a marca de "sem volta"); sai o download (`_baixar_a_que_roda`, o índice publicado `NOME_DO_INDICE_PUBLICADO` e o teste dele) e o teste por trás | `test_d857_*` (3); P9, P10 |
+| D-858 / D-864 "o 'Sim' ao fechar que não troca ganha a mesma frase do 'Reiniciar agora', na abertura seguinte" · "Não deu para atualizar agora: havia outra janela do programa aberta. Tente ao fechar o programa." | o `TrocaPedida` sem janela guarda a frase no bilhete (a da D-845 com o motivo; a 2 se o pacote não tem a assinatura); o motivo novo `MOTIVO_HAVIA_OUTRA_JANELA` com o texto da D-864 (o texto velho da outra janela, que nunca aparecia, saiu: L4) | `test_d858_d864_*`; P11, P12 |
+| D-859 "a regra usa o 'pacote esperando'" | sem internet, com o pacote mais novo esperando (e não reprovado), a regra segue com ele: `ConferirAssinatura(guardada=True)` → a assinatura guardada ao conferir → o aviso | `test_d859_*` (regra e executor); P13, P14 |
+| D-860 "os quatro testes" | Q1, Q2, Q9, Q13 | `test_m7_q*` (4) |
+| D-861, D-865, D-866 (para depois) | nada mexido | — |
+| (achado meu na tabela) a rede que não responde na assinatura não é "recusada" | `Fonte.ler`: "não existe" (404; o arquivo que falta numa pasta que existe) é `FileNotFoundError` → frase 2; o resto (sem internet; a pasta da fonte que nem existe) é "sem rede" → só o registro | `test_a_rede_que_nao_responde_na_assinatura_nao_e_recusada`; P15, P16 |
+| L1, L5 (leves do terceiro "quem tenta quebrar") | L1: uma regra, escrita num lugar só (o comentário de `PASTA_DA_ULTIMA_BOA`): o nome final da assinatura só é escrito pela guarda, POR ÚLTIMO, depois do pacote conferido no nome final; a assinatura que chega tem outro nome (`.assinatura.chegando`). L5: a soma é uma conta só (`assinatura.soma_sha256`, que também copia) | `test_l1_*` (3, um deles o caso G8 que o terceiro "quem tenta quebrar" executou: o nome final preso), `test_l5_*`; P17, P18 |
+
+## Onde mora o "já tentou voltar" (D-863), e por que não é um juiz novo
+
+É um arquivo no disco, `<raiz>\ultima-boa\<id>-<versão>.sem-volta`, ao lado da marca de aprovada e da assinatura da
+última boa, escrito por `marcar` (a única escrita das marcas) em dois momentos: (1) a versão reaberta pelo Velopack com
+`--voltando` (a volta recusada pelo Windows); (2) a volta que nem pôde ser pedida, ou não havia última boa (D-857). Ela
+entra na abertura como mais um fato do disco (`Abriu.sem_volta`), e a regra o usa num lugar só, `_precisa_do_teste`
+("não é a última boa, não foi aprovada, não tem a marca de sem volta, e não é a primeira versão do .msi"). O
+`estado.json` continua só com "reprovadas" e "frase" (`CHAVES_DO_BILHETE`; o teste `test_o_bilhete_so_guarda_as_duas_coisas`
+continua passando). Uma volta interrompida ANTES de ser pedida (o notebook desligou) não deixa a marca: é refeita na
+abertura seguinte, como desde a volta 2. "Volta ao normal com a próxima atualização": a versão seguinte não tem a marca.
+
+## O que mudou no que já estava escolhido e testado (§11.8)
+
+- O teste por trás, com a janela aberta (a primeira abertura depois do .msi e depois da pergunta do Windows), saiu (D-857).
+- O download da D-851 saiu (D-857 a mudou).
+- O "Sim" ao fechar deixou de ser calado (D-858).
+- A assinatura que não se consegue ler por falta de rede deixou de mostrar a frase (2).
+- Os testes que mudaram por isso estão na lista da D-836, seção "Volta 4". Nenhum teste de fora do atualizador mudou.
+
+## Como fica para quem usa (§11.9)
+
+- A primeira abertura depois de instalar: nada por trás (nem teste, nem cópia de 460 MB).
+- Uma versão nova que passa no teste: daí em diante abre sem o teste (sem os segundos sem nada na tela).
+- Uma versão nova que falha: volta em segundos (a frase 1); se o Windows não deixar, a frase (3) uma vez, e o programa
+  abre na versão que está; nada de janelinha do atualizador a cada abertura.
+- "Sim" ao fechar que não pôde: a frase com o motivo na abertura seguinte.
+- Sem internet, com a versão nova já baixada: o aviso e a pergunta ao fechar aparecem.
+- No livro (PDF): nada muda.
+
+## Caminho → função (o que mudou)
+
+| Caminho | A regra / a função |
+|---|---|
+| precisa do teste? | `fases._precisa_do_teste` (um lugar só) |
+| a volta pedida | `Atualizacao._voltar` → `trocar_para(volta=True)` (`--voltando`) → `conversa_com_o_velopack.trocar` |
+| a volta recusada, reaberta | `_ao_abrir` (rodando a de que se voltava) → `MarcarSemVolta` → `marcar` |
+| a volta que não deu / sem última boa | `fases._volta_que_nao_deu` (um lugar só) → `MarcarSemVolta` + a frase (3) |
+| passou no teste | `MarcarAprovada` → `marcar`; `GuardarUltimaBoa` → `guardar_ultima_boa` |
+| o espaço | `espaco_livre_basta` (o motor e a guarda) |
+| a soma de um arquivo | `assinatura.soma_sha256` (a conferência da troca e a guarda) |
+| a assinatura guardada | `assinatura_guardada` (a guarda e o pacote esperando) |
+| "Sim" ao fechar que não troca | `proxima_fase(TrocaPedida)` sem janela → `GuardarFrase` |
+| sem internet, o pacote esperando | `proxima_fase(Procurou(erro))` → `ConferirAssinatura(guardada=True)` → `_conferir_assinatura_guardada` |
+
+## O que rodei de verdade e o que só li
+
+- **Rodado** (`volta4-provas/prova_volta_uma_vez.py`, com o `vpk` 1.2.161 e o `Update.exe` de verdade, um programa de
+  prova sem janela feito com o PyInstaller, a instalação portátil do vpk numa pasta minha, `--silent`):
+  - A: a volta com `--voltando 1.2.0 1.1.0` e um arquivo de `current\` preso: o Velopack desistiu (código 1) e reabriu a
+    1.2.0 COM `--voltando 1.2.0 1.1.0` (o registro do programa de prova; os ganchos `--veloapp-obsolete` à parte).
+  - B: o executor de verdade aberto com essa linha de comando: 0 testes, a frase (3), a marca de "sem volta" no disco;
+    as duas aberturas seguintes, pelo atalho: 0 testes, nenhum pedido de volta, nenhuma frase.
+  - C: a mesma volta sem nada preso: deu certo e o Velopack reabriu a 1.1.0 com `--voltando 1.2.0 1.1.0`; o executor
+    nela: a frase (1), 0 testes.
+- **Rodado**: os testes, um arquivo por vez: `test_atualizador_volta4` 20, `test_fases_da_atualizacao` 2387 e os
+  outros 13 arquivos do atualizador (juntos, na base das mutações: 2742 passam, 8 pulados; numa de quatro vezes, o teste
+  de tempo da peça do Windows falhou, o leve 7 do terceiro "quem tenta quebrar"); e, por importarem o que mudou,
+  `test_assinatura` 16, `test_claro_no_escuro` 8, `test_decisoes_brasao` 20, `test_decisoes_desinstalar` 45,
+  `test_decisoes_testes_a_distancia` 13, `test_pasta_das_ferramentas` 17, `test_publicar_versao` 125,
+  `test_trava_windows` 42 (3 pulados). As mutações (duas rodadas). O juiz do porteiro (CONFERIDO).
+- **Só lido**: o resto do Velopack que a tabela cita (as linhas estão na tabela e na leitura da volta 3); a troca com a
+  janelinha do Velopack (só a prova à vista).
+
+## Tamanho (linhas de código, sem comentário, docstring nem linha em branco)
+
+| Arquivo | `012c849c` (antes da volta 3) | `1d01aaf9` (o terceiro "quem tenta quebrar") | agora |
+|---|---|---|---|
+| `atualizacao.py` | 660 | 832 | 878 |
+| `core/fases_da_atualizacao.py` | 358 | 405 | 432 |
+| `core/conversa_com_o_velopack.py` | 64 | 70 | 70 |
+| total | 1082 | 1307 | 1380 (+5,6% sobre `1d01aaf9`) |
+
+Saiu: o download (`_baixar_a_que_roda` e o índice publicado), o teste por trás (`antes_da_janela`, `_depois_da_licenca`,
+`_com_antes`, `_na_linha_ou_por_tras` só para a guarda), a soma duplicada. Entrou: as duas marcas, a conta única do
+espaço, a assinatura que chega com outro nome, o pacote esperando sem internet, a separação "não existe / sem rede", a
+frase do "Sim" ao fechar. A volta automática não encolheu em linhas: ficou com menos caminhos (um teste, uma volta, sem
+download, sem repetição), e cada um tem a sua prova.
+
+## As mutações (executado, no lugar, no ramo; `volta3-provas/mutacoes_volta3.py`)
+
+A rodada inteira (as 100 do implementador, as 17 + 26 + 14 dos três "quem tenta quebrar", as novas da volta 3 e as
+P1 a P18 desta volta), com os 15 arquivos de teste do atualizador: **123 acusadas, 6 sobreviveram, 7 saíram com o
+desenho** (com o porquê), 0 erros (`mutacoes_volta3-resultado.txt`). As 6, uma por uma:
+- **Q4** (a frase da troca recusada também quando deu certo): erro meu na tradução da mutação para o código novo (tirei
+  só metade da troca que o terceiro "quem tenta quebrar" fez; essa metade sozinha não muda nada). Traduzida inteira.
+- **Q5, Q8**: as mesmas duas que o terceiro "quem tenta quebrar" já tinha dito que não são proteção sem teste (Q5:
+  mutação equivalente, a frase sem janela só entra na fila e continua no bilhete; Q8: o caminho de hoje nunca chega lá).
+- **P17, N4, P18**: a mesma proteção (L1) feita em camadas que se escondiam umas atrás das outras. O passo que eu tinha
+  posto nesta volta ("tirar do caminho o pacote velho no nome final antes de copiar") fazia o mesmo que "a assinatura
+  por último" (P17), e nenhum teste cobrava o caso da conferência da versão que chega (P18) nem o nome da cópia
+  interrompida (N4). Consertado: o passo repetido saiu (a regra num lugar só, §11.12) e entraram três testes (o nome
+  final preso, o caso G8 executado pelo terceiro "quem tenta quebrar"; a assinatura que chega com um pacote velho no
+  nome final; a cópia interrompida nunca fica com o nome do pacote).
+Segunda rodada, só essas e as que mexem na guarda: 18 acusadas, 0 sobreviveram (`mutacoes_volta3-resultado-segunda-rodada.txt`): P17, P18 e N4 agora acusadas pelos três testes novos; Q4, traduzida inteira, acusada; as que mexem na guarda (Q1, Q13, N2, N3, N26, N27, P8) continuam acusadas sem o passo que saiu. **Ressalva:** Q5 e Q8 aparecem "acusadas" na segunda rodada só pelo teste de tempo `test_windows_peca.py::test_o_programa_nasce_parado_e_so_roda_dentro_do_grupo`, que falha às vezes com o PC ocupado (o leve 7 do terceiro "quem tenta quebrar"; falhou também uma vez sem mutação nenhuma nesta volta): não contam; elas continuam o que eram (equivalente e inalcançável).
+
+## Ressalvas
+
+1. A volta recusada de verdade rodou com o programa de prova (não o nosso de 460 MB) e com `--silent`.
+2. O "disco cheio" da guarda é simulado no teste (o `disk_usage` trocado); a conta é a de verdade.
+3. Um teste chama o despachante de dentro da peça do Windows por `getattr` (a ressalva da volta 3; não mudou).
+4. A marca de aprovada que não consegue ser gravada (disco cheio, sem licença): a abertura seguinte testa de novo
+   (segundos sem nada na tela), só enquanto não der para gravar.
+5. O teste "a cópia interrompida nunca fica com o nome do pacote" falha em `1d01aaf9` por outro motivo (lá a cópia era
+   outra função, que o teste não interrompe): ele não é teste de reversão; a proteção dele existia (a prova é a mutação N4).
+6. O `pyinstaller.exe` da `.venv` não abre (a prova usa `python -m PyInstaller`); é da `.venv`, não do programa.
+
+## Perguntas para o Samuel
+
+Nenhuma nova.
+
 # Volta 4 — a tabela das falhas (24/11/2026)
 
 Implementador (o mesmo da volta 3; esta é a minha segunda volta, a última pela D-815). Pedido da gerente de 24/11:
@@ -6,7 +141,9 @@ D-856, D-857) e o resto do recado (D-858, D-859, D-860; D-861 fica para depois).
 partir de `1d01aaf9`. Li inteiro: `quem-tenta-quebrar-3/relatorio.md`, a seção "Depois do terceiro 'quem tenta
 quebrar' — encolher a volta automática" do `resposta-do-fable.md` e as linhas D-851 e D-855 a D-862 do Livro.
 
-**Situação: só a tabela e as perguntas. Nenhuma linha de código mudou. Parado, esperando o "pode" da gerente.**
+**Situação: a tabela foi entregue; o Samuel respondeu (D-863 a D-866) e a gerente deu o "pode". Atualizada abaixo
+com as respostas (a casinha "Voltar × desliga" e a "Windows nega" dependiam da pergunta 1). O código está na seção de
+cima, "Volta 4 — o código".**
 
 ## As palavras do Samuel que esta volta cumpre
 
@@ -176,13 +313,13 @@ versão depois do `.msi`, por trás, e em toda abertura enquanto a guarda não d
 | Jeito | O programa faz | O Kaique vê | Fica no disco |
 |---|---|---|---|
 | deu certo | o Velopack reabre a anterior com a marca; ela vê que voltou | a frase (1), uma vez, e a janela | a reprovação da que falhou |
-| desliga no meio (antes de o Velopack trocar) | a próxima abertura roda a que falhou, sem a marca: ver **pergunta 1** (sugestão: tenta voltar uma vez de novo, sem testar, porque ela já foi reprovada) | depende da pergunta 1 | a reprovação |
-| Windows nega (arquivo preso) | **G1, muda na volta 4 (D-855):** o Velopack reabre a que falhou com a marca; ela não testa, mostra a frase (3) e abre (hoje: testa de novo, pede a volta de novo, em laço, sem frase) | a frase (3), uma vez, e a janela (na versão que falhou) | a reprovação |
-| disco cheio (a cópia de `ultima-boa\` para `packages\` não cabe; ou o Velopack não consegue abrir o pacote) | a volta não é pedida (frase 3 e abre), ou é recusada pelo Velopack (reabre com a marca: frase 3 e abre) | a frase (3) e a janela | o `.partial`, às vezes (L3) |
+| desliga no meio (antes de o Velopack trocar) | a volta não chegou a ser pedida, e nenhuma frase apareceu: a próxima abertura roda a que falhou, sem a marca de "sem volta", e refaz a volta uma vez (o G1 da volta 2: "uma volta interrompida é refeita") | o que a volta der: a frase (1) ou a (3) | a reprovação |
+| Windows nega (arquivo preso) | **G1, muda na volta 4 (D-855, D-863):** o Velopack reabre a que falhou com a marca; ela não testa, põe a marca de "sem volta" no disco, mostra a frase (3) e abre. **Nenhuma abertura seguinte testa nem tenta voltar** (D-863, a resposta B do Samuel): abre a versão que está, sem a janelinha do atualizador; volta ao normal com a próxima atualização (hoje: testa de novo, pede a volta de novo, em laço, sem frase) | a frase (3), uma vez, e a janela (na versão que falhou); nas aberturas seguintes, a janela, sem nada | a reprovação; `<id>-<versão>.sem-volta` em `ultima-boa\` |
+| disco cheio (a cópia de `ultima-boa\` para `packages\` não cabe; ou o Velopack não consegue abrir o pacote) | a volta não é pedida, ou é recusada pelo Velopack (reabre com a marca): nos dois, a marca de "sem volta", a frase (3), e abre; não tenta de novo (D-863) | a frase (3) e a janela | o `.partial`, às vezes (L3, D-866: fica para depois); a marca de "sem volta" |
 | sem internet | não importa (a volta é local, D-844) | — | — |
 | clique repetido | **D-861, fica para depois** (M1): sem laço; às vezes a frase (3) numa das janelas | ver "Testar, clique repetido" | — |
-| arquivo some (o pacote guardado, a assinatura ou a pasta `ultima-boa`) | não há última boa: a versão que falhou fica, frase (3), para (D-857). **muda na volta 4** (hoje: nada na tela, e a versão nem é reprovada; M2) | a frase (3), uma vez, e a janela | a reprovação |
-| sem última boa (a primeira atualização depois do `.msi` falhou no teste) | frase (3) e para (D-857). **muda na volta 4** (M2) | a frase (3), uma vez, e a janela | a reprovação |
+| arquivo some (o pacote guardado, a assinatura ou a pasta `ultima-boa`) | não há última boa: a versão que falhou fica, frase (3), para (D-857), e a marca de "sem volta" (D-863: não testa de novo). **muda na volta 4** (hoje: nada na tela, e a versão nem é reprovada; M2) | a frase (3), uma vez, e a janela | a reprovação; a marca de "sem volta" |
+| sem última boa (a primeira atualização depois do `.msi` falhou no teste) | frase (3) e para (D-857), e a marca de "sem volta". **muda na volta 4** (M2) | a frase (3), uma vez, e a janela | a reprovação; a marca de "sem volta" |
 | sem licença | não se aplica: sem licença a abertura pergunta ao Windows antes; a volta nunca pede licença | — | — |
 
 ## Os achados do terceiro "quem tenta quebrar", casinha por casinha
@@ -224,7 +361,14 @@ versão depois do `.msi`, por trás, e em toda abertura enquanto a guarda não d
 - Testes: os da D-851 que cobram o download saem ou mudam (lista da D-836); testes novos que falham em `1d01aaf9`; os
   quatro do M7; mutações de novo.
 
-## Perguntas para o Samuel (§11.13)
+## Perguntas para o Samuel (§11.13) — respondidas em 24/11 ("Aceito as quatro, com a sua na 1", a da gerente)
+
+- 1 → **D-863: B**, ao contrário da minha sugestão: depois da frase (3) o programa não tenta voltar de novo.
+- 2 → **D-864:** "Não deu para atualizar agora: havia outra janela do programa aberta. Tente ao fechar o programa."
+- 3 → **D-865:** o defeito do Velopack entre as duas trocas de nome fica para depois.
+- 4 → **D-866:** os quatro casos (a) a (d) ficam para depois; não consertados, não mexidos.
+
+O texto das perguntas, como foi entregue:
 
 **1. Depois da frase "não conseguiu voltar sozinho", o programa tenta voltar de novo?** É a volta automática para a
 versão anterior, quando a versão nova não passa no teste. Com a sua regra, ela tenta uma vez; se o Windows não deixar

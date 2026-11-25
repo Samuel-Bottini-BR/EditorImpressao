@@ -312,3 +312,22 @@ PASSED tests/test_atualizador_volta4.py::test_m7_q2_com_duas_na_pasta_a_ultima_b
 PASSED tests/test_atualizador_volta4.py::test_m7_q9_a_mesma_frase_noutro_dia_aparece_de_novo
 PASSED tests/test_atualizador_volta4.py::test_m7_q13_a_copia_com_a_soma_errada_nao_fica_no_disco
 14 failed, 3 passed in 2.12s
+
+
+== Depois da rodada de mutacoes (os 3 testes que ela pediu: P17, P18, N4), no mesmo codigo de 1d01aaf9. Os dois do L1 falham pelo comportamento (a pasta passava a dizer a nova); o da copia interrompida falha por outro motivo (la a copia era outra funcao, que o teste nao interrompe): nao e teste de reversao.
+
+E       AssertionError: assert '1.1.0' == '0.1.0'
+E         
+E         - 0.1.0
+E         ? ^
+E         + 1.1.0
+E         ? ^
+E       AssertionError: assert '9.9.0' == '0.1.0'
+E         
+E         - 0.1.0
+E         + 9.9.0
+E       Failed: DID NOT RAISE Morreu
+FAILED tests/test_atualizador_volta4.py::test_l1_com_o_nome_final_preso_a_pasta_nao_diz_a_nova
+FAILED tests/test_atualizador_volta4.py::test_l1_a_assinatura_que_chega_nao_faz_a_pasta_dizer_a_nova
+FAILED tests/test_atualizador_volta4.py::test_a_copia_interrompida_nunca_fica_com_o_nome_do_pacote
+3 failed, 17 deselected in 0.59s

@@ -216,3 +216,27 @@ LOCALAPPDATA (leve 1: dois testes escreviam no registro de verdade do PC); nenhu
 | `tests/test_fases_da_atualizacao.py` (o evento `abriu_sem_ultima_boa_sem_pacote` e a linha dele) | saiu | D-851 ("baixar só se o arquivo não estiver lá"): sem o pacote em `packages`, a regra não pula mais o teste (o executor baixa o pacote); o evento deixou de existir porque o campo `pacote_da_versao` saiu do `Abriu`. Teste da volta 3 (primeira parte), nenhum de antes |
 | `tests/test_atualizador_d851.py` (6) | novos | D-848 (2: a frase 2 nos dois caminhos do "Reiniciar agora"; passam em `04dd0cd4`, nada a consertar) e D-851 (4: copiar de `packages` sem internet e sem baixar; baixar só se não estiver lá; o baixado sem a assinatura certa não é guardado; sem o pacote e sem internet, tenta na próxima). 3 falham em `04dd0cd4` (`volta3b-testes-no-codigo-antigo.txt`) |
 | `relatorios/.../volta3-provas/mutacoes_volta3.py` | mudado | o arquivo novo na lista de testes; as mutações N29 a N32 (D-851 e D-848) |
+
+## Volta 4 (24/11/2026): as três regras do Samuel (D-855 a D-860) e as respostas D-863 a D-866
+
+| Arquivo :: teste | O que aconteceu | Por quê (a decisão) |
+|---|---|---|
+| `tests/test_fases_da_atualizacao.py` (`abriu_nova`, `abriu_nova_reaberta`, `abriu_nova_sem_janela`, `abriu_sem_ultima_boa`) | adaptado | o campo `antes_da_janela` saiu do estado e do efeito `RodarTesteRapido`: o teste só roda antes da janela (D-857 tirou o teste por trás) |
+| `::(PREPARANDO, prep_ok)` | adaptado | D-857: depois da pergunta do Windows, o motor e a procura; o teste por trás saiu (a versão que precisar do teste o faz na abertura seguinte, antes da janela) |
+| `::(CONFERINDO_NOVA, teste_ok)` e a versão sem janela dele | adaptado | D-856: a marca de aprovada antes da guarda |
+| `::(CONFERINDO_NOVA, teste_nao)` | adaptado | o teste só antes da janela: com a última boa, sempre a reprovação e a volta (antes: com a janela aberta, só o registro) |
+| `::(VOLTANDO, volta_nao)` e o teste sem janela da volta que não deu | adaptado | D-863: a marca de "sem volta" junto da frase (3) |
+| `::(PROCURANDO, proc_nova)` | adaptado (um campo) | o `ConferirAssinatura` diz se a assinatura é a guardada (D-859) |
+| `::(INICIO, abriu_troca_sem_saber)` | adaptado (um campo) | o estado guarda o pacote esperando (D-859) |
+| `::(TROCANDO, troca_recusada / troca_nao / troca_outra_janela)` e `test_..._troca_nao` | adaptado | D-858 ("o 'Sim' ao fechar que não troca ganha a mesma frase") e D-864 (o motivo "havia outra janela do programa aberta"); antes, só o registro |
+| `::test_d718_o_teste_antes_da_janela_que_falha_volta_pela_ultima_boa` | saiu (a mesma prova está na linha `teste_nao` da tabela) | o campo `antes_da_janela` deixou de existir |
+| `::test_sem_ultima_boa_o_teste_que_falha_nao_volta_e_segue` | trocado por `test_d857_sem_ultima_boa_o_teste_que_falha_mostra_a_frase_3_e_para` | D-857: "Sem última boa, a versão que falha no teste rápido mostra a frase (3) e para" (antes: seguia calada) |
+| `::test_d859_sem_internet_o_pacote_esperando_e_oferecido`; os eventos `abriu_primeira_do_msi`, `abriu_nova_aprovada`, `abriu_nova_sem_volta`, `abriu_volta_feita`, `abriu_volta_recusada`, `ass_sem_rede` e as linhas deles | novos | D-855, D-856, D-857, D-859, D-863 e a rede que não responde na assinatura |
+| `tests/test_atualizador_novo.py::test_d718_teste_que_falha_volta_para_a_anterior_assinada` | adaptado (uma linha) | D-855: o pedido da volta leva `--voltando <de> <para>` |
+| `::test_o_indice_publicado_tem_o_nome_do_empacotar` | saiu | o programa não lê mais o índice publicado (o download da D-851 saiu pela D-857); a fonte de prova põe o nome à mão (`tests/ajudante_do_atualizador.py`) |
+| `tests/test_atualizador_volta3.py::test_g_a_guarda_interrompida_nao_vira_ultima_boa` | adaptado | L5: a cópia somada passou a ser a conta única da soma (`assinatura.soma_sha256(copiar_para=...)`); a prova é a mesma (a cópia que morre no meio não vira última boa) |
+| `tests/test_atualizador_d851.py` (3: baixa sem o pacote; o baixado sem a assinatura certa; sem o pacote e sem internet) | saíram | D-857 mudou a D-851: "Sem baixar 460 MB na primeira abertura"; o que vale hoje: `test_d857_*` de `tests/test_atualizador_volta4.py` |
+| `tests/test_velopack_de_verdade.py` | só o texto da docstring | o índice da volta (saiu) |
+| `tests/ajudante_do_atualizador.py` | mudado (uma linha) | o nome do índice da fonte de prova escrito à mão |
+| `tests/test_atualizador_volta4.py` (20) | novos | D-855 (2), D-863 (1), D-856 (2), D-857 (3), D-858/D-864 (1), D-859 (1), a rede na assinatura (1), M7 Q1, Q2, Q9, Q13 (4), L1 (3), a cópia interrompida (1), L5 (1); dos 17 primeiros, 14 falham em `1d01aaf9` (`volta4-testes-no-codigo-antigo.txt`); os 3 que passam lá são do M7 (as proteções existiam; faltava o teste: a prova é a rodada de mutações); os 3 que a rodada de mutações pediu (P17, P18, N4) falham lá também, os dois do L1 pelo comportamento (a pasta passava a dizer a nova) e o da cópia interrompida por outro motivo (lá a cópia era outra função) |
+| `relatorios/.../volta3-provas/mutacoes_volta3.py` | mudado | o arquivo novo na lista; as 14 do terceiro "quem tenta quebrar"; os trechos que mudaram de lugar (V5, Q6, N1, N3, N23, N27 e outros); N29 a N31 saíram com o download; P1 a P18 novas |

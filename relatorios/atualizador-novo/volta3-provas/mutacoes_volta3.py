@@ -116,8 +116,10 @@ NO_CODIGO_NOVO = {
         "        if v and v == versao_boa:"),
     "Q4 D-839: a frase da troca recusada aparece também quando a troca deu certo": (
         "volta 4: a mesma condição, separada da volta", F,
-        "    if e.reaberto_para and not e.reaberto_voltando and e.versao == e.reaberto_de and \\",
-        "    if e.reaberto_para and not e.reaberto_voltando and \\"),
+        "    if e.reaberto_para and not e.reaberto_voltando and e.versao == e.reaberto_de and \\\n"
+        "            _mais_nova(e.reaberto_para, e.versao):",
+        "    if e.reaberto_para and not e.reaberto_voltando and \\\n"
+        "            _mais_nova(e.reaberto_para, e.reaberto_de):"),
     "Q13 a cópia com a soma errada deixa o .chegando (460 MB) no disco": (
         "volta 4: a soma pela conta única", A,
         "        if assinatura.soma_sha256(origem, copiar_para=chegando) != soma_assinada:\n"
@@ -344,10 +346,16 @@ def main() -> int:
                     (chave == "saiu" and linha.startswith("saiu")):
                 contas[chave] += 1
 
+    # `--so N26,Q4`: só essas (pelo primeiro nome), de todas as listas; a saída vai para outro arquivo, e a rodada
+    # inteira continua guardada no de sempre.
+    so = sys.argv[sys.argv.index("--so") + 1].split(",") if "--so" in sys.argv else None
+
     def de_antes(rotulo: str, lista, quatro: bool) -> None:
         anotar(f"== {rotulo}")
         for item in lista:
             nome, arquivo, de, para = item[:4]
+            if so is not None and nome.split()[0] not in so:
+                continue
             texto = (RAIZ / arquivo).read_text(encoding="utf-8").replace("\r\n", "\n")
             if texto.count(de) == 1 and nome not in FORCAR:
                 anotar(_rodar_uma(nome, arquivo, de, para))
@@ -367,12 +375,12 @@ def main() -> int:
     anotar(f"== sem mutação: {(base.stdout.strip().splitlines() or ['?'])[-1]}")
     if base.returncode != 0:
         anotar("PAROU: sem mutação os testes já falham")
-        (AQUI / "mutacoes_volta3-resultado.txt").write_text("\n".join(linhas) + "\n", encoding="utf-8")
+        # (com `--so`, no arquivo da segunda rodada: uma rodada que parou não apaga a rodada inteira guardada)
+        (AQUI / ("mutacoes_volta3-resultado.txt" if so is None else "mutacoes_volta3-resultado-segunda-rodada.txt")
+         ).write_text("\n".join(linhas) + "\n", encoding="utf-8")
         return 1
-    # `--so N26,N27`: só essas das novas (a segunda rodada, depois de pôr o teste que faltava); a saída vai para outro
-    # arquivo, e a rodada inteira continua guardada no de sempre.
-    so = sys.argv[sys.argv.index("--so") + 1].split(",") if "--so" in sys.argv else None
-    if so is None:
+    # As listas de antes (com `--so`, `de_antes` só roda as escolhidas).
+    if True:
         de_antes("mutacoes.py (as do implementador)", IMPL.MUTACOES, False)
         de_antes("mutacoes_qtq.py (as 17 do primeiro quem tenta quebrar)", QTQ1.MUTACOES, True)
         de_antes("mutacoes_qtq2.py (as 26 V do segundo quem tenta quebrar)", QTQ2.MUTACOES, True)
