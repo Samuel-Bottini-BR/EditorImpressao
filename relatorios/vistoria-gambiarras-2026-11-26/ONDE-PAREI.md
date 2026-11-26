@@ -26,11 +26,37 @@ código mudou; os únicos arquivos mexidos são este e `lista.md`.
 | como-fica (as renderizações) | feito (5 achados, CF-01 a CF-05) | 26/11 17:54 | 26/11 17:58 | ~5 min (relógio da máquina, `date`) |
 | marcações | feito (5 achados, MC-01 a MC-05) | 26/11 17:59 | 26/11 18:02 | ~3 min (relógio da máquina, `date`) |
 | contagens e situação da página | feito (15 achados, SP-01 a SP-15) | 26/11 18:04 | 26/11 18:18 | ~14 min de código (relógio da máquina, `date`; antes, ~5 min lendo as regras e os insumos; agente novo) |
-| o resto da tela | **próximo** | | | |
+| o resto da tela | feito (12 achados, RT-01 a RT-12) | 26/11 18:19 | 26/11 18:29 | ~10 min (relógio da máquina, `date`) |
 
-**Onde o próximo agente continua (26/11, 18:18):** no pedaço 8, o resto da tela (o que de `ui/tela_conferir.py` e do
-que ela chama ainda não foi lido por nenhum pedaço; lista do que já foi lido abaixo), numerado RT-01..., com o tipo 5
-(código morto) começando por `configuracoes.espaco_livre_mb`. Não há suspeita aberta.
+**Tela de trabalho terminada (26/11, 18:29).** Os oito pedaços estão feitos. Total da lista: **81 achados**. Por
+tipo: 53 do tipo 1 (a mesma regra em mais de um lugar), 6 do tipo 2 (conta na tela), 10 do tipo 3 (desvio por caso),
+7 do tipo 4 (peça que só protege outra) e 5 do tipo 5 (código morto). Por gravidade: 30 GRAVE, 31 médios, 20 leves.
+Por pedaço: girar 12 (6 GRAVE), dividir 16 (6), desfazer 8 (2), aplicar-em 8 (2), como-fica 5 (3), marcações 5 (1),
+contagens e situação 15 (7), o resto da tela 12 (3). Suspeita aberta: uma, de fora da tela de trabalho (abaixo).
+Quem continuar a vistoria, fora da tela (a ordem de serviço só fala da tela primeiro; o resto do programa não foi
+pedido em pedaços), começa pela suspeita aberta.
+
+O que o pedaço o resto da tela leu (não reler): `configuracoes.espaco_livre_mb` (L185-206) e as buscas por
+`disk_usage`/`espaco_livre` no programa; a busca mecânica de métodos e constantes de nível de módulo de
+`ui/tela_conferir.py` sem uso em `ui/`, `core/` e na raiz; em `ui/tela_conferir.py` L395-432 (`protegido`),
+L1916-1987 e L1987-2069 só pelas leituras do projeto, `_mudar_margens_iguais` (L2069-2088), L2274-2320 (as linhas de
+apoio), L3005-3040 (`_mexer_na_area`, `_escolher_operacao`, `_escolher_ferramenta`), `carregar` e as partidas
+(L3653-3787), `eventFilter` (L3788-3822), `_limpar_abas` (L3850-3884), `_navegar` (L4012-4040), `atualizar` e
+`_atualizar_paineis` (L4476-4535), `_atualizar_previa` (L4535-4619, fora do ramo do Dividir), L4945-4975
+(`_sai_diferente_da_previa`, `_assinatura_do_como_sai`), L5572-5666 (os pares da tira, `_ir_para_o_quadro_da_tira`,
+`_mover_da_tira`), L5796-5896 (`_pagina_da_previa`, `_previa_chegou`), L7665-7700 (o fim de
+`_atualizar_conta_do_endireitar`), L7761-7830 (`_escolher_filtro`, `_mudar_algoritmo_pb`, `_mudar_cores`), L8031-8200
+(o medidor inteiro), L8598-8700 (`_acertar_a_vista_da_pagina`, `_acertar_o_lado_a_lado`, `_onde_vai_a_peca`),
+L8804-8830 e L8947-8970 (a roda), `lista_de_paginas_mudou` (L9635-9660), L9770-9933 (as teclas), L9934-9995
+(`_avisar_problema`, `_pedir_processamento`, `miniaturas_guardadas`), a busca por `pagina.filtro`, por
+`hasattr(self`/`getattr(self, "` e por `projeto.limpar`/`cortar_bordas`/`endireitar` em `ui/`; `main.py` L55-95;
+`ui/tarefas._mensagem_amigavel` (L115-130); `ui/janela_principal.py` L1995-2035; `ui/automatico.py` L277-330 e
+`core/automatico.campos_da_pagina_no_filtro` (L145-200); `core/etapas.corta_sozinho`/`endireita_sozinho` (L284-313);
+`core/pipeline.py` L1714-1720 e L1958-1968 (`DPI_DA_PASSADA`, `_guardar_o_conteudo`); os pares em
+`ui/widgets/tira_miniaturas.py` L760-830, `ui/widgets/paginas_rolando.py` L305-320 e `ui/widgets/todas_as_paginas.py`
+L630-640. **Não lido** (só montagem de botões e desenho, sem conta achada pelas buscas): `_montar` e a barra de baixo
+(L766-1362), o corpo de `_montar_aba_*` (L1916-3653, fora das linhas acima), os `_LugaresDeEncaixe`/`_RotuloDoLivro`
+(L432-590), a "peça" nos pares (L8700-8800) e o zoom (L8478-8560, L9006-9088).
 
 O que o pedaço contagens e situação leu (não reler): `core/avisos.py` inteiro; em `modelos.py` `alertas_pendentes`,
 `_alertas_pendentes` (L1097-1104), `ConfigFolha` L45-56 e `ConfigPagina` L310-345, L490-505; em `core/pipeline.py`
@@ -141,7 +167,11 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
 
 ### Abertas
 
-- Nenhuma (26/11, 18:18: as seis do pedaço 7 foram fechadas por ele).
+- (fora da tela de trabalho, achada no pedaço 8) `core/pipeline._guardar_o_conteudo` (L1958-1968) não troca o tamanho
+  de uma página já medida (`_TAMANHOS.setdefault`), e o comentário dá o motivo: "A passada mede a DPI_DA_PASSADA e a
+  geometria a 300". Desde o mesmo commit (`57de8af4`, 21/10) a passada mede na resolução do livro e a constante não é
+  usada (RT-02). Conferir se a proteção ainda protege de alguma coisa (prévia e PDF em resoluções diferentes?) ou se
+  ficou sem motivo.
 
 ### Fechadas
 
