@@ -24,8 +24,8 @@ código mudou; os únicos arquivos mexidos são este e `lista.md`.
 | desfazer | feito (8 achados, DF-01 a DF-08) | 26/11 17:38 | 26/11 17:43 | ~5 min (relógio da máquina, `date`) |
 | aplicar-em / "o que vai junto" | feito (8 achados, AP-01 a AP-08) | 26/11 17:44 | 26/11 17:53 | ~9 min de código (relógio da máquina, `date`; antes, ~3 min lendo as regras e os insumos; agente novo) |
 | como-fica (as renderizações) | feito (5 achados, CF-01 a CF-05) | 26/11 17:54 | 26/11 17:58 | ~5 min (relógio da máquina, `date`) |
-| marcações | **próximo** | | | |
-| contagens e situação da página | | | | |
+| marcações | feito (5 achados, MC-01 a MC-05) | 26/11 17:59 | 26/11 18:02 | ~3 min (relógio da máquina, `date`) |
+| contagens e situação da página | **próximo** | | | |
 | o resto da tela | | | | |
 
 O que o pedaço girar leu (não reler): `core/girar.py` inteiro; em `ui/tela_conferir.py` os métodos do girar
@@ -94,6 +94,14 @@ figurinhas: `_atualizar_cartoes`, `_como_sai_no_pdf`, `_sai_diferente_da_previa`
 (`_miniatura_branca`, `_acertar_as_miniaturas_movidas`); `ui/tela_ampliada._imagem_do_outro_filtro` (L304-350);
 `ui/widgets/filtros_tela_cheia.py` L82-170 e L800-835.
 
+O que o pedaço marcações leu (não reler): em `ui/tela_conferir.py` L2855-2875, L3042, L3132-3197 (`_limpar_marcacao`,
+`_folha_em_branco`, `_detectar_de_novo`), L4619-4730 (`_atualizar_marcacao`, `_pagina_sem_filtro_para_o_ajuste`,
+`_avaliar_os_pedacos`); `ui/widgets/editor_selecao.py` (os `selecao_mudou.emit` e `limpar_o_que_a_maquina_marcou`,
+L244, L345, L447-455); `ui/barra_de_menu.py` L202 e L260; `core/zonas_na_folha.py` (lista das funções, `_converter`
+L420-463, `acompanhar` L560-583); `core/selecao.py` L100-175 e L370-390 (`Regiao.de_dicionario`, `Selecao.de_lista`);
+`core/etapas.py` L533-544; `core/pipeline.py` L3708-3712; `core/filtros.py` L4300-4308; `core/misto.py` L676-681; e a
+busca por `origem` em `core/`, `ui/` e `modelos.py`.
+
 ## Suspeitas (dúvidas de outros pedaços; quem ler o pedaço confirma ou descarta)
 
 ### Abertas
@@ -112,22 +120,18 @@ figurinhas: `_atualizar_cartoes`, `_como_sai_no_pdf`, `_sai_diferente_da_previa`
 - (contagens e situação) No girar de formato "pagina" com `folha:<f>.rotacao` (G-04), `_com_os_avisos_de_agora` guarda
   os avisos das páginas e não os da folha; no formato "folha", o contrário. Conferir se o desfazer devolve os avisos
   certos nos dois.
-- (marcações) A regra "página marcada antes de existir `gravura_feita_com`, com área da máquina, ganha o 'refazer a
-  gravura'" está escrita em três lugares: `core/pipeline.py` L2398-2404 (as opções do livro mudaram) e duas vezes na
-  tela, `ui/tela_conferir._preparar_para_trocar_forma` (L3205-3226, "Esta página tem foto", sozinha e com "usar em
-  todas") e o "detectar automaticamente" (L3179-3190); as duas da tela gravam o campo direto na página, fora do
-  desfazer ("de propósito", pelo docstring). Confirmar no pedaço das marcações.
 - (contagens e situação) Na grade "Todas as páginas", "trazer de volta" desfaz o "em branco" e o "tirar do livro" de
   uma vez; na página sozinha, só o "tirar do livro"; e "deixar em branco"/"tirar do livro" têm a regra escrita duas
   vezes (a gerente achou isso em 17/11, Central `au-d-487`). Confirmar no código.
-- (marcações) Mover a linha de uma folha já dividida (arrastar, "usar em todas", trocar o motor, Automático: DV-08) não
-  reparte as marcações das metades; conferir se as zonas seguem pela geometria (`zonas_na_folha.acompanhar`) ou ficam
-  fora do lugar.
 - (contagens e situação) Os avisos "Lombada incerta" e "Não parece dupla" só são refeitos pela análise e pelo
   Automático (`analise.analisar_folha`); "dividir esta", "dividir todas", a grade e a troca de motor não os refazem (o
   "dividir todas" nem marca conferida, D-627). Conferir se a folha fica com o aviso de antes depois de dividida à mão.
 
 ### Fechadas
+
+- (marcações, aberta no aplicar-em) O "refazer a gravura" em três lugares → **virou o achado MC-02**.
+- (marcações, aberta no dividir) Mover a linha de uma folha dividida não reparte as marcações → **virou o achado
+  MC-03**: as zonas seguem pela geometria da folha, sem mudar de página.
 
 - (como-fica, aberta no girar) A chave das prévias montada em dois lugares de `ui/tarefas.py` → **virou parte do
   achado CF-04**: a chave da imagem do Cortar é cópia de parte da chave da prévia, e o docstring dela não conta o ângulo
