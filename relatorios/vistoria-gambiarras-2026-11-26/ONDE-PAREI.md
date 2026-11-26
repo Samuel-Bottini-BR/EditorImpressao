@@ -21,8 +21,8 @@ código mudou; os únicos arquivos mexidos são este e `lista.md`.
 |---|---|---|---|---|
 | girar | feito (12 achados, G-01 a G-12) | 26/11 15:40 | 26/11 15:51 | ~11 min (relógio da máquina, `date`) |
 | dividir | feito (16 achados, DV-01 a DV-16) | 26/11 17:25 | 26/11 17:38 | ~13 min de código (relógio da máquina, `date`; antes, ~10 min lendo as regras e os insumos) |
-| desfazer | **próximo** | | | |
-| aplicar-em / "o que vai junto" | | | | |
+| desfazer | feito (8 achados, DF-01 a DF-08) | 26/11 17:38 | 26/11 17:43 | ~5 min (relógio da máquina, `date`) |
+| aplicar-em / "o que vai junto" | **próximo** | | | |
 | como-fica (as renderizações) | | | | |
 | marcações | | | | |
 | contagens e situação da página | | | | |
@@ -52,12 +52,20 @@ até `_trocar_jeito_da_folha`), L7396-7541 (o "dividir" da grade), o trecho dos 
 (L418-520); `ui/tela_ampliada._corte_movido` e a linha (L289); as chaves de `ui/automatico.py` L1738-1755 e
 `ui/widgets/folhas_do_caderno.py` L458-472.
 
+O que o pedaço desfazer leu (não reler): `ui/desfazer_nesta_pagina.py` inteiro; `historico_acoes.py` L1-130 e
+L398-683 (`HistoricoAcoes` até `_regravar_tudo`, `aplicar`, os prefixos, `_restaurar_tipo`, `montar_acao`); em
+`ui/tela_conferir.py` `_voltar_no_historico` (L1552-1567), `_gravar_no_livro` (L2262-2271), `_gravar_o_conteudo` e
+`_conteudo_como_veio` (L2498-2554), `CAMPOS_DA_MARCACAO`, `_selecao_mudou`, `_registrar_a_marcacao`,
+`_desfazer_marcacao` (L3050-3130), `_sem_recorte` (L7018), o fim de `_aceitar_avisos` (L9496-9514), `desfazer`,
+`refazer`, `_medir_o_em_branco_ao_refazer`, `_reacertar_as_opcoes` (L9661-9755) e o Ctrl+Z de `tratar_tecla`
+(L9856-9861); `ui/widgets/editor_selecao.py` (a pilha `_marcos`, `desfazer`, `event`, o Ctrl+Z do `keyPressEvent`);
+`ui/barra_de_menu._montar_editar`; `ui/janela_principal.py` L270-280, L397-410, L940-980 e `keyPressEvent`
+(L2046-2053); `modelos._migrar_folha`/`_migrar` (L1130-1160).
+
 ## Suspeitas (dúvidas de outros pedaços; quem ler o pedaço confirma ou descarta)
 
 ### Abertas
 
-- (desfazer) "Desfazer nesta página" (`ui/desfazer_nesta_pagina.py`) não tem o giro da página entre as etapas
-  (Endireitar, Cortar, Mover, Filtro, Marcar). Ver se é decisão (D-621) ou caminho esquecido.
 - (como-fica) A chave das prévias é montada em dois lugares de `ui/tarefas.py` (L1150-1157 e L1430-1434), as duas com
   `rotacao` e `giro_da_pagina`; conferir se são a mesma regra.
 - (como-fica / marcações) `core/pipeline.preparar_metade` chama `geometria_do_desenho` em três ramos (L713-718,
@@ -67,8 +75,6 @@ até `_trocar_jeito_da_folha`), L7396-7541 (o "dividir" da grade), o trecho dos 
   certos nos dois.
 - (aplicar-em) O "aplicar em" do Endireitar (`_paginas_do_alcance_do_angulo`, `ui/tela_conferir.py` L7118) usa
   `girar.folhas_do_alcance` e `aviso_fora_do_alcance(coisa="página")`; conferir se repete a conta de páginas da D-636.
-- (desfazer) `ui/desfazer_nesta_pagina.py` L423 decide a metade pelo clique (`x < vis.posicao_corte`, a linha da
-  tela); conferir se é mais uma cópia de "qual metade" (DV-07) e se usa a linha presa entre 2% e 98%.
 - (aplicar-em) O "usar em todas" do Dividir (`_corte_em_todas`) grava `posicao_corte`, e o `_registrar` põe a marca
   "mexida à mão" do Dividir em TODAS as folhas que recebem a linha (`MARCAS_DA_FOLHA`); na próxima vez a janela "Em
   quais páginas?" as traz desmarcadas como "linha própria". Conferir se o "usar em todas" do Cortar e do Mover faz o
@@ -90,3 +96,9 @@ até `_trocar_jeito_da_folha`), L7396-7541 (o "dividir" da grade), o trecho dos 
   com as metades guardadas) devolvem as páginas "como estavam", com o giro de cada uma, que é o que a D-498 diz e o
   comentário de `LIMPAR_AO_PARTIR` (L94-100) descreve; o `b12d6f61` é o caso da página nova partida, que passa por
   `LIMPAR_AO_PARTIR`. O que sobra é a diferença entre os jeitos de juntar, que já está no DV-03 e no DV-05.
+- (desfazer, aberta no girar) O "Desfazer nesta página" não tem o giro da página → **descartada**: é a decisão. A D-621
+  do Livro lista exatamente as cinco etapas ("Endireitar, Corte das bordas, Mover e tamanho, Filtro, Gravuras e
+  fotos"), e o cabeçalho do arquivo diz "A divisão não entra".
+- (desfazer, aberta no dividir) A metade decidida pelo clique (`_metade_clicada_no_dividir` L423) → **virou o achado
+  DF-08**: usa a linha da tela (presa entre 2% e 98%, a mesma do DV-07) e um laço próprio que não pula a página posta
+  à mão.
