@@ -28,6 +28,13 @@ código mudou; os únicos arquivos mexidos são este e `lista.md`.
 | contagens e situação da página | **próximo** | | | |
 | o resto da tela | | | | |
 
+**Onde o próximo agente continua (26/11, 18:03):** no pedaço 7, contagens e situação da página (conferida, em branco,
+tirada, avisos), numerado SP-01... As seis suspeitas abertas abaixo são todas desse pedaço; comece por elas. Na fila
+da Central, os itens que tocam nele: `k0611-numeros`, `lu-2-numeros`, `lu-9-frase`, `k0611-frase-tirou`,
+`lu-3-miniatura`/`k0611-miniatura-branco` (a parte da situação; a parte do desenho já está no CF-03),
+`k0711-pronto-conta`, `au-d-487` (a grade). O agente do pedaço 4 ao 6 parou aqui, no fim de um pedaço, para o contexto
+não acabar no meio do pedaço 7, que é grande.
+
 O que o pedaço girar leu (não reler): `core/girar.py` inteiro; em `ui/tela_conferir.py` os métodos do girar
 (L6554-6917), `_registrar` e os ajudantes dele (L5942-6081), `_espera_pelas_marcacoes` (L6938-6996), a grade
 (`_acao_nas_escolhidas`, `_girar_as_escolhidas_que_sao_metade`, `_pagina_dentro_da_folha`), `_atualizar_previa` só no
