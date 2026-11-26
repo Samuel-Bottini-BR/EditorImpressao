@@ -6,7 +6,15 @@ como o plano da parte do Windows sugeriu (plano-v2 §6.1, risco 17). **O que man
 parte do Windows (`relatorios/plano-windows-2026-11-18/plano-v2.md`, ramo `plano-windows-2026-11-18`, esperando a
 aprovação do Samuel). Ficha irmã: [testes-a-distancia.md](testes-a-distancia.md). O instalador em si: [itens/6.8.md](../itens/6.8.md).
 
-## Situação (22/11/2026)
+## Situação (26/11/2026)
+
+- **O atualizador foi refeito num desenho simples (D-830, 23/11)**, ramo `atualizador-novo-2026-11-23` (worktree `.claude/worktrees/atualizador-novo`), **não juntado**. O Update.exe do Velopack troca a versão depois de a pasta do programa ganhar, uma vez, a licença de Usuários (pergunta única do Windows na primeira abertura, D-834). Cinco voltas, cada uma conferida por um "quem tenta quebrar" novo; a volta automática saiu da primeira entrega (D-867): versão nova reprovada no teste rápido → caixa do Windows (MessageBoxW) uma vez, "A versão nova não funcionou. Não desinstale nada. Avise o Samuel." (D-868); a última boa fica guardada só para a volta à mão (D-869).
+- **Prova à vista passou (25-26/11, D-883)**; resultado em `relatorios/atualizador-novo/prova-a-vista/resultado.md` (ramo do atualizador). Passo 1 refeito pelo Samuel em 26/11: passou. **Entregar assim (D-884).** Primeiro conserto depois da entrega: o brasão durante o teste rápido (dois programas abertos com um clique no atalho no fim da troca).
+- Volta à mão (testada na prova): `Update.exe apply --norestart --package <cópia do pacote da versão anterior>` (11 a 17 s).
+- O ramo `atualizador-4-consertos-2026-11-21` ficou parado de vez (trocado pelo desenho novo).
+
+### Situação de antes (22/11/2026)
+
 
 - **Entrega em duas vezes (D-824, 21/11):** primeiro o programa que se atualiza, só com 4 consertos do que falhou em 18/11; os testes à distância e o resto do plano depois, em atualizações ("Sim, mas como vai ser feito esses 4 consertos, preciso que isso seja feito de forma rapida" · "vamos fazer com um só, uma coisa de cade vez.").
 - **Ramo `atualizador-4-consertos-2026-11-21`** (não juntado): voltas 1 a 4. Prova à vista nº 1 (22/11): funcionaram o "Não" e o "Sim" do Windows lidos do Windows, a conta comum lendo as tarefas, o motor posto pelo ajudante, o aviso de versão nova e a volta com o aviso de falha; não funcionaram a troca do "Reiniciar agora", a pergunta no meio da tela e a segunda preparação (pasta trancada) — consertados na volta 4 (D-828), esperando a resposta dele sobre 3 testes e a prova nº 2 ([PARTE -44](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md)).
@@ -88,3 +96,4 @@ aprovação do Samuel). Ficha irmã: [testes-a-distancia.md](testes-a-distancia.
   18/11); "não faça mais nada escodindo ou de mentira" (D-767).
 - Relatórios (fora do `fase-1`): etapa 5 (`etapa5-2026-11-17`), `revisao-atualizador-2026-11-18`,
   `publicar-rapido-2026-11-18`, `kraken-separado-2026-11-18`, `plano-windows-2026-11-18`.
+- **23/11/2026 a 26/11/2026** (PARTE -45 do handoff; Registro do plano de 23/11/2026, 24/11/2026, 25/11/2026 e 26/11/2026): o desenho simples (D-830) e o experimento; os testes antigos (D-836); as frases D-839 a D-841; a regra de zero itens abertos (D-842); as voltas 2 a 4 e os "quem tenta quebrar" 2 a 4 (D-843 a D-866); a opção A e a volta 5 (D-867 a D-877); a conferência do tamanho da mudança (D-879); a lista final e a fila pós-entrega (D-881); a limpeza (D-882); a prova à vista (D-883); entregar assim (D-884).

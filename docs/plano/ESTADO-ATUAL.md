@@ -8,6 +8,13 @@ Escrito em 24/09/2026. A ordem de autoridade é:
 
 O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que vale é o Plano Definitivo.
 
+> **Onde o projeto está em 26/11/2026, madrugada (vale sobre tudo abaixo; detalhe na [PARTE -45](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
+> - **O atualizador foi refeito num desenho simples (D-830)** no ramo `atualizador-novo-2026-11-23` (não juntado): cinco voltas, cada uma conferida por um agente novo; a volta automática saiu da primeira entrega (D-867); GitHub verde (45695180689, 25/11).
+> - **A prova à vista no PC do Samuel passou (25-26/11, D-883)**, e ele refez o passo 1 sozinho (passou nos registros; não confirmado se a pergunta do Windows do programa veio no meio da tela). Ele decidiu **entregar assim (D-884)**: o achado 1 (dois programas abertos com um clique no atalho no fim da troca) é o primeiro conserto depois da entrega; os achados 2, 3 e 4 ficam para depois.
+> - **Esperando ele:** "Posso começar pelo item 1 e te chamar antes do 2?" (rodar os testes no GitHub e no PC e juntar; depois publicar o motor e a versão 1.1.0 com o instalador no GitHub, que fica público; só se apaga à mão).
+> - Depois da entrega (D-881): primeiro os consertos guardados do programa e os testes à distância; depois o download do motor e a volta automática. Nada do processamento das páginas mudou.
+>
+> **Antes (22/11, noite), já superado:**
 > **Onde o projeto está em 22/11/2026, noite (vale sobre tudo abaixo; detalhe na [PARTE -44](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
 > - **Entrega ao Kaique em duas vezes (D-824):** primeiro o programa que se atualiza, só com os consertos do atualizador; os testes à distância e o resto do plano da parte do Windows vêm depois, em atualizações. O Kaique clica "Agora não" na janela da senha.
 > - **Os 4 consertos do atualizador** (ramo `atualizador-4-consertos-2026-11-21`, não juntado): voltas 1 a 3, duas conferências (a 2ª PRONTO PARA CONFERIR), D-825 a D-827.

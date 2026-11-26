@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 22/11/2026, noite (PARTE -44; a anterior, PARTE -43, é da noite de 21/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 26/11/2026, madrugada (PARTE -45; a anterior, PARTE -44, é da noite de 22/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -11,6 +11,165 @@ Pasta do projeto: `D:\programas\EditorImpressao` (mudou de
 `C:\Users\fotog\Desktop\EditorImpressao` em 07/09/2026; essa pasta antiga virou
 o backup). Repositório git ligado a
 `https://github.com/Samuel-Bottini-BR/EditorImpressao`.
+
+---
+
+# PARTE -45 — Checkpoint de 26/11/2026, madrugada: o atualizador refeito num desenho simples (D-830), cinco voltas e cinco "quem tenta quebrar"; a prova à vista no PC do Samuel passou; ele decidiu entregar assim (D-884) e refez o passo 1 (passou nos registros; não confirmado se a pergunta do Windows do programa veio no meio da tela); falta gerar o instalador (leia isto primeiro)
+
+Conversa `9fb2a36a`, de 23/11 (18h25 UTC) a 26/11 (07h UTC). A conversa foi resumida duas vezes; esta parte foi escrita a
+partir das falas salvas (`falas_da_conversa.py --desde 2026-11-23T18:14`), do git e da Central, não da memória. As
+decisões estão todas no Livro (D-829 a D-884, e a D-736 atualizada em 24/11: "decidida, não construída" até os testes à distância, commit `4169eb5e`), com as palavras dele; aqui vai o mapa e o que não está no Livro.
+
+## 0. Para recomeçar
+
+1. `git -C D:\programas\EditorImpressao fetch origin`. Versão oficial `fase-1` (ponta: este checkpoint). Livro na
+   versão de teste `obra-2026-10-26` (worktree `.claude\worktrees\obra-juncao`). **O atualizador novo** está no ramo
+   `atualizador-novo-2026-11-23` (worktree `.claude\worktrees\atualizador-novo`, ponta `431b786b`), **não juntado** em
+   nada.
+2. **Pergunta aberta, sem resposta (chat, 26/11 ~06h55 UTC), a primeira coisa a resolver:** "Posso começar pelo item 1
+   e te chamar antes do 2?" Os itens ditos a ele: (1) rodar todos os testes no GitHub e depois no PC dele, sem nenhum
+   agente rodando, e juntar o atualizador ao programa principal (CLAUDE.md §4.6); (2) publicar no GitHub o motor de achar
+   texto e a versão 1.1.0 com o instalador (dito a ele: "Depois de publicado, fica público e não dá para apagar", D-816);
+   (3) o instalador numa pasta para ele mandar ao Kaique. Ele respondeu "vamos fazer check point antes". **Correção a fazer com ele:** "não dá para apagar" foi dito errado pela gerente: uma publicação se apaga à mão com `publicar_versao_kaique.py --apagar v<versão>` (o programa nunca apaga sozinho depois do pedido de liberar, D-816), mas enquanto existe fica pública e pode ser copiada.
+3. Ainda não decidido com ele: em qual ramo o atualizador entra (o `fase-1` tem 380 commits que o ramo não tem, 381 com este checkpoint, quase
+   todos do plano; o ramo tem 1287 que o `fase-1` não tem, porque nasceu da versão de teste). Ver `memoria/ramos.md`
+   antes de juntar.
+4. A conta do Kaique é administrador (ele, 24/11 03h49 UTC: "é de administrador"; memória `kaique-conta-administrador`).
+5. A chave de assinar existe: `C:\Users\fotog\AppData\Roaming\EditorImpressao-publicar\chave-privada-da-assinatura.txt`
+   (nunca ler, nunca copiar). Nenhuma publicação existe no GitHub ainda (`gh release list` vazio em 26/11).
+
+## 1. Os trabalhos, pelo git (26/11, ~07h UTC)
+
+| Trabalho | Situação |
+|---|---|
+| **Atualizador novo, desenho simples** (D-830), ramo `atualizador-novo-2026-11-23` | **Feito e provado na tela, não juntado.** Voltas 1 a 5 (`73b5eb24` 24/11 → `d8a70874` 25/11), cada uma conferida por um "quem tenta quebrar" novo (relatórios em `relatorios/atualizador-novo/quem-tenta-quebrar-*`), conferência curta do D-877 (`8e09e193`). GitHub "Testes no Windows" verde: 45695180689 (25/11 20h27 UTC). Prova à vista preparada (`958aefe9`→`80a60955`) e feita (`431b786b`, resultado em `relatorios/atualizador-novo/prova-a-vista/resultado.md/.html`; o `.pdf` fica fora do git pelo `.gitignore`, como o do roteiro). |
+| Os 4 consertos da volta antiga (ramo `atualizador-4-consertos-2026-11-21`) | **Parado de vez:** trocado pelo desenho novo (D-830). D-829 construída lá, não serve mais. |
+| Trava "só `core/windows.py` fala com o Windows" (`test_trava_windows.py`, catraca com 46 lugares congelados) | Feita em 23/11 (`cdbaec25`, `d792ebfc`, `732a143e`; ideia do Fable, decidida por ele). Os 46 lugares se consertam depois da entrega. |
+| Os consertos guardados do programa (D-766) e os testes à distância | Não começados. Primeiros depois da entrega (D-881). |
+| Gerar o instalador e entregar ao Kaique | **Não começado.** Espera a pergunta do item 0.2. |
+
+Nada rodando no checkpoint: nenhum agente; a vigia das janelas foi parada (`parar-a-vigia`). O programa de prova 1.9.0
+**continua instalado** no PC dele (do passo 1 refeito).
+
+## 2. A história curta (o detalhe está no Livro e no Registro do plano)
+
+- **23/11:** a volta 4 da versão antiga criou problemas novos ("consertar como? vai fazer mais remendos?"). Ele levou a
+  outra IA e ao **Fable** um relatório (`relatorios/para-o-fable-2026-11-23/`); o Fable propôs refazer o atualizador num
+  desenho simples, com um experimento antes. O experimento no PC dele passou (o Update.exe troca a versão sem pedir
+  administrador de novo depois de a pasta ganhar a licença de Usuários). **D-830 a D-838.** Daí em diante, cada passo
+  foi decidido por ele **com o Fable**: ele cola a resposta do Fable no chat e a gerente executa.
+- **24/11:** voltas 1 a 4 e quatro "quem tenta quebrar". D-839 a D-866. Regra nova **D-842** (nenhum item aberto entra
+  na prova sem a decisão dele; "pequeno" é o que o Kaique nunca veria).
+- **25/11:** **opção A (D-867): a volta automática sai da primeira entrega**; volta 5 com escritor novo; quem tenta
+  quebrar 5 (com dois incidentes: uma caixa na tela dele e programas dele fechados por um agente; memória
+  `agente-nao-fecha-processo-alheio`); D-877 consertado; **D-879: a conferência tem o tamanho da mudança**; lista final
+  de 14 itens toda para depois (D-881, que também muda a fila pós-entrega); limpeza do PC (D-882); a prova à vista
+  (D-883, passo 6 trocado).
+- **26/11:** a prova passou; ele decidiu **entregar assim (D-884)** e refez o passo 1 sozinho: passou.
+
+## 3. As falas do Samuel desde o último checkpoint e o destino (UTC; as de 23-25/11 viraram as D-829 a D-883)
+
+- 23/11 18h25: "eu quero saber onde estavamos?" e "ok" (as respostas da volta antiga) → D-829. 18h25 a 22h58: "consertar como? vai fazer mais remendos?", "mas não está na regra que nada
+  deve ser feito com remendo...", as respostas coladas da outra IA e do Fable, "pode fazer um relatorio [...] para o
+  fable ler", "me da em MD" → relatório para o Fable; D-830 (refazer).
+- 23/11 23h03 a 24/11 00h57: o experimento e a trava (respostas do Fable coladas), "fechei", "ela abriu, mas não consigo
+  ver em qual versão ele está", as decisões coladas ("Depois" ao fechar já nesta entrega; janelinha do Velopack por ora;
+  motor tudo ou nada) → D-831 a D-833. 00h55 "duas coisas que apareceram na minha tela" (2 prints) → respondida no chat: o aviso do Windows barrando um arquivo do Bonjour (Apple), nada do programa. 00h57 "sim. O argumento dela é o decisivo: [...] Desfazendo, o seu PC vira o ensaio fiel." → feito na hora: a licença do experimento desfeita nos 38.546 arquivos (01h00).
+- 24/11 03h24 a 23h28: "o que vai ser feito agora?", "cade o plano?", as respostas 1 a 7 do plano (03h44 → D-834 a D-838, datadas de 23/11 na hora dele), **"é de
+  administrador"**, "sim", "Fable aprovou a lista", "1, desde que seja a volta à fase 'pronta'...", a regra de zero
+  itens abertos, as emendas do Fable, "A", "Aceito as quatro, com a sua na 1" → D-839 a D-866. 16h52 "quero saebr onde está a fase 4" → respondida no chat (o andamento da volta 3).
+- 25/11 13h40 a 21h26: a opção A (colada duas vezes), o código morto, "que volta?", "voltou, termina", "chegou uma
+  mensagem aqui no meu pc" / "que não conseguiu atualizar" / "o claude tinha fechado" (o incidente do quem tenta quebrar
+  5), "mas o que aconteceu, o programa está para ser terminado a versão para eu enviar para o kaique", a conferência do
+  tamanho da mudança, "vai limpar exactamente o que do meu pc?", "O teste do mesmo dia fica para depois...", "Todos os
+  itens da lista ficam para depois...", "Sim, pode apagar os três itens" → D-867 a D-882.
+- 25/11 23h21 a 26/11 05h04: "pode fazer" (D-883), "Antes de começar: me mostra a lista dos passos da prova..." (lista
+  dada, com o que é dele e o que é da gerente), e os cliques da prova ("fechei", "feito", "abri") → prova feita (§4).
+  Falas com achado: "o programa reabriu, mas antes [...] apareceu uma janela de atualizador" (a janelinha do Velopack,
+  esperada); "o logo do APP continua girando [...] apareceu uma caixa de erro [...] não lembro em que língua" (a caixa
+  em inglês do PyInstaller, achado 3); "tem um ok aqui, se eu apertar o que acontece?" (achado 2); "eu acho que não
+  está nessa versão de 1.9.4" (conferido: estava); "cliquei enquanto atualizava e acabei abrindo dois editores de
+  impressão" (achado 1); "eu fiz certo?" (sim).
+- 26/11 05h28 (texto colado, decisão dele): "Decidi entregar assim. O achado 1 (dois programas abertos) eu confirmei
+  na tela; vai como primeiro conserto pela própria atualização: mostrar o brasão desde o começo da reabertura, durante
+  o teste rápido, sem cadeado nem detecção de clique. Achados 2, 3 e 4 ficam para depois; o 4 anotado como 'projeto com
+  acento no nome é regravado ao abrir — investigar'. Antes de gerar o instalador, vou refazer só o passo 1 [...] Se
+  passar: gerar o instalador para o Kaique e conferir se a conta dele no notebook é de administrador." → **D-884**.
+- 26/11 05h40 a 06h54: o passo 1 refeito ("a mensagem do windows não veio para o meio da tela apareceu na faixa de
+  tarefas", "ele começou a instalar e janela foi para o canto", "consegui mover a tela para o centro", "feito") →
+  passou (§4).
+- 26/11 06h59: "vamos fazer check point antes" → este checkpoint.
+- **Outra conversa no mesmo dia** (`0ea803cc`, 23/11 18h25 a 18h52): sobre outro projeto (a biblioteca digital e
+  espelhar o jeito de trabalhar do Editor). Não é deste projeto; fica com aquela conversa.
+
+## 4. A prova à vista (25/11 19h20 a 26/11 01h10, hora dele) e o passo 1 refeito
+
+Resultado inteiro em `relatorios/atualizador-novo/prova-a-vista/resultado.md` (ramo do atualizador). Funcionaram, vistos
+na tela dele e conferidos por fora (registro `C:\ProgramData\EditorImpressao\atualizacao\atualizacao.log` e a vigia):
+instalar; aviso e "Reiniciar agora"; "Depois" + "Não" e "Depois" + "Sim" ao fechar; a versão que não abre (caixa uma
+vez, sem testar de novo) e a volta à mão (`Update.exe apply --norestart --package <cópia>`: 11 s em 25/11, 17 s na segunda, em 26/11, para refazer o passo 8); assinatura
+falsa; motor fora do lugar; "internet" parada com a versão já baixada; Update.exe apagado; pasta presa, duas recusas;
+desinstalar (projetos sem nada sumido). Abertura: 10 a 23 s; 30 a 36 s logo depois de uma troca.
+
+**Passo 1 refeito por ele (26/11, 05h50 a 06h54 UTC):** "Não" → nada mudado, abriu; "Sim" → preparado; 3ª abertura sem
+pergunta, motor posto: bateu nos registros. **Ressalva:** a condição dele era "ver a pergunta do Windows no meio da tela"; a do instalador veio na barra de tarefas, e a do programa não foi confirmada (perguntado duas vezes, sem resposta; ele respondeu "feito"). Ele fechou 22 s depois do "Sim" e interrompeu o motor; a abertura seguinte terminou sozinha e
+limpou a sobra `.chegando-1`.
+
+**Achados (Lista de bugs de 26/11, todos para depois por decisão dele, D-884):** (1) dois programas abertos com um
+clique no atalho no fim da troca; o conserto decidido é o brasão durante o teste rápido, primeiro depois da entrega;
+(2) o OK da janelinha do Velopack; (3) a caixa em inglês do PyInstaller; (4) "projeto com acento no nome é regravado
+ao abrir — investigar". Pequenos, anotados no Registro: a pergunta do Windows **do instalador** ficou piscando na barra
+de tarefas e a janela do instalador foi para o canto, quase fora da tela, quando a instalação começou.
+
+**Não vistos:** o segundo clique no atalho no uso normal (só lido no código). Foi perguntado duas vezes, sem resposta,
+se a pergunta do Windows **do programa** (no passo 1 refeito) apareceu no meio da tela ou na barra.
+
+## 5. Descobertas de comportamento real (caras de redescobrir)
+
+- O Velopack tenta a troca por **uns 15 s** (não 1 minuto) quando a pasta está presa; a janelinha dele dura ~14 s numa
+  troca normal.
+- A volta à mão deixa a "última boa" na versão mais nova; e o programa só confere "o Velopack está trabalhando?" quando
+  a versão que roda difere da última boa (`atualizacao.py` ~1398).
+- Depois do "Sim" na primeira abertura, o motor é posto ~1 min depois; fechar antes interrompe, e a abertura seguinte
+  refaz.
+- `cv2.imwrite` provavelmente falha em pasta com acento (a capa dos dois projetos com acento nunca é criada).
+- Para a prova, `fonte_da_prova.py sem-resposta|com-resposta|liberar <v>` e `por_de_lado.py ...` (em
+  `relatorios/atualizador-novo/prova-a-vista/`) e o arquivo `C:\ProgramData\EditorImpressao\fonte-de-teste.txt` (dono
+  Administradores) fazem o programa instalado ler as versões de uma pasta.
+
+## 6. Erros da gerente nesta sessão (não repetir)
+
+- O pedido ao quem tenta quebrar 5 permitiu fechar processos e abrir caixa de verdade: uma caixa apareceu na tela dele e
+  programas dele foram fechados (25/11, 14h17 e 14h27 na hora dele; 18h17 e 18h27 UTC). Agora: agente só fecha o que ele mesmo abriu (memória
+  `agente-nao-fecha-processo-alheio`).
+- O agente que preparou a prova apagou, fora do projeto, pastas de ensaio que ele mesmo criou (contra a regra de 29/09).
+- Disse a ele que a publicação no GitHub "não dá para apagar"; dá, à mão (`--apagar`), embora fique pública enquanto existe. Corrigir com ele.
+- O roteiro dizia "1 minuto" para o Velopack tentar; eram 15 s, e a tranca da pasta precisou ser renovada no meio do
+  passo 10.
+
+## 7. Sobras no PC dele (nada apagado sem o "sim" dele, regra de 29/09)
+
+- O programa de prova 1.9.0 instalado (`C:\Program Files\EditorImpressaoPrograma`), com `C:\ProgramData\EditorImpressao`
+  (o `fonte-de-teste.txt` e o registro). **Antes de ele instalar a versão de verdade, desinstalar e apagar o
+  `fonte-de-teste.txt`**, senão o programa dele lê a pasta de prova. O `estado.json` da prova foi movido para
+  `C:\EditorImpressaoProva\prova-a-vista-25-11\registros\estado-antes-do-passo-1-de-novo.json`.
+- `C:\EditorImpressaoProva` (8,5 GB, com as provas antigas); o worktree `.claude\worktrees\prova-a-vista-montagem`
+  (2,7 GB, criado pelo agente da prova); cópias no rascunho da conversa (`antigo`, `antigo2`, `antigo3`).
+
+## 8. Próximo passo recomendado
+
+Ter a resposta da pergunta do §0.2; então a rodada do GitHub e a do PC (§4.6, com nenhum agente rodando), a junção
+(conferir `memoria/ramos.md`), e só com o "sim" dele a publicação (motor primeiro, depois `publicar_versao_kaique.py
+--com-instalador`).
+
+## 9. Como rodar
+
+- Testes no GitHub: `gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao --ref
+  claude/list-server-files-gkos8v -f ramo=atualizador-novo-2026-11-23` (o `gh` em `C:\Program Files\GitHub CLI`).
+- Publicar: `.venv\Scripts\python.exe publicar_versao_kaique.py --motor`, depois `... --com-instalador` (o
+  docstring do arquivo diz o passo a passo; não começa se o C: ficaria com menos de 20 GB livres, e com o .msi usa ~10 GB: ~30 GB livres antes, como a PARTE -44 calculou).
+- Última rodada inteira dos testes: GitHub 45695180689 (25/11, verde). A rodada inteira no PC (§4.6) ainda não foi
+  feita para a junção.
 
 ---
 
