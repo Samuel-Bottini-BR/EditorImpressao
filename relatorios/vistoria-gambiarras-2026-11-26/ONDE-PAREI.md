@@ -23,8 +23,8 @@ código mudou; os únicos arquivos mexidos são este e `lista.md`.
 | dividir | feito (16 achados, DV-01 a DV-16) | 26/11 17:25 | 26/11 17:38 | ~13 min de código (relógio da máquina, `date`; antes, ~10 min lendo as regras e os insumos) |
 | desfazer | feito (8 achados, DF-01 a DF-08) | 26/11 17:38 | 26/11 17:43 | ~5 min (relógio da máquina, `date`) |
 | aplicar-em / "o que vai junto" | feito (8 achados, AP-01 a AP-08) | 26/11 17:44 | 26/11 17:53 | ~9 min de código (relógio da máquina, `date`; antes, ~3 min lendo as regras e os insumos; agente novo) |
-| como-fica (as renderizações) | **próximo** | | | |
-| marcações | | | | |
+| como-fica (as renderizações) | feito (5 achados, CF-01 a CF-05) | 26/11 17:54 | 26/11 17:58 | ~5 min (relógio da máquina, `date`) |
+| marcações | **próximo** | | | |
 | contagens e situação da página | | | | |
 | o resto da tela | | | | |
 
@@ -80,14 +80,35 @@ do Filtro), L7025-7240 (`_recorte_em_todas`, `_escolher_paginas_do_corte`, `_pag
 ver os campos do filtro); `ui/automatico.py` L405-440, L660-700 e L2575-2600; `ui/widgets/filtros_tela_cheia.py` L79 e
 L498-515; `ui/janela_principal.py` L935-980.
 
+O que o pedaço como-fica leu (não reler): `ui/tarefas.py` L360-415 (`TarefaConferirOImpressoDeFora`), L792-852
+(`_TarefaCartoes`), L895-1036 (`_TarefaPrevia`: `run`, `_para_recorte`, `_folha_crua`), L1135-1260 (a chave, `pegar`,
+`pedir`, a chave da medida) e L1395-1470 (`chave_com_filtro`, `pegar_com_filtro`, `chave_para_recorte`,
+`pedir_cartoes`); em `core/pipeline.py` L690-770 (o fim de `preparar_metade`), L3407-3545 (`_filtrar`,
+`_filtrar_a_pagina`, `_so_a_marcacao_a_mao`), L3546-3580 (`filtro_com_as_caixinhas`), L3696-3708, L4245-4265
+(`_misto_vale`), L4447-4525 (`renderizar_com_filtro`, `renderizar_pagina_para_recorte`) e L4865-4925
+(`compor_como_no_pdf`); `core/zonas_na_folha.geometria_do_desenho` (docstring, L131-161); `core/automatico.py`
+L1288-1310 (`como_sai_na_tela`) e L1527-1575 (`depois_da_pagina`); em `ui/tela_conferir.py` L4797-5160 (as
+figurinhas: `_atualizar_cartoes`, `_como_sai_no_pdf`, `_sai_diferente_da_previa`, `_assinatura_do_como_sai`,
+`_chave_dos_cartoes`, `_cartao_sem_fundo`, `_cartao_pb_pelo_misto`, `_cartoes_a_pintar`, `_cartao_do_misto`,
+`_cartoes_prontos`, `_conferir_qualidade_do_preto_e_branco`, `_imagem_sem_filtro`) e L5666-5760
+(`_miniatura_branca`, `_acertar_as_miniaturas_movidas`); `ui/tela_ampliada._imagem_do_outro_filtro` (L304-350);
+`ui/widgets/filtros_tela_cheia.py` L82-170 e L800-835.
+
 ## Suspeitas (dúvidas de outros pedaços; quem ler o pedaço confirma ou descarta)
 
 ### Abertas
 
-- (como-fica) A chave das prévias é montada em dois lugares de `ui/tarefas.py` (L1150-1157 e L1430-1434), as duas com
-  `rotacao` e `giro_da_pagina`; conferir se são a mesma regra.
-- (como-fica / marcações) `core/pipeline.preparar_metade` chama `geometria_do_desenho` em três ramos (L713-718,
-  L730-735, L761-766); só o primeiro passa `ordem=ordem_do_livro(projeto)`.
+- (contagens e situação) O aviso "Ficou escura" / "Texto quase sumiu" é posto pela tela
+  (`ui/tela_conferir._conferir_qualidade_do_preto_e_branco` L5086-5121), medindo a figurinha do Preto e branco (a conta
+  simples do CF-01, sem a marcação nem o "Só as letras"), e grava `pagina.alertas` direto, fora do Histórico;
+  `core/analise.py` L778 tem outra regra que devolve o mesmo aviso. Confirmar se são duas regras para o mesmo aviso.
+- (contagens e situação) "Parte do impresso fica de fora" (D-017) é medida em três lugares: `core/pipeline.
+  compor_como_no_pdf` (com `anotar_o_de_fora`, o PDF), `ui/tarefas.TarefaConferirOImpressoDeFora` (L382-410, que
+  refaz à mão a mesma sequência: margens e `parte_impressa_de_fora`) e a ferramenta Mover na tela (o docstring de
+  `compor_como_no_pdf` diz "a ferramenta Mover anota na tela"). Conferir se as três dão o mesmo número.
+- (contagens e situação) `ui/tela_conferir._medir_o_em_branco_por_tras` (L2610-2636) ainda procura a conta com
+  `getattr(pipeline, "medir_o_em_branco", None)` e diz "ENQUANTO ELA NÃO ESTIVER NA OBRA, nada acontece aqui"; a
+  conta já existe (`core/pipeline.py` L3062). Conferir se a guarda virou código morto.
 - (contagens e situação) No girar de formato "pagina" com `folha:<f>.rotacao` (G-04), `_com_os_avisos_de_agora` guarda
   os avisos das páginas e não os da folha; no formato "folha", o contrário. Conferir se o desfazer devolve os avisos
   certos nos dois.
@@ -107,6 +128,13 @@ L498-515; `ui/janela_principal.py` L935-980.
   "dividir todas" nem marca conferida, D-627). Conferir se a folha fica com o aviso de antes depois de dividida à mão.
 
 ### Fechadas
+
+- (como-fica, aberta no girar) A chave das prévias montada em dois lugares de `ui/tarefas.py` → **virou parte do
+  achado CF-04**: a chave da imagem do Cortar é cópia de parte da chave da prévia, e o docstring dela não conta o ângulo
+  que o livro novo usa.
+- (como-fica / marcações, aberta no girar) `geometria_do_desenho` em três ramos, só o primeiro com `ordem=` → **virou o
+  achado leve CF-05**: não é defeito (a `ordem` só conta no "endireitar antes"); o que fica é a mesma chamada escrita
+  três vezes.
 
 - (aplicar-em, aberta no dividir) O "aplicar em" do Endireitar repete a conta de páginas da D-636? → **descartada**:
   `_paginas_do_alcance_do_angulo` chama `girar.folhas_do_alcance` sobre a lista de páginas, a mesma conta que
