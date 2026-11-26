@@ -20,8 +20,8 @@ código mudou; os únicos arquivos mexidos são este e `lista.md`.
 | pedaço | situação | começo | fim | tempo |
 |---|---|---|---|---|
 | girar | feito (12 achados, G-01 a G-12) | 26/11 15:40 | 26/11 15:51 | ~11 min (relógio da máquina, `date`) |
-| dividir | **próximo** | | | |
-| desfazer | | | | |
+| dividir | feito (16 achados, DV-01 a DV-16) | 26/11 17:25 | 26/11 17:38 | ~13 min de código (relógio da máquina, `date`; antes, ~10 min lendo as regras e os insumos) |
+| desfazer | **próximo** | | | |
 | aplicar-em / "o que vai junto" | | | | |
 | como-fica (as renderizações) | | | | |
 | marcações | | | | |
@@ -37,16 +37,25 @@ do menu do girar; `core/etapas.py` (marcas, L95-245 e L587-615); `core/pipeline.
 `preparar_metade`; `core/automatico.antes_da_pagina` e o começo de `_dividir`; `ui/tarefas._folha_crua` e
 `_giro_da_folha`.
 
+O que o pedaço dividir leu (não reler): `core/dividir_a_mao.py` inteiro; `core/dividir.py` inteiro; em
+`core/pipeline.py` `_analisar_a_folha` (L209-276), `jeito_de_dividir`, `achar_divisao`, `_lombada_do_editor`,
+`achar_sobra`, `folga_do_giro_na_sobra`, `faixa_da_sobra`, `_cortar_a_sobra`, `recalcular_divisao`,
+`trazer_divisao_da_analise`, `_partes_da_folha`, `preparar_para_recorte`; em `core/automatico.py` `fotografar`
+(L535-570), `medir` (L578-672), `_a_tampa`, `_dividir` (L932-990), o ramo Dividir de `_desligar` (L1130-1160),
+`paginas_depois`, `paginas_juntadas` (L396-416), `vai_dividir_pelo_tamanho` e `paginas_do_pdf_depois` (L1590-1757);
+`core/girar.gira_so_a_pagina`/`giro_da_pagina`; `core/zonas_na_folha._corte_efetivo` e `repartir_nas_metades`;
+`core/analise.analisar_folha` (só o Dividir); `modelos.Projeto.paginas_ativas`, `_de_folha_nao_dividida`,
+`metade_sobrando`, `_tem_metade_de_folha_dividida`; em `ui/tela_conferir.py` L4040-4306 (passos do Dividir, linha do
+motor, `_volta_como_estava`, `_linha_arrastada`, `_acertar_a_linha_do_dividir`, leituras), L6083-6552 (`_mover_corte`
+até `_trocar_jeito_da_folha`), L7396-7541 (o "dividir" da grade), o trecho dos botões em `_atualizar_botoes`
+(L5447-5470) e o botão "nao_dividir" do aviso (L9379-9382); `ui/tarefas.TarefaDividirFolhas` e `TarefaLerLinhas`
+(L418-520); `ui/tela_ampliada._corte_movido` e a linha (L289); as chaves de `ui/automatico.py` L1738-1755 e
+`ui/widgets/folhas_do_caderno.py` L458-472.
+
 ## Suspeitas (dúvidas de outros pedaços; quem ler o pedaço confirma ou descarta)
 
-- (dividir) Ler a folha girada a 150 DPI para medir está escrito em quatro lugares: `core/pipeline.py` L477,
-  `core/automatico.py` L609-610, `core/dividir_a_mao.py` L562 e L620-622 (este com `int(rotacao) % 360` próprio).
-- (dividir) `core/automatico.py` L1158 também põe `apagada` na direita, fora do `_dividir`; ver se é outra cópia da
-  regra de juntar a folha.
-- (dividir) `core/automatico._dividir` (L964-968), com duas páginas na folha e a medida "não dividir": põe a direita
-  como tirada e deixa `giro_da_pagina` guardado nas duas metades (a folha deixa de ser dividida, o giro fica escondido).
-  Ver se algum caminho divide de novo sem passar por `LIMPAR_AO_PARTIR` (`core/dividir_a_mao.py` L84) e faz o giro
-  escondido voltar (o achado `b12d6f61` citado em `core/girar.py` L462). Família do remendo A4.
+### Abertas
+
 - (desfazer) "Desfazer nesta página" (`ui/desfazer_nesta_pagina.py`) não tem o giro da página entre as etapas
   (Endireitar, Cortar, Mover, Filtro, Marcar). Ver se é decisão (D-621) ou caminho esquecido.
 - (como-fica) A chave das prévias é montada em dois lugares de `ui/tarefas.py` (L1150-1157 e L1430-1434), as duas com
@@ -58,3 +67,26 @@ do menu do girar; `core/etapas.py` (marcas, L95-245 e L587-615); `core/pipeline.
   certos nos dois.
 - (aplicar-em) O "aplicar em" do Endireitar (`_paginas_do_alcance_do_angulo`, `ui/tela_conferir.py` L7118) usa
   `girar.folhas_do_alcance` e `aviso_fora_do_alcance(coisa="página")`; conferir se repete a conta de páginas da D-636.
+- (desfazer) `ui/desfazer_nesta_pagina.py` L423 decide a metade pelo clique (`x < vis.posicao_corte`, a linha da
+  tela); conferir se é mais uma cópia de "qual metade" (DV-07) e se usa a linha presa entre 2% e 98%.
+- (aplicar-em) O "usar em todas" do Dividir (`_corte_em_todas`) grava `posicao_corte`, e o `_registrar` põe a marca
+  "mexida à mão" do Dividir em TODAS as folhas que recebem a linha (`MARCAS_DA_FOLHA`); na próxima vez a janela "Em
+  quais páginas?" as traz desmarcadas como "linha própria". Conferir se o "usar em todas" do Cortar e do Mover faz o
+  mesmo (o resto do "usar em todas" do Dividir já está no DV-08; não reler).
+- (marcações) Mover a linha de uma folha já dividida (arrastar, "usar em todas", trocar o motor, Automático: DV-08) não
+  reparte as marcações das metades; conferir se as zonas seguem pela geometria (`zonas_na_folha.acompanhar`) ou ficam
+  fora do lugar.
+- (contagens e situação) Os avisos "Lombada incerta" e "Não parece dupla" só são refeitos pela análise e pelo
+  Automático (`analise.analisar_folha`); "dividir esta", "dividir todas", a grade e a troca de motor não os refazem (o
+  "dividir todas" nem marca conferida, D-627). Conferir se a folha fica com o aviso de antes depois de dividida à mão.
+
+### Fechadas
+
+- (dividir, aberta no girar) Ler a folha girada a 150 DPI em quatro lugares → **virou o achado DV-01**.
+- (dividir, aberta no girar) `core/automatico.py` L1158 põe `apagada` na direita fora do `_dividir` → **virou parte do
+  DV-03** (é o "Desligar" do Automático: um terceiro jeito de juntar a folha).
+- (dividir, aberta no girar) O giro só da página escondido na folha juntada pelo Automático voltaria ao dividir de novo
+  → **descartada como achado próprio**: os dois caminhos que dividem de novo (`campos_para_dividir` com duas páginas, e
+  com as metades guardadas) devolvem as páginas "como estavam", com o giro de cada uma, que é o que a D-498 diz e o
+  comentário de `LIMPAR_AO_PARTIR` (L94-100) descreve; o `b12d6f61` é o caso da página nova partida, que passa por
+  `LIMPAR_AO_PARTIR`. O que sobra é a diferença entre os jeitos de juntar, que já está no DV-03 e no DV-05.
