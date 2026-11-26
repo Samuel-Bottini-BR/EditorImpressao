@@ -25,15 +25,43 @@ código mudou; os únicos arquivos mexidos são este e `lista.md`.
 | aplicar-em / "o que vai junto" | feito (8 achados, AP-01 a AP-08) | 26/11 17:44 | 26/11 17:53 | ~9 min de código (relógio da máquina, `date`; antes, ~3 min lendo as regras e os insumos; agente novo) |
 | como-fica (as renderizações) | feito (5 achados, CF-01 a CF-05) | 26/11 17:54 | 26/11 17:58 | ~5 min (relógio da máquina, `date`) |
 | marcações | feito (5 achados, MC-01 a MC-05) | 26/11 17:59 | 26/11 18:02 | ~3 min (relógio da máquina, `date`) |
-| contagens e situação da página | **próximo** | | | |
-| o resto da tela | | | | |
+| contagens e situação da página | feito (15 achados, SP-01 a SP-15) | 26/11 18:04 | 26/11 18:18 | ~14 min de código (relógio da máquina, `date`; antes, ~5 min lendo as regras e os insumos; agente novo) |
+| o resto da tela | **próximo** | | | |
 
-**Onde o próximo agente continua (26/11, 18:03):** no pedaço 7, contagens e situação da página (conferida, em branco,
-tirada, avisos), numerado SP-01... As seis suspeitas abertas abaixo são todas desse pedaço; comece por elas. Na fila
-da Central, os itens que tocam nele: `k0611-numeros`, `lu-2-numeros`, `lu-9-frase`, `k0611-frase-tirou`,
-`lu-3-miniatura`/`k0611-miniatura-branco` (a parte da situação; a parte do desenho já está no CF-03),
-`k0711-pronto-conta`, `au-d-487` (a grade). O agente do pedaço 4 ao 6 parou aqui, no fim de um pedaço, para o contexto
-não acabar no meio do pedaço 7, que é grande.
+**Onde o próximo agente continua (26/11, 18:18):** no pedaço 8, o resto da tela (o que de `ui/tela_conferir.py` e do
+que ela chama ainda não foi lido por nenhum pedaço; lista do que já foi lido abaixo), numerado RT-01..., com o tipo 5
+(código morto) começando por `configuracoes.espaco_livre_mb`. Não há suspeita aberta.
+
+O que o pedaço contagens e situação leu (não reler): `core/avisos.py` inteiro; em `modelos.py` `alertas_pendentes`,
+`_alertas_pendentes` (L1097-1104), `ConfigFolha` L45-56 e `ConfigPagina` L310-345, L490-505; em `core/pipeline.py`
+L180-195 (as observações da análise), L244-276 (os avisos da análise), `_anotar_aviso_da_pagina` (L1070-1093),
+L1530-1575 (`_anotar_contas_discordam` no desenho, `_anotar_corte_encostou`), L1641-1682 (`marcar_paginas_diferentes`,
+`_anotar_contas_discordam`, `acertar_alerta_do_endireitar`), `_anotar` (L2009), `_anotar_conferir` (L2711),
+L2995-3086 (`precisa_medir_o_em_branco` até `precisa_do_desenho_do_pdf`), L4030-4070 (`acertar_aviso_do_reforco`,
+`_esquecer_aceitos`), L4126-4220 (os avisos do "Só as letras", `acertar_faixa_do_livro`), `acertar_alertas_de_cor`
+(L4279-4316), L4840-4935 (o fim de `_pagina_pronta`, `compor_como_no_pdf`, `anotar_o_impresso_de_fora`), L4985-5012
+(o laço do PDF) e `_anotar_folha_maior` (L5187); em `core/analise.py` L320-332, L434-446, L463-500
+(`avaliar_preto_e_branco`) e L750-781 (`analisar_resultado`); `core/etapas.limpa_sozinho` e `filtro_que_vale`
+(L328-345); em `core/automatico.py` L678-683 (`_DA_FOLHA`...), `_juntar_avisos` (L803), `_avisos_medidos`
+(L1173-1221) e `avisos_do_livro` (L1849-1888); `core/dividir_a_mao.py` L84-96 e L228-300 (`campos_para_dividir`,
+`campos_para_juntar`); `core/folha.tamanho_da_folha_cabe` (L130-150); em `ui/tela_conferir.py` L1385-1500 (bolinhas,
+`_atualizar_barra_de_baixo`), L2150-2195 (`_conferir_tamanho_da_folha`), L2395-2475 (o fim de `_atualizar_o_mover`,
+`_acertar_o_painel_do_mover`), L2600-2650 (`_medir_o_em_branco_por_tras`, `_impresso_conferido*`), L3885-3930
+(`_montar_tira`), `_total` (L3998), L4300-4470 (`ir_para_pagina`, `_ir_para_proximo_alerta`, `_avisos_do_item`,
+`_itens_com_duvida`, `esta_certo`, `_ir_do_para_revisar`, `abrir_so_as_que_precisam`), L4580-4596, L5075-5121
+(`_conferir_qualidade_do_preto_e_branco`), L5158-5450 (a faixa inteira: `_atualizar_faixa` até `_mostrar_sugestao`),
+L5490-5565 (`_atualizar_tira`, `_atualizar_tira_do_dividir`), `_atualizar_contador` (L5763-5790), `_alertas_da_previa`
+(L5897-5941), `_com_os_avisos_de_agora` (L6021-6045), o `_registrar` de novo (L5942-5985, só para ver a ordem),
+`_acao_nas_escolhidas` (L7285-7345, os ramos em branco/tirar/trazer), `_dividir_as_medidas` (L7510-7541),
+`abrir_todas_as_paginas` (L8412-8432), `restaurar_pagina` (L9089), L9218-9470 (`apagar_pagina` até
+`_desfazer_o_reforco`, com `_marcar_revisada`, `_aplicar_sugestao`, `_aplicar_correcao`, `_escolher_forca`,
+`_deixar_em_branco`), L9470-9590 (`_aceitar_avisos` inteiro, `_aceitar_o_motivo_em_todas`, `_aceitar_tudo`,
+`_ir_para_o_aviso`, `_mostrar_a_lista_dos_avisos`) e a tecla Delete de `tratar_tecla` (L9905-9915); a busca por
+`revisada` (todas as linhas) e pelas ações de `_registrar` (os 60 tipos); `ui/tarefas.TarefaConferirOImpressoDeFora`
+(L345-416); `ui/widgets/todas_as_paginas.py` L78-100, L555-575 e L630-660 (`ItemDaGrade`, o número "só as que
+precisam"); `ui/automatico.py` L1530-1565 e L1785-1870 (o "página N de M"); `ui/tela_ampliada._total`;
+`ui/janela_principal.py` L700-720 e L1940-1960; `ui/janela_confirmar.py` L155-190; `ui/tela_inicio.py` L960-980;
+`projetos.py` L330-360 e L410-440; `ui/dialogo_impressao.py` L845-866; o cabeçalho de `core/ordem_das_paginas.py`.
 
 O que o pedaço girar leu (não reler): `core/girar.py` inteiro; em `ui/tela_conferir.py` os métodos do girar
 (L6554-6917), `_registrar` e os ajudantes dele (L5942-6081), `_espera_pelas_marcacoes` (L6938-6996), a grade
@@ -113,28 +141,23 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
 
 ### Abertas
 
-- (contagens e situação) O aviso "Ficou escura" / "Texto quase sumiu" é posto pela tela
-  (`ui/tela_conferir._conferir_qualidade_do_preto_e_branco` L5086-5121), medindo a figurinha do Preto e branco (a conta
-  simples do CF-01, sem a marcação nem o "Só as letras"), e grava `pagina.alertas` direto, fora do Histórico;
-  `core/analise.py` L778 tem outra regra que devolve o mesmo aviso. Confirmar se são duas regras para o mesmo aviso.
-- (contagens e situação) "Parte do impresso fica de fora" (D-017) é medida em três lugares: `core/pipeline.
-  compor_como_no_pdf` (com `anotar_o_de_fora`, o PDF), `ui/tarefas.TarefaConferirOImpressoDeFora` (L382-410, que
-  refaz à mão a mesma sequência: margens e `parte_impressa_de_fora`) e a ferramenta Mover na tela (o docstring de
-  `compor_como_no_pdf` diz "a ferramenta Mover anota na tela"). Conferir se as três dão o mesmo número.
-- (contagens e situação) `ui/tela_conferir._medir_o_em_branco_por_tras` (L2610-2636) ainda procura a conta com
-  `getattr(pipeline, "medir_o_em_branco", None)` e diz "ENQUANTO ELA NÃO ESTIVER NA OBRA, nada acontece aqui"; a
-  conta já existe (`core/pipeline.py` L3062). Conferir se a guarda virou código morto.
-- (contagens e situação) No girar de formato "pagina" com `folha:<f>.rotacao` (G-04), `_com_os_avisos_de_agora` guarda
-  os avisos das páginas e não os da folha; no formato "folha", o contrário. Conferir se o desfazer devolve os avisos
-  certos nos dois.
-- (contagens e situação) Na grade "Todas as páginas", "trazer de volta" desfaz o "em branco" e o "tirar do livro" de
-  uma vez; na página sozinha, só o "tirar do livro"; e "deixar em branco"/"tirar do livro" têm a regra escrita duas
-  vezes (a gerente achou isso em 17/11, Central `au-d-487`). Confirmar no código.
-- (contagens e situação) Os avisos "Lombada incerta" e "Não parece dupla" só são refeitos pela análise e pelo
-  Automático (`analise.analisar_folha`); "dividir esta", "dividir todas", a grade e a troca de motor não os refazem (o
-  "dividir todas" nem marca conferida, D-627). Conferir se a folha fica com o aviso de antes depois de dividida à mão.
+- Nenhuma (26/11, 18:18: as seis do pedaço 7 foram fechadas por ele).
 
 ### Fechadas
+
+- (contagens e situação, suspeita 1) "Ficou escura" / "Texto quase sumiu" com duas regras → **virou o achado SP-08**:
+  a tela mede e grava; a regra do núcleo (`analise.analisar_resultado`) nunca foi chamada (código morto).
+- (contagens e situação, suspeita 2) "Parte do impresso fica de fora" medida em três lugares → **virou o achado
+  SP-10**: a mesma função, em três imagens diferentes (filtrada, sem filtro a 75 DPI, a prévia da tela).
+- (contagens e situação, suspeita 3) A guarda `getattr(pipeline, "medir_o_em_branco", None)` → **virou o achado leve
+  SP-11**: a conta existe desde o mesmo dia; a guarda nunca mais é falsa.
+- (contagens e situação, suspeita 4) Os avisos guardados para o desfazer nos dois formatos do girar → **virou o achado
+  SP-12**: só os do lado do alvo; não achei hoje o caso em que isso some com um aviso.
+- (contagens e situação, suspeita 5) A grade e a página com o "trazer de volta" diferente e a regra duas vezes →
+  **virou o achado SP-07**: confirmado; e a regra da D-650 só no aceso do botão.
+- (contagens e situação, suspeita 6) "Lombada incerta" / "Não parece dupla" depois de dividir à mão → **virou o achado
+  SP-13**: somem ou ficam conforme o botão põe o tique na folha, não por medida nova.
+
 
 - (marcações, aberta no aplicar-em) O "refazer a gravura" em três lugares → **virou o achado MC-02**.
 - (marcações, aberta no dividir) Mover a linha de uma folha dividida não reparte as marcações → **virou o achado
