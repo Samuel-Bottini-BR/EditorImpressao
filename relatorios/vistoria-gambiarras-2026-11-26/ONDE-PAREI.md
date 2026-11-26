@@ -22,8 +22,8 @@ código mudou; os únicos arquivos mexidos são este e `lista.md`.
 | girar | feito (12 achados, G-01 a G-12) | 26/11 15:40 | 26/11 15:51 | ~11 min (relógio da máquina, `date`) |
 | dividir | feito (16 achados, DV-01 a DV-16) | 26/11 17:25 | 26/11 17:38 | ~13 min de código (relógio da máquina, `date`; antes, ~10 min lendo as regras e os insumos) |
 | desfazer | feito (8 achados, DF-01 a DF-08) | 26/11 17:38 | 26/11 17:43 | ~5 min (relógio da máquina, `date`) |
-| aplicar-em / "o que vai junto" | **próximo** | | | |
-| como-fica (as renderizações) | | | | |
+| aplicar-em / "o que vai junto" | feito (8 achados, AP-01 a AP-08) | 26/11 17:44 | 26/11 17:53 | ~9 min de código (relógio da máquina, `date`; antes, ~3 min lendo as regras e os insumos; agente novo) |
+| como-fica (as renderizações) | **próximo** | | | |
 | marcações | | | | |
 | contagens e situação da página | | | | |
 | o resto da tela | | | | |
@@ -62,6 +62,24 @@ L398-683 (`HistoricoAcoes` até `_regravar_tudo`, `aplicar`, os prefixos, `_rest
 `ui/barra_de_menu._montar_editar`; `ui/janela_principal.py` L270-280, L397-410, L940-980 e `keyPressEvent`
 (L2046-2053); `modelos._migrar_folha`/`_migrar` (L1130-1160).
 
+O que o pedaço aplicar-em leu (não reler): `ui/dialogo_escolher_paginas.py` L1-104; `core/fundo_tirado.py` inteiro;
+em `core/girar.py` L100-170 e L340-420 (alcance, avisos, `paginas_do_alcance`, os campos do giro das páginas); em
+`core/etapas.py` L140-200, L260-300 e L560-600 (`_tem_valor_a_mao`, `mexida_a_mao`, `recorte_a_mao`,
+`conteudo_fora_do_padrao`); `core/automatico.py` L120-200 (`CAMPOS_DA_PAGINA`, `campos_da_pagina_no_filtro`) e
+L1040-1056 (o "Rodar nelas também" do Endireitar e do Cortar); `core/perfis.py` L40-100; `core/pipeline.py`
+L1375-1425 (`recorte_depois_de_mudar_o_angulo`), L2375-2410 (o "refazer a gravura" das opções do livro) e
+L2443-2560 (`garantir_selecao`); `modelos.py` L395-425 e `guardar_selecao` (L513-533); em `ui/tela_conferir.py`
+L2085-2150 (tamanho da folha), L2490-2650 (`_gravar_o_conteudo`, `_mover_em_todas`, `_escolher_paginas_do_mover`,
+conferência por trás), L2875-2925 (os botões do Marcar e da Foto), L3190-3345 (`_preparar_para_trocar_forma`, `_forma_nas`,
+`_marcacao_em_todas`, `_marcacao_nas_proximas`), L3462-3485 (a caixinha da letra clara), L3590-3610 (o "Aplicar em"
+do Filtro), L7025-7240 (`_recorte_em_todas`, `_escolher_paginas_do_corte`, `_paginas_do_alcance_do_angulo`,
+`_mudar_o_angulo`, `_jeito_do_retangulo`, `_com_o_retangulo_do_corte`), L7570-7600 e L7640-7760 (os caminhos do
+ângulo), L8355-8410 (`usar_da_tela_cheia`, `_gravar_opcao_da_tela_cheia`), L9100-9240 (`_campos_do_aplicar_em`,
+`desfazer_o_tirar_o_fundo`, `_filtro_em_todas`, `_filtro_nas_proximas`), `_marcar_revisada` (L9315),
+`CAMPOS_SO_DO_MOVER` (L10040-10070) e `MARCAS_DA_*` (L10140-10187); `ui/tarefas.py` L1140-1180 (a chave, só para
+ver os campos do filtro); `ui/automatico.py` L405-440, L660-700 e L2575-2600; `ui/widgets/filtros_tela_cheia.py` L79 e
+L498-515; `ui/janela_principal.py` L935-980.
+
 ## Suspeitas (dúvidas de outros pedaços; quem ler o pedaço confirma ou descarta)
 
 ### Abertas
@@ -73,12 +91,14 @@ L398-683 (`HistoricoAcoes` até `_regravar_tudo`, `aplicar`, os prefixos, `_rest
 - (contagens e situação) No girar de formato "pagina" com `folha:<f>.rotacao` (G-04), `_com_os_avisos_de_agora` guarda
   os avisos das páginas e não os da folha; no formato "folha", o contrário. Conferir se o desfazer devolve os avisos
   certos nos dois.
-- (aplicar-em) O "aplicar em" do Endireitar (`_paginas_do_alcance_do_angulo`, `ui/tela_conferir.py` L7118) usa
-  `girar.folhas_do_alcance` e `aviso_fora_do_alcance(coisa="página")`; conferir se repete a conta de páginas da D-636.
-- (aplicar-em) O "usar em todas" do Dividir (`_corte_em_todas`) grava `posicao_corte`, e o `_registrar` põe a marca
-  "mexida à mão" do Dividir em TODAS as folhas que recebem a linha (`MARCAS_DA_FOLHA`); na próxima vez a janela "Em
-  quais páginas?" as traz desmarcadas como "linha própria". Conferir se o "usar em todas" do Cortar e do Mover faz o
-  mesmo (o resto do "usar em todas" do Dividir já está no DV-08; não reler).
+- (marcações) A regra "página marcada antes de existir `gravura_feita_com`, com área da máquina, ganha o 'refazer a
+  gravura'" está escrita em três lugares: `core/pipeline.py` L2398-2404 (as opções do livro mudaram) e duas vezes na
+  tela, `ui/tela_conferir._preparar_para_trocar_forma` (L3205-3226, "Esta página tem foto", sozinha e com "usar em
+  todas") e o "detectar automaticamente" (L3179-3190); as duas da tela gravam o campo direto na página, fora do
+  desfazer ("de propósito", pelo docstring). Confirmar no pedaço das marcações.
+- (contagens e situação) Na grade "Todas as páginas", "trazer de volta" desfaz o "em branco" e o "tirar do livro" de
+  uma vez; na página sozinha, só o "tirar do livro"; e "deixar em branco"/"tirar do livro" têm a regra escrita duas
+  vezes (a gerente achou isso em 17/11, Central `au-d-487`). Confirmar no código.
 - (marcações) Mover a linha de uma folha já dividida (arrastar, "usar em todas", trocar o motor, Automático: DV-08) não
   reparte as marcações das metades; conferir se as zonas seguem pela geometria (`zonas_na_folha.acompanhar`) ou ficam
   fora do lugar.
@@ -87,6 +107,15 @@ L398-683 (`HistoricoAcoes` até `_regravar_tudo`, `aplicar`, os prefixos, `_rest
   "dividir todas" nem marca conferida, D-627). Conferir se a folha fica com o aviso de antes depois de dividida à mão.
 
 ### Fechadas
+
+- (aplicar-em, aberta no dividir) O "aplicar em" do Endireitar repete a conta de páginas da D-636? → **descartada**:
+  `_paginas_do_alcance_do_angulo` chama `girar.folhas_do_alcance` sobre a lista de páginas, a mesma conta que
+  `girar.paginas_do_alcance` (D-636) usa por dentro; a D-636 só acrescenta o filtro "é metade de folha dividida", que
+  é do girar. O aviso em duas funções já está no G-10; a conta à mão do "todas"/"daqui em diante" das outras
+  ferramentas ficou no AP-06.
+- (aplicar-em, aberta no dividir) O "usar em todas" do Dividir deixa todas as folhas que recebem a linha como "linha
+  própria" na vez seguinte; o Cortar e o Mover também? → **virou o achado AP-02**: sim, nos três (o Cortar e o Mover
+  pelo valor gravado, o Dividir pela marca).
 
 - (dividir, aberta no girar) Ler a folha girada a 150 DPI em quatro lugares → **virou o achado DV-01**.
 - (dividir, aberta no girar) `core/automatico.py` L1158 põe `apagada` na direita fora do `_dividir` → **virou parte do
