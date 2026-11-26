@@ -75,8 +75,9 @@ def test_d712_instalador_nao_pergunta_nada():
 # --- D-721: a janela da senha na primeira abertura, sem senha nada liga -----------------------
 
 def test_d721_primeira_vez_pede_a_senha_e_liga(dados, fake, monkeypatch):
-    """D-721: na primeira abertura, a janela da senha aparece; com a senha, liga.
-    Na segunda vez, não aparece sozinha."""
+    """D-721: na primeira abertura, a janela da senha aparece uma vez; na segunda, não aparece sozinha.
+    Adaptado pela D-836, com a D-825 (21/11/2026, opção B: "ok"): nesta versão a senha digitada NÃO liga os testes
+    (o nome do teste ficou o de antes); e, pela D-834, a janela da senha não faz mais pergunta do Windows."""
     pytest.importorskip("PySide6")
     import ui.testes_a_distancia_ui as tdui
 
@@ -86,8 +87,8 @@ def test_d721_primeira_vez_pede_a_senha_e_liga(dados, fake, monkeypatch):
 
     tdui.primeira_vez_se_preciso(None, instalado=lambda: True)  # D-728: so no programa instalado
     assert vezes == [1], "a janela da senha apareceu uma vez"
-    assert td.senha_ja_perguntada() and td.esta_pronto()
-    assert len(fake.chamadas) == 1
+    assert td.senha_ja_perguntada() and not td.esta_pronto()
+    assert fake.chamadas == [], "D-825: a senha não liga nada; D-834: nenhuma pergunta do Windows daqui"
 
     tdui.primeira_vez_se_preciso(None, instalado=lambda: True)
     assert vezes == [1], "na segunda abertura a janela não aparece sozinha"
@@ -228,8 +229,9 @@ def test_d728_pelo_codigo_nenhuma_janela_e_nada_marcado(dados, fake, monkeypatch
 
 
 def test_d728_instalado_primeira_vez_pede_a_senha(dados, fake, monkeypatch):
-    """D-728 (16/11/2026): no programa instalado pelo instalador, na primeira vez, a janela da
-    senha aparece (D-721). A janela é trocada por uma de mentira: nada abre na tela."""
+    """D-728 (16/11/2026): no programa instalado pelo instalador, na primeira vez, a janela da senha aparece (D-721).
+    A janela é trocada por uma de mentira: nada abre na tela. Adaptado pela D-836 (D-825: a senha não liga nada;
+    D-834: nenhuma pergunta do Windows a partir da janela da senha)."""
     pytest.importorskip("PySide6")
     import ui.testes_a_distancia_ui as tdui
 
@@ -239,8 +241,8 @@ def test_d728_instalado_primeira_vez_pede_a_senha(dados, fake, monkeypatch):
 
     tdui.primeira_vez_se_preciso(None, instalado=lambda: True)
     assert vezes == [1], "instalado, primeira vez: a janela da senha apareceu uma vez"
-    assert td.senha_ja_perguntada() and td.esta_pronto()
-    assert len(fake.chamadas) == 1
+    assert td.senha_ja_perguntada() and not td.esta_pronto()
+    assert fake.chamadas == []
 
     tdui.primeira_vez_se_preciso(None, instalado=lambda: True)
     assert vezes == [1], "na segunda abertura a janela não aparece sozinha"

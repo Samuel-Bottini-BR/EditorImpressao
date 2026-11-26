@@ -7,7 +7,9 @@ O QUE É
     arquivo (`ler_assinatura_digital`, desde o passo 2, para o publicar), e abrir um programa num grupo do Windows que
     fecha junto tudo o que ele abrir (`abrir_em_grupo`, passo 2, para a vigia do espaço do publicar), com o laço único
     de rodar, olhar a vigia e fechar (`rodar_em_grupo`, passo 2, volta 4: o vpk e o gh), e pedir ao Windows que grave
-    um arquivo no disco (`gravar_no_disco`, passo 2, volta 4). O porteiro (`regras_dos_agentes`,
+    um arquivo no disco (`gravar_no_disco`, passo 2, volta 4), e mostrar a caixa do próprio Windows, para a frase da
+    atualização que aparece antes de a janela do programa existir (`mostrar_caixa_do_windows`, volta 5 do atualizador
+    novo, D-868). O porteiro (`regras_dos_agentes`,
     conferência K01) só deixa essa conversa acontecer aqui. Quem usa hoje: o `main.py` (a entrada do trabalho de
     administrador), a janela de prova, os testes e, desde o passo 2, o `empacotar.py` (o vpk pelo laço único, a
     assinatura digital do Visual C++ e a gravação no disco) e o `publicar_versao_kaique.py` (o gh pelo laço único). O
@@ -26,6 +28,12 @@ PEDIR A LICENÇA (decisão do Samuel de 18/11: a pergunta mostra o programa do E
     não mostra janela nem brasão (`main.py` atende esse argumento antes de tudo): `atender_trabalho_de_administrador`
     confere a pasta de troca, faz só os passos do aviso (de uma lista fechada de tipos), escreve o relatório
     (`relatorio.json`) e sai. Quem pediu lê o relatório e decide pelo relatório, não pelo código de saída.
+    Desde o atualizador novo (23/11/2026) o pedido tem duas metades, da mesma conta: `comecar_pedido_de_licenca` faz a
+    pergunta e volta logo depois da resposta (a pergunta vem antes da janela do programa, D-806, D-834), e
+    `PedidoDeLicenca.esperar()` espera o trabalho e lê o relatório (por trás, com a janela aberta). `pedir_licenca` é
+    as duas juntas. Os passos do preparo do computador (o Visual C++, tirar o Inno antigo e dar a Usuários a licença de
+    Modificar na pasta do programa, `dar_licenca_aos_usuarios`, a ÚNICA mudança de licença de pasta do programa, D-837)
+    não aceitam dado nenhum no aviso: o lado com licença calcula tudo a partir do próprio programa (`raiz_da_instalacao`).
 
 A PASTA DE TROCA
     Nasce em `<pasta de dados do programa>\\troca\\troca-<data>-<sorteio>`, com `os.mkdir` comum, herdando as licenças
@@ -141,7 +149,11 @@ SID_DIREITOS_DO_DONO = "S-1-3-4"
 
 # Os tipos de passo que o programa com licença sabe fazer. Lista FECHADA (ver o topo).
 TIPOS_DE_PASSO = ("criar_pasta_segura", "apagar_pasta_segura", "gravar_na_pasta_segura", "criar_tarefa",
-                  "apagar_tarefa", "apagar_pasta_de_tarefas", "script")
+                  "apagar_tarefa", "apagar_pasta_de_tarefas", "script",
+                  # O preparo do computador do atualizador novo (23/11/2026): o lado com licença calcula tudo sozinho a
+                  # partir do próprio programa; o aviso não leva dado nenhum (`_PASSOS_SEM_DADOS`).
+                  "instalar_visual_c", "tirar_instalacao_do_inno", "dar_licenca_aos_usuarios")
+_PASSOS_SEM_DADOS = ("instalar_visual_c", "tirar_instalacao_do_inno", "dar_licenca_aos_usuarios")
 
 # Códigos de saída do programa com licença (o relatório decide; o código só explica quando não há relatório).
 SAIDA_TUDO_CERTO = 0
@@ -327,6 +339,24 @@ class _THREADENTRY32(ctypes.Structure):
                 ("dwFlags", wintypes.DWORD)]
 
 
+class _PROCESSENTRY32W(ctypes.Structure):
+    """PROCESSENTRY32W (Toolhelp32): um processo da lista do Windows, com o número, o número de quem o abriu e o nome
+    do programa (sem o caminho), lidos sem abrir o processo (`programas_rodando_de`; vinda da volta 4 do atualizador,
+    22/11/2026, com o número de quem abriu, para deixar de fora os processos filhos deste)."""
+
+    _fields_ = [("dwSize", wintypes.DWORD), ("cntUsage", wintypes.DWORD), ("th32ProcessID", wintypes.DWORD),
+                ("th32DefaultHeapID", ctypes.c_size_t), ("th32ModuleID", wintypes.DWORD),
+                ("cntThreads", wintypes.DWORD), ("th32ParentProcessID", wintypes.DWORD),
+                ("pcPriClassBase", wintypes.LONG), ("dwFlags", wintypes.DWORD), ("szExeFile", wintypes.WCHAR * 260)]
+
+
+class _USEROBJECTFLAGS(ctypes.Structure):
+    """As bandeiras de uma estação de janelas (USEROBJECTFLAGS, winuser.h): `dwFlags` tem `WSF_VISIBLE` quando a
+    estação tem tela à vista (volta 5 do atualizador novo, a caixa do Windows)."""
+
+    _fields_ = [("fInherit", wintypes.BOOL), ("fReserved", wintypes.BOOL), ("dwFlags", wintypes.DWORD)]
+
+
 class _Bibliotecas:
     """As funções do Windows que a peça usa, com os tipos certos e `use_last_error=True` (o erro de cada chamada
     fica guardado e é lido por `_ler_erro`, nunca um erro velho de outra chamada)."""
@@ -361,6 +391,12 @@ class _Bibliotecas:
             (k.CreateToolhelp32Snapshot, [wintypes.DWORD, wintypes.DWORD], wintypes.HANDLE),
             (k.Thread32First, [wintypes.HANDLE, ctypes.POINTER(_THREADENTRY32)], wintypes.BOOL),
             (k.Thread32Next, [wintypes.HANDLE, ctypes.POINTER(_THREADENTRY32)], wintypes.BOOL),
+            (k.Process32FirstW, [wintypes.HANDLE, ctypes.POINTER(_PROCESSENTRY32W)], wintypes.BOOL),
+            (k.Process32NextW, [wintypes.HANDLE, ctypes.POINTER(_PROCESSENTRY32W)], wintypes.BOOL),
+            (k.QueryFullProcessImageNameW, [wintypes.HANDLE, wintypes.DWORD, wintypes.LPWSTR,
+                                            ctypes.POINTER(wintypes.DWORD)], wintypes.BOOL),
+            (k.GetCurrentProcessId, [], wintypes.DWORD),
+            (k.GetProcessTimes, [wintypes.HANDLE] + [ctypes.POINTER(wintypes.FILETIME)] * 4, wintypes.BOOL),
             (a.GetNamedSecurityInfoW, [wintypes.LPCWSTR, ctypes.c_int, wintypes.DWORD, ctypes.POINTER(P),
                                        ctypes.POINTER(P), ctypes.POINTER(P), ctypes.POINTER(P), ctypes.POINTER(P)],
              wintypes.DWORD),
@@ -390,6 +426,10 @@ class _Bibliotecas:
             (u.ShowWindow, [wintypes.HWND, ctypes.c_int], wintypes.BOOL),
             (u.SetForegroundWindow, [wintypes.HWND], wintypes.BOOL),
             (u.GetForegroundWindow, [], wintypes.HWND),
+            (u.GetProcessWindowStation, [], wintypes.HANDLE),
+            (u.GetUserObjectInformationW, [wintypes.HANDLE, ctypes.c_int, P, wintypes.DWORD,
+                                           ctypes.POINTER(wintypes.DWORD)], wintypes.BOOL),
+            (u.MessageBoxW, [wintypes.HWND, wintypes.LPCWSTR, wintypes.LPCWSTR, wintypes.UINT], ctypes.c_int),
             (o.CoInitializeEx, [P, wintypes.DWORD], ctypes.c_long),
             (o.CoUninitialize, [], None),
             (o.CoTaskMemFree, [P], None),
@@ -563,6 +603,7 @@ class Licenca:
     herdada: bool
     so_para_dentro: bool
     para_objetos: bool = False      # OBJECT_INHERIT_ACE: passa para os arquivos (ou as tarefas) que nascem dentro
+    para_pastas: bool = False       # CONTAINER_INHERIT_ACE: passa para as pastas que nascem dentro (atualizador novo)
 
     @property
     def grava(self) -> bool:
@@ -790,13 +831,14 @@ def _linhas_da_lista(lista: ctypes.c_void_p, de_onde: str) -> list[Licenca]:
         cabeca = ctypes.cast(ace, ctypes.POINTER(_ACE)).contents
         herdada, so_dentro = bool(cabeca.AceFlags & _ACE_HERDADA), bool(cabeca.AceFlags & _ACE_SO_PARA_DENTRO)
         objetos = bool(cabeca.AceFlags & 0x01)                                     # OBJECT_INHERIT_ACE
+        pastas = bool(cabeca.AceFlags & 0x02)                                      # CONTAINER_INHERIT_ACE
         if cabeca.AceType in (_ACE_PERMITE, _ACE_NEGA):
             psid = ace.value + 8
             linhas.append(Licenca(_sid_em_texto(psid), _nome_da_conta(psid),
                                   "permite" if cabeca.AceType == _ACE_PERMITE else "nega", cabeca.Mask, herdada,
-                                  so_dentro, objetos))
+                                  so_dentro, objetos, pastas))
         else:
-            linhas.append(Licenca("", "", "outra", cabeca.Mask, herdada, so_dentro, objetos))
+            linhas.append(Licenca("", "", "outra", cabeca.Mask, herdada, so_dentro, objetos, pastas))
     return linhas
 
 
@@ -1813,6 +1855,217 @@ def marca_existe(nome: str) -> bool | None:
 
 
 # ---------------------------------------------------------------------------------------------------------------------
+# Os programas que rodam de dentro de uma pasta: só ler (volta 4 do atualizador, 22/11/2026; atualizador novo, 23/11)
+# ---------------------------------------------------------------------------------------------------------------------
+
+_TODOS_OS_PROCESSOS = 0x00000002                # TH32CS_SNAPPROCESS
+_SO_PERGUNTAR_O_CAMINHO = 0x1000                # PROCESS_QUERY_LIMITED_INFORMATION
+_A_LISTA_ACABOU = 18                            # ERROR_NO_MORE_FILES
+
+
+def _dentro_de(caminho: str, pastas: tuple[str, ...]) -> bool:
+    """O arquivo `caminho` está dentro de uma das `pastas` (já normalizadas por `os.path.normcase(normpath)`)?"""
+    c = os.path.normcase(os.path.normpath(caminho))
+    return any(c.startswith(p + os.sep) for p in pastas)
+
+
+def familia_de(pid: int, pais: dict[int, int], criados: dict[int, int] | None = None) -> set[int]:
+    """`pid` e todos os processos que ele abriu, e os que esses abriram (pela tabela processo -> quem o abriu, como o
+    Windows a dá). Lugar único da conta. Um número de quem abriu que já não existe não liga nada a ninguém.
+    `criados` (processo -> a hora em que nasceu, do Windows): o Windows reaproveita os números, então um processo só é
+    filho de quem nasceu ANTES dele (volta 2, leve 3: sem isto, uma janela aberta por um processo que já morreu, cujo
+    número passou a este programa, contava como da família e ficava de fora da conta de "outra janela aberta")."""
+    criados = criados or {}
+    familia, mudou = {int(pid)}, True
+    while mudou:
+        mudou = False
+        for filho, pai in pais.items():
+            if pai in familia and filho not in familia and filho != pai:
+                if filho in criados and pai in criados and criados[filho] < criados[pai]:
+                    continue                    # nasceu antes do "pai": o número do pai é reaproveitado
+                familia.add(filho)
+                mudou = True
+    return familia
+
+
+def _hora_em_que_nasceu(alca) -> int | None:
+    """A hora em que o processo nasceu (GetProcessTimes, em unidades de 100 ns), ou None se não deu para ler."""
+    w = _win()
+    nasceu, saiu, nucleo, usuario = (wintypes.FILETIME() for _ in range(4))
+    if not w.kernel32.GetProcessTimes(alca, ctypes.byref(nasceu), ctypes.byref(saiu), ctypes.byref(nucleo),
+                                      ctypes.byref(usuario)):
+        return None
+    return (nasceu.dwHighDateTime << 32) | nasceu.dwLowDateTime
+
+
+def programas_rodando_de(pasta: Path | str, menos_a_familia_de: int | None = None,
+                         nomes: set[str] | None = None) -> list[tuple[int, str]] | None:
+    """Os processos cujo programa está dentro de `pasta` (em qualquer conta), lidos agora no Windows: [(número,
+    caminho)], [] se nenhum, None se o Windows não deu a lista. `menos_a_familia_de`: deixa de fora esse processo e os
+    que ele abriu (o servidor de páginas, o brasão): para o atualizador saber se há OUTRA janela do programa aberta.
+    `nomes`: os nomes de programa (.exe, em minúsculas) que contam quando o caminho não deu para ler; None = os .exe
+    que estão na pasta (lidos do disco).
+
+    É a mesma pergunta que o Velopack faz antes de fechar à força o que roda na pasta dele (util_windows.rs,
+    `get_processes_running_in_directory`: o caminho de cada processo pelo `QueryFullProcessImageNameW`), feita ANTES,
+    para o atualizador não pedir a troca com outra janela do programa aberta (o Velopack a fecharia à força, com o que
+    estivesse nela). Como: a lista do Windows (`CreateToolhelp32Snapshot`) dá o número, o número de quem o abriu e o
+    nome de cada processo sem abri-lo; o caminho e a hora em que nasceu vêm de `OpenProcess` só para perguntar
+    (`PROCESS_QUERY_LIMITED_INFORMATION`), `QueryFullProcessImageNameW` e `GetProcessTimes`. Um processo cujo caminho
+    não deu para ler (outra conta sem licença, um processo protegido do Windows) conta como de dentro se o NOME dele é o
+    de um programa que está na pasta: nunca se dá como fechado o que não deu para conferir. Só lê; não fecha nada.
+    Seguro mexer: as frases. Arriscado: comparar só pelo nome (outro programa com o mesmo nome contaria) ou só pelo
+    caminho (o processo que não deixa ler o caminho sumiria da conta)."""
+    w = _win()
+    pastas = tuple({os.path.normcase(os.path.normpath(str(pasta))),
+                    os.path.normcase(os.path.normpath(os.path.realpath(str(pasta))))})
+    if nomes is None:
+        try:
+            nomes = {p.name.lower() for p in Path(pasta).rglob("*.exe")}
+        except OSError:
+            nomes = set()
+    lista = w.kernel32.CreateToolhelp32Snapshot(_TODOS_OS_PROCESSOS, 0)
+    if not lista or lista == _ALCA_INVALIDA:
+        return None
+    lidos: list[tuple[int, int, str]] = []
+    try:
+        linha = _PROCESSENTRY32W()
+        linha.dwSize = ctypes.sizeof(linha)
+        if not w.kernel32.Process32FirstW(lista, ctypes.byref(linha)):
+            return None
+        while True:
+            lidos.append((int(linha.th32ProcessID), int(linha.th32ParentProcessID), str(linha.szExeFile)))
+            if not w.kernel32.Process32NextW(lista, ctypes.byref(linha)):
+                if _ler_erro() != _A_LISTA_ACABOU:      # outro erro: a lista veio cortada
+                    return None
+                break
+    finally:
+        w.kernel32.CloseHandle(lista)
+    caminhos: dict[int, str | None] = {}
+    criados: dict[int, int] = {}
+    for pid, _pai, _nome in lidos:
+        caminhos[pid] = None
+        if not pid:
+            continue
+        alca = w.kernel32.OpenProcess(_SO_PERGUNTAR_O_CAMINHO, False, pid)
+        if alca:
+            try:
+                buffer = ctypes.create_unicode_buffer(32768)
+                tamanho = wintypes.DWORD(len(buffer))
+                if w.kernel32.QueryFullProcessImageNameW(alca, 0, buffer, ctypes.byref(tamanho)):
+                    caminhos[pid] = buffer.value
+                hora = _hora_em_que_nasceu(alca)
+                if hora is not None:
+                    criados[pid] = hora
+            finally:
+                w.kernel32.CloseHandle(alca)
+    fora = (familia_de(menos_a_familia_de, {pid: pai for pid, pai, _ in lidos}, criados)
+            if menos_a_familia_de else set())
+    achados: list[tuple[int, str]] = []
+    for pid, _pai, nome in lidos:
+        if not pid or pid in fora:
+            continue
+        caminho = caminhos[pid]
+        if caminho is not None:
+            if _dentro_de(caminho, pastas):
+                achados.append((pid, caminho))
+        elif nome.lower() in nomes:
+            achados.append((pid, f"{nome}{SEM_CAMINHO}"))
+    return achados
+
+
+# O fim do texto de um processo que `programas_rodando_de` contou só pelo nome (o caminho não deu para ler). Um lugar
+# só: `caminho_conferido` é a única leitura (volta 3, M7: "não deu para conferir" nunca é "é dele", nem "não é").
+SEM_CAMINHO = " (o caminho não deu para ler)"
+
+
+def caminho_conferido(caminho: str) -> bool:
+    """O processo achado por `programas_rodando_de` teve o caminho LIDO (está de fato na pasta)? False = só o nome bateu
+    (o caminho não deu para ler: outra conta, um processo protegido do Windows)."""
+    return not str(caminho).endswith(SEM_CAMINHO)
+
+
+NOME_DO_ATUALIZADOR_DO_VELOPACK = "Update.exe"
+
+
+def atualizador_do_velopack_rodando(raiz: Path | str) -> bool | None:
+    """O atualizador do Velopack desta instalação (`<raiz>\\Update.exe`) está rodando agora? True, False, ou None (o
+    Windows não deu a lista de processos). Só lê.
+
+    Para quê (volta 2 do atualizador novo, achado G1): o atualizador do Velopack roda do pedido da troca até reabrir o
+    programa: espera o programa sair (`util_common.rs` 14-26), mostra a janelinha, abre o pacote, fecha à força o que
+    roda da pasta, renomeia `current` e reabre (`apply_windows_impl.rs` 134-176; `apply.rs` 47-75). Enquanto ele roda,
+    a troca está acontecendo, e quem abre o programa pelo atalho nesse tempo abre a versão de antes (o atalho só chama
+    `Update.exe start`, que abre `current\\` sem esperar nem olhar a tranca: `stub.rs` 32-39,
+    `start_windows_impl.rs` 111-133; o `start` volta logo depois de abrir o programa). Um processo de nome
+    `Update.exe` cujo caminho não deu para ler (o de outro programa, de outra conta) é "não deu para saber" (None),
+    nunca "rodando" nem "parado" (volta 3, M7: contado como rodando, ele fazia o programa sair calado a cada clique
+    no atalho enquanto rodasse). O caminho lido e igual ao desta instalação: True."""
+    alvo = os.path.normcase(os.path.normpath(str(Path(raiz) / NOME_DO_ATUALIZADOR_DO_VELOPACK)))
+    achados = programas_rodando_de(raiz, nomes={NOME_DO_ATUALIZADOR_DO_VELOPACK.lower()})
+    if achados is None:
+        return None
+    if any(caminho_conferido(c) and os.path.normcase(os.path.normpath(c)) == alvo for _, c in achados):
+        return True
+    return None if any(not caminho_conferido(c) for _, c in achados) else False
+
+
+def numero_deste_processo() -> int:
+    """O número deste processo no Windows."""
+    return int(_win().kernel32.GetCurrentProcessId())
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# O dono de um arquivo, o Visual C++ e a instalação antiga do Inno: só ler (atualizador novo, 23/11/2026; antes eram
+# escritos no atualizacao.py, cada um com o seu ctypes e o seu winreg)
+# ---------------------------------------------------------------------------------------------------------------------
+
+def dono_do_arquivo(caminho: Path | str) -> str | None:
+    """O SID do dono do arquivo ("S-1-5-32-544"...), lido pelo Windows (`ler_licencas`), ou None se não deu para ler."""
+    try:
+        return ler_licencas(caminho).dono or None
+    except OSError:
+        return None
+
+
+# A chave do Visual C++ 2015-2022 x64 (a mesma do instalador.iss, seção [Code], que a Microsoft documenta) e a da
+# instalação antiga do Inno Setup (o AppId fixo do instalador.iss; o Windows a guarda em ...\Uninstall\{AppId}_is1).
+CHAVE_DO_VISUAL_C = "SOFTWARE\\Microsoft\\VisualStudio\\14.0\\VC\\Runtimes\\x64"
+APPID_DO_INNO = "{7C4E1B92-3A5D-4F18-9B6C-2E8A5D0F3C71}"
+CHAVE_DO_INNO = f"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{APPID_DO_INNO}_is1"
+
+
+def ler_versao_do_visual_c() -> tuple[int, int, int] | None:
+    """A maior versão do Visual C++ 2015-2022 x64 instalada (as duas vistas do registro), ou None. Só lê."""
+    import winreg
+
+    achadas = []
+    for vista in (winreg.KEY_WOW64_64KEY, winreg.KEY_WOW64_32KEY):
+        try:
+            with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, CHAVE_DO_VISUAL_C, 0, winreg.KEY_READ | vista) as chave:
+                if winreg.QueryValueEx(chave, "Installed")[0] != 1:
+                    continue
+                achadas.append(tuple(int(winreg.QueryValueEx(chave, nome)[0]) for nome in ("Major", "Minor", "Bld")))
+        except (OSError, ValueError, TypeError):
+            continue
+    return max(achadas) if achadas else None
+
+
+def ler_instalacao_do_inno() -> dict | None:
+    """A instalação antiga do Inno Setup (a de 28/10 do Kaique): {"UninstallString", "InstallLocation"} lidos do
+    registro, ou None se não há. Só lê."""
+    import winreg
+
+    for vista in (winreg.KEY_WOW64_64KEY, winreg.KEY_WOW64_32KEY):
+        try:
+            with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, CHAVE_DO_INNO, 0, winreg.KEY_READ | vista) as chave:
+                return {nome: winreg.QueryValueEx(chave, nome)[0] for nome in ("UninstallString", "InstallLocation")}
+        except OSError:
+            continue
+    return None
+
+
+# ---------------------------------------------------------------------------------------------------------------------
 # Trazer a janela para a frente
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -1830,6 +2083,77 @@ def trazer_para_a_frente(janela: int | None) -> bool:
         u.ShowWindow(janela, 9)                                        # SW_RESTORE
     u.SetForegroundWindow(janela)
     return u.GetForegroundWindow() == janela
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# A caixa do Windows (volta 5 do atualizador novo, 25/11/2026; D-868)
+# ---------------------------------------------------------------------------------------------------------------------
+# Para quê: a frase da atualização que aparece ANTES de a janela do programa existir (a versão nova que não passou no
+# teste rápido; a frase guardada para a abertura seguinte) não pode esperar a janela: se a janela da versão estragada
+# não abre, a frase nunca apareceria (o G1 do quarto "quem tenta quebrar"). Palavras do Samuel (D-868): "a frase
+# aparece pela caixa do Windows, pela peça (`MessageBoxW`), nunca pela janela do programa". Esta é a ÚNICA chamada da
+# caixa do Windows no programa; quem mostra a frase é o executor da atualização (`atualizacao.Atualizacao._para_a_tela`).
+# O que a caixa faz em cada caso, com a fonte (a documentação da Microsoft), está no ONDE-PAREI da volta 5
+# (`relatorios/atualizador-novo/ONDE-PAREI.md`, "A leitura antes de usar a peça de fora: a caixa do Windows").
+# Arriscado: tirar a conferência da área de trabalho à vista (numa sessão sem tela, a caixa nasce onde ninguém vê e a
+# linha que a chamou fica parada para sempre esperando o OK); contar como "viu" outra volta que não seja o OK.
+
+_UOI_FLAGS = 1                      # GetUserObjectInformationW: as bandeiras do objeto (USEROBJECTFLAGS)
+_WSF_VISIBLE = 0x0001               # "a estação de janelas tem superfícies de tela visíveis"
+_MB_OK = 0x00000000                 # só o botão OK
+_MB_ICONINFORMATION = 0x00000040    # o ícone "i" (o mesmo das caixas da janela: QMessageBox.Information)
+_MB_SETFOREGROUND = 0x00010000      # o Windows tenta pôr a caixa na frente (SetForegroundWindow)
+_MB_TOPMOST = 0x00040000            # a caixa fica acima das outras janelas (WS_EX_TOPMOST)
+_IDOK = 1                           # a volta da caixa quando a pessoa clica OK (ou aperta ESC, com só o OK)
+
+
+def area_de_trabalho_a_vista() -> bool | None:
+    """A estação de janelas DESTE processo tem tela à vista (`WSF_VISIBLE`)? True, False, ou None (não deu para ler).
+    Só lê. É o jeito que a Microsoft documenta ("Interactive Services": GetProcessWindowStation e
+    GetUserObjectInformation com o atributo WSF_VISIBLE). False é, por exemplo, o programa aberto por uma conexão de
+    longe ou por um serviço: a caixa nasceria numa tela que ninguém vê. O identificador que GetProcessWindowStation
+    devolve não se fecha (documentação dela)."""
+    try:
+        u = _win().user32
+        estacao = u.GetProcessWindowStation()
+        if not estacao:
+            return None
+        bandeiras = _USEROBJECTFLAGS()
+        precisou = wintypes.DWORD(0)
+        if not u.GetUserObjectInformationW(estacao, _UOI_FLAGS, ctypes.byref(bandeiras), ctypes.sizeof(bandeiras),
+                                           ctypes.byref(precisou)):
+            return None
+        return bool(bandeiras.dwFlags & _WSF_VISIBLE)
+    except OSError:
+        return None
+
+
+def mostrar_caixa_do_windows(titulo: str, texto: str) -> Resposta:
+    """Mostra a caixa do próprio Windows (`MessageBoxW`, sem janela dona, só o OK) e ESPERA o OK; devolve `DEU_CERTO`
+    só quando a pessoa clicou OK (a volta `IDOK`). Nunca levanta.
+    - Sem área de trabalho à vista (`area_de_trabalho_a_vista` não é True): NÃO chama a caixa e devolve `FALHOU`
+      (quem chamou guarda a frase para depois).
+    - A caixa que o Windows não mostrou (a volta zero): `FALHOU`, com o número do erro (`_ler_erro`, logo depois da
+      chamada).
+    Trava só a linha que chama, até o OK (a caixa é modal: "o sistema não devolve o controle [...] até a caixa ser
+    fechada"). `MB_TOPMOST` a deixa acima das outras janelas; `MB_SETFOREGROUND` pede a frente (o Windows pode
+    recusar e piscar o botão na barra de tarefas)."""
+    a_vista = area_de_trabalho_a_vista()
+    if a_vista is not True:
+        return _falhou("não há área de trabalho à vista: a caixa do Windows não foi mostrada" if a_vista is False
+                       else "não deu para saber se há área de trabalho à vista: a caixa do Windows não foi mostrada",
+                       "WSF_VISIBLE ausente" if a_vista is False else "GetUserObjectInformationW falhou")
+    try:
+        volta = _win().user32.MessageBoxW(None, str(texto), str(titulo),
+                                          _MB_OK | _MB_ICONINFORMATION | _MB_SETFOREGROUND | _MB_TOPMOST)
+        erro = _ler_erro()
+    except OSError as e:
+        return _falhou("a caixa do Windows não abriu", str(e))
+    if volta == _IDOK:
+        return _certo()
+    if volta == 0:
+        return _falhou("o Windows não mostrou a caixa", f"MessageBoxW devolveu 0 (erro {erro})")
+    return _falhou("a caixa do Windows fechou sem o OK", f"MessageBoxW devolveu {volta}")
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -2298,6 +2622,21 @@ def passo_script(descricao: str, texto: str, com_segredo: bool = False, limite_s
     return Passo("script", descricao, {"texto": texto, "com_segredo": com_segredo, "limite_s": limite_s})
 
 
+def passo_instalar_visual_c() -> Passo:
+    """Passo (atualizador novo): instalar o Visual C++ que vem dentro do programa, só se faltar (D-727)."""
+    return Passo("instalar_visual_c", "instalar o Visual C++ que vem com o programa, se faltar", {})
+
+
+def passo_tirar_instalacao_do_inno() -> Passo:
+    """Passo (atualizador novo): tirar a instalação antiga do programa (o instalador de antes), se houver (D-723)."""
+    return Passo("tirar_instalacao_do_inno", "tirar a instalação antiga do programa, se houver", {})
+
+
+def passo_dar_licenca_aos_usuarios() -> Passo:
+    """Passo (atualizador novo, D-837): ACRESCENTAR "Usuários podem modificar" na pasta do programa."""
+    return Passo("dar_licenca_aos_usuarios", "deixar as contas do computador atualizarem a pasta do programa", {})
+
+
 def problemas_do_passo(passo: dict) -> list[str]:
     """O que está errado num passo do aviso (lugar único: o lado que pede confere antes de pedir, e o lado com
     licença confere antes de fazer). Lista vazia = o passo é aceito."""
@@ -2322,6 +2661,8 @@ def problemas_do_passo(passo: dict) -> list[str]:
             return [f"nome de tarefa fora da pasta do programa: {dados.get('nome')!r}"]
     if tipo == "criar_tarefa" and not isinstance(dados.get("xml"), str):
         return ["tarefa sem desenho (XML)"]
+    if tipo in _PASSOS_SEM_DADOS and dados:
+        return [f"o passo {tipo} não aceita dados no pedido (o lado com licença calcula tudo sozinho)"]
     if tipo == "script":
         limite = dados.get("limite_s")
         if not isinstance(dados.get("texto"), str) or not isinstance(dados.get("com_segredo"), bool):
@@ -2346,9 +2687,284 @@ def _fazer_passo(passo: dict, segredo: str | None) -> Resposta:
         return apagar_tarefa(d["nome"])
     if tipo == "apagar_pasta_de_tarefas":
         return apagar_pasta_de_tarefas()
+    if tipo in _PASSOS_SEM_DADOS:
+        try:
+            raiz = raiz_da_instalacao()
+        except OSError as erro:
+            return _falhou("este passo só roda no programa instalado", repr(erro))
+        if tipo == "instalar_visual_c":
+            return instalar_visual_c_do_programa(raiz / NOME_DA_PASTA_TROCADA)
+        if tipo == "tirar_instalacao_do_inno":
+            return tirar_instalacao_do_inno(raiz)
+        # A licença, no mesmo passo, para as duas pastas (volta 3, emenda do Fable): primeiro a raiz (é ela que decide
+        # o "preparado?", D-749); depois a do registro e do bilhete no ProgramData (sem ela o programa continua
+        # atualizando: o passo diz que falhou, o registro diz por quê, e a raiz já grava).
+        da_raiz = dar_licenca_aos_usuarios(raiz, raiz / NOME_DA_PASTA_TROCADA / NOME_DO_MANIFESTO)
+        if not da_raiz.deu_certo:
+            return da_raiz
+        try:
+            do_registro = pasta_da_atualizacao_no_programdata()
+        except OSError as erro:
+            return _falhou("a pasta do registro da atualização não deu para preparar", repr(erro))
+        return dar_licenca_aos_usuarios(do_registro, do_registro / "atualizacao.log")
     if d["com_segredo"] and segredo is None:
         return _falhou("o script precisa do segredo e ele não veio")
     return rodar_powershell(d["texto"], d["limite_s"], segredo if d["com_segredo"] else None)
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# O preparo do computador do atualizador novo (23/11/2026): os três passos, feitos pelo lado com licença
+# ---------------------------------------------------------------------------------------------------------------------
+# Por que o lado com licença calcula tudo sozinho: o aviso de trabalho vem da pasta de troca da conta que pediu; se ele
+# dissesse QUAL pasta liberar ou QUAL instalador rodar, um aviso trocado mandaria o programa com licença liberar outra
+# pasta ou rodar outro programa. Por isso os três passos não aceitam dado nenhum (`_PASSOS_SEM_DADOS`) e partem do
+# próprio programa com licença (`raiz_da_instalacao`).
+
+NOME_DA_PASTA_TROCADA = "current"       # a pasta que o Velopack troca a cada versão (locator.rs: root_dir.join("current"))
+NOME_DO_MANIFESTO = "sq.version"        # o manifesto dela (locator.rs: ManifestPath = current\sq.version)
+DIREITOS_DE_MODIFICAR = 0x1301BF        # "Modificar" (M): ler, gravar, executar e apagar
+LIMITE_DA_LICENCA_DA_PASTA_S = 1800
+LIMITE_DO_INNO_S = 900
+ESPERA_DO_INNO_S = 300                  # o desinstalador do Inno continua numa cópia dele depois de sair
+
+
+def raiz_da_instalacao(exe: Path | str | None = None) -> Path:
+    """A raiz da instalação do Velopack deste programa (a pasta acima de `current`), conferida: o programa é o
+    empacotado (não roda pelo código), mora em `<raiz>\\current` com o manifesto do Velopack, nenhuma das duas é atalho
+    e a raiz está dentro de Arquivos de Programas (perguntado ao Windows). Levanta OSError com o motivo.
+    `exe` só muda nos testes."""
+    if exe is None:
+        if not getattr(sys, "frozen", False):
+            raise OSError("o programa roda pelo código, não está instalado")
+        exe = sys.executable
+    programa = Path(exe).resolve()
+    atual, raiz = programa.parent, programa.parent.parent
+    if atual.name.lower() != NOME_DA_PASTA_TROCADA or not (atual / NOME_DO_MANIFESTO).is_file():
+        raise OSError(f"o programa não está numa instalação do Velopack ({programa})")
+    if e_atalho(raiz) or e_atalho(atual):
+        raise OSError(f"a pasta do programa é um atalho para outro lugar ({raiz})")
+    programas = pasta_de_programas().resolve()
+    if raiz == programas or not raiz.is_relative_to(programas):
+        raise OSError(f"a pasta do programa não está em Arquivos de Programas ({raiz})")
+    return raiz
+
+
+def instalar_visual_c_do_programa(pasta: Path) -> Resposta:
+    """O Visual C++ oficial que vem dentro do programa (`<pasta>\\instalar\\vc_redist.x64.exe`, D-727), em silêncio, só
+    se faltar. A regra (precisa? qual versão o pacote traz? ficou instalado?) é a única do programa,
+    `atualizacao.instalar_visual_c_se_faltar`; aqui só entram a leitura do registro (`ler_versao_do_visual_c`) e o
+    rodar, com uma conferência antes: o instalador e a pasta dele só podem ser mudados pelo sistema e pelos
+    administradores (a regra da pasta segura, `problemas_da_pasta_segura`). Este passo roda com a licença de
+    administrador, e um arquivo que uma conta comum pudesse trocar seria rodado com essa licença. (A régua da
+    assinatura da Microsoft mora no `empacotar.py`, que o programa não importa: ver o ONDE-PAREI do atualizador novo.)"""
+    import atualizacao
+
+    def rodar(comando: list[str], limite_s: int) -> tuple[int, str]:
+        """Confere quem pode mudar o instalador e roda; (código, o que disse)."""
+        exe = Path(comando[0])
+        try:
+            problemas = problemas_da_pasta_segura(ler_licencas(exe)) + problemas_da_pasta_segura(ler_licencas(exe.parent))
+        except OSError as erro:
+            return -1, f"não deu para conferir quem pode mudar o instalador ({erro})"
+        if problemas:
+            return -1, "o instalador pode ser trocado por quem não é administrador, e não foi rodado: " + "; ".join(problemas)
+        feito = _rodar(comando, limite_s)
+        codigo = feito.dados.get("codigo")
+        return (codigo if isinstance(codigo, int) else -1), f"{feito.motivo} {feito.detalhe}".strip()
+
+    if atualizacao.instalar_visual_c_se_faltar(Path(pasta), ler=ler_versao_do_visual_c, rodar=rodar):
+        return _certo("o Visual C++ está instalado")
+    return _falhou("o Visual C++ não ficou instalado (o registro da atualização diz por quê)")
+
+
+def tirar_instalacao_do_inno(raiz: Path, ler: Callable[[], dict | None] | None = None,
+                             esperar_s: float = ESPERA_DO_INNO_S) -> Resposta:
+    """Tira a instalação antiga do Inno Setup (a de 28/10), se existir (D-723), e CONFERE que a chave dela sumiu do
+    registro. O caminho e o comando seguem a regra única (`atualizacao.achar_instalacao_do_inno`,
+    `atualizacao.comando_para_tirar_o_inno`: só um `unins*.exe` dentro da pasta que a chave diz, nunca a pasta do
+    programa novo nem a dos projetos). Quando o caminho não parece seguro, NÃO tira de propósito e dá certo (perguntar
+    de novo a cada abertura não mudaria nada; fica no registro). O desinstalador do Inno continua numa cópia dele depois
+    de sair: por isso a conferência espera a chave sumir até `esperar_s`. `ler` só muda nos testes."""
+    import atualizacao
+
+    ler = ler or ler_instalacao_do_inno
+    antiga = atualizacao.achar_instalacao_do_inno(ler)
+    if antiga is None:
+        return _certo("não há instalação antiga")
+    comando = atualizacao.comando_para_tirar_o_inno(antiga, Path(raiz))
+    if comando is None:
+        return _certo(f"instalação antiga em {antiga['pasta']}: não tirada de propósito (o caminho não parece seguro)")
+    feito = _rodar(comando, LIMITE_DO_INNO_S)
+    fim = time.monotonic() + esperar_s
+    while ler() is not None:
+        if time.monotonic() > fim:
+            return _falhou("a instalação antiga não saiu", f"{antiga['pasta']}: {feito.motivo} {feito.detalhe}")
+        time.sleep(1)
+    return _certo(f"instalação antiga em {antiga['pasta']} tirada")
+
+
+def problemas_da_licenca_dos_usuarios(antes: Licencas, depois: Licencas) -> list[str]:
+    """A licença da pasta depois do passo é a de antes MAIS "Usuários podem modificar", e nada mais mudou? (D-837:
+    "só para acrescentar"; o defeito de 18/11 foi uma tranca que cortou a herança.) Lista vazia = sim. Confere:
+    - o dono e a herança (a lista não ficou protegida se não era) são os mesmos;
+    - cada linha de antes continua (ou ficou maior, quando o Windows junta a linha nova a uma igual que já havia);
+    - há uma linha própria (não herdada) de Usuários que permite Modificar, vale para a própria pasta e passa para os
+      arquivos e as pastas de dentro."""
+    problemas = []
+    if depois.dono != antes.dono:
+        problemas.append(f"o dono da pasta mudou ({antes.dono} -> {depois.dono})")
+    if depois.protegida != antes.protegida:
+        problemas.append("a herança da pasta mudou")
+    if depois.sem_lista != antes.sem_lista:
+        problemas.append("a pasta ficou sem lista de licenças")
+
+    def cobre(velha: Licenca) -> bool:
+        return any(n.sid == velha.sid and n.tipo == velha.tipo and n.herdada == velha.herdada
+                   and n.so_para_dentro == velha.so_para_dentro and n.para_objetos == velha.para_objetos
+                   and n.para_pastas == velha.para_pastas and (n.mascara & velha.mascara) == velha.mascara
+                   for n in depois.lista)
+
+    for velha in antes.lista:
+        if not cobre(velha):
+            problemas.append(f"sumiu a licença de {nome_para_mostrar(velha.sid, velha.nome)}: {velha.direitos()}")
+
+    def e_a_nova(li: Licenca) -> bool:
+        return li.sid == SID_USUARIOS and li.tipo == "permite" and not li.herdada
+
+    def veio_de_antes(li: Licenca) -> bool:
+        return any(v.sid == li.sid and v.tipo == li.tipo and v.herdada == li.herdada and v.so_para_dentro ==
+                   li.so_para_dentro and v.para_objetos == li.para_objetos and v.para_pastas == li.para_pastas
+                   and (li.mascara & v.mascara) == v.mascara for v in antes.lista)
+
+    for nova in depois.lista:
+        # Volta 2, leve 2 (D-837, "só para acrescentar Usuários podem modificar"): nenhuma linha a mais além dessa.
+        # (Modificar escrito do jeito genérico, ler+gravar+executar+apagar, também vale; Controle total nunca.)
+        if not veio_de_antes(nova) and not (e_a_nova(nova) and not (nova.mascara & ~(DIREITOS_DE_MODIFICAR
+                                                                                       | 0xE0010000))):
+            problemas.append(f"apareceu uma licença que não era para acrescentar: "
+                             f"{nome_para_mostrar(nova.sid, nova.nome)}: {nova.direitos()}")
+    if not any(li.sid == SID_USUARIOS and li.tipo == "permite" and not li.herdada and not li.so_para_dentro
+               and li.para_objetos and li.para_pastas and (li.mascara & DIREITOS_DE_MODIFICAR) == DIREITOS_DE_MODIFICAR
+               for li in depois.lista):
+        problemas.append("a pasta não ficou com \"Usuários podem modificar\" passando para dentro")
+    return problemas
+
+
+def usuarios_modificam(licencas: Licencas) -> bool:
+    """Alguma linha que permite a Usuários Modificar (própria ou herdada) neste arquivo ou pasta?"""
+    return any(li.sid == SID_USUARIOS and li.tipo == "permite" and not li.so_para_dentro
+               and (li.mascara & DIREITOS_DE_MODIFICAR) == DIREITOS_DE_MODIFICAR for li in licencas.lista)
+
+
+def ligacoes_dentro(pasta: Path) -> list[str]:
+    """O que há dentro de `pasta` (ela inclusive) que leva para outro lugar: atalho (junção ou link simbólico) ou
+    arquivo ligado a outro (`st_nlink` > 1, o mesmo arquivo com dois nomes). Lista vazia = nada. Não entra em atalho.
+    Para quê (volta 3): a licença que só acrescenta passa para tudo o que está dentro (`/T`); um arquivo ligado a outro
+    de fora da pasta (um do sistema) receberia a licença junto. Numa pasta que uma conta comum pôde criar antes do
+    preparo (a do `%ProgramData%`), isso seria um jeito de ganhar a licença sobre o arquivo de outro."""
+    if e_atalho(pasta):
+        return [str(pasta)]
+    achados: list[str] = []
+    for raiz_local, pastas, arquivos in os.walk(pasta, followlinks=False):
+        for nome in list(pastas):
+            caminho = Path(raiz_local) / nome
+            if e_atalho(caminho):
+                achados.append(str(caminho))
+                pastas.remove(nome)
+        for nome in arquivos:
+            caminho = Path(raiz_local) / nome
+            try:
+                info = os.lstat(caminho)
+            except OSError:
+                continue
+            if e_atalho(caminho) or info.st_nlink != 1:
+                achados.append(str(caminho))
+    return achados
+
+
+def dar_licenca_aos_usuarios(pasta: Path, conferir_dentro: Path | None = None) -> Resposta:
+    """A ÚNICA mudança de licença de pasta do programa (D-837; o porteiro, K03, só deixa esta função, e só chamada por
+    `_fazer_passo`): ACRESCENTA a Usuários (`S-1-5-32-545`) a licença de Modificar na `pasta`, passando para todos os
+    arquivos e pastas de dentro, e CONFERE lendo de volta. Usada para duas pastas, no mesmo passo da pergunta única
+    (volta 3, emenda do Fable): a raiz da instalação e a pasta do registro e do bilhete
+    (`%ProgramData%\\EditorImpressao\\atualizacao`, para a conta comum continuar gravando nela mesmo quando os arquivos
+    nasceram de uma abertura com licença de administrador: volta 3, M4). É o jeito provado no experimento de
+    23/11/2026: o `icacls "<pasta>" /grant "*S-1-5-32-545:(OI)(CI)M" /T`, pelo caminho inteiro da pasta do sistema.
+    Nunca tira herança, nunca troca dono, nunca apaga nem nega linha (o porteiro barra `/inheritance`, `/setowner`,
+    `/remove`, `/deny` até aqui dentro).
+
+    O que a ferramenta faz (Microsoft Learn, icacls): "/grant[:r] <sid>:<perm>" acrescenta (sem o ":r", "permissions
+    are added to any previously granted explicit permissions"); "(OI)" passa para os arquivos, "(CI)" para as pastas;
+    "M" é Modificar; "/t" faz o mesmo em todos os arquivos e pastas de dentro; sem "/c" para no primeiro erro (o código
+    de saída diz). O código de saída não decide: decide a leitura de volta (a pasta, pela regra
+    `problemas_da_licenca_dos_usuarios`, e `conferir_dentro`, um arquivo de dentro que tem de deixar Usuários
+    modificar), e quem pediu ainda testa de verdade se a pasta aceita gravação (`atualizacao.pasta_aceita_gravacao`).
+    ANTES, recusa a pasta que é um atalho ou que tem dentro um atalho ou um arquivo ligado a outro (`ligacoes_dentro`).
+    Se a leitura não confere, FALHOU, e o que já foi acrescentado fica (tirar licença aqui é proibido)."""
+    pasta = Path(pasta)
+    if not pasta.is_dir() or e_atalho(pasta):
+        return _falhou("a pasta não existe ou é um atalho", str(pasta))
+    ligacoes = ligacoes_dentro(pasta)
+    if ligacoes:
+        return _falhou("a pasta tem dentro um atalho ou um arquivo ligado a outro lugar: a licença não foi dada",
+                       "; ".join(ligacoes[:20]))
+    try:
+        antes = ler_licencas(pasta)
+    except OSError as erro:
+        return _falhou("não deu para ler a licença da pasta", repr(erro))
+    try:
+        ferramenta = pasta_do_sistema() / "icacls.exe"
+    except OSError as erro:
+        return _falhou("não deu para achar a ferramenta do Windows", repr(erro))
+    feito = _rodar([ferramenta, pasta, "/grant", f"*{SID_USUARIOS}:(OI)(CI)M", "/T"], LIMITE_DA_LICENCA_DA_PASTA_S)
+    try:
+        depois = ler_licencas(pasta)
+    except OSError as erro:
+        return _falhou("não deu para ler a licença da pasta depois de mudar", repr(erro))
+    problemas = problemas_da_licenca_dos_usuarios(antes, depois)
+    if conferir_dentro is not None and Path(conferir_dentro).is_file():
+        try:
+            if not usuarios_modificam(ler_licencas(conferir_dentro)):
+                problemas.append(f"o arquivo {Path(conferir_dentro).name} de dentro não ficou com a licença")
+        except OSError as erro:
+            problemas.append(f"não deu para ler a licença de {Path(conferir_dentro).name} ({erro})")
+    if problemas:
+        return _falhou(f"a licença de {pasta} não ficou como pedido: " + "; ".join(problemas),
+                       f"{feito.desfecho}: {feito.detalhe} {feito.dados.get('saida', '')}"[-4000:])
+    return _certo(f"as contas do computador podem gravar em {pasta}", saida=feito.dados.get("saida", ""))
+
+
+_PASTA_DE_DADOS_COMUM = "62ab5d82-fdc1-4dc3-a9dd-070d1d495d97"   # FOLDERID_ProgramData
+NOMES_DA_PASTA_DA_ATUALIZACAO = ("EditorImpressao", "atualizacao")   # os mesmos de atualizacao.pasta_do_estado
+
+
+def pasta_de_dados_comum() -> Path:
+    """O %ProgramData% (C:\\ProgramData), perguntado ao Windows (não às variáveis de ambiente, que a conta pode mudar:
+    o lado com licença nunca usa um caminho que venha da conta que pediu)."""
+    w = _win()
+    guid = _GUID.from_buffer_copy(uuid.UUID(_PASTA_DE_DADOS_COMUM).bytes_le)
+    saida = wintypes.LPWSTR()
+    resultado = w.shell32.SHGetKnownFolderPath(ctypes.byref(guid), 0, None, ctypes.byref(saida))
+    try:
+        if resultado != 0 or not saida.value:
+            raise OSError(f"o Windows não disse onde fica o ProgramData (0x{resultado & 0xFFFFFFFF:08X})")
+        return Path(saida.value)
+    finally:
+        w.ole32.CoTaskMemFree(ctypes.cast(saida, ctypes.c_void_p))
+
+
+def pasta_da_atualizacao_no_programdata(base: Path | None = None) -> Path:
+    """`<ProgramData>\\EditorImpressao\\atualizacao`, criada se faltar, conferida: nem ela nem a de cima são atalho.
+    Levanta OSError. `base` só muda nos testes (o padrão é o que o Windows diz)."""
+    base = Path(base) if base is not None else pasta_de_dados_comum()
+    mae = base / NOMES_DA_PASTA_DA_ATUALIZACAO[0]
+    pasta = mae / NOMES_DA_PASTA_DA_ATUALIZACAO[1]
+    if e_atalho(mae) or e_atalho(pasta):
+        raise OSError(f"a pasta do registro da atualização é um atalho para outro lugar ({pasta})")
+    pasta.mkdir(parents=True, exist_ok=True)
+    if e_atalho(mae) or e_atalho(pasta):
+        raise OSError(f"a pasta do registro da atualização é um atalho para outro lugar ({pasta})")
+    return pasta
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -2578,14 +3194,13 @@ def _ler_relatorio(pasta: Path) -> dict | None:
     return relatorio if isinstance(relatorio, dict) else None
 
 
-def _abrir_com_licenca(programa: list[str], argumentos: list[str], janela: int | None, limite_s: float,
-                       pasta: Path) -> tuple[str, int | None, str]:
-    """Abre o programa com a licença de administrador (a pergunta do Windows) e espera ele terminar.
-
-    Devolve (o que houve, código de saída, técnico): `o_que_houve_ao_abrir` (o Windows não abriu, ou a pessoa disse
-    Não), "tempo" (passou do limite), "sem_acompanhar" (a espera do Windows falhou), "terminou". Se o Windows não
-    devolver o processo (a documentação diz que pode acontecer), espera o relatório dizer que terminou. Nunca no fio da
-    tela: a pergunta segura esta chamada até a resposta."""
+def _abrir_o_pedido(programa: list[str], argumentos: list[str], janela: int | None) -> tuple[str, int | None, str]:
+    """A primeira metade do pedido: abre o programa com a licença de administrador (a pergunta do Windows) e volta
+    logo depois da resposta. Devolve (o que houve, a alça do processo aberto, técnico): "comecou" (a pessoa disse
+    Sim e o Windows abriu o trabalho; a alça pode ser None, a documentação diz que pode acontecer) ou
+    `o_que_houve_ao_abrir` (disse Não, ou o Windows não abriu). O COM do Windows é ligado e desligado aqui, no mesmo
+    fio (é a regra dele); a espera (`_esperar_o_pedido`) não precisa dele e pode rodar em outro fio.
+    Nunca no fio da tela: a pergunta segura esta chamada até a resposta."""
     w = _win()
     comeco_com = w.ole32.CoInitializeEx(None, 0x2 | 0x4)       # COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE
     try:
@@ -2601,37 +3216,151 @@ def _abrir_com_licenca(programa: list[str], argumentos: list[str], janela: int |
         if not w.shell32.ShellExecuteExW(ctypes.byref(info)):
             erro = _ler_erro()
             return o_que_houve_ao_abrir(erro), None, f"ShellExecuteExW erro {erro}"
-        fim = time.monotonic() + limite_s
-        if not info.hProcess:
-            while time.monotonic() < fim:
-                if (_ler_relatorio(pasta) or {}).get("terminou"):
-                    return "terminou", None, "o Windows não devolveu o processo; acompanhado pelo relatório"
-                time.sleep(0.5)
-            return "tempo", None, f"passou de {limite_s} s (sem o processo para acompanhar)"
-        try:
-            while True:
-                espera = w.kernel32.WaitForSingleObject(info.hProcess, 250)
-                if espera == 0:                                                 # WAIT_OBJECT_0
-                    break
-                if espera == 0xFFFFFFFF:                                        # WAIT_FAILED
-                    return "sem_acompanhar", None, f"WaitForSingleObject falhou (erro {_ler_erro()})"
-                if time.monotonic() > fim:
-                    return "tempo", None, f"passou de {limite_s} s"
-            codigo = wintypes.DWORD()
-            if not w.kernel32.GetExitCodeProcess(info.hProcess, ctypes.byref(codigo)):
-                return "terminou", None, f"código de saída não lido (erro {_ler_erro()})"
-            return "terminou", int(codigo.value), ""
-        finally:
-            w.kernel32.CloseHandle(info.hProcess)
+        return "comecou", info.hProcess or None, ""
     finally:
         if comeco_com in (0, 1):                        # S_OK, S_FALSE: este fio iniciou o COM, este fio fecha
             w.ole32.CoUninitialize()
 
 
+def _esperar_o_pedido(processo: int | None, limite_s: float, pasta: Path) -> tuple[str, int | None, str]:
+    """A segunda metade do pedido: espera o trabalho com licença terminar (com limite). Devolve (o que houve, código
+    de saída, técnico): "tempo" (passou do limite), "sem_acompanhar" (a espera do Windows falhou), "terminou". Sem a
+    alça do processo, espera o relatório dizer que terminou. Fecha a alça."""
+    w = _win()
+    fim = time.monotonic() + limite_s
+    if not processo:
+        while time.monotonic() < fim:
+            if (_ler_relatorio(pasta) or {}).get("terminou"):
+                return "terminou", None, "o Windows não devolveu o processo; acompanhado pelo relatório"
+            time.sleep(0.5)
+        return "tempo", None, f"passou de {limite_s} s (sem o processo para acompanhar)"
+    try:
+        while True:
+            espera = w.kernel32.WaitForSingleObject(processo, 250)
+            if espera == 0:                                                 # WAIT_OBJECT_0
+                break
+            if espera == 0xFFFFFFFF:                                        # WAIT_FAILED
+                return "sem_acompanhar", None, f"WaitForSingleObject falhou (erro {_ler_erro()})"
+            if time.monotonic() > fim:
+                return "tempo", None, f"passou de {limite_s} s"
+        codigo = wintypes.DWORD()
+        if not w.kernel32.GetExitCodeProcess(processo, ctypes.byref(codigo)):
+            return "terminou", None, f"código de saída não lido (erro {_ler_erro()})"
+        return "terminou", int(codigo.value), ""
+    finally:
+        w.kernel32.CloseHandle(processo)
+
+
+class PedidoDeLicenca:
+    """Um pedido de licença já perguntado ao Windows (`comecar_pedido_de_licenca`; atualizador novo, 23/11/2026).
+
+    Dois casos:
+    - a resposta já veio na pergunta (`comecou` False): a pessoa disse Não, o Windows não abriu o trabalho, ou o pedido
+      estava errado; `esperar()` devolve essa resposta na hora;
+    - a pessoa disse Sim e o trabalho com licença começou (`comecou` True): `esperar()` espera ele terminar (com o
+      limite), lê o relatório, decide pelo relatório (`resposta_do_pedido`, o lugar único da decisão) e apaga a pasta de
+      troca (menos quando o trabalho pode estar ainda rodando: ver `manter_a_pasta_de_troca`).
+    `esperar()` pode rodar em outro fio (a espera não usa o COM) e só espera uma vez: as chamadas seguintes devolvem a
+    mesma resposta. Arriscado: esperar no fio da tela (a janela congela enquanto o Visual C++ instala)."""
+
+    def __init__(self, resposta: Resposta | None = None, *, processo: int | None = None, pasta: Path | None = None,
+                 pedidos: list[dict] | None = None, limite_s: float = 1800, na_frente: bool = False) -> None:
+        """Só `comecar_pedido_de_licenca` cria (e os testes)."""
+        self._resposta = resposta
+        self._processo, self._pasta, self._pedidos = processo, pasta, list(pedidos or [])
+        self._limite_s, self._na_frente = limite_s, na_frente
+
+    @property
+    def comecou(self) -> bool:
+        """A pessoa disse Sim e o trabalho com licença começou (ainda falta `esperar`)."""
+        return self._resposta is None
+
+    @property
+    def resposta_da_pergunta(self) -> Resposta | None:
+        """A resposta que já veio na pergunta (None quando o trabalho começou)."""
+        return self._resposta
+
+    def esperar(self) -> Resposta:
+        """Espera o trabalho com licença terminar e devolve o desfecho (ver a classe). Nunca levanta."""
+        if self._resposta is not None:
+            return self._resposta
+        manter = False
+        try:
+            houve, codigo, tecnico = _esperar_o_pedido(self._processo, self._limite_s, self._pasta)
+            manter = manter_a_pasta_de_troca(houve)
+            r = resposta_do_pedido(houve, codigo, tecnico, _ler_relatorio(self._pasta) if houve == "terminou" else None,
+                                   self._pedidos, self._limite_s)
+            self._resposta = Resposta(r.desfecho, r.motivo, r.detalhe, {**r.dados, "janela_na_frente": self._na_frente})
+        except Exception as erro:  # noqa: BLE001 - nunca derruba quem esperava
+            self._resposta = _falhou("o pedido ao Windows teve um problema inesperado", repr(erro))
+        finally:
+            _fechar_a_pasta_do_pedido(self._pasta, manter)
+        return self._resposta
+
+
+def _fechar_a_pasta_do_pedido(pasta: Path | None, manter: bool) -> None:
+    """Apaga o segredo do pedido e, se não for para manter, a pasta de troca inteira (nunca levanta)."""
+    if pasta is None:
+        return
+    try:
+        (pasta / NOME_DO_SEGREDO).unlink(missing_ok=True)
+    except OSError:
+        pass
+    if not manter:
+        apagar_pasta_de_troca(pasta)
+
+
+def comecar_pedido_de_licenca(passos: list[Passo], *, segredo: str | None = None, janela: int | None = None,
+                              programa: list[str] | None = None, limite_s: float = 1800,
+                              ate_o_fim: bool = False) -> PedidoDeLicenca:
+    """A pergunta do Windows ("Deseja permitir...?") para fazer os `passos` com a licença de administrador, e VOLTA
+    LOGO DEPOIS DA RESPOSTA (atualizador novo, 23/11/2026: a pergunta vem antes da janela do programa, D-806, D-834, e
+    a espera roda por trás, com a janela já aberta). Grava o aviso de trabalho numa pasta de troca e abre o próprio
+    programa com a licença e `ARG_TRABALHO_DE_ADMINISTRADOR` (o mesmo de sempre). Os argumentos são os de
+    `pedir_licenca`. Nunca levanta: o que der errado antes do trabalho começar vem como a resposta do pedido
+    (`PedidoDeLicenca.comecou` False)."""
+    pedidos = [asdict(p) for p in passos]
+    problemas = [p for passo in pedidos for p in problemas_do_passo(passo)] or ([] if pedidos else ["sem passos"])
+    if problemas:
+        return PedidoDeLicenca(_falhou("o pedido ao Windows está errado", "; ".join(problemas)))
+    programa = [str(p) for p in (programa or programa_deste_processo())]
+    if not Path(programa[0]).is_file():
+        return PedidoDeLicenca(_falhou("não achei o programa a abrir com a licença", programa[0]))
+    try:
+        sid = sid_desta_conta()
+        pasta = criar_pasta_de_troca()
+    except OSError as erro:
+        return PedidoDeLicenca(_falhou("não consegui preparar o pedido (o disco está cheio ou sem licença?)",
+                                       repr(erro)))
+    try:
+        problemas = problemas_da_pasta_de_troca(ler_licencas(pasta), sid) + \
+            problemas_da_pasta_de_troca(ler_licencas(pasta.parent), sid)
+        if problemas:
+            _fechar_a_pasta_do_pedido(pasta, False)
+            return PedidoDeLicenca(_falhou("a pasta do pedido não é só desta conta: " + "; ".join(problemas),
+                                           str(pasta)))
+        if segredo is not None:
+            _gravar_por_inteiro(pasta / NOME_DO_SEGREDO, cifrar_segredo(segredo))
+        aviso = {"formato": FORMATO_DO_AVISO, "pedido_por": sid, "criado_em": datetime.now().isoformat(timespec="seconds"),
+                 "com_segredo": segredo is not None, "ate_o_fim": ate_o_fim, "passos": pedidos}
+        _gravar_por_inteiro(pasta / NOME_DO_AVISO, json.dumps(aviso, ensure_ascii=False).encode("utf-8"))
+        na_frente = trazer_para_a_frente(janela)
+        houve, processo, tecnico = _abrir_o_pedido(programa, [ARG_TRABALHO_DE_ADMINISTRADOR, str(pasta)], janela)
+    except Exception as erro:  # noqa: BLE001 - nunca derruba quem chamou
+        _fechar_a_pasta_do_pedido(pasta, False)
+        return PedidoDeLicenca(_falhou("o pedido ao Windows teve um problema inesperado", repr(erro)))
+    if houve != "comecou":
+        _fechar_a_pasta_do_pedido(pasta, False)
+        r = resposta_do_pedido(houve, None, tecnico, None, pedidos, limite_s)
+        return PedidoDeLicenca(Resposta(r.desfecho, r.motivo, r.detalhe, {**r.dados, "janela_na_frente": na_frente}))
+    return PedidoDeLicenca(processo=processo, pasta=pasta, pedidos=pedidos, limite_s=limite_s, na_frente=na_frente)
+
+
 def pedir_licenca(passos: list[Passo], *, segredo: str | None = None, janela: int | None = None,
                   programa: list[str] | None = None, limite_s: float = 1800, ate_o_fim: bool = False) -> Resposta:
     """A pergunta do Windows ("Deseja permitir...?"): abre o próprio programa com a licença de administrador para
-    fazer os `passos`, espera e lê o relatório.
+    fazer os `passos`, espera e lê o relatório. É `comecar_pedido_de_licenca(...).esperar()` (uma conta só; desde o
+    atualizador novo, 23/11/2026, as duas metades ficaram separadas para a espera poder rodar por trás).
 
     `janela`: a janela do programa (o número dela no Windows), que vira a dona da pergunta e é trazida para a frente
     antes. `segredo`: vai cifrado num arquivo da pasta de troca, nunca pela linha de comando. `programa`: o programa a
@@ -2642,43 +3371,5 @@ def pedir_licenca(passos: list[Passo], *, segredo: str | None = None, janela: in
     motivo), DEU_CERTO (todos os passos feitos e conferidos). `dados`: `passos` (o relatório de cada passo),
     `janela_na_frente`, `codigo`. Se o trabalho com licença passou do limite, a pasta de troca fica (ele ainda pode
     estar usando; a limpeza das velhas a apaga depois de um dia)."""
-    pedidos = [asdict(p) for p in passos]
-    problemas = [p for passo in pedidos for p in problemas_do_passo(passo)] or ([] if pedidos else ["sem passos"])
-    if problemas:
-        return _falhou("o pedido ao Windows está errado", "; ".join(problemas))
-    programa = [str(p) for p in (programa or programa_deste_processo())]
-    if not Path(programa[0]).is_file():
-        return _falhou("não achei o programa a abrir com a licença", programa[0])
-    try:
-        sid = sid_desta_conta()
-        pasta = criar_pasta_de_troca()
-    except OSError as erro:
-        return _falhou("não consegui preparar o pedido (o disco está cheio ou sem licença?)", repr(erro))
-    manter_a_pasta = False
-    try:
-        problemas = problemas_da_pasta_de_troca(ler_licencas(pasta), sid) + \
-            problemas_da_pasta_de_troca(ler_licencas(pasta.parent), sid)
-        if problemas:
-            return _falhou("a pasta do pedido não é só desta conta: " + "; ".join(problemas), str(pasta))
-        if segredo is not None:
-            _gravar_por_inteiro(pasta / NOME_DO_SEGREDO, cifrar_segredo(segredo))
-        aviso = {"formato": FORMATO_DO_AVISO, "pedido_por": sid, "criado_em": datetime.now().isoformat(timespec="seconds"),
-                 "com_segredo": segredo is not None, "ate_o_fim": ate_o_fim, "passos": pedidos}
-        _gravar_por_inteiro(pasta / NOME_DO_AVISO, json.dumps(aviso, ensure_ascii=False).encode("utf-8"))
-        na_frente = trazer_para_a_frente(janela)
-        houve, codigo, tecnico = _abrir_com_licenca(programa, [ARG_TRABALHO_DE_ADMINISTRADOR, str(pasta)], janela,
-                                                    limite_s, pasta)
-        manter_a_pasta = manter_a_pasta_de_troca(houve)
-        resposta = resposta_do_pedido(houve, codigo, tecnico, _ler_relatorio(pasta) if houve == "terminou" else None,
-                                      pedidos, limite_s)
-        return Resposta(resposta.desfecho, resposta.motivo, resposta.detalhe,
-                        {**resposta.dados, "janela_na_frente": na_frente})
-    except Exception as erro:  # noqa: BLE001 - nunca derruba quem chamou
-        return _falhou("o pedido ao Windows teve um problema inesperado", repr(erro))
-    finally:
-        try:
-            (pasta / NOME_DO_SEGREDO).unlink(missing_ok=True)
-        except OSError:
-            pass
-        if not manter_a_pasta:
-            apagar_pasta_de_troca(pasta)
+    return comecar_pedido_de_licenca(passos, segredo=segredo, janela=janela, programa=programa, limite_s=limite_s,
+                                     ate_o_fim=ate_o_fim).esperar()

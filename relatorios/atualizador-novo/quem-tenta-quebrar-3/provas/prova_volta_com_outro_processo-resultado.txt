@@ -1,0 +1,22 @@
+{
+ "o que a peça do Windows viu de dentro de current\\": [
+  [
+   21260,
+   "D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\qtq3\\outro-processo\\instalado\\current\\EditorImpressao.exe"
+  ]
+ ],
+ "a volta (VoltaPedida)": [
+  false,
+  "há outra janela do programa aberta: D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\qtq3\\outro-processo\\instalado\\current\\EditorImpressao.exe"
+ ],
+ "pedido ao Update.exe": [],
+ "o que a regra manda depois": [
+  "Registrar(texto='a volta para a 1.1.0 não deu certo (há outra janela do programa aberta: D:\\\\programas\\\\EditorImpressao\\\\.claude\\\\worktrees\\\\atualizador-novo\\\\saida_teste\\\\qtq3\\\\outro-processo\\\\instalado\\\\current\\\\EditorImpressao.exe)')",
+  "MostrarFalha(tipo='volta', nome='volta-1.2.0', motivo_da_tela='', sempre=False)"
+ ],
+ "a frase que vai para a tela": [
+  "A atualização não deu certo e o programa não conseguiu voltar sozinho. Não desinstale nada. Avise o Samuel."
+ ],
+ "o processo sai antes da janela?": false,
+ "a fase": "parado"
+}

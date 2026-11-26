@@ -2059,8 +2059,11 @@ class JanelaPrincipal(QMainWindow):
         Grava ANTES de encerrar as threads: a prévia que ainda vier não muda o
         trabalho, e esperar por ela só atrasaria o fechamento.
 
-        E não pergunta nada. A pergunta "quer salvar?" é o que este programa
-        não faz - um "não" por engano apagaria um dia de trabalho do Kaique.
+        E não pergunta "quer salvar?": é o que este programa não faz - um
+        "não" por engano apagaria um dia de trabalho do Kaique. A única
+        pergunta possível aqui é a da atualização ("Atualizar agora?", só com
+        uma versão nova pronta e "Depois"), feita DEPOIS de gravar: qualquer
+        resposta fecha o programa com o trabalho gravado.
         """
         # Decisao Z1 (b): a conversao das zonas para ANTES de gravar (so a
         # bandeira; a pagina em curso termina logo abaixo): o que ja foi
@@ -2099,4 +2102,12 @@ class JanelaPrincipal(QMainWindow):
         # diferentes de mesmo nome, fechar com o segundo aberto apagava o
         # trabalho do primeiro. Bug grave de 29/09/2026. O _salvar_agora, la
         # em cima, ja grava tudo na pasta do projeto aberto.)
+        # Atualizacao (atualizador novo, 23/11/2026; D-769, D-794, D-831, D-835):
+        # com uma versao nova pronta e "Depois", a pergunta "Atualizar agora?"
+        # vem aqui, DEPOIS de gravar e de parar as tarefas (o Velopack so troca
+        # depois que este processo sai). Sem versao pronta, pelo codigo e na
+        # conta de testes nao faz nada. Ver ui/aviso_de_atualizacao.py.
+        from ui.aviso_de_atualizacao import ao_fechar
+
+        ao_fechar(self)
         evento.accept()

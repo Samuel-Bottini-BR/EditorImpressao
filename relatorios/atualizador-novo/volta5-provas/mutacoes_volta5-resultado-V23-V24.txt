@@ -1,0 +1,5 @@
+SEM MUTACAO: nenhum teste falhou
+V23 (D-877: a frase de um acontecimento sem o momento no nome (a segunda recusa do Windows some)): ACUSADA por tests/test_decisoes_atualizacao_volta5.py: FAILED tests/test_decisoes_atualizacao_volta5.py::test_d877_cada_recusa_do_windows_avisa_uma_vez_e_nao_se_repete
+V24 (D-877: a abertura não manda o momento à regra): ACUSADA por tests/test_decisoes_atualizacao_volta5.py: FAILED tests/test_decisoes_atualizacao_volta5.py::test_d877_cada_recusa_do_windows_avisa_uma_vez_e_nao_se_repete
+git status dos arquivos mexidos depois: M atualizacao.py
+ M core/fases_da_atualizacao.py

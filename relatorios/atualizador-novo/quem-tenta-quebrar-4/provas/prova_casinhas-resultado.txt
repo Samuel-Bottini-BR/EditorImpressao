@@ -1,0 +1,180 @@
+{
+ "C1 dois cliques (outra janela testando junto), depois da D-863": {
+  "1. a abertura que testa (a outra está testando junto / a lista não veio)": {
+   "linha de comando": [],
+   "testes rapidos": 1,
+   "pedidos de troca (volta)": [],
+   "tela": [
+    "[Atualização] A atualização não deu certo e o programa não conseguiu voltar sozinho. Não desinstale nada. Avise o Samuel."
+   ],
+   "marca de sem volta": true,
+   "fase no fim": "parado"
+  },
+  "2. a abertura seguinte, um clique só, nada mais aberto": {
+   "linha de comando": [],
+   "testes rapidos": 0,
+   "pedidos de troca (volta)": [],
+   "tela": [],
+   "marca de sem volta": true,
+   "fase no fim": "parado"
+  },
+  "3. e a outra seguinte": {
+   "linha de comando": [],
+   "testes rapidos": 0,
+   "pedidos de troca (volta)": [],
+   "tela": [],
+   "marca de sem volta": true,
+   "fase no fim": "parado"
+  },
+  "última boa no disco": "0.1.0"
+ },
+ "C2 a lista do Windows que não veio na hora da volta": {
+  "1. a abertura que testa (a outra está testando junto / a lista não veio)": {
+   "linha de comando": [],
+   "testes rapidos": 1,
+   "pedidos de troca (volta)": [],
+   "tela": [
+    "[Atualização] A atualização não deu certo e o programa não conseguiu voltar sozinho. Não desinstale nada. Avise o Samuel."
+   ],
+   "marca de sem volta": true,
+   "fase no fim": "parado"
+  },
+  "2. a abertura seguinte, um clique só, nada mais aberto": {
+   "linha de comando": [],
+   "testes rapidos": 0,
+   "pedidos de troca (volta)": [],
+   "tela": [],
+   "marca de sem volta": true,
+   "fase no fim": "parado"
+  },
+  "3. e a outra seguinte": {
+   "linha de comando": [],
+   "testes rapidos": 0,
+   "pedidos de troca (volta)": [],
+   "tela": [],
+   "marca de sem volta": true,
+   "fase no fim": "parado"
+  },
+  "última boa no disco": "0.1.0"
+ },
+ "C3 a marca de sem volta que não grava": {
+  "1a. o atalho": {
+   "linha de comando": [],
+   "testes rapidos": 1,
+   "pedidos de troca (volta)": [
+    [
+     "0.1.0",
+     true
+    ]
+   ],
+   "tela": [],
+   "marca de sem volta": false,
+   "fase no fim": "parado"
+  },
+  "1b. a reabertura pelo Velopack (--voltando)": {
+   "linha de comando": [
+    "--voltando",
+    "9.9.0",
+    "0.1.0"
+   ],
+   "testes rapidos": 0,
+   "pedidos de troca (volta)": [],
+   "tela": [
+    "[Atualização] A atualização não deu certo e o programa não conseguiu voltar sozinho. Não desinstale nada. Avise o Samuel."
+   ],
+   "marca de sem volta": false,
+   "fase no fim": "parado"
+  },
+  "2a. o atalho": {
+   "linha de comando": [],
+   "testes rapidos": 1,
+   "pedidos de troca (volta)": [
+    [
+     "0.1.0",
+     true
+    ]
+   ],
+   "tela": [],
+   "marca de sem volta": false,
+   "fase no fim": "parado"
+  },
+  "2b. a reabertura pelo Velopack (--voltando)": {
+   "linha de comando": [
+    "--voltando",
+    "9.9.0",
+    "0.1.0"
+   ],
+   "testes rapidos": 0,
+   "pedidos de troca (volta)": [],
+   "tela": [],
+   "marca de sem volta": false,
+   "fase no fim": "parado"
+  },
+  "3a. o atalho": {
+   "linha de comando": [],
+   "testes rapidos": 1,
+   "pedidos de troca (volta)": [
+    [
+     "0.1.0",
+     true
+    ]
+   ],
+   "tela": [],
+   "marca de sem volta": false,
+   "fase no fim": "parado"
+  },
+  "3b. a reabertura pelo Velopack (--voltando)": {
+   "linha de comando": [
+    "--voltando",
+    "9.9.0",
+    "0.1.0"
+   ],
+   "testes rapidos": 0,
+   "pedidos de troca (volta)": [],
+   "tela": [],
+   "marca de sem volta": false,
+   "fase no fim": "parado"
+  }
+ },
+ "C4 aprovada e a guarda que não cabe": {
+  "1. a abertura depois da troca: o teste passa, a guarda não cabe": {
+   "linha de comando": [],
+   "testes rapidos": 1,
+   "pedidos de troca (volta)": [],
+   "tela": [],
+   "marca de sem volta": false,
+   "fase no fim": "parado"
+  },
+  "2. a abertura seguinte": {
+   "linha de comando": [],
+   "testes rapidos": 0,
+   "pedidos de troca (volta)": [],
+   "tela": [],
+   "marca de sem volta": false,
+   "fase no fim": "parado"
+  },
+  "última boa": "0.1.0",
+  "marca de aprovada": true,
+  "registro (fim)": [
+   "2026-11-24T21:29:03 | versão 9.9.0 | a versão 9.9.0 passou no teste rápido, mas o pacote dela não foi guardado (falta espaço para guardar a 9.9.0 (precisa de 500 MB, tem 10 MB): a última boa de antes continua): o teste roda de novo na próxima abertura",
+   "2026-11-24T21:29:03 | versão 9.9.0 | procurei: a publicada (9.9.0) não é mais nova que a 9.9.0",
+   "2026-11-24T21:29:03 | versão 9.9.0 | procurei: a publicada (9.9.0) não é mais nova que a 9.9.0"
+  ]
+ },
+ "C5 sem rede x não existe": {
+  "a fonte não responde": {
+   "tela": [],
+   "registro (fim)": [
+    "2026-11-24T21:29:03 | versão 0.1.0 | não deu para ler a assinatura da versão 9.9.0 (a fonte D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\qtq4\\casinhas\\C5-sem-rede\\fonte não está acessível): tento na próxima abertura"
+   ]
+  },
+  "a assinatura não existe": {
+   "tela": [
+    "[Atualização] Chegou uma versão nova, mas ela não foi instalada porque não tem a assinatura do Samuel. O programa continua funcionando. Avise o Samuel."
+   ],
+   "registro (fim)": [
+    "2026-11-24T21:29:03 | versão 0.1.0 | a versão 9.9.0 não foi baixada: assinatura recusada (não achei a assinatura da versão 9.9.0 ([Errno 2] No such file or directory: 'D:\\\\programas\\\\EditorImpressao\\\\.claude\\\\worktrees\\\\atualizador-novo\\\\saida_teste\\\\qtq4\\\\casinhas\\\\C5-nao-existe\\\\fonte\\\\EditorImpressaoPrograma-9.9.0.assinatura'))"
+   ]
+  }
+ }
+}

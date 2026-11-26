@@ -1,0 +1,96 @@
+[
+ {
+  "caso": "A",
+  "abertura": "primeira",
+  "linha de comando": [
+   "--voltando",
+   "1.2.0",
+   "1.1.0"
+  ],
+  "saida do executor": null,
+  "testes rapidos rodados": 0,
+  "pedidos ao Velopack": [
+   "procurar"
+  ],
+  "frases na fila da tela (esperando a janela)": [
+   "A atualização não deu certo e o programa não conseguiu voltar sozinho. Não desinstale nada. Avise o Samuel."
+  ],
+  "o main.main() parou com": "ModuleNotFoundError: import of ui.janela_principal halted; None in sys.modules",
+  "o que apareceu na tela (caixas)": [
+   "[Um momento] Aconteceu um problema inesperado, mas o programa continua funcionando."
+  ],
+  "marca de sem volta no disco": true,
+  "frases marcadas como vistas": [],
+  "bilhete": {
+   "reprovadas": [
+    "1.2.0"
+   ]
+  }
+ },
+ {
+  "caso": "A",
+  "abertura": "seguinte",
+  "linha de comando": [],
+  "saida do executor": null,
+  "testes rapidos rodados": 0,
+  "pedidos ao Velopack": [
+   "procurar"
+  ],
+  "frases na fila da tela (esperando a janela)": [],
+  "o main.main() parou com": "ModuleNotFoundError: import of ui.janela_principal halted; None in sys.modules",
+  "o que apareceu na tela (caixas)": [
+   "[Um momento] Aconteceu um problema inesperado, mas o programa continua funcionando."
+  ],
+  "marca de sem volta no disco": true,
+  "frases marcadas como vistas": [],
+  "bilhete": {
+   "reprovadas": [
+    "1.2.0"
+   ]
+  }
+ },
+ {
+  "caso": "B",
+  "abertura": "primeira",
+  "linha de comando": [],
+  "saida do executor": null,
+  "testes rapidos rodados": 1,
+  "pedidos ao Velopack": [],
+  "frases na fila da tela (esperando a janela)": [
+   "A atualização não deu certo e o programa não conseguiu voltar sozinho. Não desinstale nada. Avise o Samuel."
+  ],
+  "o main.main() parou com": "ModuleNotFoundError: import of ui.janela_principal halted; None in sys.modules",
+  "o que apareceu na tela (caixas)": [
+   "[Um momento] Aconteceu um problema inesperado, mas o programa continua funcionando."
+  ],
+  "marca de sem volta no disco": true,
+  "frases marcadas como vistas": [],
+  "bilhete": {
+   "reprovadas": [
+    "1.2.0"
+   ]
+  }
+ },
+ {
+  "caso": "B",
+  "abertura": "seguinte",
+  "linha de comando": [],
+  "saida do executor": null,
+  "testes rapidos rodados": 0,
+  "pedidos ao Velopack": [
+   "procurar"
+  ],
+  "frases na fila da tela (esperando a janela)": [],
+  "o main.main() parou com": "ModuleNotFoundError: import of ui.janela_principal halted; None in sys.modules",
+  "o que apareceu na tela (caixas)": [
+   "[Um momento] Aconteceu um problema inesperado, mas o programa continua funcionando."
+  ],
+  "marca de sem volta no disco": true,
+  "frases marcadas como vistas": [],
+  "bilhete": {
+   "reprovadas": [
+    "1.2.0"
+   ]
+  }
+ }
+]

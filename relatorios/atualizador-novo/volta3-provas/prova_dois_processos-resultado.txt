@@ -1,0 +1,56 @@
+{
+ "G1": {
+  "depois do processo 1": {
+   "codigo de saida do 1 (9 = morreu)": 9,
+   "ultima boa no disco": "1.1.0",
+   "arquivos da ultima-boa": [
+    "EditorImpressaoPrograma-1.1.0-full.nupkg",
+    "EditorImpressaoPrograma-1.1.0.assinatura",
+    "EditorImpressaoPrograma-1.2.0.assinatura"
+   ],
+   "packages": [
+    ".velopack_lock",
+    "EditorImpressaoPrograma-1.1.0-full.nupkg"
+   ],
+   "bilhete": {
+    "reprovadas": [
+     "1.2.0"
+    ]
+   }
+  },
+  "processo 2 (o atalho, sem linha de comando)": {
+   "saida": 0,
+   "fase": "parado",
+   "frases para a tela": [],
+   "ultima boa": "1.1.0"
+  },
+  "troca pedida pelo 2": "1.1.0 True ['--fonte', 'D:\\\\programas\\\\EditorImpressao\\\\saida_teste\\\\prova-volta3\\\\G1\\\\sem-internet']",
+  "registro": "2026-11-24T13:25:12 | versão 1.2.0 | FALHOU no teste rápido a versão 1.2.0: a versão 1.2.0 não passou no teste rápido (o teste rápido de prova)\n2026-11-24T13:25:12 | versão 1.2.0 | FALHOU no teste rápido a versão 1.2.0: a versão 1.2.0 não passou no teste rápido (o teste rápido de prova)\n2026-11-24T13:25:12 | versão 1.2.0 | a volta para a 1.1.0 foi pedida ao Velopack; o programa sai e ele troca\n",
+  "erros": "Using explicit locator configuration, ignoring auto-locate.\nUsing explicit locator configuration, ignoring auto-locate.\nError extracting Update.exe from bundle: This update package is invalid: (zip bundle predicate not found).\nUsing explicit locator configuration, ignoring auto-locate.\nUsing explicit locator configuration, ignoring auto-locate.\n"
+ },
+ "G": {
+  "depois do processo 1": {
+   "codigo de saida do 1 (9 = morreu)": 9,
+   "ultima boa no disco": "1.1.0",
+   "arquivos da ultima-boa": [
+    "EditorImpressaoPrograma-1.1.0-full.nupkg",
+    "EditorImpressaoPrograma-1.1.0.assinatura",
+    "EditorImpressaoPrograma-1.2.0-full.nupkg.chegando",
+    "EditorImpressaoPrograma-1.2.0.assinatura"
+   ],
+   "packages": [
+    "EditorImpressaoPrograma-1.2.0-full.nupkg"
+   ],
+   "bilhete": {}
+  },
+  "processo 2 (o atalho, sem linha de comando)": {
+   "saida": null,
+   "fase": "parado",
+   "frases para a tela": [],
+   "ultima boa": "1.2.0"
+  },
+  "troca pedida pelo 2": "nenhuma",
+  "registro": "2026-11-24T13:25:13 | versão 1.2.0 | a versão 1.2.0 passou no teste rápido e está guardada como a última boa\n2026-11-24T13:25:13 | versão 1.2.0 | procurei: nenhuma versão nova (esta é a 1.2.0)\n",
+  "erros": "Using explicit locator configuration, ignoring auto-locate.\nUsing explicit locator configuration, ignoring auto-locate.\n"
+ }
+}

@@ -1,0 +1,987 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plano do atualizador novo</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Atualizador novo: o plano (23/11/2026)</h1>
+<p>Implementador. Ramo <code>atualizador-novo-2026-11-23</code>, worktree <code>.claude/worktrees/atualizador-novo</code>, ponta <code>732a143e</code>.
+Pedido da gerente de 23/11/2026: <strong>só o plano, nenhuma linha de código nem de teste.</strong> O código só começa com o "pode"
+da gerente. As voltas da trava (abaixo deste plano) ficam como estavam.</p>
+<p><strong>Situação: plano escrito, esperando a gerente.</strong> Nada do programa mudou. Li: <code>resposta-do-fable.md</code> (inteiro, com a
+correção das 20:42 e a revisão das 20:50), <code>experimento-passo-1.md</code>, a Parte 2 do <code>relatorio-para-o-fable.md</code>, as
+decisões D-705 a D-833 do Livro mais novo (<code>obra-juncao</code>), <code>atualizacao.py</code> e <code>core/windows.py</code> deste ramo, o
+<code>atualizacao.py</code> do ramo <code>atualizador-4-consertos-2026-11-21</code>, <code>ui/aviso_de_atualizacao.py</code>, <code>ui/testes_a_distancia_ui.py</code>,
+<code>main.py</code>, a trava (<code>tests/test_trava_windows.py</code>), o porteiro (<code>regras_dos_agentes/porteiro.py</code>, <code>excecoes.py</code>,
+<code>tests/conferencias_excecoes.json</code>) e o código do Velopack 1.2.161 (clone na etiqueta <code>1.2.161</code>, no rascunho).</p>
+<p>Em resumo, o desenho: <strong>o único ato com licença é dar à pasta do programa a licença de Modificar para Usuários, uma vez,
+na primeira abertura, antes da janela. Depois disso o próprio programa, na conta do Kaique, procura, confere a
+assinatura, confere o motor, baixa e pede ao Velopack para trocar; o Velopack espera o programa sair, troca, mostra a
+janelinha dele e reabre na conta do Kaique.</strong> Nenhum processo nosso roda como o sistema, nenhum PowerShell, nenhuma
+marca, nenhum canal entre contas.</p>
+<hr />
+<h2>1. Decisões que esta tarefa precisa cumprir (§11.3)</h2>
+<p>Palavras dele copiadas do Livro (<code>obra-juncao/docs/plano/DECISOES.md</code>). Quando duas se contradizem, vale a mais nova
+(anotado em cada linha).</p>
+<h3>O que o atualizador faz</h3>
+<table>
+<thead>
+<tr>
+<th>Decisão</th>
+<th>Palavras dele</th>
+<th>Como o desenho novo cumpre</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-706</td>
+<td>"a atualização via internet tem que ser como funciona com apps, não pode ser ele ter que baixar de novo um instalador fazer tudo de novo"</td>
+<td>O Velopack troca a pasta <code>current</code>; o instalador só na primeira vez.</td>
+</tr>
+<tr>
+<td>D-713</td>
+<td>"não precisa ser privado"</td>
+<td>As versões vêm dos "Releases" do projeto público (<code>Fonte.padrao()</code>, fica).</td>
+</tr>
+<tr>
+<td>D-714</td>
+<td>"1 - vamos seguir sua sugestão" (publicada de propósito)</td>
+<td>Nada muda no publicar. A parte "toda vez que o pc inicializar" foi trocada pela D-732.</td>
+</tr>
+<tr>
+<td>D-715</td>
+<td>"ele dá um aviso se o programa estiver aberto, um aviso para salvar o trabalho atual e reinicializar o programa"</td>
+<td>Baixou com o programa aberto → aviso. "Reiniciar agora" fecha pela janela (o fechar grava) e só depois pede a troca.</td>
+</tr>
+<tr>
+<td>D-718</td>
+<td>"Sim, e tem que avisar a gente de alguma maneira"</td>
+<td>A versão nova reaberta roda o teste rápido antes da janela; falhou → volta para a anterior (pacote assinado) e anota.</td>
+</tr>
+<tr>
+<td>D-719</td>
+<td>"1" (aviso na tela e registro lido de longe)</td>
+<td>O aviso uma vez por falha; o registro fica em <code>%ProgramData%\EditorImpressao\atualizacao\atualizacao.log</code>, que outra conta do PC lê. A leitura "de longe" depende dos testes à distância (ficam para depois).</td>
+</tr>
+<tr>
+<td>D-720</td>
+<td>"Sim" (Reiniciar agora / Depois)</td>
+<td>Os dois botões ficam. O "Depois" muda de efeito pela D-769/D-794/D-831 (abaixo).</td>
+</tr>
+<tr>
+<td>D-723</td>
+<td>"velopack"</td>
+<td>Velopack 1.2.161, sem trocar (D-779).</td>
+</tr>
+<tr>
+<td>D-724</td>
+<td>"gratis, mas o que é essa assinatura e é segura?"</td>
+<td>A assinatura é conferida <strong>antes de baixar</strong> (fica) e, novo, <strong>de novo no arquivo baixado, logo antes de trocar</strong> (com Modificar para Usuários, outra conta poderia trocar o arquivo em <code>packages\</code>).</td>
+</tr>
+<tr>
+<td>D-727</td>
+<td>"se tiver qualquer coisa que o kaique precise, ele tem que estar no instalador né"</td>
+<td>O Visual C++ e o motor do Kraken continuam dentro do instalador; nada baixado na instalação.</td>
+</tr>
+<tr>
+<td>D-732</td>
+<td>"não, faz quando o programa é aberto"</td>
+<td>A procura roda <strong>só ao abrir</strong> (correção das 20:42: o "de 5 em 5 minutos" era do código antigo e sai). Nada roda por trás depois.</td>
+</tr>
+<tr>
+<td>D-733</td>
+<td>"1- sim / VAI CONSEGUIR FAZER OS TESTS A DISTANCIA NÉ?"</td>
+<td>Uma pergunta do Windows só, na primeira abertura; depois nenhuma, nem na volta. O programa continua em Arquivos de Programas, fora da conta do Kaique, então os testes à distância continuam possíveis depois. O "ajudante" que a D-733 descrevia era o jeito; a D-830 ("refazer") troca o jeito e mantém a escolha "1".</td>
+</tr>
+<tr>
+<td>D-735</td>
+<td>"Sim" (a pergunta aparece sempre, com ou sem a senha)</td>
+<td>A pergunta não depende da senha: vem antes da janela, em toda abertura em que a pasta ainda não tem a licença.</td>
+</tr>
+<tr>
+<td>D-741</td>
+<td>"Sim" (depois do "Não", volta a cada abertura até o "Sim")</td>
+<td>"Preparado?" = a pasta do programa aceita gravação pela conta que abriu (o mesmo teste que o Velopack faz). Sem isso, pergunta de novo. Na conta de testes, nada pergunta.</td>
+</tr>
+<tr>
+<td>D-749</td>
+<td>"Sim" (preparação pela metade conta como não feita)</td>
+<td>A licença da pasta é o <strong>último</strong> passo do pedido, e a peça para no primeiro passo que falha. Então "a pasta aceita gravação" só acontece se o Visual C++ e a retirada do Inno deram certo antes.</td>
+</tr>
+<tr>
+<td>D-763/D-764</td>
+<td>"ok, pode fazer" · "ok"</td>
+<td>O nome do pacote continua <code>versao.ID_DO_PACOTE</code>. Bônus: com a pasta gravável, o Velopack deixa de usar a pasta de reserva no <code>%LOCALAPPDATA%</code> (fato, <code>locator.rs</code> L152-176).</td>
+</tr>
+<tr>
+<td>D-765</td>
+<td>"eu não quero fazer nenhum conserto até o .exe estar pronto para o kaique [...]"</td>
+<td>Só o atualizador muda. Nada de ferramenta, filtro ou tela de trabalho.</td>
+</tr>
+<tr>
+<td>D-767</td>
+<td>"não faça mais nada escodindo ou de mentira" · "não quero fazer consertos quero que funcione"</td>
+<td>O que mexe no Windows só conta como pronto depois da prova à vista (seção 11).</td>
+</tr>
+<tr>
+<td>D-768/D-788/D-789</td>
+<td>"vou escolher a 16" · "1" · "A"</td>
+<td>O motor mora em <code>&lt;raiz&gt;\motor-kraken\&lt;versão&gt;</code>, fora de <code>current</code>; a atualização vai inteira e sem o motor.</td>
+</tr>
+<tr>
+<td>D-769</td>
+<td>"b" (com "Depois", entra ao fechar)</td>
+<td>Mudada pela D-794 e confirmada pela D-831.</td>
+</tr>
+<tr>
+<td>D-778</td>
+<td>"A" (três frases para as três falhas)</td>
+<td><strong>Adiada pela D-824</strong> ("os três avisos" ficam para depois). Ver pergunta 4: o desenho novo mostraria a frase errada em dois casos se continuar adiada.</td>
+</tr>
+<tr>
+<td>D-779</td>
+<td>"ta vamos continuar com ele, mas o que fazemos para ele não dar defeito [...]"</td>
+<td>Fica a 1.2.161. A "proteção em volta" (guardar a versão que funciona fora da pasta trocada) <strong>fica de fora nesta entrega</strong>: é parte do "resto do plano da parte do Windows" que a D-824 deixou para depois. Ver ressalva 6.</td>
+</tr>
+<tr>
+<td>D-790</td>
+<td>"A" (tudo ou nada do motor)</td>
+<td>Pela D-833, o que vem é o conserto 4 da volta 1: sem o motor no lugar, nada é anunciado nem trocado. <strong>Baixar só o motor pela internet fica de fora</strong>, como já estava no ramo <code>atualizador-4</code> ("Nesta entrega nao baixa motor da internet").</td>
+</tr>
+<tr>
+<td>D-794</td>
+<td>"eu acho que deveria aparecer o aviso para atualizar ou não na hora de fechar e se ele disser sim, o programa fecha e fica uma janelinha em segundo plano tipo esses iconizinhos, mostrando porcentagem atualizando" · "da proxima vez que ele abrir o programa"</td>
+<td>Com versão pronta e "Depois", fechar pergunta "Atualizar agora?". Sim → o programa grava, fecha, e o Velopack troca. Não → fecha sem trocar; o aviso volta na próxima abertura. <strong>O ícone perto do relógio: ver pergunta 3</strong> (a D-832 diz "janelinha do Velopack").</td>
+</tr>
+<tr>
+<td>D-805</td>
+<td>"a" (na pergunta fica "EditorImpressao.exe")</td>
+<td>A pergunta abre o próprio <code>EditorImpressao.exe</code> pela peça (como hoje).</td>
+</tr>
+<tr>
+<td>D-806</td>
+<td>"então pode ser opção A" (a licença pedida no instante do clique, com o programa na frente)</td>
+<td>A pergunta é feita <strong>antes do brasão e da janela</strong>, cerca de um segundo depois do clique no atalho, quando o programa ainda tem o direito de vir para a frente que o Velopack lhe passa (fato: <code>stub.rs</code> L41 e <code>start_windows_impl.rs</code> L132 chamam <code>AllowSetForegroundWindow</code> para o programa aberto). Sai a espera pela janela na frente.</td>
+</tr>
+<tr>
+<td>D-824</td>
+<td>"vamos fazer com um só, uma coisa de cade vez." (entrega em duas vezes)</td>
+<td>Esta entrega: o programa que se atualiza. Ficam para depois: testes à distância, os três avisos, a janelinha nossa, o desinstalar limpo dos testes.</td>
+</tr>
+<tr>
+<td>D-825</td>
+<td>"ok" (B: a senha não liga os testes nesta entrega)</td>
+<td>A janela da senha continua na primeira abertura; o que se digita não liga nada (como no <code>atualizador-4</code>).</td>
+</tr>
+<tr>
+<td>D-826</td>
+<td>(a parte do "erro pequeno" <strong>não tem resposta dele</strong>)</td>
+<td>No desenho novo ela some: qualquer passo que falha deixa a pasta sem a licença, e a pergunta volta (vale a D-749, que é dele).</td>
+</tr>
+<tr>
+<td>D-828</td>
+<td>"foi eu, pode consertar essas coisas"</td>
+<td>(1) Quem espera o programa fechar é o Velopack, pelo número do <strong>nosso</strong> processo (<code>--waitPid</code>), e o programa só sai depois de gravar. Um clique no atalho no meio da troca não estraga a troca: o Velopack fecha à força o que roda da pasta antes de trocar (fato, <code>apply_windows_impl.rs</code> L159). (2) A pergunta no clique (D-806). (3) Não há pasta trancada: nenhuma tranca à mão.</td>
+</tr>
+<tr>
+<td>D-830</td>
+<td>"refazer"</td>
+<td>Este plano.</td>
+</tr>
+<tr>
+<td>D-831</td>
+<td>"a" (o "Depois" ao fechar, com "Atualizar agora?", já nesta entrega)</td>
+<td><code>wait_exit_then_apply_updates</code> ao fechar, provado no experimento de 23/11.</td>
+</tr>
+<tr>
+<td>D-832</td>
+<td>"pode ser velopack, deixamos para mudar isso mais para frente"</td>
+<td>A troca é chamada com a janelinha do Velopack ligada (sem <code>--silent</code>). Em português no Windows em português: "Atualização do Editor de Impressão / Instalando Atualização / Atualizando para a versão X, aguarde..." (fato, <code>locales/pt-BR.ftl</code> L2, L64-65). Nenhuma janelinha nossa.</td>
+</tr>
+<tr>
+<td>D-833</td>
+<td>"motor do Kraken tudo ou nada continua"</td>
+<td><code>garantir_o_motor</code> e <code>motor_esta_no_lugar</code> vêm do <code>atualizador-4</code>, agora rodando na conta do Kaique (a pasta tem a licença).</td>
+</tr>
+</tbody>
+</table>
+<h3>Testes à distância (deixados de fora nesta entrega, D-824/D-825)</h3>
+<p>D-705, D-711, D-712, D-717, D-721, D-728, D-731, D-736, D-739, D-743, D-771, D-772, D-780, D-781:
+- <strong>Continuam como estão:</strong> a janela da senha na primeira abertura (D-721) e o botão nas Configurações (D-712); pelo
+  código nada aparece (D-728); na conta de testes nada procura nem pergunta (D-736, D-741).
+- <strong>D-736 ("Se tiver nova versão eu quero poder mandar atualizar aqui pelo meu pc, mas o programa não precisa procurar
+  versão nova")</strong> depende do comando de longe (SSH), que vem com os testes à distância. <strong>Não é construída agora.</strong> O
+  desenho deixa o lugar: o mesmo "procurar, conferir e baixar" que a abertura usa serviria a um <code>--baixar-atualizacao</code>
+  rodado de longe; a troca entraria na próxima abertura ou no "Reiniciar agora" (como o Fable descreveu).
+- <strong>D-731 ("ok": desinstalar tira junto o que os testes puseram):</strong> nesta entrega os testes não põem nada (D-825), e o
+  desenho novo não põe tarefa nenhuma no Windows. O desinstalar do <code>.msi</code> apaga a pasta inteira do programa, com o motor
+  dentro. O gancho de desinstalar continua mandando rodar o "desfazer" dos testes <strong>se</strong> ele existir (como hoje).</p>
+<h3>Regras de trabalho</h3>
+<p>D-605 / §11.8 (nada de mudar o que está testado sem o "sim"), D-637 / §11.9, §11.12 (uma peça só; nada dado como feito
+sem conferir; a lista das falhas; ler a peça de fora), §11.13, D-775 (quem tenta quebrar antes da prova), D-785 (à
+vista), D-793 / §11.11 (não abrir agente), D-809 (nada que mude o <code>.git</code> inteiro), D-811 a D-813 e D-827 (cada
+proteção com o teste que a acusa), D-815, D-819 (comparar o jeito mais simples e dizer por quê).</p>
+<hr />
+<h2>2. O que já está escolhido e testado aqui (§11.8)</h2>
+<p>Legenda: <strong>F</strong> = continua igual, sem mudar uma linha. <strong>C</strong> = cobra a mesma decisão, mas chama o caminho novo (muda a
+chamada, não a conferência). <strong>S</strong> = testa uma peça que sai. <strong>M</strong> = cobra uma decisão que ele mesmo mudou depois.
+<strong>Nenhum teste muda nem sai sem o "sim" dele</strong> (pergunta 5). Os C marcados "D-825" já têm o "sim" de 21/11 para passar
+ao "caminho novo [...], o 'preparado' lido do Windows" — a gerente confere se esse "sim" cobre a leitura da pasta (no
+lugar da leitura das tarefas).</p>
+<p><strong><code>tests/test_decisoes_atualizacao.py</code> (38):</strong>
+- F: <code>d714_a_versao_vem_de_um_lugar_so</code>, <code>os_textos_do_aviso_sem_emoji_e_com_acento</code>, <code>pelo_codigo_o_aviso_nao_liga</code>,
+  <code>d719_a_frase_da_falha_e_a_combinada</code>, <code>d719_o_erro_vai_para_o_registro_no_programdata</code>, <code>d719_nenhum_token_dentro_do_programa</code>,
+  os 3 <code>d724_publicar_*</code>, <code>d724_a_chave_nunca_dentro_do_repositorio</code>, <code>d724_o_que_o_publicar_assina_o_programa_aceita</code>,
+  <code>d723_o_desinstalador_do_inno_nao_apaga_os_projetos</code>, <code>d714_a_instalacao_de_verdade_nao_cria_a_tarefa</code>, os 2
+  <code>d727_o_vpk_*</code>/<code>o_visual_c_vai_dentro</code>, <code>pelo_codigo_a_linha_de_comando_nao_faz_nada_nem_importa_o_velopack</code>,
+  <code>o_main_chama_a_atualizacao_por_um_ponto_so</code>.
+- C: os 4 <code>d724</code> de procurar (assinatura errada, sem arquivo, pacote trocado, já falhou: sai só o argumento "programa
+  aberto?"), <code>d715_programa_aberto_fica_pendente_e_a_tela_avisa</code>, <code>sem_internet_nao_e_falha_e_nao_avisa</code>,
+  <code>d720_reiniciar_agora_fecha_gravando_e_so_depois_troca</code>, <code>d719_a_falha_aparece_na_tela_uma_vez_so</code>, os 4 <code>d718</code>
+  (volta, fica, troca desfeita, só pacote assinado: a versão de antes e a nova passam a vir na linha de comando da
+  reabertura), <code>d723_o_comando_que_tira_o_inno</code>, <code>d723_o_pacote_portatil_*</code>, <code>d723_instalacao_de_verdade_prepara_o_computador</code>,
+  <code>d727_o_visual_c_so_roda_se_faltar</code> (as três últimas: o Visual C++ e o Inno passam a ser passos da peça).
+- S: <code>d714_a_tarefa_roda_ao_ligar_*</code>, <code>d714_criar_e_apagar_a_tarefa_pelo_schtasks</code>,
+  <code>d714_programa_fechado_baixa_e_troca_e_reabre_escondido_*</code> (quem trocava com o programa fechado era o ajudante),
+  <code>d723_o_portatil_nunca_cria_nem_apaga_a_tarefa</code>.
+- M: <code>d720_depois_do_depois_a_tarefa_troca_quando_o_computador_liga</code> (já era da D-714 antiga), <code>d720_o_aviso_tem_reiniciar_agora_e_depois_*</code>
+  (cobra a frase "próxima vez que você abrir o programa"; o "Depois" agora pergunta ao fechar).</p>
+<p><strong><code>tests/test_decisoes_ajudante_da_atualizacao.py</code> (37):</strong>
+- F: <code>b1_ao_instalar_e_ao_atualizar_nao_criam_a_tarefa</code>, <code>d736_a_conta_de_testes_e_reconhecida_pelo_nome_fixo</code>, os 4
+  <code>etapa5_*</code> (a fonte de teste do administrador: fica; só a leitura do dono do arquivo passa para a peça).
+- C: <code>d732_ao_abrir_o_programa_manda_o_ajudante_procurar</code> e <code>d732_a_janela_aberta_chama_o_ajudante_e_liga_o_aviso</code>
+  (procura ao abrir, agora no próprio programa), os 3 <code>d735_*</code> (D-825), <code>d733_disse_nao_fica_anotado_e_nada_quebra</code>
+  (D-825), <code>d733_reiniciar_agora_chama_o_ajudante_e_nao_pede_licenca</code> (continua sem licença, pelo Velopack),
+  <code>d736_aberto_por_teste_a_distancia_nao_procura_nem_troca</code>, os 3 <code>d741_*</code> de pergunta voltar (D-825).
+- S: <code>d732_o_ajudante_nao_roda_mais_ao_ligar_o_computador</code>, <code>d733_a_conta_comum_pode_mandar_rodar_mas_nao_mudar_o_ajudante</code>,
+  <code>d733_depois_de_trocar_o_ajudante_e_refeito_como_o_sistema</code>, <code>d733_o_passo_de_preparar_roda_este_exe_escondido_*</code> (D-825),
+  <code>d733_o_modo_preparar_cria_o_ajudante_e_prepara_o_computador</code>, <code>d733_a_linha_de_comando_atende_o_preparar</code>,
+  <code>d733_o_script_escondido_vai_codificado_e_solto</code>, <code>d736_o_samuel_manda_atualizar_de_longe_pelo_mesmo_ajudante</code>,
+  <code>regra_num_lugar_so_todos_os_caminhos_chamam_o_ajudante_pelo_mesmo_comando</code>, <code>d741_a_marca_e_de_fabrica_falsa_*</code> (a
+  marca nas Configurações já saiu pela D-825).
+- M: <code>d733_com_a_senha_preparo_e_testes_numa_pergunta_so</code> (D-825: a senha não liga), os 3 <code>d734_*</code> (entra na próxima
+  abertura → ao fechar), os 6 <code>d742_*</code> (a nossa janelinha → a do Velopack, D-832).</p>
+<p><strong><code>tests/test_decisoes_preparo_d749.py</code> (5):</strong> C: <code>sim_com_a_preparacao_parada_no_meio_a_pergunta_volta</code>,
+<code>visual_c_ou_inno_que_falham_contam_como_erro</code> (D-825). S: <code>uma_anotacao_velha_nao_conta</code>, <code>o_modo_preparar_devolve_erro_*</code>,
+<code>o_passo_anota_como_o_preparo_terminou</code> (o <code>preparo.txt</code> e o <code>--preparar-o-computador</code> saem; D-825).</p>
+<p><strong><code>tests/test_decisoes_desinstalar.py</code> (37):</strong> F: os 31 dos testes à distância. C: os 3 <code>d731_desinstalar_*</code> (trocam
+<code>atualizacao.apagar_tarefa</code>, que sai; o "manda rodar o desfazer" fica). S: <code>d731a_sem_os_testes_ligados_desinstalar_apaga_a_tarefa_da_atualizacao</code>,
+<code>d731a_com_os_testes_ligados_o_desfazer_inteiro_apaga_tambem_a_tarefa_da_atualizacao</code>,
+<code>d731a_a_primeira_abertura_nao_troca_o_desfazer_inteiro_pelo_curto</code> (a primeira abertura deixa de criar o "desfazer" e
+o ajudante não existe). <strong><code>tests/test_decisoes_desinstalar_pasta.py</code> (4):</strong> F.</p>
+<p><strong><code>tests/test_decisoes_testes_a_distancia.py</code> (13):</strong> F: 11. C (D-825): <code>d721_primeira_vez_pede_a_senha_e_liga</code>,
+<code>d728_instalado_primeira_vez_pede_a_senha</code>.</p>
+<p><strong><code>tests/test_decisoes_brasao.py</code> (22):</strong> F: 19 (o <code>d744_o_brasao_some_quando_a_janela_principal_abre</code> importa
+<code>ui.aviso_de_atualizacao</code>, que continua existindo). M: os 3 <code>d748_*</code> (a janelinha nossa e as duas marcas saem; o
+brasão deixa de esperar a janelinha).</p>
+<p><strong><code>tests/test_windows_peca.py</code> (71):</strong> F: 69. C: <code>a_licenca_da_tarefa_e_comparada_pelo_sentido_*</code> e
+<code>a_tarefa_numa_pasta_do_agendador_que_mudou_no_meio_e_apagada</code> usam <code>atualizacao.QUEM_PODE_MANDAR_RODAR</code> como dado de
+exemplo; a constante sai com o ajudante (pergunta 5: o texto vai escrito no próprio teste).</p>
+<p><strong><code>tests/test_nome_do_pacote.py</code> (5), <code>tests/test_publicar_*.py</code>:</strong> F (o publicar não muda).</p>
+<p><strong><code>tests/test_trava_windows.py</code> (deste ramo, ainda não juntado):</strong> a catraca muda pelo jeito previsto nela mesma (seção 10).</p>
+<p><strong><code>tests/test_conferencias_excecoes.py::test_o_repositorio_so_tem_os_erros_que_a_lista_deixa</code>:</strong> vai falhar até a
+gerente gerar a lista de novo (seção 10). Não mexo nele nem na lista.</p>
+<p>Os testes do ramo <code>atualizador-4</code> (<code>test_atualizador_4.py</code>, <code>test_atualizador_volta4.py</code>) não existem aqui. Vêm só os
+do motor (conserto 4) que cobram o que passa (seção 5).</p>
+<hr />
+<h2>3. Como fica para quem usa e no livro (§11.9)</h2>
+<p><strong>No livro (PDF): nada muda.</strong> Só o atualizador muda. Pelo atalho "(desenvolvimento)" e pelo código, nada muda (o
+programa não está instalado pelo Velopack: nada roda).</p>
+<p><strong>Primeira abertura (programa recém-instalado pelo <code>.msi</code>):</strong>
+- Antes: clique → brasão → janela → janela da senha → "Agora não" → a pergunta do Windows (às vezes só piscando na
+  barra) → nada na tela enquanto prepara.
+- Depois: clique → <strong>logo em seguida</strong> a pergunta do Windows ("Deseja permitir que este aplicativo... EditorImpressao.exe",
+  faixa amarela) no meio da tela → "Sim" → o brasão e a janela abrem normalmente, enquanto a preparação (Visual C++,
+  tirar a instalação antiga, a licença da pasta) termina por trás, num processo separado → a janela da senha aparece
+  como hoje (pergunta 1: a ordem muda). Depois da preparação, o programa põe o motor do Kraken no lugar e procura versão
+  nova, por trás, sem nada na tela.</p>
+<p><strong>Pergunta recusada com "Não":</strong> a janela abre normalmente; nada é feito; na próxima abertura a pergunta aparece de
+novo, logo no clique, até o "Sim". Sem o "Sim", nada se procura (se procurasse, o Velopack pediria licença a cada versão,
+o jeito 2 que ele recusou).</p>
+<p><strong>Abertura comum com versão nova publicada:</strong> clique → brasão → janela (nada atrasa: a procura e o download rodam por
+trás). Quando o download termina (uns 460 MB), aparece o aviso de hoje: "Reiniciar agora" / "Depois".</p>
+<p><strong>"Reiniciar agora":</strong> a janela fecha pelo caminho de sempre (grava o trabalho) → aparece a janelinha do Velopack
+("Atualizando para a versão X, aguarde...") → some → uns segundos sem nada na tela (o teste rápido da versão nova) → o
+brasão e a janela, já na versão nova. Ressalva 3: os segundos sem nada na tela.</p>
+<p><strong>"Depois":</strong> nada muda agora; ele continua trabalhando. Ao fechar o programa aparece "Atualizar agora?" (texto na
+pergunta 2). "Sim" → o programa grava e fecha → a janelinha do Velopack aparece até a troca acabar → nada abre (D-769:
+na próxima vez ele já abre na versão nova, sem esperar). "Não" → fecha sem trocar; na próxima abertura o aviso de versão
+nova aparece de novo.</p>
+<p><strong>Versão nova que falha no teste rápido:</strong> depois da janelinha do Velopack, a versão nova não passa no teste; ela anota,
+baixa de novo a versão anterior assinada (uns minutos, nada na tela: ressalva 4), pede a troca de volta (janelinha do
+Velopack de novo) e abre a anterior, que mostra uma vez "A atualização não deu certo. O programa voltou para a versão
+anterior e continua funcionando. Avise o Samuel." Essa versão não é tentada de novo; espera uma mais nova.</p>
+<p><strong>Clique no atalho no meio da troca:</strong> a troca não se estraga (o Velopack fecha à força o que abriu da pasta antes de
+trocar). O clique pode se perder: ele clica de novo depois que a janelinha do Velopack sumir.</p>
+<p><strong>Duas janelas do programa abertas e "Atualizar agora? Sim" numa delas:</strong> a troca não acontece (o Velopack fecharia a
+outra à força, com o que estiver nela); fica anotado, e o aviso volta na próxima abertura. Nenhum texto novo na tela.</p>
+<p><strong>O que pode virar problema novo:</strong> (a) a ordem da primeira abertura (pergunta 1); (b) "Programas e Recursos" continua
+mostrando a versão do instalador (fato do experimento: "Failed to update uninstall entry"; o Fable deixou para depois da
+entrega); (c) se a conta do Kaique for padrão (não administrador), a pergunta do Windows pede a senha de um
+administrador (não conferi o tipo da conta dele; ressalva 7).</p>
+<hr />
+<h2>4. O desenho</h2>
+<h3>4.1 As peças (uma para cada conversa com o que está fora)</h3>
+<table>
+<thead>
+<tr>
+<th>Peça</th>
+<th>Arquivo</th>
+<th>Só ela pode</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A regra (máquina de estados)</td>
+<td><code>core/fases_da_atualizacao.py</code> (novo, puro)</td>
+<td>decidir o que acontece: <code>proxima_fase(estado, evento) -&gt; (estado, efeitos)</code>. Não importa nada além de <code>dataclasses</code>, <code>enum</code> e <code>typing</code> (um teste lê a árvore e cobra).</td>
+</tr>
+<tr>
+<td>O Windows</td>
+<td><code>core/windows.py</code> (existe)</td>
+<td>a pergunta do Windows, os passos com licença, ler licenças, dono de arquivo, registro do Windows, tarefas, rodar o teste rápido, a lista de processos.</td>
+</tr>
+<tr>
+<td>O Velopack</td>
+<td><code>core/conversa_com_o_velopack.py</code> (novo)</td>
+<td><code>import velopack</code>: os ganchos, a versão, procurar, baixar, o pendente, montar o pacote da anterior, trocar. <strong>Uma função só chama a troca</strong> (<code>trocar</code>).</td>
+</tr>
+<tr>
+<td>O executor</td>
+<td><code>atualizacao.py</code> (refeito)</td>
+<td>rodar os efeitos que a regra devolve, chamando as duas peças acima; o <code>estado.json</code>, o registro, o motor, a fonte de teste, a linha de comando.</td>
+</tr>
+<tr>
+<td>A tela</td>
+<td><code>ui/aviso_de_atualizacao.py</code></td>
+<td>só transforma clique em evento e efeito em caixa. Nenhuma conta.</td>
+</tr>
+</tbody>
+</table>
+<h3>4.2 "Preparado?" (§11.12 ponto 2)</h3>
+<p>É o que o Windows responde agora: <strong>a conta que abriu consegue criar um arquivo na raiz da instalação?</strong> É o mesmo teste
+que o próprio Velopack faz para decidir se vai pedir licença na troca (fato: <code>misc.rs</code> L73-85, <code>is_directory_writable</code>,
+arquivo <code>.velopack_dir_test</code> com apagar-ao-fechar; <code>locator.rs</code> L152-176 decide por ele). Fazemos igual, com outro nome
+de arquivo, em <code>atualizacao.py</code> (só o disco, sem a biblioteca do Windows: leva cerca de 1 ms; ler a licença pela peça
+carregaria o <code>core/windows.py</code>, ~100 ms por abertura, medidos em 19/11).
+- Por que não ler a lista de licenças (D-819, o mais simples contra o outro): o teste de gravar responde exatamente "a
+  troca vai pedir licença?", inclusive com grupos e negações que uma leitura da lista teria de recalcular. A leitura da
+  lista (<code>core.windows.ler_licencas</code>) fica para conferir, depois do "Sim", que a licença nova está lá e herdada (seção 7).
+- <code>os.access</code> não serve: no Windows ele só olha o atributo "só leitura" (a conferir na leitura do CPython antes do código).</p>
+<h3>4.3 Onde mora a pergunta do Windows (D-806)</h3>
+<p><code>main.py</code> → <code>atualizacao.atender_linha_de_comando</code> (já roda <strong>antes</strong> do brasão e da janela) → abertura comum do programa
+instalado, fora da conta de testes, pasta sem a licença → efeito <code>PedirLicenca</code> → <code>core.windows.comecar_pedido_de_licenca(passos)</code>.
+- <strong>Mudança na peça:</strong> hoje <code>pedir_licenca</code> pergunta e espera o trabalho com licença acabar (pode levar minutos com o
+  Visual C++). Ela vira duas metades da mesma conta: <code>comecar_pedido_de_licenca</code> (prepara o pedido e faz a pergunta; volta
+  logo depois da resposta: "disse Não", "falhou" ou "começou") e <code>PedidoDeLicenca.esperar()</code> (espera e lê o relatório).
+  <code>pedir_licenca</code> passa a ser <code>comecar(...).esperar()</code>, sem conta copiada; quem já a usa não muda.
+- A espera roda num fio de trás, depois que a janela abriu. Fechar o programa no meio não estraga: o trabalho com
+  licença é outro processo e termina sozinho; a próxima abertura testa a pasta de novo.</p>
+<h3>4.4 Os passos do pedido, nesta ordem (a peça para no primeiro que falha)</h3>
+<ol>
+<li><strong>Apagar o ajudante antigo</strong> (<code>passo_apagar_tarefa</code>, já existe), só se a leitura sem licença (<code>core.windows.ler_tarefa</code>)
+   achou <code>\EditorImpressao\Procurar versao nova</code>. <strong>Segurança:</strong> essa tarefa roda o <code>.exe</code> da pasta como o sistema; com
+   Modificar para Usuários, qualquer conta poderia trocar esse <code>.exe</code>. Por isso ela sai <strong>antes</strong> da licença, no mesmo
+   pedido. Só existe no PC do Samuel (seção 8).</li>
+<li><strong>Instalar o Visual C++ se faltar</strong> — tipo novo de passo <code>instalar_visual_c</code>: o lado com licença calcula sozinho o
+   caminho (<code>&lt;pasta do programa&gt;\instalar\vc_redist.x64.exe</code>, nunca vindo do aviso), confere a assinatura da Microsoft
+   (<code>ler_assinatura_digital</code>, já na peça), roda <code>/install /quiet /norestart</code> e confere a versão lida no registro depois.</li>
+<li><strong>Tirar a instalação antiga do Inno, se houver</strong> — tipo novo <code>tirar_instalacao_do_inno</code>: o lado com licença lê a chave
+   do Inno (AppId fixo), aceita só um desinstalador <code>unins*.exe</code> dentro da pasta que a chave diz, roda em silêncio e
+   confere que a chave sumiu. Os projetos não são tocados (teste <code>d723_o_desinstalador_do_inno_nao_apaga_os_projetos</code>).</li>
+<li><strong>Dar Modificar para Usuários na raiz</strong> — tipo novo <code>dar_licenca_aos_usuarios</code>: o lado com licença calcula a raiz
+   (a pasta acima de <code>current</code>, que tem <code>current\sq.version</code> e fica em Arquivos de Programas; nada vem do aviso),
+   <strong>acrescenta</strong> uma linha "Usuários (<code>S-1-5-32-545</code>): Modificar, passa para pastas e arquivos" e confere lendo de volta
+   (a raiz e um arquivo de dentro de <code>current</code>). Nunca tira herança, nunca troca dono, nunca apaga linha (o defeito de
+   18/11 foi o <code>/inheritance:r</code>). Jeito: <code>SetNamedSecurityInfoW</code> só na raiz, porque "the system automatically propagates
+   any inheritable access control entries (ACEs) to existing child objects" (Microsoft, <code>SetNamedSecurityInfoW</code>,
+   Remarks). O experimento provou o <code>icacls ... /grant ... /T</code>; se a prova à vista mostrar que a herança não chegou a
+   algum arquivo, o passo usa o jeito provado. <strong>O porteiro barra isso hoje (K03): pergunta 6.</strong></li>
+</ol>
+<p>Os passos 2 e 3 já existiam (<code>instalar_visual_c_se_faltar</code>, <code>comando_para_tirar_o_inno</code>, <code>atualizacao.py</code>), rodando dentro
+do "exe elevado que abre PowerShell que abre exe". Passam para a peça como passos da lista fechada; a regra de cada um
+continua num lugar só.</p>
+<h3>4.5 Cada momento, e o que se chama</h3>
+<table>
+<thead>
+<tr>
+<th>Momento</th>
+<th>O que acontece</th>
+<th>Chama</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Abrir (qualquer abertura)</td>
+<td><code>atender_linha_de_comando</code>: modos escondidos; ganchos do Velopack</td>
+<td><code>conversa_com_o_velopack.atender_ganchos()</code> (o <code>velopack.App().set_auto_apply_on_startup(False)...run()</code> de hoje; sem troca automática, senão o "Não" ao fechar trocaria na abertura seguinte)</td>
+</tr>
+<tr>
+<td>Abrir, sem licença na pasta</td>
+<td>pergunta do Windows, antes da janela</td>
+<td><code>core.windows.comecar_pedido_de_licenca</code></td>
+</tr>
+<tr>
+<td>Depois do "Sim" (fio de trás)</td>
+<td>espera; testa a pasta de novo; confere a licença lida</td>
+<td><code>PedidoDeLicenca.esperar()</code>, <code>core.windows.ler_licencas</code></td>
+</tr>
+<tr>
+<td>Abrir com licença (fio de trás)</td>
+<td>motor; procurar; assinatura; baixar</td>
+<td><code>atualizacao.garantir_o_motor</code> (do <code>atualizador-4</code>); <code>conversa_com_o_velopack.procurar()</code> (<code>check_for_updates</code>); <code>atualizacao.conferir_assinatura_do</code>; <code>conversa_com_o_velopack.baixar()</code> (<code>download_updates</code>, que confere tamanho e SHA256: fato, <code>manager.rs</code> L537-561)</td>
+</tr>
+<tr>
+<td>Baixou</td>
+<td>aviso "Reiniciar agora"/"Depois"</td>
+<td>efeito <code>MostrarVersaoNova</code> → <code>ui/aviso_de_atualizacao.py</code></td>
+</tr>
+<tr>
+<td>"Reiniciar agora"</td>
+<td>fecha a janela (grava); então pede a troca e sai</td>
+<td><code>conversa_com_o_velopack.trocar(alvo, reabrir=[conferir, de, para])</code> → <code>wait_exit_then_apply_updates(alvo, silent=False, restart=True, restart_args=...)</code></td>
+</tr>
+<tr>
+<td>Fechar com versão pronta</td>
+<td>"Atualizar agora?"; Sim → grava, pede a troca, sai</td>
+<td>a mesma <code>trocar(alvo, reabrir=[conferir, de, para, sem janela])</code></td>
+</tr>
+<tr>
+<td>Reaberto pelo Velopack</td>
+<td>versão atual = a nova → teste rápido (outro processo, sem janela); = a anterior → a troca não aconteceu (o Velopack reabre a anterior com os mesmos argumentos quando a troca falha: fato, <code>apply.rs</code> L56-60)</td>
+<td><code>core.windows.rodar_e_esperar([este exe, --teste-rapido])</code></td>
+</tr>
+<tr>
+<td>Teste rápido falhou</td>
+<td>anota a falha; monta o pacote da anterior; baixa; pede a troca de volta</td>
+<td><code>conversa_com_o_velopack.pacote_da_versao(anterior)</code> + <code>baixar</code> + <code>trocar(..., reabrir=[])</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Antes de toda troca</strong> (dentro de <code>trocar</code>, um lugar só): o arquivo em <code>packages\</code> tem a soma assinada? o motor está
+  no lugar? há outra janela do programa aberta (<code>core.windows.programas_rodando_de</code>, vinda do <code>atualizador-4</code>, sem os
+  processos filhos deste)? Qualquer "não" → não troca e anota.</li>
+<li><strong>A volta pela biblioteca, sem <code>Update.exe</code> à mão:</strong> fato, <code>sources/github.rs</code> L129-138: o Velopack procura o arquivo
+  pelo nome em todos os "Releases" lidos; <code>UpdateInfo</code> e <code>VelopackAsset</code> se montam pelo Python (<code>__init__.pyi</code> L225, L400);
+  o tamanho e a soma vêm do <code>releases.win.json</code> da versão anterior, lido pela <code>Fonte</code> (como a assinatura), e a soma tem de
+  bater com a assinada. Assim nenhuma linha nossa roda o <code>Update.exe</code> (K01 continua sem exceção nova).</li>
+<li><strong>Ler a versão:</strong> <code>versao.VERSAO</code> (o número com que o pacote foi montado, D-714) em vez de perguntar ao Velopack: não
+  carrega a biblioteca na abertura. "Instalado pelo Velopack" = programa empacotado com <code>current\sq.version</code> ao lado;
+  "portátil" = <code>.portable</code> na raiz (fato, <code>locator.rs</code> L376). Nenhum dos dois cita o <code>Update.exe</code>.</li>
+</ul>
+<h3>4.6 A máquina de estados (<code>core/fases_da_atualizacao.py</code>)</h3>
+<p><code>proxima_fase(estado, evento) -&gt; (estado, efeitos)</code>, sem I/O. O estado guarda a fase, a versão atual, a nova, a
+anterior e o que veio do <code>estado.json</code> (versões que não tentar, a última falha). Fases:</p>
+<p><code>fora</code> (código, portátil, conta de testes) · <code>sem_licenca</code> · <code>preparando</code> · <code>motor</code> · <code>procurando</code> · <code>conferindo</code> ·
+<code>baixando</code> · <code>pronta</code> · <code>depois</code> · <code>fechando_para_trocar</code> · <code>trocando</code> · <code>conferir_nova</code> · <code>voltando</code> · <code>parado</code>.</p>
+<p>Eventos: <code>Abriu(instalado, conta_de_testes, portatil, pasta_grava, reaberto_de, reaberto_para, sem_janela)</code> ·
+<code>LicencaRespondida(desfecho)</code> · <code>PreparoTerminou(pasta_grava, motivo)</code> · <code>MotorConferido(no_lugar)</code> · <code>Procurou(versao|None, erro)</code> ·
+<code>Assinatura(certa, motivo)</code> · <code>Baixou(certo, erro)</code> · <code>Escolheu(reiniciar|depois)</code> · <code>JanelaFechou(fechou)</code> · <code>Fechando</code> ·
+<code>RespondeuAoFechar(sim|nao)</code> · <code>PodeTrocar(sim, motivo)</code> · <code>TesteRapido(passou, detalhe)</code> · <code>VoltaPedida(certa, motivo)</code>.</p>
+<p>Efeitos: <code>PedirLicenca(passos)</code> · <code>EsperarPreparo</code> · <code>GarantirMotor</code> · <code>Procurar</code> · <code>ConferirAssinatura(v)</code> · <code>Baixar(v)</code> ·
+<code>MostrarVersaoNova(v)</code> · <code>FecharJanela</code> · <code>PerguntarAoFechar</code> · <code>ConferirAntesDeTrocar</code> · <code>Trocar(v, reabrir)</code> ·
+<code>AnotarTentativa(de, para)</code> · <code>RodarTesteRapido</code> · <code>AnotarOk(v)</code> · <code>AnotarFalha(tipo, de, para, motivo)</code> ·
+<code>Voltar(v)</code> · <code>MostrarFalha(tipo)</code> · <code>Registrar(texto)</code> · <code>AbrirJanela</code> · <code>Sair(codigo)</code>.</p>
+<p>Todo par (fase, evento) tem resposta escrita; o que não faz sentido naquela fase vira <code>Registrar</code> e a fase fica (nunca
+exceção). O <code>estado.json</code> (<code>%ProgramData%\EditorImpressao\atualizacao\</code>, gravado pela conta do Kaique) guarda só o que
+precisa passar de uma abertura para outra: as versões que não tentar, a falha a mostrar uma vez e "tentando X a partir
+de Y" (para a abertura seguinte saber, comparando com a versão que de fato roda, que uma troca não aconteceu). "Há versão
+baixada esperando" não se anota: é o que o Velopack diz (<code>get_update_pending_restart</code>, fato <code>manager.rs</code> L272-281).</p>
+<hr />
+<h2>5. O que sai, o que fica, o que vem do <code>atualizador-4</code></h2>
+<p><strong>Sai de <code>atualizacao.py</code> (deste ramo):</strong> <code>NOME_DA_TAREFA</code>, <code>QUEM_PODE_MANDAR_RODAR</code>, <code>LIMITE_DA_TROCA_S</code>,
+<code>ESPERA_DA_VOLTA_S</code>, <code>MARCA_DE_ABERTO</code>, <code>MARCA_DA_JANELINHA</code>, <code>TEXTO_DA_JANELINHA</code>, <code>ARG_PREPARAR</code>, <code>ARG_DEPOIS_DA_TROCA</code>,
+<code>_dono_do_arquivo</code> (vai para a peça), <code>update_exe</code>, <code>criar_gerente</code>/<code>versao_que_roda</code> (vão para a peça do Velopack),
+<code>rodar_ao_ligar</code>, <code>_argumentos_da_fonte</code>, <code>_aplicar_pacote_quando_sair</code>, <code>marcar_programa_aberto</code>, <code>_marca_existe</code>,
+<code>ha_programa_aberto</code>, <code>ha_janelinha</code>, <code>_rodar</code>, <code>script_da_janelinha</code>, <code>_linhas_da_janelinha</code>, <code>script_de_trocar_e_reabrir</code>,
+<code>_aspas_do_powershell</code>, <code>_lancar_escondido</code>, <code>trocar_e_reabrir</code>, <code>aplicar_agora_e_reabrir</code>, <code>trocar_antes_de_abrir</code>,
+<code>comando_de_rodar_a_tarefa</code>, <code>procurar_ao_abrir</code>, <code>comando_de_longe_para_atualizar</code>, <code>comando_de_longe_para_ler_o_registro</code>,
+<code>xml_da_tarefa</code>, <code>criar_tarefa</code>, <code>rodar_tarefa_agora</code>, <code>apagar_tarefa</code>, <code>_ler_versao_do_visual_c</code> e <code>_ler_chave_do_inno</code>
+(vão para a peça), <code>instalar_visual_c_se_faltar</code>/<code>tirar_instalacao_antiga</code>/<code>comando_para_tirar_o_inno</code> (viram passos),
+<code>preparar_o_computador</code>, <code>preparar_como_administrador</code>, <code>criar_as_tarefas</code>, <code>arquivo_do_preparo</code>,
+<code>passo_de_preparar_o_computador</code>, <code>preparo_deu_certo</code>, <code>preparar_na_primeira_abertura</code>,
+<code>CHAVE_PERGUNTA_DO_WINDOWS_RESPONDIDA</code>, <code>falta_a_pergunta_do_windows</code>, <code>conferir_e_refazer_o_ajudante</code>, <code>_rodar_o_velopack</code>.
+<code>ARG_PROCURAR</code> fica só para ser reconhecido: a tarefa antiga que sobrar num PC chama o <code>.exe</code> novo com ele; o programa
+anota e sai sem fazer nada.</p>
+<p><strong>As peças de hoje, uma a uma:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Peça</th>
+<th>Sai ou fica</th>
+<th>Por quê</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O ajudante (tarefa SYSTEM)</td>
+<td>sai</td>
+<td>Só existia para trocar em Arquivos de Programas sem pergunta. Com a licença da pasta, a conta do Kaique troca (experimento de 23/11).</td>
+</tr>
+<tr>
+<td>Os scripts PowerShell (trocar e reabrir; janelinha; no <code>atualizador-4</code> também o vigia e o "só de reabrir")</td>
+<td>saem</td>
+<td>O Velopack espera o processo certo (o nosso) e reabre na conta certa (fato, <code>manager.rs</code> L602-675).</td>
+</tr>
+<tr>
+<td>O vigia</td>
+<td>sai (nem entra)</td>
+<td>Só segurava a marca da troca no caminho sem script.</td>
+</tr>
+<tr>
+<td>As marcas (programa aberto, janelinha, troca, reabrir)</td>
+<td>saem</td>
+<td>Ninguém em outra conta precisa saber se o programa está aberto.</td>
+</tr>
+<tr>
+<td><code>estado.json</code> entre contas</td>
+<td>sai como canal</td>
+<td>Fica um arquivo da conta do Kaique, só com o que passa de uma abertura para outra (4.6).</td>
+</tr>
+<tr>
+<td>Lista de processos (esperar 30 s)</td>
+<td>sai como espera</td>
+<td>O <code>--waitPid</code> é o nosso. Fica <code>programas_rodando_de</code> só para "outra janela aberta → não troca".</td>
+</tr>
+<tr>
+<td><code>GerenteComAMarcaDaTroca</code>, <code>TrocaSemAMarca</code>, <code>FASES_EM_QUE_HA_TROCA</code></td>
+<td>saem (nem entram)</td>
+<td>Existiam para a marca da troca. "Uma troca só por um lugar" passa a ser <code>conversa_com_o_velopack.trocar</code>.</td>
+</tr>
+<tr>
+<td>Espera pela janela na frente</td>
+<td>sai (nem entra)</td>
+<td>A pergunta vem antes da janela (D-806).</td>
+</tr>
+<tr>
+<td>A nossa janelinha</td>
+<td>sai</td>
+<td>D-832: a do Velopack.</td>
+</tr>
+<tr>
+<td><code>--preparar-o-computador</code> (exe elevado → PowerShell → exe)</td>
+<td>sai</td>
+<td>Os passos rodam direto no trabalho com licença da peça.</td>
+</tr>
+<tr>
+<td>A tarefa "desfazer" na primeira abertura</td>
+<td>sai desta entrega</td>
+<td>Era para apagar o ajudante e desfazer os testes ao desinstalar; não há ajudante, e os testes não ligam nesta entrega. Volta com os testes à distância.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Fica:</strong> <code>Fonte</code>, <code>fonte_da_linha</code>, <code>fonte_de_teste</code> (o dono do arquivo passa a ser lido pela peça), <code>registrar</code>,
+<code>ler_estado</code>/<code>gravar_estado</code>, <code>registrar_falha</code>, <code>situacao</code>/<code>o_que_avisar</code> (adaptadas às fases), <code>_versao_assinada_do</code>,
+<code>conferir_assinatura_do</code>, <code>teste_rapido</code>, <code>voltar_para_a_anterior</code> (pela biblioteca), <code>conferir_versao_nova</code> (com a
+versão de antes e a nova pela linha de comando), <code>e_a_conta_de_testes</code>, <code>e_portatil</code>, <code>instalado_pelo_velopack</code>,
+<code>ao_instalar</code>, <code>ao_atualizar</code>, <code>ao_desinstalar</code> (continua mandando o "desfazer" dos testes, se existir),
+<code>atender_linha_de_comando</code>, os textos (<code>TITULO_*</code>, <code>FRASE_*</code>, <code>BOTAO_*</code>), as constantes do Inno e do Visual C++ (vão para
+a peça, que as usa nos passos).</p>
+<p><strong>Vem do <code>atualizador-4</code>:</strong> <code>garantir_o_motor</code>, <code>motor_esta_no_lugar</code>, <code>_apagar_pasta_do_motor</code>, <code>FOLGA_DO_MOTOR_BYTES</code> e
+o ramo "sem motor → nada anunciado" (D-833); <code>core/ocr_kraken.py</code>: <code>pasta_do_motor_instalado</code> e o lugar único do motor no
+programa instalado; o teste rápido conferindo o motor pela <code>core/ocr_kraken</code>; <code>configuracoes.py</code> sem a marca
+<code>atualizacao_computador_preparado</code>; <code>ui/testes_a_distancia_ui.py</code>: a senha não liga nada (D-825); <code>core/windows.py</code>:
+<code>programas_rodando_de</code>; e os testes do conserto 4 que cobram o motor. <strong>Não vem:</strong> o resto da volta 2 a 4 (marca da
+troca, vigia, esperar a janela, ler as tarefas, os 30 s, as 30 tentativas do <code>gravar_estado</code>).</p>
+<hr />
+<h2>6. Caminho → função (§11.12)</h2>
+<table>
+<thead>
+<tr>
+<th>Caminho</th>
+<th>Entra por</th>
+<th>A regra</th>
+<th>A ação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Abrir pelo atalho</td>
+<td><code>main.py</code> → <code>atualizacao.atender_linha_de_comando</code></td>
+<td><code>proxima_fase(Abriu)</code></td>
+<td><code>PedirLicenca</code> → <code>core.windows.comecar_pedido_de_licenca</code>; ou <code>GarantirMotor</code>/<code>Procurar</code> no fio de trás</td>
+</tr>
+<tr>
+<td>Abrir na conta de testes / pelo código / portátil</td>
+<td>o mesmo</td>
+<td><code>proxima_fase(Abriu)</code> → <code>fora</code></td>
+<td>nada</td>
+</tr>
+<tr>
+<td>Reaberto pelo Velopack</td>
+<td>o mesmo, com os argumentos de conferir</td>
+<td><code>proxima_fase(Abriu(reaberto_*))</code></td>
+<td><code>RodarTesteRapido</code> → <code>core.windows.rodar_e_esperar</code></td>
+</tr>
+<tr>
+<td>"Reiniciar agora"</td>
+<td><code>ui/aviso_de_atualizacao.py</code> → evento <code>Escolheu(reiniciar)</code></td>
+<td><code>proxima_fase</code></td>
+<td><code>FecharJanela</code>, depois <code>Trocar</code> → <code>conversa_com_o_velopack.trocar</code></td>
+</tr>
+<tr>
+<td>"Depois"</td>
+<td>o mesmo → <code>Escolheu(depois)</code></td>
+<td><code>proxima_fase</code></td>
+<td>nada agora</td>
+</tr>
+<tr>
+<td>Fechar o programa</td>
+<td><code>ui/janela_principal.py</code> <code>closeEvent</code> → <code>ui/aviso_de_atualizacao.ao_fechar</code> → <code>Fechando</code></td>
+<td><code>proxima_fase</code></td>
+<td><code>PerguntarAoFechar</code> → <code>RespondeuAoFechar</code> → <code>Trocar</code> → <code>conversa_com_o_velopack.trocar</code></td>
+</tr>
+<tr>
+<td>A volta para a anterior</td>
+<td><code>proxima_fase(TesteRapido(falhou))</code></td>
+<td><code>proxima_fase</code></td>
+<td><code>Voltar</code> → <code>atualizacao.voltar_para_a_anterior</code> → <code>conversa_com_o_velopack.baixar</code> + <code>trocar</code></td>
+</tr>
+<tr>
+<td>O motor do Kraken</td>
+<td><code>proxima_fase</code> (antes de procurar; e dentro de <code>trocar</code>)</td>
+<td><code>motor_esta_no_lugar</code> (uma só)</td>
+<td><code>atualizacao.garantir_o_motor</code> (o único que mexe em <code>motor-kraken\</code>)</td>
+</tr>
+<tr>
+<td>Os ganchos do Velopack (instalar, atualizar, desinstalar)</td>
+<td><code>atender_linha_de_comando</code> → <code>conversa_com_o_velopack.atender_ganchos</code></td>
+<td>—</td>
+<td><code>ao_instalar</code>/<code>ao_atualizar</code>/<code>ao_desinstalar</code></td>
+</tr>
+<tr>
+<td>A tarefa antiga chamando <code>--procurar-atualizacao</code></td>
+<td><code>atender_linha_de_comando</code></td>
+<td>—</td>
+<td><code>Registrar</code> e sai</td>
+</tr>
+</tbody>
+</table>
+<p>Toda troca passa por <strong>uma</strong> função (<code>conversa_com_o_velopack.trocar</code>), e só ela chama <code>wait_exit_then_apply_updates</code>.
+Prova: um teste que lê a árvore e cobra que esse nome aparece só ali; e um teste que passa por "Reiniciar agora", "Sim ao
+fechar" e a volta e cobra que os três chegam a <code>trocar</code>, com a mesma conferência antes.</p>
+<hr />
+<h2>7. A lista das falhas (§11.12 ponto 3)</h2>
+<p>Regra para todas: nada fica pela metade sem a tela dizer, nunca "deu certo" sem conferir, e o erro técnico vai para o
+registro, nunca para a tela.</p>
+<p><strong>A pergunta do Windows e a preparação</strong>
+- A pessoa clica "Não" (ou fecha a pergunta): a peça devolve "disse Não" (erro 1223, já provado na peça). Nada muda; a
+  janela abre; na próxima abertura pergunta de novo. Tela: nada.
+- A conta é padrão e ninguém sabe a senha de administrador: igual ao "Não". Pergunta toda abertura (D-741). Ressalva 7.
+- O Windows não abre o pedido (sem licença de rodar, programa sumiu): "falhou"; abre a janela; registra; pergunta de novo
+  na próxima.
+- Ninguém responde à pergunta: a abertura fica parada na pergunta (ela está no meio da tela, com o resto escurecido).
+- Visual C++ falha / Inno falha: a peça para ali; a licença não é dada; a pasta continua sem gravar; a pergunta volta
+  (D-749). Registro: qual passo e o motivo.
+- A licença não "pega" (lida de volta sem a linha, ou um arquivo de dentro sem ela): o passo devolve "falhou" com o que
+  faltou; a pergunta volta. Se a raiz já grava mas um arquivo de dentro não, a troca do Velopack falharia num arquivo:
+  por isso a conferência lê também um arquivo de <code>current</code>.
+- Desligar no meio da preparação: o que já foi feito fica (o Visual C++ é transacional; o Inno pode ficar pela metade e é
+  tentado de novo); a licença ou foi dada ou não. A próxima abertura testa a pasta e decide.
+- A tarefa antiga do ajudante existe e não dá para apagar: a peça para nesse passo; a licença <strong>não</strong> é dada (segurança).</p>
+<p><strong>Procurar, conferir, baixar</strong>
+- Sem internet / GitHub fora do ar: <code>check_for_updates</code> levanta; registra; tela nada; tenta na próxima abertura.
+- A assinatura errada ou ausente: não baixa; anota a falha ("recusada") e a versão em "não tentar"; a tela mostra o aviso
+  de falha uma vez (qual frase: pergunta 4).
+- O motor do Kraken não está no lugar e o arquivo dele não está em <code>current\instalar\</code>: nada é baixado nem anunciado
+  (D-833); registra; tenta de novo na próxima. Disco sem espaço para o motor: confere antes (como no <code>atualizador-4</code>).
+- Disco cheio no download: o Velopack falha; o arquivo <code>.partial</code> fica e é apagado no próximo download (fato, <code>manager.rs</code>
+  L437-480); registra; tela nada.
+- Outro download segurando a tranca do Velopack (duas janelas abertas): <code>download_updates</code> falha pela tranca (fato,
+  <code>manager.rs</code> L406); registra; a outra janela segue.
+- Fechar o programa no meio do download: o fio de trás morre com o programa; fica o <code>.partial</code>; nada a desfazer.</p>
+<p><strong>Trocar</strong>
+- O arquivo em <code>packages\</code> não tem a soma assinada (trocado depois de baixar): não troca; anota "recusada".
+- Outra janela do programa aberta: não troca; registra; o aviso volta na próxima abertura.
+- A janela não fecha no "Reiniciar agora" (ela recusou fechar): nada é trocado; o aviso continua valendo.
+- O programa demora mais de 60 s para sair depois de pedir a troca: o Velopack o fecha à força (fato, documentação
+  <code>docs.velopack.io/integrating/overview</code>). Por isso a troca é pedida só <strong>depois</strong> de gravar e parar os trabalhos.
+- Outro programa segura um arquivo de <code>current</code> (antivírus, Explorador aberto na pasta): o Velopack tenta 10 vezes e
+  desiste antes de mexer ("Unable to start the update", fato, <code>apply_windows_impl.rs</code> L161-163); reabre a anterior com os
+  nossos argumentos (fato, <code>apply.rs</code> L56-60); ela vê que continua na versão de antes, anota a falha "troca" e a tela
+  avisa uma vez.
+- Falha da <strong>segunda</strong> troca de nome ("the app was left in a broken state", fato, L174-176): <code>current</code> fica faltando; o
+  programa não abre. Remédio: reinstalar pelo <code>.msi</code> (os projetos ficam). É o defeito do Velopack que a D-779 quer cercar;
+  a proteção ficou para depois (ressalva 6).
+- Desligar no meio da troca: o mesmo caso acima, se for entre as duas trocas de nome; senão, ou trocou ou não trocou.
+- A volta precisa de internet (baixar a anterior); sem internet: anota a falha, a tela diz o que ficou (pergunta 4) e a
+  versão nova abre se conseguir.
+- A versão anterior não está entre os 10 "Releases" mais novos do GitHub: o Velopack não a acha (fato, <code>sources/github.rs</code>
+  L80, <code>per_page=10</code>); igual a "sem internet". Só acontece se houver mais de 9 versões publicadas depois dela.</p>
+<p><strong>A pasta sem a licença (instalação antiga, reinstalação):</strong> igual à primeira abertura: pergunta. Sem o "Sim", nada se
+procura (se procurasse, o Velopack usaria a pasta de reserva e pediria licença em toda troca: fato, <code>locator.rs</code> L159-176
+e <code>apply_windows_impl.rs</code> "Re-launching as administrator").</p>
+<hr />
+<h2>8. O que o desenho antigo deixou nos PCs</h2>
+<ul>
+<li><strong>No notebook do Kaique:</strong> nada. O desenho antigo nunca foi instalado lá (lá há só o instalador antigo de 28/10, que o
+  passo 3 tira).</li>
+<li><strong>No PC do Samuel:</strong> as tarefas <code>\EditorImpressao\Procurar versao nova</code> (desligada no experimento) e
+  <code>\EditorImpressao\Desfazer testes a distancia</code>, a pasta <code>\EditorImpressao</code> do Agendador, <code>C:\ProgramData\EditorImpressao\atualizacao\</code>
+  (do sistema; a conta comum só lê; o programa novo não conseguiria gravar o registro ali), <code>...\testes-a-distancia\desfazer.ps1</code>
+  e o <code>fonte-de-teste.txt</code> (fica: o programa novo continua usando nas provas).</li>
+<li><strong>O que o programa novo limpa sozinho:</strong> só o ajudante antigo, e só por segurança (passo 1 de 4.4), na mesma pergunta,
+  antes da licença. Nada mais: escrever limpeza para um estado que só existe num PC é código a mais (D-819).</li>
+<li><strong>O resto:</strong> à mão, pela gerente, com o Samuel vendo, numa pergunta do Windows, antes da prova à vista. O jeito mais
+  limpo: desinstalar a 1.1.x por "Programas e Recursos" (o gancho dela manda rodar o "desfazer", que apaga o ajudante e a
+  si mesmo), conferir só lendo o que sobrou e apagar o resto com o "sim" dele (pergunta 7). Fora do projeto, eu não apago
+  nada.</li>
+<li><strong>Não sei se o experimento de 23/11 foi desfeito</strong> (o passo 6 do roteiro). Se a pasta continua com Modificar para
+  Usuários e a tarefa do ajudante existe (desligada), um administrador que a ligasse rodaria como o sistema um <code>.exe</code> que
+  qualquer conta pode trocar. Sugestão à gerente: conferir só lendo (<code>icacls</code> da raiz e <code>schtasks /Query</code>) e, se for o
+  caso, apagar a tarefa logo.</li>
+</ul>
+<hr />
+<h2>9. Os arquivos que vou mexer</h2>
+<p>Programa:
+- <code>atualizacao.py</code> (refeito; ~400 linhas).
+- <code>core/fases_da_atualizacao.py</code> (novo).
+- <code>core/conversa_com_o_velopack.py</code> (novo).
+- <code>core/windows.py</code>: <code>comecar_pedido_de_licenca</code>/<code>PedidoDeLicenca</code> (e <code>pedir_licenca</code> por cima delas); os três tipos de
+  passo novos; <code>ler_versao_do_visual_c</code>, <code>ler_instalacao_do_inno</code>, <code>dono_do_arquivo</code>; <code>programas_rodando_de</code> (do
+  <code>atualizador-4</code>).
+- <code>core/ocr_kraken.py</code>: o lugar do motor no instalado (do <code>atualizador-4</code>).
+- <code>configuracoes.py</code>: sai a marca (do <code>atualizador-4</code>).
+- <code>main.py</code>: só comentários (a ordem já é a certa).
+- <strong>Tela, precisa do "pode" explícito da gerente (o implementador não mexe em <code>ui/</code> sem isso):</strong>
+  <code>ui/aviso_de_atualizacao.py</code> (sai o relógio de 5 em 5 minutos; recebe os efeitos; o "Atualizar agora?"),
+  <code>ui/janela_principal.py</code> (uma chamada no <code>closeEvent</code>, antes de aceitar o fechar), <code>ui/testes_a_distancia_ui.py</code> (a
+  primeira abertura não pergunta mais nada ao Windows; a senha não liga nada), <code>ui/brasao_girando.py</code> (deixa de pôr a marca
+  e de esperar a janelinha).</p>
+<p>Testes:
+- novos: <code>tests/test_fases_da_atualizacao.py</code>, <code>tests/test_atualizador_novo.py</code> (e os do motor vindos do <code>atualizador-4</code>).
+- <code>tests/test_trava_windows.py</code> (catraca, seção 10).
+- os antigos da seção 2, <strong>só depois do "sim" dele</strong> (pergunta 5).</p>
+<p>Não mexo: <code>empacotar.py</code>, <code>publicar_versao_kaique.py</code>, <code>core/testes_a_distancia.py</code>, <code>core/_testes_a_distancia_windows.py</code>,
+o porteiro e a lista de exceções. Qualquer outro arquivo, só com o "pode" da gerente.</p>
+<hr />
+<h2>10. As travas</h2>
+<p><strong>A catraca (<code>tests/test_trava_windows.py</code>):</strong> saem da <code>LISTA_CONGELADA</code> as 12 linhas de <code>atualizacao.py</code> (o
+<code>import subprocess</code>; as 5 de <code>_dono_do_arquivo</code>; as 2 de <code>marcar_programa_aberto</code>; as 2 de <code>_marca_existe</code>; a de
+<code>_ler_versao_do_visual_c</code>; a de <code>_ler_chave_do_inno</code>). <code>TETO</code> desce de 46 para <strong>34</strong>. As 8 de
+<code>core/_testes_a_distancia_windows.py</code> ficam (os testes à distância não mudam nesta entrega). Os arquivos novos não usam
+<code>ctypes</code>, <code>subprocess</code>, <code>winreg</code> nem <code>os.startfile</code>. O <code>core/windows.py</code> é o dono (não entra na lista). Se no meio do
+código eu precisar de um lugar novo fora dos donos, a catraca falha e eu paro.
+- Proposta (só com o "pode" da gerente; não é lugar novo, é capacidade nova): "Velopack" como capacidade com dono
+  <code>core/conversa_com_o_velopack.py</code>, para a trava cobrar que ninguém mais importa <code>velopack</code>.</p>
+<p><strong>O porteiro (<code>tests/conferencias_excecoes.json</code>, eu não mexo):</strong> quando <code>atualizacao.py</code> for refeito,
+<code>tests/test_conferencias_excecoes.py::test_o_repositorio_so_tem_os_erros_que_a_lista_deixa</code> vai falhar com:
+- <strong>40 linhas "a lista de exceções tem um lugar que o código já não tem (sobraram 0 de 1): tire ou diminua o item ..."</strong>,
+  uma por item de <code>atualizacao.py</code>: 33 K01 (<code>_aplicar_pacote_quando_sair</code> 2, <code>_dono_do_arquivo</code> 5, <code>_lancar_escondido</code> 3,
+  <code>_ler_chave_do_inno</code> 4, <code>_ler_versao_do_visual_c</code> 5, <code>_linhas_da_janelinha</code> 1, <code>_marca_existe</code> 3, <code>apagar_tarefa</code> 1,
+  <code>comando_de_rodar_a_tarefa</code> 1, <code>criar_tarefa</code> 1, <code>marcar_programa_aberto</code> 1, <code>passo_de_preparar_o_computador</code> 1,
+  <code>script_de_trocar_e_reabrir</code> 4, <code>update_exe</code> 1), 2 K02 e 5 K04. O comando que a mensagem sugere é o da gerente.
+- <strong>Um K03 novo em <code>core/windows.py</code></strong> (a função do passo <code>dar_licenca_aos_usuarios</code>): a K03 vale "em qualquer arquivo do
+  programa (até na peça única)". Não há como dar a licença sem isso. Pergunta 6.
+- Os arquivos novos não terão nenhuma palavra da K01 no código (nem <code>Update.exe</code>: ver 4.5) nem número de decisão em texto
+  de tela ou de registro (K04).
+- O juiz do GitHub usa a lista da versão de teste: a rodada vai dizer "BARROU" até a gerente juntar a lista nova.</p>
+<hr />
+<h2>11. Como vai provar (D-767, D-811 a D-813, D-827)</h2>
+<p><strong>Testes de comportamento, não de texto.</strong> Nenhum teste confere se uma palavra está num texto de PowerShell (não haverá
+PowerShell no atualizador).
+- <strong>A regra, exaustiva:</strong> <code>tests/test_fases_da_atualizacao.py</code> passa por <strong>todos</strong> os pares (fase, evento) e cobra a
+  fase e os efeitos de cada um, numa tabela escrita no teste; e lê a árvore do arquivo para cobrar que ele não importa
+  nada que fale com o mundo de fora.
+- <strong>O executor, com as duas peças de mentira só na borda</strong> (a de mentira anota o que pediram; a lógica em volta é a de
+  verdade): abrir sem licença → o primeiro efeito é a pergunta e nenhum <code>procurar</code>; "Não" → nada procurado nem gravado;
+  "Sim" com o Visual C++ falhando → a licença não é pedida (a peça de verdade para no passo; teste da peça); assinatura
+  errada → nenhum <code>baixar</code>; motor fora → nada anunciado; "Reiniciar agora" → a janela fecha antes de <code>trocar</code>; "Depois" +
+  fechar + "Sim" → <code>trocar</code> com "sem janela"; reaberto na anterior → falha "troca"; teste rápido falha → <code>voltar</code> com o
+  pacote assinado; outra janela aberta → não troca.
+- <strong>Uma prova por proteção, que falha quando ela é desligada</strong> (o verificador desliga cada uma numa cópia e mostra a
+  falha): (1) sem licença não procura; (2) assinatura antes de baixar; (3) soma conferida no arquivo antes de trocar; (4)
+  motor antes de anunciar e antes de trocar; (5) a licença é o último passo; (6) o ajudante antigo sai antes da licença;
+  (7) a conta de testes não procura nem pergunta; (8) versão que falhou não é tentada de novo; (9) outra janela aberta
+  não troca; (10) a troca só depois de a janela fechar; (11) a volta só com pacote assinado; (12) pelo código nada roda;
+  (13) só <code>trocar</code> chama a troca do Velopack.
+- <strong>A biblioteca do Velopack de verdade</strong>, sem trocar nada: uma instalação falsa numa pasta de prova (como a do
+  pesquisador), uma fonte de pasta com duas versões: <code>procurar</code> acha a nova; o pacote da anterior é montado e <strong>baixado</strong>
+  para a pasta de prova com o tamanho e a soma conferidos pelo próprio Velopack. Não chama <code>trocar</code> (isso roda o
+  atualizador do Velopack: só à vista).
+- <strong>A peça do Windows de verdade, no GitHub</strong> (máquina jogada fora, como os testes de tarefa de hoje; no PC do Samuel
+  não roda, D-785): o passo da licença numa pasta de prova → um arquivo de dentro passa a ter Modificar herdado, nenhuma
+  linha antiga sumiu, a herança não foi cortada; e o teste de gravar dá "não" antes e "sim" depois.</p>
+<p><strong>Só se prova rodando de verdade, à vista, no PC do Samuel</strong> (D-767, D-785, D-773: as versões servidas por uma janela
+visível; uma conta sem a janela "como administrador"):
+1. Instalar pelo <code>.msi</code>; primeira abertura: a pergunta vem no meio da tela, logo no clique (print). "Não" → abre; fechar
+   e abrir → pergunta de novo. "Sim" → abre; a licença lida de volta; o motor posto; o Inno de 01/09 tirado (D-729).
+2. Publicar uma versão de prova; abrir → aviso; "Reiniciar agora" → janelinha do Velopack (print) → abre na nova.
+3. Outra versão; "Depois"; fechar → "Atualizar agora?" (print) → "Sim" → janelinha → abrir → já na nova, sem espera.
+   "Não" → abrir → o aviso volta.
+4. Uma versão quebrada de propósito → volta para a anterior → a frase (print).
+5. Uma versão com assinatura falsa → recusada → a frase (print).
+6. Fechar a janela das versões no meio do download → nada na tela, nada quebrado; abrir de novo → baixa.
+7. Tirar o motor do lugar → nada anunciado.
+8. Clicar no atalho durante a janelinha do Velopack → a troca termina.
+9. Desinstalar → a pasta inteira some (com o motor); os projetos ficam.
+10. Medir: quanto tempo a abertura do programa instalado leva antes e depois (o teste de gravar), e os segundos sem
+    nada na tela depois da troca.</p>
+<p>Antes da prova, quem tenta quebrar (agente novo, D-775/D-815) confere a leitura do Velopack desta seção e da 4.5 contra o
+código dele.</p>
+<hr />
+<h2>12. Perguntas para o Samuel (§11.13; a gerente leva à Central)</h2>
+<p>Antes de cada uma procurei no Livro (D-705 a D-833) e no <code>resposta-do-fable.md</code>; o porquê de ainda estar aberta vai em
+cada uma. Prints: não há tela nova ainda; os prints das perguntas 1 a 3 só existem depois do código (a gerente pode
+montar um desenho da caixa com o texto antes de publicar).</p>
+<p><strong>Pergunta 1 — A ordem da primeira abertura</strong>
+- <em>Do que se trata:</em> a primeira vez que o Kaique abre o programa instalado. Hoje aparece primeiro a janelinha da senha
+  dos testes à distância e, depois do clique nela, a pergunta do Windows "Deseja permitir...?".
+- <em>O que muda:</em> para a pergunta do Windows vir sempre no meio da tela (como você escolheu em 19/11), ela passa a vir
+  <strong>logo depois do clique no atalho, antes da janela do programa</strong>. A janelinha da senha aparece depois, quando a janela
+  já abriu. A senha continua sem ligar nada nesta versão, como você decidiu em 21/11.
+- <em>O que você escolhe:</em> (1) <strong>sugestão:</strong> a pergunta do Windows primeiro, a senha depois; (2) a senha primeiro, e a
+  pergunta do Windows depois dela, só na primeira vez (nas aberturas seguintes, depois de um "Não", ela vem antes da janela
+  do mesmo jeito); (3) só comentário.
+- <em>O que muda no que já funciona:</em> só a ordem das duas janelas na primeira vez. Situação: plano, nada feito.
+- <em>Por que pergunto:</em> você decidiu a pergunta "no instante do clique" e a senha "na primeira vez", mas nunca a ordem
+  entre as duas.</p>
+<p><strong>Pergunta 2 — O texto da pergunta ao fechar e do aviso da versão nova</strong>
+- <em>Do que se trata:</em> quando chega uma versão nova com o programa aberto, aparece o aviso "Reiniciar agora / Depois". Hoje
+  ele diz: "Se escolher "Depois", a versão nova entra sozinha na próxima vez que você abrir o programa." Com a sua
+  escolha de 19/11, o "Depois" passa a perguntar ao fechar. Você disse que o texto da pergunta ao fechar seria decidido
+  antes de construir.
+- <em>O que você escolhe:</em>
+  - Aviso: (A) "Se escolher "Depois", o programa pergunta de novo quando você fechar." (B) "Se escolher "Depois", você
+    pode atualizar quando fechar o programa."
+  - Pergunta ao fechar: (A, sugestão) título "Atualizar agora?", texto "Há uma versão nova do programa pronta. Quer
+    atualizar agora, ao fechar? Leva uns 2 minutos e da próxima vez o programa já abre na versão nova.", botões
+    "Atualizar agora" e "Agora não". (B) o mesmo título, texto curto "Quer atualizar o programa agora, ao fechar?",
+    botões "Sim" e "Não". (C) só comentário.
+- <em>O que muda no que já funciona:</em> só esses textos. Situação: plano.</p>
+<p><strong>Pergunta 3 — O ícone perto do relógio</strong>
+- <em>Do que se trata:</em> em 19/11 você pediu que, no "Sim" ao fechar, aparecesse um ícone perto do relógio com a
+  porcentagem. Em 23/11 você disse que a janelinha da troca é a do próprio Velopack, por enquanto. A janelinha do
+  Velopack aparece no meio da tela, em português ("Atualizando para a versão X, aguarde..."), com uma barra.
+- <em>O que você escolhe:</em> (1) <strong>sugestão:</strong> nesta versão, no "Sim" ao fechar aparece a mesma janelinha do Velopack do
+  "Reiniciar agora"; o ícone perto do relógio vai para a lista de espera, junto com o texto e o brasão nossos; (2) fazer o
+  ícone agora (é uma janela nossa, que precisa ficar viva depois que o programa fecha: volta parte do que o desenho novo
+  tirou); (3) só comentário.</p>
+<p><strong>Pergunta 4 — Os três avisos de falha</strong>
+- <em>Do que se trata:</em> em 18/11 você escolheu três frases, uma para cada falha da atualização; em 21/11 elas ficaram para
+  uma atualização depois. Hoje existe só uma: "A atualização não deu certo. O programa voltou para a versão anterior e
+  continua funcionando. Avise o Samuel."
+- <em>O que acontece se continuar uma só:</em> em dois casos a frase diz uma coisa que não aconteceu: quando a versão chega sem
+  a sua assinatura (o programa nem saiu da versão dele) e quando a volta não deu certo (ela diria "voltou").
+- <em>O que você escolhe:</em> (1) <strong>sugestão:</strong> as três frases que você já escolheu entram agora (é só escolher a frase certa
+  para cada caso; nada de tela nova); (2) continua uma frase só nesta versão; (3) só comentário.</p>
+<p><strong>Pergunta 5 — Os testes antigos do atualizador</strong>
+- <em>Do que se trata:</em> o programa tem testes automáticos que conferem, a cada mudança, o que você decidiu sobre a
+  atualização. Muitos conferem as peças que saem (o ajudante que rodava como o sistema, os scripts, a nossa janelinha, as
+  marcas) ou decisões que você mesmo mudou depois (o "Depois" na próxima abertura virou "ao fechar"; a nossa janelinha
+  virou a do Velopack).
+- <em>O que você escolhe:</em> (1) <strong>sugestão:</strong> (a) os que conferem peças que saem saem, e cada decisão que eles cobravam e
+  continua valendo ganha um teste novo pelo caminho novo; (b) os que cobram as mesmas decisões passam a chamar o caminho
+  novo, com a mesma conferência; (c) os que cobram decisões que você mudou passam a cobrar o que vale hoje. A lista, teste
+  por teste, vai com a entrega, e o verificador mostra cada teste novo falhando no código de antes; (2) mostrar a lista
+  antes, um por um; (3) só comentário.
+- <em>O que muda no que já funciona:</em> nenhum comportamento que você escolheu deixa de ser conferido.</p>
+<p><strong>Pergunta 6 — O porteiro e a licença da pasta</strong>
+- <em>Do que se trata:</em> o porteiro é a conferência automática que barra código com erro já conhecido. Uma das regras
+  proíbe mexer na licença de pasta em qualquer parte do programa, por causa do defeito de 18/11 (uma tranca feita à mão
+  deixou arquivos sem leitura). O desenho novo precisa fazer isso uma vez: <strong>acrescentar</strong> "Usuários podem modificar" na
+  pasta do programa, sem tirar nada.
+- <em>O que você escolhe:</em> (1) <strong>sugestão:</strong> a regra passa a deixar só essa função da peça do Windows, e só para acrescentar
+  (nunca tirar herança nem trocar dono); continua barrando em todo o resto; (2) o lugar entra na lista de exceções; (3) só
+  comentário.
+- <em>O que muda no que já funciona:</em> nada para o Kaique. Sem uma das duas, o trabalho não entra.</p>
+<p><strong>Pergunta 7 — A limpeza do seu PC antes da prova</strong>
+- <em>Do que se trata:</em> o atualizador antigo deixou no seu PC duas tarefas do Windows, uma pasta delas no Agendador e duas
+  pastas em <code>C:\ProgramData\EditorImpressao</code> (uma delas impede o programa novo de gravar o registro da atualização). No
+  notebook do Kaique não há nada disso.
+- <em>O que você escolhe:</em> (1) <strong>sugestão:</strong> antes da prova, desinstalar a versão de teste pelo "Programas e Recursos" (ela
+  mesma apaga as tarefas), a gerente confere só lendo o que sobrou e mostra a lista, e o que sobrar é apagado com o seu
+  "sim", com você vendo; o programa novo só apaga sozinho a tarefa antiga do ajudante, se achar, por segurança; (2) o
+  programa novo apaga tudo isso sozinho, em qualquer PC; (3) só comentário.</p>
+<hr />
+<h2>Ressalvas do plano</h2>
+<ol>
+<li><strong>A pergunta sem janela dona:</strong> pedir a licença antes de existir janela confia no direito de vir para a frente que o
+   Velopack passa ao programa. Li o código que dá esse direito; não provei que a pergunta vem no meio da tela assim. É o
+   primeiro item da prova à vista; se piscar, a saída é perguntar com a janela já aberta (o que a espera da volta 4
+   tentava resolver).</li>
+<li><strong>A herança da licença em arquivos abertos:</strong> não conferi que o Windows muda a licença de um arquivo em uso (o
+   programa roda de <code>current</code> durante a preparação). A leitura de volta pega; a prova à vista confirma.</li>
+<li><strong>Segundos sem nada na tela</strong> depois da janelinha do Velopack, enquanto o teste rápido roda. Não medi.</li>
+<li><strong>A volta baixa a anterior</strong> (uns minutos, nada na tela; a versão quebrada fica aberta nesse tempo). É o
+   comportamento do <code>atualizador-4</code>; guardar a versão que funciona (a proteção da D-779) resolveria e ficou para depois.</li>
+<li><strong>Uma troca que falha por um arquivo preso</strong> põe a versão em "não tentar" (como hoje), mesmo sendo passageira.</li>
+<li><strong>O defeito do Velopack</strong> na segunda troca de nome (programa sem <code>current</code>) continua sem proteção nesta entrega.</li>
+<li><strong>Conta padrão:</strong> se a do Kaique não for administradora, a pergunta pede a senha de um administrador. Não conferi.</li>
+<li><strong>"Programas e Recursos"</strong> fica na versão do instalador (o Fable deixou para depois).</li>
+<li><strong>O registro no <code>ProgramData</code></strong> é criado pela conta do Kaique: outra conta do PC só lê, e desinstalar não o apaga.</li>
+<li><strong>O botão das Configurações dos testes à distância</strong> continua chamando o caminho antigo (<code>core/_testes_a_distancia_windows.py</code>,
+    com o "Não" lido como 0 por falta do <code>use_last_error</code>). Não faz parte desta entrega (D-825 só tirou a senha da
+    primeira abertura), mas está ao alcance do Kaique.</li>
+<li><strong>A leitura do Velopack</strong> foi feita no código da etiqueta <code>1.2.161</code> (clone no rascunho, <code>92d6a1c9</code>), arquivos e
+    linhas citados acima; o que não citei com linha não conferi.</li>
+</ol>
+<h2>Ideias para a Lista de espera</h2>
+<ul>
+<li>Guardar o pacote da versão que funciona antes de trocar (volta sem internet e sem os minutos de espera; é a D-779).</li>
+<li>Uma troca que falha por arquivo preso não deveria pôr a versão em "não tentar".</li>
+<li>O brasão girando durante o teste rápido da versão nova.</li>
+</ul>
+<hr />
+<p class="rodape">Editor de Impressão &middot; gerado em 23/11/2026 às 23:27</p>
+</body>
+</html>

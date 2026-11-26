@@ -1,0 +1,27 @@
+acusada     V1 G1: 'não deu para saber' conta como 'a troca acabou' (anota falha) | 1 failed, 36 passed in 11.00s | FAILED tests/test_atualizador_volta2.py::test_g1_sem_saber_se_a_troca_acontece_nada_e_anotado
+acusada     V2 G1: em curso abre a janela em vez de sair | 1 failed, 35 passed in 8.10s | FAILED tests/test_atualizador_volta2.py::test_g1_abrir_pelo_atalho_no_meio_da_troca_nao_anota_falha_e_sai_sem_janela
+SOBREVIVEU  V3 G1: o Update.exe cujo caminho não deu para ler não conta | 1263 passed, 4 skipped in 74.71s (0:01:14)
+acusada     V4 G1: o executor nunca pergunta se o Velopack roda | 1 failed, 35 passed in 10.77s | FAILED tests/test_atualizador_volta2.py::test_g1_abrir_pelo_atalho_no_meio_da_troca_nao_anota_falha_e_sai_sem_janela
+acusada     V5 G1: o executor pergunta também na reabertura com linha de comando | 1 failed, 37 passed in 9.05s | FAILED tests/test_atualizador_volta2.py::test_g1_a_troca_que_acabou_sem_trocar_continua_sendo_falha
+acusada     V6 M1: a conferência antes de fechar sempre diz 'pode' | 1 failed, 39 passed in 8.80s | FAILED tests/test_atualizador_volta2.py::test_m1_reiniciar_agora_que_nao_pode_trocar_nao_fecha_a_janela
+acusada     V7 M1: a troca que falha depois de fechar não reabre | 1 failed, 40 passed in 9.04s | FAILED tests/test_atualizador_volta2.py::test_m1_a_troca_que_falha_depois_de_fechar_reabre_o_programa
+acusada     V8 M1: o sinal de vida não é dado | 1 failed, 41 passed in 9.11s | FAILED tests/test_atualizador_volta2.py::test_m1_o_sinal_de_vida_e_dado_antes_de_tudo
+SOBREVIVEU  V9 M1: o reabrir dá como feito sem o sinal (olha só se lançou) | 1263 passed, 4 skipped in 69.59s (0:01:09)
+SOBREVIVEU  V10 M2: pacote sem o motor-exigido.json conta como motor no lugar (anunciar) | 1263 passed, 4 skipped in 68.82s (0:01:08)
+SOBREVIVEU  V11 M2: pacote sem o motor-exigido.json pode trocar | 1263 passed, 4 skipped in 69.69s (0:01:09)
+acusada     V12 M2: a troca confere o motor do programa que roda, não o da versão que entra | 1 failed, 42 passed in 11.40s | FAILED tests/test_atualizador_volta2.py::test_m2_a_volta_confere_o_motor_da_anterior_e_volta
+SOBREVIVEU  V13 M2: o número do motor aceita texto e booleano | 1263 passed, 4 skipped in 68.94s (0:01:08)
+acusada     V14 M4: a troca é pedida mesmo sem a anotação gravada | 1 failed, 45 passed in 11.61s | FAILED tests/test_atualizador_volta2.py::test_m4_com_o_estado_que_nao_grava_nada_e_procurado_nem_trocado
+acusada     V15 M4: o estado sempre 'aceita gravação' | 1 failed, 45 passed in 9.59s | FAILED tests/test_atualizador_volta2.py::test_m4_com_o_estado_que_nao_grava_nada_e_procurado_nem_trocado
+acusada     V16 M4: sem o estado gravando, procura mesmo assim | 1 failed, 45 passed in 9.65s | FAILED tests/test_atualizador_volta2.py::test_m4_com_o_estado_que_nao_grava_nada_e_procurado_nem_trocado
+acusada     V17 leve 3: a família sem a hora em que cada um nasceu | 1 failed, 59 passed in 9.99s | FAILED tests/test_atualizador_volta2.py::test_leve3_a_familia_respeita_a_hora_em_que_cada_um_nasceu
+acusada     V18 leve 2: a leitura de volta aceita linha a mais | 1 failed, 60 passed in 11.69s | FAILED tests/test_atualizador_volta2.py::test_leve2_uma_licenca_a_mais_na_pasta_e_acusada
+acusada     V19 D-839: a falha 'troca' volta a usar a frase (1) | 1 failed, 26 passed in 2.42s | FAILED tests/test_atualizador_novo.py::test_d835_e_d778_os_textos_da_tela_palavra_por_palavra
+acusada     V20 D-840: outra janela sem a frase | 1 failed, 824 passed in 12.37s | FAILED tests/test_fases_da_atualizacao.py::test_todo_par_fase_evento_tem_a_resposta_escrita[conferida_outra_janela-conferindo_troca]
+acusada     V21 D-841: outra janela sem o aviso de novo | 1 failed, 824 passed in 12.44s | FAILED tests/test_fases_da_atualizacao.py::test_todo_par_fase_evento_tem_a_resposta_escrita[conferida_outra_janela-conferindo_troca]
+acusada     V22 D-840: 'não deu para saber' (sem a lista) também mostra a frase da outra janela | 1 failed, 1137 passed, 1 skipped in 16.70s | FAILED tests/test_decisoes_atualizacao.py::test_d840_a_frase_so_aparece_com_outra_janela_aberta[sem_a_lista_de_processos]
+acusada     V23 a falha aparece toda vez (sem o 'já vista') | 1 failed, 22 passed in 2.25s | FAILED tests/test_atualizador_novo.py::test_a_troca_que_nao_aconteceu_avisa_uma_vez
+acusada     V24 a ponte da tela: 'Reiniciar agora' manda 'Depois' | 1 failed, 1106 passed, 1 skipped in 15.99s | FAILED tests/test_decisoes_atualizacao.py::test_d720_reiniciar_agora_fecha_gravando_e_so_depois_troca
+acusada     V25 a ponte: a frase da outra janela não aparece | 1 failed, 1136 passed, 1 skipped in 17.40s | FAILED tests/test_decisoes_atualizacao.py::test_d840_reiniciar_agora_com_outra_janela_aberta_diz_para_fechar_e_nada_fecha
+acusada     V26 a falha de teste não põe a versão em 'não tentar' | 1 failed, 1033 passed in 13.42s | FAILED tests/test_fases_da_atualizacao.py::test_todo_par_fase_evento_tem_a_resposta_escrita[teste_nao-conferindo_nova]
+5 de 26 sobreviveram

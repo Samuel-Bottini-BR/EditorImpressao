@@ -1,0 +1,125 @@
+[
+ {
+  "caso": "R2 estado.json preso",
+  "conferencias (antes de fechar, dentro de trocar_para)": [
+   {
+    "pode": true,
+    "motivo": "",
+    "recusada": false,
+    "outra_janela": false
+   },
+   {
+    "pode": true,
+    "motivo": "",
+    "recusada": false,
+    "outra_janela": false
+   }
+  ],
+  "tela": [
+   "FecharJanela"
+  ],
+  "reaberto": true,
+  "fase no fim": "parado",
+  "estado.json": {},
+  "a abertura reaberta mostra": []
+ },
+ {
+  "caso": "R4 pacote trocado nos segundos do fechar",
+  "conferencias (antes de fechar, dentro de trocar_para)": [
+   {
+    "pode": true,
+    "motivo": "",
+    "recusada": false,
+    "outra_janela": false
+   },
+   {
+    "pode": false,
+    "motivo": "o pacote baixado não tem a soma assinada pelo Samuel (foi trocado depois de baixar)",
+    "recusada": true,
+    "outra_janela": false
+   }
+  ],
+  "tela": [
+   "FecharJanela"
+  ],
+  "reaberto": true,
+  "fase no fim": "parado",
+  "estado.json": {
+   "nao_tentar": [
+    "1.2.0"
+   ],
+   "falha": {
+    "id": "recusada-1.2.0",
+    "tipo": "recusada",
+    "fica": "1.1.0",
+    "falhou": "1.2.0",
+    "motivo": "o pacote baixado não tem a soma assinada pelo Samuel (foi trocado depois de baixar)",
+    "quando": "2026-11-24T10:39:33"
+   }
+  },
+  "a abertura reaberta mostra": [
+   "recusada: Chegou uma versão nova, mas ela não foi instalada porque não tem a assinatura do Samuel. O programa continua funcionando. Avise o Samuel."
+  ]
+ },
+ {
+  "caso": "R6 o Velopack não aceita o pedido",
+  "conferencias (antes de fechar, dentro de trocar_para)": [
+   {
+    "pode": true,
+    "motivo": "",
+    "recusada": false,
+    "outra_janela": false
+   },
+   {
+    "pode": true,
+    "motivo": "",
+    "recusada": false,
+    "outra_janela": false
+   }
+  ],
+  "tela": [
+   "FecharJanela"
+  ],
+  "reaberto": true,
+  "fase no fim": "parado",
+  "estado.json": {},
+  "a abertura reaberta mostra": []
+ },
+ {
+  "caso": "R3 outra janela aberta nos segundos do fechar",
+  "conferencias (antes de fechar, dentro de trocar_para)": [
+   {
+    "pode": true,
+    "motivo": "",
+    "recusada": false,
+    "outra_janela": false
+   },
+   {
+    "pode": false,
+    "motivo": "há outra janela do programa aberta: D:\\programas\\EditorImpressao\\rascunho-qtq2\\reabrir\\raiz\\current\\EditorImpressao.exe",
+    "recusada": false,
+    "outra_janela": true
+   }
+  ],
+  "tela": [
+   "FecharJanela"
+  ],
+  "reaberto": true,
+  "fase no fim": "parado",
+  "estado.json": {},
+  "a abertura reaberta mostra": []
+ },
+ {
+  "registro": [
+   "não consegui gravar o estado da atualização: [WinError 5] Acesso negado: 'D:\\\\programas\\\\EditorImpressao\\\\rascunho-qtq2\\\\reabrir\\\\pd\\\\EditorImpressao\\\\atualizacao\\\\estado.json.gravando' -> 'D:\\\\programas\\\\EditorImpressao\\\\rascunho-qtq2\\\\reabrir\\\\pd\\\\EditorImpressao\\\\atualizacao\\\\estado.json'",
+   "a troca para a 1.2.0 não foi pedida (o estado da atualização não aceitou a anotação da troca: a troca não foi pedida); fica para a próxima abertura",
+   "o programa foi aberto de novo",
+   "FALHOU (recusada) a atualização para a 1.2.0; o programa fica na 1.1.0: o pacote baixado não tem a soma assinada pelo Samuel (foi trocado depois de baixar)",
+   "o programa foi aberto de novo",
+   "a troca para a 1.2.0 não foi pedida (o Velopack não aceitou a troca: trocar: o atualizador não abriu (de mentira)); fica para a próxima abertura",
+   "o programa foi aberto de novo",
+   "a troca para a 1.2.0 não foi pedida (há outra janela do programa aberta: D:\\programas\\EditorImpressao\\rascunho-qtq2\\reabrir\\raiz\\current\\EditorImpressao.exe); fica para a próxima abertura",
+   "o programa foi aberto de novo"
+  ]
+ }
+]

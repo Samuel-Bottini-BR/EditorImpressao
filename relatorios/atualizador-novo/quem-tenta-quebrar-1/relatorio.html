@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quem tenta quebrar, volta 1: o atualizador novo</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Quem tenta quebrar, volta 1: o atualizador novo</h1>
+<p>24/11/2026. Agente que tenta quebrar (D-775), novo, que não escreveu este código. Ramo <code>atualizador-novo-2026-11-23</code>,
+último commit conferido <code>cd4b8414</code> (diferença conferida: <code>7d1f633a..cd4b8414</code>). Nada do programa nem dos testes foi
+mudado. Nenhuma janela foi aberta na tela, nenhuma pergunta do Windows, nada mudado em <code>C:\Program Files</code>, nenhuma
+tarefa do Windows mexida. As provas rodaram em pastas de prova minhas no D:. Tudo o que está em <code>provas/</code> é meu.</p>
+<h2>Em uma frase</h2>
+<p><strong>NÃO ESTÁ PRONTO para a prova à vista.</strong> Há um defeito grave: se o Kaique clicar no atalho enquanto a versão nova
+está sendo trocada (o mesmo clique que o Samuel fez na prova de 22/11), o programa anota uma falha que não aconteceu e
+depois mostra "A atualização não deu certo. O programa voltou para a versão anterior...", com o programa já na
+versão nova. Há também 5 médios (o "Reiniciar agora" que fecha o programa e não reabre; a volta que olha o motor
+errado; 9 proteções que nenhum teste acusa quando desligadas; o estado que não grava e ninguém confere; e uma
+pergunta de desenho sobre as outras contas do computador) e 12 leves.</p>
+<p>O que está certo é bastante: a regra pura, a peça do Velopack, a troca por um lugar só, o "Não" do Windows que nunca
+vira "deu certo", os textos da D-835 e da D-778 palavra por palavra, a ordem da primeira abertura (D-834). Ver
+"Conferido e certo" no fim.</p>
+<h2>Máquina ou olho</h2>
+<p>Tudo aqui é <strong>máquina</strong> (leitura do código, testes e provas rodadas) e <strong>leitura do código do Velopack 1.2.161</strong>
+(clone limpo da etiqueta, commit <code>92d6a1c9</code>, numa pasta nova minha, nada rodado de dentro dele). Nada foi visto na
+tela: o que só a prova à vista mostra está em "Não deu para conferir".</p>
+<h2>Os testes do ramo, um arquivo por vez (no PC, pasta temporária no D:)</h2>
+<table>
+<thead>
+<tr>
+<th>Arquivo</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_fases_da_atualizacao.py</code></td>
+<td>807 passaram</td>
+</tr>
+<tr>
+<td><code>test_atualizador_novo.py</code></td>
+<td>35 passaram</td>
+</tr>
+<tr>
+<td><code>test_windows_preparo_do_computador.py</code></td>
+<td>19 passaram, 1 pulado (o de verdade, só no GitHub)</td>
+</tr>
+<tr>
+<td><code>test_velopack_de_verdade.py</code></td>
+<td>3 passaram</td>
+</tr>
+<tr>
+<td><code>test_porteiro_licenca_que_acrescenta.py</code></td>
+<td>14 passaram</td>
+</tr>
+<tr>
+<td><code>test_trava_windows.py</code></td>
+<td>42 passaram, 3 pulados</td>
+</tr>
+<tr>
+<td><code>test_decisoes_atualizacao.py</code></td>
+<td>35 passaram</td>
+</tr>
+<tr>
+<td><code>test_decisoes_ajudante_da_atualizacao.py</code></td>
+<td>22 passaram</td>
+</tr>
+<tr>
+<td><code>test_decisoes_preparo_d749.py</code></td>
+<td>3 passaram</td>
+</tr>
+<tr>
+<td><code>test_decisoes_brasao.py</code></td>
+<td>20 passaram</td>
+</tr>
+<tr>
+<td><code>test_decisoes_desinstalar.py</code></td>
+<td>45 passaram</td>
+</tr>
+<tr>
+<td><code>test_decisoes_testes_a_distancia.py</code></td>
+<td>13 passaram</td>
+</tr>
+<tr>
+<td><code>test_windows_peca.py</code></td>
+<td>68 passaram, 3 pulados</td>
+</tr>
+<tr>
+<td><code>test_conferencias_pacote.py</code></td>
+<td>26 passaram</td>
+</tr>
+</tbody>
+</table>
+<p>As 20 mutações do implementador (<code>relatorios/atualizador-novo/mutacoes.py</code>), rodadas por mim numa cópia do ramo:
+<strong>20 de 20 acusadas</strong>, como ele disse. As minhas 17 mutações, com todos os arquivos de teste do atualizador (não só o
+teste escolhido): <strong>9 sobreviveram</strong> (achado médio 3). A rodada inteira no GitHub não foi disparada por mim (é da
+gerente).</p>
+<hr />
+<h2>Achados graves</h2>
+<h3>G1. Abrir o programa pelo atalho no meio da troca anota uma falha que não houve, e a tela depois diz que a atualização falhou</h3>
+<ul>
+<li><strong>O que acontece.</strong> O Kaique escolhe "Reiniciar agora" (ou "Sim" no "Atualizar agora?" ao fechar). O programa grava
+  no <code>estado.json</code> "tentando de X para Y" e pede a troca ao Velopack (<code>atualizacao.py:845</code>, <code>trocar_para</code>). O
+  Velopack espera o programa sair (até 60 s), mostra a janelinha dele e abre o pacote inteiro (uns 460 MB), e só
+  depois fecha à força o que roda da pasta e renomeia <code>current</code>. Nesse tempo todo, <code>current</code> ainda é a versão X, e o
+  atalho abre a X normalmente: o atalho do Velopack não espera a troca nem olha a tranca dele. Essa segunda abertura
+  lê "tentando X para Y" do disco (<code>atualizacao.py:893-899</code>), vê que roda a X e conclui "a troca não aconteceu"
+  (<code>core/fases_da_atualizacao.py:433-440</code>): anota a falha "troca", põe Y em "não tentar" e manda a frase (1) para a
+  tela. O Velopack então a fecha à força (com o que o Kaique tiver feito nela desde a última gravação), troca e reabre
+  a Y, que passa no teste rápido e apaga só o "tentando" (<code>anotar_ok</code>, <code>atualizacao.py:199-204</code>): <strong>a falha falsa
+  fica anotada</strong>. Resultado: ou a frase "A atualização não deu certo. O programa voltou para a versão anterior e
+  continua funcionando. Avise o Samuel." aparece na janela que vai ser fechada à força, ou, se ela não chegou a
+  abrir, aparece na abertura seguinte, com o programa já na versão nova.</li>
+<li><strong>A causa.</strong> A regra trata "a versão que roda é a de antes" como "a troca não aconteceu", sem separar "a troca ainda
+  está acontecendo". O dado do disco é usado como prova de algo que ele não prova.</li>
+<li><strong>A leitura do Velopack que mostra a janela de tempo:</strong> <code>src/bins/src/stub.rs</code> 32-39 (o atalho só chama
+  <code>Update.exe start</code>); <code>src/bins/src/commands/start_windows_impl.rs</code> 111-133 (<code>start</code> abre <code>current\</code> sem tranca nem
+  espera); <code>src/bins/src/shared/util_common.rs</code> 14-26 (espera o programa até 60 s); <code>apply_windows_impl.rs</code> 134-147
+  (a janelinha e a extração do pacote), 159 (só então fecha à força), 162 (renomeia).</li>
+<li><strong>Prova (rodada):</strong> <code>provas/test_qtq_provas.py::test_A_...</code> e <code>::test_A2_...</code>, com a regra e o executor de verdade,
+  o <code>estado.json</code> de verdade numa pasta de prova e as mesmas peças de mentira na borda que os testes do implementador
+  usam. Passam (isto é: o defeito acontece). Saída em <code>provas/test_qtq_provas-resultado.txt</code>.</li>
+<li><strong>Fere:</strong> D-828 (1), palavras dele: "abrir o programa pelo atalho no meio da troca não estraga a troca (o caso que
+  ele fez na prova)"; D-770: "em vez de o programa ser fechado à força e acusar uma falha que não houve"; CLAUDE.md
+  §11.12, ponto 2 (nada se dá como feito, nem como falho, sem conferir).</li>
+<li><strong>Defeito ou risco:</strong> <strong>defeito</strong> na lógica (provado). O tamanho da janela de tempo no notebook é leitura do código
+  do Velopack: a confirmar na prova à vista (passo 8 do plano: "Clicar no atalho durante a janelinha do Velopack").</li>
+</ul>
+<hr />
+<h2>Achados médios</h2>
+<h3>M1. "Reiniciar agora" fecha o programa antes de conferir se pode trocar; se não puder, nada reabre e nada aparece</h3>
+<ul>
+<li><strong>O que acontece.</strong> "Reiniciar agora" → a janela fecha (<code>ui/aviso_de_atualizacao.py:67-70</code>; <code>fases:526-528</code>) → só
+  então <code>trocar_para</code> confere o pacote, o motor e se há outra janela aberta (<code>atualizacao.py:823-842</code>). Se qualquer
+  um disser não (outra janela do programa aberta, o motor fora do lugar, o Windows não deu a lista de processos, o
+  Velopack não aceitou), a regra vai para "parado" com uma linha no registro (<code>fases:549-550</code>). O programa já fechou;
+  ninguém o reabre; a tela não diz nada. Para o Kaique: clicou "Reiniciar agora" e o programa sumiu.</li>
+<li><strong>Prova (rodada):</strong> <code>provas/test_qtq_provas.py::test_B_...</code> (o executor: depois do fechar, nenhum efeito de tela e
+  nenhuma saída) e <code>::test_E_...</code> (a regra pura: só <code>Registrar</code>).</li>
+<li><strong>Fere:</strong> D-715 ("reinicializar o programa") e D-720 ("Reiniciar agora"); §11.12, ponto 3 (nada pela metade sem a
+  tela dizer o que ficou). A lista das falhas do ONDE-PAREI diz "não troca; o aviso volta na próxima abertura", mas
+  não diz que o programa fica fechado.</li>
+<li><strong>Defeito.</strong> (No "Sim" ao fechar o efeito é menor: o programa ia fechar mesmo; só a troca não acontece, calada.)</li>
+</ul>
+<h3>M2. A volta para a versão anterior confere o motor da versão que falhou; e ninguém lê qual motor a versão nova pede</h3>
+<ul>
+<li><strong>O que acontece.</strong> <code>motor_esta_no_lugar</code> confere o motor que <strong>o programa que roda</strong> pede
+  (<code>atualizacao.py:478-490</code> → <code>core/ocr_kraken.py:151-157</code>, com <code>VERSAO_DO_MOTOR</code> deste programa). A troca única usa
+  essa conferência (<code>atualizacao.py:662</code>, <code>835-836</code>), e a volta também passa por ela (<code>atualizacao.py:880</code>). Se a
+  versão nova falhou no teste rápido justamente porque o motor dela não está (uma versão que pede outro motor), a volta
+  é recusada por "o motor do Kraken não está no lugar", a tela mostra a frase (3) ("não conseguiu voltar sozinho. Não
+  desinstale nada.") e a versão quebrada fica, com o motor da anterior inteiro no lugar.</li>
+<li><strong>A causa, mais funda.</strong> O pacote de cada atualização leva o <code>motor-exigido.json</code> (que motor esta versão pede,
+  <code>empacotar.py:235</code> e <code>264</code>), mas nada no atualizador o lê. Então a versão nova é anunciada e trocada sem saber se o
+  motor dela está no lugar; o "tudo ou nada" só vale quando o motor da nova é o mesmo da que roda.</li>
+<li><strong>Prova (rodada):</strong> <code>provas/test_qtq_provas.py::test_C_...</code> (baixa a anterior assinada e não pede a troca de volta;
+  falha "volta" com o motivo "motor").</li>
+<li><strong>Fere:</strong> D-833 ("a versão nova só é anunciada com o motor dela no lugar"), D-790 ("A volta para a versão anterior
+  acha o motor antigo na pasta dele"), D-718 (volta sozinha).</li>
+<li><strong>Defeito na lógica, risco ainda não vivido:</strong> hoje todas as versões pedem o motor 1, então não acontece até o motor
+  mudar. Era igual no conserto 4 da volta 1 (que a D-833 manda trazer); a volta recusada pelo motor errado é nova
+  deste desenho.</li>
+</ul>
+<h3>M3. Nove proteções que nenhum teste acusa quando desligadas (D-827)</h3>
+<p>Desliguei cada uma numa cópia do ramo, rodando <strong>todos</strong> os arquivos de teste do atualizador (924 casos), não só o
+teste escolhido (<code>provas/mutacoes_qtq.py</code>, saída em <code>provas/mutacoes_qtq-resultado.txt</code>). Sobreviveram:</p>
+<table>
+<thead>
+<tr>
+<th>Proteção desligada</th>
+<th>Onde</th>
+<th>O que ela protege</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q1 a conferência do espaço livre antes de abrir o motor</td>
+<td><code>atualizacao.py:543-547</code></td>
+<td>o disco nunca fica cheio por causa do motor</td>
+</tr>
+<tr>
+<td>Q2 a conferência do motor aberto antes de dar o nome final</td>
+<td><code>atualizacao.py:550-552</code></td>
+<td>motor pela metade nunca passa por "está no lugar" (D-833)</td>
+</tr>
+<tr>
+<td>Q3 "o motor já está" invertido: nunca põe e diz que pôs</td>
+<td><code>atualizacao.py:531-532</code></td>
+<td>D-788, D-833</td>
+</tr>
+<tr>
+<td>Q4 "o motor está no lugar" sempre sim</td>
+<td><code>atualizacao.py:490</code></td>
+<td>D-833 (antes de anunciar e de trocar)</td>
+</tr>
+<tr>
+<td>Q5 o "preparado?" só olhando se a pasta existe</td>
+<td><code>atualizacao.py:341-355</code></td>
+<td>D-741, D-749 (é a regra única do "preparado?")</td>
+</tr>
+<tr>
+<td>Q7 a leitura de volta do arquivo de dentro (<code>sq.version</code>)</td>
+<td><code>core/windows.py:2715</code></td>
+<td>D-837, §11.12 ponto 2 (a licença "pegou" lá dentro)</td>
+</tr>
+<tr>
+<td>Q8 o Visual C++ só roda se só administradores podem trocá-lo</td>
+<td><code>core/windows.py:2606-2609</code></td>
+<td>segurança: o instalador roda com a licença de administrador</td>
+</tr>
+<tr>
+<td>Q14 "o Windows não deu a lista de processos" vira "pode trocar"</td>
+<td><code>atualizacao.py:839-840</code></td>
+<td>outra janela fechada à força com o trabalho dentro</td>
+</tr>
+<tr>
+<td>Q15 o processo cujo caminho não deu para ler conta como de dentro</td>
+<td><code>core/windows.py:1928</code></td>
+<td>a mesma (a janela de outra conta)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Q1 a Q4: <code>garantir_o_motor</code> e <code>motor_esta_no_lugar</code> <strong>não têm teste nenhum neste ramo</strong> (só peças de mentira que
+  devolvem sim ou não). O plano, seção 5, dizia que vinham do ramo <code>atualizador-4</code> "e os testes do conserto 4 que
+  cobram o motor"; lá eram uns 8 (<code>test_conserto4_*</code> e <code>test_volta2_medio1_*</code> em <code>tests/test_atualizador_4.py</code>). Não
+  vieram, e a lista da D-836 não fala deles.</li>
+<li><strong>Fere:</strong> D-827 ("proteção sem teste nunca é 'baixo'"), D-811 a D-813, D-833 ("O que foi feito no conserto 4 da
+  volta 1 passa para o desenho novo").</li>
+<li><strong>Defeito</strong> (falta de prova; as proteções em si existem no código).</li>
+</ul>
+<h3>M4. O estado que não grava: a troca é pedida mesmo assim, e a falha some</h3>
+<ul>
+<li><strong>O que acontece.</strong> <code>trocar_para</code> não olha o que <code>anotar_tentativa</code> devolve (<code>atualizacao.py:845</code>), e <code>anotar_falha</code>,
+  <code>anotar_ok</code> e <code>apagar_tentativa</code> não olham o que <code>gravar_estado</code> devolve (<code>atualizacao.py:195</code>, <code>203</code>, <code>218</code>). Se o
+  <code>estado.json</code> não aceita gravação pela conta do Kaique, a troca é pedida sem a anotação e a falha não fica: a versão
+  que acabou de falhar no teste rápido volta a ser procurada, baixada (uns 460 MB) e anunciada na abertura seguinte, e
+  a frase da falha nunca aparece. Pode repetir a cada abertura.</li>
+<li><strong>Quando o estado não grava:</strong> o arquivo nasce de um processo com licença e a conta comum não consegue substituí-lo
+  (a pasta <code>C:\ProgramData\EditorImpressao\atualizacao</code> só dá às contas comuns "criar arquivo novo"). A prova nº 1 de
+  22/11 mostrou que o <code>.msi</code> aberto por janela com licença abre o programa com licença no "Iniciar" do fim; esse
+  programa grava o registro e pode gravar o estado. O mesmo vale para o registro (<code>atualizacao.log</code>): se nascer de um
+  processo com licença (o próprio trabalho do preparo grava nele), as linhas da conta do Kaique vão para o <code>erros.log</code>
+  dele e saem do registro que a gerente lê de longe (D-719).</li>
+<li><strong>Prova (rodada):</strong> <code>provas/test_qtq_provas.py::test_F_...</code> (com o gravar do estado recusando).</li>
+<li><strong>Fere:</strong> §11.12, ponto 2 (resultado não conferido); D-718/D-719 (o aviso e o registro).</li>
+<li><strong>Defeito</strong> no "não conferir" (provado); <strong>risco</strong> no "quando acontece" (não provado no notebook).</li>
+</ul>
+<h3>M5. Pergunta de desenho: "Usuários podem modificar" vale para todas as contas do computador, inclusive a dos testes à distância</h3>
+<ul>
+<li><strong>O que é.</strong> A licença da D-837 vai para o grupo Usuários, que tem todas as contas do computador. Com ela, qualquer
+  conta pode trocar <code>current\EditorImpressao.exe</code> e o <code>Update.exe</code>. Esses arquivos rodam na conta do Kaique, e o
+  <code>EditorImpressao.exe</code> roda com a licença de administrador quando o Kaique diz "Sim" à pergunta do Windows. A conta
+  dos testes à distância (D-717: "sem poder de administrador") passa a ter, na prática, um caminho até o
+  administrador. O desenho apagou o ajudante antigo antes da licença justamente por isso (o Fable elogiou), mas não
+  olhou as outras contas.</li>
+<li><strong>Efeito no que já foi feito:</strong> a proteção 3 (a soma do pacote conferida antes de trocar, "outra conta poderia
+  trocar o arquivo") não protege dessa outra conta: ela troca <code>current\</code> direto, e entre a conferência e a troca do
+  Velopack há segundos.</li>
+<li><strong>Fere:</strong> não é defeito do código (o código faz o que a D-837 pede). É um ponto que a lista das falhas (§11.12 ponto
+  3) e o parecer não trataram, e que bate na D-717. <strong>Risco de desenho, não provado.</strong> Pergunta para o Samuel antes da
+  entrega dos testes à distância (é ali que a outra conta nasce).</li>
+</ul>
+<hr />
+<h2>Achados leves (12)</h2>
+<ol>
+<li><strong>A falha "troca" usa a frase que diz "voltou".</strong> Quando o Velopack não consegue trocar (arquivo preso), o programa
+   nunca saiu da versão de antes, e a tela diz "O programa voltou para a versão anterior" (<code>atualizacao.py:112-113</code>).
+   A D-778 tem três frases e nenhuma para esse caso; a escolha é do agente, sem pergunta (§11.7). Prova: <code>test_D</code>.</li>
+<li><strong>A exceção da K03 do porteiro é mais larga que a D-837.</strong> Na função da exceção passa um <code>/grant</code> para Todos com
+   Controle total; fora dela passa tirar licença ou trocar o dono com o nome da ferramenta escrito em pedaços; e chamar
+   a função com outra pasta (ex.: <code>C:\Windows</code>) não é acusado. A leitura de volta (<code>core/windows.py:2645</code>) também não
+   recusa linha a mais. Prova: <code>provas/prova_porteiro_k03.py</code> (saída em <code>-resultado.txt</code>). O porteiro é rede de
+   segurança por texto; o caso "tirar a herança em dois pedaços" dentro da função foi acusado.</li>
+<li><strong>"Outra janela aberta" pelo número de quem abriu cada processo, sem a hora de criação</strong> (<code>core/windows.py:1858</code>).
+   O Windows reaproveita números: uma janela aberta por um processo que já morreu e cujo número passou para este
+   programa conta como "da família" e fica de fora; o Velopack a fecharia à força. Risco não provado.</li>
+<li><strong>"Nenhum PowerShell" não é verdade</strong> (<code>atualizacao.py:8</code>): o passo 1 do preparo (<code>apagar_tarefa</code>) lê a tarefa
+   pelo PowerShell duas vezes (<code>core/windows.py:2145</code>, <code>2242-2246</code>), com a licença. Num computador que bloqueia o
+   PowerShell, o passo 1 falha sempre, a licença nunca é dada e a pergunta volta a cada abertura, sem nada na tela.
+   No notebook do Kaique a tarefa nem existe. Risco não provado.</li>
+<li><strong>O teste do "preparado?" não cobre a pasta que existe e não aceita gravação</strong> (mutação Q5, médio 3): fica aqui
+   como lembrete de que é a regra única de D-741/D-749.</li>
+<li><strong>Afirmação do ONDE-PAREI que não confere neste PC:</strong> o <code>atualizacao.log</code> velho em
+   <code>C:\ProgramData\EditorImpressao\atualizacao\</code> é da conta do Samuel, com controle total para ela (lido só com a
+   leitura de licenças da peça), não "do sistema". Sem efeito ruim.</li>
+<li><strong>Comentários que dizem o que não é mais:</strong> <code>core/testes_a_distancia.py:26</code>, <code>384</code>, <code>829</code> citam
+   <code>atualizacao.preparar_como_administrador</code>, que saiu (§11.12: comentário "como X" se confere na hora).</li>
+<li><strong>Corrida entre o aviso e o fechar:</strong> se o download terminar no instante em que o Kaique fecha, o aviso "Reiniciar
+   agora / Depois" (que vem por sinal de outro fio) pode aparecer junto ou depois do "Atualizar agora?". Risco não
+   provado.</li>
+<li><strong>Sem o "Sim", não há motor do Kraken:</strong> no programa instalado o motor só é procurado em <code>&lt;raiz&gt;\motor-kraken\1</code>,
+   e só é tirado do arquivo depois do preparo. Enquanto o Kaique disser "Não", o detector do Kraken não funciona. Era
+   igual no <code>atualizador-4</code>.</li>
+<li><strong>Falha que não passa nunca vira pergunta a cada abertura, sem aviso:</strong> Visual C++ ou Inno que falham sempre, ou um
+    bloqueio de gravação (ex.: proteção contra ransomware do Windows na pasta), fazem a pergunta voltar em toda
+    abertura (é a D-749) e nada na tela diz por quê; só o registro.</li>
+<li><strong>Aberto "como administrador" conta como preparado:</strong> o teste de gravar dá sim com a licença, a pergunta não é
+    feita e a procura e o download rodam com a licença (<code>atualizacao.py:903</code>). Na abertura comum seguinte a pergunta
+    vem. Risco não provado.</li>
+<li><strong>Segundos sem nada na tela depois da troca</strong> (o teste rápido antes da janela, até 5 min de limite): um segundo
+    clique abre outra abertura que também roda o teste rápido e depois abre outra janela. Risco não provado (ressalva
+    3 do plano).</li>
+</ol>
+<hr />
+<h2>A peça de fora (§11.12 ponto 6): a leitura do implementador, conferida</h2>
+<p>Li eu mesmo o Velopack 1.2.161 (clone limpo da etiqueta) e o pacote da <code>.venv</code> (<code>velopack-1.2.161</code>, <code>__init__.pyi</code>):</p>
+<ul>
+<li><strong>Confere:</strong> <code>wait_exit_then_apply_updates</code> (<code>manager.rs</code> 602-680: exige o pacote em <code>packages\</code>, <code>--waitPid</code> deste
+  processo, <code>--norestart</code> se não reabrir, os argumentos depois de <code>--</code>); a espera de 60 s (<code>util_common.rs</code> 14-26);
+  na falha com reabrir, abre a de antes com os mesmos argumentos (<code>apply.rs</code> 57-61); "Unable to start the update" sem
+  mexer (<code>apply_windows_impl.rs</code> 162-163) e "broken state" (175-176); "Failed to update uninstall entry" não para
+  nada (210-212); <code>download_updates</code> não baixa nem confere se o arquivo já existe (<code>manager.rs</code> 414-416) e confere
+  tamanho e SHA256 (537-561); a reserva no <code>%LOCALAPPDATA%</code> quando a raiz não grava (<code>locator.rs</code> 152-178); só os 10
+  "Releases" mais novos (<code>github.rs</code> 80) e o arquivo achado pelo nome (129-138); o <code>App().run()</code> sem troca automática
+  (<code>app.rs</code> 180-191); as assinaturas de <code>UpdateInfo</code>, <code>VelopackAsset</code> e <code>UpdateOptions</code> usadas em
+  <code>core/conversa_com_o_velopack.py</code> batem com o <code>__init__.pyi</code>.</li>
+<li><strong>Conferido a mais por mim:</strong> os ganchos rápidos saem do processo mesmo sem função nossa (<code>app.rs</code> 211-225), então o
+  <code>--veloapp-obsolete</code> que o Velopack roda no meio da troca nunca chega ao nosso <code>abrir</code> (bom); a limpeza do <code>.msi</code>
+  como o sistema usa <code>remove_dir_all</code> 1.0.0 (<code>Cargo.lock</code>), a versão que já não segue atalho de pasta.</li>
+<li><strong>O que faltou na leitura:</strong> a ordem "janelinha → abrir o pacote → fechar à força → renomear", que o ONDE-PAREI
+  cita, deixa a versão de antes abrível pelo atalho durante a espera e a extração; e o <code>start</code> não olha a tranca.
+  Daí o grave 1.</li>
+<li><strong>icacls:</strong> conferi de verdade, numa pasta minha no D:, que um arquivo aberto por outro processo sem compartilhar
+  nada também recebe a licença (<code>provas/prova_licenca_arquivo_em_uso.py</code>; ressalva 2 do plano, nessa parte, resolvida).
+  Não conferi em <code>C:\Program Files</code> (proibido aqui).</li>
+</ul>
+<h2>Conferido e certo (curto)</h2>
+<ul>
+<li>A regra é pura e exaustiva (807 pares); o executor chama o Windows só pela peça e o Velopack só pela peça dele; a
+  trava pega também <code>importlib.import_module("velopack")</code> e <code>__import__("velopack")</code> (<code>provas/prova_trava_velopack.py</code>).</li>
+<li>A troca passa por um lugar só (<code>trocar_para</code>), pelos três caminhos; o <code>silent</code> nunca é ligado (D-832).</li>
+<li>O "Não" e a falha da pergunta do Windows nunca viram "deu certo"; o "preparado?" é o teste de gravar feito de novo
+  depois do trabalho com licença, nunca o que ele anotou (D-741, D-749).</li>
+<li>A licença é o último passo; o ajudante antigo sai antes dela (D-838); os passos não aceitam dado no pedido e a raiz
+  é conferida em Arquivos de Programas; a licença é só o <code>icacls ... /grant "*S-1-5-32-545:(OI)(CI)M" /T</code>, lido de
+  volta (D-837). Nada do desenho antigo vivo no código novo: sem ajudante, sem marcas, sem a espera de 30 s, sem
+  <code>estado.json</code> como canal (sobra só o nome da tarefa velha, para apagá-la).</li>
+<li>Textos palavra por palavra: D-835 (aviso: "Se escolher "Depois", você pode atualizar quando fechar o programa.";
+  "Atualizar agora?" / "Quer atualizar o programa agora, ao fechar?" / "Sim" / "Não") e as três frases da D-778.</li>
+<li>A pergunta do Windows vem dentro de <code>atender_linha_de_comando</code>, antes do brasão e da janela; a janela da senha vem
+  depois e não pergunta nada ao Windows (D-834, D-825). Procura só ao abrir (D-732). Conta de testes, código e
+  portátil: nada (D-728, D-736).</li>
+<li>"Depois" sempre leva ao "Atualizar agora?" ao fechar; fechar sem versão pronta não pergunta nada (D-831, D-794).</li>
+<li>A catraca da trava desceu de 46 para 34 e bate com a lista.</li>
+</ul>
+<h2>Não deu para conferir sem a prova à vista</h2>
+<ul>
+<li>A pergunta do Windows no meio da tela, sem janela dona, logo no clique (D-806, ressalva 1 do plano).</li>
+<li>O <code>icacls</code> na pasta de verdade de Arquivos de Programas, com os arquivos do <code>.msi</code> e o programa rodando.</li>
+<li>Se a janelinha do Velopack aparece de fato quando a troca é pedida por <code>wait_exit_then_apply_updates</code> (ele abre o
+  <code>Update.exe</code> com <code>CREATE_NO_WINDOW</code>, <code>process_win.rs</code> 388-392; a leitura diz que só some a janela preta).</li>
+<li>O tamanho real da janela de tempo do grave 1 no notebook.</li>
+<li>Desinstalar (a pasta inteira some com o motor), a conta padrão, o <code>.msi</code> aberto com ou sem licença no notebook.</li>
+</ul>
+<h2>As provas (tudo meu, nesta pasta)</h2>
+<ul>
+<li><code>provas/test_qtq_provas.py</code> (7 provas; rodar com o PYTHONPATH na raiz do ramo) e <code>-resultado.txt</code>.</li>
+<li><code>provas/mutacoes_qtq.py</code> (roda numa cópia do ramo, nunca no worktree) e <code>mutacoes_qtq-resultado.txt</code>.</li>
+<li><code>provas/prova_porteiro_k03.py</code>, <code>provas/prova_trava_velopack.py</code>, <code>provas/prova_licenca_arquivo_em_uso.py</code> e as
+  saídas.</li>
+</ul>
+<p>Não proponho conserto: a causa de cada achado está escrita acima.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 24/11/2026 às 08:38</p>
+</body>
+</html>

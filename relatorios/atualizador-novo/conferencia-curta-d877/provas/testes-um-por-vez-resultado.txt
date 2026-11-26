@@ -1,0 +1,4 @@
+tests/test_decisoes_atualizacao_volta5.py: 23 passed, 1 warning in 3.24s
+tests/test_fases_da_atualizacao.py: 2255 passed in 2.88s
+tests/test_atualizador_volta5.py: 21 passed, 1 warning in 2.79s
+tests/test_atualizador_volta4.py: 18 passed in 1.27s

@@ -192,6 +192,15 @@ def pytest_configure(config) -> None:
     _ESTA_RODADA = PASTA_DE_DADOS_DOS_TESTES / f"{time.strftime('%Y%m%d-%H%M%S')}-{os.getpid()}"
     _ESTA_RODADA.mkdir(parents=True, exist_ok=True)
     os.environ["LOCALAPPDATA"] = str(_ESTA_RODADA)
+    # O mesmo para o PROGRAMDATA (volta 3 do atualizador novo, leve 1 do segundo "quem tenta quebrar"): o registro e
+    # o bilhete da atualização moram em %ProgramData%\EditorImpressao\atualizacao (atualizacao.pasta_do_estado, que
+    # lê a variável na hora); dois testes da primeira abertura escreviam no registro de VERDADE do PC (16 linhas
+    # achadas em 24/11). Agora nenhum teste o alcança, nem os que esquecem de trocar a variável. O valor verdadeiro
+    # fica em EDITOR_IMPRESSAO_PROGRAMDATA_REAL (nenhum teste precisa dele). Teste:
+    # tests/test_atualizador_volta3.py (test_l1_nenhum_teste_escreve_no_programdata_de_verdade).
+    if os.environ.get("EDITOR_IMPRESSAO_PROGRAMDATA_REAL") is None:
+        os.environ["EDITOR_IMPRESSAO_PROGRAMDATA_REAL"] = os.environ.get("PROGRAMDATA", "")
+    os.environ["PROGRAMDATA"] = str(_ESTA_RODADA / "ProgramData")
     # Registrada PRIMEIRO, roda por ULTIMO na saida (o atexit roda do ultimo
     # registrado para o primeiro): depois das rotinas de saida dos testes.
     atexit.register(_apagar_a_pasta_da_rodada)

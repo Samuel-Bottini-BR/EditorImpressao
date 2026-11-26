@@ -1,0 +1,80 @@
+tests/test_atualizador_volta5.py | 21 passed, 1 warning in 9.05s
+tests/test_decisoes_atualizacao_volta5.py | 22 passed, 1 warning in 9.24s
+tests/test_atualizador_volta4.py | 18 passed in 2.39s
+tests/test_fases_da_atualizacao.py | 2255 passed in 4.09s
+tests/test_atualizador_d851.py | 3 passed in 1.27s
+tests/test_atualizador_novo.py | 31 passed in 52.27s
+tests/test_atualizador_volta2.py | 31 passed in 3.62s
+tests/test_atualizador_volta3.py | 32 passed in 6.29s
+tests/test_atualizador_volta3_de_verdade.py | 4 passed, 1 skipped in 0.78s
+tests/test_decisoes_atualizacao.py | 38 passed in 2.54s
+tests/test_decisoes_ajudante_da_atualizacao.py | 22 passed in 1.66s
+tests/test_velopack_de_verdade.py | 3 passed in 0.41s
+tests/test_windows_preparo_do_computador.py | 19 passed, 1 skipped in 3.85s
+tests/test_porteiro_licenca_que_acrescenta.py | 14 passed in 1.45s
+tests/test_trava_windows.py | 42 passed, 3 skipped in 6.90s
+tests/test_assinatura.py | 16 passed in 0.65s
+tests/test_windows_peca.py | 68 passed, 3 skipped in 69.89s (0:01:09)
+tests/test_decisoes.py | 27 passed in 26.35s
+tests/test_decisoes_9b1.py | 22 passed, 3 skipped in 37.80s
+tests/test_decisoes_9b2.py | 30 passed in 67.82s (0:01:07)
+tests/test_decisoes_antes_depois_da_ferramenta.py | 5 passed in 7.03s
+tests/test_decisoes_automatico.py | 29 passed in 72.06s (0:01:12)
+tests/test_decisoes_automatico_margens_no_depois.py | 5 passed in 13.19s
+tests/test_decisoes_automatico_opcoes_do_filtro.py | 21 passed in 55.77s
+tests/test_decisoes_automatico_ver_como_fica.py | 22 passed in 53.14s
+tests/test_decisoes_aviso_de_memoria.py | 15 passed in 12.60s
+tests/test_decisoes_avisos.py | 22 passed in 49.11s
+tests/test_decisoes_brasao.py | 20 passed in 12.62s
+tests/test_decisoes_caderno_numeros.py | 9 passed in 10.65s
+tests/test_decisoes_caderno_tela_grande.py | 14 passed, 1 skipped in 43.95s
+tests/test_decisoes_capa_aberta.py | 6 passed in 12.05s
+tests/test_decisoes_d622_clicar_fora.py | 3 passed in 4.55s
+tests/test_decisoes_desfazer_pagina.py | 14 passed in 25.92s
+tests/test_decisoes_desinstalar.py | 45 passed in 20.82s
+tests/test_decisoes_desinstalar_pasta.py | 6 passed in 3.04s
+tests/test_decisoes_dividir.py | 21 passed in 47.99s
+tests/test_decisoes_dividir_arrastar.py | 16 passed in 24.17s
+tests/test_decisoes_dividir_aviso.py | 11 passed in 20.00s
+tests/test_decisoes_dividir_linha.py | 13 passed in 15.43s
+tests/test_decisoes_dividir_metade.py | 6 passed in 9.37s
+tests/test_decisoes_ferramentas_antes_depois.py | 12 passed in 19.00s
+tests/test_decisoes_ferramentas_lado.py | 9 passed in 9.59s
+tests/test_decisoes_filtro_automatico.py | 4 passed in 10.72s
+tests/test_decisoes_fundo_tirado.py | 21 passed in 28.10s
+tests/test_decisoes_girar_capa.py | 26 passed in 40.08s
+tests/test_decisoes_girar_dividir_duas.py | 10 passed in 16.41s
+tests/test_decisoes_girar_pagina.py | 20 passed in 17.23s
+tests/test_decisoes_girar_paginas_aplicar_em.py | 10 passed in 11.81s
+tests/test_decisoes_gravura_a_mao.py | 15 passed in 25.54s
+tests/test_decisoes_gravura_pular.py | 7 passed in 5.91s
+tests/test_decisoes_gravuras_cinza.py | 20 passed in 52.32s
+tests/test_decisoes_impressao.py | 22 passed in 25.32s
+tests/test_decisoes_juntar_todas.py | 4 passed in 8.66s
+tests/test_decisoes_livreto_ver.py | 13 passed, 1 skipped in 36.20s
+tests/test_decisoes_marcacoes.py | 19 passed in 11.04s
+tests/test_decisoes_montar_cadernos.py | 13 passed in 46.05s
+tests/test_decisoes_mover.py | 13 passed in 16.31s
+tests/test_decisoes_mover_lado.py | 7 passed in 9.03s
+tests/test_decisoes_nucleo.py | 38 passed in 6.96s
+tests/test_decisoes_nucleo2.py | 21 passed in 18.21s
+tests/test_decisoes_ordem_folhas.py | 12 passed in 14.60s
+tests/test_decisoes_pagina_em_branco.py | 11 passed in 18.45s
+tests/test_decisoes_painel_livro.py | 9 passed in 14.31s
+tests/test_decisoes_par_escolhe_e_arrasta.py | 4 passed in 7.15s
+tests/test_decisoes_preparo_d749.py | 3 passed in 10.06s
+tests/test_decisoes_previa_dividida.py | 4 passed in 14.84s
+tests/test_decisoes_previa_numero.py | 8 passed in 15.15s
+tests/test_decisoes_quadrados_brancos.py | 17 passed in 61.61s (0:01:01)
+tests/test_decisoes_respeitar_gravuras.py | 19 passed in 56.97s
+tests/test_decisoes_shift_todas_as_telas.py | 10 passed in 18.26s
+tests/test_decisoes_so_as_letras.py | 5 passed in 19.63s
+tests/test_decisoes_tamanho_no_par.py | 5 passed in 7.39s
+tests/test_decisoes_tela.py | 35 passed, 4 warnings in 46.54s
+tests/test_decisoes_testes_a_distancia.py | 13 passed in 0.80s
+tests/test_decisoes_tira_em_pares.py | 4 passed in 10.58s
+tests/test_decisoes_tira_marca_a_tela.py | 3 passed in 6.32s
+tests/test_decisoes_tira_numero_real.py | 3 passed in 11.29s
+tests/test_decisoes_tira_pares_juntas.py | 3 passed in 7.37s
+tests/test_decisoes_ver.py | 11 passed in 30.49s
+FIM

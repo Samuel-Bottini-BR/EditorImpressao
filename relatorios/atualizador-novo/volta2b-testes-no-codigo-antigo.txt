@@ -1,0 +1,24 @@
+Os testes da D-839 e da D-840 rodados no codigo de 63bd8546 (so o arquivo de teste novo; o programa sem mudanca), 24/11/2026
+E       AssertionError: assert [('Atualizaçã...e o Samuel.')] == [('Atualizaçã...e o Samuel.')]
+E         
+E         At index 0 diff: ('Atualização', 'A atualização não deu certo. O programa voltou para a versão anterior e continua funcionando. Avise o Samuel.') != ('Atualização', 'A atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel.')
+E         Use -v to get more diff
+E       AssertionError: assert [('Atualizaçã...e o Samuel.')] == [('Atualizaçã...e o Samuel.')]
+E         
+E         At index 0 diff: ('Atualização', 'A atualização não deu certo. O programa voltou para a versão anterior e continua funcionando. Avise o Samuel.') != ('Atualização', 'A atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel.')
+E         Use -v to get more diff
+E       AssertionError: assert 'A atualizaçã...ise o Samuel.' == 'A atualizaçã...ise o Samuel.'
+E         
+E         - A atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel.
+E         + A atualização não deu certo. O programa voltou para a versão anterior e continua funcionando. Avise o Samuel.
+E       AssertionError: assert [('Versão nov...a', 'Depois')] == [('Versão nov...ue de novo.')]
+E         
+E         Right contains one more item: ('Versão nova do programa', 'Feche a outra janela do programa e clique de novo.')
+E         Use -v to get more diff
+PASSED tests/test_decisoes_atualizacao.py::test_d840_a_frase_so_aparece_com_outra_janela_aberta[sem_a_lista_de_processos]
+PASSED tests/test_decisoes_atualizacao.py::test_d840_a_frase_so_aparece_com_outra_janela_aberta[sem_o_motor_da_nova]
+FAILED tests/test_decisoes_atualizacao.py::test_d839_a_troca_que_nao_aconteceu_diz_que_continua_na_versao_de_antes[com_janela]
+FAILED tests/test_decisoes_atualizacao.py::test_d839_a_troca_que_nao_aconteceu_diz_que_continua_na_versao_de_antes[sem_janela_e_depois_a_proxima_abertura]
+FAILED tests/test_decisoes_atualizacao.py::test_d839_as_tres_frases_da_d778_continuam_iguais
+FAILED tests/test_decisoes_atualizacao.py::test_d840_reiniciar_agora_com_outra_janela_aberta_diz_para_fechar_e_nada_fecha
+4 failed, 2 passed, 35 deselected in 1.26s

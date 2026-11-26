@@ -1,0 +1,48 @@
+{
+ "1. a reabertura sem janela (o teste passa) morta à força no meio da cópia": {
+  "a cópia tinha chegado a (MB)": 64.0,
+  "registro (fim)": [],
+  "última boa": "1.1.0",
+  "aprovada (1.2.0)": true,
+  "ultima-boa\\ (MB)": {
+   "EditorImpressaoPrograma-1.1.0-full.nupkg": 0.0,
+   "EditorImpressaoPrograma-1.1.0.assinatura": 0.0,
+   "EditorImpressaoPrograma-1.2.0-full.nupkg.chegando": 64.0,
+   "EditorImpressaoPrograma-1.2.0.aprovada": 0.0,
+   "EditorImpressaoPrograma-1.2.0.assinatura.chegando": 0.0
+  }
+ },
+ "2.1 a abertura seguinte, pelo atalho": {
+  "saida": null,
+  "testes rapidos": 0,
+  "registro (fim)": [
+   "2026-11-24T21:35:59 | versão 1.2.0 | não consegui procurar a versão nova: sem internet"
+  ],
+  "última boa": "1.1.0",
+  "aprovada (1.2.0)": true,
+  "ultima-boa\\ (MB)": {
+   "EditorImpressaoPrograma-1.1.0-full.nupkg": 0.0,
+   "EditorImpressaoPrograma-1.1.0.assinatura": 0.0,
+   "EditorImpressaoPrograma-1.2.0-full.nupkg.chegando": 68.0,
+   "EditorImpressaoPrograma-1.2.0.aprovada": 0.0,
+   "EditorImpressaoPrograma-1.2.0.assinatura.chegando": 0.0
+  }
+ },
+ "2.2 a abertura seguinte, pelo atalho": {
+  "saida": null,
+  "testes rapidos": 0,
+  "registro (fim)": [
+   "2026-11-24T21:35:59 | versão 1.2.0 | não consegui procurar a versão nova: sem internet",
+   "2026-11-24T21:36:00 | versão 1.2.0 | não consegui procurar a versão nova: sem internet"
+  ],
+  "última boa": "1.1.0",
+  "aprovada (1.2.0)": true,
+  "ultima-boa\\ (MB)": {
+   "EditorImpressaoPrograma-1.1.0-full.nupkg": 0.0,
+   "EditorImpressaoPrograma-1.1.0.assinatura": 0.0,
+   "EditorImpressaoPrograma-1.2.0-full.nupkg.chegando": 68.0,
+   "EditorImpressaoPrograma-1.2.0.aprovada": 0.0,
+   "EditorImpressaoPrograma-1.2.0.assinatura.chegando": 0.0
+  }
+ }
+}

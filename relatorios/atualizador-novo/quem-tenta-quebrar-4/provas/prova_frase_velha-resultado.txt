@@ -1,0 +1,63 @@
+{
+ "0. a outra janela, vista pela peca do Windows": [
+  [
+   7488,
+   "D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\qtq4\\frase-velha\\raiz\\current\\EditorImpressao.exe"
+  ]
+ ],
+ "1. a primeira janela: Depois, fechar, Sim (a outra janela aberta)": {
+  "tela": [
+   "MostrarVersaoNova",
+   "PerguntarAoFechar"
+  ],
+  "pedidos ao Velopack": [
+   "procurar",
+   "baixar"
+  ],
+  "fase": "parado",
+  "bilhete depois": {
+   "frase": {
+    "tipo": "nao_deu_agora",
+    "nome": "nao_deu_agora-1.2.0-2026-11-24T21:21:47",
+    "motivo": "havia_outra_janela"
+   }
+  }
+ },
+ "2. a segunda janela (aberta antes): Depois, fechar, Sim (agora sozinha)": {
+  "tela": [
+   "MostrarVersaoNova",
+   "PerguntarAoFechar"
+  ],
+  "pedidos ao Velopack": [
+   "procurar",
+   "baixar",
+   "trocar"
+  ],
+  "fase": "trocando",
+  "bilhete depois": {
+   "frase": {
+    "tipo": "nao_deu_agora",
+    "nome": "nao_deu_agora-1.2.0-2026-11-24T21:21:47",
+    "motivo": "havia_outra_janela"
+   }
+  }
+ },
+ "3. a reabertura sem janela da 1.2.0 (o teste passa)": {
+  "saida": 0,
+  "ultima boa": "1.2.0",
+  "aprovada": true,
+  "bilhete": {
+   "frase": {
+    "tipo": "nao_deu_agora",
+    "nome": "nao_deu_agora-1.2.0-2026-11-24T21:21:47",
+    "motivo": "havia_outra_janela"
+   }
+  }
+ },
+ "4. a abertura seguinte, pelo atalho, JÁ NA 1.2.0": {
+  "versao que roda": "1.2.0",
+  "o que aparece na tela": [
+   "[Atualização] Não deu para atualizar agora: havia outra janela do programa aberta. Tente ao fechar o programa."
+  ]
+ }
+}

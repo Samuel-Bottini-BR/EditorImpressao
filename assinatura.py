@@ -293,12 +293,21 @@ def conferir_versao(texto: str, esperado: VersaoAssinada,
     return None
 
 
-def soma_sha256(arquivo: Path) -> str:
-    """A soma SHA-256 de um arquivo, em hexadecimal minusculo (lendo aos pedacos)."""
+def soma_sha256(arquivo: Path, copiar_para: Path | None = None) -> str:
+    """A soma SHA-256 de um arquivo, em hexadecimal minusculo (lendo aos pedacos). A UNICA conta da soma de um arquivo
+    no programa (volta 4 do atualizador novo, leve 5: a guarda da ultima boa tinha a sua). `copiar_para`: tambem copia
+    o arquivo para la, na mesma leitura (a guarda soma e copia os 460 MB de uma vez); a soma e a do que foi lido e
+    escrito. Levanta OSError."""
     h = hashlib.sha256()
     with open(arquivo, "rb") as f:
-        for bloco in iter(lambda: f.read(1024 * 1024), b""):
-            h.update(bloco)
+        if copiar_para is None:
+            for bloco in iter(lambda: f.read(1024 * 1024), b""):
+                h.update(bloco)
+        else:
+            with open(copiar_para, "wb") as destino:
+                for bloco in iter(lambda: f.read(4 * 1024 * 1024), b""):
+                    h.update(bloco)
+                    destino.write(bloco)
     return h.hexdigest()
 
 

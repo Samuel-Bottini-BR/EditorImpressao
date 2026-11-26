@@ -1,0 +1,21 @@
+FAILED tests/test_atualizador_volta2.py::test_g1_abrir_pelo_atalho_no_meio_da_troca_nao_anota_falha_e_sai_sem_janela
+FAILED tests/test_atualizador_volta2.py::test_g1_sem_saber_se_a_troca_acontece_nada_e_anotado
+FAILED tests/test_atualizador_volta2.py::test_g1_a_peca_ve_o_atualizador_do_velopack_pelo_caminho_dele
+FAILED tests/test_atualizador_volta2.py::test_m1_reiniciar_agora_que_nao_pode_trocar_nao_fecha_a_janela
+FAILED tests/test_atualizador_volta2.py::test_m1_a_troca_que_falha_depois_de_fechar_reabre_o_programa
+FAILED tests/test_atualizador_volta2.py::test_m1_o_sinal_de_vida_e_dado_antes_de_tudo
+FAILED tests/test_atualizador_volta2.py::test_m2_a_volta_confere_o_motor_da_anterior_e_volta
+FAILED tests/test_atualizador_volta2.py::test_m2_a_versao_nova_sem_o_motor_dela_nao_e_anunciada
+FAILED tests/test_atualizador_volta2.py::test_m2_o_motor_exigido_e_lido_de_dentro_do_pacote
+FAILED tests/test_atualizador_volta2.py::test_m4_com_o_estado_que_nao_grava_nada_e_procurado_nem_trocado
+FAILED tests/test_atualizador_volta2.py::test_q4_conserto4_o_motor_no_lugar_e_a_mesma_conferencia
+FAILED tests/test_atualizador_volta2.py::test_q14_sem_a_lista_de_processos_nao_troca
+FAILED tests/test_atualizador_volta2.py::test_q15_o_processo_cujo_caminho_nao_da_para_ler_conta
+FAILED tests/test_atualizador_volta2.py::test_leve3_a_familia_respeita_a_hora_em_que_cada_um_nasceu
+FAILED tests/test_atualizador_volta2.py::test_leve2_uma_licenca_a_mais_na_pasta_e_acusada
+FAILED tests/test_atualizador_volta2.py::test_leve2_o_porteiro_acusa_o_que_a_d837_nao_deixa[core/windows.py-def dar_licenca_aos_usuarios(raiz):\n    ferramenta = pasta_do
+FAILED tests/test_atualizador_volta2.py::test_leve2_o_porteiro_acusa_o_que_a_d837_nao_deixa[core/windows.py-def outra(raiz):\n    return _rodar([pasta_do_sistema() / ("ic
+FAILED tests/test_atualizador_volta2.py::test_leve2_o_porteiro_acusa_o_que_a_d837_nao_deixa[core/windows.py-FERRAMENTA = "ica" "cls.exe"\ndef outra(raiz):\n    return _ro
+FAILED tests/test_atualizador_volta2.py::test_leve2_o_porteiro_acusa_o_que_a_d837_nao_deixa[atualizacao.py-from core import windows\ndef liberar_o_windows():\n    return 
+FAILED tests/test_atualizador_volta2.py::test_os_comentarios_do_desfazer_nao_citam_o_que_saiu
+20 failed, 12 passed in 2.63s

@@ -1,0 +1,13 @@
+{
+ "vezes que o aviso apareceu": 142,
+ "profundidade na 1a, 2a, 10a e última": [
+  5,
+  12,
+  68,
+  992
+ ],
+ "fase no fim": "pronta",
+ "linhas de erro no registro": [
+  "2026-11-24T10:50:02 | versão 1.1.0 | erro inesperado em ConferirTroca: RecursionError: maximum recursion depth exceeded"
+ ]
+}

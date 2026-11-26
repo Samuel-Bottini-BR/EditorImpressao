@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prova à vista do atualizador: o resultado</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Prova à vista do atualizador novo: o resultado</h1>
+<p>Feita no PC do Samuel em 25 e 26/11/2026, das 19h20 à 1h10, com as versões de prova 1.9.0 a 1.9.6, publicadas numa
+pasta do computador (nunca no GitHub). O Samuel clicou no programa; a gerente preparou cada passo e conferiu por fora (o
+registro do atualizador, a pasta do programa e a vigia das janelas).</p>
+<p><strong>Em uma frase:</strong> o atualizador fez o que devia em todos os passos. A prova achou um caso de dois programas abertos
+(o clique no atalho no fim da troca) e dois defeitos fora do atualizador, todos anotados abaixo.</p>
+<h2>O que funcionou, passo a passo</h2>
+<table>
+<thead>
+<tr>
+<th>Passo</th>
+<th>O que se fez</th>
+<th>O que aconteceu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Instalar a 1.9.0</td>
+<td>Instalou, deixou tudo preparado e pôs o motor de achar texto no lugar. A caixinha do instalador "abrir o programa" ficou marcada, então a pergunta do Windows não apareceu: o caminho do "Não" nessa pergunta <strong>não foi visto</strong>.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1.9.1 publicada, "Reiniciar agora"</td>
+<td>O aviso apareceu com o texto certo; trocou, passou no teste e ficou guardada, sem internet. Na abertura seguinte não testou de novo.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>1.9.2, "Depois", fechar, "Não"</td>
+<td>Ao fechar perguntou "Atualizar agora?"; com "Não", o aviso voltou na abertura seguinte.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>1.9.3, que não abre</td>
+<td>O teste da versão nova falhou: a caixa do Windows apareceu uma vez, e não apareceu de novo; a versão não foi testada de novo. A volta à mão para a 1.9.2 levou 11 s e o programa abriu normal; a 1.9.3 não foi mais oferecida.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>1.9.4 (a correção), "Depois", fechar, <strong>"Sim"</strong></td>
+<td>Trocou ao fechar, passou no teste sem abrir janela e ficou guardada.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>1.9.5 com a assinatura falsa</td>
+<td>A caixa "Atualização" ("não tem a assinatura do Samuel") apareceu uma vez; nada baixado; na abertura seguinte, nada.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Motor de achar texto fora do lugar, 1.9.6 publicada</td>
+<td>Nenhum aviso, nenhuma pergunta; nada procurado.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>"Internet" parada com a 1.9.6 já baixada</td>
+<td>O aviso apareceu mesmo assim.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Atualizador do Velopack apagado, "Reiniciar agora"</td>
+<td>A caixa "o atualizador do programa sumiu do computador" (texto certo, palavra por palavra); o programa continuou aberto até o X; ao fechar, nenhuma pergunta.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Pasta do programa presa, "Reiniciar agora" duas vezes</td>
+<td>As duas vezes: a caixa "A atualização não deu certo", o programa de volta na 1.9.4 e o aviso de novo.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Clique duplo no atalho durante a troca</td>
+<td>O primeiro clique (antes de os arquivos serem trocados) saiu sem janela, como devia. O segundo abriu outro programa (ver os achados).</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Desinstalar</td>
+<td>A pasta do programa sumiu inteira, a entrada saiu da lista do Windows, o atalho saiu da área de trabalho. Uma pergunta do Windows.</td>
+</tr>
+</tbody>
+</table>
+<h2>Quanto a abertura leva</h2>
+<p>De o processo começar até a janela principal aparecer, lido da vigia: <strong>de 10 a 23 s</strong> nas aberturas comuns, com e sem
+versão nova sendo baixada por trás (o vai-e-vem é do PC, não do atualizador). Depois de uma troca, a primeira abertura
+leva <strong>de 30 a 36 s</strong>, porque o teste da versão nova roda antes (de 12 a 22 s) ou porque espera o OK de uma caixa.</p>
+<h2>Os achados</h2>
+<ol>
+<li><strong>Dois programas abertos (a conferir).</strong> No clique duplo do passo 8, o segundo clique veio quando os arquivos já
+   estavam trocados, mas o Velopack ainda não tinha terminado: abriu um programa, e a reabertura do Velopack abriu
+   outro. A causa: o programa só confere se o Velopack está trabalhando quando a versão que roda é diferente da última
+   boa, e a volta à mão feita na prova tinha deixado a 1.9.6 como última boa. No uso normal a conferência seria feita
+   (lido no código, não visto na tela). <strong>Mas há um caso parecido no uso normal, também só lido no código:</strong> nos 12 a
+   22 s em que o teste da versão nova roda, não há nada na tela; se o Kaique clicar no atalho nesse tempo, o programa
+   abre, e o teste abre outro. Precisa de prova.</li>
+<li><strong>A janelinha do Velopack tem um botão OK</strong> ("Instalando Atualização"). O Samuel perguntou "tem um ok aqui, se eu
+   apertar o que acontece?": só fecha a janelinha, a troca continua. O Kaique pode ter a mesma dúvida.</li>
+<li><strong>Uma caixa técnica em inglês</strong> ("Unhandled exception in script", do PyInstaller) apareceu na versão que não abre
+   (1.9.3), depois do botão da caixa "Um momento". Fere a regra de nunca mostrar erro técnico. Vai junto com o item da
+   frase quando a janela não abre, que o Samuel deixou para depois da entrega.</li>
+<li><strong>Fora do atualizador: dois projetos mudam de data ao abrir o programa.</strong> Os resumos de "Schön Neues Modell Buch" e
+   de "Sobre a Consolação da Filosofia" foram regravados às 00:45:08 (o conteúdo igual, só o "mexido em" mudou, e isso
+   muda a ordem da lista). As duas pastas têm acento no nome e não têm a capa (<code>capa.png</code>); provável causa: o programa
+   tenta criar a capa a cada vez, a gravação da imagem falha no caminho com acento, e o resumo é gravado do mesmo
+   jeito. Nada sumiu nem mudou dentro dos projetos além disso. Não tem relação com desinstalar.</li>
+<li><strong>O Velopack tenta a troca por uns 15 s, não 1 minuto</strong> como o roteiro dizia. Não é defeito do programa; a tranca
+   da pasta precisou ser renovada entre as duas recusas.</li>
+</ol>
+<h2>O que não foi visto</h2>
+<ul>
+<li>O "Não" na pergunta do Windows na primeira abertura (passo 1).</li>
+<li>O segundo clique no atalho no uso normal (achado 1).</li>
+</ul>
+<p>Opinião da gerente: o atualizador está pronto para a entrega no que a prova cobriu. O achado 1 é o único que o Kaique
+pode encontrar sozinho; na prova ele só abriu dois programas, mas não se sabe o que acontece se o Kaique mexer no mesmo
+livro nos dois. A decisão de consertar antes ou
+depois da entrega é do Samuel.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 26/11/2026 às 01:09</p>
+</body>
+</html>

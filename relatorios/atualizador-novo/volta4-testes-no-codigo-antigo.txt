@@ -1,0 +1,333 @@
+Volta 4: tests/test_atualizador_volta4.py rodado no codigo de 1d01aaf9 (git archive numa pasta de rascunho). Os 3 do M7 que passam la (Q2, Q9, Q13) sao protecoes que ja existiam sem teste (D-860); a prova delas e a rodada de mutacoes.
+
+FFFFFFFFFFFF...FF                                                        [100%]
+================================== FAILURES ===================================
+__________________ test_d855_o_pedido_da_volta_leva_a_marca ___________________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v4/antigo/test_d855_o_pedido_da_volta_le0')
+
+    def test_d855_o_pedido_da_volta_leva_a_marca(tmp_path):
+        """D-855 ("o pedido de volta leva marca (`--voltando de para`, como a D-839)"): a volta pede ao Velopack a troca
+        para a última boa com `--voltando <de> <para>`, para a versão reaberta saber o que aconteceu. Em `1d01aaf9` o
+        pedido ia sem argumento nenhum (o G1 do terceiro "quem tenta quebrar")."""
+        p = Prova(tmp_path, teste=(False, "código 1"))
+        _guardar_a_mao(p, ANTERIOR)
+        assert p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL) == 0
+        troca = [c for c in p.vp.chamadas if c[0] == "trocar"][-1]
+>       assert troca[1] == ANTERIOR and troca[3][:3] == (ARG_VOLTANDO, ATUAL, ANTERIOR)
+E       AssertionError: assert ('0.1.0' == '0.1.0'
+E         
+E           0.1.0 and ('--fonte', '...a_le0\\fonte') == ('--voltando'...1.0', '0.1.0')
+E         
+E         At index 0 diff: '--fonte' != '--voltando'
+E         Right contains one more item: '0.1.0'
+E         Use -v to get more diff)
+
+tests\test_atualizador_volta4.py:87: AssertionError
+_ test_d855_d863_a_volta_que_o_windows_nao_deixou_mostra_a_frase_3_e_nunca_mais_tenta _
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v4/antigo/test_d855_d863_a_volta_que_o_w0')
+
+    def test_d855_d863_a_volta_que_o_windows_nao_deixou_mostra_a_frase_3_e_nunca_mais_tenta(tmp_path):
+        """G1 do terceiro "quem tenta quebrar" (grave): o Windows não deixou a volta (um arquivo preso) e o Velopack reabriu
+        a versão que falhou com o pedido. Ela NÃO testa de novo (D-855), mostra a frase (3) da D-778 e abre; e nenhuma
+        abertura seguinte testa nem tenta voltar (D-863: "não tenta voltar de novo nas aberturas seguintes. Abre a versão
+        que está"). Em `1d01aaf9`: testava, pedia a volta de novo e saía, sem frase (o laço)."""
+        p = Prova(tmp_path, teste=(False, "código 1"))
+        _guardar_a_mao(p, ANTERIOR)
+        atualizacao.gravar_estado({"reprovadas": [ATUAL]})
+        teste = ContaDoTeste(passa=False)
+        reaberta = _outra_abertura(p, teste)
+        saida = reaberta.abrir([ARG_VOLTANDO, ATUAL, ANTERIOR])
+        tela = _na_tela(reaberta)
+>       assert saida is None and teste.vezes == 0
+E       assert (0 is None)
+
+tests\test_atualizador_volta4.py:102: AssertionError
+_______ test_d863_a_volta_que_nem_pode_ser_pedida_tambem_nao_se_repete ________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v4/antigo/test_d863_a_volta_que_nem_pode0')
+
+    def test_d863_a_volta_que_nem_pode_ser_pedida_tambem_nao_se_repete(tmp_path):
+        """D-863: a volta que não pôde ser pedida (o pacote guardado não confere) mostra a frase (3) e não se repete na
+        abertura seguinte (nem o teste)."""
+        p = Prova(tmp_path, teste=(False, "código 1"))
+        pasta = _guardar_a_mao(p, ANTERIOR)
+        (pasta / f"{PACOTE}-{ANTERIOR}-full.nupkg").write_bytes(b"estragado")
+        p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL)
+        assert "trocar" not in p.vp.nomes()
+        teste = ContaDoTeste(passa=False)
+>       assert _outra_abertura(p, teste).abrir([]) is None and teste.vezes == 0
+E       assert (None is None and 1 == 0)
+E        +  where None = abrir([])
+E        +    where abrir = <atualizacao.Atualizacao object at 0x00000294F2F92D70>.abrir
+E        +      where <atualizacao.Atualizacao object at 0x00000294F2F92D70> = _outra_abertura(<tests.ajudante_do_atualizador.Prova object at 0x00000294F32F8190>, <tests.test_atualizador_volta4.ContaDoTeste object at 0x00000294F32F8B90>)
+E        +  and   1 = <tests.test_atualizador_volta4.ContaDoTeste object at 0x00000294F32F8B90>.vezes
+
+tests\test_atualizador_volta4.py:119: AssertionError
+_ test_d856_a_versao_aprovada_nao_e_testada_de_novo_e_sem_espaco_nada_e_copiado _
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v4/antigo/test_d856_a_versao_aprovada_na0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000294F2FA27A0>
+
+    def test_d856_a_versao_aprovada_nao_e_testada_de_novo_e_sem_espaco_nada_e_copiado(tmp_path, monkeypatch):
+        """D-856 ("Versão aprovada no teste rápido ganha uma marca no disco e não é testada de novo. Se a cópia da última
+        boa não couber, a anterior continua valendo; conferir espaço antes de copiar, pela mesma função do motor."): com o
+        disco sem espaço, a versão nova passa no teste, NADA é copiado, a última boa de antes continua, e a abertura seguinte
+        não testa. Em `1d01aaf9` a cópia ia até o fim (não conferia o espaço) e o teste se repetia (o M4)."""
+        import shutil
+    
+        p = Prova(tmp_path, publicar_nova=False, ultima_boa=ANTERIOR)
+        p.pacote_em_packages(ATUAL)
+        real = shutil.disk_usage
+        monkeypatch.setattr(shutil, "disk_usage", lambda caminho: real(caminho)._replace(free=1024))
+        p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL)
+        pasta = atualizacao.pasta_da_ultima_boa(p.raiz)
+>       assert atualizacao.ler_ultima_boa(p.raiz) == ANTERIOR
+E       AssertionError: assert '1.1.0' == '0.1.0'
+E         
+E         - 0.1.0
+E         ? ^
+E         + 1.1.0
+E         ? ^
+
+tests\test_atualizador_volta4.py:139: AssertionError
+_________________ test_d856_o_espaco_e_a_mesma_conta_do_motor _________________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v4/antigo/test_d856_o_espaco_e_a_mesma_c0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000294F2FA2CF0>
+
+    def test_d856_o_espaco_e_a_mesma_conta_do_motor(tmp_path, monkeypatch):
+        """D-856 ("pela mesma função do motor"): o motor do Kraken e a guarda da última boa perguntam o espaço livre pela
+        MESMA função (`espaco_livre_basta`); não há outra conta de espaço no arquivo (lido pela árvore: só ela chama o
+        `disk_usage`)."""
+        arvore = ast.parse((RAIZ_DO_REPOSITORIO / "atualizacao.py").read_text(encoding="utf-8"))
+        quem = {f.name for f in ast.walk(arvore) if isinstance(f, ast.FunctionDef)
+                for n in ast.walk(f) if isinstance(n, ast.Attribute) and n.attr == "disk_usage"}
+>       assert quem == {"espaco_livre_basta"}
+E       AssertionError: assert {'garantir_o_motor'} == {'espaco_livre_basta'}
+E         
+E         Extra items in the left set:
+E         'garantir_o_motor'
+E         Extra items in the right set:
+E         'espaco_livre_basta'
+E         Use -v to get more diff
+
+tests\test_atualizador_volta4.py:153: AssertionError
+_______ test_d857_a_primeira_versao_do_msi_nao_e_testada_nem_baixa_nada _______
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v4/antigo/test_d857_a_primeira_versao_do0')
+
+    def test_d857_a_primeira_versao_do_msi_nao_e_testada_nem_baixa_nada(tmp_path):
+        """D-857 ("A primeira versão instalada não tem volta automática. Sem baixar 460 MB na primeira abertura."): sem
+        última boa e sem o pacote da versão em `packages` (o .msi não o põe lá), nada é testado nem baixado. Em
+        `1d01aaf9`: o teste por trás e o download de 460 MB."""
+        p = Prova(tmp_path, publicar_nova=False)
+        p.conteudo_de(ATUAL)                                # publicada (o código de antes a baixaria)
+        teste = ContaDoTeste(passa=True)
+        atual = _outra_abertura(p, teste, vp=p.vp)
+        atual.abrir([])
+>       assert teste.vezes == 0 and ("baixar", ATUAL) not in [c[:2] for c in p.vp.chamadas]
+E       assert (1 == 0)
+E        +  where 1 = <tests.test_atualizador_volta4.ContaDoTeste object at 0x00000294F32F9950>.vezes
+
+tests\test_atualizador_volta4.py:177: AssertionError
+_____ test_d857_sem_ultima_boa_a_versao_que_falha_mostra_a_frase_3_e_para _____
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v4/antigo/test_d857_sem_ultima_boa_a_ver0')
+
+    def test_d857_sem_ultima_boa_a_versao_que_falha_mostra_a_frase_3_e_para(tmp_path):
+        """D-857 ("Sem última boa, a atualização acontece assim mesmo; se a versão nova falhar no teste, aparece a frase
+        (3) da D-778 e para."): a primeira atualização depois do .msi (o pacote dela em `packages`, nenhuma última boa)
+        falha no teste: a frase (3), nada é procurado, e a versão fica reprovada. Em `1d01aaf9`: nada na tela e a procura
+        seguia (o M2)."""
+        p = Prova(tmp_path, teste=(False, "código 1"))
+        p.pacote_em_packages(ATUAL)
+        p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL)
+        p.ligar_a_tela()
+>       assert [e.tipo for e in p.tela if isinstance(e, fases.MostrarFalha)] == [fases.FALHA_VOLTA]
+E       AssertionError: assert [] == ['volta']
+E         
+E         Right contains one more item: 'volta'
+E         Use -v to get more diff
+
+tests\test_atualizador_volta4.py:190: AssertionError
+_____ test_d857_sem_o_pacote_em_packages_nada_e_baixado_e_a_anterior_vale _____
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v4/antigo/test_d857_sem_o_pacote_em_pack0')
+
+    def test_d857_sem_o_pacote_em_packages_nada_e_baixado_e_a_anterior_vale(tmp_path):
+        """D-857 (a D-851 mudou: sai o "baixar se não estiver lá"): a versão passa no teste mas o pacote dela não está em
+        `packages`: nada é baixado, a última boa de antes continua."""
+        p = Prova(tmp_path, publicar_nova=False, ultima_boa=ANTERIOR)
+        p.conteudo_de(ATUAL)
+        p.abrir(atualizacao.ARG_CONFERIR_NOVA, ANTERIOR, ATUAL)
+>       assert ("baixar", ATUAL) not in [c[:2] for c in p.vp.chamadas]
+E       AssertionError: assert ('baixar', '1.1.0') not in [('pacote_da_versao', '1.1.0'), ('baixar', '1.1.0'), ('procurar',)]
+
+tests\test_atualizador_volta4.py:200: AssertionError
+_ test_d858_d864_sim_ao_fechar_com_outra_janela_mostra_a_frase_na_abertura_seguinte _
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v4/antigo/test_d858_d864_sim_ao_fechar_c0')
+
+    def test_d858_d864_sim_ao_fechar_com_outra_janela_mostra_a_frase_na_abertura_seguinte(tmp_path):
+        """D-858 ("o 'Sim' ao fechar que não troca ganha a mesma frase do 'Reiniciar agora', na abertura seguinte") e D-864
+        ("Não deu para atualizar agora: havia outra janela do programa aberta. Tente ao fechar o programa."). Em
+        `1d01aaf9`: nada, nem depois (o M3)."""
+        p = _ate_o_aviso(tmp_path, outras=[(7, r"C:\Program Files\EditorImpressaoPrograma\current\EditorImpressao.exe")])
+        p.atual.evento(fases.Escolheu(False))
+        p.atual.evento(fases.Fechando())
+        p.atual.evento(fases.RespondeuAoFechar(True))
+        assert "trocar" not in p.vp.nomes()
+        seguinte = _outra_abertura(p, ContaDoTeste(passa=True))
+        seguinte.abrir([])
+        frases = [atualizacao.frase_da_falha(e.tipo, e.motivo_da_tela) for e in _na_tela(seguinte)
+                  if isinstance(e, fases.MostrarFalha)]
+>       assert frases == ["Não deu para atualizar agora: havia outra janela do programa aberta. Tente ao fechar o "
+                          "programa."]
+E       AssertionError: assert [] == ['Não deu par... o programa.']
+E         
+E         Right contains one more item: 'Não deu para atualizar agora: havia outra janela do programa aberta. Tente ao fechar o programa.'
+E         Use -v to get more diff
+
+tests\test_atualizador_volta4.py:221: AssertionError
+___________ test_d859_sem_internet_o_pacote_ja_baixado_e_anunciado ____________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v4/antigo/test_d859_sem_internet_o_pacot0')
+
+    def test_d859_sem_internet_o_pacote_ja_baixado_e_anunciado(tmp_path):
+        """D-859 ("Sem internet, com a versão nova já baixada, o aviso volta e a pergunta ao fechar aparece."): uma
+        abertura baixa a versão nova (e guarda a assinatura dela ao conferir) e fecha com "Não"; a seguinte, sem internet,
+        mostra o aviso de novo. Em `1d01aaf9`: nada (o M6)."""
+        p = _ate_o_aviso(tmp_path)
+        p.atual.evento(fases.Escolheu(False))
+        p.atual.evento(fases.Fechando())
+        p.atual.evento(fases.RespondeuAoFechar(False))
+        sem_internet = VelopackFalso(p.raiz, None, "sem internet", p.vp.conteudo, pendente=NOVA)
+        seguinte = _outra_abertura(p, ContaDoTeste(passa=True), vp=sem_internet,
+                                   fonte=atualizacao.Fonte(str(tmp_path / "sem-internet")))
+        seguinte.abrir([])
+        tela = _na_tela(seguinte)
+>       assert [type(e).__name__ for e in tela] == ["MostrarVersaoNova"]
+E       AssertionError: assert [] == ['MostrarVersaoNova']
+E         
+E         Right contains one more item: 'MostrarVersaoNova'
+E         Use -v to get more diff
+
+tests\test_atualizador_volta4.py:242: AssertionError
+__________ test_a_rede_que_nao_responde_na_assinatura_nao_e_recusada __________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v4/antigo/test_a_rede_que_nao_responde_n0')
+
+    def test_a_rede_que_nao_responde_na_assinatura_nao_e_recusada(tmp_path):
+        """Achado ao montar a tabela da volta 4 (Conferir × sem internet): a procura achou a versão nova e a internet caiu
+        antes de ler a assinatura. Em `1d01aaf9` isso virava "recusada" e a tela mostrava a frase (2) ("não tem a assinatura
+        do Samuel"), que é falsa. Agora: só o registro; a frase (2) fica para a assinatura que não existe ou não confere."""
+        p = Prova(tmp_path)
+        p.atual.fonte = atualizacao.Fonte(str(tmp_path / "sem-internet"))
+        p.abrir()
+        p.ligar_a_tela()
+>       assert p.tela == [] and "baixar" not in p.vp.nomes()
+E       AssertionError: assert ([MostrarFalha...sempre=False)] == []
+E         
+E         Left contains one more item: MostrarFalha(tipo='recusada', nome='recusada-9.9.0', motivo_da_tela='', sempre=False)
+E         Use -v to get more diff)
+
+tests\test_atualizador_volta4.py:260: AssertionError
+___ test_m7_q1_a_guarda_nao_apaga_a_assinatura_da_versao_que_esta_chegando ____
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v4/antigo/test_m7_q1_a_guarda_nao_apaga_0')
+
+    def test_m7_q1_a_guarda_nao_apaga_a_assinatura_da_versao_que_esta_chegando(tmp_path):
+        """Q1 (D-860): guardar a última boa não apaga a assinatura de uma versão MAIS NOVA que já foi conferida e está
+        chegando (sem ela, essa versão precisaria de internet para virar a última boa depois)."""
+        p = Prova(tmp_path, publicar_nova=True, ultima_boa=ANTERIOR)
+        p.pacote_em_packages(ATUAL)
+        pasta = atualizacao.pasta_da_ultima_boa(p.raiz)
+        chegando = [pasta / assinatura.nome_do_arquivo_da_assinatura(PACOTE, NOVA),
+                    pasta / (assinatura.nome_do_arquivo_da_assinatura(PACOTE, NOVA) + ".chegando")]
+        for arquivo in chegando:
+            arquivo.write_bytes((p.fonte_pasta / assinatura.nome_do_arquivo_da_assinatura(PACOTE, NOVA)).read_bytes())
+        assert atualizacao.guardar_ultima_boa(p.raiz, ATUAL, p.atual.fonte, PUBLICA) is None
+>       assert all(arquivo.exists() for arquivo in chegando)
+E       assert False
+E        +  where False = all(<generator object test_m7_q1_a_guarda_nao_apaga_a_assinatura_da_versao_que_esta_chegando.<locals>.<genexpr> at 0x00000294F360FAC0>)
+
+tests\test_atualizador_volta4.py:283: AssertionError
+__________ test_l1_a_guarda_que_falha_nunca_faz_a_pasta_dizer_a_nova __________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v4/antigo/test_l1_a_guarda_que_falha_nun0')
+
+    def test_l1_a_guarda_que_falha_nunca_faz_a_pasta_dizer_a_nova(tmp_path):
+        """L1 do terceiro "quem tenta quebrar": um pacote velho no nome final e uma guarda que falha não podem fazer a pasta
+        dizer que a última boa é a nova (a assinatura da última boa só nasce depois do pacote conferido no lugar). Em
+        `1d01aaf9` a assinatura era gravada antes da cópia, e a pasta passava a dizer a nova."""
+        p = Prova(tmp_path, publicar_nova=False, ultima_boa=ANTERIOR)
+        p.pacote_em_packages(ATUAL).write_bytes(b"conteudo trocado")          # a cópia vai falhar na soma
+        pasta = atualizacao.pasta_da_ultima_boa(p.raiz)
+        (pasta / f"{PACOTE}-{ATUAL}-full.nupkg").write_bytes(b"pacote velho")   # um arquivo velho no nome final
+        assert atualizacao.guardar_ultima_boa(p.raiz, ATUAL, p.atual.fonte, PUBLICA) is not None
+>       assert atualizacao.ler_ultima_boa(p.raiz) == ANTERIOR
+E       AssertionError: assert '1.1.0' == '0.1.0'
+E         
+E         - 0.1.0
+E         ? ^
+E         + 1.1.0
+E         ? ^
+
+tests\test_atualizador_volta4.py:330: AssertionError
+___________________ test_l5_a_soma_do_pacote_e_uma_conta_so ___________________
+
+tmp_path = WindowsPath('D:/programas/EditorImpressao/saida_teste/bt-v4/antigo/test_l5_a_soma_do_pacote_e_uma0')
+
+    def test_l5_a_soma_do_pacote_e_uma_conta_so(tmp_path):
+        """L5 do terceiro "quem tenta quebrar" (§11.12): a soma SHA256 de um arquivo é calculada num lugar só
+        (`assinatura.soma_sha256`); o `atualizacao.py` não tem a sua (lido pela árvore: não usa `hashlib`)."""
+        arvore = ast.parse((RAIZ_DO_REPOSITORIO / "atualizacao.py").read_text(encoding="utf-8"))
+        usa = [n for n in ast.walk(arvore) if isinstance(n, (ast.Import, ast.ImportFrom))
+               and any(a.name == "hashlib" for a in n.names)]
+>       assert usa == []
+E       AssertionError: assert [Import(names...sname=None)])] == []
+E         
+E         Left contains one more item: Import(names=[alias(name='hashlib', asname=None)])
+E         Use -v to get more diff
+
+tests\test_atualizador_volta4.py:339: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_atualizador_volta4.py::test_d855_o_pedido_da_volta_leva_a_marca
+FAILED tests/test_atualizador_volta4.py::test_d855_d863_a_volta_que_o_windows_nao_deixou_mostra_a_frase_3_e_nunca_mais_tenta
+FAILED tests/test_atualizador_volta4.py::test_d863_a_volta_que_nem_pode_ser_pedida_tambem_nao_se_repete
+FAILED tests/test_atualizador_volta4.py::test_d856_a_versao_aprovada_nao_e_testada_de_novo_e_sem_espaco_nada_e_copiado
+FAILED tests/test_atualizador_volta4.py::test_d856_o_espaco_e_a_mesma_conta_do_motor
+FAILED tests/test_atualizador_volta4.py::test_d857_a_primeira_versao_do_msi_nao_e_testada_nem_baixa_nada
+FAILED tests/test_atualizador_volta4.py::test_d857_sem_ultima_boa_a_versao_que_falha_mostra_a_frase_3_e_para
+FAILED tests/test_atualizador_volta4.py::test_d857_sem_o_pacote_em_packages_nada_e_baixado_e_a_anterior_vale
+FAILED tests/test_atualizador_volta4.py::test_d858_d864_sim_ao_fechar_com_outra_janela_mostra_a_frase_na_abertura_seguinte
+FAILED tests/test_atualizador_volta4.py::test_d859_sem_internet_o_pacote_ja_baixado_e_anunciado
+FAILED tests/test_atualizador_volta4.py::test_a_rede_que_nao_responde_na_assinatura_nao_e_recusada
+FAILED tests/test_atualizador_volta4.py::test_m7_q1_a_guarda_nao_apaga_a_assinatura_da_versao_que_esta_chegando
+FAILED tests/test_atualizador_volta4.py::test_l1_a_guarda_que_falha_nunca_faz_a_pasta_dizer_a_nova
+FAILED tests/test_atualizador_volta4.py::test_l5_a_soma_do_pacote_e_uma_conta_so
+PASSED tests/test_atualizador_volta4.py::test_m7_q2_com_duas_na_pasta_a_ultima_boa_e_a_mais_nova
+PASSED tests/test_atualizador_volta4.py::test_m7_q9_a_mesma_frase_noutro_dia_aparece_de_novo
+PASSED tests/test_atualizador_volta4.py::test_m7_q13_a_copia_com_a_soma_errada_nao_fica_no_disco
+14 failed, 3 passed in 2.12s
+
+
+== Depois da rodada de mutacoes (os 3 testes que ela pediu: P17, P18, N4), no mesmo codigo de 1d01aaf9. Os dois do L1 falham pelo comportamento (a pasta passava a dizer a nova); o da copia interrompida falha por outro motivo (la a copia era outra funcao, que o teste nao interrompe): nao e teste de reversao.
+
+E       AssertionError: assert '1.1.0' == '0.1.0'
+E         
+E         - 0.1.0
+E         ? ^
+E         + 1.1.0
+E         ? ^
+E       AssertionError: assert '9.9.0' == '0.1.0'
+E         
+E         - 0.1.0
+E         + 9.9.0
+E       Failed: DID NOT RAISE Morreu
+FAILED tests/test_atualizador_volta4.py::test_l1_com_o_nome_final_preso_a_pasta_nao_diz_a_nova
+FAILED tests/test_atualizador_volta4.py::test_l1_a_assinatura_que_chega_nao_faz_a_pasta_dizer_a_nova
+FAILED tests/test_atualizador_volta4.py::test_a_copia_interrompida_nunca_fica_com_o_nome_do_pacote
+3 failed, 17 deselected in 0.59s

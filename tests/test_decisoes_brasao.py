@@ -431,87 +431,20 @@ _BRASAO_DE_PROVA = textwrap.dedent(r"""
 """)
 
 
-@pytest.mark.skipif(sys.platform != "win32", reason="a janelinha usa o PowerShell e as marcas do Windows")
-def test_d748_a_janelinha_some_quando_o_brasao_aparece_e_nunca_ficam_juntos(tmp_path, monkeypatch):
-    """D-748 (Samuel, 17/11/2026: "Sim"). A janelinha de verdade (o script da D-742, com a janela do Windows
-    Forms trocada por uma de mentira que anota a hora) esta na tela; abre-se o processo do brasao de verdade.
-    Ela tem de fechar ANTES de o brasao aparecer. Marcas com nome de teste: nada do programa de verdade e tocado.
-    Teste de reversao: no codigo de antes o brasao nao punha a marca, e a janelinha so fechava no limite (20 s),
-    muito depois de o brasao aparecer."""
-    import shutil
-    import threading
-    import uuid
+def test_d748_o_brasao_nao_espera_janelinha_nenhuma():
+    """Era `test_d748_a_janelinha_some_quando_o_brasao_aparece_e_nunca_ficam_juntos` (e os outros dois da D-748). A
+    janelinha nossa saiu (D-832, "pode ser velopack, deixamos para mudar isso mais para frente": a da troca é a do
+    próprio Velopack) e, com ela, as marcas e a espera do brasão. O que vale hoje (D-836): nunca os dois juntos, porque a
+    janelinha do Velopack fecha antes de ele reabrir o programa (Velopack 1.2.161: `reporter.close()` no fim de
+    `apply_package_impl`, apply_windows_impl.rs 275, e a reabertura vem depois que ela volta, apply.rs 47-57), e a
+    conferência da versão nova roda antes do brasão (atualizacao.atender_linha_de_comando, antes do main()). Cobra aqui
+    que o brasão aparece na hora: não há mais espera nem marca nele, e ele não depende da atualização."""
+    import ast
 
-    import atualizacao
-
-    powershell = shutil.which("powershell")
-    assert powershell
-    sufixo = uuid.uuid4().hex
-    marca_aberto = f"Local\\EditorImpressao-teste-aberto-{sufixo}"
-    marca_janelinha = f"Local\\EditorImpressao-teste-janelinha-{sufixo}"
-    monkeypatch.setattr(atualizacao, "MARCA_DA_JANELINHA", marca_janelinha, raising=False)
-    script = tmp_path / "janelinha.ps1"
-    script.write_text(_JANELINHA_DE_MENTIRA + "\n" + atualizacao.script_da_janelinha(marca=marca_aberto, limite_s=20),
-                      encoding="utf-8-sig")
-    janelinha = subprocess.Popen([powershell, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
-                                  "-File", str(script)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
-                                 encoding="utf-8", errors="replace",
-                                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
-    linhas: list[str] = []
-    leitor = threading.Thread(target=lambda: linhas.extend(l.strip() for l in janelinha.stdout), daemon=True)
-    leitor.start()
-    brasao_py = tmp_path / "brasao_de_prova.py"
-    brasao_py.write_text(_BRASAO_DE_PROVA, encoding="utf-8")
-    try:
-        limite = time.monotonic() + 90
-        while not any(l.startswith("MOSTROU") for l in linhas) and time.monotonic() < limite:
-            assert janelinha.poll() is None, f"a janelinha parou antes de aparecer: {linhas}"
-            time.sleep(0.1)
-        assert any(l.startswith("MOSTROU") for l in linhas), f"a janelinha não apareceu: {linhas}"
-        feito = subprocess.run([sys.executable, str(brasao_py), str(RAIZ), marca_aberto, marca_janelinha,
-                                str(os.getpid())], cwd=str(RAIZ), capture_output=True, text=True, timeout=120,
-                               env=dict(os.environ, QT_QPA_PLATFORM="offscreen"),
-                               creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
-        janelinha.wait(timeout=60)
-        leitor.join(timeout=10)
-    finally:
-        if janelinha.poll() is None:
-            janelinha.kill()
-    brasao_apareceu = [int(l.split()[1]) for l in feito.stdout.splitlines() if l.startswith("BRASAO ")]
-    fechou = [int(l.split()[1]) for l in linhas if l.startswith("FECHOU ")]
-    assert brasao_apareceu, feito.stdout + feito.stderr
-    assert fechou, f"a janelinha nunca fechou: {linhas}"
-    assert fechou[0] <= brasao_apareceu[0], (
-        f"o brasão apareceu {(fechou[0] - brasao_apareceu[0]) / 1e7:.2f} s antes de a janelinha sumir: os dois juntos")
-
-
-def test_d748_o_brasao_poe_a_marca_antes_de_olhar_a_janelinha_e_espera_ela_sumir():
-    """D-748: a ordem que garante "nunca juntos" (o brasao poe a marca de aberto, so depois olha a da
-    janelinha) e a espera enquanto a janelinha existe. Na abertura comum (sem janelinha) nada espera."""
     from ui import brasao_girando as bg
 
-    passos = []
-    ainda = iter([True, True, False])
-    bg.antes_de_mostrar(marcar=lambda: passos.append("marcou"),
-                        ha_janelinha=lambda: passos.append("olhou") or next(ainda),
-                        dormir=lambda s: passos.append("esperou"))
-    assert passos == ["marcou", "olhou", "esperou", "olhou", "esperou", "olhou"]
-    passos.clear()
-    bg.antes_de_mostrar(marcar=lambda: passos.append("marcou"),
-                        ha_janelinha=lambda: passos.append("olhou") or False, dormir=lambda s: passos.append("x"))
-    assert passos == ["marcou", "olhou"]
-    # se a janelinha travar, o brasao aparece mesmo assim depois do limite
-    comeco = time.monotonic()
-    bg.antes_de_mostrar(marcar=lambda: None, ha_janelinha=lambda: True, limite_s=0.2)
-    assert time.monotonic() - comeco < 2
-
-
-def test_d748_a_janelinha_pega_a_marca_dela_antes_de_olhar_o_programa_e_solta_depois_de_fechar():
-    import atualizacao
-
-    texto = atualizacao.script_da_janelinha()
-    pega = texto.index(f"[System.Threading.Mutex]::new($false, '{atualizacao.MARCA_DA_JANELINHA}')")
-    assert pega < texto.index("TryOpenExisting"), "a marca da janelinha vem antes de olhar a do programa aberto"
-    assert texto.index("$janela.Close()") < texto.index("$minha.Dispose()")
-    # a regra continua uma so: a mesma marca do programa aberto faz a janelinha sumir
-    assert f"'{atualizacao.MARCA_DE_ABERTO}'" in texto
+    assert not hasattr(bg, "antes_de_mostrar") and not hasattr(bg, "ESPERA_DA_JANELINHA_S")
+    arvore = ast.parse(Path(bg.__file__).read_text(encoding="utf-8"))
+    importados = {a.name for n in ast.walk(arvore) if isinstance(n, ast.Import) for a in n.names}
+    importados |= {n.module for n in ast.walk(arvore) if isinstance(n, ast.ImportFrom)}
+    assert "atualizacao" not in importados

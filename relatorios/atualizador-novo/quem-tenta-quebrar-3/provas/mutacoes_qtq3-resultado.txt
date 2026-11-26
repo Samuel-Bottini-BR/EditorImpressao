@@ -1,0 +1,15 @@
+SEM MUTAÇÃO: todos passam
+Q1 a guarda apaga também a assinatura da versão mais nova que está chegando: SOBREVIVEU
+Q2 a última boa é a MAIS VELHA da pasta: SOBREVIVEU
+Q3 a volta não confere a assinatura guardada: ACUSADA por tests/test_atualizador_novo.py: FAILED tests/test_atualizador_novo.py::test_protecao_11_a_volta_sem_a_assinatura_nao_troca_e_avisa_com_a_frase_3
+Q4 D-839: a frase da troca recusada aparece também quando a troca deu certo: ACUSADA por tests/test_fases_da_atualizacao.py: FAILED tests/test_fases_da_atualizacao.py::test_todo_par_fase_evento_tem_a_resposta_escrita[abriu_nova_reaberta-inicio]
+Q5 a frase guardada é 'mostrada' na reabertura sem janela (e marcada vista sem ninguém ver): SOBREVIVEU
+Q6 a reabertura pelo Velopack também pergunta se o atualizador roda (e sai, se ele ainda estiver saindo): ACUSADA por tests/test_atualizador_volta2.py: FAILED tests/test_atualizador_volta2.py::test_g1_a_troca_que_acabou_sem_trocar_nao_e_falha_e_a_reabertura_nao_pergunta
+Q7 D-848: a frase 2 no 'Reiniciar agora' só aparece uma vez (o segundo clique fica sem resposta): ACUSADA por tests/test_fases_da_atualizacao.py: FAILED tests/test_fases_da_atualizacao.py::test_todo_par_fase_evento_tem_a_resposta_escrita[conferida_recusada-conferindo_troca]
+Q8 a versão sem assinatura conferida nesta abertura pode ser trocada: SOBREVIVEU
+Q9 a frase guardada sem a hora no nome (a mesma frase noutro dia não aparece): SOBREVIVEU
+Q10 D-719: a frase de abertura aparece em toda abertura (não uma vez): ACUSADA por tests/test_atualizador_volta3.py: FAILED tests/test_atualizador_volta3.py::test_m6_a_versao_que_pede_motor_novo_mostra_a_frase_uma_vez
+Q11 D-840: com outra janela aberta, a frase da D-845 no lugar da D-840: ACUSADA por tests/test_atualizador_volta3.py: FAILED tests/test_atualizador_volta3.py::test_m8_a_caixa_da_outra_janela_tem_o_titulo_atualizacao
+Q12 a janela que não fechou fica sem frase (clique sem resposta): ACUSADA por tests/test_fases_da_atualizacao.py: FAILED tests/test_fases_da_atualizacao.py::test_todo_par_fase_evento_tem_a_resposta_escrita[nao_fechou-fechando]
+Q13 a cópia com a soma errada deixa o .chegando (460 MB) no disco: SOBREVIVEU
+Q14 a volta reabre com os argumentos da troca normal (a anterior acha que a troca foi recusada): ACUSADA por tests/test_atualizador_novo.py: FAILED tests/test_atualizador_novo.py::test_d718_teste_que_falha_volta_para_a_anterior_assinada

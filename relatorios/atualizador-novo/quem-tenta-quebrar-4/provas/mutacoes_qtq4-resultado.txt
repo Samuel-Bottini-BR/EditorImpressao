@@ -1,0 +1,32 @@
+cópia de 5dfcdc9d em D:\programas\EditorImpressao\.claude\worktrees\atualizador-novo\saida_teste\qtq4\copia
+SEM MUTACAO: SOBREVIVEU (nenhum dos arquivos acusou)
+X1 (a marca de aprovada não é olhada (D-856)): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_d856_a_versao_aprovada_nao_e_testada_de_novo_e_sem_espaco_nada_e_copiado
+X2 (a marca de sem volta não é olhada (D-863)): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_d855_d863_a_volta_que_o_windows_nao_deixou_mostra_a_frase_3_e_nunca_mais_tenta
+X3 (a reabertura com --voltando não põe a marca de sem volta): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_d855_d863_a_volta_que_o_windows_nao_deixou_mostra_a_frase_3_e_nunca_mais_tenta
+X4 (a volta que não deu não põe a marca de sem volta): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_d863_a_volta_que_nem_pode_ser_pedida_tambem_nao_se_repete
+X5 (a primeira versão do .msi também é testada (D-857)): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_d857_a_primeira_versao_do_msi_nao_e_testada_nem_baixa_nada
+X6 (a marca de aprovada não é posta quando passa): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_d856_a_versao_aprovada_nao_e_testada_de_novo_e_sem_espaco_nada_e_copiado
+X7 (a marca de aprovada DEPOIS da guarda (D-856: antes)): ACUSADA por tests/test_fases_da_atualizacao.py: FAILED tests/test_fases_da_atualizacao.py::test_todo_par_fase_evento_tem_a_resposta_escrita[teste_ok-conferindo_nova]
+X8 (o executor não grava a marca (o efeito vira nada)): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_d856_a_versao_aprovada_nao_e_testada_de_novo_e_sem_espaco_nada_e_copiado
+X9 (sem rede na assinatura volta a ser 'recusada' (a frase 2)): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_a_rede_que_nao_responde_na_assinatura_nao_e_recusada
+X10 (o executor não diz 'sem rede' (OSError vira recusada)): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_a_rede_que_nao_responde_na_assinatura_nao_e_recusada
+X11 (o 404 do GitHub deixa de ser 'não existe'): SOBREVIVEU (nenhum dos arquivos acusou)
+X12 (a fonte de pasta que não existe vira 'não existe' (frase 2) em vez de 'sem rede'): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_a_rede_que_nao_responde_na_assinatura_nao_e_recusada
+X13 (o 'Sim' ao fechar que não troca não guarda a frase (D-858)): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_d858_d864_sim_ao_fechar_com_outra_janela_mostra_a_frase_na_abertura_seguinte
+X14 (o motivo da outra janela no 'Sim' ao fechar vira o da D-840 (D-864)): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_d858_d864_sim_ao_fechar_com_outra_janela_mostra_a_frase_na_abertura_seguinte
+X15 (o texto da D-864 trocado): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_d858_d864_sim_ao_fechar_com_outra_janela_mostra_a_frase_na_abertura_seguinte
+X16 (sem internet, o pacote esperando não é oferecido (D-859)): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_d859_sem_internet_o_pacote_ja_baixado_e_anunciado
+X17 (o pacote esperando reprovado é oferecido de novo): ACUSADA por tests/test_fases_da_atualizacao.py: FAILED tests/test_fases_da_atualizacao.py::test_d859_sem_internet_o_pacote_esperando_e_oferecido
+X18 (a assinatura guardada do pacote esperando não é conferida): SOBREVIVEU (nenhum dos arquivos acusou)
+X19 (a guarda não confere o espaço (D-856)): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_d856_a_versao_aprovada_nao_e_testada_de_novo_e_sem_espaco_nada_e_copiado
+X20 (a volta sem a marca --voltando (a do G1)): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_d855_o_pedido_da_volta_leva_a_marca
+X21 (a abertura não lê o --voltando): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_d855_d863_a_volta_que_o_windows_nao_deixou_mostra_a_frase_3_e_nunca_mais_tenta
+X22 (a reabertura com --voltando que DEU CERTO também vira 'não conseguiu voltar'): ACUSADA por tests/test_fases_da_atualizacao.py: FAILED tests/test_fases_da_atualizacao.py::test_todo_par_fase_evento_tem_a_resposta_escrita[abriu_volta_feita-inicio]
+X23 (a reabertura com --voltando testa de novo (sem o desvio dela)): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_d855_d863_a_volta_que_o_windows_nao_deixou_mostra_a_frase_3_e_nunca_mais_tenta
+X24 (sem última boa, o teste que falha não mostra a frase (3) (D-857)): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_d857_sem_ultima_boa_a_versao_que_falha_mostra_a_frase_3_e_para
+X25 (a guarda tenta baixar sem o pacote em packages (o download da D-851)): SOBREVIVEU (nenhum dos arquivos acusou)
+X26 (Q1: a guarda apaga também a assinatura da versão mais nova que chega): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_m7_q1_a_guarda_nao_apaga_a_assinatura_da_versao_que_esta_chegando
+X27 (Q2: a última boa escolhida é a mais velha): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_m7_q2_com_duas_na_pasta_a_ultima_boa_e_a_mais_nova
+X28 (Q9: a frase guardada sem a hora no nome): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_m7_q9_a_mesma_frase_noutro_dia_aparece_de_novo
+X29 (Q13: a cópia com a soma errada não apaga o .chegando): ACUSADA por tests/test_atualizador_volta4.py: FAILED tests/test_atualizador_volta4.py::test_m7_q13_a_copia_com_a_soma_errada_nao_fica_no_disco
+X30 (o 'Sim' ao fechar com o pacote trocado guarda a frase com motivo em vez da (2) (D-848)): ACUSADA por tests/test_fases_da_atualizacao.py: FAILED tests/test_fases_da_atualizacao.py::test_todo_par_fase_evento_tem_a_resposta_escrita[troca_recusada-trocando]

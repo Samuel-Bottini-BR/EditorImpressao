@@ -1,0 +1,76 @@
+{
+ "1. a abertura com o Update.exe no lugar": {
+  "tela": [
+   "MostrarVersaoNova"
+  ],
+  "pedidos à biblioteca": [
+   "pendente",
+   "procurar",
+   "baixar"
+  ],
+  "em packages": [
+   "EditorImpressaoPrograma-1.2.0-full.nupkg"
+  ]
+ },
+ "2. o Update.exe some; o clique em Reiniciar agora": {
+  "tela (a janela continua aberta)": [
+   "[Atualização] Não deu para atualizar: o atualizador do programa sumiu do computador. O programa continua funcionando. Avise o Samuel."
+  ],
+  "fase": "parado"
+ },
+ "3. fechar o programa depois": {
+  "tela": [],
+  "fase": "parado",
+  "a troca foi pedida?": false
+ },
+ "4. a abertura seguinte, ainda sem o Update.exe": {
+  "caixas do Windows": [],
+  "tela": [],
+  "fase depois de fechar": "parado",
+  "a biblioteca agora": [
+   "pendente: ERRO ler o pacote esperando: RuntimeError: This application is not properly installed: Update.exe does not exist in the expected path (D:\\programas\\EditorImpressao\\.",
+   "procurar: ERRO procurar: RuntimeError: This application is not properly installed: Update.exe does not exist in the expected path (D:\\programas\\EditorImpressao\\.claude\\worktre"
+  ]
+ },
+ "5. o Update.exe volta: a abertura seguinte": {
+  "tela": [
+   "MostrarVersaoNova"
+  ],
+  "caixas do Windows": [],
+  "pedidos à biblioteca": [
+   "pendente",
+   "procurar",
+   "baixar"
+  ],
+  "a biblioteca": [
+   "pendente: ''"
+  ]
+ },
+ "6. 'Depois', fechar, 'Sim', sem o Update.exe": {
+  "a troca foi pedida?": false,
+  "bilhete": {
+   "frase": {
+    "tipo": "nao_deu_agora",
+    "nome": "nao_deu_agora-1.2.0-2026-11-25T10:47:59",
+    "motivo": "sem_atualizador"
+   }
+  }
+ },
+ "7. a abertura seguinte": {
+  "caixas do Windows (antes da janela)": [
+   "[Atualização] Não deu para atualizar: o atualizador do programa sumiu do computador. O programa continua funcionando. Avise o Samuel."
+  ],
+  "tela": []
+ },
+ "8. o registro (as últimas linhas)": [
+  "2026-11-25T10:47:59 | versão 1.1.0 | versão 1.2.0 publicada e assinada pelo Samuel: baixando",
+  "2026-11-25T10:47:59 | versão 1.1.0 | \"Reiniciar agora\": a troca não pode ser pedida (o atualizador do Velopack não está em D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\v5\\update-exe\\instalado)",
+  "2026-11-25T10:47:59 | versão 1.1.0 | não deu para saber se há versão baixada esperando: ler o pacote esperando: RuntimeError: This application is not properly installed: Update.exe does not exist in the expected path (D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\v5\\update-exe\\instalado\\Update.exe)",
+  "2026-11-25T10:47:59 | versão 1.1.0 | não consegui procurar a versão nova: procurar: RuntimeError: This application is not properly installed: Update.exe does not exist in the expected path (D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\v5\\update-exe\\instalado\\Update.exe)",
+  "2026-11-25T10:47:59 | versão 1.1.0 | versão 1.2.0 publicada e assinada pelo Samuel: baixando",
+  "2026-11-25T10:47:59 | versão 1.1.0 | versão 1.2.0 pronta; o Kaique escolheu \"Depois\": a pergunta vem ao fechar",
+  "2026-11-25T10:47:59 | versão 1.1.0 | a troca para a 1.2.0 não foi pedida (o atualizador do Velopack não está em D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\v5\\update-exe\\instalado); fica para a próxima abertura",
+  "2026-11-25T10:47:59 | versão 1.1.0 | não deu para saber se há versão baixada esperando: ler o pacote esperando: RuntimeError: This application is not properly installed: Update.exe does not exist in the expected path (D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\v5\\update-exe\\instalado\\Update.exe)",
+  "2026-11-25T10:48:00 | versão 1.1.0 | não consegui procurar a versão nova: procurar: RuntimeError: This application is not properly installed: Update.exe does not exist in the expected path (D:\\programas\\EditorImpressao\\.claude\\worktrees\\atualizador-novo\\saida_teste\\v5\\update-exe\\instalado\\Update.exe)"
+ ]
+}

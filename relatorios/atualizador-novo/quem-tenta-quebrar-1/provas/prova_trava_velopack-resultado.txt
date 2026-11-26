@@ -1,0 +1,3 @@
+import velopack (controle): ['core/usa.py:2: Velopack (import velopack)']
+importlib.import_module: ["core/usa.py:3: Velopack (import_module('velopack'))"]
+__import__: ["core/usa.py:2: Velopack (__import__('velopack'))"]

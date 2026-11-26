@@ -1,0 +1,6 @@
+0 controle: a funcao certa (deve passar): PASSOU (o porteiro nao acusou)
+1 Todos (Everyone) com Controle total, na funcao da excecao: PASSOU (o porteiro nao acusou)
+2 cortar a heranca escrito em dois pedacos, na funcao da excecao: ACUSADO [('core/windows.py', 3, 'return _rodar([ferramenta, raiz, "/inh" + "eritance:r", "/T"')]
+3 tirar Usuarios em OUTRA funcao, com o nome da ferramenta em pedacos: PASSOU (o porteiro nao acusou)
+4 trocar o dono em OUTRA funcao, reaproveitando uma variavel: PASSOU (o porteiro nao acusou)
+5 chamar a funcao da excecao com OUTRA pasta, de outro arquivo: PASSOU (o porteiro nao acusou)

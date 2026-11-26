@@ -1,0 +1,40 @@
+[
+ {
+  "abertura": "1 recusa 1",
+  "viu": [
+   "CAIXA: A atualização não deu certo. O programa continua na versão de antes e funcionando. Avise o Samuel."
+  ]
+ },
+ {
+  "abertura": "2 recusa 2",
+  "viu": []
+ },
+ {
+  "abertura": "3 atalho",
+  "viu": []
+ },
+ {
+  "abertura": "4 atalho",
+  "viu": []
+ },
+ {
+  "abertura": "5 recusa 3",
+  "viu": []
+ },
+ {
+  "abertura": "6 atalho",
+  "viu": []
+ },
+ {
+  "vistos": [
+   "troca-7.0.1-2026-11-25T17:09:10"
+  ],
+  "bilhete": {
+   "frase": {
+    "tipo": "troca",
+    "nome": "troca-7.0.1-2026-11-25T17:09:10",
+    "motivo": ""
+   }
+  }
+ }
+]

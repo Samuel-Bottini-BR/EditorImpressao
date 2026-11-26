@@ -1,0 +1,142 @@
+{
+ "R1 Sim ao fechar e a troca não pode": {
+  "outra janela aberta": {
+   "fase": "parado",
+   "na tela ou guardado para a próxima abertura": [
+    "PerguntarAoFechar()"
+   ],
+   "efeitos depois do Sim": [
+    "Registrar(texto='a troca para a 1.2.0 não foi pedida (x); fica para a próxima abertura')"
+   ]
+  },
+  "o pacote sumiu": {
+   "fase": "parado",
+   "na tela ou guardado para a próxima abertura": [
+    "PerguntarAoFechar()"
+   ],
+   "efeitos depois do Sim": [
+    "Registrar(texto='a troca para a 1.2.0 não foi pedida (x); fica para a próxima abertura')"
+   ]
+  },
+  "o motor fora do lugar": {
+   "fase": "parado",
+   "na tela ou guardado para a próxima abertura": [
+    "PerguntarAoFechar()"
+   ],
+   "efeitos depois do Sim": [
+    "Registrar(texto='a troca para a 1.2.0 não foi pedida (x); fica para a próxima abertura')"
+   ]
+  },
+  "sem a lista do Windows": {
+   "fase": "parado",
+   "na tela ou guardado para a próxima abertura": [
+    "PerguntarAoFechar()"
+   ],
+   "efeitos depois do Sim": [
+    "Registrar(texto='a troca para a 1.2.0 não foi pedida (x); fica para a próxima abertura')"
+   ]
+  },
+  "o pacote trocado (sem a soma assinada)": {
+   "fase": "parado",
+   "na tela ou guardado para a próxima abertura": [
+    "PerguntarAoFechar()"
+   ],
+   "efeitos depois do Sim": [
+    "Registrar(texto='a troca para a 1.2.0 não foi pedida (x); fica para a próxima abertura')"
+   ]
+  },
+  "o atualizador não começou": {
+   "fase": "parado",
+   "na tela ou guardado para a próxima abertura": [
+    "PerguntarAoFechar()"
+   ],
+   "efeitos depois do Sim": [
+    "Registrar(texto='a troca para a 1.2.0 não foi pedida (x); fica para a próxima abertura')"
+   ]
+  }
+ },
+ "R2 sem última boa, a versão nova reprovada no teste": {
+  "reaberto pelo Reiniciar agora (com janela)": {
+   "o teste roda?": [
+    "RodarTesteRapido(antes_da_janela=False)"
+   ],
+   "depois do teste reprovado": [
+    "Registrar(texto='a versão 1.2.0 não passou no teste rápido (código 1); não há versão guardada para voltar')",
+    "GarantirMotor()"
+   ],
+   "frase": [],
+   "reprovada?": false
+  },
+  "reaberto pelo Sim ao fechar (sem janela)": {
+   "o teste roda?": [],
+   "depois do teste reprovado": [],
+   "frase": [],
+   "reprovada?": false
+  },
+  "a abertura seguinte, pelo atalho": {
+   "o teste roda?": [
+    "RodarTesteRapido(antes_da_janela=False)"
+   ],
+   "depois do teste reprovado": [
+    "Registrar(texto='a versão 1.2.0 não passou no teste rápido (código 1); não há versão guardada para voltar')",
+    "GarantirMotor()"
+   ],
+   "frase": [],
+   "reprovada?": false
+  }
+ },
+ "R3 a guarda da 1.2.0 falhou: as aberturas seguintes": [
+  {
+   "abertura": 1,
+   "efeitos": [
+    "RodarTesteRapido(antes_da_janela=True)",
+    "GuardarUltimaBoa(versao='1.2.0', por_tras=True)",
+    "Registrar(texto='a versão 1.2.0 passou no teste rápido, mas o pacote dela não foi guardado (sem espaço no disco): o teste roda de novo na próxima abertura')",
+    "GarantirMotor()"
+   ],
+   "frase": []
+  },
+  {
+   "abertura": 2,
+   "efeitos": [
+    "RodarTesteRapido(antes_da_janela=True)",
+    "GuardarUltimaBoa(versao='1.2.0', por_tras=True)",
+    "Registrar(texto='a versão 1.2.0 passou no teste rápido, mas o pacote dela não foi guardado (sem espaço no disco): o teste roda de novo na próxima abertura')",
+    "GarantirMotor()"
+   ],
+   "frase": []
+  },
+  {
+   "abertura": 3,
+   "efeitos": [
+    "RodarTesteRapido(antes_da_janela=True)",
+    "GuardarUltimaBoa(versao='1.2.0', por_tras=True)",
+    "Registrar(texto='a versão 1.2.0 passou no teste rápido, mas o pacote dela não foi guardado (sem espaço no disco): o teste roda de novo na próxima abertura')",
+    "GarantirMotor()"
+   ],
+   "frase": []
+  }
+ ],
+ "R4 ReabrirOPrograma: os casos que o mandam (todos depois de a janela fechar)": {
+  "outra janela": "não reabre",
+  "o pacote trocado": "REABRE",
+  "o pacote sumiu": "REABRE",
+  "o motor": "REABRE",
+  "sem a lista": "REABRE",
+  "sem conferir": "REABRE",
+  "o atualizador não começou": "REABRE",
+  "erro inesperado": "REABRE"
+ },
+ "R5 a frase 'Tente ao fechar o programa' e, sem internet, o fechar": {
+  "na tela": [
+   "MostrarFalha(tipo='nao_deu_agora', nome='nao_deu_agora-1.2.0-x', motivo_da_tela='atualizador', sempre=False)"
+  ],
+  "a pergunta ao fechar veio?": false,
+  "fase no fim": "parado"
+ },
+ "R6 o pacote baixado esperando, sem internet": {
+  "o aviso volta?": false,
+  "a pergunta ao fechar vem?": false,
+  "a regra usa o campo pendente em algum lugar?": false
+ }
+}

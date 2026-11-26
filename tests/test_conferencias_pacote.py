@@ -157,20 +157,27 @@ def test_a_lista_do_windows_da_tabela_e_a_do_porteiro():
 
 
 def test_o_pacote_mostra_os_lugares_da_lista_nos_arquivos_do_pedido():
-    """Achado 11: quem mexe num arquivo com lugares na lista recebe a lista deles e o aviso de como ela funciona."""
-    texto = montar_pacote.montar("implementador", "atualizador", [], ["atualizacao.py"], RAIZ, "746dbda6", "x")
+    """Achado 11: quem mexe num arquivo com lugares na lista recebe a lista deles e o aviso de como ela funciona.
+    Adaptado em 24/11/2026 (atualizador novo, D-836, com o "sim" do Samuel): só o arquivo de exemplo mudou, de
+    `atualizacao.py` para `core/testes_a_distancia.py`, porque o `atualizacao.py` ficou sem lugares na lista."""
+    texto = montar_pacote.montar("implementador", "testes à distância", [], ["core/testes_a_distancia.py"], RAIZ,
+                                 "746dbda6", "x")
     assert "## Lugares da lista de exceções nos seus arquivos" in texto and "vira erro novo" in texto
 
 
 def test_q3_o_pacote_do_passo_diz_as_funcoes_de_outros_passos_que_nao_se_mexem():
     """Achado Q3 (quarta volta, 19/11/2026): o lugar da lista é a função e o texto; o agente do passo 3 que renomeasse
     `criar_as_tarefas` (lugares do passo 5) faria o ramo barrar sem saber por quê. Com `passo`, o pacote lista essas
-    funções; as do próprio passo não entram nessa lista."""
-    texto = montar_pacote.montar("implementador", "passo 3", [], ["atualizacao.py"], RAIZ, "746dbda6", "x", "3")
+    funções; as do próprio passo não entram nessa lista.
+    Adaptado em 24/11/2026 (atualizador novo, D-836, com o "sim" do Samuel): só o arquivo de exemplo mudou, de
+    `atualizacao.py` (passo 3, com `criar_as_tarefas` do passo 5) para `core/testes_a_distancia.py` (passo 4, com
+    `_passos_das_nossas_tarefas` do passo 5), porque o `atualizacao.py` ficou sem lugares na lista."""
+    texto = montar_pacote.montar("implementador", "passo 4", [], ["core/testes_a_distancia.py"], RAIZ, "746dbda6", "x",
+                                 "4")
     bloco = texto.split("Não renomeie nem mova", 1)[1].split("\n\n", 2)[1]
-    assert "`criar_as_tarefas` (lugares do passo 5)" in bloco and "passo 3)" not in bloco
-    assert "Não renomeie nem mova" not in montar_pacote.montar("implementador", "x", [], ["atualizacao.py"], RAIZ,
-                                                               "746dbda6", "x")
+    assert "`_passos_das_nossas_tarefas` (lugares do passo 5)" in bloco and "passo 4)" not in bloco
+    assert "Não renomeie nem mova" not in montar_pacote.montar("implementador", "x", [], ["core/testes_a_distancia.py"],
+                                                               RAIZ, "746dbda6", "x")
 
 
 # ---------------------------------------------------------------- as regras e perguntas do catálogo dos erros (19/11)

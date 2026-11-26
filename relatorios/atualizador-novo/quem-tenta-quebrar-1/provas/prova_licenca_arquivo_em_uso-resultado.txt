@@ -1,0 +1,12 @@
+arquivo preso aberto: True
+desfecho: deu certo | as contas do computador podem atualizar a pasta do programa
+  Usuarios modificam EditorImpressaoProva: True
+  Usuarios modificam sq.version: True
+  Usuarios modificam preso.dll: True
+  Usuarios modificam zz_depois.txt: True
+saida do icacls: ivo processado: D:\programas\EditorImpressao\.qtq-tmp\licenca2\EditorImpressaoProva\current
+arquivo processado: D:\programas\EditorImpressao\.qtq-tmp\licenca2\EditorImpressaoProva\current\sq.version
+arquivo processado: D:\programas\EditorImpressao\.qtq-tmp\licenca2\EditorImpressaoProva\current\sub
+arquivo processado: D:\programas\EditorImpressao\.qtq-tmp\licenca2\EditorImpressaoProva\current\sub\preso.dll
+arquivo processado: D:\programas\EditorImpressao\.qtq-tmp\licenca2\EditorImpressaoProva\current\sub\zz_depois.txt
+Processados com sucesso 6 arquivos; falha no processamento de 0 arquivos

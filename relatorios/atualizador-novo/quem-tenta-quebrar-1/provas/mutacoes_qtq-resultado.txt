@@ -1,0 +1,20 @@
+[SOBREVIVEU - nenhum teste acusa] Q1 motor: sem a conferencia do espaco livre | 924 passed, 1 skipped in 16.88s
+[SOBREVIVEU - nenhum teste acusa] Q2 motor: o motor aberto nao e conferido antes do nome final | 924 passed, 1 skipped in 17.19s
+[SOBREVIVEU - nenhum teste acusa] Q3 motor: nunca poe o motor e diz que esta no lugar | 924 passed, 1 skipped in 18.16s
+[SOBREVIVEU - nenhum teste acusa] Q4 motor: 'esta no lugar' sempre sim | 924 passed, 1 skipped in 16.30s
+[SOBREVIVEU - nenhum teste acusa] Q5 preparado?: so olha se a pasta existe (como o os.access) | 924 passed, 1 skipped in 18.76s
+[acusada] Q6 licenca da pasta: nao cobra a linha de Usuarios Modificar | 4 failed, 920 passed, 1 skipped in 18.50s | ['FAILED tests/test_windows_preparo_do_computador.py::test_d837_o_que_tira_ou_nao_acrescenta_e_acusado[depois3-n\\xe3o ficou]', 'FAILED tests/test_windows_preparo_do_computador.py::test_d837_o_que_tira_ou_nao_acrescenta_e_acusado[depois4-n\\xe3o ficou]']
+[SOBREVIVEU - nenhum teste acusa] Q7 licenca da pasta: nao confere o arquivo de dentro (manifesto) | 924 passed, 1 skipped in 16.67s
+[SOBREVIVEU - nenhum teste acusa] Q8 Visual C++: roda o instalador que uma conta comum pode trocar | 924 passed, 1 skipped in 15.82s
+[acusada] Q9 o aviso de falha: mostra de novo a cada abertura | 3 failed, 921 passed, 1 skipped in 16.60s | ['FAILED tests/test_atualizador_novo.py::test_a_troca_que_nao_aconteceu_avisa_uma_vez', 'FAILED tests/test_atualizador_novo.py::test_d719_a_falha_vai_para_a_janela_uma_vez_so_nesta_conta']
+[acusada] Q10 o disco: a versao que falhou nao entra em 'nao tentar' | 5 failed, 919 passed, 1 skipped in 16.64s | ['FAILED tests/test_atualizador_novo.py::test_protecao_2_assinatura_errada_nao_baixa_e_avisa_com_a_frase_2', 'FAILED tests/test_atualizador_novo.py::test_protecao_3_pacote_trocado_depois_de_baixar_nao_troca']
+[acusada] Q11 Inno: nao espera a chave sumir | 2 failed, 922 passed, 1 skipped in 15.28s | ['FAILED tests/test_windows_preparo_do_computador.py::test_o_inno_antigo_so_conta_como_tirado_quando_a_chave_some', 'FAILED tests/test_decisoes_preparo_d749.py::test_d749_visual_c_ou_inno_que_falham_contam_como_erro']
+[acusada] Q12 Inno: aceita a pasta antiga que contem a pasta dos projetos | 1 failed, 923 passed, 1 skipped in 16.86s | ['FAILED tests/test_decisoes_atualizacao.py::test_d723_o_comando_que_tira_o_inno']
+[acusada] Q13 raiz da instalacao: aceita fora de Arquivos de Programas | 1 failed, 923 passed, 1 skipped in 16.01s | ['FAILED tests/test_windows_preparo_do_computador.py::test_a_raiz_da_instalacao_so_dentro_de_arquivos_de_programas']
+[SOBREVIVEU - nenhum teste acusa] Q14 troca: o Windows nao deu a lista de processos e troca mesmo assim | 924 passed, 1 skipped in 15.56s
+[SOBREVIVEU - nenhum teste acusa] Q15 processos: o que nao deixa ler o caminho nao conta | 924 passed, 1 skipped in 17.07s
+[acusada] Q16 a linha de comando da reabertura vale mais que a anotacao | 7 failed, 917 passed, 1 skipped in 18.16s | ['FAILED tests/test_atualizador_novo.py::test_d718_teste_que_falha_volta_para_a_anterior_assinada', 'FAILED tests/test_atualizador_novo.py::test_protecao_11_a_volta_sem_a_assinatura_nao_troca_e_avisa_com_a_frase_3']
+[acusada] Q17 a anotacao velha (de outra versao) nao e apagada | 2 failed, 922 passed, 1 skipped in 17.92s | ['FAILED tests/test_fases_da_atualizacao.py::test_todo_par_fase_evento_tem_a_resposta_escrita[abriu_velha-inicio]', 'FAILED tests/test_fases_da_atualizacao.py::test_todo_par_fase_evento_tem_a_resposta_escrita[abriu_velha_sem_janela-inicio]']
+
+9 de 17 mutacoes sobreviveram.
+FIM
