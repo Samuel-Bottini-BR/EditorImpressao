@@ -1,0 +1,1999 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parte A: as regras de hoje e o destino de cada uma (27/11/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Parte A: as regras de hoje e o destino de cada uma (27/11/2026)</h1>
+<p><strong>Em uma frase:</strong> das 158 regras escritas hoje para os agentes, 46 são jeito de fazer (viram skill), 40 o computador já
+confere ou pode conferir lendo o código em segundos, 24 são contexto que fica no CLAUDE.md, 16 valem só para certas
+pastas, 13 precisam do programa rodando no GitHub, 10 são coisas que o agente simplesmente não deveria poder fazer, 2
+viram ação automática num momento fixo, 2 podem sair e 5 dependem do Samuel.</p>
+<p>Feito pelo agente da triagem, só lendo (D-887). Nenhum arquivo do projeto mudou. Nenhuma regra nova: a coluna "destino"
+diz para onde cada regra que já existe iria, não o que construir.</p>
+<h2>De onde veio a lista</h2>
+<ul>
+<li><strong>As 158 regras</strong> são as do catálogo das regras (<code>regras_dos_agentes/catalogo.py</code>, R001 a R158, feito em 18-19/11,
+  D-784), conferidas contra o texto de hoje: o <code>CLAUDE.md</code> desta cópia (819 linhas, ramo <code>obra-2026-10-26</code>) não muda
+  desde 18/11 (<code>fc2a0c53</code>) e os quatro arquivos de agente desde 18/11 (<code>afa68e46</code>), antes do catálogo (19/11). Os
+  quatro arquivos de agente são iguais na pasta principal e nesta cópia.</li>
+<li><strong>Os dois CLAUDE.md</strong> são iguais, menos um trecho do §10.10 (linhas 562-603 do de 859): a aba Respostas, o "responder
+  de novo", o modelo de print do girar e o celular da Central só estão no de 859 linhas (ramo <code>fase-1</code>). Na tabela:
+  R082, R083, R085 e parte da R084. Todas as outras regras estão nos dois.</li>
+<li><strong>O porteiro</strong> (<code>regras_dos_agentes/porteiro.py</code>), a <strong>lista de exceções</strong>, o <strong>gancho antes do commit</strong>
+  (<code>ganchos/pre-commit</code>) e a <strong>skill</strong> (<code>.claude/skills/conferir-testes-visuais/</code>) estão nas seções do fim.</li>
+</ul>
+<h2>Como ler</h2>
+<ul>
+<li><strong>nº</strong>: o número do catálogo (R001...). <strong>onde</strong>: CLAUDE = CLAUDE.md; impl, verif, pesq, layout = os arquivos dos
+  agentes; Livro = só no Livro de decisões.</li>
+<li><strong>desde e por quê</strong>: a data e o erro que a motivou, quando o texto diz.</li>
+<li><strong>teste · cópias</strong>: o teste que já cobre (arquivo em <code>tests/</code>; "(K..)" = a conferência do porteiro) e em quantos
+  lugares a regra está escrita. "contradição X.." = o catálogo achou outro texto que diz diferente.</li>
+</ul>
+<h2>Contagem por destino</h2>
+<table>
+<thead>
+<tr>
+<th>destino</th>
+<th>quantas</th>
+<th>o que quer dizer aqui</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SKILL</td>
+<td>46</td>
+<td>jeito de fazer: como escrever ao Samuel (§11.13), pilotar a janela, Central, pesquisa, imagem</td>
+</tr>
+<tr>
+<td>FISCAL RÁPIDO</td>
+<td>40</td>
+<td>34 já são cobradas por uma conferência do porteiro (K01 a K25); 6 dariam para ter (segredo no commit, as duas cópias do plano, decisão sem dono, e as três de "um lugar só")</td>
+</tr>
+<tr>
+<td>FICA NO CLAUDE.md</td>
+<td>24</td>
+<td>contexto: o Kaique, o livro, a máquina, quem manda, princípios</td>
+</tr>
+<tr>
+<td>REGRA POR PASTA</td>
+<td>16</td>
+<td>imagem (<code>core/filtros</code>...), tela (<code>ui/</code>), modelo de dados, Windows</td>
+</tr>
+<tr>
+<td>FISCAL GITHUB</td>
+<td>13</td>
+<td>memória, janela que não congela, velocidade, provas das decisões, Windows de verdade</td>
+</tr>
+<tr>
+<td>PERMISSÃO</td>
+<td>10</td>
+<td>acervo, apagar fora, gravar fora da cópia, instalar no .venv, fechar processo alheio</td>
+</tr>
+<tr>
+<td>DÚVIDA</td>
+<td>5</td>
+<td>quatro presas a contradições sem resposta (X3, X9) e uma talvez vencida (V2)</td>
+</tr>
+<tr>
+<td>GANCHO</td>
+<td>2</td>
+<td>ler a memória ao abrir o agente; avisar a gerente quando aparece pergunta nova</td>
+</tr>
+<tr>
+<td>APAGAR</td>
+<td>2</td>
+<td>a do plano de layout (vencida) e a que só repete "sem gambiarra vale para tudo"</td>
+</tr>
+<tr>
+<td><strong>total</strong></td>
+<td><strong>158</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>A tabela</h2>
+<table>
+<thead>
+<tr>
+<th>nº</th>
+<th>regra</th>
+<th>onde</th>
+<th>desde e por quê</th>
+<th>destino</th>
+<th>motivo</th>
+<th>teste · cópias</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R001</td>
+<td>Ordem de leitura e quem manda</td>
+<td>CLAUDE topo; impl; verif; pesq; layout</td>
+<td>24/09 (o plano manda); item 0 em 26/10</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>contexto: quem manda; falta acertar a ordem (contradição X10, sem resposta)</td>
+<td>— · 5 lugares; contradição X10</td>
+</tr>
+<tr>
+<td>R002</td>
+<td>PEDIDOS.md e handoff são histórico</td>
+<td>CLAUDE topo; CLAUDE §7</td>
+<td>24/09 (o plano manda); item 0 em 26/10</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>contexto de uma linha; a 2ª cópia no §7 pode sair</td>
+<td>— · 2 lugares</td>
+</tr>
+<tr>
+<td>R003</td>
+<td>Tela em português sem jargão</td>
+<td>CLAUDE §1; layout</td>
+<td>07/09 (duas versões fracassaram)</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>quem é o Kaique não se lê no código; botão em inglês já tem fiscal</td>
+<td>test_botoes_em_portugues.py (em parte) · 2 lugares</td>
+</tr>
+<tr>
+<td>R004</td>
+<td>Critério final do livro</td>
+<td>CLAUDE §1</td>
+<td>07/09 (duas versões fracassaram)</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>o critério do livro, contexto que vale sempre</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R005</td>
+<td>Não recomeçar do zero</td>
+<td>CLAUDE §2</td>
+<td>07/09; 'claro e direto' 29/10</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>jeito de trabalhar, não se confere lendo código</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R006</td>
+<td>Uma mudança por vez</td>
+<td>CLAUDE §2; CLAUDE §8 passo 3; impl</td>
+<td>07/09; 'claro e direto' 29/10</td>
+<td><strong>DÚVIDA</strong></td>
+<td>a obra (D-014) e a D-765/D-885 suspendem; contradição X9 sem resposta</td>
+<td>— · 3 lugares; contradição X9</td>
+</tr>
+<tr>
+<td>R007</td>
+<td>Planejar antes; perguntar antes de mexer em estrutura</td>
+<td>CLAUDE §2</td>
+<td>07/09; 'claro e direto' 29/10</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento: vai no modelo da ordem de serviço (Parte C)</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R008</td>
+<td>Ir até o fim dentro da alçada</td>
+<td>CLAUDE §2</td>
+<td>07/09; 'claro e direto' 29/10</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>jeito de trabalhar</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R009</td>
+<td>Primeiro a frase, depois o número</td>
+<td>CLAUDE §2; impl; verif; pesq; layout; CLAUDE §11.13.7</td>
+<td>07/09; 'claro e direto' 29/10</td>
+<td><strong>SKILL</strong></td>
+<td>jeito de escrever para o Samuel; 6 cópias viram uma skill</td>
+<td>— · 6 lugares</td>
+</tr>
+<tr>
+<td>R010</td>
+<td>Conciso: essencial no chat, detalhe em arquivo</td>
+<td>CLAUDE §2</td>
+<td>07/09; 'claro e direto' 29/10</td>
+<td><strong>SKILL</strong></td>
+<td>idem (escrever para o Samuel)</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R011</td>
+<td>Claro e direto com o Samuel</td>
+<td>CLAUDE §2; CLAUDE §11.13.7</td>
+<td>07/09; 'claro e direto' 29/10</td>
+<td><strong>SKILL</strong></td>
+<td>idem (escrever para o Samuel)</td>
+<td>— · 2 lugares; contradição X11</td>
+</tr>
+<tr>
+<td>R012</td>
+<td>Honesto: avisar erro e risco</td>
+<td>CLAUDE §2</td>
+<td>07/09; 'claro e direto' 29/10</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>princípio, não se confere</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R013</td>
+<td>Não inventar detalhe</td>
+<td>CLAUDE §2</td>
+<td>07/09; 'claro e direto' 29/10</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K20 já compara as palavras citadas com o Livro, letra por letra</td>
+<td>test_conferencias_formulario.py (K20) · 1 lugar</td>
+</tr>
+<tr>
+<td>R014</td>
+<td>Relatório em três formatos</td>
+<td>CLAUDE §2; CLAUDE §8 passo 7; verif</td>
+<td>07/09; 'claro e direto' 29/10</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K09 já acusa .md sem .html/.pdf</td>
+<td>test_conferencias_mudancas.py (K09); test_relatorio.py · 3 lugares</td>
+</tr>
+<tr>
+<td>R015</td>
+<td>PySide6, nunca tkinter</td>
+<td>CLAUDE §3; layout</td>
+<td>07/09 (cicatrizes das versões antigas)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K07 já acusa tkinter</td>
+<td>test_conferencias_codigo.py (K07) · 2 lugares</td>
+</tr>
+<tr>
+<td>R016</td>
+<td>Uma página por vez na memória</td>
+<td>CLAUDE §3</td>
+<td>07/09 (cicatrizes das versões antigas)</td>
+<td><strong>FISCAL GITHUB</strong></td>
+<td>só se prova abrindo livro grande</td>
+<td>test_memoria_nao_cresce_com_o_livro.py · 1 lugar</td>
+</tr>
+<tr>
+<td>R017</td>
+<td>A janela nunca congela</td>
+<td>CLAUDE §3; layout</td>
+<td>07/09 (cicatrizes das versões antigas)</td>
+<td><strong>FISCAL GITHUB</strong></td>
+<td>só se prova com o programa rodando</td>
+<td>test_gravar_pdf_sem_parar_a_janela.py (em parte) · 2 lugares</td>
+</tr>
+<tr>
+<td>R018</td>
+<td>Nenhuma exceção fecha a janela</td>
+<td>CLAUDE §3</td>
+<td>07/09 (cicatrizes das versões antigas)</td>
+<td><strong>FISCAL GITHUB</strong></td>
+<td>só se prova clicando em tudo (teste_botoes.py)</td>
+<td>teste_botoes.py (no GitHub) · 1 lugar</td>
+</tr>
+<tr>
+<td>R019</td>
+<td>Nenhum emoji em rótulo</td>
+<td>CLAUDE §3; layout</td>
+<td>07/09 (cicatrizes das versões antigas)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K05 já acusa emoji em texto de tela</td>
+<td>test_conferencias_codigo.py (K05) · 2 lugares</td>
+</tr>
+<tr>
+<td>R020</td>
+<td>Texto com acento, caminho sem acento</td>
+<td>CLAUDE §3</td>
+<td>07/09 (cicatrizes das versões antigas)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K08 acusa nome de arquivo com acento; texto sem acento não tem fiscal</td>
+<td>test_conferencias_codigo.py (K08) · 1 lugar</td>
+</tr>
+<tr>
+<td>R021</td>
+<td>Algoritmo consagrado</td>
+<td>CLAUDE §3</td>
+<td>07/09 (cicatrizes das versões antigas)</td>
+<td><strong>REGRA POR PASTA</strong></td>
+<td>só vale para imagem (core/filtros, core/camadas...)</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R022</td>
+<td>Nenhum modelo generativo</td>
+<td>CLAUDE §3; impl; pesq</td>
+<td>07/09 (cicatrizes das versões antigas)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K16 já acusa biblioteca que desenha</td>
+<td>test_conferencias_codigo.py (K16) · 3 lugares</td>
+</tr>
+<tr>
+<td>R023</td>
+<td>Python 3.14, não rebaixar</td>
+<td>CLAUDE §3; impl</td>
+<td>07/09 (cicatrizes das versões antigas)</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>contexto da máquina, uma linha</td>
+<td>— · 2 lugares</td>
+</tr>
+<tr>
+<td>R024</td>
+<td>GPU sem float16 rápido</td>
+<td>CLAUDE §3; pesq</td>
+<td>07/09 (cicatrizes das versões antigas)</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>contexto da máquina e do notebook do Kaique</td>
+<td>— · 2 lugares</td>
+</tr>
+<tr>
+<td>R025</td>
+<td>Erro nunca como stack trace</td>
+<td>CLAUDE §3</td>
+<td>07/09 (cicatrizes das versões antigas)</td>
+<td><strong>FISCAL GITHUB</strong></td>
+<td>só se prova provocando erro com o programa aberto</td>
+<td>test_decisoes_automatico.py (em parte) · 1 lugar</td>
+</tr>
+<tr>
+<td>R026</td>
+<td>Licença: GPL pode entrar</td>
+<td>CLAUDE §3; pesq</td>
+<td>07/09 (cicatrizes das versões antigas)</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>contexto (licença), vale sempre para pesquisa</td>
+<td>— · 2 lugares</td>
+</tr>
+<tr>
+<td>R027</td>
+<td>Teste de máquina: o agente decide</td>
+<td>CLAUDE §4.1</td>
+<td>07/09 (57 commits 'feito', zero aprovados)</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>a divisão máquina/olho é contexto do projeto</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R028</td>
+<td>Teste de olho: prepara, abre tudo, para e chama</td>
+<td>CLAUDE §4.2; verif</td>
+<td>07/09 ('10 de 10' com seis erradas)</td>
+<td><strong>SKILL</strong></td>
+<td>já é a skill conferir-testes-visuais; contradição X3 (quais páginas) sem resposta</td>
+<td>— · 2 lugares; contradição X3</td>
+</tr>
+<tr>
+<td>R029</td>
+<td>Número que não pega o pior defeito não dá veredito</td>
+<td>CLAUDE §4.2</td>
+<td>07/09 ('10 de 10' com seis erradas)</td>
+<td><strong>SKILL</strong></td>
+<td>já está na skill conferir-testes-visuais</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R030</td>
+<td>Ressalva escrita, nunca escondida</td>
+<td>CLAUDE §4.2; impl; verif</td>
+<td>07/09 ('10 de 10' com seis erradas)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K19 cobra a seção 'Ressalvas'; o conteúdo, só quem confere</td>
+<td>test_conferencias_formulario.py (K19) · 3 lugares</td>
+</tr>
+<tr>
+<td>R031</td>
+<td>Nunca 'APROVADO'</td>
+<td>CLAUDE §4.3; CLAUDE §8; impl; verif</td>
+<td>07/09 (só o Samuel aprova)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K10 já acusa 'APROVADO' e [x] posto por agente</td>
+<td>test_conferencias_formulario.py, _mudancas.py (K10) · 5 lugares; contradição X4</td>
+</tr>
+<tr>
+<td>R032</td>
+<td>Máquina ou olho, item por item</td>
+<td>CLAUDE §4.3; verif</td>
+<td>07/09 (só o Samuel aprova)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K19 cobra a seção 'Máquina ou olho' (F13)</td>
+<td>test_conferencias_formulario.py (K19) · 3 lugares</td>
+</tr>
+<tr>
+<td>R033</td>
+<td>Auditoria por amostragem</td>
+<td>CLAUDE §4.4</td>
+<td>07/09</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>só a gerente; não se confere em código</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R034</td>
+<td>Onde roda cada teste</td>
+<td>CLAUDE §4.6; impl; verif; pesq; layout</td>
+<td>19/10 (D-453, D-458)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K21 confere que a rodada existe, é do último commit e passou (X2 resolvida, D-787)</td>
+<td>test_conferencias_formulario.py (K21) · 5 lugares; contradição X2</td>
+</tr>
+<tr>
+<td>R035</td>
+<td>Só documentos: entra com o GitHub</td>
+<td>CLAUDE §4.6</td>
+<td>19/10 (D-453, D-458)</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>só a gerente</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R036</td>
+<td>Filtro de velocidade no GitHub</td>
+<td>CLAUDE §4.6; impl; verif; pesq; layout</td>
+<td>19/10 (D-453, D-458)</td>
+<td><strong>FISCAL GITHUB</strong></td>
+<td>é a própria rodada de velocidade no GitHub (X1 resolvida, D-786)</td>
+<td>workflow 'Testes no Windows' (velocidade_ab) · 5 lugares; contradição X1</td>
+</tr>
+<tr>
+<td>R037</td>
+<td>Lentidão pequena vai para a Fase 5</td>
+<td>CLAUDE §4.6</td>
+<td>19/10 (D-453, D-458)</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>só a gerente</td>
+<td>— · 1 lugar; contradição X1</td>
+</tr>
+<tr>
+<td>R038</td>
+<td>Teste de reversão em todo conserto</td>
+<td>CLAUDE §4.7; impl; verif; layout</td>
+<td>19/10 (D-457)</td>
+<td><strong>FISCAL GITHUB</strong></td>
+<td>dá para rodar o teste novo no commit de partida, sozinho, na rodada</td>
+<td>nenhum (hoje só o verificador prova) · 4 lugares</td>
+</tr>
+<tr>
+<td>R039</td>
+<td>Agente entrega sempre à gerente</td>
+<td>CLAUDE §4.8; impl; verif; pesq; layout</td>
+<td>19/10 (D-456)</td>
+<td><strong>PERMISSÃO</strong></td>
+<td>o agente já não tem a ferramenta de abrir agente (D-793)</td>
+<td>test_conferencias_codigo.py (K23) · 5 lugares</td>
+</tr>
+<tr>
+<td>R040</td>
+<td>Recados de outras janelas</td>
+<td>CLAUDE §4.8</td>
+<td>19/10 (D-456)</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>só a gerente</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R041</td>
+<td>Ler a memória antes</td>
+<td>CLAUDE §4.9; impl; verif; pesq; layout</td>
+<td>19/10 (D-454)</td>
+<td><strong>GANCHO</strong></td>
+<td>ao abrir o agente, o pacote já leva índice e fichas; texto 'se a pasta já existir' vencido (V3)</td>
+<td>— · 5 lugares</td>
+</tr>
+<tr>
+<td>R042</td>
+<td>Teste de imagem pelo caminho inteiro</td>
+<td>CLAUDE §4.10; impl; verif; layout; CLAUDE §11.13.4</td>
+<td>21/10 (lombada, corte sem endireitar; D-461, D-462)</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento de teste de imagem</td>
+<td>— · 5 lugares</td>
+</tr>
+<tr>
+<td>R043</td>
+<td>Cada foto diz o caminho e as opções</td>
+<td>CLAUDE §4.10; impl; verif; layout; CLAUDE §11.13.5</td>
+<td>21/10 (lombada, corte sem endireitar; D-461, D-462)</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento de foto de conferência</td>
+<td>— · 5 lugares</td>
+</tr>
+<tr>
+<td>R044</td>
+<td>Só páginas que vão ser impressas</td>
+<td>CLAUDE §4.10; impl; verif; layout; CLAUDE §11.13.4</td>
+<td>21/10 (lombada, corte sem endireitar; D-461, D-462)</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento; a lista de páginas que não se imprimem poderia virar dado do gabarito</td>
+<td>— · 5 lugares</td>
+</tr>
+<tr>
+<td>R045</td>
+<td>Protocolo de mudança de imagem</td>
+<td>CLAUDE §5</td>
+<td>07/09 (régua que mentia)</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento de mudança de imagem (medir, mudar um, medir)</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R046</td>
+<td>Tudo o que foi tentado vai para melhorias.md</td>
+<td>CLAUDE §5; pesq</td>
+<td>07/09 (régua que mentia)</td>
+<td><strong>REGRA POR PASTA</strong></td>
+<td>só vale para trabalho de imagem</td>
+<td>— · 2 lugares</td>
+</tr>
+<tr>
+<td>R047</td>
+<td>O que o agente decide sozinho</td>
+<td>CLAUDE §6</td>
+<td>07/09</td>
+<td><strong>REGRA POR PASTA</strong></td>
+<td>alçada técnica de imagem</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R048</td>
+<td>O que precisa perguntar antes</td>
+<td>CLAUDE §6; impl</td>
+<td>07/09</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K15 acusa requirements mudado sem 'sim'; o resto do §6 não tem fiscal</td>
+<td>test_conferencias_mudancas.py (K15) · 2 lugares</td>
+</tr>
+<tr>
+<td>R049</td>
+<td>core/ não importa ui/</td>
+<td>CLAUDE §7; impl</td>
+<td>07/09; ordem do preparo 09/10</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K06 já acusa core/ importando ui/</td>
+<td>test_conferencias_codigo.py (K06) · 2 lugares</td>
+</tr>
+<tr>
+<td>R050</td>
+<td>Modelo de dados em dois níveis</td>
+<td>CLAUDE §7</td>
+<td>07/09; ordem do preparo 09/10</td>
+<td><strong>REGRA POR PASTA</strong></td>
+<td>vale para modelos.py e quem grava ConfigPagina/ConfigFolha</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R051</td>
+<td>Onde o programa guarda estado</td>
+<td>CLAUDE §7</td>
+<td>07/09; ordem do preparo 09/10</td>
+<td><strong>REGRA POR PASTA</strong></td>
+<td>vale para configuracoes.py, projetos.py</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R052</td>
+<td>Desempenho já resolvido, não refazer</td>
+<td>CLAUDE §7</td>
+<td>07/09; ordem do preparo 09/10</td>
+<td><strong>REGRA POR PASTA</strong></td>
+<td>vale para core/filtros, core/analise</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R053</td>
+<td>Ordem obrigatória do processamento</td>
+<td>CLAUDE §7</td>
+<td>07/09; ordem do preparo 09/10</td>
+<td><strong>FISCAL GITHUB</strong></td>
+<td>já tem teste que roda páginas</td>
+<td>test_ordem_do_preparo.py · 1 lugar</td>
+</tr>
+<tr>
+<td>R054</td>
+<td>Acervo e originais só para ler</td>
+<td>CLAUDE §7; impl; verif</td>
+<td>07/09; ordem do preparo 09/10</td>
+<td><strong>PERMISSÃO</strong></td>
+<td>pastas do acervo e originais: o agente não deve poder gravar lá</td>
+<td>— · 3 lugares</td>
+</tr>
+<tr>
+<td>R055</td>
+<td>Queixas do Kaique são requisito</td>
+<td>CLAUDE §7</td>
+<td>07/09; ordem do preparo 09/10</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>contexto: onde estão as queixas do Kaique</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R056</td>
+<td>Handoff só com pedido do Samuel</td>
+<td>CLAUDE §7</td>
+<td>07/09; ordem do preparo 09/10</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K17 acusa agente mexendo no handoff, CLAUDE.md, Livro, plano</td>
+<td>test_conferencias_mudancas.py (K17) · 1 lugar</td>
+</tr>
+<tr>
+<td>R057</td>
+<td>Item da fase atual, na ordem</td>
+<td>CLAUDE §8 passo 1; CLAUDE §10.2; impl</td>
+<td>25/09 (plano definitivo)</td>
+<td><strong>DÚVIDA</strong></td>
+<td>contradição X9 (fase atual × obra × D-765) sem resposta</td>
+<td>— · 3 lugares; contradição X9</td>
+</tr>
+<tr>
+<td>R058</td>
+<td>Testes quebrados: conserta antes de seguir</td>
+<td>CLAUDE §8 passo 4; impl</td>
+<td>25/09 (plano definitivo)</td>
+<td><strong>FISCAL GITHUB</strong></td>
+<td>a rodada do GitHub barra (K21)</td>
+<td>test_conferencias_formulario.py (K21) · 2 lugares</td>
+</tr>
+<tr>
+<td>R059</td>
+<td>Régua e velocidade; nada mais lento</td>
+<td>CLAUDE §8 passo 5; impl; verif</td>
+<td>25/09 (plano definitivo)</td>
+<td><strong>FISCAL GITHUB</strong></td>
+<td>régua e velocidade só no GitHub; o texto antigo do §8 passo 5 sobra (X1, D-786)</td>
+<td>workflow (velocidade_ab) · 3 lugares; contradição X1</td>
+</tr>
+<tr>
+<td>R060</td>
+<td>Antes/depois só nas páginas-gabarito do item</td>
+<td>CLAUDE §8 passo 6; verif</td>
+<td>25/09 (plano definitivo)</td>
+<td><strong>DÚVIDA</strong></td>
+<td>contradição X3 (todas as páginas × só gabarito) sem resposta</td>
+<td>— · 2 lugares; contradição X3</td>
+</tr>
+<tr>
+<td>R061</td>
+<td>Item de tela: janela real com mouse nativo</td>
+<td>CLAUDE §8 passo 6; verif; layout</td>
+<td>25/09 (plano definitivo)</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento de pilotar a janela</td>
+<td>— · 3 lugares</td>
+</tr>
+<tr>
+<td>R062</td>
+<td>Commit na hora com o defeito por extenso; nunca segredo</td>
+<td>CLAUDE §8 passo 10</td>
+<td>25/09 (plano definitivo)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>o antes-do-commit pode barrar arquivo de segredo; 'commit na hora' contradiz X12</td>
+<td>— · 1 lugar; contradição X12</td>
+</tr>
+<tr>
+<td>R063</td>
+<td>Mancha do verso: o defeito mais grave</td>
+<td>CLAUDE §9</td>
+<td>07/09 (achados que não se redescobrem)</td>
+<td><strong>REGRA POR PASTA</strong></td>
+<td>achado técnico de imagem (core/filtros, avaliar.py)</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R064</td>
+<td>A régua precisa de critérios novos</td>
+<td>CLAUDE §9</td>
+<td>07/09 (achados que não se redescobrem)</td>
+<td><strong>REGRA POR PASTA</strong></td>
+<td>achado técnico da régua (avaliar.py)</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R065</td>
+<td>Amarelado está na tinta</td>
+<td>CLAUDE §9</td>
+<td>07/09 (achados que não se redescobrem)</td>
+<td><strong>REGRA POR PASTA</strong></td>
+<td>achado técnico de imagem</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R066</td>
+<td>Não há binarizador vencedor</td>
+<td>CLAUDE §9</td>
+<td>07/09 (achados que não se redescobrem)</td>
+<td><strong>REGRA POR PASTA</strong></td>
+<td>achado técnico de imagem</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R067</td>
+<td>Não desfazer a correção do 'magic color'</td>
+<td>CLAUDE §9</td>
+<td>07/09 (achados que não se redescobrem)</td>
+<td><strong>REGRA POR PASTA</strong></td>
+<td>vale para core/filtros; poderia ganhar teste da capa azul</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R068</td>
+<td>Scan de baixa resolução não se recupera</td>
+<td>CLAUDE §9</td>
+<td>07/09 (achados que não se redescobrem)</td>
+<td><strong>REGRA POR PASTA</strong></td>
+<td>achado técnico de imagem</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R069</td>
+<td>Barra de rolagem cinza, de propósito</td>
+<td>CLAUDE §9</td>
+<td>07/09 (achados que não se redescobrem)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K22 confere os valores de ui/estilo.py (P0-v1-18: o valor do §9 não bate com o da K22)</td>
+<td>test_conferencias_codigo.py (K22) · 1 lugar</td>
+</tr>
+<tr>
+<td>R070</td>
+<td>Gerente não escreve código</td>
+<td>CLAUDE §10.1</td>
+<td>25/09 (gerente + agentes)</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>só a gerente; não há como travar a conversa principal</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R071</td>
+<td>Cada papel no seu lugar</td>
+<td>CLAUDE §10.1; impl; verif; pesq; layout</td>
+<td>25/09 (gerente + agentes)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K13 acusa quem mexe fora do papel</td>
+<td>test_conferencias_mudancas.py (K13) · 5 lugares; contradição X7</td>
+</tr>
+<tr>
+<td>R072</td>
+<td>Layout só começa com o plano de layout</td>
+<td>CLAUDE §10.1; layout</td>
+<td>25/09 (gerente + agentes)</td>
+<td><strong>APAGAR</strong></td>
+<td>vencida (V1): a obra do layout já existe; a cópia 'layout' não é mais usada</td>
+<td>— · 2 lugares; contradição V1</td>
+</tr>
+<tr>
+<td>R073</td>
+<td>Ideia nova vai para a Lista de espera; bug que não impede, para a Lista de bugs</td>
+<td>CLAUDE §10.2; impl; layout</td>
+<td>25/09</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K19 cobra a seção 'Ideias e bugs' (F16)</td>
+<td>test_conferencias_formulario.py (K19) · 3 lugares; contradição X9</td>
+</tr>
+<tr>
+<td>R074</td>
+<td>Uma cópia e um ramo por frente</td>
+<td>CLAUDE §10.3; layout</td>
+<td>25/09</td>
+<td><strong>PERMISSÃO</strong></td>
+<td>o agente só deve poder gravar na própria cópia</td>
+<td>— · 2 lugares; contradição X5</td>
+</tr>
+<tr>
+<td>R075</td>
+<td>Plano em duas cópias</td>
+<td>CLAUDE §10.4</td>
+<td>25/09 (cópia do plano sobrescrita)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>comparar as duas cópias do plano é conta de máquina</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R076</td>
+<td>Docstring em tudo o que tocar</td>
+<td>CLAUDE §10.5; impl; layout</td>
+<td>25/09 (D-406)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K12 acusa função mudada sem docstring</td>
+<td>test_conferencias_mudancas.py (K12) · 3 lugares</td>
+</tr>
+<tr>
+<td>R077</td>
+<td>Plano novo não apaga pendência</td>
+<td>CLAUDE §10.6</td>
+<td>25/09</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>princípio da gerente</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R078</td>
+<td>Item resolvido guarda o pedido original</td>
+<td>CLAUDE §10.7</td>
+<td>25/09</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>só a gerente</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R079</td>
+<td>Prosa de checkpoint não é prova</td>
+<td>CLAUDE §10.8; CLAUDE §9 (menu Abrir)</td>
+<td>22/09 (menu 'Abrir')</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>princípio: prosa de checkpoint não é prova</td>
+<td>— · 2 lugares</td>
+</tr>
+<tr>
+<td>R080</td>
+<td>Apagar: fora do projeto nada; dentro só o seu; junções</td>
+<td>CLAUDE §10.9; impl; verif; pesq; layout</td>
+<td>29/09 (D:\d apagada)</td>
+<td><strong>PERMISSÃO</strong></td>
+<td>apagar fora do projeto não deve ser possível; K25 já acusa rm -r em script</td>
+<td>test_conferencias_codigo.py (K25) · 5 lugares</td>
+</tr>
+<tr>
+<td>R081</td>
+<td>Conferências em página do claude.ai com banco</td>
+<td>CLAUDE §10.10</td>
+<td>06/10 a 13/11 (páginas, Central)</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento da Central (só a gerente)</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R082</td>
+<td>Aba Respostas: gerente responde no documento</td>
+<td>CLAUDE §10.10</td>
+<td>06/10 a 13/11 (páginas, Central)</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento da Central (só a gerente); SÓ NO CLAUDE.md DE 859 LINHAS</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R083</td>
+<td>Responder de novo guardando a antiga</td>
+<td>CLAUDE §10.10</td>
+<td>06/10 a 13/11 (páginas, Central)</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento da Central (só a gerente); SÓ NO CLAUDE.md DE 859 LINHAS</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R084</td>
+<td>Modelo de print (o do girar)</td>
+<td>CLAUDE §10.10; CLAUDE §11.13.3</td>
+<td>06/10 a 13/11 (páginas, Central)</td>
+<td><strong>SKILL</strong></td>
+<td>o modelo do girar vira a skill de print; §10.10 só no de 859, §11.13.3 nos dois</td>
+<td>— · 2 lugares</td>
+</tr>
+<tr>
+<td>R085</td>
+<td>Central: um jeito de ver e celular</td>
+<td>CLAUDE §10.10</td>
+<td>06/10 a 13/11 (páginas, Central)</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento da Central (só a gerente); SÓ NO CLAUDE.md DE 859 LINHAS</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R086</td>
+<td>Central: atualizar sempre</td>
+<td>CLAUDE §10.10</td>
+<td>06/10 a 13/11 (páginas, Central)</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento da Central (só a gerente)</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R087</td>
+<td>Central: ler as ordens dele primeiro</td>
+<td>CLAUDE §10.10</td>
+<td>06/10 a 13/11 (páginas, Central)</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento da Central (só a gerente)</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R088</td>
+<td>Aviso no celular ao pôr cartão</td>
+<td>CLAUDE §10.10</td>
+<td>06/10 a 13/11 (páginas, Central)</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento da Central (só a gerente)</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R089</td>
+<td>Pergunta de agente vai à Central na hora</td>
+<td>CLAUDE §10.10; impl; verif; pesq; layout</td>
+<td>06/10 a 13/11 (páginas, Central)</td>
+<td><strong>GANCHO</strong></td>
+<td>quando a seção 'Perguntas para o Samuel' muda, a gerente é avisada sozinha</td>
+<td>— · 5 lugares; contradição X13</td>
+</tr>
+<tr>
+<td>R090</td>
+<td>Agente não grava na Central</td>
+<td>CLAUDE §10.10</td>
+<td>06/10 a 13/11 (páginas, Central)</td>
+<td><strong>PERMISSÃO</strong></td>
+<td>já tirada a ferramenta da Central dos agentes (D-793)</td>
+<td>test_conferencias_codigo.py (K23) · 1 lugar</td>
+</tr>
+<tr>
+<td>R091</td>
+<td>Aba Conferência</td>
+<td>CLAUDE §10.10</td>
+<td>06/10 a 13/11 (páginas, Central)</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento da Central (só a gerente)</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R092</td>
+<td>Abrir a conferência sozinha no navegador</td>
+<td>CLAUDE §10.10</td>
+<td>06/10 a 13/11 (páginas, Central)</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento da Central (só a gerente)</td>
+<td>— · 1 lugar; contradição X13</td>
+</tr>
+<tr>
+<td>R093</td>
+<td>Comentário dele se responde na página</td>
+<td>CLAUDE §10.10</td>
+<td>06/10 a 13/11 (páginas, Central)</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento da Central (só a gerente)</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R094</td>
+<td>Livro de decisões único</td>
+<td>CLAUDE §11.1</td>
+<td>26/10 (decisões de 25/09 nunca feitas)</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>contexto: onde ficam as decisões</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R095</td>
+<td>Nenhuma decisão sem dono</td>
+<td>CLAUDE §11.2</td>
+<td>26/10 (painel Automático sem dono)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>coluna 'Dono' vazia se acha lendo o Livro</td>
+<td>nenhum · 1 lugar</td>
+</tr>
+<tr>
+<td>R096</td>
+<td>Pedido leva as decisões; ONDE-PAREI diz como cumpriu</td>
+<td>CLAUDE §11.3; impl; verif; pesq; layout</td>
+<td>26/10 (o agente recebia a etapa, não a decisão)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K19/K20 cobram 'Decisões...' e 'Como cumpri cada uma'</td>
+<td>test_conferencias_formulario.py (K19, K20) · 5 lugares</td>
+</tr>
+<tr>
+<td>R097</td>
+<td>Cada decisão tem prova de comportamento; aparência não é prova</td>
+<td>CLAUDE §11.4; CLAUDE §11.8; impl; verif; pesq; layout</td>
+<td>26/10 ('Photoshop puro' só na aparência)</td>
+<td><strong>FISCAL GITHUB</strong></td>
+<td>as provas das decisões rodam no GitHub</td>
+<td>tests/test_decisoes*.py (97 arquivos) · 6 lugares</td>
+</tr>
+<tr>
+<td>R098</td>
+<td>Quem confere não construiu, e confere do zero</td>
+<td>CLAUDE §11.5; verif</td>
+<td>26/10</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K10 acusa 'PRONTO' no ramo de quem construiu; agente novo a cada volta (D-815)</td>
+<td>test_conferencias_formulario.py (K10) · 2 lugares</td>
+</tr>
+<tr>
+<td>R099</td>
+<td>Na dúvida, parar e perguntar</td>
+<td>CLAUDE §11.6; impl; verif; pesq; layout</td>
+<td>26/10</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>princípio: na dúvida, parar</td>
+<td>— · 5 lugares</td>
+</tr>
+<tr>
+<td>R100</td>
+<td>Gerente procura no Livro antes de perguntar</td>
+<td>CLAUDE §11.6; CLAUDE §11.13.10</td>
+<td>26/10</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>F23 'Decisões procuradas antes de cada pergunta' (D-814)</td>
+<td>test_conferencias_formulario.py (K19) · 2 lugares</td>
+</tr>
+<tr>
+<td>R101</td>
+<td>Só o que ele mandou</td>
+<td>CLAUDE §11.7</td>
+<td>27/10 (D-549: agentes mudando o decidido)</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>princípio; K14 pega só o arquivo fora da lista</td>
+<td>test_conferencias_mudancas.py (K14, em parte) · 1 lugar</td>
+</tr>
+<tr>
+<td>R102</td>
+<td>O novo não estraga o escolhido e testado (D-605)</td>
+<td>CLAUDE §11.8; impl; verif; pesq; layout</td>
+<td>03/11 (D-605)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K11 acusa teste antigo mudado sem a decisão no commit</td>
+<td>test_conferencias_mudancas.py (K11) · 5 lugares; contradição X14</td>
+</tr>
+<tr>
+<td>R103</td>
+<td>Verificador confere o que funcionava ao redor</td>
+<td>CLAUDE §11.8; impl; verif; pesq; layout</td>
+<td>03/11 (D-605)</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento do verificador</td>
+<td>— · 5 lugares</td>
+</tr>
+<tr>
+<td>R104</td>
+<td>Como fica para quem usa e no livro (D-637)</td>
+<td>CLAUDE §11.9; impl; verif; pesq; layout</td>
+<td>05/11 (D-637)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K19 cobra a seção (F4)</td>
+<td>test_conferencias_formulario.py (K19) · 5 lugares</td>
+</tr>
+<tr>
+<td>R105</td>
+<td>Mudou a ferramenta, muda em todos os lugares (D-667)</td>
+<td>CLAUDE §11.10</td>
+<td>10/11 (D-667: D-662 feita só no 'todas')</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>trava por leitura de código: cada campo gravado por uma porta só (Fable, Pergunta 2)</td>
+<td>nenhum · 1 lugar</td>
+</tr>
+<tr>
+<td>R106</td>
+<td>Agente não abre agente</td>
+<td>CLAUDE §11.11</td>
+<td>10/11 (cinco agentes rodando)</td>
+<td><strong>PERMISSÃO</strong></td>
+<td>já feito (D-793); o número máximo de agentes é contradição X6, sem resposta</td>
+<td>test_conferencias_codigo.py (K23) · 1 lugar; contradição X6</td>
+</tr>
+<tr>
+<td>R107</td>
+<td>Sem gambiarra: a causa, a regra, todos os caminhos</td>
+<td>CLAUDE §11.12; impl; verif; pesq; layout</td>
+<td>13/11 (Girar com 7 caminhos; 17 remendos)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>trava por leitura de código: lista derivada do modelo, uma porta (Fable)</td>
+<td>nenhum · 5 lugares</td>
+</tr>
+<tr>
+<td>R108</td>
+<td>Como conserta: um lugar só</td>
+<td>CLAUDE §11.12</td>
+<td>13/11 (Girar com 7 caminhos; 17 remendos)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>mesmo fiscal da R107</td>
+<td>nenhum · 1 lugar; contradição X7</td>
+</tr>
+<tr>
+<td>R109</td>
+<td>Prova: caminho → função e o mesmo resultado em todos</td>
+<td>CLAUDE §11.12; impl; verif</td>
+<td>13/11 (Girar com 7 caminhos; 17 remendos)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K19 cobra 'Caminho e função' (F12); 'o mesmo resultado' pede teste de pixels no GitHub</td>
+<td>test_conferencias_formulario.py (K19) · 3 lugares</td>
+</tr>
+<tr>
+<td>R110</td>
+<td>Quando só der remendo: parar</td>
+<td>CLAUDE §11.12</td>
+<td>13/11 (Girar com 7 caminhos; 17 remendos)</td>
+<td><strong>FICA NO CLAUDE.md</strong></td>
+<td>princípio: remendo nunca calado</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R111</td>
+<td>Gerente pede sobre a ferramenta inteira</td>
+<td>CLAUDE §11.12; CLAUDE §11.10</td>
+<td>13/11 (Girar com 7 caminhos; 17 remendos)</td>
+<td><strong>SKILL</strong></td>
+<td>vai no modelo da ordem de serviço (Parte C)</td>
+<td>— · 2 lugares</td>
+</tr>
+<tr>
+<td>R112</td>
+<td>Sem gambiarra vale para tudo</td>
+<td>CLAUDE §11.12 (18/11); impl; verif; pesq; layout</td>
+<td>18/11 (etapa 5: 7 defeitos + 26)</td>
+<td><strong>APAGAR</strong></td>
+<td>repete a R107; basta a R107 dizer 'em tudo'</td>
+<td>— · 5 lugares</td>
+</tr>
+<tr>
+<td>R113</td>
+<td>Uma peça só para conversar com o que está fora</td>
+<td>CLAUDE §11.12.1; impl; verif; pesq; layout</td>
+<td>18/11 (etapa 5: 7 defeitos no Windows)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K01, K02, K03 (hoje por lista de palavras; o Fable sugere leitura de import)</td>
+<td>test_conferencias_codigo.py; test_windows_peca.py; test_trava_windows.py · 5 lugares</td>
+</tr>
+<tr>
+<td>R114</td>
+<td>Nada dá como feito o que não conferiu</td>
+<td>CLAUDE §11.12.2; impl; verif; pesq; layout</td>
+<td>18/11 (etapa 5: 7 defeitos no Windows)</td>
+<td><strong>FISCAL GITHUB</strong></td>
+<td>só se prova desligando a conferência e vendo um teste falhar (mutação)</td>
+<td>anexos de mutação dos quebradores (manual) · 5 lugares</td>
+</tr>
+<tr>
+<td>R115</td>
+<td>Antes de escrever, a lista das falhas</td>
+<td>CLAUDE §11.12.3; impl; verif; pesq; layout</td>
+<td>18/11 (etapa 5: 7 defeitos no Windows)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K19 cobra a seção 'O que pode falhar' (F6)</td>
+<td>test_conferencias_formulario.py (K19) · 5 lugares</td>
+</tr>
+<tr>
+<td>R116</td>
+<td>Peça de mentira não prova (D-767)</td>
+<td>CLAUDE §11.12.4; impl; verif; pesq; layout</td>
+<td>18/11 (etapa 5: 7 defeitos no Windows)</td>
+<td><strong>FISCAL GITHUB</strong></td>
+<td>só conta rodando no Windows de verdade (X8 resolvida, D-785)</td>
+<td>test_velopack_de_verdade.py; test_atualizador_volta3_de_verdade.py · 5 lugares; contradição X8</td>
+</tr>
+<tr>
+<td>R117</td>
+<td>Gerente não aceita 'pronto' sem prova</td>
+<td>CLAUDE §11.12.5; impl; verif; pesq; layout</td>
+<td>18/11 (etapa 5: 7 defeitos no Windows)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K19 + K21: sem prova a entrega volta</td>
+<td>test_conferencias_formulario.py · 5 lugares</td>
+</tr>
+<tr>
+<td>R118</td>
+<td>Ler a peça de fora antes de usar</td>
+<td>CLAUDE §11.12.6; impl; verif; pesq; layout; Livro D-813</td>
+<td>18/11 (etapa 5: 7 defeitos no Windows)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K19 cobra 'O que li da peça de fora' (F7); acréscimo D-813 não está no CLAUDE.md</td>
+<td>test_conferencias_formulario.py (K19) · 6 lugares</td>
+</tr>
+<tr>
+<td>R119</td>
+<td>Perguntar: comece pelo que é e onde fica</td>
+<td>CLAUDE §11.13.1; impl; verif; pesq; layout</td>
+<td>13/11 (106 'Ainda não entendi')</td>
+<td><strong>SKILL</strong></td>
+<td>como perguntar ao Samuel (§11.13)</td>
+<td>— · 5 lugares</td>
+</tr>
+<tr>
+<td>R120</td>
+<td>Perguntar: nenhuma palavra de dentro</td>
+<td>CLAUDE §11.13.2; impl; verif; pesq; layout</td>
+<td>13/11 (106 'Ainda não entendi')</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>número de decisão, arquivo ou código no texto para ele se acha lendo; K04 já faz na tela</td>
+<td>test_conferencias_codigo.py (K04, só tela) · 5 lugares</td>
+</tr>
+<tr>
+<td>R121</td>
+<td>Perguntar: print que prova</td>
+<td>CLAUDE §11.13.3; impl; verif; pesq; layout</td>
+<td>13/11 (106 'Ainda não entendi')</td>
+<td><strong>SKILL</strong></td>
+<td>como perguntar (o print)</td>
+<td>— · 5 lugares</td>
+</tr>
+<tr>
+<td>R122</td>
+<td>Perguntar: o caso que o Kaique encontra, print conferido</td>
+<td>CLAUDE §11.13.4; impl; verif; pesq; layout</td>
+<td>13/11 (106 'Ainda não entendi')</td>
+<td><strong>SKILL</strong></td>
+<td>como perguntar (o caso real)</td>
+<td>— · 5 lugares</td>
+</tr>
+<tr>
+<td>R123</td>
+<td>Perguntar: o caminho, e se é defeito ou escolha</td>
+<td>CLAUDE §11.13.5; impl; verif; pesq; layout</td>
+<td>13/11 (106 'Ainda não entendi')</td>
+<td><strong>SKILL</strong></td>
+<td>como perguntar</td>
+<td>— · 5 lugares</td>
+</tr>
+<tr>
+<td>R124</td>
+<td>Perguntar: o que você escolhe e o que muda</td>
+<td>CLAUDE §11.13.6; impl; verif; pesq; layout</td>
+<td>13/11 (106 'Ainda não entendi')</td>
+<td><strong>SKILL</strong></td>
+<td>como perguntar</td>
+<td>— · 5 lugares</td>
+</tr>
+<tr>
+<td>R125</td>
+<td>Perguntar: curto, sem ficha</td>
+<td>CLAUDE §11.13.7; impl; verif; pesq; layout</td>
+<td>13/11 (106 'Ainda não entendi')</td>
+<td><strong>SKILL</strong></td>
+<td>como perguntar</td>
+<td>— · 5 lugares</td>
+</tr>
+<tr>
+<td>R126</td>
+<td>Perguntar: ele continua no controle?</td>
+<td>CLAUDE §11.13.8; impl; verif; pesq; layout</td>
+<td>13/11 (106 'Ainda não entendi')</td>
+<td><strong>SKILL</strong></td>
+<td>como perguntar</td>
+<td>— · 5 lugares</td>
+</tr>
+<tr>
+<td>R127</td>
+<td>Perguntar: de onde veio</td>
+<td>CLAUDE §11.13.9; impl; verif; pesq; layout</td>
+<td>13/11 (106 'Ainda não entendi')</td>
+<td><strong>SKILL</strong></td>
+<td>como perguntar</td>
+<td>— · 5 lugares</td>
+</tr>
+<tr>
+<td>R128</td>
+<td>Perguntar: a situação de agora, sem repetir</td>
+<td>CLAUDE §11.13.10; impl; verif; pesq; layout</td>
+<td>13/11 (106 'Ainda não entendi')</td>
+<td><strong>SKILL</strong></td>
+<td>como perguntar; F23 cobra parte</td>
+<td>— · 5 lugares</td>
+</tr>
+<tr>
+<td>R129</td>
+<td>Depois de 'Ainda não entendi': mudar o jeito</td>
+<td>CLAUDE §11.13</td>
+<td>13/11 (106 'Ainda não entendi')</td>
+<td><strong>SKILL</strong></td>
+<td>como perguntar (gerente)</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R130</td>
+<td>A lista de conferência antes de mandar</td>
+<td>CLAUDE §11.13; CLAUDE §10.10</td>
+<td>13/11 (106 'Ainda não entendi')</td>
+<td><strong>SKILL</strong></td>
+<td>a lista de conferência da gerente antes de mandar</td>
+<td>— · 2 lugares</td>
+</tr>
+<tr>
+<td>R131</td>
+<td>Obra D-014: o que não vale durante a obra</td>
+<td>CLAUDE fim</td>
+<td>26/10 (D-014, a obra)</td>
+<td><strong>DÚVIDA</strong></td>
+<td>a obra ainda vale? (D-014 × D-765 × D-885)</td>
+<td>— · 1 lugar; contradição X9</td>
+</tr>
+<tr>
+<td>R132</td>
+<td>Teste escrito antes do código, quando der</td>
+<td>impl</td>
+<td>25/09 (agentes criados)</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento de conserto</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R133</td>
+<td>Nunca commit no master</td>
+<td>impl; layout</td>
+<td>25/09 (agentes criados)</td>
+<td><strong>PERMISSÃO</strong></td>
+<td>gravar no ramo da gerente não deve ser possível; trocar 'master' pelos dois de hoje (D-797)</td>
+<td>— · 2 lugares; contradição X5</td>
+</tr>
+<tr>
+<td>R134</td>
+<td>Nunca fechar à força janela que o Samuel usa</td>
+<td>impl; verif; layout</td>
+<td>16/09 a 22/09 (janela do Samuel)</td>
+<td><strong>PERMISSÃO</strong></td>
+<td>fechar processo alheio já é bloqueado pelo Claude Code; caso de 25/11 mostra o furo por código</td>
+<td>— · 3 lugares</td>
+</tr>
+<tr>
+<td>R135</td>
+<td>Como entregar (lista do papel)</td>
+<td>impl; verif; pesq; layout</td>
+<td>25/09 (agentes criados)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>o formulário único (K19) substitui as 4 listas; as 4 podem sair</td>
+<td>test_conferencias_formulario.py (K19) · 4 lugares</td>
+</tr>
+<tr>
+<td>R136</td>
+<td>Commit e push a cada passo; ONDE-PAREI</td>
+<td>impl; verif; pesq; layout</td>
+<td>19/10</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K18 acusa trabalho sem commit/push</td>
+<td>test_conferencias_mudancas.py (K18) · 4 lugares; contradição X12</td>
+</tr>
+<tr>
+<td>R137</td>
+<td>Verificador: não conserta código</td>
+<td>verif</td>
+<td>25/09 (agentes criados)</td>
+<td><strong>PERMISSÃO</strong></td>
+<td>verificador sem escrita em core/ e ui/</td>
+<td>test_conferencias_mudancas.py (K13) · 2 lugares</td>
+</tr>
+<tr>
+<td>R138</td>
+<td>Verificador: skill conferir-testes-visuais</td>
+<td>verif</td>
+<td>30/07 ('10 de 10' com seis erradas)</td>
+<td><strong>SKILL</strong></td>
+<td>já é skill</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R139</td>
+<td>Defeitos conhecidos da Fase 1 em destaque</td>
+<td>verif</td>
+<td>28/09 (D-409)</td>
+<td><strong>DÚVIDA</strong></td>
+<td>vencida? 'até a Fase 1 ficar pronta' (V2)</td>
+<td>— · 1 lugar; contradição V2</td>
+</tr>
+<tr>
+<td>R140</td>
+<td>Pilotar: instância nova, nunca a dele</td>
+<td>verif</td>
+<td>25/09; janela real 22/09 e 16/09</td>
+<td><strong>SKILL</strong></td>
+<td>pilotar a janela</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R141</td>
+<td>Pilotar: mouse por mensagem nativa ao hwnd</td>
+<td>verif</td>
+<td>25/09; janela real 22/09 e 16/09</td>
+<td><strong>SKILL</strong></td>
+<td>pilotar a janela</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R142</td>
+<td>Pilotar: nunca pywinauto click_input/send_keys</td>
+<td>verif</td>
+<td>25/09; janela real 22/09 e 16/09</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K24 já acusa click_input/send_keys</td>
+<td>test_conferencias_codigo.py (K24) · 1 lugar</td>
+</tr>
+<tr>
+<td>R143</td>
+<td>Pilotar: roda do mouse não funciona sem foco</td>
+<td>verif</td>
+<td>25/09; janela real 22/09 e 16/09</td>
+<td><strong>SKILL</strong></td>
+<td>pilotar a janela (limite conhecido)</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R144</td>
+<td>Pilotar: print fora da tela</td>
+<td>verif</td>
+<td>25/09; janela real 22/09 e 16/09</td>
+<td><strong>SKILL</strong></td>
+<td>pilotar a janela; X8 resolvida pela D-785</td>
+<td>— · 1 lugar; contradição X8</td>
+</tr>
+<tr>
+<td>R145</td>
+<td>offscreen não tem fonte</td>
+<td>verif</td>
+<td>25/09; janela real 22/09 e 16/09</td>
+<td><strong>SKILL</strong></td>
+<td>pilotar a janela (limite conhecido)</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R146</td>
+<td>Verificador: prova de reversão numa cópia à parte</td>
+<td>verif</td>
+<td>19/10</td>
+<td><strong>FISCAL GITHUB</strong></td>
+<td>rodar o teste novo no código antigo dá para fazer sozinho na rodada</td>
+<td>nenhum · 1 lugar</td>
+</tr>
+<tr>
+<td>R147</td>
+<td>Pesquisador: não repetir caminho fechado</td>
+<td>pesq</td>
+<td>25/09 (agentes criados)</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento de pesquisa</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R148</td>
+<td>Pesquisador: resumir com as próprias palavras</td>
+<td>pesq</td>
+<td>25/09</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento de pesquisa</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R149</td>
+<td>Pesquisador: roda aqui e no notebook do Kaique?</td>
+<td>pesq</td>
+<td>25/09</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento de pesquisa</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R150</td>
+<td>Lido na fonte separado de dedução</td>
+<td>pesq</td>
+<td>25/09</td>
+<td><strong>SKILL</strong></td>
+<td>procedimento de pesquisa; F7 cobra a seção</td>
+<td>— · 2 lugares</td>
+</tr>
+<tr>
+<td>R151</td>
+<td>Pesquisa gravada em docs/pesquisa/ com data e links</td>
+<td>pesq</td>
+<td>25/09 (pesquisa que só existiu na conversa)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K13 já confere onde o pesquisador grava</td>
+<td>test_conferencias_mudancas.py (K13) · 1 lugar</td>
+</tr>
+<tr>
+<td>R152</td>
+<td>Não instalar no .venv sem pedido</td>
+<td>pesq</td>
+<td>25/09</td>
+<td><strong>PERMISSÃO</strong></td>
+<td>instalar no .venv não deve ser possível sem pedido</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R153</td>
+<td>Layout: pista visual em toda área de clicar</td>
+<td>layout</td>
+<td>22/09 (arrasto 'não funcionava' sem pista)</td>
+<td><strong>REGRA POR PASTA</strong></td>
+<td>só vale para ui/</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R154</td>
+<td>Toda função automática tem ligar e desligar</td>
+<td>layout; impl</td>
+<td>24/09 (regra 8 do plano)</td>
+<td><strong>REGRA POR PASTA</strong></td>
+<td>vale para ui/ e core/automatico.py</td>
+<td>— · 2 lugares</td>
+</tr>
+<tr>
+<td>R155</td>
+<td>Layout: ler a Lista de espera e as referências</td>
+<td>layout</td>
+<td>25/09 (agentes criados)</td>
+<td><strong>REGRA POR PASTA</strong></td>
+<td>só vale para ui/</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R156</td>
+<td>A cópia divide o .git com o Samuel: nada de comando que muda o .git inteiro</td>
+<td>Livro D-809</td>
+<td>19/11 (repositório raso; modelos/ esvaziada)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K25 já acusa</td>
+<td>test_conferencias_codigo.py; test_conferencias_protecao.py (K25) · 1 lugar</td>
+</tr>
+<tr>
+<td>R157</td>
+<td>O teste do Windows roda em três computadores diferentes</td>
+<td>Livro D-810</td>
+<td>19/11 (3 rodadas perdidas: Windows em inglês)</td>
+<td><strong>REGRA POR PASTA</strong></td>
+<td>vale para tests/ do Windows e core/windows.py</td>
+<td>— · 1 lugar</td>
+</tr>
+<tr>
+<td>R158</td>
+<td>Toda conferência diz de onde vem cada dado</td>
+<td>Livro D-812</td>
+<td>19/11 ('sim' forjável)</td>
+<td><strong>FISCAL RÁPIDO</strong></td>
+<td>K19 cobra 'De onde vem cada dado' (F22)</td>
+<td>test_conferencias_formulario.py (K19) · 1 lugar</td>
+</tr>
+</tbody>
+</table>
+<h2>O porteiro: as 25 conferências que já existem</h2>
+<p>A ordem fala em "K01 a K09"; no código são <strong>25</strong> (K01 a K25). 13 leem o código parado; 12 olham o que a entrega mudou.
+Todas são FISCAL RÁPIDO por natureza. "Observação" é só o que vi, não plano.</p>
+<table>
+<thead>
+<tr>
+<th>K</th>
+<th>confere</th>
+<th>tipo</th>
+<th>regra</th>
+<th>onde roda hoje</th>
+<th>teste do próprio fiscal</th>
+<th>observação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>K01</td>
+<td>conversa com o Windows fora de <code>core/windows.py</code></td>
+<td>código</td>
+<td>R113</td>
+<td>GitHub, em toda rodada</td>
+<td>test_conferencias_codigo.py, _excecoes, _juiz, _protecao; test_windows_peca.py</td>
+<td>é lista de palavras; o vizinho passou em 6 voltas do passo 0 (família F2); o Fable sugere ler o import</td>
+</tr>
+<tr>
+<td>K02</td>
+<td>DETACHED_PROCESS</td>
+<td>código</td>
+<td>R113</td>
+<td>GitHub</td>
+<td>test_conferencias_codigo.py</td>
+<td>—</td>
+</tr>
+<tr>
+<td>K03</td>
+<td>licença de pasta à mão (icacls...)</td>
+<td>código</td>
+<td>R113</td>
+<td>GitHub</td>
+<td>test_conferencias_codigo.py; test_porteiro_licenca_que_acrescenta.py</td>
+<td>1 exceção aberta pela D-837</td>
+</tr>
+<tr>
+<td>K04</td>
+<td>número de decisão em texto de tela</td>
+<td>código</td>
+<td>R120</td>
+<td>GitHub</td>
+<td>test_conferencias_codigo.py</td>
+<td>não olha o texto para o Samuel (Central, ONDE-PAREI)</td>
+</tr>
+<tr>
+<td>K05</td>
+<td>emoji em texto de tela</td>
+<td>código</td>
+<td>R019</td>
+<td>GitHub</td>
+<td>test_conferencias_codigo.py</td>
+<td>—</td>
+</tr>
+<tr>
+<td>K06</td>
+<td><code>core/</code> importa <code>ui/</code></td>
+<td>código</td>
+<td>R049</td>
+<td>GitHub</td>
+<td>test_conferencias_codigo.py</td>
+<td>falta a inversa (<code>ui/</code> monta campos), Fable, Pergunta 6</td>
+</tr>
+<tr>
+<td>K07</td>
+<td>tkinter</td>
+<td>código</td>
+<td>R015</td>
+<td>GitHub</td>
+<td>test_conferencias_codigo.py</td>
+<td>—</td>
+</tr>
+<tr>
+<td>K08</td>
+<td>nome de arquivo com acento</td>
+<td>código</td>
+<td>R020</td>
+<td>GitHub</td>
+<td>test_conferencias_codigo.py</td>
+<td>—</td>
+</tr>
+<tr>
+<td>K09</td>
+<td>relatório só em .md</td>
+<td>entrega</td>
+<td>R014</td>
+<td>ao conferir a entrega</td>
+<td>test_conferencias_mudancas.py</td>
+<td>—</td>
+</tr>
+<tr>
+<td>K10</td>
+<td>"APROVADO" de agente; PRONTO no ramo de quem fez</td>
+<td>entrega</td>
+<td>R031, R098</td>
+<td>ao conferir a entrega</td>
+<td>test_conferencias_formulario.py, _mudancas</td>
+<td>—</td>
+</tr>
+<tr>
+<td>K11</td>
+<td>teste antigo mudado sem decisão citada</td>
+<td>entrega</td>
+<td>R102</td>
+<td>ao conferir a entrega</td>
+<td>test_conferencias_mudancas.py</td>
+<td>—</td>
+</tr>
+<tr>
+<td>K12</td>
+<td>função tocada sem docstring</td>
+<td>entrega</td>
+<td>R076</td>
+<td>ao conferir a entrega</td>
+<td>test_conferencias_mudancas.py</td>
+<td>—</td>
+</tr>
+<tr>
+<td>K13</td>
+<td>mexeu fora do papel</td>
+<td>entrega</td>
+<td>R071</td>
+<td>ao conferir a entrega</td>
+<td>test_conferencias_mudancas.py</td>
+<td>—</td>
+</tr>
+<tr>
+<td>K14</td>
+<td>arquivo fora da lista do pedido (só avisa)</td>
+<td>entrega</td>
+<td>—</td>
+<td>ao conferir a entrega</td>
+<td>test_conferencias_mudancas.py</td>
+<td>é o "Fora" da Parte C, mas não barra</td>
+</tr>
+<tr>
+<td>K15</td>
+<td>requirements.txt sem "sim"</td>
+<td>entrega</td>
+<td>R048</td>
+<td>ao conferir a entrega</td>
+<td>test_conferencias_mudancas.py</td>
+<td>—</td>
+</tr>
+<tr>
+<td>K16</td>
+<td>biblioteca que desenha</td>
+<td>código</td>
+<td>R022</td>
+<td>GitHub</td>
+<td>test_conferencias_codigo.py</td>
+<td>—</td>
+</tr>
+<tr>
+<td>K17</td>
+<td>agente mexeu em CLAUDE.md, agentes, Livro, plano, handoff</td>
+<td>entrega</td>
+<td>R056, R094</td>
+<td>ao conferir a entrega</td>
+<td>test_conferencias_mudancas.py</td>
+<td>—</td>
+</tr>
+<tr>
+<td>K18</td>
+<td>sem commit ou sem push</td>
+<td>entrega</td>
+<td>R136</td>
+<td>ao conferir a entrega</td>
+<td>test_conferencias_mudancas.py</td>
+<td>—</td>
+</tr>
+<tr>
+<td>K19</td>
+<td>o formulário da entrega (F1 a F23)</td>
+<td>entrega</td>
+<td>R096, R104, R115, R118</td>
+<td>ao conferir a entrega</td>
+<td>test_conferencias_formulario.py</td>
+<td>só confere que a seção existe</td>
+</tr>
+<tr>
+<td>K20</td>
+<td>palavras do Samuel batem com o Livro</td>
+<td>entrega</td>
+<td>R013, R096</td>
+<td>ao conferir a entrega</td>
+<td>test_conferencias_formulario.py</td>
+<td>—</td>
+</tr>
+<tr>
+<td>K21</td>
+<td>rodada do GitHub do último commit passou</td>
+<td>entrega</td>
+<td>R034</td>
+<td>ao conferir a entrega</td>
+<td>test_conferencias_formulario.py</td>
+<td>—</td>
+</tr>
+<tr>
+<td>K22</td>
+<td>barra de rolagem cinza</td>
+<td>código</td>
+<td>R069</td>
+<td>GitHub</td>
+<td>test_conferencias_codigo.py</td>
+<td>o valor da K22 não bate com o <code>#a8a49e</code> do §9 (P0-v1-18)</td>
+</tr>
+<tr>
+<td>K23</td>
+<td>agente sem ferramenta de abrir agente e de gravar na Central</td>
+<td>código</td>
+<td>R106, R090</td>
+<td>GitHub</td>
+<td>test_conferencias_codigo.py</td>
+<td>—</td>
+</tr>
+<tr>
+<td>K24</td>
+<td>pywinauto click_input / send_keys</td>
+<td>código</td>
+<td>R142</td>
+<td>GitHub</td>
+<td>test_conferencias_codigo.py</td>
+<td>—</td>
+</tr>
+<tr>
+<td>K25</td>
+<td>comando que muda o .git inteiro ou apaga pasta com tudo</td>
+<td>código</td>
+<td>R156</td>
+<td>GitHub</td>
+<td>test_conferencias_codigo.py, _protecao</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>As 12 "de entrega" dependem do pedido</strong> (papel, commit de partida, lista de arquivos), que vem do pacote (D-784).
+Achei o pacote copiado no ONDE-PAREI dos passos 0, 1 e 2 (19 a 21/11) e no <code>zoom-mouse</code>. Do atualizador novo (23/11) em
+diante, os ONDE-PAREI não têm as seções "Pedido" e "Arquivos que vou mexer". Então, de 23/11 para cá, essas 12 não
+tinham o que conferir. (Achado por leitura; não rodei o porteiro.)</p>
+<h2>A lista de exceções: quantas são de verdade</h2>
+<ul>
+<li>A ordem diz 164. <strong>Hoje são 135</strong> (<code>tests/conferencias_excecoes.json</code> desta cópia, ligada com o "sim" do Samuel,
+  D-801). O 164 é o número que o Fable leu em 23/11 ("164 exceções em 4 arquivos"). A lista nasceu com 176 (19/11),
+  passou a 175 e perdeu 40 em 24/11 (<code>f2d0ad14</code>).</li>
+<li>Por conferência: <strong>124 da K01</strong>, 9 da K04, 2 da K03. Por arquivo: 71 em <code>core/</code>, 52 em <code>teste_velocidade.py</code>, 7 em
+  <code>ui/</code>, 5 em outros.</li>
+<li>Por quando somem: 69 "depois da entrega" (D-800, D-802), 50 no passo 4 e 16 no passo 5 do plano da parte do Windows.</li>
+<li><strong>No ramo <code>fase-1</code> (a pasta principal) a lista não existe:</strong> o porteiro só está na versão de teste.</li>
+<li><strong>Destino:</strong> FISCAL RÁPIDO (é parte do porteiro). Pelo Fable, elas somem quando a K01 virar leitura de import e os
+  arquivos se acertarem; até lá, só diminuem.</li>
+</ul>
+<h2>O gancho antes do commit</h2>
+<ul>
+<li><code>ganchos/pre-commit</code> roda as conferências "de código" só nos arquivos do commit. <strong>Não está ligado:</strong> o próprio
+  arquivo diz "NÃO ESTÁ LIGADA", e <code>git config core.hooksPath</code> não tem valor no repositório (conferido hoje). Quem
+  garante hoje é o GitHub.</li>
+<li><strong>Destino:</strong> GANCHO (já é gancho do git; falta ligar). Faz o mesmo que o GitHub, mais cedo.</li>
+<li>Não há <code>.claude/settings.json</code> no projeto: <strong>nenhuma permissão e nenhum gancho do Claude Code</strong> estão configurados.
+  As 10 regras com destino PERMISSÃO e as 2 com GANCHO não têm onde morar hoje.</li>
+</ul>
+<h2>A skill que existe</h2>
+<table>
+<thead>
+<tr>
+<th>skill</th>
+<th>o que faz</th>
+<th>destino</th>
+<th>observação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>conferir-testes-visuais</code></td>
+<td>abrir todas as imagens, veredito por imagem, percentual não é veredito (caso de 30/07)</td>
+<td>SKILL (fica)</td>
+<td>cobre R028, R029, R138; só o verificador a cita</td>
+</tr>
+</tbody>
+</table>
+<h2>As ferramentas dos agentes</h2>
+<p>Os quatro arquivos de agente já tiram "abrir outro agente" e "gravar na Central" (D-793, conferido pela K23). É a única
+PERMISSÃO construída hoje.</p>
+<h2>Regras que só estão no Livro (nem no CLAUDE.md, nem nos agentes)</h2>
+<p>Achei por busca do número em <code>CLAUDE.md</code>, <code>.claude/agents/</code> e no catálogo. São decisões do Samuel sobre o jeito de
+trabalhar, de 16 a 25/11, que o agente só recebe se a gerente copiar no pedido. Não estão na contagem de 158.</p>
+<table>
+<thead>
+<tr>
+<th>decisão</th>
+<th>o que diz (resumo)</th>
+<th>no catálogo?</th>
+<th>destino que ela pediria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-709 (16/11)</td>
+<td>plano antes de mexer, com o porquê do erro e o guia de leitura</td>
+<td>não</td>
+<td>SKILL (vai no modelo da ordem, Parte C); falta ele dizer se o agente espera o "sim"</td>
+</tr>
+<tr>
+<td>D-710 (16/11)</td>
+<td>um modelo por tipo de tarefa</td>
+<td>não</td>
+<td>DÚVIDA (proposta da gerente sem resposta)</td>
+</tr>
+<tr>
+<td>D-760 (17/11)</td>
+<td>a contagem de páginas e folhas numa conta só; "rever as regras dos agentes"</td>
+<td>não</td>
+<td>FISCAL RÁPIDO (é a R105/R107 num caso)</td>
+</tr>
+<tr>
+<td>D-791, D-792 (18/11)</td>
+<td>porteiro barra desde o 1º dia; formulário único</td>
+<td>não (é o próprio porteiro)</td>
+<td>FISCAL RÁPIDO</td>
+</tr>
+<tr>
+<td>D-796, D-797, D-798 (19/11)</td>
+<td>tela pode mexer em <code>core/</code> se nomeado; dois ramos só; só quem confere escreve PRONTO</td>
+<td>sim, como contradição resolvida</td>
+<td>o texto do CLAUDE.md e dos agentes ainda diz o contrário</td>
+</tr>
+<tr>
+<td>D-807 (19/11)</td>
+<td>conjunto inteiro dos testes só no GitHub</td>
+<td>não</td>
+<td>PERMISSÃO (não rodar a suíte inteira no PC)</td>
+</tr>
+<tr>
+<td>D-809, D-810, D-812 (19/11)</td>
+<td>.git dividido; três computadores; de onde vem o dado</td>
+<td>sim (R156 a R158)</td>
+<td>já na tabela</td>
+</tr>
+<tr>
+<td>D-811, D-814 (19/11)</td>
+<td>perguntas F21 e F23 do formulário</td>
+<td>só no formulário</td>
+<td>FISCAL RÁPIDO</td>
+</tr>
+<tr>
+<td>D-813 (19/11)</td>
+<td>acréscimo à regra 6 do §11.12</td>
+<td>só no catálogo</td>
+<td>FICA o texto; FISCAL RÁPIDO a seção F7</td>
+</tr>
+<tr>
+<td>D-815 (20/11)</td>
+<td>quem tenta quebrar é sempre um agente novo</td>
+<td>não</td>
+<td>GANCHO (a cada volta, agente novo)</td>
+</tr>
+<tr>
+<td>D-819 (21/11)</td>
+<td>comparar o jeito mais simples antes de aceitar um plano</td>
+<td>não</td>
+<td>SKILL (modelo da ordem)</td>
+</tr>
+<tr>
+<td>D-827 (22/11)</td>
+<td>proteção sem teste nunca é "pequena"</td>
+<td>não</td>
+<td>FISCAL GITHUB (mutação)</td>
+</tr>
+<tr>
+<td>D-842 (24/11)</td>
+<td>nenhum item aberto entra na prova à vista</td>
+<td>não</td>
+<td>FISCAL RÁPIDO (achado sem "consertar" ou "deixo para depois" barra)</td>
+</tr>
+<tr>
+<td>D-879 (25/11)</td>
+<td>conferência curta, do tamanho da mudança</td>
+<td>não</td>
+<td>SKILL (do quem tenta quebrar)</td>
+</tr>
+</tbody>
+</table>
+<h2>As contradições ainda abertas (do catálogo)</h2>
+<p>As X1, X2, X4, X5, X7 e X8 foram resolvidas pelo Samuel (D-785 a D-798), <strong>mas o texto do CLAUDE.md e dos agentes
+ainda diz o antigo</strong> (o catálogo avisa isso no pacote). Continuam sem resposta: <strong>X3</strong> (quais páginas no antes/depois),
+<strong>X6</strong> (quantos agentes ao mesmo tempo), <strong>X9</strong> (o ritmo: fase atual × obra × D-765), <strong>X10</strong> (a ordem de leitura) e a
+vencida <strong>V2</strong> (o aviso da moldura até a Fase 1). Vão na lista de dúvidas do resumo.</p>
+<h2>Ressalvas</h2>
+<ul>
+<li><strong>Destino é julgamento meu.</strong> Onde dois cabiam (ex.: R014, relatório em três formatos: fiscal e skill), escolhi um e
+  disse o outro no motivo.</li>
+<li><strong>"Teste que cobre"</strong> é o que achei por busca de nome e da conferência; não rodei nenhum teste (a ordem proíbe). Um
+  teste marcado "(em parte)" cobre só um pedaço da regra.</li>
+<li><strong>O catálogo é de 19/11.</strong> Conferi que o CLAUDE.md e os agentes não mudaram depois; segui a divisão do catálogo (ele
+  pode ter juntado duas frases numa regra só).</li>
+<li><strong>Não contei como regra</strong> os itens de informação do catálogo (quantos testes existem, mapa de pastas, comandos) nem a
+  história do §11.12 (o que aconteceu em 10/11 e 18/11). Ficam como contexto.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 27/11/2026 às 15:09</p>
+</body>
+</html>
