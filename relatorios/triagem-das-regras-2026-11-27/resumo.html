@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Triagem das regras e dos erros: resumo (27/11/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Triagem das regras e dos erros: resumo (27/11/2026)</h1>
+<p><strong>Em uma frase:</strong> a maior parte das regras de hoje é jeito de fazer ou coisa que o computador já confere; a maior parte
+dos erros veio de pedido claro feito diferente, e três conferências do computador (uma porta só para cada dado, a prova
+de cada decisão e o arquivo fora da lista que barra) teriam pegado a maioria deles.</p>
+<p>Só leitura (D-887): nenhuma regra nova, nenhum arquivo do projeto mudou, nenhuma skill ou gancho criado. O detalhe está
+nos três arquivos ao lado: <code>tabela-regras</code>, <code>tabela-erros</code> e <code>ordem-de-servico</code> (cada um em .md e .html).</p>
+<h2>Contagens por destino</h2>
+<table>
+<thead>
+<tr>
+<th>destino</th>
+<th>regras de hoje (Parte A, 158)</th>
+<th>tipos de erro (Parte B, 31)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FISCAL RÁPIDO</td>
+<td>40 (34 já cobradas pelo porteiro)</td>
+<td>13</td>
+</tr>
+<tr>
+<td>FISCAL GITHUB</td>
+<td>13</td>
+<td>9</td>
+</tr>
+<tr>
+<td>SKILL</td>
+<td>46</td>
+<td>3</td>
+</tr>
+<tr>
+<td>PERMISSÃO</td>
+<td>10</td>
+<td>3</td>
+</tr>
+<tr>
+<td>REGRA POR PASTA</td>
+<td>16</td>
+<td>1</td>
+</tr>
+<tr>
+<td>FICA NO CLAUDE.md</td>
+<td>24</td>
+<td>0</td>
+</tr>
+<tr>
+<td>GANCHO</td>
+<td>2</td>
+<td>0 (2 como segundo jeito)</td>
+</tr>
+<tr>
+<td>APAGAR</td>
+<td>2</td>
+<td>0</td>
+</tr>
+<tr>
+<td>DÚVIDA</td>
+<td>5</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Causa dos erros:</strong> 29 tipos são erro de programação (o pedido estava claro); 2 não dá para saber sem o Samuel. As
+  38 vezes em que ele mudou de ideia depois de ver ficam só como registro.</li>
+<li><strong>O que achei e não estava na ordem:</strong> o porteiro tem 25 conferências (não 9) e a lista de exceções tem 135 itens
+  hoje (não 164); o gancho antes do commit não está ligado; não existe configuração de permissões nem de ganchos do
+  Claude Code no projeto; 20 decisões dele sobre o jeito de trabalhar (16 a 25/11) não estão no CLAUDE.md nem nos agentes (algumas só no catálogo do porteiro); o pacote do
+  pedido e o formulário da entrega deixaram de ser usados depois de 21/11.</li>
+</ul>
+<h2>Os 10 fiscais que mais erros teriam evitado, em ordem</h2>
+<p>A conta é a soma das vezes dos tipos de erro que cada um pegaria (Parte B). Nenhum é plano: é só a ordem.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>o fiscal</th>
+<th>rápido ou GitHub</th>
+<th>pegaria</th>
+<th>vezes (aprox.)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Cada dado da página é gravado por uma porta só, e as listas ("o que vai junto") saem do modelo de dados; a segunda cópia é acusada</td>
+<td>rápido (lendo o código)</td>
+<td>conserto só num caminho; conta repetida; conta feita na tela</td>
+<td>~140</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Toda decisão "construída" tem a sua prova de comportamento rodando; a que não tem é acusada</td>
+<td>GitHub (e rápido para achar a sem prova)</td>
+<td>decisão não construída ou só na aparência; caixinha que não vale; o novo que estraga o que funcionava</td>
+<td>~95</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Arquivo mudado fora do "Dentro" da ordem barra a entrega (hoje só avisa)</td>
+<td>rápido</td>
+<td>agente que acrescentou o que não foi pedido</td>
+<td>~45</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Mutação automática: cada proteção e cada conferência desligada numa cópia faz um teste falhar</td>
+<td>GitHub</td>
+<td>dá como feito sem conferir; proteção sem teste; teste que só confere texto</td>
+<td>~40</td>
+</tr>
+<tr>
+<td>5</td>
+<td>O texto para o Samuel é lido antes de ir: sem código nem número, com imagem, e conferido no Livro se já foi respondido</td>
+<td>rápido</td>
+<td>pergunta sem prova; palavra de dentro; pergunta repetida</td>
+<td>~40</td>
+</tr>
+<tr>
+<td>6</td>
+<td>O mesmo resultado por todos os caminhos de uma ferramenta, e a mesma imagem na tela, na miniatura e no PDF</td>
+<td>GitHub</td>
+<td>desvio por caso; tela diferente do PDF</td>
+<td>~25</td>
+</tr>
+<tr>
+<td>7</td>
+<td>A conversa com o Windows conferida pelo que o código importa, não por lista de palavras</td>
+<td>rápido</td>
+<td>a recusa que deixa passar o vizinho (e acaba com a maior parte das 135 exceções)</td>
+<td>~20</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Caça de função que ninguém chama</td>
+<td>rápido</td>
+<td>código morto</td>
+<td>~20</td>
+</tr>
+<tr>
+<td>9</td>
+<td>"De onde vem cada dado" da conferência, cobrado no formulário e conferido por quem tenta quebrar</td>
+<td>rápido</td>
+<td>conferência que acredita no que o conferido escreve</td>
+<td>~15</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Comando que mexe no <code>.git</code> inteiro ou apaga pasta com tudo, acusado em script e teste (já existe)</td>
+<td>rápido</td>
+<td>comando que estraga o que é do Samuel</td>
+<td>~8</td>
+</tr>
+</tbody>
+</table>
+<h2>Dúvidas para o Samuel</h2>
+<p>Cada uma diz o que é, o que você escolhe e a sugestão do agente da triagem. O número da decisão vai no fim, só para
+consulta.</p>
+<ol>
+<li><strong>O ritmo do trabalho depois da entrega.</strong> As regras dizem "uma mudança por vez, uma fase por vez, conferir cada item
+   antes do próximo". A obra de 26/10 e a parada de consertos até a entrega suspenderam isso. <strong>O que você escolhe:</strong>
+   volta a valer agora, ou continua suspenso enquanto durar a vistoria? Sugestão: dizer qual vale, para tirar a outra do
+   texto. (X9; R006, R057, R131)</li>
+<li><strong>As páginas do antes e depois.</strong> Um trecho manda mostrar a mudança em todos os livros do conjunto de teste; outro, só
+   nas páginas-gabarito daquele item. <strong>O que você escolhe:</strong> todas, ou só as do gabarito? Sugestão: só as do gabarito,
+   que é o que se faz hoje. (X3; R060)</li>
+<li><strong>Quantos agentes ao mesmo tempo.</strong> O CLAUDE.md diz no máximo dois (três em 10/11); a memória diz 3 a 4; a Central
+   tem um número próprio. <strong>O que você escolhe:</strong> qual vale? (X6)</li>
+<li><strong>O que o agente lê primeiro.</strong> O CLAUDE.md põe o Livro de decisões primeiro; os arquivos dos agentes começam pelo
+   estado atual e pelo plano. <strong>O que você escolhe:</strong> o Livro primeiro em todos? Sugestão: sim. (X10)</li>
+<li><strong>O aviso da moldura dourada.</strong> O verificador tem de avisar, em toda conferência, que moldura e iluminura são defeito
+   conhecido "até a Fase 1 ficar pronta". <strong>O que você escolhe:</strong> ainda vale, ou sai? (V2; R139)</li>
+<li><strong>O atualizador antigo, complicado demais.</strong> Ele foi refeito porque tinha peças que só protegiam outras peças, e a
+   volta automática saiu depois de três rodadas. Foi feito o que você pediu ("volta sozinho"), mas o jeito custou mais
+   do que valia. <strong>O que você escolhe:</strong> conta como erro de programação (o jeito estava errado) ou como pedido que você
+   trocou depois de ver? Só muda a conta da triagem. (E08; D-718, D-830, D-868)</li>
+<li><strong>As contradições que você já resolveu.</strong> Em 18 e 19/11 você resolveu seis (velocidade, testes no PC, quem escreve
+   "pronto", os dois ramos, o agente de tela no núcleo, janela escondida ou à vista), mas o CLAUDE.md e os arquivos dos
+   agentes ainda dizem o antigo. <strong>O que você escolhe:</strong> a gerente acerta o texto agora, ou isso espera a construção das
+   skills e fiscais? (D-785 a D-798)</li>
+<li><strong>O plano antes de mexer.</strong> Você mandou que todo agente apresente um plano antes de consertar. Falta dizer se ele
+   espera o seu "sim" depois do plano. <strong>O que você escolhe:</strong> espera sempre, só nos consertos e ferramentas novas, ou
+   nunca? Sugestão (já da gerente em 16/11): espera nos consertos e ferramentas novas; não nas investigações. (D-709)</li>
+<li><strong>Um modelo de agente por tipo de tarefa.</strong> A gerente propôs três opções em 16/11 e ficou sem resposta. <strong>O que você
+   escolhe:</strong> uma das três, ou deixar para depois? (D-710)</li>
+<li><strong>O pacote do pedido e o formulário da entrega.</strong> Eles foram construídos em 18-19/11 e usados até 21/11; do
+    atualizador novo em diante deixaram de ser usados, sem decisão sua. <strong>O que você escolhe:</strong> voltam a valer em todo
+    trabalho, ou ficam esperando o modelo novo da ordem de serviço? (D-784, D-792)</li>
+<li><strong>Onde mora a trava da ordem de serviço.</strong> Opção 1: no programa das regras dos agentes, rodado pela gerente. Opção 2:
+    num gancho do Claude Code, que roda sozinho antes de abrir o agente. <strong>O que você escolhe:</strong> 1, 2, ou as duas com
+    uma peça só? Sugestão do agente: as duas com uma peça só (a conferência mora na opção 1 e o gancho só a chama).</li>
+<li><strong>O gancho antes do commit.</strong> Ele existe desde 19/11, mas nunca foi ligado; quem confere hoje é o GitHub. <strong>O que
+    você escolhe:</strong> ligar, ou deixar só o GitHub? Sugestão: ligar, porque avisa mais cedo e não muda o programa.</li>
+</ol>
+<h2>O tempo de cada parte (relógio da máquina)</h2>
+<table>
+<thead>
+<tr>
+<th>parte</th>
+<th>começo</th>
+<th>fim</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>leitura das fontes</td>
+<td>14:56</td>
+<td>15:05</td>
+</tr>
+<tr>
+<td>A, as regras</td>
+<td>15:05</td>
+<td>15:10</td>
+</tr>
+<tr>
+<td>B, os erros</td>
+<td>15:10</td>
+<td>15:13</td>
+</tr>
+<tr>
+<td>C, a ordem de serviço</td>
+<td>15:13</td>
+<td>15:15</td>
+</tr>
+<tr>
+<td>resumo</td>
+<td>15:15</td>
+<td>15:18</td>
+</tr>
+</tbody>
+</table>
+<h2>Ressalvas</h2>
+<ul>
+<li><strong>Destino e causa são julgamento meu</strong>, com o motivo em cada linha. O Samuel e o Fable podem trocar qualquer um.</li>
+<li><strong>A vistoria ainda corre</strong>: os números dos erros de código (Parte B, E05 a E09) são os da lista em 27/11 às 15h.</li>
+<li><strong>Não rodei nada</strong>: nem testes, nem o porteiro, nem o programa. "Já cobre" e "não achei uso" são por leitura.</li>
+<li><strong>Não li uma por uma</strong> as 19 conferências antigas nem os relatórios de quem tenta quebrar dos passos 0 a 2: entraram
+  pelo Livro e pelo catálogo dos erros, que já as tinham juntado.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 27/11/2026 às 15:16</p>
+</body>
+</html>
