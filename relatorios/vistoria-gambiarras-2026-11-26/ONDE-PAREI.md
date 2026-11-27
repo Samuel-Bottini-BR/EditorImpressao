@@ -181,7 +181,7 @@ L463-500, L707-781; em `core/pipeline.py` L180-276).
 | pedaço pequeno | arquivos | situação | começo | fim |
 |---|---|---|---|---|
 | 1. o painel Automático na tela | `ui/automatico.py` L1-836 e L2161-3007 (o estado, a lista das etapas, o painel, as opções, a janela grande, a receita), fora do já lido | feito (5 achados, AV-01 a AV-05) | 27/11 14:42 | 27/11 14:46 |
-| 2. o "antes/depois" | `ui/automatico.py` L837-2160 (a vista, a tela cheia do comparar, a página antes e depois) e, em `core/automatico.py`, L1274-1530 e L1576-1606, L1762-1848 (as cópias, as medidas guardadas, a folha do caderno), fora do já lido | a fazer | | |
+| 2. o "antes/depois" | `ui/automatico.py` L837-2160 (a vista, a tela cheia do comparar, a página antes e depois) e, em `core/automatico.py`, L1274-1530 e L1576-1606, L1762-1848 (as cópias, as medidas guardadas, a folha do caderno), fora do já lido | feito (2 achados, AV-06 e AV-07) | 27/11 14:46 | 27/11 14:48 |
 | 3. as etapas do Automático no núcleo | `core/automatico.py` L1-1273, fora do já lido (o pedido, as mexidas, o resumo, o livro leve, `aplicar`, `_capa_aberta`, `_ligar_na_pagina`, `_desligar_as_desmarcadas`, `rodar`) | a fazer | | |
 | 4. a análise do livro | `core/analise.py` (fora do já lido), as partes da análise de `core/pipeline.py` (o que chama `analisar_folha`/`analisar_pagina` fora de L180-276), `core/automatico.medir_o_livro_ao_abrir` | a fazer | | |
 | 5. o "Para revisar" e os avisos | `core/revisar.py`; `core/analise.Alerta`/`descrever` (L139-462); `core/avisos.py` já lido: só as buscas | a fazer | | |
