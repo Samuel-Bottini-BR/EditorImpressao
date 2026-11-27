@@ -487,7 +487,35 @@ L549-566 (FS-11); `core/fases_da_atualizacao._numeros` (FS-15).
 | 4. a peça única do Windows | `core/windows.py` | feito (3 achados, AT-04 a AT-06) | 27/11 16:34 | 27/11 16:36 |
 | 5. as fases e o Velopack | `core/fases_da_atualizacao.py`, `core/conversa_com_o_velopack.py` | feito (1 achado, AT-07) | 27/11 16:37 | 27/11 16:38 |
 | 6. os testes à distância | `core/testes_a_distancia.py`, `core/_testes_a_distancia_windows.py` | feito (1 achado, AT-08; duas notas fora dos tipos 4 e 5 e uma suspeita aberta) | 27/11 16:40 | 27/11 16:41 |
-| 7. as telas | `ui/aviso_de_atualizacao.py`, `ui/testes_a_distancia_ui.py`, `ui/brasao_girando.py` | a fazer | | |
+| 7. as telas | `ui/aviso_de_atualizacao.py`, `ui/testes_a_distancia_ui.py`, `ui/brasao_girando.py` | feito (1 achado, AT-09) | 27/11 16:42 | 27/11 16:43 |
+
+**Pedaço grande 8 terminado (27/11, das 16:27 às 16:43 pelo relógio da máquina).** Só os tipos 4 e 5 (D-886). 9 achados
+novos, AT-01 a AT-09: 2 do tipo 4 (AT-02: as quatro peças contra o ajudante antigo, que só existiu nas provas do PC do
+Samuel, com a D-838; AT-06: a recusa do rodar genérico da peça do Windows, contra o código de amanhã) e 7 do tipo 5
+(AT-01 e AT-03: comentários que ficaram do que saiu ou mudou de lugar; AT-04: metade de `core/windows.py`, a pasta
+segura, as tarefas, o segredo e sete tipos de passo, feita para os passos 3 a 5 do plano trocado pela D-830, só a janela
+de prova e os testes a usam; AT-05: duas funções da peça sem uso; AT-07: o jeito antigo de ler a versão a conferir, só
+para testes antigos; AT-08: o preparo do "desfazer" na primeira abertura, que saiu, e uma variável que ninguém põe;
+AT-09: os caminhos para fora do Windows). Por gravidade: todos leves (nenhum chega na tela do Kaique nem no PDF). "Outra
+cópia" de achado já listado: AT-03 (AT-01), AT-07 (FS-12). Da mesma família: AT-04 (FL-19, pela frase do cabeçalho),
+AT-06 (FL-19, CLAUDE.md §11.12 ponto 1). Central: nenhum achado explica item da fila lida em 26/11 (nenhum item da fila
+é do atualizador).
+
+O que a gerente pediu para olhar: (1) a volta automática (D-867): do código não sobrou nada; sobraram dois comentários
+(AT-01). (2) O pedido antigo de licença (`core/_testes_a_distancia_windows.py`): continua vivo, pelas Configurações, e não
+é dos tipos 4 e 5; o que dele é morto está no AT-08, e o resto são as duas notas do pedaço 6 da lista (as Configurações
+ligam os testes à distância com a senha, contra o que a D-825 diz da primeira abertura; e o erro lido do jeito que o
+cabeçalho de `core/windows.py` diz ser o defeito 2 da etapa 5, deixado como suspeita aberta). (3) O caminho antigo dos
+"4 consertos" (D-830 substituiu): o que ficou dele é o AT-02 (o ajudante antigo) e o AT-04 (a pasta segura e as tarefas
+do plano-v2, do mesmo tempo).
+
+O que ficou sem ler neste pedaço grande (os tipos 1 a 3 não são deste pedaço; as contas lidas como conversa com o
+Windows ou como algoritmo): em `core/windows.py` as contas por dentro das licenças de pasta, do pedido de licença
+(`ShellExecuteEx`), da lista de processos e da caixa do Windows; em `core/testes_a_distancia.py` os comandos do
+PowerShell de cada plano (L187-660), só pela lista das funções e pelas buscas; em `core/fases_da_atualizacao.py` a regra
+`proxima_fase` só nas transições que falam da volta, do bilhete e da abertura; em `assinatura.py` as contas do Ed25519.
+
+**Próximo:** parar e entregar à gerente (a tarefa pediu só os pedaços grandes 10 e 8).
 
 ## Pedaços (tela de trabalho, 26/11)
 
