@@ -434,7 +434,29 @@ no GV-13), `empacotar.achar_motor_kraken`/`LUGARES_DO_MOTOR` (no OC-03), `empaco
 | 2. a pasta das ferramentas e os compilar | `core/pasta_das_ferramentas.py`, `compilar_detector_gravura.py`, `compilar_st_ferramentas.py` | feito (3 achados, FS-04 a FS-06; fecha a suspeita da pasta do Samuel) | 27/11 16:15 | 27/11 16:18 |
 | 3. montar o motor do Kraken | `montar_motor_kraken.py` (fora de L160 e L588) | feito (2 achados, FS-07 e FS-08; a nota do `--so-servidor`) | 27/11 16:19 | 27/11 16:20 |
 | 4. o empacotar | `empacotar.py` (fora do já lido) | feito (5 achados, FS-09 a FS-13; fecha a suspeita do "baixar"; a nota do `--modo entrega`) | 27/11 16:21 | 27/11 16:23 |
-| 5. publicar e servir as versões | `publicar_versao_kaique.py`, `servidor_das_versoes.py` | a fazer | | |
+| 5. publicar e servir as versões | `publicar_versao_kaique.py`, `servidor_das_versoes.py` | feito (3 achados, FS-14 a FS-16) | 27/11 16:24 | 27/11 16:25 |
+
+**Pedaço grande 10 terminado (27/11, das 16:12 às 16:25 pelo relógio da máquina; o código, das 16:12 às 16:25).**
+16 achados novos, FS-01 a FS-16. Por tipo (o principal): 10 do tipo 1 (FS-01, FS-04, FS-05, FS-06, FS-07, FS-10, FS-11,
+FS-13, FS-14, FS-15), nenhum do tipo 2 nem do 3, 2 do tipo 4 (FS-02, FS-09; FS-14 tem o 4 junto) e 4 do tipo 5 (FS-03,
+FS-08, FS-12, FS-16). Por gravidade, com a régua nova: nenhum GRAVE (nada destas ferramentas chega na tela do Kaique nem
+no PDF; o que chega no programa dele é o .msi, a versão e as DLLs), 3 médios (FS-01: três folhas de estilo do relatório;
+FS-05: os dois compilar, e a DLL do detector entra no programa conferida só por "abriu"; FS-10: a cópia conferida em
+cinco jeitos, apesar do "lugar único") e 13 leves. "Outra cópia" de achado já listado: FS-16 (FS-12). Da mesma família:
+FS-02 (OC-01, FL-16), FS-05 (FL-15), FS-06 (AB-24: três das onze perguntas "está empacotado?" são de lá), FS-10 e FS-11
+(RT-01, FL-15), FS-12 (OC-03, FS-05). Central: nenhum achado explica item da fila lida em 26/11 (nenhum item da fila é
+destas ferramentas). O achado conhecido da gerente (o PDF corta a última coluna das tabelas largas) foi conferido pela
+leitura: é defeito simples, não dos cinco tipos; a causa está ao lado do FS-01 (a tabela do .html rola de lado; as do
+PDF não têm para onde ir). Três notas que não são dos cinco tipos: o `--so-servidor` do montar regrava a ficha do motor
+com a mesma versão (pedaço 3); o `--modo entrega` do empacotar apaga pastas na Área de Trabalho sem perguntar (pedaço 4);
+o instalador antigo (Inno) ficou como reserva pela D-730, cuja pergunta de "depois da etapa 5" não achei (FS-09).
+
+O que ficou sem ler neste pedaço grande (só pela lista das funções e pelas buscas, sem cópia achada): em
+`montar_motor_kraken.py` o leitor do PE por dentro (`importacoes_da_dll`, lido como algoritmo); em `empacotar.py` as
+mensagens de cada parada (os `print`), lidas só pelo caminho; o `instalador.iss` (não é Python: só a existência, FS-09);
+os scripts que chamam o `relatorio.py` (são dos scripts soltos, fora da vistoria).
+
+**Próximo:** o pedaço grande 8, "atualizador", só os tipos 4 e 5.
 
 ## Pedaços (tela de trabalho, 26/11)
 
