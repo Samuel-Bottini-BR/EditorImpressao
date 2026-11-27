@@ -344,7 +344,27 @@ aviso uma vez por sessão L1352-1377, no FL-16, e a forma de fábrica do `detect
 | 3. a gravura do ScanTailor | `core/detectar_regioes.py` L930-1350 (a limpeza, as barras, crescer pela moldura, o DPI, a procura com tempo), `core/gravura_scantailor.py` | feito (3 achados, GV-06 a GV-08; o carregador da DLL já é o FL-15) | 27/11 15:58 | 27/11 16:00 |
 | 4. a seleção (as áreas e as máscaras) | `core/selecao.py` (fora do já lido) | feito (2 achados, GV-09 e GV-10) | 27/11 16:00 | 27/11 16:01 |
 | 5. as zonas na folha | `core/zonas_na_folha.py` (fora do já lido) | feito (2 achados, GV-11 e GV-12) | 27/11 16:01 | 27/11 16:03 |
-| 6. editar as áreas e a rede que aponta | `core/editar_zonas.py`, `core/rede_selecao.py` | a fazer | | |
+| 6. editar as áreas e a rede que aponta | `core/editar_zonas.py`, `core/rede_selecao.py` | feito (1 achado, GV-13; o resto de `editar_zonas` já entrou no GV-02, GV-03 e GV-09) | 27/11 16:03 | 27/11 16:04 |
+
+**Pedaço grande 4 terminado (27/11, das 15:51 às 16:05 pelo relógio da máquina; o código, das 15:52 às 16:04).**
+13 achados novos, GV-01 a GV-13. Por tipo (o principal): 7 do tipo 1 (GV-02, GV-03, GV-05, GV-07, GV-08, GV-09, GV-11),
+nenhum do tipo 2, nenhum do tipo 3 (GV-07 tem o 3 junto), 2 do tipo 4 (GV-06, GV-12) e 4 do tipo 5 (GV-01, GV-04,
+GV-10, GV-13). Por gravidade, com a régua nova: 2 GRAVE (GV-07: o que o ScanTailor deixa de fora da pintura vira letra
+sem a pergunta "parece escrita?", que só o detector antigo faz, a causa do `lu-1-remendos`; GV-11: o preparo da página
+escrito duas vezes, na imagem e na conta das marcações), 4 médios (GV-02, GV-03, GV-06, GV-09) e 7 leves. "Outra cópia"
+de achado já listado: GV-02 (MC-01 e FL-07; com elas, 18 lugares), GV-06 (PP-13), GV-11 (G-06 e G-07), GV-13 (PT-19).
+Da mesma família: GV-03 (AV-15, SP-10), GV-07 (FL-13, GV-03), GV-09 (FL-12), GV-12 (PP-01, AB-05). Central: o GV-07
+explica o `lu-1-remendos` (e o GV-03 diz que a pergunta "parece escrita?" já existe em três medidas); o GV-02 é a
+pergunta que desenha o laranja do `lu-7-laranja` (a causa do aviso continua no PT-20); o `au-d-528` continua no MC-03.
+
+O que ficou sem ler neste pedaço grande (só pela lista das funções e pelas buscas, sem cópia achada): nada dos seis
+arquivos ficou de fora por inteiro; as contas por dentro (`_espalhamento_do_miolo`, `_e_objeto_e_nao_folha`,
+`_papel_a_vista`, `_e_meio_tom`, a rede do layout em `achar`, `_desenhar` das formas, `de_mascara`, as matrizes do giro)
+foram lidas como algoritmo, uma conta cada, sem cópia achada pela busca. O cabeçalho de `core/detectar_regioes.py`
+(L41-43: "o padrão de detectar() para quem não sabe o DPI da imagem (a aba Marcar [...])") ficou para trás como o de
+`core/gravura_scantailor.py` (nota no pedaço 3 da lista).
+
+**Próximo:** o pedaço grande 9, "achar texto".
 
 ## Pedaços (tela de trabalho, 26/11)
 
@@ -505,7 +525,9 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
   li as outras duas ainda. Visto no pedaço 3: a falha ao abrir tem duas regras: o modelo de layout tenta de novo na
   página seguinte (o conserto de 21/10, "o mesmo código nem sempre dá a mesma imagem"), e as duas DLLs do ScanTailor
   (`gravura_scantailor` e `st_ferramentas`, `_tentou`) guardam a falha para a sessão inteira (o carregador duplicado já é
-  o FL-15; a regra diferente da falha, não).
+  o FL-15; a regra diferente da falha, não). Visto no pedaço 6: `core/rede_selecao._carregar` (L45-63) é uma terceira
+  cópia, que guarda a falha para a sessão (`_sessoes` com `None`), mas o módulo só serve à função morta (GV-13). Falta
+  ler o de `core/ocr_doctr.py` (pedaço grande 9) para fechar.
 - (pedaço grande 4, vista no pedaço 2; fora deste pedaço grande) "Onde há tinta nesta página" tem mais de uma conta:
   `core/detectar_regioes.mascara_de_tinta` (Sauvola com o `k` do filtro), `core/editar_zonas._tinta_na_area` (o Preto e
   branco da página), `core/recortar._mascara_de_tinta_local` e, em `core/filtros.py`, `cinza < papel * TINTA_PARA_ORLA`
