@@ -322,6 +322,30 @@ grande 8); em `ui/dialogos_de_arquivo.py` a `JanelaDeArquivo` por dentro (L173-3
 
 **Próximo:** o pedaço grande 4, "gravuras e marcações" (lista em `resposta-do-fable-2026-11-27.md`). A gerente decide quando.
 
+## Programa inteiro (D-886): pedaço grande 4, gravuras e marcações
+
+Agente novo, 27/11/2026, começou às 15:51 (relógio da máquina, `date`). Leu as regras do verificador, o CLAUDE.md
+(§11.12; §3: "Rede neural aqui só segmenta: aponta onde estão as coisas, nunca desenha"), o índice da memória, a ordem,
+a resposta do Fable, este arquivo inteiro, a lista (o modelo, os títulos e, por inteiro, os que tocam este pedaço: MC-01
+a MC-05, PT-17 a PT-20, FL-07, FL-13, FL-16) e a fila da Central (as que tocam a gravura: `lu-1-remendos`, `au-d-528`,
+`lu-7-laranja`). As decisões que valem são as copiadas no alto deste arquivo (D-885, D-886, §11.12); conferidas, valem
+também para este pedaço grande. Código: linhas no `cbc9784f` (`git diff cbc9784f HEAD -- core/ ui/ *.py motor_kraken/`
+vazio). Prefixo dos achados: **GV**.
+
+Divisão em pedaços pequenos (escrita antes de começar). O que outros pedaços já leram não se relê (em
+`core/zonas_na_folha.py` `geometria_do_desenho` (docstring), `_converter` L420-463, `acompanhar` L560-583,
+`_corte_efetivo`, `repartir_nas_metades`; em `core/selecao.py` L100-175 e L370-390; em `core/detectar_regioes.py` o
+aviso uma vez por sessão L1352-1377, no FL-16, e a forma de fábrica do `detectar`, no FL-13; `core/gravura_scantailor.figuras_pelo_scantailor`, no FL-13).
+
+| pedaço pequeno | arquivos | situação | começo | fim |
+|---|---|---|---|---|
+| 1. a entrada do detector e as opções | `core/detectar_regioes.py` L1-215 e L1392-1683 (as opções, a assinatura, `detectar`, `refinar_para_tinta`, `explicar_em_portugues`), e quem chama `detectar` no programa | feito (2 achados, GV-01 e GV-02) | 27/11 15:52 | 27/11 15:56 |
+| 2. o detector antigo e o layout | `core/detectar_regioes.py` L215-930 (a rede do layout, as máscaras, a página vazia, o objeto, o meio tom, `_gravura_antiga`) | a fazer | | |
+| 3. a gravura do ScanTailor | `core/detectar_regioes.py` L930-1350 (a limpeza, as barras, crescer pela moldura, o DPI, a procura com tempo), `core/gravura_scantailor.py` | a fazer | | |
+| 4. a seleção (as áreas e as máscaras) | `core/selecao.py` (fora do já lido) | a fazer | | |
+| 5. as zonas na folha | `core/zonas_na_folha.py` (fora do já lido) | a fazer | | |
+| 6. editar as áreas e a rede que aponta | `core/editar_zonas.py`, `core/rede_selecao.py` | a fazer | | |
+
 ## Pedaços (tela de trabalho, 26/11)
 
 | pedaço | situação | começo | fim | tempo |
