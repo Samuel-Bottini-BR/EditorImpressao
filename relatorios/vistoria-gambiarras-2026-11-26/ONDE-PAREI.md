@@ -81,8 +81,8 @@ abaixo); `core/girar.py`, `core/dividir.py` e `core/dividir_a_mao.py` já foram 
 | 0. a suspeita aberta | `core/pipeline._geometria` e `_chave_da_geometria` | feito (virou PP-02) | 27/11 13:54 | 27/11 13:58 |
 | 1. o caminho da página no pipeline e as chaves | `core/pipeline.py` L526-1720 (fora do já lido), L2778-3200, L5034-5210 | feito (5 achados, PP-03 a PP-07) | 27/11 13:58 | 27/11 14:03 |
 | 2. o conteúdo e o tamanho do livro | `core/pipeline.py` L1718-2300 (fora do já lido), `core/corte_pelo_conteudo.py`, `core/folha.py`, `core/unidades.py`, `core/paginas_diferentes.py` | feito (4 achados, PP-08 a PP-11) | 27/11 14:03 | 27/11 14:05 |
-| 3. cortar e borda preta | `core/recortar.py`, `core/borda_preta.py`, `core/caixas_scantailor.py`, `core/margens_scantailor.py`, `core/ajustar_pedaco.py` | feito (3 achados, PP-12 a PP-14) | 27/11 14:05 | 27/11 14:12 |
-| 4. endireitar e desentortar | `core/endireitar.py`, `core/endireitar_scantailor.py`, `core/desentortar_scantailor.py`, `core/guias.py`, `core/linhas_do_texto.py` | a fazer | | |
+| 3. cortar e borda preta | `core/recortar.py`, `core/borda_preta.py`, `core/caixas_scantailor.py`, `core/margens_scantailor.py`, `core/ajustar_pedaco.py` | feito (3 achados, PP-12 a PP-14) | 27/11 14:05 | 27/11 14:07 |
+| 4. endireitar e desentortar | `core/endireitar.py`, `core/endireitar_scantailor.py`, `core/desentortar_scantailor.py`, `core/guias.py`, `core/linhas_do_texto.py` | feito (4 achados, PP-15 a PP-18; fecha as duas suspeitas abertas) | 27/11 14:07 | 27/11 14:09 |
 | 5. girar e dividir: o que sobra | `core/dividir_scantailor.py`; em `girar.py`, `dividir.py`, `dividir_a_mao.py` só as buscas no programa inteiro (já lidos) | a fazer | | |
 | 6. etapas e ordem do preparo | `core/etapas.py` (fora do já lido), `core/ordem_do_preparo.py` | a fazer | | |
 
@@ -241,11 +241,12 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
 
 ### Abertas
 
-- (pedaço grande 2, pedaço 4; vista no pedaço 1) `core/pipeline._chave_do_desentortar` (L937) soma à chave da geometria só o modo e o "aumentando a página". Conferir em `core/desentortar_scantailor.preparar_no_corte` se ele lê outro campo da página ou do livro que não está nessa chave (a mesma família do PP-03).
-
-- (pedaço grande 2, pedaço 4; vista no pedaço 3) "O DPI dito ao ScanTailor": as caixas e o limpar pontinhos usam uma conta só (`pontinhos_scantailor.dpi_para_os_pontinhos`); conferir se `endireitar_scantailor.dpi_para_o_endireitar` (L142) e `desentortar_scantailor._dpi_ou_pela_altura` (L279) chamam essa mesma ou têm conta própria.
+(nenhuma)
 
 ### Fechadas
+
+- (pedaço grande 2, vista no pedaço 1; fechada no pedaço 4, 27/11) `_chave_do_desentortar` e o que o desentortar lê da página → **descartada como achado próprio**: `preparar_no_corte` só lê o modo, o lado (`metade`) e o "aumentando", e os três estão na chave (a metade, pela da geometria). O que falta na chave é o tamanho do livro, já no PP-03.
+- (pedaço grande 2, vista no pedaço 3; fechada no pedaço 4, 27/11) O DPI dito ao ScanTailor → o endireitar chama a conta única (`dpi_para_o_endireitar` → `dpi_para_os_pontinhos`); **o desentortar não: virou o achado PP-15**.
 
 - (pedaço grande 2, vista no pedaço 0 do grande 1; fechada no pedaço 0 do grande 2, 27/11) `_geometria` mede com o
   aviso "Parece em branco", que não está na chave → **virou o achado PP-02** (médio): o aviso muda depois de a
