@@ -80,7 +80,7 @@ abaixo); `core/girar.py`, `core/dividir.py` e `core/dividir_a_mao.py` já foram 
 |---|---|---|---|---|
 | 0. a suspeita aberta | `core/pipeline._geometria` e `_chave_da_geometria` | feito (virou PP-02) | 27/11 13:54 | 27/11 13:58 |
 | 1. o caminho da página no pipeline e as chaves | `core/pipeline.py` L526-1720 (fora do já lido), L2778-3200, L5034-5210 | feito (5 achados, PP-03 a PP-07) | 27/11 13:58 | 27/11 14:03 |
-| 2. o conteúdo e o tamanho do livro | `core/pipeline.py` L1718-2300 (fora do já lido), `core/corte_pelo_conteudo.py`, `core/folha.py`, `core/unidades.py`, `core/paginas_diferentes.py` | a fazer | | |
+| 2. o conteúdo e o tamanho do livro | `core/pipeline.py` L1718-2300 (fora do já lido), `core/corte_pelo_conteudo.py`, `core/folha.py`, `core/unidades.py`, `core/paginas_diferentes.py` | feito (4 achados, PP-08 a PP-11) | 27/11 14:03 | 27/11 14:12 |
 | 3. cortar e borda preta | `core/recortar.py`, `core/borda_preta.py`, `core/caixas_scantailor.py`, `core/margens_scantailor.py`, `core/ajustar_pedaco.py` | a fazer | | |
 | 4. endireitar e desentortar | `core/endireitar.py`, `core/endireitar_scantailor.py`, `core/desentortar_scantailor.py`, `core/guias.py`, `core/linhas_do_texto.py` | a fazer | | |
 | 5. girar e dividir: o que sobra | `core/dividir_scantailor.py`; em `girar.py`, `dividir.py`, `dividir_a_mao.py` só as buscas no programa inteiro (já lidos) | a fazer | | |
