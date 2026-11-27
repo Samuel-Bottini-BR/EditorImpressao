@@ -1,0 +1,1134 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vistoria das gambiarras: a lista (começada em 26/11/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Vistoria das gambiarras: a lista (começada em 26/11/2026)</h1>
+<p>Só leitura do código do ramo <code>obra-2026-10-26</code> (cópia <code>obra-juncao</code>, ponta <code>30920fe7</code>). Nenhuma linha de código mudou.
+A lista não fecha nada: nenhum item da Central muda de estado por causa dela. Sem propostas de conserto.</p>
+<h2>Legenda das colunas</h2>
+<ul>
+<li><strong>nº</strong>: o pedaço e o número do achado (G = girar; DV = dividir, e não D, para não confundir com os números de
+  decisão do Livro, D-xxx; DF = desfazer; AP = aplicar em; CF = como fica; MC = marcações; SP = situação da página;
+  RT = o resto da tela).</li>
+<li><strong>onde</strong>: arquivo e função (linha no <code>30920fe7</code>).</li>
+<li><strong>tipo</strong>: 1 = a mesma regra em mais de um lugar, com código diferente · 2 = conta ou regra na tela (<code>ui/</code>) que deveria
+  estar em <code>core/</code> · 3 = desvio por caso · 4 = peça que só protege outra peça · 5 = código morto.</li>
+<li><strong>grav.</strong>: GRAVE / médio / leve, pelo risco de o próximo conserto quebrar algo ao lado. Como li a régua: GRAVE = a
+  regra em 3 ou mais lugares, ou tipo 1 a 3 numa peça que o Kaique usa toda hora (o girar da tela: botões, cantos,
+  menu, teclas, tira e prévia); médio = 2 lugares, conta na tela, ou peça de vez em quando (a grade "Todas as
+  páginas", a capa do cartão); leve = código morto ou proteção que hoje não atrapalha.</li>
+<li><strong>outras cópias</strong>: onde mais a mesma coisa está escrita.</li>
+<li><strong>por quê</strong>: o commit e a data em que entrou (git log -S / -L) e a decisão do Livro; "não achei o motivo" quando não achei.</li>
+<li><strong>Central</strong>: o id da pergunta na fila lida da página (<code>fila-da-central.md</code>), se o achado a explica.</li>
+<li><strong>o que o Kaique perderia</strong>: se a peça sumisse hoje (sem nada no lugar).</li>
+</ul>
+<h2>Pedaço 1: girar (feito em 26/11/2026)</h2>
+<p>Caminhos que chegam no girar, e a função que cada um usa (achados com busca no código):
+botão "¼ à direita/esquerda/meia volta" do painel e a lista "aplicar em" → <code>BarraGirar.girar_pedido</code> → <code>_girar_folhas(giro)</code>;
+botões do canto da página → <code>_girar_folhas(giro, so_esta=True)</code>; menu Página e Ctrl+Seta → <code>_girar</code>/<code>_girar_esquerda</code>/
+<code>_girar_meia_volta</code> → <code>_girar_folhas</code>; grade "Todas as páginas" → <code>_acao_nas_escolhidas</code> (conta própria, G-03);
+desfazer/refazer → <code>historico_acoes.aplicar</code> (genérico); Automático: não gira (não tem etapa de girar); tela cheia e
+"comparar": não giram, só mostram (pelas prévias). Mostrar a página girada: PDF e prévias → <code>core/pipeline.preparar_para_recorte</code>;
+tira, grade, Dividir "Uma página" e "antes" do Automático → contas próprias (G-06).</p>
+<table>
+<thead>
+<tr>
+<th>nº</th>
+<th>onde</th>
+<th>tipo</th>
+<th>grav.</th>
+<th>outras cópias</th>
+<th>por quê</th>
+<th>Central</th>
+<th>o que o Kaique perderia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G-01</td>
+<td><code>ui/tela_conferir.py</code> <code>_girar_folhas</code> (L6570-6644): escolhe entre seis jeitos de montar o giro pelo jeito de ver a tela (ferramenta Dividir, "Uma página"/"Duas lado a lado": <code>_pagina_que_gira_sozinha</code> L6721, <code>_pagina_da_folha_dividida_no_dividir_em_duas</code> L6802) e pelo item da lista (<code>if alcance == ALCANCE_TODAS</code>, L6620, só para a D-662), não pelo que a folha é</td>
+<td>3</td>
+<td>GRAVE</td>
+<td>os jeitos: <code>_girar_so_a_pagina</code> L6742; <code>_girar_as_paginas</code> L6758 (com e sem <code>atual</code>); <code>_girar_as_divididas_pagina_por_pagina</code> L6646; <code>campos_do_giro</code> simples L6639; a grade (G-03). Cada um monta o seu dicionário e chama <code>_registrar</code></td>
+<td>um <code>if</code> por decisão: D-035/D-036 <code>3046cc43</code>, <code>27a0498d</code> (06/10); D-618 <code>93a390ed</code> (04/11); D-636 <code>78f2e025</code> (05/11); D-638/D-640 <code>99d7d782</code> (07/11); D-645 <code>df8db4ec</code> (07/11); D-662 <code>c76d4b97</code> (10/11). É o remendo A1 da revisão de 10/11, continua igual</td>
+<td><code>girar-dividir-outros</code> (D-666), <code>girar-dividir-tela</code> (D-665)</td>
+<td>nada do que funciona, se os caminhos virassem uma regra só; hoje cada decisão do girar só existe dentro do seu caminho</td>
+</tr>
+<tr>
+<td>G-02</td>
+<td><code>ui/tela_conferir.py</code> <code>_girar_folhas</code> no Dividir com "Duas lado a lado", numa folha dividida: "só esta folha", os botões do canto, "daqui em diante", "só as pares" e "só as ímpares" caem em <code>campos_do_giro</code> e gravam <code>rotacao</code> na folha dividida (L6633-6644). O próprio <code>core/girar.py</code> (L460; e a tela, L6668) marca isso como "Arriscado: por 'rotacao' numa folha dividida (volta o a-70)": cada página vira meia folha deitada com pedaço da vizinha. Só o "todas as folhas" foi trocado (D-662). E o resultado nas outras folhas muda conforme a folha da vez: partindo da capa inteira, as divididas giram página por página (D-638, L6673); partindo de uma folha dividida, giram inteiras</td>
+<td>3</td>
+<td>GRAVE</td>
+<td>o mesmo item fora do Dividir vai por <code>_girar_as_paginas</code> (página por página)</td>
+<td>D-666 "não construída (fila de consertos)" no Livro; o "só esta folha" e os botões do canto ali: não achei decisão do Samuel (o ONDE-PAREI do girar-capa, <code>a7e534c0</code>, escreve "gira a folha, D-618", mas a D-618 do Livro não fala do Dividir). Contra a D-667 ("se mudou a ferramenta, muda em todos os lugares")</td>
+<td><code>girar-dividir-outros</code></td>
+<td>nada: hoje esse caminho dá a página com pedaço da vizinha</td>
+</tr>
+<tr>
+<td>G-03</td>
+<td><code>ui/tela_conferir.py</code> <code>_acao_nas_escolhidas</code> (L7317-7327) e <code>_girar_as_escolhidas_que_sao_metade</code> (L7356-7394): a grade gira cada escolhida ¼ a partir de onde está; o painel deixa todas "viradas como a da vez" (D-035). A soma da folha é feita à mão duas vezes, <code>(rotacao + giro) % 360</code> (L7322 e L7382), em vez de <code>girar.nova_rotacao</code> (<code>core/girar.py</code> L170, que também arredonda giro estranho); a da página tem função própria no core, <code>campos_do_giro_relativo_das_paginas</code> (L407)</td>
+<td>1</td>
+<td>GRAVE (a mesma soma em 3 lugares)</td>
+<td><code>core/girar.campos_do_giro</code> / <code>campos_do_giro_das_paginas</code> (o jeito do painel)</td>
+<td>grade: <code>e2321b16</code> (26/10, etapa 3; D-487 é "escolha da gerente"); página na grade: <code>78f2e025</code> (05/11, D-636, docstring: "a grade sempre girou assim"). Não achei decisão do Samuel que mande a grade girar diferente do painel</td>
+<td><code>au-d-487</code> (o Samuel: "tem que ver se não tem gambiarra ai"; a gerente listou este remendo)</td>
+<td>o girar das escolhidas na grade</td>
+</tr>
+<tr>
+<td>G-04</td>
+<td><code>ui/tela_conferir.py</code>: a mesma ação de girar sai em dois formatos, conforme o caminho: alvo "folha" com <code>pagina:&lt;i&gt;.&lt;campo&gt;</code> (<code>_girar_folhas</code>, <code>_girar_as_divididas_pagina_por_pagina</code> L6683, grade sem metade L7324) ou alvo "pagina" com <code>folha:&lt;f&gt;.rotacao</code> (<code>_com_as_folhas_inteiras_tambem</code> L6880, grade com metade L7388). <code>_com_a_marca_mexida_a_mao</code> (L6046) e <code>_com_os_avisos_de_agora</code> (L6021) só veem os campos sem prefixo: a folha que gira pelo formato "pagina" não ganha a marca "girar", e os avisos guardados são só os do lado do alvo</td>
+<td>3</td>
+<td>médio</td>
+<td>—</td>
+<td>formato "folha:" entrou com <code>78f2e025</code> (05/11, grade) e <code>99d7d782</code> (07/11, D-640); formato "pagina:" com <code>06b80752</code> (04/11, "girar - sim"). Não achei decisão sobre isso</td>
+<td>—</td>
+<td>nada achado hoje: a falta da marca fica coberta por outra regra (<code>modelos.Projeto.so_cadernos</code> recusa o caminho rápido com folha dividida)</td>
+</tr>
+<tr>
+<td>G-05</td>
+<td><code>ui/tela_conferir.py</code> <code>_com_as_folhas_inteiras_tambem</code> (L6832-6882) e <code>_com_as_paginas_que_giram_junto</code> (L6689-6719): a regra da D-640/D-645 (quais folhas inteiras giram junto, e com que giro, lido de volta de <code>campos["giro_da_pagina"][str(atual)]</code>) e a conta "quanto esta página girou" moram na tela; a regra-espelho da D-638 mora no core</td>
+<td>2</td>
+<td>GRAVE</td>
+<td><code>core/girar.campos_do_giro_numa_folha_inteira</code> (L464, D-638); a conta <code>(final - antes) % 360</code> também em <code>campos_do_giro_das_paginas</code> (L403) e L488; a tela faz <code>(final - nova_rotacao(rotacao, 0)) % 360</code> (L6711)</td>
+<td><code>06b80752</code> (04/11, "girar - sim"); <code>99d7d782</code> e <code>df8db4ec</code> (07/11, D-640, D-645). O docstring do core diz: "A D-640 [...] mora na tela"</td>
+<td>—</td>
+<td>a capa aberta que gira junto (D-640, D-645) e o corte à mão, o tamanho e o lugar do conteúdo que giram com a folha ("girar - sim")</td>
+</tr>
+<tr>
+<td>G-06</td>
+<td>Desenhar a página girada ("gira a folha → divide → gira só a página") está escrito em cinco lugares: <code>core/pipeline.preparar_para_recorte</code> (L544-560, o do PDF), <code>core/automatico.antes_da_pagina</code> (L1350-1364), <code>ui/tela_conferir._atualizar_previa</code> no Dividir "Uma página" (L4545-4553), <code>ui/tela_conferir._pagina_dentro_da_folha</code> da grade (L8436-8459) e <code>ui/widgets/tira_miniaturas._mostrar_folha</code> + <code>_metade</code> (L854-869, L945-957). A linha do meio difere: o core usa <code>dividir_imagem</code> (arredonda e prende entre 2% e 98%); a grade e a tira, <code>int(posicao * largura)</code> sem prender. A tampa e a sobra só existem no pipeline; o "antes" do Automático deixa a folha inteira sem giro (de propósito, pelo docstring)</td>
+<td>1 (e 2)</td>
+<td>GRAVE</td>
+<td>as cinco ao lado</td>
+<td>tira <code>edd5db7a</code> (06/10, D2 do girar); grade <code>744292de</code> (21/10); <code>antes_da_pagina</code> <code>55a816df</code> (30/10, D-577); a D-618 (<code>93a390ed</code>, 04/11) teve de pôr o giro da página em cada cópia (8 arquivos no mesmo commit)</td>
+<td>—</td>
+<td>a tira, a grade, o Dividir "Uma página" e o "antes" da janela grande do Automático mostrarem a página virada (nada, se chamassem a conta do pipeline)</td>
+</tr>
+<tr>
+<td>G-07</td>
+<td><code>ui/tela_conferir.py</code> <code>_proporcao_da_pagina</code> (L7161-7193, usada no corte que "acompanha o texto", L7215) e <code>_tamanhos_estimados</code> (L8835-8872, o lado a lado antes da prévia chegar): a forma da página depois de girar e dividir, escrita duas vezes, diferente: <code>% 180 == 90</code> contra <code>in (90, 270)</code>; a parte da metade presa em 5% contra 5% a 95%; o corte à mão só na segunda</td>
+<td>1 (e 2)</td>
+<td>médio</td>
+<td>a troca largura/altura da folha girada também em <code>core/automatico.vai_dividir_pelo_tamanho</code> (L1664)</td>
+<td><code>e2321b16</code> (26/10) e <code>4d147bc4</code> (27/10); a D-618 (<code>93a390ed</code>) pôs a mesma linha nas duas</td>
+<td>—</td>
+<td>a proporção do corte que acompanha o ângulo (D-093/D-094) e o tamanho das páginas no lado a lado enquanto a prévia não chega</td>
+</tr>
+<tr>
+<td>G-08</td>
+<td>"Girar é mexido à mão" está em duas listas: a da tela <code>MARCAS_DA_FOLHA</code>/<code>MARCAS_DA_PAGINA</code> (<code>ui/tela_conferir.py</code> L10152-10173) e a do core <code>ETAPAS_DA_PAGINA</code>/<code>ETAPAS_DA_FOLHA</code> + <code>_tem_valor_a_mao</code> (<code>core/etapas.py</code> L102-103, L165). Nenhuma das duas conhece o giro só da página (<code>giro_da_pagina</code>, D-618): só <code>rotacao</code> da folha</td>
+<td>1 (e 2)</td>
+<td>médio</td>
+<td><code>core/etapas.tem_feito_a_mao_que_vale</code> (L611-614) e <code>marcar_pelos_valores</code> (L238-242) leem só a folha</td>
+<td>listas: <code>e2321b16</code> (26/10, etapa 3); a D-618 (<code>93a390ed</code>, 04/11) não acrescentou o campo da página. Remendo M6 da revisão de 10/11, continua</td>
+<td>—</td>
+<td>nada achado hoje: o giro da página só existe em folha dividida, e a folha dividida já tira o livro do caminho rápido (<code>modelos._tem_metade_de_folha_dividida</code>)</td>
+</tr>
+<tr>
+<td>G-09</td>
+<td><code>ui/tela_conferir.py</code> <code>_marcacoes_ainda_no_formato_antigo</code> (L6895-6917), chamada só pelo girar de folhas (L6634): confere as marcações no formato antigo e avisa; logo depois <code>_registrar</code> faz a mesma conferência em <code>_espera_pelas_marcacoes</code> (L6938-6983), com a mesma frase copiada (L6914-6916 e L6975-6977). Os outros caminhos do girar só têm a segunda</td>
+<td>4 (e 1)</td>
+<td>leve</td>
+<td>—</td>
+<td><code>9f8d4e53</code> (06/10, girar); a geral <code>5b4598a6</code> (06/10) diz "Recebe a mesma protecao do giro (9f8d4e5)", e a do giro ficou</td>
+<td>—</td>
+<td>nada: a segunda cobre o mesmo caso</td>
+</tr>
+<tr>
+<td>G-10</td>
+<td><code>core/girar.py</code>: a regra "pares/ímpares fora do lugar avisa e não gira" está em duas funções, <code>aviso_fora_do_alcance</code> (L126, com <code>coisa</code> folha/página) e <code>aviso_fora_do_alcance_das_paginas</code> (L356), com três pares de frases; e a frase do Histórico em três: <code>descricao_do_giro</code> (L494), <code>descricao_do_giro_das_paginas</code> (L421), mais a da grade escrita na tela (L7326, L7392)</td>
+<td>1</td>
+<td>leve</td>
+<td>—</td>
+<td><code>27a0498d</code> (06/10, D-036); <code>a742bf48</code> (07/10, "página" do Endireitar); <code>78f2e025</code> (05/11, D-636 fez função nova em vez de usar <code>coisa</code>). A D-475 (o aviso dizer página e folha) está "não construída" no Livro</td>
+<td>—</td>
+<td>nada (só texto e uma conta de paridade)</td>
+</tr>
+<tr>
+<td>G-11</td>
+<td><code>ui/janela_principal.py</code> <code>_acertar_a_capa</code> (L1650-1666): a capa do cartão do livro acompanha só <code>folhas[0].rotacao</code>; o giro só da página 1 (D-618) não chega à capa</td>
+<td>1</td>
+<td>médio</td>
+<td>a página girada é desenhada pela conta do pipeline (G-06); a capa tem a sua em <code>projetos.refazer_miniatura_por_tras</code></td>
+<td><code>edd5db7a</code> (06/10, D2 do girar); a D-618 (<code>93a390ed</code>) não tocou neste arquivo. Remendo M6 da revisão de 10/11, continua</td>
+<td>—</td>
+<td>a capa do cartão virar junto com a folha 1</td>
+</tr>
+<tr>
+<td>G-12</td>
+<td>"O giro da folha agora" é lido de quatro jeitos: <code>int(f.rotacao) % 360</code> em <code>ui/tela_conferir._giros_das_folhas</code> (L3963), <code>ui/tarefas._giro_da_folha</code> (L1501), <code>ui/janela_principal._acertar_a_capa</code> (L1662), <code>core/automatico</code> (L554) e <code>core/dividir_a_mao</code> (L620); <code>girar.nova_rotacao(r, 0)</code> arredonda ao quarto mais perto (L170); o pipeline usa <code>folha.rotacao</code> cru (L545)</td>
+<td>1</td>
+<td>GRAVE (3 ou mais lugares)</td>
+<td>as cinco ao lado</td>
+<td>não achei o motivo (cada uma entrou com a sua tela: <code>edd5db7a</code> 06/10 e outras). Hoje os valores gravados são 0/90/180/270, então coincidem; a grade grava sem arredondar (G-03)</td>
+<td>—</td>
+<td>nada, enquanto o giro gravado for sempre 0/90/180/270</td>
+</tr>
+</tbody>
+</table>
+<h2>Pedaço 2: dividir (feito em 26/11/2026)</h2>
+<p>Números: <strong>DV</strong> = dividir (para não confundir com os números de decisão do Livro, D-xxx). Linhas no <code>1d9ca22f</code>
+(o mesmo código do <code>30920fe7</code>: o commit do pedaço 1 só mexeu na lista).</p>
+<p>Caminhos que chegam no dividir, e a função que cada um usa (achados com busca no código):
+"dividir esta" / "não dividir esta" (botão da ferramenta) → <code>_alternar_dividir</code> → <code>_dividir_esta</code> ou <code>_nao_dividir</code>;
+aviso "Não parece dupla" → <code>_nao_dividir</code>; "juntar todas" → <code>_juntar_todas</code> → <code>dividir_a_mao.campos_para_juntar_todas</code>;
+"dividir todas" → <code>_dividir_todas</code> → <code>TarefaLerLinhas</code> → <code>_dividir_as_lidas</code> → <code>_dividir_as_medidas</code>;
+grade "Todas as páginas", "dividir" → <code>_acao_nas_escolhidas</code> → <code>_dividir_escolhidas</code> → <code>TarefaDividirFolhas</code> →
+<code>_dividir_as_medidas</code>; arrastar a linha (ferramenta e tela cheia) → <code>_mover_corte</code> (folha dividida) ou
+<code>_mover_a_linha_da_folha_inteira</code> (D-609); "usar em todas" do Dividir → <code>_corte_em_todas</code>; lista "motor de corte" →
+<code>_trocar_jeito_da_folha</code> (folha inteira: <code>_linha_com_o_motor</code> → <code>ler_a_linha</code>; folha dividida: <code>pipeline.recalcular_divisao</code>);
+linha azul na folha inteira → <code>_acertar_a_linha_do_dividir</code> → <code>TarefaLerLinhas</code> → <code>ler_a_linha</code>;
+Automático, etapa Dividir → <code>automatico.medir</code> + <code>_dividir</code>; "Desligar" do Automático com o Dividir → <code>automatico._desligar</code>;
+prévia do Automático e caderno da etapa 7 → <code>automatico.paginas_do_pdf_depois</code> (conta própria, DV-10); análise ao abrir
+com "Dividir" ligado → <code>pipeline._analisar_a_folha</code>; desfazer/refazer → <code>historico_acoes.aplicar</code> (genérico,
+<code>PREFIXO_PAGINAS_DA_FOLHA</code>). Partir a página em duas: <code>dividir_a_mao.metades_da_pagina</code> (o dividir à mão e o
+Automático); juntar: três jeitos (DV-03).</p>
+<table>
+<thead>
+<tr>
+<th>nº</th>
+<th>onde</th>
+<th>tipo</th>
+<th>grav.</th>
+<th>outras cópias</th>
+<th>por quê</th>
+<th>Central</th>
+<th>o que o Kaique perderia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DV-01</td>
+<td>"Achar a linha da folha" (abrir a folha a 150 DPI, girar, pintar a tampa do scanner, achar a divisão) está escrito em quatro funções: <code>core/pipeline.recalcular_divisao</code> (L463-478, <strong>sem</strong> a tampa), <code>core/dividir_a_mao.ler_a_linha</code> (L589-625, com a tampa), <code>core/dividir_a_mao._folha_girada</code> (L550-562, só abre e gira, para a tampa do arrasto) e <code>core/automatico.medir</code> (L609-626, com a tampa); a análise ao abrir (<code>pipeline._analisar_a_folha</code> L223) acha a linha sem a tampa. O giro é lido de dois jeitos (<code>folha.rotacao</code> cru em L476, L562, L611; <code>int(rotacao) % 360</code> em L620). Consequência no código: trocar o "motor de corte" numa folha <strong>dividida</strong> (<code>ui/tela_conferir._trocar_jeito_da_folha</code> L6542 → <code>recalcular_divisao</code>) acha a linha na folha com a tampa preta; numa folha <strong>inteira ou juntada</strong> (L6529 → <code>_linha_com_o_motor</code> → <code>ler_a_linha</code>), na folha com a tampa pintada de branco. Num livro com tampa (Righetti), a mesma folha pode ganhar linhas diferentes</td>
+<td>1</td>
+<td>GRAVE</td>
+<td>as quatro ao lado e a da análise</td>
+<td><code>recalcular_divisao</code>: <code>bff787cd</code> (06/10, item 2.1), antes de existir a tampa; a tampa (D-495) entrou em <code>4d521de0</code> e <code>ee9f3270</code> (27/10, etapa 4) só nas funções novas; <code>ler_a_linha</code>: <code>1934a5ce</code> (03/11, D-602). É o remendo M4 da revisão de 10/11 (o Fable, 23/11: "continua"). Confirma a suspeita 1 do pedaço girar</td>
+<td>—</td>
+<td>nada, se as quatro chamassem uma só; a troca de motor na folha dividida continuaria (D-606)</td>
+</tr>
+<tr>
+<td>DV-02</td>
+<td>"Qual linha vale ao dividir" tem uma regra por botão: "dividir esta" (<code>ui/tela_conferir._dividir_esta</code> L6450-6478: a linha arrastada à mão, D-609; senão a linha que a tela mostra, lida sem forçar; se o motor acha a folha de uma página só, a conta forçada); "dividir todas" (<code>_dividir_as_lidas</code> L6407-6420: a arrastada ou a lida; a folha que o motor acha de uma página só fica inteira, mesmo juntada); grade "Todas as páginas" (<code>_dividir_escolhidas</code> L7427-7440 → <code>ui/tarefas.TarefaDividirFolhas</code> → <code>medir_para_dividir</code>: <strong>sempre</strong> a conta forçada; não olha a linha arrastada nem a linha que a ferramenta mostrou, e divide também a folha de uma página só). Os comentários da grade (L7403; <code>ui/tarefas.py</code> L423) dizem "pela MESMA conta do 'dividir esta'", e isso deixou de ser verdade. A escolha entre os três jeitos de chamar <code>campos_para_dividir</code> (sem linha / só a tampa / linha nova) está escrita duas vezes na tela (L6454-6478 e L7516-7523), e o teste "a folha volta como estava" (<code>len(paginas_da_folha) &gt;= 2 or metades_guardadas</code>) quatro vezes (<code>_volta_como_estava</code> L4176, L6453, L7429, L7518)</td>
+<td>1 (e 2, 3)</td>
+<td>GRAVE</td>
+<td>as três regras ao lado</td>
+<td>grade: <code>8622caf3</code> (27/10, D-558, a conta do "dividir esta" daquela data); a D-602 (<code>1934a5ce</code>, 03/11) e a D-609 (<code>ecf5e3a1</code>, 04/11) mudaram só o "dividir esta" e o "dividir todas" (conferido no <code>git show</code>: nenhuma linha da grade). Contra a D-667 ("se mudou a ferramenta, muda em todos os lugares"). Remendo M5 da revisão de 10/11, continua</td>
+<td>—</td>
+<td>nada: hoje a grade corta a folha onde a ferramenta não mostrou a linha</td>
+</tr>
+<tr>
+<td>DV-03</td>
+<td>Juntar a folha está feito de três jeitos: "não dividir esta", o botão do aviso "Não parece dupla" e "juntar todas" → <code>core/dividir_a_mao.campos_para_juntar</code> (L267: uma página inteira, as duas guardadas em <code>metades_guardadas</code>); o Automático com a medida "não dividir" (<code>core/automatico._dividir</code> L962-968) e o "Desligar" do Automático com o Dividir (<code>core/automatico._desligar</code> L1149-1160) → o jeito antigo: a folha fica não dividida com as duas páginas, a da direita "tirada do livro" e escondida (com o corte, a marcação e o giro só dela guardados). O contrário (a direita volta) também está em dois: <code>campos_para_dividir</code> L236-240 e <code>_dividir</code> L963-968. O comentário do <code>_dividir</code> (L934-935) ainda diz "como o 'não dividir esta' da ferramenta". No Automático, a folha de duas páginas que volta a dividir fica com as páginas de antes numa linha nova (L957); o "dividir esta" não muda a linha dela</td>
+<td>1 (e 3)</td>
+<td>GRAVE</td>
+<td><code>campos_para_juntar</code> / <code>_dividir</code> / <code>_desligar</code>; a regra da direita escondida tem ainda uma 4ª cópia em <code>paginas_do_pdf_depois</code> (DV-10)</td>
+<td>Automático e <code>_desligar</code>: <code>4d535ab6</code> (26/10, etapa 3); o botão refeito em <code>4d521de0</code> (27/10, etapa 4, D-498), sem mudar o Automático. Remendo A4 da revisão de 10/11 (o Fable: 1 página pelo botão, 2 pelo Automático, o contador "1 apagadas"). Confirma a suspeita 2 do pedaço girar (L1158)</td>
+<td><code>au-d-528</code> (a gerente: "Na mesma família, já conhecido desde 10/11: o Automático deixa a folha inteira de um jeito, e o 'não dividir esta', de outro")</td>
+<td>nada: o jeito novo já faz o mesmo para quem usa</td>
+</tr>
+<tr>
+<td>DV-04</td>
+<td>A folha "não dividida com duas páginas" (o estado que o Automático e o "Desligar" deixam, DV-03, e o de projeto antigo) precisa de três regras para não sair repetida: <code>modelos.Projeto.paginas_ativas</code> e <code>metade_sobrando</code> (L841-893: fica a primeira página <strong>não tirada</strong> da folha), <code>ui/tela_conferir._passos_do_dividir</code> (L4076-4085: as setas do Dividir param na <strong>primeira</strong> página da folha, tirada ou não) e a cópia de <code>paginas_ativas</code> dentro de <code>core/automatico.paginas_do_pdf_depois</code> (L1745-1756)</td>
+<td>4 (e 1)</td>
+<td>médio</td>
+<td>as três ao lado</td>
+<td><code>paginas_ativas</code>: <code>e93c0853</code> (06/10, "a folha não some mais do PDF com a esquerda apagada"); <code>_passos_do_dividir</code>: <code>cd36c4d9</code> (02/11, D-601); a cópia: <code>35affb34</code> (04/11, D-603)</td>
+<td>—</td>
+<td>com o DV-03 como está, a folha sairia duas vezes no PDF</td>
+</tr>
+<tr>
+<td>DV-05</td>
+<td>Dividir de novo uma folha juntada tem três regras do que passa da página juntada para as duas: (a) <code>campos_para_dividir</code> com as metades guardadas (L244-250, o "dividir esta", o "dividir todas" e a grade): voltam as duas de antes, e da página juntada só passam "tirar do livro" e "em branco"; a marcação e o filtro mudados na juntada se perdem sem aviso; (b) a primeira divisão (<code>metades_da_pagina</code> + <code>LIMPAR_AO_PARTIR</code>, L86-152): passam o filtro e os ajustes, e as marcações à mão vão para a metade em que estão (D-528); (c) o Automático (<code>core/automatico._dividir</code> L971-985) numa folha juntada <strong>joga fora</strong> as guardadas (<code>folha.metades_guardadas = None</code>) e parte a página juntada pela regra (b), o contrário do que fazem os três botões da tela (D-498: "devolve as duas como estavam")</td>
+<td>1</td>
+<td>GRAVE</td>
+<td>as três ao lado</td>
+<td>(a) e (c): <code>4d521de0</code> (27/10, etapa 4, D-498; o comentário do Automático diz que as guardadas "eram de outra linha"); (b) com as marcações: <code>6e9eea30</code> (27/10, D-528), só na regra (b). Não achei decisão do Samuel que mande o Automático fazer diferente dos botões</td>
+<td><code>au-d-528</code> (o "caminho esquecido" que a gerente provou rodando em 17/11: "A segunda não leva as marcações"; D-761: "tem que ver se não tem gambiarra nessa decisão, e nessa função")</td>
+<td>nada, se fosse uma regra só</td>
+</tr>
+<tr>
+<td>DV-06</td>
+<td><code>core/zonas_na_folha.repartir_nas_metades</code> (L531-552): sem a geometria da página inteira desenhada, reparte as marcações por uma conta aproximada (só a fração x), um segundo caminho para a mesma coisa</td>
+<td>4</td>
+<td>leve</td>
+<td>a conta com a geometria, no mesmo laço (L532-544)</td>
+<td><code>6e9eea30</code> (27/10, D-528)</td>
+<td><code>au-d-528</code> (a gerente: "Uma conta de reserva [...] Pela tela isso não deve acontecer")</td>
+<td>a marcação de uma página nunca desenhada, ao dividir (pela tela isso não deve acontecer; não vi o caso)</td>
+</tr>
+<tr>
+<td>DV-07</td>
+<td>"A linha da divisão presa entre 2% e 98%" está escrita em cinco lugares: <code>core/dividir.dividir_imagem</code> L183, <code>core/dividir_a_mao.area_da_tampa_na_pagina</code> L655, <code>core/zonas_na_folha._corte_efetivo</code> L316 e <code>repartir_nas_metades</code> L517 (duas vezes no mesmo arquivo), <code>ui/widgets/visualizador</code> L596 (a linha da tela); a grade e a tira cortam sem prender (G-06)</td>
+<td>1</td>
+<td>GRAVE (5 lugares)</td>
+<td>as cinco ao lado</td>
+<td><code>dividir_imagem</code>: <code>d2b2265c</code> (18/07); visualizador: <code>d9fae8c2</code> (18/07); <code>_corte_efetivo</code>: <code>7cb56c1c</code> (05/10, D2); tampa: <code>eea610a9</code> (27/10, D-559); repartir: <code>6e9eea30</code> (27/10, D-528). Cada uma copiou a do <code>dividir_imagem</code> (os comentários de L648 e L315 dizem isso)</td>
+<td>—</td>
+<td>nada; hoje coincidem, mudar o número num só desencontraria a linha da tela, a tampa e a marcação</td>
+</tr>
+<tr>
+<td>DV-08</td>
+<td>Mudar a linha de uma folha <strong>já dividida</strong> tem quatro caminhos com regras diferentes: arrastar (<code>_mover_corte</code> L6098: procura a tampa na primeira vez, marca conferida); "usar em todas" (<code>_corte_em_todas</code> L6157: não procura a tampa, não marca conferida); trocar o motor (<code>_trocar_jeito_da_folha</code> L6538-6552: sem a tampa, DV-01; marca conferida); Automático (<code>_dividir</code> L957 + <code>_a_tampa</code>: procura a tampa, tira a marca "mexida à mão"). Nenhum reparte as marcações das metades na linha nova (a primeira divisão reparte, D-528). O "usar em todas" grava a linha também nas folhas inteiras, sem a marca <code>linha_a_mao</code> da D-609: na folha nunca dividida a tela continua mostrando a linha do motor e o "dividir esta" corta nela; na folha juntada, a linha do "usar em todas" vale</td>
+<td>1 (e 3)</td>
+<td>médio</td>
+<td>os quatro ao lado</td>
+<td>arrastar com a tampa: <code>ee9f3270</code> (27/10, D-495: a tampa "sai quando a folha é girada e dividida à mão"); "usar em todas": <code>d9fae8c2</code> (18/07) e <code>577e6ec8</code> (27/10, a lista da D-090); a D-609 (<code>ecf5e3a1</code>, 04/11) não mexeu no "usar em todas". Não achei decisão sobre a tampa no "usar em todas"</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>DV-09</td>
+<td>O "corte da sobra" (opção do Cortar, D-081) é medido pelo Automático (<code>core/automatico.medir</code> L631-632) mas só é gravado dentro do Dividir (<code>_dividir</code> L989-990): pela leitura do código, rodar o Cortar com "corte da sobra" sem o Dividir na mesma vez não grava a sobra. E a medida do Automático não tem a folga do giro (<code>pipeline.folga_do_giro_na_sobra</code>, o conserto do Cursus 3 da etapa 10a, D-104), que só a análise ao abrir aplica (<code>_analisar_a_folha</code> L232)</td>
+<td>3 (e 1)</td>
+<td>médio</td>
+<td>a análise ao abrir (L225-232)</td>
+<td>Automático: <code>4d535ab6</code> (26/10, etapa 3); a folga: <code>e6342990</code> (26/10, etapa 10a), só no <code>_analisar_a_folha</code>. Não rodei: tirado da leitura</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>DV-10</td>
+<td><code>core/automatico.paginas_do_pdf_depois</code> (L1682-1757) é uma segunda cópia do <code>_dividir</code> (o próprio docstring: "Arriscado: mudar o <code>_dividir</code> sem mudar aqui"): "vai dividir?" refeito pelo tamanho da folha (<code>vai_dividir_pelo_tamanho</code> L1641) em vez da medida, a direita escondida (DV-03), <code>paginas_ativas</code> (DV-04) e a capa aberta (<code>_capa_aberta</code>, D-616). A chave que guarda esse resultado está copiada em dois arquivos da tela: <code>ui/automatico.py</code> L1743-1749 e <code>ui/widgets/folhas_do_caderno.py</code> L462-468</td>
+<td>1</td>
+<td>médio</td>
+<td><code>_dividir</code>, <code>_capa_aberta</code>, <code>paginas_ativas</code>; as duas chaves</td>
+<td><code>35affb34</code> (04/11, D-603), <code>ee5b1049</code> (04/11, D-614), <code>b701df31</code> (04/11, D-616). Existe por velocidade (o <code>_dividir</code> numa cópia levava 0,35 s num livro de 700 folhas, pelo docstring); a prova de que dá o mesmo é <code>tests/test_caderno_segue_as_etapas.py</code></td>
+<td>—</td>
+<td>a prévia do Automático e o caderno da etapa 7 seguindo o Dividir marcado sem parar a tela (D-603, D-614)</td>
+</tr>
+<tr>
+<td>DV-11</td>
+<td>Duas tarefas de fundo para a mesma leitura: <code>ui/tarefas.TarefaDividirFolhas</code> (L418: recebe o projeto e o lê no fio de fundo; conta forçada) e <code>TarefaLerLinhas</code> (L467: só o caminho do PDF e a rotação; sem forçar)</td>
+<td>1</td>
+<td>leve</td>
+<td>—</td>
+<td><code>8622caf3</code> (27/10, D-558) e <code>1934a5ce</code> (03/11, D-602)</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>DV-12</td>
+<td>"As páginas da folha, sem a página em branco posta à mão" (D-623) existe como função (<code>core/dividir_a_mao.paginas_da_folha</code>/<code>_da_folha</code>), mas está reescrita à mão em <code>core/automatico._dividir</code> L956, <code>_desligar</code> L1152, <code>paginas_do_pdf_depois</code> L1715, <code>ui/tela_conferir._passos_do_dividir</code> L4079 e <code>modelos.Projeto._de_folha_nao_dividida</code> L877; e duas listas das páginas de uma folha <strong>contam</strong> a página posta como da folha: <code>core/automatico.fotografar</code> L543-544 (decide se a folha é pulada como mexida à mão) e <code>ui/tela_conferir._paginas_das_folhas</code> L6090 (depois de dividir: medir o "em branco", escolher as páginas novas na grade)</td>
+<td>1</td>
+<td>GRAVE (5 cópias e 2 diferentes)</td>
+<td>as sete ao lado</td>
+<td>a D-623 (04/11) pôs o <code>inserida</code> lugar por lugar; é o remendo M7 da revisão de 10/11 ("26 testes <code>getattr(..., 'inserida', ...)</code>"), continua</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>DV-13</td>
+<td>Dados gravados que ninguém lê: <code>ConfigFolha.confianca_corte</code> (gravado em <code>pipeline</code> L244 e L508, <code>automatico._dividir</code> L960, <code>dividir_a_mao.campos_para_dividir</code> L258, <code>ui/tela_conferir</code> L6531 e L6549) e <code>ConfigFolha.e_paisagem</code> (<code>pipeline</code> L245 e L509, <code>automatico</code> L961, <code>dividir_a_mao</code> L259): nenhum arquivo de <code>core/</code>, <code>ui/</code>, <code>modelos.py</code>, <code>projetos.py</code> ou <code>historico_acoes.py</code> os lê. O aviso "Lombada incerta" vem da medida na hora (<code>analise.analisar_folha</code> L721-725), não do campo</td>
+<td>5</td>
+<td>leve</td>
+<td>—</td>
+<td>não achei o motivo de continuarem gravados</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>DV-14</td>
+<td><code>core/pipeline.trazer_divisao_da_analise</code> (L481-512): só os testes a chamam (<code>tests/test_dividir_no_programa.py</code>); a chamada em <code>ui/janela_principal._analise_pronta</code> saiu em <code>e2321b16</code> (26/10, etapa 3: o livro abre direto na área de trabalho), e o docstring ainda cita essa chamada</td>
+<td>5</td>
+<td>leve</td>
+<td>—</td>
+<td>entrou em <code>bff787cd</code> (06/10, item 2.1); a chamada saiu em <code>e2321b16</code> (26/10)</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>DV-15</td>
+<td><code>core/pipeline.achar_divisao</code> (L327-335): quando o ScanTailor corta na beirada da folha, a "Lombada incerta" é ligada baixando a confiança de propósito (<code>min(achada.confianca, CONFIANCA_LOMBADA_MIN / 2)</code>), em vez de um sinal próprio: a regra do aviso passa a depender de um número posto para dispará-lo</td>
+<td>3</td>
+<td>leve</td>
+<td>a regra do aviso em <code>analise.analisar_folha</code> L724</td>
+<td><code>4d521de0</code> (27/10, etapa 4); a D-500 (escolha da gerente) pede o aviso; o jeito de ligar não está na decisão</td>
+<td>—</td>
+<td>o aviso "Lombada incerta" nessas folhas</td>
+</tr>
+<tr>
+<td>DV-16</td>
+<td>"Folha juntada" está definida duas vezes: <code>core/automatico.paginas_juntadas</code> (L409-410, o aviso do Automático, D-607: conta também as do "juntar todas") e <code>core/dividir_a_mao.folhas_juntadas_a_mao</code> (L398-408, o aviso do "dividir todas", D-613: não conta as do "juntar todas"). O comentário de <code>JUNTAR_TODAS_CONTA</code> (L359-364) ainda diz "PERGUNTA ABERTA ao Samuel"; o Livro (D-613) registra a resposta dele de 04/11 ("2- ok": só as juntadas uma por uma)</td>
+<td>1</td>
+<td>leve</td>
+<td>—</td>
+<td><code>b33a16ed</code> (03/11, D-607) e <code>725764c6</code> (04/11, D-613)</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+</tbody>
+</table>
+<h2>Pedaço 3: desfazer (feito em 26/11/2026)</h2>
+<p>Números: <strong>DF</strong> = desfazer. Linhas no <code>1197669a</code> (o mesmo código do <code>30920fe7</code>).</p>
+<p>Caminhos que chegam no desfazer, e a função que cada um usa (achados com busca no código):
+Ctrl+Z e Ctrl+Shift+Z → atalho do menu Editar (<code>ui/barra_de_menu.py</code> L146-147) → <code>TelaConferir.desfazer</code>/<code>refazer</code>
+(e, de reserva, <code>tratar_tecla</code> L9856-9861, que atende também Ctrl+Y; DF-07); botões "Desfazer"/"Refazer" da barra de
+baixo e do painel Histórico → <code>desfazer</code>/<code>refazer</code>; clicar numa linha do painel Histórico → <code>_voltar_no_historico</code> →
+<code>HistoricoAcoes.voltar_para</code> (DF-04); botão direito → "Desfazer nesta página" → <code>ui/desfazer_nesta_pagina.desfazer</code>
+(ação própria, DF-01); "Desfazer o tirar o fundo" (menu Filtro e painel) → <code>desfazer_o_tirar_o_fundo</code> (uma ação comum,
+com a regra em <code>core/fundo_tirado</code>); o editor de marcar → pilha própria (DF-07). Por baixo de todos: <code>HistoricoAcoes.desfazer</code>/<code>refazer</code>
+→ <code>historico_acoes.aplicar</code> (um só, genérico). Quem põe a ação no Histórico: sete portas (DF-01).</p>
+<table>
+<thead>
+<tr>
+<th>nº</th>
+<th>onde</th>
+<th>tipo</th>
+<th>grav.</th>
+<th>outras cópias</th>
+<th>por quê</th>
+<th>Central</th>
+<th>o que o Kaique perderia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DF-01</td>
+<td>"Pôr uma mudança no Histórico" tem sete portas, cada uma com o seu conjunto de proteções: <code>ui/tela_conferir._registrar</code> (L5942-5980: espera as marcações no formato antigo, marca "mexida à mão", guarda os avisos de agora, <code>montar_acao</code> com o fundo tirado, limpa as prévias, refaz a lista de páginas, mede o "em branco"); <code>_gravar_no_livro</code> (L2262-2271: <code>montar_acao</code> vazia e os campos "livro." escritos à mão); <code>_registrar_a_marcacao</code> (L3098-3117: <code>Acao.nova</code> à mão, sem <code>montar_acao</code>); <code>_aceitar_avisos</code> (L9509-9514: <code>montar_acao</code> sem o <code>_registrar</code>, "de propósito", para não refazer as prévias); <code>ui/desfazer_nesta_pagina.desfazer</code> (L183-231: <code>Acao.nova</code> à mão; copia três passos do <code>_registrar</code> e o próprio comentário, L210-213, diz "esta ação é montada aqui, sem passar por lá"); <code>ui/janela_principal</code> L968-976 (o "Sim" da pergunta do fundo: <code>montar_acao</code> e campos "livro." à mão); e o Automático (<code>core/automatico</code> L755 e L770 montam <code>Acao.nova</code>; <code>ui/janela_principal</code> L1414 registra). Cada proteção nova precisa ser posta porta por porta (o fundo tirado da D-646 foi posto em <code>montar_acao</code> e copiado à mão no "Desfazer nesta página")</td>
+<td>1</td>
+<td>GRAVE (7 lugares, desfazer)</td>
+<td>as sete ao lado</td>
+<td><code>_registrar</code>: 18/07 (<code>d9fae8c2</code>) e cada etapa depois; <code>_registrar_a_marcacao</code>: <code>4f881001</code> (27/10, etapa 9b-2); <code>_aceitar_avisos</code> sem o <code>_registrar</code>: <code>fbe0b7fa</code> (12/10); <code>_gravar_no_livro</code>: <code>9861e4f4</code> (20/10); "Desfazer nesta página": <code>5f081246</code> (04/11, D-621). Remendo M1 da revisão de 10/11 ("o 'Desfazer nesta página' ainda copia o <code>_registrar</code>"); o Fable (23/11, Pergunta 2) propõe a "porta única"</td>
+<td>—</td>
+<td>nada, se as sete passassem por uma</td>
+</tr>
+<tr>
+<td>DF-02</td>
+<td>Os valores "como veio do scan" do "Desfazer nesta página" (<code>ui/desfazer_nesta_pagina.campos_para_desfazer</code> L149-162: ângulo 0, corte (0, 0, 1, 1), tamanho 100% sem mover, Original, marcação vazia) são cópias, escritas de novo, do que cada botão da ferramenta grava: <code>_angulo_zero</code> (L7649), <code>_sem_recorte</code> (L7018-7023), <code>_conteudo_como_veio</code> → <code>_gravar_o_conteudo</code> (L2498-2554), o Original do painel (L7776-7778) e o "Limpar tudo" do Marcar. O cabeçalho do arquivo (L41-42) avisa: "Arriscado: gravar outro valor que não o do botão da ferramenta". O Mover desfeito pula a conta do <code>_gravar_o_conteudo</code> (arredondar, prender o tamanho)</td>
+<td>1</td>
+<td>médio</td>
+<td>os cinco botões ao lado</td>
+<td><code>5f081246</code> (04/11, D-621: "Só as marcadas voltam ao que veio do scan")</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>DF-03</td>
+<td><code>ui/desfazer_nesta_pagina.etapas_que_mexeram</code> (L89-140): a tela decide "esta etapa mexeu nesta página" com contas próprias (<code>_endireitar_mexeu</code>, <code>_corte_mexeu</code>, <code>_gravuras_mexeu</code>; o filtro "marcação feita à mão" <code>origem == MAO</code> reescrito, como em <code>core/dividir_a_mao.metades_da_pagina</code> L138-139), ao lado das regras do core para a mesma página (<code>core/etapas.mexida_a_mao</code>, <code>_tem_valor_a_mao</code>, <code>endireita_sozinho</code>, <code>corta_sozinho</code>)</td>
+<td>2</td>
+<td>médio</td>
+<td><code>core/etapas</code></td>
+<td><code>5f081246</code> (04/11, D-621)</td>
+<td>—</td>
+<td>as caixinhas apagadas nas etapas que não mexeram na página (D-621)</td>
+</tr>
+<tr>
+<td>DF-04</td>
+<td>O desfazer tem três caminhos com passos diferentes depois de mudar o livro: Ctrl+Z, botão e menu (<code>TelaConferir.desfazer</code> L9661-9672: espera as marcações antigas, limpa as prévias, <code>lista_de_paginas_mudou</code>, <code>_reacertar_as_opcoes</code>); Ctrl+Y (<code>refazer</code> L9675-9687: o mesmo, e mais <code>_medir_o_em_branco_ao_refazer</code>, uma cópia do que o <code>_registrar</code> faz depois de dividir e de mover a linha, L5959-5976, posta só no refazer); e clicar no painel Histórico (<code>_voltar_no_historico</code> L1552-1567: espera as marcações, limpa as prévias e chama <code>atualizar</code>; não chama <code>lista_de_paginas_mudou</code> nem <code>_reacertar_as_opcoes</code> nem a medida do "em branco"). Não rodei: não sei se o <code>atualizar</code> refaz a tira depois de voltar um dividir pelo painel</td>
+<td>1 (e 3)</td>
+<td>GRAVE (desfazer, 3 caminhos)</td>
+<td>os três ao lado</td>
+<td>painel: <code>fe6a449c</code> (08/08); a lista de páginas no Ctrl+Z/Ctrl+Y: <code>e2321b16</code> (26/10, etapa 3: "o Automático muda a lista"); a medida no refazer: <code>046c5b3b</code> (03/11, D-497, defeito do Gradus "dividir todas" → Ctrl+Z → Ctrl+Y); a caixinha do Dividir: <code>b4cf2e61</code> (04/11, D-590). Nenhum desses commits tocou no <code>_voltar_no_historico</code></td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>DF-05</td>
+<td>Dividir uma folha fica guardado no Histórico de dois jeitos: o dividir à mão guarda só as páginas daquela folha (<code>paginas_da_folha:&lt;f&gt;</code>, <code>historico_acoes.py</code> L531-539) e o Automático guarda as listas inteiras do livro (<code>livro.paginas</code> e <code>livro.folhas</code>, L433-437, <code>core/automatico._Gravador.guardar_a_estrutura</code>). Mais duas trocas da lista com formato próprio (<code>livro.ordem_das_paginas</code>, <code>livro.paginas_inseridas</code>) e dois formatos para mudar outro item na mesma ação (<code>pagina:&lt;i&gt;.&lt;campo&gt;</code> e <code>folha:&lt;f&gt;.&lt;campo&gt;</code>, já no G-04)</td>
+<td>1</td>
+<td>médio</td>
+<td>—</td>
+<td>Automático: <code>4d535ab6</code> (26/10, etapa 3); dividir à mão: <code>4d521de0</code> (27/10, etapa 4; o comentário L536-537: "Guarda só as páginas de uma folha (leve), e não o livro inteiro como o Automático")</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>DF-06</td>
+<td>"Os campos que são tupla e o arquivo grava como lista" estão em duas listas diferentes: <code>historico_acoes._CAMPOS_TUPLA</code> (L598-599: recorte, recorte_detectado, tamanho_folha_cm, conteudo_deslocamento, sobra), usada no Ctrl+Z, e o carregar do projeto (<code>modelos._migrar_folha</code> e <code>_migrar</code>, L1130-1150: sobra, recorte, tamanho_folha_cm). Depois de reabrir o livro, <code>conteudo_deslocamento</code> fica lista; depois de um Ctrl+Z, tupla (o próprio comentário L591-596 conta o "bug latente" de comparar com <code>== (a, b)</code>, e <code>_gravar_o_conteudo</code> L2507-2508 compara com <code>tuple(...)</code> por isso). <code>recorte_detectado</code> não é mais campo do modelo</td>
+<td>1</td>
+<td>médio</td>
+<td>as duas ao lado</td>
+<td>a lista do desfazer: <code>9c5ce236</code> (18/07), <code>conteudo_deslocamento</code> em <code>b15ac310</code> (25/09), a sobra em <code>4d535ab6</code> (26/10); o carregar: <code>d9fae8c2</code> (18/07) e o item 2.1</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>DF-07</td>
+<td>O editor de marcar guarda uma pilha própria de desfazer (<code>ui/widgets/editor_selecao</code> <code>_marcos</code>, até 200 passos, L297, L436-446, L465-467) e atende o Ctrl+Z no <code>keyPressEvent</code> dele (L1034-1037); <code>TelaConferir._desfazer_marcacao</code> (L3120-3130), que escolhia entre essa pilha e o Histórico, não tem quem a chame. O Ctrl+Z tem mais dois donos: o atalho do menu Editar (<code>ui/barra_de_menu.py</code> L146) e <code>TelaConferir.tratar_tecla</code> (L9856-9861). Pela leitura, o atalho do menu pega a tecla antes (o editor só pede a Delete no ShortcutOverride, L1004-1010), e os outros dois ficam de reserva; não rodei</td>
+<td>4 (e 5)</td>
+<td>leve</td>
+<td>os três donos do Ctrl+Z</td>
+<td>o editor: <code>f15e4694</code> (01/08, "A aba Marcar entra no programa"); a chamada do <code>_desfazer_marcacao</code> saiu em <code>fe6a449c</code> (08/08), pelo <code>git log -S</code>; a marcação foi para o Histórico em <code>4f881001</code> (27/10, etapa 9b-2), e a pilha do editor ficou</td>
+<td>—</td>
+<td>nada, se o atalho do menu for mesmo quem atende</td>
+</tr>
+<tr>
+<td>DF-08</td>
+<td><code>ui/desfazer_nesta_pagina._metade_clicada_no_dividir</code> (L405-429): no Dividir com "Duas lado a lado", acha a página da metade clicada com um laço próprio (L424-426) que não pula a página em branco posta à mão (D-623): é mais uma cópia de "as páginas da folha" (DV-12); a linha que separa as metades é a da tela (<code>vis.posicao_corte</code>, presa entre 2% e 98% no visualizador, DV-07)</td>
+<td>1</td>
+<td>leve</td>
+<td>DV-12</td>
+<td><code>5f081246</code> (04/11, D-621); a página posta à mão veio depois, em <code>d3550841</code> (04/11, D-623), sem mexer neste laço</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+</tbody>
+</table>
+<h2>Pedaço 4: aplicar-em / "o que vai junto" (feito em 26/11/2026)</h2>
+<p>Números: <strong>AP</strong> = aplicar em. Linhas no <code>aa1f1d09</code> (o mesmo código do <code>30920fe7</code>: os commits depois dele só mexeram na
+lista, no ONDE-PAREI e numa linha do Livro). O Girar (pedaço 1) e o "usar em todas" do Dividir (DV-08) não foram relidos.</p>
+<p>Caminhos que levam um ajuste a outras páginas, e a função que cada um usa (achados com busca no código):
+Cortar, "usar em todas" → <code>_recorte_em_todas</code> (L7064) → janela "Em quais páginas?" (<code>ui/dialogo_escolher_paginas</code>, a
+exceção é <code>_corte_proprio</code>); Mover, "usar em todas..." → <code>_mover_em_todas</code> (L2557) → a mesma janela, com
+<code>etapas.conteudo_fora_do_padrao</code> → <code>_gravar_o_conteudo(indices=)</code> e a conferência por trás; Dividir, "usar em todas" →
+<code>_corte_em_todas</code> (L6157, a janela com as folhas e a marca DIVIDIR); Endireitar, lista "aplicar em" (5 itens) →
+<code>_paginas_do_alcance_do_angulo</code> (L7118) → <code>girar.folhas_do_alcance</code> → <code>_mudar_o_angulo</code> (o ângulo, a seta, o número, o
+"não endireitar") ou <code>_angulo_automatico</code> (L7747, "usar o ângulo do programa"); Filtro, "Aplicar em: só nesta · todas ·
+daqui em diante" do painel → <code>_marcar_revisada</code> / <code>_filtro_em_todas</code> / <code>_filtro_nas_proximas</code> → <code>_campos_do_aplicar_em</code>
+(L9133); tela cheia dos filtros, "Aplicar em" → <code>usar_da_tela_cheia</code> (L8361) → as opções uma a uma
+(<code>_gravar_opcao_da_tela_cheia</code>) e depois <code>_filtro_em_todas</code>/<code>_filtro_nas_proximas</code>; Marcar, "usar em todas" / "daqui em
+diante" → <code>_marcacao_em_todas</code>/<code>_marcacao_nas_proximas</code> (L3311, L3331); "Esta página tem foto", "usar em todas" / "daqui
+em diante" → <code>_forma_nas</code> (L3261); o "Sim" da pergunta do fundo → <code>ui/janela_principal</code> L934-980 (só as páginas em
+Original); Automático, "Rodar em: o livro todo / esta página / as escolhidas" → <code>core/automatico</code> (pula as mexidas à mão
+pela pergunta D-004, com <code>etapas.mexida_a_mao</code>); grade "Todas as páginas" → <code>_acao_nas_escolhidas</code> (girar G-03, dividir
+DV-02; deixar em branco / tirar / trazer de volta ficam para o pedaço 7). Por baixo de todos: <code>_registrar</code> (menos o
+"Sim" do fundo, DF-01), que põe a marca "mexida à mão" em todas as páginas que recebem.</p>
+<table>
+<thead>
+<tr>
+<th>nº</th>
+<th>onde</th>
+<th>tipo</th>
+<th>grav.</th>
+<th>outras cópias</th>
+<th>por quê</th>
+<th>Central</th>
+<th>o que o Kaique perderia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AP-01</td>
+<td>O "usar em todas" / "aplicar em" quer dizer uma coisa em cada ferramenta, cada uma com o seu código: <strong>Cortar, Mover e Dividir</strong> abrem a janela "Em quais páginas?" com as páginas (folhas) que têm o seu desmarcadas, e as tiradas do livro também (D-090, "nunca apaga exceção"); <strong>Filtro</strong> (<code>_filtro_em_todas</code> L9183, <code>_filtro_nas_proximas</code> L9202) leva a todas ou daqui em diante, por cima do filtro posto à mão em outras páginas (o comentário "nunca apaga exceção" fala só da marcação); <strong>Endireitar</strong> (<code>_mudar_o_angulo</code> L7133) grava o ângulo em todas as do alcance, por cima do ângulo à mão das outras; <strong>Marcar</strong> (<code>_marcacao_em_todas</code> L3311, <code>_marcacao_nas_proximas</code> L3331) troca a marcação de todas pela cópia desta, e o que as outras tinham marcado à mão some; <strong>"Esta página tem foto"</strong> (<code>_forma_nas</code> L3261) grava em todas; <strong>Girar</strong> copia o giro final (D-035, pedaço 1); o <strong>"Sim" da pergunta do fundo</strong> (<code>ui/janela_principal</code> L958) só troca as que estão em Original; o <strong>Automático</strong> pula as mexidas à mão pela regra do core (<code>etapas.mexida_a_mao</code>, pergunta D-004). A regra "o que a pessoa fez numa página não é apagado por um 'todas'" mora em nove lugares, com quatro respostas diferentes</td>
+<td>1 (e 3)</td>
+<td>GRAVE (9 lugares; filtro e girar)</td>
+<td>as nove ao lado; a regra do core é <code>core/etapas.mexida_a_mao</code> (L170)</td>
+<td>Filtro: <code>d9fae8c2</code> (18/07); Marcar: <code>b15ac310</code> (25/09, comentário "Fase 3b do plano 'corrigir bugs do teste do Boécio'"); Foto: <code>fc25d72f</code> (30/09, item 1.2); Endireitar: <code>a742bf48</code> (07/10, item 2.2 G5); "Sim" do fundo: decisão de 29/09 (<code>f94f69b</code>, citada no docstring); janela do Cortar: <code>6be46d4e</code> (20/10, D-090); Mover: <code>de69f29f</code> (27/10, D-545); Dividir: <code>f7173f3e</code> (27/10, D-090/P-061). A D-090 do Livro fala do corte ("fazer um corte e mandar para todas as paginas"); para as outras ferramentas não achei decisão. É o remendo A3 da revisão de 10/11 (a pergunta 1 dela, "essas quatro também deveriam deixar de fora as páginas mexidas à mão?", não achei respondida; o Fable, 23/11, caso 3: "não resolvido")</td>
+<td>—</td>
+<td>nada, se fosse uma regra só; hoje, no Marcar, a gravura marcada à mão em outra página</td>
+</tr>
+<tr>
+<td>AP-02</td>
+<td>A exceção da janela "Em quais páginas?" ("esta já tem o seu", que vem desmarcada) é decidida por três testes escritos à parte, e nenhum é a regra do core (<code>etapas.mexida_a_mao</code>, a do Automático): Cortar <code>_corte_proprio</code> (<code>ui/dialogo_escolher_paginas.py</code> L40: <code>recorte is not None</code>); Mover <code>etapas.conteudo_fora_do_padrao</code> (tamanho e lugar do conteúdo; a regra do core para o Mover, <code>_tem_valor_a_mao</code> L160-162, conta também o tamanho da folha escolhido e a marca, e o "usar em todas..." não leva o tamanho da folha); Dividir, uma função na própria chamada (<code>ui/tela_conferir.py</code> L6197: a marca DIVIDIR). Os três testes olham o <strong>valor</strong> (ou a marca) que o próprio "usar em todas" grava, e o <code>_registrar</code> marca "mexida à mão" toda página que recebe (<code>_com_a_marca_mexida_a_mao</code> L6046). Pela leitura, depois do primeiro "usar em todas", todas as páginas que receberam o corte, o tamanho ou a linha vêm desmarcadas no seguinte, como "corte próprio", "já mexida" ou "linha própria": a janela deixa de separar a exceção de verdade (D-090: "alterar em algumas paginas só o corte") da página que só recebeu a cópia; para mandar o corte novo, sobra o "Selecionar todas", que pega também as exceções. Não rodei</td>
+<td>1</td>
+<td>médio</td>
+<td>as três ao lado e a do core</td>
+<td>janela do Cortar: <code>6be46d4e</code> (20/10, D-090); Mover: <code>de69f29f</code> (27/10, D-545: "com as páginas já mexidas (tamanho ou lugar próprio) desmarcadas"); Dividir: <code>f7173f3e</code> (27/10); a marca em toda página que recebe: <code>e2321b16</code> (26/10, etapa 3). Não achei decisão sobre a segunda vez do "usar em todas". <strong>Confirma a suspeita do Dividir aberta no pedaço 2</strong>, e vale também para o Cortar e o Mover</td>
+<td>—</td>
+<td>as exceções desmarcadas da D-090 (nada, se a janela soubesse o que foi feito na página e o que veio de outra)</td>
+</tr>
+<tr>
+<td>AP-03</td>
+<td>"O que vai junto com o filtro" está em listas diferentes: o "Aplicar em" do painel e da tela cheia (<code>_campos_do_aplicar_em</code> L9133: sem "Letra clara em fundo escuro", <code>claro_no_escuro</code>; com "Limpar pontinhos" da página, as quatro do Misto e o fundo tirado; leva todas as opções, qualquer que seja o filtro); o "Limpar a folha" do Automático (<code>core/automatico.CAMPOS_DA_PAGINA</code> L149: com <code>claro_no_escuro</code>, sem "Limpar pontinhos" e sem o Misto da página; e <code>campos_da_pagina_no_filtro</code> L157: só as que o filtro escolhido mostra); a receita (<code>core/perfis.CAMPOS</code> L61-65, cópia da lista do Automático, guardada por um teste); a marca "mexida à mão" (<code>MARCAS_DA_PAGINA</code> L10152, com <code>claro_no_escuro</code>, sem o fundo tirado); a tela cheia, opção por opção (<code>_gravar_opcao_da_tela_cheia</code> L8390, com <code>claro_no_escuro</code>); a janela do Automático (<code>ui/automatico.py</code> L2587). Consequência no código: na tela cheia dos filtros, marcar "Letra clara em fundo escuro" e escolher "Aplicar em: todas" grava a caixinha só nesta página (pela ação da caixinha) e leva às outras o filtro e as outras opções, sem ela; no Automático, a mesma caixinha vai a todas</td>
+<td>1</td>
+<td>GRAVE (6 listas; filtros)</td>
+<td>as seis ao lado; a chave das prévias (<code>ui/tarefas.py</code> L1150-1180) é do pedaço como-fica</td>
+<td>a caixinha na página: <code>0f4ee587</code> (20/10, item 2.9), sem entrar nas duas listas do "Aplicar em"; no mesmo dia <code>02c2cea1</code> (item 2.11) pôs "Letras com a cor delas" nas duas; a tela cheia com a caixinha: <code>40df242a</code> (22/10); as duas listas viraram uma em <code>1268ae56</code> (13/11, D-699), ainda sem ela. A D-177 (caixinha por página) e a D-594 (o Automático com todas as opções do painel) não falam do "Aplicar em". É o remendo M9 da revisão de 10/11 (o Fable, caso 5: "em parte")</td>
+<td>—</td>
+<td>nada, se fosse uma lista só</td>
+</tr>
+<tr>
+<td>AP-04</td>
+<td>O "usar em todas" e o "daqui em diante" do Marcar (L3325, L3343) gravam só <code>selecao</code>, a cópia da lista desta página. Os outros dois caminhos que gravam a marcação tratam-na como quatro campos juntos (<code>CAMPOS_DA_MARCACAO</code> L3052: <code>selecao</code>, <code>marcacao_provisoria</code>, <code>mexida_a_mao</code>, <code>geometria_das_zonas</code>): a marcação de uma página (<code>_selecao_mudou</code> L3054-3095, com <code>guardar_selecao(provisoria=)</code>) e o "Desfazer nesta página" (<code>ui/desfazer_nesta_pagina.campos_para_desfazer</code> L159-162). Diferenças, pela leitura: (a) a marca "Gravuras e fotos mexida à mão": na página sozinha só quando há área feita à mão (L3087); no "usar em todas", em todas as páginas, também quando a cópia só tem áreas da máquina (<code>_registrar</code> → <code>MARCAS_DA_PAGINA["selecao"]</code>); (b) <code>marcacao_provisoria</code> não vai junto: numa página que ainda estava com a marcação provisória, o desenho do tamanho do PDF (<code>core/pipeline.garantir_selecao</code> L2502-2526) troca as áreas da máquina, as copiadas, pela procura dela, e só as feitas à mão ficam; numa página já definitiva, a cópia fica. Não rodei</td>
+<td>1</td>
+<td>médio</td>
+<td>os dois caminhos ao lado</td>
+<td>o "usar em todas" do Marcar: <code>b15ac310</code> (25/09, a Fase 3b do teste do Boécio); a marcação em quatro campos: <code>4f881001</code> (27/10, etapa 9b-2, P-129), só na página sozinha; a marca: <code>e2321b16</code> (26/10, etapa 3). Não achei decisão sobre o que o "usar em todas" do Marcar leva</td>
+<td>—</td>
+<td>o "usar em todas" do Marcar (ninguém ficaria sem ele se gravasse como a página sozinha)</td>
+</tr>
+<tr>
+<td>AP-05</td>
+<td>O que vai junto com o ângulo (o corte à mão, se a escolha da página é "acompanha o texto", D-093/D-094) é decidido na tela: <code>_jeito_do_retangulo</code> (L7148: página, livro, Configurações) e <code>_com_o_retangulo_do_corte</code> (L7194; a conta é do core, <code>pipeline.recorte_depois_de_mudar_o_angulo</code>). Passam por ele o ângulo à mão com o "aplicar em" (<code>_mudar_o_angulo</code> L7140) e o "Desfazer nesta página" (<code>ui/desfazer_nesta_pagina.py</code> L204, que chama o método da tela). Não passam, e o ângulo também muda: "usar o ângulo do programa" com o "aplicar em" (<code>_angulo_automatico</code> L7747, direto no <code>_registrar</code>) e o Automático com "Rodar nelas também" (<code>core/automatico.py</code> L1051, que põe <code>angulo_manual = None</code>). Pela leitura, nesses dois o corte que "acompanha o texto" fica onde estava, calculado para o ângulo à mão de antes. O docstring do core (<code>core/pipeline.py</code> L1386-1392) ainda diz "NAO ha controle na tela nem campo no projeto"</td>
+<td>2 (e 1)</td>
+<td>médio</td>
+<td>os quatro caminhos ao lado</td>
+<td>a escolha na tela: <code>e2321b16</code> (26/10, etapa 3, D-094); "usar o ângulo do programa": <code>d9fae8c2</code> (18/07), com o "aplicar em" em <code>a742bf48</code> (07/10). O Livro ainda dá a D-094 como "não construída" (o código tem os três lugares). Não achei decisão que deixe o "usar o ângulo do programa" de fora</td>
+<td>—</td>
+<td>o corte que acompanha o texto (D-094), no caminho que já o tem</td>
+</tr>
+<tr>
+<td>AP-06</td>
+<td>"Todas" e "daqui em diante" são contados à mão na tela em cinco lugares (<code>[p.indice for p in self.projeto.paginas]</code> L3323, L9193; <code>p.indice &gt;= ...</code> L3268, L3340, L9212), ao lado da conta do core que o Girar e o Endireitar usam (<code>girar.folhas_do_alcance</code> L148). Os nomes da escolha estão em três vocabulários: <code>girar.ALCANCE_*</code> (Girar, Endireitar); <code>SO_NESTA, TODAS, DAQUI_EM_DIANTE = "nesta", "todas", "daqui"</code> da tela cheia (<code>ui/widgets/filtros_tela_cheia.py</code> L79), que a tela de trabalho compara com o texto escrito à mão (<code>alcance == "todas"</code>, L8385-8388); e <code>NO_LIVRO, NA_PAGINA, NAS_ESCOLHIDAS</code> do Automático (<code>ui/automatico.py</code> L92). "Todas" leva também as páginas tiradas do livro no Filtro, no Marcar, na Foto e no Endireitar; nas três janelas "Em quais páginas?" elas vêm desmarcadas</td>
+<td>1</td>
+<td>leve</td>
+<td>as cinco contas e os três vocabulários</td>
+<td>Filtro: <code>d9fae8c2</code> (18/07); Marcar: <code>b15ac310</code> (25/09); Foto: <code>fc25d72f</code> (30/09); tela cheia: <code>dc51dec2</code> (21/10). Não achei o motivo de não usarem a conta do core</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>AP-07</td>
+<td><code>_mudar_o_angulo</code> (L7133-7146): com uma página só, a ação leva "conferida"; com o "aplicar em" pegando várias, nenhuma fica conferida, nem a da vez. O docstring diz "Só a página da vez fica 'conferida'". Os outros "todas" (Cortar, Mover, Dividir, Filtro, Marcar, Foto) não marcam conferida nenhuma; o "só nesta" do Filtro é só o "conferir" (<code>_marcar_revisada</code>)</td>
+<td>3</td>
+<td>leve</td>
+<td>—</td>
+<td><code>a742bf48</code> (07/10, item 2.2); não achei o motivo da diferença</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>AP-08</td>
+<td>O "usar em todas" do Cortar (<code>_recorte_em_todas</code> L7074-7077) e o do Dividir (<code>_corte_em_todas</code> L6171-6175) fazem a conferência das marcações no formato antigo antes de abrir a janela, "o mesmo que _registrar faria depois" (comentário L7074-7075); o <code>_registrar</code> a faz de novo. É a mesma família do G-09 (o girar)</td>
+<td>4</td>
+<td>leve</td>
+<td>G-09; <code>_espera_pelas_marcacoes</code> (L6938)</td>
+<td>Cortar: <code>6be46d4e</code> (20/10); Dividir: <code>f7173f3e</code> (27/10, comentário "como o 'usar em todas' do Cortar")</td>
+<td>—</td>
+<td>a janela "Em quais páginas?" não abriria à toa num projeto de antes de 05/10 com a conversão andando</td>
+</tr>
+</tbody>
+</table>
+<h2>Pedaço 5: como-fica, as renderizações (feito em 26/11/2026)</h2>
+<p>Números: <strong>CF</strong> = como fica. Linhas no <code>52e3936a</code> (o mesmo código do <code>30920fe7</code>). O giro desenhado em cinco lugares já
+está no G-06 e não foi relido.</p>
+<p>Caminhos que desenham a página na tela, e a conta que cada um usa (achados com busca no código):
+a página grande e o PDF → <code>core/pipeline.renderizar_pagina</code> (<code>_filtrar</code> → <code>_filtrar_a_pagina</code>), na tarefa
+<code>ui/tarefas._TarefaPrevia</code>; a figurinha do filtro escolhido → a própria prévia; as outras figurinhas →
+<code>ui/tarefas._TarefaCartoes</code> → <code>pipeline.filtro_com_as_caixinhas</code> (a conta simples, na amostra de
+<code>_imagem_sem_filtro</code>); a figurinha "Tirar o fundo", a do Preto e branco com "Só as letras", a tela cheia dos filtros e a
+miniatura da página movida sem prévia → <code>pipeline.renderizar_com_filtro</code> (o caminho inteiro numa cópia); o
+"comparar" da tela grande → <code>ui/tela_ampliada._imagem_do_outro_filtro</code> (a conta simples; "Tirar o fundo" pelo caminho
+inteiro); a imagem do Cortar → <code>pipeline.renderizar_pagina_para_recorte</code>; "como sai no PDF" (margens e Mover) →
+<code>pipeline.compor_como_no_pdf</code> em todos (tela, figurinhas, miniaturas, prévia do Automático, PDF: o M2 da revisão de
+10/11 está resolvido); o "depois" do Automático → <code>automatico.depois_da_pagina</code> → <code>renderizar_pagina</code> numa cópia;
+o "antes" do Automático, a tira e a grade → G-06. Quando a imagem guardada fica velha: a chave das prévias e as
+limpezas (CF-04).</p>
+<table>
+<thead>
+<tr>
+<th>nº</th>
+<th>onde</th>
+<th>tipo</th>
+<th>grav.</th>
+<th>outras cópias</th>
+<th>por quê</th>
+<th>Central</th>
+<th>o que o Kaique perderia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CF-01</td>
+<td>"Como fica a página com outro filtro" tem duas contas e três desvios. A página, o PDF, a tela cheia dos filtros e as figurinhas "Tirar o fundo" e "Preto e branco com Só as letras" passam pelo caminho inteiro (<code>renderizar_pagina</code>/<code>renderizar_com_filtro</code>). As outras figurinhas (<code>ui/tarefas._TarefaCartoes</code> L842) e o "comparar" (<code>ui/tela_ampliada._imagem_do_outro_filtro</code> L346) passam por <code>core/pipeline.filtro_com_as_caixinhas</code> (L3546), que só inverte a letra clara, aplica o filtro puro e as cores: pela leitura, sem a marcação (gravura, letra, papel, "só neste pedaço"), sem o "Só as letras", sem igualar a luz, suavizar e chuvisco (no caminho inteiro em L3597-3601), sem "Respeitar as gravuras achadas" e "Gravuras em tons de cinza", sem o reforço da força do preto; o docstring dela diz "na ordem de _filtrar". Os desvios ficam na tela: o Preto e branco com "Só as letras" (<code>_cartao_pb_pelo_misto</code> L5019, que diz "a mesma conta de core.pipeline._filtrar" mas olha <code>self.projeto.limpar</code>, e não <code>etapas.filtro_que_vale</code>/<code>_misto_vale</code> do core, L4257), o "Tirar o fundo" (<code>_cartao_sem_fundo</code> L5001) e a página posta em branco (L4836). O "comparar" não tem o desvio do "Só as letras"</td>
+<td>1 (e 3)</td>
+<td>GRAVE (filtros; 3 contas)</td>
+<td>as duas contas e os três desvios ao lado</td>
+<td>a conta simples: <code>e49463c0</code> (21/10, "o cartao de cada filtro segue as caixinhas da pagina", bug do verificador do 2.9); o desvio do Misto: <code>14d721ad</code> (05/10); o da página em branco: <code>1fa0c850</code> (05/11, D-623 "defeito B"); o fundo nas figurinhas e no comparar: <code>f86b68a1</code> (13/11, pelo Fable). É o remendo A2 da revisão de 10/11 (o Fable, caso 2: "5 voltas", "não resolvido")</td>
+<td>—</td>
+<td>nada, se as figurinhas e o comparar fossem pela conta da página (custa tempo: é a razão da conta simples, pelo docstring de <code>_TarefaCartoes</code>)</td>
+</tr>
+<tr>
+<td>CF-02</td>
+<td><code>ui/tela_ampliada._imagem_do_outro_filtro</code> (L325-336): o "comparar" decide pelo <code>self.projeto.limpar</code> (a caixinha "Limpar a folha" do livro), a regra de antes da etapa 1 (26/10, D-009). Num livro novo sem o Automático, qualquer filtro escolhido no comparar mostra a página sem filtro, e o "Tirar o fundo" não vem; na página de verdade, escolher o filtro à mão vale (<code>etapas.filtro_a_mao</code>). É a mesma falta que a D-648 consertou em 10/11 no caminho inteiro (<code>renderizar_com_filtro</code> L4478-4481: a cópia leva a marca do filtro à mão), e que não chegou aqui. As figurinhas (<code>_TarefaCartoes</code>) aplicam o filtro sem olhar o "Limpar": no mesmo livro, a figurinha e o comparar mostram coisas diferentes. Não rodei</td>
+<td>3 (e 1)</td>
+<td>médio (o comparar é de vez em quando)</td>
+<td><code>renderizar_com_filtro</code>; <code>_cartao_pb_pelo_misto</code> (CF-01) usa a mesma condição velha</td>
+<td><code>52d0c7cd</code> (18/07, o comparar); a D-009 (<code>e2321b16</code>/etapa 1, 26/10) e a D-648 (<code>bcd49735</code>, 10/11) não tocaram neste arquivo. Contra a D-667 ("se mudou a ferramenta, muda em todos os lugares")</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>CF-03</td>
+<td>"Esta página sai branca?" está escrito em quatro lugares: o PDF e a prévia (<code>core/pipeline._filtrar</code> L3429: "deixar em branco" <strong>ou</strong> a página posta em branco); e três na tela, que olham <strong>só</strong> a página posta em branco (<code>inserida</code>): as figurinhas (<code>ui/tela_conferir._atualizar_cartoes</code> L4836), a miniatura da tira e da grade (<code>_acertar_as_miniaturas_movidas</code> L5734 → <code>_miniatura_branca</code> L5666) e a imagem do Cortar (<code>ui/tarefas._TarefaPrevia._para_recorte</code> L1003). Pela leitura, a página com "deixar em branco" sai branca no PDF e na página grande, e a miniatura, as outras figurinhas e o Cortar mostram o conteúdo</td>
+<td>1</td>
+<td>GRAVE (4 lugares; miniaturas)</td>
+<td>as quatro ao lado</td>
+<td>"deixar em branco" no core: <code>7695b467</code> (12/10); a página posta em branco: <code>d3550841</code> (04/11, D-623) no core e na miniatura, e <code>1fa0c850</code> (05/11, "defeito B") nas figurinhas e no Cortar, sem o "deixar em branco". A D-649 ("o preview as miniaturas tem que estar sincronizada") e a D-680 (na fila)</td>
+<td><code>lu-3-miniatura</code> (a gerente, 17/11: "A pergunta 'esta página sai em branco?' está escrita em três lugares do programa"), <code>k0611-miniatura-branco</code> (D-680), <code>k0711-grade-branco</code></td>
+<td>nada, se fosse uma pergunta só</td>
+</tr>
+<tr>
+<td>CF-04</td>
+<td>"Quando a imagem guardada ficou velha" tem dois mecanismos ao mesmo tempo: a chave das prévias, uma lista à mão de uns 25 campos (<code>ui/tarefas.GerenciadorPrevias.chave</code> L1135-1200; os comentários contam quatro consertos de "a tela mostraria a imagem velha": as caixinhas do 2.9/2.11 em 21/10, D-583/D-586, D-588, D-646/D-699), e as limpezas <code>previas.invalidar</code> (no <code>_registrar</code> e em outros lugares), com a lista do contrário, o que <strong>não</strong> muda o desenho (<code>CAMPOS_SO_DO_MOVER</code>, <code>ui/tela_conferir.py</code> L10049). A chave não tem, por exemplo, o "Jeito do preto e branco" (<code>algoritmo_preto_branco</code>), a forma da gravura nem a marcação: quem garante é a limpeza. A chave da imagem do Cortar (<code>chave_para_recorte</code> L1424-1435) é uma cópia de parte da outra (divisão, giro da folha e da página, sobra, tampa; as duas ganharam o giro da página no mesmo commit da D-618), e o docstring dela diz "Depende de girar/dividir, nunca de <code>recorte</code>": no livro novo essa imagem também é endireitada (<code>renderizar_pagina_para_recorte</code> L4519-4525, desde o G6 de 09/10), e o ângulo não está na chave</td>
+<td>1 (e 4)</td>
+<td>GRAVE (prévia e miniaturas; 4 lugares)</td>
+<td>as quatro ao lado</td>
+<td>a chave: <code>d9fae8c2</code> (18/07) e um campo por item depois; <code>CAMPOS_SO_DO_MOVER</code>: <code>de69f29f</code> (27/10, etapa 5); a imagem do Cortar endireitada: <code>9928717e</code> (09/10, G6), sem mudar a chave. Não achei decisão</td>
+<td>—</td>
+<td>nada, se o desenho soubesse sozinho de que campos depende</td>
+</tr>
+<tr>
+<td>CF-05</td>
+<td><code>core/pipeline.preparar_metade</code>: a chamada <code>geometria_do_desenho(...)</code> com os mesmos sete argumentos está escrita três vezes (L712, L729, L760), uma por ordem do preparo. Só a primeira passa <code>ordem=</code>, e isso está certo (as outras duas são a ordem antiga, e a <code>ordem</code> só conta no "endireitar antes", docstring de <code>core/zonas_na_folha.geometria_do_desenho</code> L152-157); a D-618 teve de pôr o giro da página nas três</td>
+<td>1</td>
+<td>leve</td>
+<td>—</td>
+<td>a ordem nova: <code>9928717e</code> (09/10, G6); o desentortar: item 2.12 (22/10); o giro da página nas três: <code>93a390ed</code> (04/11, D-618). <strong>Fecha a suspeita do <code>ordem=</code> aberta no pedaço 1</strong> (não é defeito)</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+</tbody>
+</table>
+<h2>Pedaço 6: marcações (feito em 26/11/2026)</h2>
+<p>Números: <strong>MC</strong> = marcações. Linhas no <code>8c33b5e1</code> (o mesmo código do <code>30920fe7</code>). O "usar em todas" do Marcar já está no
+AP-01 e no AP-04, a pilha própria do editor no DF-07, a conta de reserva ao dividir no DV-06: não relidos.</p>
+<p>Caminhos que mudam a marcação, e a função que cada um usa (achados com busca no código):
+desenhar, mexer ou apagar uma área no editor, "Limpar tudo" e "Deixar a folha em branco" (menu Marcar) → sinal
+<code>selecao_mudou</code> do editor → <code>_selecao_mudou</code> (grava os quatro campos, <code>CAMPOS_DA_MARCACAO</code>, numa ação do Histórico);
+"detectar automaticamente" (painel) e "Procurar de novo" (menu) → <code>_detectar_de_novo</code> (MC-02); "Esta página tem foto"
+→ <code>_mudar_forma_da_pagina</code>/<code>_forma_nas</code> → <code>_preparar_para_trocar_forma</code> (MC-02); "usar em todas"/"daqui em diante" →
+AP-04; as opções de gravura do livro → <code>core/pipeline</code> L2375-2405 (MC-02); o desenho da página → <code>garantir_selecao</code>
+(a procura da máquina e a troca da provisória) e <code>zonas_na_folha.acompanhar</code> (as zonas seguem o preparo novo);
+dividir → <code>zonas_na_folha.repartir_nas_metades</code> (D-528); mover a linha da folha dividida → só <code>acompanhar</code> (MC-03);
+"Desfazer nesta página", "Gravuras e fotos" → DF-02/DF-03.</p>
+<table>
+<thead>
+<tr>
+<th>nº</th>
+<th>onde</th>
+<th>tipo</th>
+<th>grav.</th>
+<th>outras cópias</th>
+<th>por quê</th>
+<th>Central</th>
+<th>o que o Kaique perderia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MC-01</td>
+<td>"A parte da marcação feita à mão" (as áreas com <code>origem == MAO</code>) é tirada da lista à mão em dez lugares, cada um do seu jeito: <code>core/etapas._regioes_a_mao</code> (L146, nos dicionários) e <code>marcacao_a_mao</code> (L542, nos objetos, só se vale); <code>core/pipeline.py</code> L3710 (cópia da de L542, sem conferir se vale), L2531 (o "refazer" da <code>garantir_selecao</code>) e L2402 (o contrário: "tem área da máquina?"); <code>core/dividir_a_mao.py</code> L139; <code>modelos.guardar_selecao</code> L531; <code>ui/desfazer_nesta_pagina.py</code> L115-117; <code>ui/tela_conferir.py</code> L3086 (com o texto <code>"mao"</code> escrito à mão, e não a constante) e L3218. Pela leitura, um dicionário sem a chave <code>origem</code> conta como feito à mão em <code>_regioes_a_mao</code>, em <code>dividir_a_mao</code>, no "Desfazer nesta página" e no <code>Regiao</code> (o padrão é <code>MAO</code>, <code>core/selecao.py</code> L108), e como da máquina em <code>pipeline.py</code> L2402 e <code>tela_conferir.py</code> L3218 (<code>r.get("origem") != MAO</code>). Não sei se existe projeto com área sem a chave</td>
+<td>1</td>
+<td>GRAVE (10 lugares)</td>
+<td>os dez ao lado</td>
+<td><code>_regioes_a_mao</code> e <code>marcacao_a_mao</code>: <code>175addb7</code> (26/10, etapa 1, D-009); a cópia de L3710: <code>3ee32fd3</code> (29/10, D-583/D-586); L3086: <code>e2321b16</code> (26/10, etapa 3); L2402 e L3218: <code>ee1f6d60</code> e <code>fc25d72f</code> (30/09, item 1.2); <code>dividir_a_mao</code>: <code>6e9eea30</code> (27/10, D-528); o "Desfazer nesta página": <code>5f081246</code> (04/11, D-621)</td>
+<td>—</td>
+<td>nada, se fosse uma função só</td>
+</tr>
+<tr>
+<td>MC-02</td>
+<td>"Procurar a gravura de novo" (<code>gravura_feita_com = "refazer"</code>) é decidido em três lugares: as opções de gravura do livro (<code>core/pipeline.py</code> L2398-2404: página marcada antes do campo existir, com área da máquina, ganha o "refazer"), a cópia dessa regra na tela para o "Esta página tem foto" (<code>_preparar_para_trocar_forma</code> L3205-3226, que ainda compara a forma de antes e de depois) e o "detectar automaticamente" (<code>_detectar_de_novo</code> L3163-3197, que põe o "refazer" sempre). Os dois da tela gravam o campo direto na página, fora do Histórico (o docstring diz "Fora do desfazer de proposito"; <code>CAMPOS_DA_MARCACAO</code> L3052 não tem <code>gravura_feita_com</code>). O <code>_detectar_de_novo</code> ainda grava a marcação duas vezes: o editor já avisou <code>selecao_mudou</code> (<code>ui/widgets/editor_selecao.py</code> L454), que passa por <code>_selecao_mudou</code> e pelo Histórico, e logo depois a tela chama <code>pagina.guardar_selecao</code> de novo (L3186)</td>
+<td>1 (e 2, 4)</td>
+<td>médio</td>
+<td>as três ao lado</td>
+<td>o "refazer" do livro: <code>ee1f6d60</code> (30/09, item 1.2); o "Esta página tem foto": <code>fc25d72f</code> (30/09); o "detectar" pelo caminho do PDF: <code>fc25d72f</code> (30/09); a marcação no Histórico: <code>4f881001</code> (27/10, etapa 9b-2), sem mexer no <code>_detectar_de_novo</code>. <strong>Fecha a suspeita aberta no pedaço 4</strong></td>
+<td>—</td>
+<td>o "procurar de novo" e a troca da forma (nada, se fosse uma regra só, no core)</td>
+</tr>
+<tr>
+<td>MC-03</td>
+<td>A marcação de uma folha dividida tem duas regras quando a linha do meio muda. Na primeira divisão, cada área vai para a metade em que está (<code>core/zonas_na_folha.repartir_nas_metades</code> L506, D-528). Quando a linha de uma folha já dividida muda (arrastar, "usar em todas", trocar o motor, Automático: DV-08), as áreas só seguem pela geometria (<code>acompanhar</code> L560 → <code>trocar_de_geometria</code> → <code>_converter</code> L420): ficam no mesmo lugar da folha, mas na lista da mesma página; pela leitura, a área que passou para o outro lado da linha nova fica fora da página dela (<code>_converter</code> não corta nem muda de página) e não vai para a outra. Não rodei</td>
+<td>1 (e 3)</td>
+<td>médio</td>
+<td><code>repartir_nas_metades</code> / <code>acompanhar</code></td>
+<td>as zonas presas à folha: <code>7cb56c1c</code> (05/10, D2); o repartir: <code>6e9eea30</code> (27/10, D-528), só na primeira divisão. Não achei decisão para a linha movida. <strong>Fecha a suspeita aberta no pedaço 2</strong></td>
+<td><code>au-d-528</code> (o Samuel: "tem que ver se não tem gambiarra nessa decisão, e nessa função")</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>MC-04</td>
+<td>Há três jeitos de a página sair branca, com código diferente: o "Deixar a folha em branco" do Marcar (menu Marcar, <code>ui/barra_de_menu.py</code> L202 → <code>_folha_em_branco</code> L3142: uma área de papel feita à mão do tamanho da página, reconhecida dentro dos filtros pelo teste de 95% escrito duas vezes, <code>core/filtros.py</code> L4305 e <code>core/misto.py</code> L679); o "Deixar esta página em branco" (menu Página, tecla Del, botões: <code>ConfigPagina.em_branco</code>, lido em <code>core/pipeline._filtrar</code> L3429); e a página posta em branco à mão (<code>inserida</code>, D-623). O docstring do <code>_folha_em_branco</code> diz "Assim nao ha um segundo jeito de dizer a mesma coisa dentro do programa", o que era verdade em 08/08 e deixou de ser em 12/10. As perguntas "esta página sai branca?" (CF-03) não conhecem o jeito do Marcar</td>
+<td>1</td>
+<td>médio</td>
+<td>os três jeitos; o teste de 95% em dois arquivos</td>
+<td>o do Marcar: <code>28883ae9</code> (08/08); o <code>em_branco</code>: <code>7695b467</code> (12/10, rodada 5 do "Para revisar"); a página posta: <code>d3550841</code> (04/11, D-623). Não achei decisão que mande manter os dois primeiros separados</td>
+<td><code>lu-3-miniatura</code> (a mesma família do CF-03)</td>
+<td>nada; o "Deixar esta página em branco" faz o mesmo para quem usa</td>
+</tr>
+<tr>
+<td>MC-05</td>
+<td>"A página sem filtro" é montada de dois jeitos na tela: <code>_imagem_sem_filtro</code> (L5124: a base das figurinhas e do "comparar"; na página sem o fundo, a página sem o fundo, D-699) e <code>_pagina_sem_filtro_para_o_ajuste</code> (L4652: a medida do pedaço que pegou papel em volta da figura; confere se as zonas valem no desenho, mas não tem a regra do fundo tirado). Pela leitura, numa página sem o fundo, o aviso do pedaço mede a folha com o papel velho, e a figurinha mostra a página sem ele</td>
+<td>1</td>
+<td>leve</td>
+<td>as duas ao lado</td>
+<td>o pedaço: <code>30fc7c0d</code> (05/10, conferência 13); o fundo nas figurinhas: <code>f86b68a1</code> (13/11, D-699, pelo Fable), sem mexer na do pedaço</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+</tbody>
+</table>
+<h2>Pedaço 7: contagens e situação da página (feito em 26/11/2026)</h2>
+<p>Números: <strong>SP</strong> = situação da página. Linhas no <code>80536c37</code> (o mesmo código do <code>30920fe7</code>: os commits depois dele só
+mexeram na lista e no ONDE-PAREI). O que já está noutros pedaços não foi relido: a página "sai branca?" (CF-03, MC-04),
+o girar da grade (G-03), a folha juntada pelo Automático com a direita escondida (DV-03, DV-04).</p>
+<p>Caminhos que mudam ou mostram a situação da página, e a função que cada um usa (achados com busca no código):
+"página conferida" (o "está certo" da faixa, barra de espaço, "só nesta" do Filtro, o "tirar este aviso" do último
+aviso) → <code>_marcar_revisada</code> (ação "revisar"); mexer à mão → o <code>revisada: True</code> que cada botão escreve (SP-06);
+"tirar este aviso", "das N", "todos os N" e a lista grande → <code>_aceitar_avisos</code> → <code>core/avisos.campos_para_aceitar</code>;
+"deixar em branco" (botão de "Esta página", botão do Filtro, menu Página, tecla Del, botão do aviso) →
+<code>deixar_em_branco_ou_voltar</code> / <code>_deixar_em_branco</code>; "tirar do livro" e "trazer de volta" (botões, menu, Shift+Del,
+botão do aviso) → <code>apagar_pagina</code>; grade "Todas as páginas" → <code>_acao_nas_escolhidas</code> (SP-07); pôr e tirar avisos →
+quinze funções (SP-01); o número de dúvidas (barra de baixo, sino, "Para revisar", "ver as N", janela "Antes de
+processar", janela de salvar, cartão da tela inicial, grade) → <code>core/avisos.quantas_com_duvida</code> (uma conta só, desde
+27/10: <strong>não é achado</strong>); o número de páginas → três contas (SP-03); o que a tela diz da página → cada parte a sua
+(SP-04).</p>
+<table>
+<thead>
+<tr>
+<th>nº</th>
+<th>onde</th>
+<th>tipo</th>
+<th>grav.</th>
+<th>outras cópias</th>
+<th>por quê</th>
+<th>Central</th>
+<th>o que o Kaique perderia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SP-01</td>
+<td>"Pôr ou tirar um aviso" está escrito à mão em quinze funções, com três respostas diferentes: (a) ao pôr, a página volta a "não conferida"? (b) ao tirar, o "tirar este aviso" dado antes é esquecido? (c) o aviso entra na frente (a faixa mostra o primeiro) ou no fim? Em <code>core/pipeline.py</code>: <code>_anotar_aviso_da_pagina</code> L1083 (o docstring: "O jeito comum dos dois avisos do desentortar"; volta, não esquece, frente), <code>_anotar_contas_discordam</code> L1659 e <code>_anotar</code> L2009 (o mesmo, reescrito), <code>_anotar_conferir</code> L2711 (o mesmo; o docstring: "Arriscado: por o alerta sem voltar <code>revisada</code> traz o defeito de volta"), <code>acertar_aviso_do_reforco</code> L4030 e <code>_por_avisos_do_so_as_letras</code> L4126 (voltam e esquecem), <code>anotar_o_impresso_de_fora</code> L4918 (volta e esquece), <code>_anotar_corte_encostou</code> L1556 (na folha; volta, no fim), <code>_acertar_o_em_branco</code> L3016 (não volta, no fim), <code>acertar_faixa_do_livro</code> L4182 e <code>acertar_alertas_de_cor</code> L4279 (não voltam, de propósito, pelo docstring), <code>_anotar_folha_maior</code> L5187 (não volta, no fim), <code>marcar_paginas_diferentes</code> L1641 (só põe; nenhum lugar tira "Inclinação diferente das outras", a não ser dividir a folha ou o "tirar este aviso"); <code>core/automatico._juntar_avisos</code> L803 (não volta); e duas na tela (SP-08). Pela leitura: os que não voltam a página a "não conferida", numa página que já tem o tique, põem o aviso escondido (<code>modelos._alertas_pendentes</code> L1101 não devolve nada com <code>revisada</code>), o mesmo defeito que o <code>_anotar_conferir</code> conta ter consertado em 29/09</td>
+<td>1</td>
+<td>GRAVE (15 lugares; avisos e "página conferida")</td>
+<td>as quinze ao lado</td>
+<td>uma por aviso, cada uma com a sua etapa: <code>_anotar_conferir</code> item 1.1 (29/09); <code>_anotar</code> <code>2f1cd43b</code> (20/10, 2.5); <code>_anotar_aviso_da_pagina</code> <code>a220c2de</code> (22/10, 2.12); <code>_anotar_folha_maior</code> <code>c180af3e</code> (22/10, 2.4); <code>_juntar_avisos</code> <code>4d535ab6</code> (26/10, etapa 3); as da tela <code>b15ac310</code> (25/09). Não achei decisão que mande um aviso nascer escondido na página conferida</td>
+<td>—</td>
+<td>nada, se fosse uma função só com as três escolhas ditas</td>
+</tr>
+<tr>
+<td>SP-02</td>
+<td>O aviso "Endireitar: as contas discordam" é medido em três momentos, em três resoluções, e a última medida manda: a análise ao abrir, a 150 DPI (<code>core/pipeline.py</code> L192); o Automático com o Endireitar (<code>core/automatico._avisos_medidos</code> L1207-1208); e o desenho no tamanho do PDF, por trás, quando a pessoa passa pela página (<code>core/pipeline.py</code> L1551, na resolução do livro). Pela leitura do código e pelo que a gerente provou em 14/11: o número de páginas com dúvida muda sozinho enquanto a pessoa anda pelo livro</td>
+<td>1</td>
+<td>GRAVE (3 lugares; o sino e o "Para revisar")</td>
+<td>as três ao lado; a de tirar o aviso sem desenhar, <code>acertar_alerta_do_endireitar</code> L1672</td>
+<td>a medida do desenho e a da análise: item 2.2 (C1, 20-21/10); a do Automático: <code>4d535ab6</code> (26/10, etapa 3). Não achei decisão que diga qual medida vale (a D-760 manda "a contagem" ser uma conta só; "não construída")</td>
+<td><code>lu-2-numeros</code> (a gerente, 17/11: "é a mesma coisa medida de dois jeitos"), <code>k0611-numeros</code> (D-679: "o sino passa de 24 para 28 avisos sem ninguém mexer")</td>
+<td>nada, se o aviso fosse medido num lugar só</td>
+</tr>
+<tr>
+<td>SP-03</td>
+<td>"Quantas páginas tem o livro" tem três contas: a lista inteira, com as tiradas e a direita escondida da folha juntada pelo Automático (<code>len(self.projeto.paginas)</code>: barra de baixo, <code>ui/tela_conferir._atualizar_barra_de_baixo</code> L1463; o "N de M conferidas" L1489; <code>ui/tela_ampliada._total</code> L260; o "Ir para a página" <code>ui/janela_principal._perguntar_a_pagina</code> L710; o Automático sem o Dividir, <code>ui/automatico._numero_e_total</code> L1845; o cartão da tela inicial, <code>projetos.py</code> L352 e L418); as que vão para o PDF (<code>Projeto.paginas_ativas</code>: janela de salvar <code>ui/janela_confirmar._frase_do_livro</code> L167, "Ficou pronto" e o histórico <code>ui/janela_principal.py</code> L1952-1954, o lado a lado L8644, o caderno da etapa 7); e os passos (o Automático com o Dividir, L1844, por <code>paginas_do_pdf_depois</code>, DV-10; as setas e a tira do Dividir, <code>_passos_do_dividir</code>). As "apagadas" do sino (<code>_atualizar_contador</code> L5767) e da janela de salvar (L168) contam <code>p.apagada</code> de todas, com a direita escondida (DV-03)</td>
+<td>1</td>
+<td>GRAVE (3 contas, 13 lugares; barra de baixo e Automático)</td>
+<td>as três contas ao lado</td>
+<td>barra de baixo e sino: <code>d9fae8c2</code> (18/07); a janela de salvar pelo <code>paginas_ativas</code>: conserto do verificador de 06/10 (o docstring: "139 páginas" e o PDF com 138), só nela; o Automático com os passos: D-614 (04/11). A D-760 (17/11) manda "uma conta" e está "não construída"</td>
+<td><code>k0611-numeros</code> (D-679: "a prévia do Automático diz 'de 134' e saem 133 páginas"), <code>lu-2-numeros</code> (o Samuel: "o motor de contagem deveria valer para todo o programa e não fazer uma conta em cada lugar")</td>
+<td>nada, se fosse uma conta só</td>
+</tr>
+<tr>
+<td>SP-04</td>
+<td>"Em que situação está a página" (tirada, em branco, posta em branco, com aviso, conferida) é decidido por cada parte da tela, com regras diferentes: a faixa (<code>_atualizar_faixa</code> L5158: aviso, depois em branco, depois conferida, depois a frase da ferramenta; <code>_texto_tranquilo</code> L5342 conhece a página posta em branco, <code>inserida</code>, mas não a tirada, que cai em "Esta página vai sair em ..."); a tira (<code>_atualizar_tira</code> L5501-5504: tirada, aviso e tique; o em branco só pelo CF-03); a tira do Dividir (<code>_atualizar_tira_do_dividir</code> L5534: a folha inteira só aparece tirada por <code>folha.apagada</code>, que ninguém grava, SP-15: pela leitura, a página tirada de uma folha não dividida não aparece tirada na tira do Dividir); a grade (<code>abrir_todas_as_paginas</code> L8428: aviso e tirada); os botões de "Esta página" e do Filtro (<code>_atualizar_os_botoes_da_pagina</code> L9285: em branco e tirada); e a faixa "conferida" (<code>_conferida_na_faixa</code> L5275, SP-06)</td>
+<td>1 (e 2)</td>
+<td>GRAVE (6 lugares; a faixa e a tira)</td>
+<td>as seis ao lado</td>
+<td>a faixa: <code>d9fae8c2</code> (18/07), a página posta <code>1fa0c850</code> (05/11, D-623 "defeito B"), só na faixa; a tira do Dividir: <code>3b098c96</code> (02/11, D-601). A D-686 (a faixa da tirada) e a D-595 (a tirada some da tira) estão "não construída"</td>
+<td><code>lu-9-frase</code> (a gerente, 17/11: "cada parte da tela decide sozinha em que situação a página está, e a faixa não aprendeu a 'tirada'"), <code>k0611-frase-tirou</code> (D-686)</td>
+<td>nada, se fosse uma pergunta só</td>
+</tr>
+<tr>
+<td>SP-05</td>
+<td>A faixa diz "Esta página vai sair em {filtro}" pelo filtro gravado na página (<code>_texto_tranquilo</code> L5381: <code>pagina.filtro</code>, e <code>pagina.filtro == TIRAR_FUNDO</code> L5376), e não pela regra do PDF, <code>core/etapas.filtro_que_vale</code> (L335: sem "Limpar a folha" e sem o filtro escolhido à mão, a página sai em Original, D-009). Pela leitura, na página com filtro gravado que não vale, a faixa diz um filtro e o PDF sai em outro. Não rodei</td>
+<td>1</td>
+<td>GRAVE (a faixa, toda página)</td>
+<td><code>filtro_que_vale</code>; a mesma condição velha no "comparar" (CF-02)</td>
+<td>a frase: <code>d9fae8c2</code>/<code>7b75e962</code> (18/07); a regra do PDF: <code>175addb7</code> (26/10, etapa 1, D-009), sem mexer na faixa. Contra a D-667</td>
+<td><code>k0611-frase-tirou</code> (o Samuel: "porque tem esse aviso de a pagina vai sair em preto e branco, para que serve")</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>SP-06</td>
+<td>"Conferida" quer dizer duas coisas, e o tique é posto botão por botão. O tique, o "N de M conferidas", o "Para revisar" e o cartão da tela inicial contam <code>revisada</code>; a faixa só diz "Página N conferida." quando o Histórico tem a ação "revisar" dela (<code>_conferida_na_faixa</code> L5275 → <code>_ok_dado</code> L5297: o ok não é um dado da página, é lido de volta do Histórico, e a busca para, sem ok, em toda ação que mudou a lista de páginas da folha ou de uma folha antes, L5318-5330). Quem põe <code>revisada: True</code> é cada botão, no seu dicionário: catorze ações põem (o corte à mão, o sem corte, o alargado, o alinhar, o ângulo de uma página, a conta do endireitar, o filtro, o medidor do ajuste, a tela cheia, tirar, trazer, deixar em branco, mover a linha, trocar o motor; L6108 a L9431) e outras não (girar, Mover e tamanho do conteúdo, tamanho da folha, marcação, a forma da gravura, todas as caixinhas do filtro, o desentortar, o "usar mais escuro/fraco" do aviso L9417, todo "usar em todas"; o ângulo com várias páginas, AP-07). O docstring de <code>_conferida_na_faixa</code> diz "Mexer à mão (girar, mover a linha, cortar, trocar o filtro) também põe o tique": o girar não põe</td>
+<td>1 (e 3)</td>
+<td>GRAVE (14 lugares; "página conferida")</td>
+<td>as listas ao lado</td>
+<td>o tique por botão: desde <code>d9fae8c2</code> (18/07), um por botão; o ok pelo Histórico: <code>0aaf7bd6</code> (02/11, D-572: "pode deixar do jeito que ele esta fazendo"). Não achei decisão que diga quais mexidas põem o tique</td>
+<td><code>k0711-pronto-conta</code> (Consertar, "Na fila"; a fila lida não diz mais)</td>
+<td>nada do que a D-572 pede, se o "ok" e o "mexido" fossem dois dados da página, gravados por uma regra só</td>
+</tr>
+<tr>
+<td>SP-07</td>
+<td>"Tirar do livro", "deixar em branco" e "trazer de volta" estão escritos duas vezes, na página (<code>apagar_pagina</code> L9223, <code>_deixar_em_branco</code> L9420) e na grade (<code>_acao_nas_escolhidas</code> L7328-7336), e o "trazer de volta" é diferente: na grade tira também o "em branco" e não marca conferida; na página só tira o "tirar do livro" e marca conferida. A regra "página tirada não pode ser posta em branco" (D-650) mora só no aceso do botão (<code>_atualizar_os_botoes_da_pagina</code> L9302): a tecla Del, o menu Página (<code>deixar_em_branco_ou_voltar</code> L9244) e o "deixar em branco" da grade não a olham. A tecla Del tem dois donos: o atalho do menu (<code>ui/barra_de_menu.py</code> L260) e <code>tratar_tecla</code> (L9912)</td>
+<td>1 (e 3)</td>
+<td>médio (a grade é de vez em quando)</td>
+<td>as duas ao lado</td>
+<td>a página: <code>d9fae8c2</code> (18/07) e etapa 2 (<code>82cdadae</code>, 26/10, a Del deixa em branco); a grade: <code>e2321b16</code> (26/10, etapa 3; D-334). A D-650 ("Ela deveria voltar com o conteúdo dela"; "o menu Página e a tecla Delete também não deixam pôr em branco") está "a fazer": o "trazer de volta" da grade já faz a primeira metade, o da página não. <strong>Fecha a suspeita 5 do pedaço 7</strong></td>
+<td><code>au-d-487</code> (a gerente, 17/11: "na grade, desfaz o 'em branco' e o 'tirar do livro' de uma vez [...] a regra está escrita duas vezes"), <code>lu-9-frase</code></td>
+<td>nada, se fosse uma regra só</td>
+</tr>
+<tr>
+<td>SP-08</td>
+<td>Três avisos são medidos e gravados pela tela, fora do Histórico e só quando a página é vista: "Ficou escura" e "Texto quase sumiu" (<code>_conferir_qualidade_do_preto_e_branco</code> L5086, medindo a figurinha do Preto e branco, que é a conta simples do CF-01: sem a marcação nem o "Só as letras"); "Folha menor que o corte" (<code>_conferir_tamanho_da_folha</code> L2165, só na ferramenta Cortar, L4593). O PDF não mede nenhum dos três. A regra do núcleo para o mesmo aviso, <code>core/analise.analisar_resultado</code> (L763, outros limites: 1% contra 0,3%, e sem comparar com o original), nunca foi chamada desde que entrou (tipo 5); a tela usa <code>avaliar_preto_e_branco</code> (L469)</td>
+<td>2 (e 5)</td>
+<td>médio</td>
+<td><code>analisar_resultado</code> (morta)</td>
+<td>a tela: <code>b15ac310</code> (25/09); <code>analisar_resultado</code>: <code>9c5ce236</code> (18/07), sem quem a chame (<code>git log -S</code>). O docstring da tela (9b-2, <code>8b774778</code>, 27/10) cita a morta: "como core.analise.analisar_resultado já dizia". <strong>Fecha a suspeita 1 do pedaço 7</strong></td>
+<td>—</td>
+<td>o aviso "Ficou escura" / "Texto quase sumiu" nas páginas vistas (nada, se fosse medido no núcleo, na página de verdade)</td>
+</tr>
+<tr>
+<td>SP-09</td>
+<td>"A folha escolhida não cabe" tem dois avisos e uma frase, com medidas diferentes: "Folha menor que o corte" (<code>FOLHA_MENOR_QUE_O_RECORTE</code>, a tela, ferramenta Cortar, compara o tamanho do corte com a folha); "Parte do impresso fica de fora" (<code>IMPRESSO_DE_FORA</code>, D-017, mede o impresso fora da área branca, SP-10); e a frase do painel do Mover, "A folha escolhida (...) é menor que o conteúdo" (<code>_acertar_o_painel_do_mover</code> L2457, por <code>area_branca_que_vale</code>). Desde a etapa 5 o tamanho da folha é escolhido no Mover, e o primeiro aviso só é refeito no Cortar</td>
+<td>1</td>
+<td>médio</td>
+<td>os três ao lado</td>
+<td>"Folha menor": <code>b15ac310</code> (25/09, "decisão 2 do plano"); o D-017: etapa 5 (<code>de69f29f</code>, 27/10), sem tocar no primeiro</td>
+<td>—</td>
+<td>nada, se fosse uma medida só</td>
+</tr>
+<tr>
+<td>SP-10</td>
+<td>"Parte do impresso fica de fora" (D-017) é medido em três lugares, com a mesma função (<code>core/folha.parte_impressa_de_fora</code>) em três imagens diferentes: o PDF (<code>core/pipeline.compor_como_no_pdf</code> L4905, a página filtrada, na resolução do livro); a conferência por trás do "usar em todas..." do Mover (<code>ui/tarefas.TarefaConferirOImpressoDeFora</code> L382-410, a página sem filtro a 75 DPI, que refaz à mão as margens e a chamada com os cinco argumentos); e a ferramenta Mover (<code>ui/tela_conferir._atualizar_o_mover</code> L2429-2433, a prévia da tela). O PDF grava o aviso enquanto o livro é feito (<code>_anotar_aviso_da_pagina</code>, que volta a página a "não conferida"): pela leitura, depois de "Confirmar e processar" uma página pode voltar sem o tique. Não rodei</td>
+<td>1</td>
+<td>GRAVE (3 lugares)</td>
+<td>as três ao lado</td>
+<td><code>de69f29f</code> (27/10, etapa 5, D-017; o docstring de <code>anotar_o_impresso_de_fora</code>: "a mesma conta nos tres lugares (D-473)"); a composição única de 10/11 (M2, D-649) deixou a medida da tarefa de fora. <strong>Fecha a suspeita 2 do pedaço 7</strong></td>
+<td>—</td>
+<td>nada, se a medida fosse feita num lugar só, na página como sai</td>
+</tr>
+<tr>
+<td>SP-11</td>
+<td><code>ui/tela_conferir._medir_o_em_branco_por_tras</code> (L2610-2636) procura a conta com <code>getattr(pipeline, "medir_o_em_branco", None)</code> e o docstring diz "ENQUANTO ELA NÃO ESTIVER NA OBRA, nada acontece aqui": a conta existe (<code>core/pipeline.py</code> L3062) desde o mesmo dia. A guarda nunca mais é falsa</td>
+<td>4 (e 5)</td>
+<td>leve</td>
+<td>—</td>
+<td>a guarda: <code>b3dd854b</code> (27/10, etapa 7, "tela pronta para a D-497"); a conta: <code>ec959313</code> (27/10, etapa 9d). <strong>Fecha a suspeita 3 do pedaço 7</strong></td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>SP-12</td>
+<td><code>_com_os_avisos_de_agora</code> (L6021-6045), a peça que faz o Ctrl+Z devolver os avisos como eram (D-020, lista única 1.6), guarda só os avisos do lado do alvo da ação. No girar e no mover a linha (alvo "folha") guarda os da folha e não os das páginas, que são os que mudam quando a página é desenhada de novo; no girar em formato "pagina" com <code>folha:&lt;f&gt;.rotacao</code> (G-04), o contrário. Não rodei: não achei hoje um aviso de página que o girar tire e que o desenho depois do Ctrl+Z não ponha de volta</td>
+<td>3</td>
+<td>médio</td>
+<td>o formato duplo do G-04</td>
+<td><code>4f881001</code> (27/10, etapa 9b-2); os formatos com prefixo: <code>78f2e025</code> (05/11) e <code>99d7d782</code> (07/11). <strong>Fecha a suspeita 4 do pedaço 7</strong></td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>SP-13</td>
+<td>Os avisos "Lombada incerta" e "Não parece dupla" só são medidos de novo pela análise e pelo Automático (<code>automatico._DA_FOLHA[DIVIDIR]</code>). Depois de dividir ou mover a linha à mão, se eles somem ou ficam depende de o botão pôr <code>revisada</code> na folha, não de medir: "dividir esta", arrastar a linha e trocar o motor põem, e os avisos saem com o tique; "dividir todas" e o "dividir" da grade tiram o <code>revisada</code> de propósito (D-627, <code>_dividir_as_medidas</code> L7524), e o "usar em todas" não o põe: nesses, a folha dividida continua "Não parece dupla"</td>
+<td>3</td>
+<td>médio</td>
+<td>—</td>
+<td>o <code>revisada</code> dos botões: cada um no seu commit (DV-02); o "dividir todas" sem conferida: <code>d2c6ffa1</code> (03/11, D-602/D-627). Não achei decisão sobre o aviso depois de dividir à mão. <strong>Fecha a suspeita 6 do pedaço 7</strong></td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>SP-14</td>
+<td>Pôr no livro os avisos medidos tem três cópias: <code>core/automatico._avisos_medidos</code> (L1173) e <code>avisos_do_livro</code> (L1849) repetem o mesmo laço (as páginas da folha sem a posta à mão, a página pela metade, <code>_juntar_avisos</code>); a análise ao abrir grava os avisos por cima (<code>core/pipeline._analisar_a_folha</code> L250, L270). O "separar as observações do livro" está duas vezes (<code>pipeline.py</code> L184-189 e <code>automatico.py</code> L1878-1885). E "quais avisos são da divisão" está em três listas: <code>core/avisos.DA_DIVISAO</code> (L147), os dois códigos escritos de novo em <code>_ir_para_o_aviso</code> (L9555) e o <code>_DA_FOLHA</code> do Automático (L678, os códigos como texto)</td>
+<td>1</td>
+<td>médio</td>
+<td>as cópias ao lado</td>
+<td><code>_avisos_medidos</code> e <code>avisos_do_livro</code>: <code>4d535ab6</code> (26/10, etapa 3); <code>DA_DIVISAO</code>: <code>b3dd854b</code> (27/10, etapa 7); <code>_ir_para_o_aviso</code>: <code>4d521de0</code> (27/10, etapa 4), antes da lista</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>SP-15</td>
+<td><code>ConfigFolha.apagada</code> é lido em seis lugares (<code>core/avisos.py</code> L110 e L165; <code>core/pipeline.py</code> L3011, L4992, L5009; <code>ui/tela_conferir.py</code> L5534) e ninguém o grava: desde 18/07 o "tirar do livro" é sempre da página (<code>apagar_pagina</code>, alvo "pagina"). Só um projeto muito antigo o traria ligado. A leitura da tira do Dividir (SP-04) depende dele</td>
+<td>5</td>
+<td>leve</td>
+<td>—</td>
+<td>o campo: <code>9c5ce236</code> (18/07); o tirar sempre da página: <code>d9fae8c2</code> (18/07). Não achei o motivo de continuar sendo lido</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+</tbody>
+</table>
+<h2>Pedaço 8: o resto da tela (feito em 26/11/2026)</h2>
+<p>Números: <strong>RT</strong> = resto da tela. Linhas no <code>ee8f531c</code> (o mesmo código do <code>30920fe7</code>). Lido aqui o que nenhum pedaço
+tinha lido de <code>ui/tela_conferir.py</code> e do que ela chama (lista no ONDE-PAREI); o código morto foi procurado também por
+busca mecânica (todo método e constante de <code>ui/tela_conferir.py</code> cujo nome só aparece uma vez em <code>ui/</code>, <code>core/</code> e na
+raiz). O que já está noutros pedaços não foi repetido: <code>_desfazer_marcacao</code> (DF-07), <code>analisar_resultado</code> (SP-08),
+<code>ConfigFolha.apagada</code> (SP-15), <code>confianca_corte</code>/<code>e_paisagem</code> (DV-13), <code>trazer_divisao_da_analise</code> (DV-14).</p>
+<p>Caminhos que este pedaço olhou, e a função que cada um usa: um erro dentro de um botão → <code>protegido</code> →
+<code>_avisar_problema</code>; um erro fora dele → o <code>sys.excepthook</code> de <code>main.py</code>; um erro numa tarefa de fundo →
+<code>ui/tarefas._mensagem_amigavel</code> (RT-03). Abrir o livro → <code>carregar</code> (desmonta e remonta as seis ferramentas, RT-09;
+escolhe a ferramenta de partida, RT-05). Andar de página: setas, roda sem zoom, barra de espaço → <code>_navegar</code>; Page
+Up/Down, Home, End → <code>_ir_para</code>; Tab e "próxima dúvida" → <code>_ir_para_proximo_alerta</code> (RT-06). O painel Filtro →
+<code>_configurar_medidor</code>, <code>_resumir_o_filtro</code> (RT-04, RT-11). Uma prévia que chega → <code>_previa_chegou</code> (RT-08). Toda
+mudança → <code>atualizar</code> (RT-12). Os pares do livro aberto → quatro contas (RT-07).</p>
+<table>
+<thead>
+<tr>
+<th>nº</th>
+<th>onde</th>
+<th>tipo</th>
+<th>grav.</th>
+<th>outras cópias</th>
+<th>por quê</th>
+<th>Central</th>
+<th>o que o Kaique perderia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RT-01</td>
+<td><code>configuracoes.espaco_livre_mb</code> (L193-206): ninguém a chama, e nunca chamou (<code>git log -S</code> só acha o commit em que ela nasceu). A conta "quanto espaço livre tem o disco" está escrita mais duas vezes: <code>atualizacao.espaco_livre_basta</code> (L441, a "conta única" do atualizador, D-856) e <code>empacotar.espaco_livre</code> (L1374, o script que monta o instalador). Fazer o PDF não confere o espaço antes; o disco cheio vira a frase de <code>ui/tarefas._mensagem_amigavel</code> (L128, "Verifique se há espaço em disco")</td>
+<td>5</td>
+<td>leve</td>
+<td>as duas contas ao lado</td>
+<td><code>c3840ebd</code> (18/07, "Escolher onde salvar, instalador do Windows e versão portátil"), sem quem a chamasse. A D-876 (25/11): "<code>configuracoes.espaco_livre_mb</code> é código morto — apagar depois da entrega, e rodar um caça-código-morto no programa inteiro na arrumação"</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>RT-02</td>
+<td>Mais código morto na tela e no que ela chama: <code>ui/tela_conferir._escolher_operacao</code> (L3018) e <code>_escolher_ferramenta</code> (L3023, docstring: "Mantido pelo nome antigo"), sem quem as chame desde 08/08; <code>_sai_diferente_da_previa</code> (L4952), que nasceu sem quem a chamasse; <code>core/pipeline.DPI_DA_PASSADA</code> (L1718, o próprio comentário: "Fica o nome, sem uso no código"), que o comentário de <code>_guardar_o_conteudo</code> (L1963) ainda dá como a resolução da passada</td>
+<td>5</td>
+<td>leve</td>
+<td>—</td>
+<td>as duas primeiras: as chamadas saíram em <code>d83bb033</code> (08/08, "trilha de ferramentas e barra de opções"); <code>_sai_diferente_da_previa</code>: <code>4f881001</code> (27/10, etapa 9b-2), sem chamada (<code>git log -S</code>); <code>DPI_DA_PASSADA</code>: sem uso desde <code>57de8af4</code> (21/10, o tamanho do livro do Egenloff)</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>RT-03</td>
+<td>"Deu um erro" tem quatro caixas, com frases diferentes, e qual aparece depende de onde o erro nasceu: dentro dos 90 métodos da tela marcados com <code>protegido</code> (L412) → <code>_avisar_problema</code> (L9934: "Não consegui fazer isso agora. O programa continua funcionando e o seu trabalho está salvo", montada à mão com <code>QMessageBox</code>); nos outros 323 métodos da tela e no resto do programa → o <code>sys.excepthook</code> de <code>main.py</code> (L65-75: "Aconteceu um problema inesperado, mas o programa continua funcionando.", por <code>ui.perguntas.avisar</code>, que existe para o botão sair em português, <code>tests/test_botoes_em_portugues.py</code>); numa tarefa de fundo → <code>ui/tarefas._mensagem_amigavel</code> (L115-130); falta de memória → <code>ui/janela_principal._avisar_falta_de_memoria</code> (L2003, outra <code>QMessageBox</code> à mão). A primeira diz "o seu trabalho está salvo" sem conferir nada: <code>_avisar_problema</code> não grava nem olha se gravou (CLAUDE.md §11.12, ponto 2: "Nada dá como feito o que não conferiu")</td>
+<td>1 (e 4)</td>
+<td>GRAVE (4 lugares; toda vez que algo falha)</td>
+<td>as quatro ao lado; há 9 <code>QMessageBox</code> montadas à mão em <code>ui/</code></td>
+<td><code>protegido</code>: <code>ccc87266</code> (18/07, "protege os handlers"); a frase: <code>7b75e962</code> (18/07); o <code>excepthook</code> e <code>_mensagem_amigavel</code>: <code>d9fae8c2</code> (18/07). Não achei decisão que mande frases diferentes</td>
+<td>— (o item 12 da lista do Fable, "a caixa 'continua funcionando' que mente", posto "cedo" na frente 3 de 25-26/11)</td>
+<td>nada, se fosse uma caixa só, que diz o que conferiu</td>
+</tr>
+<tr>
+<td>RT-04</td>
+<td>O filtro da página, na tela, é o gravado (<code>pagina.filtro</code>), não o que vale no PDF (<code>core/etapas.filtro_que_vale</code>, D-009: sem "Limpar a folha" e sem o filtro escolhido à mão, a página sai em Original). Umas vinte decisões da tela leem o gravado: o cartão aceso e os outros cartões (<code>_atualizar_cartoes</code> L4825-4847), o medidor e as caixinhas que aparecem (<code>_campo_do_ajuste</code> L8036, <code>_configurar_medidor</code> L8043-8073, <code>_resumir_o_filtro</code> L8125, <code>_mostrar_respeitar_gravuras</code> L7881, <code>_mostrar_gravuras_em_cinza</code> L7929), o "já está neste filtro, não faz nada" de <code>_escolher_filtro</code> (L7771), a faixa (SP-05), o cartão "Tirar o fundo" (L5879), as marcações (L4721, L4785) e as frases do "todas" (L9194, L9213); só quatro lugares usam <code>filtro_que_vale</code>. Pela leitura, na página cujo filtro gravado não vale, o cartão desse filtro fica aceso com os ajustes dele, e clicar nele não muda nada (o filtro "já está"), enquanto o PDF sai em Original. Não rodei</td>
+<td>1</td>
+<td>GRAVE (cerca de 20 lugares; filtros)</td>
+<td>as leituras ao lado e <code>filtro_que_vale</code>; a faixa (SP-05) e o "comparar" (CF-02) são da mesma família</td>
+<td>as leituras: desde <code>d9fae8c2</code> (18/07), uma por controle; a regra do PDF: <code>175addb7</code> (26/10, etapa 1, D-009), sem mexer na tela. Contra a D-667</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>RT-05</td>
+<td>"O Automático desta etapa está ligado?" é lido na tela pela caixinha velha do livro, e não pela regra do núcleo (<code>core/etapas.corta_sozinho</code>, <code>endireita_sozinho</code>, <code>marca_sozinho</code>: o livro OU o Automático rodado só nesta página): a ferramenta de partida (<code>_aba_de_partida</code> L3760-3762, <code>projeto.cortar_bordas</code> e <code>projeto.endireitar</code>); a ferramenta de marcar de partida (<code>_ferramenta_de_partida</code> L3784, <code>projeto.limpar and projeto.detectar_regioes</code>); e o painel do Endireitar (<code>_atualizar_conta_do_endireitar</code> L7679-7685, <code>self.projeto.endireitar</code>, quando a mesma função, 20 linhas antes, usa <code>endireita_sozinho</code>). Pela leitura, na página em que o Automático rodou só nela, a lista da conta do endireitar fica acesa e os dois ângulos medidos não aparecem. Mais duas da mesma família já anotadas (CF-01 L5028, CF-02)</td>
+<td>1 (e 3)</td>
+<td>médio</td>
+<td>as três ao lado e as duas já anotadas</td>
+<td>as partidas: <code>3be204ae</code> (26/10, etapa 2, "escolha do agente de layout [...]; não há decisão do Samuel sobre isto", pelo docstring); o painel do Endireitar: <code>e1ef0d3c</code> (21/10), antes da regra do núcleo (etapa 3, 26/10)</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>RT-06</td>
+<td>"A próxima página" tem três ordens: as setas, a roda sem zoom e a barra de espaço (<code>_navegar</code> L4012: no Dividir com "Uma página", as páginas, D-601; no Dividir com "Duas lado a lado", as folhas na ordem do livro, D-615; fora dele, o número); Page Up/Down, Home e End (<code>tratar_tecla</code> L9890-9897: só o número, por <code>_ir_para</code>, sem os passos do Dividir nem a ordem mudada à mão); a Tab e o "próxima dúvida" (<code>_ir_para_proximo_alerta</code> L4359: o número, com volta no fim). Pela leitura, no Dividir com "Uma página", Page Down pula dez folhas, e não dez páginas; e com folhas arrastadas para outro lugar (D-615), Page Down, End e a Tab andam na ordem do PDF de entrada</td>
+<td>1 (e 3)</td>
+<td>médio (no Dividir e com a ordem mudada)</td>
+<td>os três ao lado</td>
+<td>Page Down: <code>4d147bc4</code> (27/10, etapa 6, D-021); os passos: D-601 (02/11); a ordem do livro: <code>3b95ac0b</code> (04/11, D-615), só no <code>_navegar</code>. Contra a D-667</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>RT-07</td>
+<td>Os pares do livro aberto ("a 1 sozinha à direita, depois 2 e 3...") são contados em quatro lugares, com duas regras: só as páginas que vão para o PDF, com a tirada sozinha fora dos pares (<code>ui/tela_conferir._grupos_do_livro_aberto</code> L5572, a tira com "Duas lado a lado"; <code>ui/widgets/paginas_rolando</code> L308-318, a tela grande); ou pelo número, com as tiradas dentro (<code>ui/widgets/tira_miniaturas.posicao</code> L777-779, a tira com o "Ver em pares" do menu; <code>ui/widgets/todas_as_paginas._grupos</code> L638, a grade em pares). Pela leitura, num livro com uma página tirada, os pares da grade e do "Ver em pares" ficam um para o lado dos da tela grande</td>
+<td>1</td>
+<td>GRAVE (4 lugares; miniaturas)</td>
+<td>as quatro ao lado</td>
+<td>tira e grade: <code>744292de</code> (21/10, layout etapa 5); a tela grande: <code>82175b41</code> (22/10); a tira pelos pares da tela: <code>6d62dd47</code> (04/11, D-611; o Samuel: "tem que verificar se vai ficar assim em todo os lugares né?"), só na tira com "Duas lado a lado"</td>
+<td>—</td>
+<td>nada, se fosse uma conta só</td>
+</tr>
+<tr>
+<td>RT-08</td>
+<td>A tela reconhece a prévia que chegou desmontando o texto da chave do <code>ui/tarefas.GerenciadorPrevias</code>: <code>_pagina_da_previa</code> (L5796, <code>chave.split(":", 1)[0]</code>) e <code>_previa_chegou</code> (L5816-5896: <code>startswith(f"{indice}:{dpi}:")</code>, <code>startswith("folha:")</code>, <code>MARCA_DA_MEDIDA</code>). O formato da chave é decidido em <code>ui/tarefas</code> e lido à mão em outro arquivo. E há um ramo só para a "Força do preto sozinha" (L5859-5868, o comentário: "Sem isto a tela ficaria esperando uma prévia que ninguém pediu")</td>
+<td>2 (e 4)</td>
+<td>médio</td>
+<td>a chave em <code>ui/tarefas</code> (CF-04)</td>
+<td>o ramo da força: <code>fbe0b7fa</code> (12/10, "Para revisar na tela"); <code>_pagina_da_previa</code>: <code>1e04573b</code> (10/11, D-649)</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>RT-09</td>
+<td>A cada livro aberto a tela desmonta e remonta as seis ferramentas (<code>carregar</code> L3653 → <code>_limpar_abas</code> L3850, que apaga até o nome do editor, <code>del self.editor_selecao</code> L3874). É o resto da regra de julho, em que cada ferramenta só existia com a caixinha marcada; desde a D-001 todas existem sempre, e a tela continua com 27 <code>hasattr(self, ...)</code> e 35 <code>getattr(self, "...", None)</code> (15 só para o <code>editor_selecao</code>), para quando a peça "ainda não nasceu"</td>
+<td>4</td>
+<td>leve</td>
+<td>—</td>
+<td><code>_limpar_abas</code>: <code>ccc87266</code> (18/07); o <code>del self.editor_selecao</code>: <code>3be204ae</code> (26/10, D-001, "todas as ferramentas sempre montadas"), que manteve a remontagem</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>RT-10</td>
+<td>O painel Automático relê o livro a cada Ctrl+Z, "Rodar" e caixinha, e marcaria de novo o Dividir que a pessoa desmarcou; para não marcar, cada chamada decide se passa <code>manter_o_dividir_desmarcado</code> (<code>ui/automatico.EstadoDoAutomatico.do_projeto</code> L277-316): passam o Ctrl+Z/Ctrl+Y (<code>ui/tela_conferir._reacertar_as_opcoes</code> L9751), a caixinha "Margens iguais" (L2084) e o fim do "Rodar" (<code>ui/janela_principal.py</code> L1435); não passam <code>ui/janela_principal.py</code> L1095 e L1268 e <code>ui/automatico.py</code> L1173. Só vale para o Dividir. E <code>total_paginas = len(projeto.paginas)</code> (L322) é mais uma conta de páginas (SP-03)</td>
+<td>3 (e 4)</td>
+<td>médio</td>
+<td>as seis chamadas</td>
+<td><code>ce8ff1d2</code> (04/11, D-590: "Sim a caixinha continua desmacada."). A decisão é do Dividir; o jeito (uma bandeira por chamada) não está nela</td>
+<td>—</td>
+<td>a caixinha do Dividir continuar desmarcada (D-590), se o estado dela não fosse refeito do livro a cada vez</td>
+</tr>
+<tr>
+<td>RT-11</td>
+<td>"O que o painel Filtro mostra em cada filtro" está escrito duas vezes: na tela (<code>_configurar_medidor</code> L8039-8110 e <code>_resumir_o_filtro</code> L8113, por <code>setVisible</code> e <code>pagina.filtro == PRETO_E_BRANCO</code>) e no núcleo (<code>core/automatico.campos_da_pagina_no_filtro</code> L157, que o Automático usa para gravar; o docstring: "Arriscado: divergir do painel"). A tela não chama a função. Hoje coincidem (conferido opção por opção: o ajuste, a letra clara, reduzir cores, igualar a luz e o chuvisco em todo filtro com ajuste; o jeito do preto e branco, letras com a cor, suavizar e tons de cinza só no Preto e branco; respeitar as gravuras em todos)</td>
+<td>1</td>
+<td>médio</td>
+<td>as duas ao lado</td>
+<td>a do núcleo: <code>92b75a11</code> (31/10, D-594), copiada da tela; a da tela: um controle por item (2.8, 2.9, 2.11, 2.17, D-586, D-588)</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>RT-12</td>
+<td>Os avisos que não dependem de desenhar só ficam certos quando a tela se atualiza: <code>atualizar</code> (L4476-4500) chama a cada mudança <code>acertar_alertas_do_fundo</code> (só a página da vez), <code>acertar_alertas_de_cor</code> e <code>acertar_faixa_do_livro</code> (o livro todo), e <code>_alertas_da_previa</code> (L5933) chama a faixa de novo. São regras do núcleo, mas quem decide quando elas rodam é a tela; ao abrir, <code>ui/janela_principal.py</code> L1077 chama a do fundo; o PDF chama só a da faixa (<code>core/pipeline.py</code> L5000 e L5030). Pela leitura, uma mudança feita fora da tela (o Automático rodando no fio de fundo) só acerta o "Tem cor" quando a tela atualizar depois. Não rodei</td>
+<td>2</td>
+<td>médio</td>
+<td>—</td>
+<td>o "Tem cor": <code>3e68f58b</code> (05/10, "o alerta 'Tem cor' some com 'Só as letras'"); o fundo tirado: item 1.1 (29/09); a faixa do livro: 12/10 (o "Para revisar")</td>
+<td>—</td>
+<td>nada</td>
+</tr>
+</tbody>
+</table>
+<p class="rodape">Editor de Impressão &middot; gerado em 27/11/2026 às 12:48</p>
+</body>
+</html>

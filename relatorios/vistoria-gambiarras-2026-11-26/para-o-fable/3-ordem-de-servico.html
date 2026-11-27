@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ordem de serviço da vistoria das gambiarras (26/11/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Ordem de serviço da vistoria das gambiarras (26/11/2026)</h1>
+<p>Colada pelo Samuel no chat da gerente em 26/11/2026, sem mudar nada. É esta a ordem que vale; a gerente não acrescentou
+nada a ela. O que a gerente preparou antes do agente começar está no fim.</p>
+<hr />
+<p>Vistoria das gambiarras — decisão do Samuel, 26/11/2026 (frente 1). Começa agora, pela tela de trabalho.</p>
+<p>O QUE É. Um agente NOVO, que só lê e não conserta nada, vistoria o programa e escreve uma lista. Nenhuma linha de código muda. Nada vai para o CLAUDE.md nem para os arquivos dos agentes. Ramo: obra-2026-10-26.</p>
+<p>ANTES DE ABRIR O CÓDIGO, ele lê, nesta ordem:
+1. Esta ordem de serviço inteira.
+2. relatorios/vistoria-gambiarras-2026-11-26/ONDE-PAREI.md (se existir: pedaços feitos, próximo pedaço, rascunho de suspeitas).
+3. relatorios/vistoria-gambiarras-2026-11-26/lista.md (se existir: é o modelo de como anotar e mostra as contas que já apareceram).
+4. O que já se sabe: relatorios/para-o-fable-2026-11-23/resposta-do-fable.md (Pergunta 2 e Pergunta 5), os 16 remendos do relatorio-para-o-fable.md, e a fila da Central LIDA DA PÁGINA (coleção respostas, itens "pode consertar" / "na fila"; a cópia em docs/plano/central é de 27/10 e está velha). Tudo isso é registro, não prova: cada item é confirmado no código de hoje antes de entrar na lista.</p>
+<p>FERRAMENTA PRIMEIRO. Antes do agente começar, gere com um script (AST, sem rodar o programa) a tabela "campo de ConfigPagina/ConfigFolha → todos os lugares de core/ e ui/ que gravam nele", em relatorios/vistoria-gambiarras-2026-11-26/campos.md. É insumo do agente: duas gravações do mesmo campo em lugares diferentes são suspeita obrigatória.</p>
+<p>OS CINCO TIPOS que ele procura:
+1. A mesma regra ou conta escrita em mais de um lugar, com código diferente.
+2. Conta ou regra feita em ui/ que deveria estar em core/ (a tela calcula, decide, ou monta campos de ConfigPagina/ConfigFolha em vez de só mostrar e receber clique).
+3. Desvio por caso: "se veio de tal botão / tal lugar, faz diferente".
+4. Peça que só existe para proteger outra peça: espera, cadeado, arquivo de marca, segundo caminho "de reserva".
+5. Código morto (começando por configuracoes.espaco_livre_mb).</p>
+<p>GRAVE / MÉDIO / LEVE — pelo risco de o próximo conserto quebrar algo ao lado:
+- GRAVE: a mesma regra em 3 ou mais lugares, OU em peça que o Kaique usa toda hora (girar, dividir, desfazer, conferir/"está certo", filtros, miniaturas).
+- MÉDIO: regra em 2 lugares, conta na tela, ou desvio por caso em peça usada de vez em quando.
+- LEVE: código morto; peça de proteção que hoje não atrapalha ninguém.</p>
+<p>CADA ACHADO É UMA LINHA: onde (arquivo e função) · tipo (1–5) · grave/médio/leve · as outras cópias, se houver · POR QUÊ (o commit e a data em que entrou, pelo git log, e o pedido ou decisão D-xxx que o motivou, pelo Livro; se não achar, escrever "não achei o motivo", nunca inventar) · qual item da Central ele explica, se houver (o id da pergunta) · o que o Kaique perderia se essa peça sumisse hoje.</p>
+<p>ORDEM E PEDAÇOS. Primeiro a tela de trabalho (ui/tela_conferir.py e o que ela chama), dividida em pedaços pequenos por assunto: girar · dividir · desfazer · aplicar-em / "o que vai junto" · como-fica (as renderizações) · marcações · contagens e situação da página (conferida, em branco, tirada, avisos) · o resto da tela. Um pedaço de cada vez. Ao terminar um pedaço: grava na lista.md, atualiza o ONDE-PAREI.md (pedaços feitos, próximo, tempo gasto neste pedaço) e só então segue. Ele nunca para no meio de um pedaço.</p>
+<p>DOIS DESTINOS. Certeza vai para a lista. Dúvida que ele não consegue confirmar agora (ex.: "esta conta do girar parece existir também no dividir, que ainda não li") vai para a seção "Suspeitas" do ONDE-PAREI, uma linha, na hora em que vê. Quem ler o pedaço seguinte confirma ou descarta. Nada é escrito duas vezes.</p>
+<p>CONTEXTO. Você acompanha o consumo do agente. Se apertar, ele termina o pedaço em que está e para; você abre um agente novo com esta mesma ordem de serviço, e ele continua pelo ONDE-PAREI. O que já foi vistoriado não se relê.</p>
+<p>ENTREGA DO PRIMEIRO PEDAÇO. Quando o pedaço "girar" estiver gravado, me avise com: o tempo que levou, quantos achados por tipo e gravidade, e o caminho da lista. O Fable lê antes de o agente seguir para o segundo pedaço — mas o agente não espera: continua no pedaço seguinte enquanto a leitura acontece. Depois de cada pedaço, uma linha no chat com o tempo.</p>
+<p>A LISTA NÃO FECHA NADA. Nenhum item da Central muda de estado por causa da vistoria. Só o "deu certo" do Samuel, depois de testar um conserto, fecha item. Sem propostas de conserto na lista, sem plano.</p>
+<p>Antes de começar: me diga quanto tempo estima para a tela de trabalho inteira e confirme que o agente não vai tocar em código.</p>
+<hr />
+<h2>O que a gerente preparou (26/11/2026)</h2>
+<ul>
+<li><code>fila-da-central.md</code> (nesta pasta): as 37 respostas da coleção <code>respostas</code> da Central, lidas da página em 26/11,
+  em que "pode consertar" ou "na fila" aparece na opção, no comentário do Samuel ou na resposta da gerente. O agente
+  não tem acesso à Central; esta é a cópia lida da página que a ordem pede.</li>
+<li><code>campos.md</code> e <code>campos_que_gravam.py</code> (nesta pasta): a tabela da "FERRAMENTA PRIMEIRO", gerada pela AST.</li>
+<li>Os relatórios do Fable ficam na pasta principal do projeto (<code>D:\programas\EditorImpressao\relatorios\para-o-fable-2026-11-23\</code>),
+  não nesta cópia.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 27/11/2026 às 12:48</p>
+</body>
+</html>

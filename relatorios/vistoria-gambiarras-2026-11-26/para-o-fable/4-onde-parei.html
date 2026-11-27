@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vistoria das gambiarras: onde parei</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Vistoria das gambiarras: onde parei</h1>
+<p>Agente vistoriador (só lê código e escreve a lista). Ramo <code>obra-2026-10-26</code>, cópia <code>obra-juncao</code>. Nenhuma linha de
+código mudou; os únicos arquivos mexidos são este e <code>lista.md</code>.</p>
+<h2>Decisões que esta tarefa precisa cumprir</h2>
+<ul>
+<li><strong>A ordem de serviço do Samuel (26/11/2026)</strong>, em <code>ordem-de-servico.md</code>: "Um agente NOVO, que só lê e não conserta
+  nada, vistoria o programa e escreve uma lista. Nenhuma linha de código muda." Os cinco tipos; GRAVE/médio/leve; uma
+  linha por achado com onde, tipo, gravidade, cópias, POR QUÊ ("se não achar, escrever 'não achei o motivo', nunca
+  inventar"), item da Central e o que o Kaique perderia; certeza na lista, dúvida em "Suspeitas"; "Ele nunca para no
+  meio de um pedaço"; "A LISTA NÃO FECHA NADA"; "Sem propostas de conserto na lista, sem plano."</li>
+<li><strong>CLAUDE.md §11.12</strong> (13/11 e 18/11/2026): "o agente não pode fazer gambiarras como na outra ferramenta nossa que
+  fazia várias gambiarras e funcionava de maneira diferente em vários lugares" · "eu acho que tinhamos que atualizar a
+  regra de gambiarras para que ela se aplicasse a tudo né?". O que a vistoria procura é o que essa regra chama de
+  gambiarra: conserto só no lugar do defeito, conta copiada, sintoma tratado em vez da causa.</li>
+</ul>
+<h2>Pedaços</h2>
+<table>
+<thead>
+<tr>
+<th>pedaço</th>
+<th>situação</th>
+<th>começo</th>
+<th>fim</th>
+<th>tempo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>girar</td>
+<td>feito (12 achados, G-01 a G-12)</td>
+<td>26/11 15:40</td>
+<td>26/11 15:51</td>
+<td>~11 min (relógio da máquina, <code>date</code>)</td>
+</tr>
+<tr>
+<td>dividir</td>
+<td>feito (16 achados, DV-01 a DV-16)</td>
+<td>26/11 17:25</td>
+<td>26/11 17:38</td>
+<td>~13 min de código (relógio da máquina, <code>date</code>; antes, ~10 min lendo as regras e os insumos)</td>
+</tr>
+<tr>
+<td>desfazer</td>
+<td>feito (8 achados, DF-01 a DF-08)</td>
+<td>26/11 17:38</td>
+<td>26/11 17:43</td>
+<td>~5 min (relógio da máquina, <code>date</code>)</td>
+</tr>
+<tr>
+<td>aplicar-em / "o que vai junto"</td>
+<td>feito (8 achados, AP-01 a AP-08)</td>
+<td>26/11 17:44</td>
+<td>26/11 17:53</td>
+<td>~9 min de código (relógio da máquina, <code>date</code>; antes, ~3 min lendo as regras e os insumos; agente novo)</td>
+</tr>
+<tr>
+<td>como-fica (as renderizações)</td>
+<td>feito (5 achados, CF-01 a CF-05)</td>
+<td>26/11 17:54</td>
+<td>26/11 17:58</td>
+<td>~5 min (relógio da máquina, <code>date</code>)</td>
+</tr>
+<tr>
+<td>marcações</td>
+<td>feito (5 achados, MC-01 a MC-05)</td>
+<td>26/11 17:59</td>
+<td>26/11 18:02</td>
+<td>~3 min (relógio da máquina, <code>date</code>)</td>
+</tr>
+<tr>
+<td>contagens e situação da página</td>
+<td>feito (15 achados, SP-01 a SP-15)</td>
+<td>26/11 18:04</td>
+<td>26/11 18:18</td>
+<td>~14 min de código (relógio da máquina, <code>date</code>; antes, ~5 min lendo as regras e os insumos; agente novo)</td>
+</tr>
+<tr>
+<td>o resto da tela</td>
+<td>feito (12 achados, RT-01 a RT-12)</td>
+<td>26/11 18:19</td>
+<td>26/11 18:29</td>
+<td>~10 min (relógio da máquina, <code>date</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tela de trabalho terminada (26/11, 18:29).</strong> Os oito pedaços estão feitos. Total da lista: <strong>81 achados</strong>. Por
+tipo: 53 do tipo 1 (a mesma regra em mais de um lugar), 6 do tipo 2 (conta na tela), 10 do tipo 3 (desvio por caso),
+7 do tipo 4 (peça que só protege outra) e 5 do tipo 5 (código morto). Por gravidade: 30 GRAVE, 31 médios, 20 leves.
+Por pedaço: girar 12 (6 GRAVE), dividir 16 (6), desfazer 8 (2), aplicar-em 8 (2), como-fica 5 (3), marcações 5 (1),
+contagens e situação 15 (7), o resto da tela 12 (3). Suspeita aberta: uma, de fora da tela de trabalho (abaixo).
+Quem continuar a vistoria, fora da tela (a ordem de serviço só fala da tela primeiro; o resto do programa não foi
+pedido em pedaços), começa pela suspeita aberta.</p>
+<p>O que o pedaço o resto da tela leu (não reler): <code>configuracoes.espaco_livre_mb</code> (L185-206) e as buscas por
+<code>disk_usage</code>/<code>espaco_livre</code> no programa; a busca mecânica de métodos e constantes de nível de módulo de
+<code>ui/tela_conferir.py</code> sem uso em <code>ui/</code>, <code>core/</code> e na raiz; em <code>ui/tela_conferir.py</code> L395-432 (<code>protegido</code>),
+L1916-1987 e L1987-2069 só pelas leituras do projeto, <code>_mudar_margens_iguais</code> (L2069-2088), L2274-2320 (as linhas de
+apoio), L3005-3040 (<code>_mexer_na_area</code>, <code>_escolher_operacao</code>, <code>_escolher_ferramenta</code>), <code>carregar</code> e as partidas
+(L3653-3787), <code>eventFilter</code> (L3788-3822), <code>_limpar_abas</code> (L3850-3884), <code>_navegar</code> (L4012-4040), <code>atualizar</code> e
+<code>_atualizar_paineis</code> (L4476-4535), <code>_atualizar_previa</code> (L4535-4619, fora do ramo do Dividir), L4945-4975
+(<code>_sai_diferente_da_previa</code>, <code>_assinatura_do_como_sai</code>), L5572-5666 (os pares da tira, <code>_ir_para_o_quadro_da_tira</code>,
+<code>_mover_da_tira</code>), L5796-5896 (<code>_pagina_da_previa</code>, <code>_previa_chegou</code>), L7665-7700 (o fim de
+<code>_atualizar_conta_do_endireitar</code>), L7761-7830 (<code>_escolher_filtro</code>, <code>_mudar_algoritmo_pb</code>, <code>_mudar_cores</code>), L8031-8200
+(o medidor inteiro), L8598-8700 (<code>_acertar_a_vista_da_pagina</code>, <code>_acertar_o_lado_a_lado</code>, <code>_onde_vai_a_peca</code>),
+L8804-8830 e L8947-8970 (a roda), <code>lista_de_paginas_mudou</code> (L9635-9660), L9770-9933 (as teclas), L9934-9995
+(<code>_avisar_problema</code>, <code>_pedir_processamento</code>, <code>miniaturas_guardadas</code>), a busca por <code>pagina.filtro</code>, por
+<code>hasattr(self</code>/<code>getattr(self, "</code> e por <code>projeto.limpar</code>/<code>cortar_bordas</code>/<code>endireitar</code> em <code>ui/</code>; <code>main.py</code> L55-95;
+<code>ui/tarefas._mensagem_amigavel</code> (L115-130); <code>ui/janela_principal.py</code> L1995-2035; <code>ui/automatico.py</code> L277-330 e
+<code>core/automatico.campos_da_pagina_no_filtro</code> (L145-200); <code>core/etapas.corta_sozinho</code>/<code>endireita_sozinho</code> (L284-313);
+<code>core/pipeline.py</code> L1714-1720 e L1958-1968 (<code>DPI_DA_PASSADA</code>, <code>_guardar_o_conteudo</code>); os pares em
+<code>ui/widgets/tira_miniaturas.py</code> L760-830, <code>ui/widgets/paginas_rolando.py</code> L305-320 e <code>ui/widgets/todas_as_paginas.py</code>
+L630-640. <strong>Não lido</strong> (só montagem de botões e desenho, sem conta achada pelas buscas): <code>_montar</code> e a barra de baixo
+(L766-1362), o corpo de <code>_montar_aba_*</code> (L1916-3653, fora das linhas acima), os <code>_LugaresDeEncaixe</code>/<code>_RotuloDoLivro</code>
+(L432-590), a "peça" nos pares (L8700-8800) e o zoom (L8478-8560, L9006-9088).</p>
+<p>O que o pedaço contagens e situação leu (não reler): <code>core/avisos.py</code> inteiro; em <code>modelos.py</code> <code>alertas_pendentes</code>,
+<code>_alertas_pendentes</code> (L1097-1104), <code>ConfigFolha</code> L45-56 e <code>ConfigPagina</code> L310-345, L490-505; em <code>core/pipeline.py</code>
+L180-195 (as observações da análise), L244-276 (os avisos da análise), <code>_anotar_aviso_da_pagina</code> (L1070-1093),
+L1530-1575 (<code>_anotar_contas_discordam</code> no desenho, <code>_anotar_corte_encostou</code>), L1641-1682 (<code>marcar_paginas_diferentes</code>,
+<code>_anotar_contas_discordam</code>, <code>acertar_alerta_do_endireitar</code>), <code>_anotar</code> (L2009), <code>_anotar_conferir</code> (L2711),
+L2995-3086 (<code>precisa_medir_o_em_branco</code> até <code>precisa_do_desenho_do_pdf</code>), L4030-4070 (<code>acertar_aviso_do_reforco</code>,
+<code>_esquecer_aceitos</code>), L4126-4220 (os avisos do "Só as letras", <code>acertar_faixa_do_livro</code>), <code>acertar_alertas_de_cor</code>
+(L4279-4316), L4840-4935 (o fim de <code>_pagina_pronta</code>, <code>compor_como_no_pdf</code>, <code>anotar_o_impresso_de_fora</code>), L4985-5012
+(o laço do PDF) e <code>_anotar_folha_maior</code> (L5187); em <code>core/analise.py</code> L320-332, L434-446, L463-500
+(<code>avaliar_preto_e_branco</code>) e L750-781 (<code>analisar_resultado</code>); <code>core/etapas.limpa_sozinho</code> e <code>filtro_que_vale</code>
+(L328-345); em <code>core/automatico.py</code> L678-683 (<code>_DA_FOLHA</code>...), <code>_juntar_avisos</code> (L803), <code>_avisos_medidos</code>
+(L1173-1221) e <code>avisos_do_livro</code> (L1849-1888); <code>core/dividir_a_mao.py</code> L84-96 e L228-300 (<code>campos_para_dividir</code>,
+<code>campos_para_juntar</code>); <code>core/folha.tamanho_da_folha_cabe</code> (L130-150); em <code>ui/tela_conferir.py</code> L1385-1500 (bolinhas,
+<code>_atualizar_barra_de_baixo</code>), L2150-2195 (<code>_conferir_tamanho_da_folha</code>), L2395-2475 (o fim de <code>_atualizar_o_mover</code>,
+<code>_acertar_o_painel_do_mover</code>), L2600-2650 (<code>_medir_o_em_branco_por_tras</code>, <code>_impresso_conferido*</code>), L3885-3930
+(<code>_montar_tira</code>), <code>_total</code> (L3998), L4300-4470 (<code>ir_para_pagina</code>, <code>_ir_para_proximo_alerta</code>, <code>_avisos_do_item</code>,
+<code>_itens_com_duvida</code>, <code>esta_certo</code>, <code>_ir_do_para_revisar</code>, <code>abrir_so_as_que_precisam</code>), L4580-4596, L5075-5121
+(<code>_conferir_qualidade_do_preto_e_branco</code>), L5158-5450 (a faixa inteira: <code>_atualizar_faixa</code> até <code>_mostrar_sugestao</code>),
+L5490-5565 (<code>_atualizar_tira</code>, <code>_atualizar_tira_do_dividir</code>), <code>_atualizar_contador</code> (L5763-5790), <code>_alertas_da_previa</code>
+(L5897-5941), <code>_com_os_avisos_de_agora</code> (L6021-6045), o <code>_registrar</code> de novo (L5942-5985, só para ver a ordem),
+<code>_acao_nas_escolhidas</code> (L7285-7345, os ramos em branco/tirar/trazer), <code>_dividir_as_medidas</code> (L7510-7541),
+<code>abrir_todas_as_paginas</code> (L8412-8432), <code>restaurar_pagina</code> (L9089), L9218-9470 (<code>apagar_pagina</code> até
+<code>_desfazer_o_reforco</code>, com <code>_marcar_revisada</code>, <code>_aplicar_sugestao</code>, <code>_aplicar_correcao</code>, <code>_escolher_forca</code>,
+<code>_deixar_em_branco</code>), L9470-9590 (<code>_aceitar_avisos</code> inteiro, <code>_aceitar_o_motivo_em_todas</code>, <code>_aceitar_tudo</code>,
+<code>_ir_para_o_aviso</code>, <code>_mostrar_a_lista_dos_avisos</code>) e a tecla Delete de <code>tratar_tecla</code> (L9905-9915); a busca por
+<code>revisada</code> (todas as linhas) e pelas ações de <code>_registrar</code> (os 60 tipos); <code>ui/tarefas.TarefaConferirOImpressoDeFora</code>
+(L345-416); <code>ui/widgets/todas_as_paginas.py</code> L78-100, L555-575 e L630-660 (<code>ItemDaGrade</code>, o número "só as que
+precisam"); <code>ui/automatico.py</code> L1530-1565 e L1785-1870 (o "página N de M"); <code>ui/tela_ampliada._total</code>;
+<code>ui/janela_principal.py</code> L700-720 e L1940-1960; <code>ui/janela_confirmar.py</code> L155-190; <code>ui/tela_inicio.py</code> L960-980;
+<code>projetos.py</code> L330-360 e L410-440; <code>ui/dialogo_impressao.py</code> L845-866; o cabeçalho de <code>core/ordem_das_paginas.py</code>.</p>
+<p>O que o pedaço girar leu (não reler): <code>core/girar.py</code> inteiro; em <code>ui/tela_conferir.py</code> os métodos do girar
+(L6554-6917), <code>_registrar</code> e os ajudantes dele (L5942-6081), <code>_espera_pelas_marcacoes</code> (L6938-6996), a grade
+(<code>_acao_nas_escolhidas</code>, <code>_girar_as_escolhidas_que_sao_metade</code>, <code>_pagina_dentro_da_folha</code>), <code>_atualizar_previa</code> só no
+ramo do Dividir, <code>_giros_das_paginas</code>/<code>_giros_das_folhas</code>, <code>_proporcao_da_pagina</code>, <code>_tamanhos_estimados</code>,
+<code>MARCAS_DA_*</code>; <code>ui/widgets/tira_miniaturas.py</code> (giros e <code>_metade</code>); <code>ui/janela_principal._acertar_a_capa</code> e a fiação
+do menu do girar; <code>core/etapas.py</code> (marcas, L95-245 e L587-615); <code>core/pipeline.preparar_para_recorte</code> e o fim de
+<code>preparar_metade</code>; <code>core/automatico.antes_da_pagina</code> e o começo de <code>_dividir</code>; <code>ui/tarefas._folha_crua</code> e
+<code>_giro_da_folha</code>.</p>
+<p>O que o pedaço dividir leu (não reler): <code>core/dividir_a_mao.py</code> inteiro; <code>core/dividir.py</code> inteiro; em
+<code>core/pipeline.py</code> <code>_analisar_a_folha</code> (L209-276), <code>jeito_de_dividir</code>, <code>achar_divisao</code>, <code>_lombada_do_editor</code>,
+<code>achar_sobra</code>, <code>folga_do_giro_na_sobra</code>, <code>faixa_da_sobra</code>, <code>_cortar_a_sobra</code>, <code>recalcular_divisao</code>,
+<code>trazer_divisao_da_analise</code>, <code>_partes_da_folha</code>, <code>preparar_para_recorte</code>; em <code>core/automatico.py</code> <code>fotografar</code>
+(L535-570), <code>medir</code> (L578-672), <code>_a_tampa</code>, <code>_dividir</code> (L932-990), o ramo Dividir de <code>_desligar</code> (L1130-1160),
+<code>paginas_depois</code>, <code>paginas_juntadas</code> (L396-416), <code>vai_dividir_pelo_tamanho</code> e <code>paginas_do_pdf_depois</code> (L1590-1757);
+<code>core/girar.gira_so_a_pagina</code>/<code>giro_da_pagina</code>; <code>core/zonas_na_folha._corte_efetivo</code> e <code>repartir_nas_metades</code>;
+<code>core/analise.analisar_folha</code> (só o Dividir); <code>modelos.Projeto.paginas_ativas</code>, <code>_de_folha_nao_dividida</code>,
+<code>metade_sobrando</code>, <code>_tem_metade_de_folha_dividida</code>; em <code>ui/tela_conferir.py</code> L4040-4306 (passos do Dividir, linha do
+motor, <code>_volta_como_estava</code>, <code>_linha_arrastada</code>, <code>_acertar_a_linha_do_dividir</code>, leituras), L6083-6552 (<code>_mover_corte</code>
+até <code>_trocar_jeito_da_folha</code>), L7396-7541 (o "dividir" da grade), o trecho dos botões em <code>_atualizar_botoes</code>
+(L5447-5470) e o botão "nao_dividir" do aviso (L9379-9382); <code>ui/tarefas.TarefaDividirFolhas</code> e <code>TarefaLerLinhas</code>
+(L418-520); <code>ui/tela_ampliada._corte_movido</code> e a linha (L289); as chaves de <code>ui/automatico.py</code> L1738-1755 e
+<code>ui/widgets/folhas_do_caderno.py</code> L458-472.</p>
+<p>O que o pedaço desfazer leu (não reler): <code>ui/desfazer_nesta_pagina.py</code> inteiro; <code>historico_acoes.py</code> L1-130 e
+L398-683 (<code>HistoricoAcoes</code> até <code>_regravar_tudo</code>, <code>aplicar</code>, os prefixos, <code>_restaurar_tipo</code>, <code>montar_acao</code>); em
+<code>ui/tela_conferir.py</code> <code>_voltar_no_historico</code> (L1552-1567), <code>_gravar_no_livro</code> (L2262-2271), <code>_gravar_o_conteudo</code> e
+<code>_conteudo_como_veio</code> (L2498-2554), <code>CAMPOS_DA_MARCACAO</code>, <code>_selecao_mudou</code>, <code>_registrar_a_marcacao</code>,
+<code>_desfazer_marcacao</code> (L3050-3130), <code>_sem_recorte</code> (L7018), o fim de <code>_aceitar_avisos</code> (L9496-9514), <code>desfazer</code>,
+<code>refazer</code>, <code>_medir_o_em_branco_ao_refazer</code>, <code>_reacertar_as_opcoes</code> (L9661-9755) e o Ctrl+Z de <code>tratar_tecla</code>
+(L9856-9861); <code>ui/widgets/editor_selecao.py</code> (a pilha <code>_marcos</code>, <code>desfazer</code>, <code>event</code>, o Ctrl+Z do <code>keyPressEvent</code>);
+<code>ui/barra_de_menu._montar_editar</code>; <code>ui/janela_principal.py</code> L270-280, L397-410, L940-980 e <code>keyPressEvent</code>
+(L2046-2053); <code>modelos._migrar_folha</code>/<code>_migrar</code> (L1130-1160).</p>
+<p>O que o pedaço aplicar-em leu (não reler): <code>ui/dialogo_escolher_paginas.py</code> L1-104; <code>core/fundo_tirado.py</code> inteiro;
+em <code>core/girar.py</code> L100-170 e L340-420 (alcance, avisos, <code>paginas_do_alcance</code>, os campos do giro das páginas); em
+<code>core/etapas.py</code> L140-200, L260-300 e L560-600 (<code>_tem_valor_a_mao</code>, <code>mexida_a_mao</code>, <code>recorte_a_mao</code>,
+<code>conteudo_fora_do_padrao</code>); <code>core/automatico.py</code> L120-200 (<code>CAMPOS_DA_PAGINA</code>, <code>campos_da_pagina_no_filtro</code>) e
+L1040-1056 (o "Rodar nelas também" do Endireitar e do Cortar); <code>core/perfis.py</code> L40-100; <code>core/pipeline.py</code>
+L1375-1425 (<code>recorte_depois_de_mudar_o_angulo</code>), L2375-2410 (o "refazer a gravura" das opções do livro) e
+L2443-2560 (<code>garantir_selecao</code>); <code>modelos.py</code> L395-425 e <code>guardar_selecao</code> (L513-533); em <code>ui/tela_conferir.py</code>
+L2085-2150 (tamanho da folha), L2490-2650 (<code>_gravar_o_conteudo</code>, <code>_mover_em_todas</code>, <code>_escolher_paginas_do_mover</code>,
+conferência por trás), L2875-2925 (os botões do Marcar e da Foto), L3190-3345 (<code>_preparar_para_trocar_forma</code>, <code>_forma_nas</code>,
+<code>_marcacao_em_todas</code>, <code>_marcacao_nas_proximas</code>), L3462-3485 (a caixinha da letra clara), L3590-3610 (o "Aplicar em"
+do Filtro), L7025-7240 (<code>_recorte_em_todas</code>, <code>_escolher_paginas_do_corte</code>, <code>_paginas_do_alcance_do_angulo</code>,
+<code>_mudar_o_angulo</code>, <code>_jeito_do_retangulo</code>, <code>_com_o_retangulo_do_corte</code>), L7570-7600 e L7640-7760 (os caminhos do
+ângulo), L8355-8410 (<code>usar_da_tela_cheia</code>, <code>_gravar_opcao_da_tela_cheia</code>), L9100-9240 (<code>_campos_do_aplicar_em</code>,
+<code>desfazer_o_tirar_o_fundo</code>, <code>_filtro_em_todas</code>, <code>_filtro_nas_proximas</code>), <code>_marcar_revisada</code> (L9315),
+<code>CAMPOS_SO_DO_MOVER</code> (L10040-10070) e <code>MARCAS_DA_*</code> (L10140-10187); <code>ui/tarefas.py</code> L1140-1180 (a chave, só para
+ver os campos do filtro); <code>ui/automatico.py</code> L405-440, L660-700 e L2575-2600; <code>ui/widgets/filtros_tela_cheia.py</code> L79 e
+L498-515; <code>ui/janela_principal.py</code> L935-980.</p>
+<p>O que o pedaço como-fica leu (não reler): <code>ui/tarefas.py</code> L360-415 (<code>TarefaConferirOImpressoDeFora</code>), L792-852
+(<code>_TarefaCartoes</code>), L895-1036 (<code>_TarefaPrevia</code>: <code>run</code>, <code>_para_recorte</code>, <code>_folha_crua</code>), L1135-1260 (a chave, <code>pegar</code>,
+<code>pedir</code>, a chave da medida) e L1395-1470 (<code>chave_com_filtro</code>, <code>pegar_com_filtro</code>, <code>chave_para_recorte</code>,
+<code>pedir_cartoes</code>); em <code>core/pipeline.py</code> L690-770 (o fim de <code>preparar_metade</code>), L3407-3545 (<code>_filtrar</code>,
+<code>_filtrar_a_pagina</code>, <code>_so_a_marcacao_a_mao</code>), L3546-3580 (<code>filtro_com_as_caixinhas</code>), L3696-3708, L4245-4265
+(<code>_misto_vale</code>), L4447-4525 (<code>renderizar_com_filtro</code>, <code>renderizar_pagina_para_recorte</code>) e L4865-4925
+(<code>compor_como_no_pdf</code>); <code>core/zonas_na_folha.geometria_do_desenho</code> (docstring, L131-161); <code>core/automatico.py</code>
+L1288-1310 (<code>como_sai_na_tela</code>) e L1527-1575 (<code>depois_da_pagina</code>); em <code>ui/tela_conferir.py</code> L4797-5160 (as
+figurinhas: <code>_atualizar_cartoes</code>, <code>_como_sai_no_pdf</code>, <code>_sai_diferente_da_previa</code>, <code>_assinatura_do_como_sai</code>,
+<code>_chave_dos_cartoes</code>, <code>_cartao_sem_fundo</code>, <code>_cartao_pb_pelo_misto</code>, <code>_cartoes_a_pintar</code>, <code>_cartao_do_misto</code>,
+<code>_cartoes_prontos</code>, <code>_conferir_qualidade_do_preto_e_branco</code>, <code>_imagem_sem_filtro</code>) e L5666-5760
+(<code>_miniatura_branca</code>, <code>_acertar_as_miniaturas_movidas</code>); <code>ui/tela_ampliada._imagem_do_outro_filtro</code> (L304-350);
+<code>ui/widgets/filtros_tela_cheia.py</code> L82-170 e L800-835.</p>
+<p>O que o pedaço marcações leu (não reler): em <code>ui/tela_conferir.py</code> L2855-2875, L3042, L3132-3197 (<code>_limpar_marcacao</code>,
+<code>_folha_em_branco</code>, <code>_detectar_de_novo</code>), L4619-4730 (<code>_atualizar_marcacao</code>, <code>_pagina_sem_filtro_para_o_ajuste</code>,
+<code>_avaliar_os_pedacos</code>); <code>ui/widgets/editor_selecao.py</code> (os <code>selecao_mudou.emit</code> e <code>limpar_o_que_a_maquina_marcou</code>,
+L244, L345, L447-455); <code>ui/barra_de_menu.py</code> L202 e L260; <code>core/zonas_na_folha.py</code> (lista das funções, <code>_converter</code>
+L420-463, <code>acompanhar</code> L560-583); <code>core/selecao.py</code> L100-175 e L370-390 (<code>Regiao.de_dicionario</code>, <code>Selecao.de_lista</code>);
+<code>core/etapas.py</code> L533-544; <code>core/pipeline.py</code> L3708-3712; <code>core/filtros.py</code> L4300-4308; <code>core/misto.py</code> L676-681; e a
+busca por <code>origem</code> em <code>core/</code>, <code>ui/</code> e <code>modelos.py</code>.</p>
+<h2>Suspeitas (dúvidas de outros pedaços; quem ler o pedaço confirma ou descarta)</h2>
+<h3>Abertas</h3>
+<ul>
+<li>(fora da tela de trabalho, achada no pedaço 8) <code>core/pipeline._guardar_o_conteudo</code> (L1958-1968) não troca o tamanho
+  de uma página já medida (<code>_TAMANHOS.setdefault</code>), e o comentário dá o motivo: "A passada mede a DPI_DA_PASSADA e a
+  geometria a 300". Desde o mesmo commit (<code>57de8af4</code>, 21/10) a passada mede na resolução do livro e a constante não é
+  usada (RT-02). Conferir se a proteção ainda protege de alguma coisa (prévia e PDF em resoluções diferentes?) ou se
+  ficou sem motivo.</li>
+</ul>
+<h3>Fechadas</h3>
+<ul>
+<li>(contagens e situação, suspeita 1) "Ficou escura" / "Texto quase sumiu" com duas regras → <strong>virou o achado SP-08</strong>:
+  a tela mede e grava; a regra do núcleo (<code>analise.analisar_resultado</code>) nunca foi chamada (código morto).</li>
+<li>(contagens e situação, suspeita 2) "Parte do impresso fica de fora" medida em três lugares → <strong>virou o achado
+  SP-10</strong>: a mesma função, em três imagens diferentes (filtrada, sem filtro a 75 DPI, a prévia da tela).</li>
+<li>(contagens e situação, suspeita 3) A guarda <code>getattr(pipeline, "medir_o_em_branco", None)</code> → <strong>virou o achado leve
+  SP-11</strong>: a conta existe desde o mesmo dia; a guarda nunca mais é falsa.</li>
+<li>(contagens e situação, suspeita 4) Os avisos guardados para o desfazer nos dois formatos do girar → <strong>virou o achado
+  SP-12</strong>: só os do lado do alvo; não achei hoje o caso em que isso some com um aviso.</li>
+<li>(contagens e situação, suspeita 5) A grade e a página com o "trazer de volta" diferente e a regra duas vezes →
+  <strong>virou o achado SP-07</strong>: confirmado; e a regra da D-650 só no aceso do botão.</li>
+<li>
+<p>(contagens e situação, suspeita 6) "Lombada incerta" / "Não parece dupla" depois de dividir à mão → <strong>virou o achado
+  SP-13</strong>: somem ou ficam conforme o botão põe o tique na folha, não por medida nova.</p>
+</li>
+<li>
+<p>(marcações, aberta no aplicar-em) O "refazer a gravura" em três lugares → <strong>virou o achado MC-02</strong>.</p>
+</li>
+<li>
+<p>(marcações, aberta no dividir) Mover a linha de uma folha dividida não reparte as marcações → <strong>virou o achado
+  MC-03</strong>: as zonas seguem pela geometria da folha, sem mudar de página.</p>
+</li>
+<li>
+<p>(como-fica, aberta no girar) A chave das prévias montada em dois lugares de <code>ui/tarefas.py</code> → <strong>virou parte do
+  achado CF-04</strong>: a chave da imagem do Cortar é cópia de parte da chave da prévia, e o docstring dela não conta o ângulo
+  que o livro novo usa.</p>
+</li>
+<li>
+<p>(como-fica / marcações, aberta no girar) <code>geometria_do_desenho</code> em três ramos, só o primeiro com <code>ordem=</code> → <strong>virou o
+  achado leve CF-05</strong>: não é defeito (a <code>ordem</code> só conta no "endireitar antes"); o que fica é a mesma chamada escrita
+  três vezes.</p>
+</li>
+<li>
+<p>(aplicar-em, aberta no dividir) O "aplicar em" do Endireitar repete a conta de páginas da D-636? → <strong>descartada</strong>:
+  <code>_paginas_do_alcance_do_angulo</code> chama <code>girar.folhas_do_alcance</code> sobre a lista de páginas, a mesma conta que
+  <code>girar.paginas_do_alcance</code> (D-636) usa por dentro; a D-636 só acrescenta o filtro "é metade de folha dividida", que
+  é do girar. O aviso em duas funções já está no G-10; a conta à mão do "todas"/"daqui em diante" das outras
+  ferramentas ficou no AP-06.</p>
+</li>
+<li>
+<p>(aplicar-em, aberta no dividir) O "usar em todas" do Dividir deixa todas as folhas que recebem a linha como "linha
+  própria" na vez seguinte; o Cortar e o Mover também? → <strong>virou o achado AP-02</strong>: sim, nos três (o Cortar e o Mover
+  pelo valor gravado, o Dividir pela marca).</p>
+</li>
+<li>
+<p>(dividir, aberta no girar) Ler a folha girada a 150 DPI em quatro lugares → <strong>virou o achado DV-01</strong>.</p>
+</li>
+<li>(dividir, aberta no girar) <code>core/automatico.py</code> L1158 põe <code>apagada</code> na direita fora do <code>_dividir</code> → <strong>virou parte do
+  DV-03</strong> (é o "Desligar" do Automático: um terceiro jeito de juntar a folha).</li>
+<li>(dividir, aberta no girar) O giro só da página escondido na folha juntada pelo Automático voltaria ao dividir de novo
+  → <strong>descartada como achado próprio</strong>: os dois caminhos que dividem de novo (<code>campos_para_dividir</code> com duas páginas, e
+  com as metades guardadas) devolvem as páginas "como estavam", com o giro de cada uma, que é o que a D-498 diz e o
+  comentário de <code>LIMPAR_AO_PARTIR</code> (L94-100) descreve; o <code>b12d6f61</code> é o caso da página nova partida, que passa por
+  <code>LIMPAR_AO_PARTIR</code>. O que sobra é a diferença entre os jeitos de juntar, que já está no DV-03 e no DV-05.</li>
+<li>(desfazer, aberta no girar) O "Desfazer nesta página" não tem o giro da página → <strong>descartada</strong>: é a decisão. A D-621
+  do Livro lista exatamente as cinco etapas ("Endireitar, Corte das bordas, Mover e tamanho, Filtro, Gravuras e
+  fotos"), e o cabeçalho do arquivo diz "A divisão não entra".</li>
+<li>(desfazer, aberta no dividir) A metade decidida pelo clique (<code>_metade_clicada_no_dividir</code> L423) → <strong>virou o achado
+  DF-08</strong>: usa a linha da tela (presa entre 2% e 98%, a mesma do DV-07) e um laço próprio que não pula a página posta
+  à mão.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 27/11/2026 às 12:48</p>
+</body>
+</html>

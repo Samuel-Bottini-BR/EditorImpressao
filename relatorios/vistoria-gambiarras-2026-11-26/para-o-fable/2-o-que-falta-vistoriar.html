@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vistoria das gambiarras: o que já foi lido e o que falta (27/11/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Vistoria das gambiarras: o que já foi lido e o que falta (27/11/2026)</h1>
+<p>Escrito pela gerente, a partir do <code>ONDE-PAREI.md</code> da vistoria e da lista dos arquivos do programa no ramo
+<code>obra-2026-10-26</code> (ponta <code>65190e78</code>). As contas de linhas são do <code>wc</code>, sem os testes.</p>
+<h2>O que já foi vistoriado</h2>
+<p><strong>A tela de trabalho</strong> (<code>ui/tela_conferir.py</code>, 10.187 linhas, e o que ela chama), em 8 pedaços, em 26/11/2026:
+girar (12 achados), dividir (16), desfazer (8), aplicar em (8), como fica (5), marcações (5), contagens e situação da
+página (15), o resto da tela (12). <strong>81 achados: 30 graves, 31 médios, 20 leves.</strong> Lista completa em <code>lista.md</code>.</p>
+<p>Dentro da própria tela de trabalho ficou <strong>sem ler</strong>, de propósito (o agente achou só montagem de botões e desenho,
+sem conta, pelas buscas): <code>_montar</code> e a barra de baixo (L766-1362), o corpo de <code>_montar_aba_*</code> (L1916-3653, fora das
+linhas citadas no ONDE-PAREI), <code>_LugaresDeEncaixe</code>/<code>_RotuloDoLivro</code> (L432-590), a "peça" nos pares (L8700-8800) e o
+zoom (L8478-8560, L9006-9088).</p>
+<p>Dos outros arquivos, a vistoria leu <strong>só os trechos</strong> que a tela chama (estão listados no ONDE-PAREI). Nenhum outro
+arquivo foi lido inteiro.</p>
+<p><strong>Uma suspeita ficou aberta</strong>, de fora da tela: <code>core/pipeline._guardar_o_conteudo</code> (L1958-1968) não troca o tamanho
+de uma página já medida, e o motivo escrito no comentário parece ter deixado de valer no mesmo commit de 21/10
+(<code>57de8af4</code>).</p>
+<p><strong>Ressalva da gerente:</strong> os pedaços foram rápidos (3 a 14 minutos cada, ~70 min no total). A profundidade só foi
+conferida à mão num achado (MC-01: as linhas batem). Os agentes não rodaram o programa; o que depende de uso está
+marcado "pela leitura, não rodei".</p>
+<h2>O que falta vistoriar: o resto do programa</h2>
+<p>A ordem de serviço só pediu a tela de trabalho primeiro; o resto <strong>não foi dividido em pedaços por ninguém</strong>. Abaixo,
+uma divisão <strong>sugerida pela gerente</strong> (o Samuel decide), por assunto, na ordem de quanto o Kaique usa:</p>
+<table>
+<thead>
+<tr>
+<th>nº</th>
+<th>pedaço sugerido</th>
+<th>arquivos</th>
+<th>linhas</th>
+<th>o que tem</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>As peças da tela de trabalho</td>
+<td>27</td>
+<td>15.041</td>
+<td>painéis, visualizador, seleção à mão, tira de miniaturas, grade "Todas as páginas", tela cheia, comparar, botões de girar, menu, desfazer nesta página</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Preparar a página (geometria)</td>
+<td>21</td>
+<td>13.290</td>
+<td><code>core/pipeline.py</code> (5.323), girar, dividir (automático e à mão), cortar, borda preta, endireitar, desentortar, etapas, ordem do preparo</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Filtros e limpeza</td>
+<td>14</td>
+<td>9.346</td>
+<td><code>core/filtros.py</code> (4.483), Só as letras, camadas, Tirar o fundo, peças do ScanTailor (preto e branco, cores, luz, pontinhos)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Gravuras e marcações</td>
+<td>6</td>
+<td>3.860</td>
+<td>achar gravura, seleção, zonas presas à folha, editar zonas, rede de segmentação</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Automático e avisos</td>
+<td>7</td>
+<td>7.088</td>
+<td>painel Automático (tela e núcleo), análise, "Para revisar", avisos, página em branco</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Abrir, guardar e desfazer</td>
+<td>19</td>
+<td>13.021</td>
+<td>projetos, modelos (<code>ConfigFolha</code>/<code>ConfigPagina</code>), histórico de ações, configurações, ler o PDF, páginas em outro processo, tela inicial, janela principal, tarefas</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Gerar o PDF e cadernos</td>
+<td>8</td>
+<td>4.748</td>
+<td>impressão, cadernos, impressora, ordem das páginas, janela de montar para imprimir, tela final</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Atualizador, Windows e instalação</td>
+<td>13</td>
+<td>8.220</td>
+<td><code>atualizacao.py</code>, <code>core/windows.py</code> (3.375), fases da atualização, Velopack, testes à distância, <code>main.py</code>, assinatura</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Achar texto (OCR)</td>
+<td>7</td>
+<td>2.551</td>
+<td>Kraken, Tesseract, docTR e o servidor do Kraken</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Ferramentas do Samuel</td>
+<td>9</td>
+<td>5.624</td>
+<td>empacotar, publicar a versão, servidor das versões, montar o motor, compilar as peças do ScanTailor</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total que falta: 131 arquivos, ~82.800 linhas</strong> (a tela de trabalho tinha 10.187).</p>
+<p><strong>Fora da divisão:</strong> 33 scripts soltos de teste e de régua na raiz (<code>teste_*.py</code>, <code>avaliar*.py</code>, <code>conferencia.py</code>,
+<code>rodada_*.py</code> etc., ~20.000 linhas) e as regras dos agentes (<code>regras_dos_agentes/</code>, 18 arquivos, 5.209 linhas). Não são
+o programa do Kaique; a gerente sugere deixar de fora, a menos que o Samuel ou o Fable queiram.</p>
+<h2>Observações para quem decide a ordem</h2>
+<ul>
+<li>O pedaço 8 (atualizador) já passou por cinco rodadas de "quem tenta quebrar" entre 23 e 25/11. Pode ir por último,
+  ou só com o tipo 5 (código morto) e o tipo 4 (peças de proteção).</li>
+<li>Os pedaços 1, 2 e 3 são os que mais aparecem nos achados da tela (a tela chama o núcleo por eles). Muitos achados da
+  lista apontam "a outra cópia" para dentro deles, e eles ainda não foram lidos inteiros.</li>
+<li>No ritmo da tela de trabalho (~10.000 linhas em ~70 min de leitura), o resto levaria várias horas de agente. A
+  estimativa da gerente da última vez errou para cima; esta também pode errar.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 27/11/2026 às 12:48</p>
+</body>
+</html>
