@@ -390,7 +390,27 @@ FL-16 e no PP-18; aqui só as buscas); `core/ocr_comum.py` L209-221 (FL-19).
 | 2. o docTR | `core/ocr_doctr.py` (e fecha a suspeita do modelo ONNX aberto em três lugares) | feito (1 achado, OC-02; fecha a suspeita) | 27/11 16:06 | 27/11 16:07 |
 | 3. o Kraken e o servidor | `core/ocr_kraken.py`, `motor_kraken/servidor_kraken.py` | feito (2 achados, OC-03 e OC-04) | 27/11 16:07 | 27/11 16:09 |
 | 4. o Tesseract | `core/ocr_tesseract.py` | feito (2 achados, OC-05 e OC-06) | 27/11 16:09 | 27/11 16:10 |
-| 5. a comparação | `core/ocr_comparar.py` | a fazer | | |
+| 5. a comparação | `core/ocr_comparar.py` | feito (2 achados, OC-07 e OC-08) | 27/11 16:10 | 27/11 16:11 |
+
+**Pedaço grande 9 terminado (27/11, das 16:05 às 16:11 pelo relógio da máquina).** 8 achados novos, OC-01 a OC-08. Por
+tipo (o principal): 6 do tipo 1 (OC-02, OC-03, OC-04, OC-05, OC-06, OC-07), nenhum do tipo 2 nem do 3, 1 do tipo 4
+(OC-01) e 1 do tipo 5 (OC-08). Por gravidade, com a régua nova: nenhum GRAVE, 2 médios (OC-01: o "Só as letras" A ou C
+sai pela B, calado, quando o docTR falha; OC-02: a falha ao abrir uma peça de fora guardada para a sessão em cinco
+lugares, e só o modelo de layout tenta de novo) e 6 leves (o Kraken e o Tesseract não rodam no programa do Kaique
+hoje). "Outra cópia" de achado já listado: OC-01 (FL-16: **confirma a suspeita do FL-16** do lado dos leitores de texto;
+nenhum arquivo dos leitores chama o `erros.log`, e três comentários dizem que sim), OC-08 (PP-18). Da mesma família:
+OC-02 e OC-03 (FL-15, RT-01), OC-05 (FL-15), OC-06 (AB-24, FL-19), OC-07 (GV-03). Central: nenhum achado explica item
+da fila lida em 26/11 (nenhum item da fila é dos leitores de texto). Fecha a suspeita aberta do modelo ONNX (virou o
+OC-02).
+
+O que ficou sem ler neste pedaço grande: em `core/ocr_tesseract.py` a leitura do hOCR por dentro (`_LeitorHocr`,
+`ler_hocr`, L466-517), lida só pela lista das funções; em `core/ocr_diagnostico.py` o `conferir_gravura` e a linha de
+comando (L108-155), só pelas buscas; o que o atualizador, o empacotar, o publicar e o montar fazem com o motor do Kraken
+(pedaços grandes 8 e 10). Os cabeçalhos de `ocr_doctr`, `ocr_kraken` e `ocr_tesseract` ainda dizem "AINDA NÃO ESTÁ
+LIGADO AO PROGRAMA (29/09/2026)"; o do docTR, também que o empacotar "ainda NÃO inclui este" (notas nos pedaços da
+lista; não são dos cinco tipos).
+
+**Próximo:** parar e entregar à gerente (a tarefa pediu só os pedaços grandes 4 e 9).
 
 ## Pedaços (tela de trabalho, 26/11)
 
