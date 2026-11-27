@@ -1437,11 +1437,39 @@ programa (fora de `tests/`, de `relatorios/` e da própria peça). As contas por
 Lidos, só pelos tipos 4 e 5: `core/fases_da_atualizacao.py` (o cabeçalho, as fases, os tipos de frase e os motivos, os
 eventos e os efeitos, a regra `proxima_fase` pelas transições que falam da volta, do bilhete e da abertura; a
 comparação de versões já está no FS-15) e `core/conversa_com_o_velopack.py` inteiro. Da volta automática não sobrou
-transição nem efeito ("nenhuma transição pede volta ao Velopack (D-867: a volta automática saiu)", L105-106; o
-`AllowVersionDowngrade` saiu, L93-95, e o `False` que fica é o de fábrica). O "não instalado" da regra
+transição nem efeito ("nenhuma transição pede volta ao Velopack (D-867: a volta automática saiu)", L82; o
+`AllowVersionDowngrade` "saiu", L93-95, e fica passado como `False`, L97). O "não instalado" da regra
 (`not e.instalado`, L617) só acontece nos testes (o executor sempre manda `instalado=True`), e é o jeito de a regra
 responder a todo par: não é peça de proteção. Pela leitura; não rodei.
 
 | nº | onde | tipo | grav. | outras cópias | outra cópia de | por quê | Central | o que o Kaique perderia |
 |---|---|---|---|---|---|---|---|---|
-| AT-07 | `atualizacao.conferir_assinatura_do` (L907-933) lê a versão a conferir de dois jeitos: o nosso (`pacote`, `versao`, `arquivo`, `sha256`, da `conversa_com_o_velopack.VersaoDoVelopack`) "ou um objeto com PackageId/Version/FileName/SHA256" (o do Velopack), `getattr(alvo, "pacote", None) or alvo.PackageId` em cada campo (L920-923). No programa a versão vem sempre do jeito nosso (`self._achada`, de `procurar` ou de `pacote_da_versao`); o jeito do Velopack só é usado pelos testes antigos (`tests/test_publicar_versao.py` L274 e o `Pacote` de `tests/test_decisoes_atualizacao.py` L327). E `core/fases_da_atualizacao.TIPOS_DE_EVENTO` (L359-361) só os testes leem (é a lista que o teste percorre, par por par) | 5 | leve | — | mais um do FS-12 (a peça mantida só por teste antigo) | os dois jeitos: `55ffa4f1` (24/11, "Atualizador novo, código"), quando a versão deixou de ser o objeto do Velopack (etapa 3, `16c838a7`, 16/11) e passou a ser a nossa; a regra de não mudar teste antigo: D-605 | — | nada |
+| AT-07 | `atualizacao.conferir_assinatura_do` (L907-933) lê a versão a conferir de dois jeitos: o nosso (`pacote`, `versao`, `arquivo`, `sha256`, da `conversa_com_o_velopack.VersaoDoVelopack`) "ou um objeto com PackageId/Version/FileName/SHA256" (o do Velopack), `getattr(alvo, "pacote", None) or alvo.PackageId` em cada campo (L916-919). No programa a versão vem sempre do jeito nosso (`self._achada`, de `procurar` ou de `pacote_da_versao`); o jeito do Velopack só é usado pelos testes antigos (`tests/test_publicar_versao.py` L274 e o `Pacote` de `tests/test_decisoes_atualizacao.py` L327). E `core/fases_da_atualizacao.TIPOS_DE_EVENTO` (L359-361) só os testes leem (é a lista que o teste percorre, par por par) | 5 | leve | — | mais um do FS-12 (a peça mantida só por teste antigo) | os dois jeitos: `55ffa4f1` (24/11, "Atualizador novo, código"), quando a versão deixou de ser o objeto do Velopack (etapa 3, `16c838a7`, 16/11) e passou a ser a nossa; a regra de não mudar teste antigo: D-605 | — | nada |
+
+### Atualizador, pedaço 6: os testes à distância (feito em 27/11/2026)
+
+Lidos, só pelos tipos 4 e 5: `core/testes_a_distancia.py` (o cabeçalho, os nomes fixos, o caderninho e a tarefa
+"desfazer", os planos de ligar, desligar e desfazer, o montador do script, o executor, o estado, `ligar`, `desligar`,
+`mandar_desfazer`, `preparar_o_desfazer`; L518-545 já lidas no pedaço 3) e `core/_testes_a_distancia_windows.py` inteiro
+(o pedido antigo de licença que a gerente pediu para olhar). Para cada função, quem a chama no programa: `ligar` (a
+janela da primeira abertura, sem senha, e as Configurações, com senha), `desligar` (as Configurações), `mandar_desfazer`
+(o gancho de desinstalar). Pela leitura; não rodei.
+
+**Duas notas que não são dos tipos 4 e 5 (a D-886 tirou os tipos 1 a 3 deste pedaço), para a gerente:**
+1. O pedido antigo de licença continua vivo, e não pela peça única do Windows: as Configurações (a caixinha "Testes à
+   distância" e o botão de pôr a senha, `ui/tela_configuracoes.py` L383-401) chamam `pedir_senha_e_ligar`
+   (`ui/testes_a_distancia_ui.py` L118-129), que passa a senha digitada a `testes_a_distancia.ligar` (L774-799), que
+   manda o `ExecutorWindows` aplicar o plano de verdade (`_testes_a_distancia_windows.aplicar_no_windows`, com o seu
+   próprio `runas` em `_rodar_elevado`, L81-100). A D-825 diz "nesta entrega, a senha digitada na janela da primeira
+   abertura não liga os testes à distância; eles ligam na atualização que trouxer os testes consertados", e o próprio
+   docstring de `primeira_vez_se_preciso` (L151-152) avisa "deixar a senha chegar ao `ligar` (os testes à distância
+   ainda têm os defeitos de 18/11 e não fazem parte desta entrega)". A janela da primeira abertura cumpre; pela
+   leitura, o caminho das Configurações não. Não rodei.
+2. Em `_rodar_elevado` (L94-95), quando o `ShellExecuteExW` falha, o erro é lido com `ctypes.get_last_error()` de uma
+   função aberta por `ctypes.windll` (sem `use_last_error`). O cabeçalho de `core/windows.py` (L52-53) diz que é assim
+   que "o 'Não' vira 'deu certo'" (o defeito 2 da etapa 5): se o valor lido for 0, `aplicar_no_windows` devolve
+   "deu certo" (L117-125) sem ter rodado nada. Ficou como suspeita aberta no ONDE-PAREI (não confirmei rodando).
+
+| nº | onde | tipo | grav. | outras cópias | outra cópia de | por quê | Central | o que o Kaique perderia |
+|---|---|---|---|---|---|---|---|---|
+| AT-08 | Ficou sem quem chame o preparo do "desfazer" na primeira abertura, que saiu com o atualizador novo: `testes_a_distancia.preparar_o_desfazer` (L828-840; o próprio docstring: "hoje ninguem do programa chama; fica para a entrega dos testes a distancia decidir"), `plano_de_preparar_o_desfazer` (L376-400), o "plano curto" de `plano_de_desfazer(testes_ligados=False)` e de `_comando_preparar_o_desfazer(testes_ligados=False)` (L323-353, L496-516), o método `aplicar_ja_como_administrador` do executor (L680-684 e L719-728) e a peça dele no Windows, `_testes_a_distancia_windows.aplicar_ja_como_administrador_no_windows` (L140-170). E `aplicar_no_windows` apaga, no fim, uma variável do ambiente que ninguém põe (`os.environ.pop("EDITOR_SENHA_TESTES", None)`, L137; pela busca, é a única linha com esse nome no programa) | 5 | leve | — | — (o cabeçalho de `testes_a_distancia.py`, L24-33, já diz que a primeira abertura deixou de criar a tarefa) | o preparo na primeira abertura: `77be80ff` (17/11, "D-731: a tarefa desfazer existe sempre"), chamado pelo `--preparar-o-computador` (D-733), que saiu com o atualizador novo (D-830; o docstring foi acertado em `24b949b0`, 24/11); a variável: `59aa8049` (16/11, "Etapa 4 (testes a distância), pela metade"), sem quem a pusesse. Não achei decisão | — | nada |

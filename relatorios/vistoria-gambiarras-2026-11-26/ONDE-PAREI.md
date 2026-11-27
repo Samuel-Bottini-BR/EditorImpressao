@@ -486,7 +486,7 @@ L549-566 (FS-11); `core/fases_da_atualizacao._numeros` (FS-15).
 | 3. a entrada, a versão, a assinatura, o brasão | `main.py`, `versao.py`, `assinatura.py`, `brasao.py` | feito (1 achado, AT-03; e lê L518-545 de `core/testes_a_distancia.py`, que o pedaço 6 não relê) | 27/11 16:32 | 27/11 16:34 |
 | 4. a peça única do Windows | `core/windows.py` | feito (3 achados, AT-04 a AT-06) | 27/11 16:34 | 27/11 16:36 |
 | 5. as fases e o Velopack | `core/fases_da_atualizacao.py`, `core/conversa_com_o_velopack.py` | feito (1 achado, AT-07) | 27/11 16:37 | 27/11 16:38 |
-| 6. os testes à distância | `core/testes_a_distancia.py`, `core/_testes_a_distancia_windows.py` | a fazer | | |
+| 6. os testes à distância | `core/testes_a_distancia.py`, `core/_testes_a_distancia_windows.py` | feito (1 achado, AT-08; duas notas fora dos tipos 4 e 5 e uma suspeita aberta) | 27/11 16:40 | 27/11 16:41 |
 | 7. as telas | `ui/aviso_de_atualizacao.py`, `ui/testes_a_distancia_ui.py`, `ui/brasao_girando.py` | a fazer | | |
 
 ## Pedaços (tela de trabalho, 26/11)
@@ -640,6 +640,15 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
 ## Suspeitas (dúvidas de outros pedaços; quem ler o pedaço confirma ou descarta)
 
 ### Abertas
+
+- (pedaço grande 8, vista no pedaço 6; **para a gerente**: fora dos tipos 4 e 5 que a D-886 deixou neste pedaço) O pedido
+  antigo de licença dos testes à distância (`core/_testes_a_distancia_windows._rodar_elevado`, L81-100) lê o erro do
+  `ShellExecuteExW` com `ctypes.get_last_error()` de uma função aberta por `ctypes.windll`, sem `use_last_error`. Pela
+  documentação do ctypes, `get_last_error` só guarda o erro das funções abertas com `use_last_error=True`; aqui ele
+  devolveria um valor velho (ou 0). Com 0, `aplicar_no_windows` (L117-125) dá "deu certo" sem ter rodado, e `ligar`
+  marca a opção como ligada e pronta. É o mesmo defeito que o cabeçalho de `core/windows.py` (L52-53) conta da etapa 5
+  ("sem eles o 'Não' vira 'deu certo'"). O caminho que chega aqui no programa do Kaique: Configurações > Testes à
+  distância (a nota 1 do pedaço 6 da lista). Não rodei: confirmar à vista, se a gerente quiser.
 
 
 - (pedaço grande 4, vista no pedaço 2; fora deste pedaço grande) "Onde há tinta nesta página" tem mais de uma conta:
