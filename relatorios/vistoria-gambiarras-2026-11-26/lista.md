@@ -267,7 +267,8 @@ SP, RT) este é mais uma cópia ("—" se não for).
 
 Prefixos: **PT** = peças da tela de trabalho (pedaço grande 1); **PP** = preparar a página (pedaço grande 2); **FL** =
 filtros e limpeza (pedaço grande 3); **AV** = Automático e avisos (pedaço grande 5); **IM** = gerar o PDF e cadernos
-(pedaço grande 7); **AB** = abrir, guardar e desfazer (pedaço grande 6); **GV** = gravuras e marcações (pedaço grande 4).
+(pedaço grande 7); **AB** = abrir, guardar e desfazer (pedaço grande 6); **GV** = gravuras e marcações (pedaço grande 4);
+**OC** = achar texto (pedaço grande 9).
 
 ### Preparar a página: a suspeita que ficou aberta da tela
 
@@ -1202,3 +1203,16 @@ figura (`recortar_no_ponto`), nunca pixel. Pela leitura; não rodei.
 | nº | onde | tipo | grav. | outras cópias | outra cópia de | por quê | Central | o que o Kaique perderia |
 |---|---|---|---|---|---|---|---|---|
 | GV-13 | `core/rede_selecao.py` inteiro (o clique numa figura que devolve o contorno dela, o MobileSAM) só tem um usuário, `EditorSelecao.selecionar_com_a_rede`, que ninguém chama (PT-19); o `esquecer()` ("Chamar ao trocar de livro") também não tem quem o chame, e o cabeçalho diz "Se ele não estiver instalado, o atalho simplesmente não aparece": não existe atalho. Mesmo assim o pacote leva os dois modelos, 45 MB (`empacotar.modelos_do_programa`, L292 e L311), e a conferência do programa instalado acusa "falta" se eles não estiverem lá (`atualizacao.py` L947-951) | 5 | leve | — | outra cópia do PT-19 (o lado do núcleo e do pacote) | o módulo: `e93cb9cf` (01/08, "Editor de selecao a mao: seis ferramentas, e a rede assistindo"); no pacote: `48ba4155` (28/09, "Instalador leva os modelos"); na conferência do instalado: `16c838a7` (16/11, etapa 3). Não achei decisão de ligar o clique da rede na tela | — | nada |
+
+### Achar texto (pedaço grande 9), pedaço 1: o comum e o diagnóstico (feito em 27/11/2026)
+
+Lidos: `core/ocr_comum.py` inteiro (fora de L209-221, no FL-19: os tipos, `indisponivel`, `retangulo`, `para_dict`,
+`de_dict`, `abrir_processo`) e `core/ocr_diagnostico.py` inteiro (a conferência `--conferir-ocr`, que não é do Kaique).
+Quem chama os leitores no programa (busca): só `core/linhas_do_texto.linhas_da_pagina` (o docTR; o Kraken atrás do
+gancho desligado do PP-18), chamada por `core/pipeline._filtrar_no_misto` (L3908). Para conferir a suspeita do FL-16:
+a busca por `registrar_erro`/`anotar_no_erros_log` em `core/ocr_*.py`, `core/linhas_do_texto.py`, `core/misto.py` e
+`motor_kraken/`. Pela leitura; não rodei.
+
+| nº | onde | tipo | grav. | outras cópias | outra cópia de | por quê | Central | o que o Kaique perderia |
+|---|---|---|---|---|---|---|---|---|
+| OC-01 | Quando o leitor de texto falha (o docTR sem a biblioteca, sem o modelo, com o modelo danificado, ou um erro na página), a página com "Só as letras" A ou C sai pela opção B, sem aviso: `core/linhas_do_texto.linhas_da_pagina` devolve a lista vazia (L171-180) e `core/pipeline._filtrar_no_misto` só monta as linhas "if resultados" (L3908-3911). O motivo de cada leitor é escrito "para a tela" (`ResultadoOCR.motivo`, `core/ocr_comum.py` L95-97) e o detalhe "para o erros.log" (L98), mas a única porta das três pontes é `ocr_comum.indisponivel` (L125-129, `_log.warning`) e as linhas de `linhas_do_texto` (L172 `_log.exception`, L176 `_log.warning`), que o programa não grava (FL-16); nenhum arquivo dos leitores chama `registrar_erro`, e ninguém mostra o motivo. Três comentários dizem o contrário: `core/linhas_do_texto.py` L32 e `core/pipeline.py` L3892 ("sai o Misto B (o motivo vai para o erros.log)"), e o cabeçalho de `ocr_comum` (L98). Pela busca, são 19 das 46 chamadas `_log` do núcleo: `ocr_kraken` 6, `ocr_tesseract` 4, `linhas_do_texto` 4, `ocr_doctr` 3, `ocr_comum` 1, `ocr_comparar` 1 | 4 (e 1) | médio (chega no PDF, só quando o leitor falha; a tela continua dizendo A ou C) | a porta `indisponivel` e as duas linhas de `linhas_do_texto`, ao lado; as 19 chamadas | outra cópia do FL-16 (o lado dos leitores de texto; e confirma a suspeita dele) | `indisponivel`: `6db4b60a` (29/09, "Item 1.3: pontes do docTR (fast_base) e do Tesseract (ainda nao ligadas)"), antes da porta do erros.log (`ba5eefe7`, 20/10), que não foi posta aqui; a reserva B e os comentários: `ee56ba41` (05/10, "Misto no processamento"). O CLAUDE.md §11.12, ponto 2: "Falha ou 'Não' nunca vira 'deu certo'". Não achei decisão que mande trocar A por B em silêncio | — | nada: sem a reserva, a página com o leitor quebrado ficaria sem sair; o que se perde hoje é saber que ela saiu pela B |

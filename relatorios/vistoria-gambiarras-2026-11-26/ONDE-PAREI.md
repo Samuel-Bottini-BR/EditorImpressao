@@ -346,7 +346,7 @@ aviso uma vez por sessão L1352-1377, no FL-16, e a forma de fábrica do `detect
 | 5. as zonas na folha | `core/zonas_na_folha.py` (fora do já lido) | feito (2 achados, GV-11 e GV-12) | 27/11 16:01 | 27/11 16:03 |
 | 6. editar as áreas e a rede que aponta | `core/editar_zonas.py`, `core/rede_selecao.py` | feito (1 achado, GV-13; o resto de `editar_zonas` já entrou no GV-02, GV-03 e GV-09) | 27/11 16:03 | 27/11 16:04 |
 
-**Pedaço grande 4 terminado (27/11, das 15:51 às 16:05 pelo relógio da máquina; o código, das 15:52 às 16:04).**
+**Pedaço grande 4 terminado (27/11, das 15:51 às 16:04 pelo relógio da máquina; o código, das 15:52 às 16:04).**
 13 achados novos, GV-01 a GV-13. Por tipo (o principal): 7 do tipo 1 (GV-02, GV-03, GV-05, GV-07, GV-08, GV-09, GV-11),
 nenhum do tipo 2, nenhum do tipo 3 (GV-07 tem o 3 junto), 2 do tipo 4 (GV-06, GV-12) e 4 do tipo 5 (GV-01, GV-04,
 GV-10, GV-13). Por gravidade, com a régua nova: 2 GRAVE (GV-07: o que o ScanTailor deixa de fora da pintura vira letra
@@ -365,6 +365,32 @@ foram lidas como algoritmo, uma conta cada, sem cópia achada pela busca. O cabe
 `core/gravura_scantailor.py` (nota no pedaço 3 da lista).
 
 **Próximo:** o pedaço grande 9, "achar texto".
+
+## Programa inteiro (D-886): pedaço grande 9, achar texto
+
+O mesmo agente do pedaço grande 4, 27/11/2026, começou às 16:05 (relógio da máquina, `date`). As decisões que valem são
+as copiadas no alto deste arquivo (D-885, D-886, §11.12); conferidas, valem também para este pedaço grande. Do Livro,
+sobre os leitores de texto: D-132, D-138 ("todos os OCRs instalados, com ligar/desligar e comparação automática entre
+eles", **pela metade**), D-139, D-140 (o motor do Kraken à parte), D-164 (o Kraken como segunda opinião, **pela
+metade**), D-768, D-788 a D-790, D-833, D-843 (o motor no atualizador). Código: linhas no `cbc9784f` (`git diff
+cbc9784f HEAD -- core/ ui/ *.py motor_kraken/` vazio). Prefixo dos achados: **OC**. Atenção pedida: a suspeita do FL-16
+(falhas do leitor de texto que não vão para o `erros.log`).
+
+Quem chama os leitores no programa do Kaique (busca): só `core/linhas_do_texto.py` (o docTR, para o "Só as letras"; o
+Kraken atrás do gancho desligado do PP-18); `core/misto.py` e `core/revisar.py` recebem os resultados. O Tesseract e a
+comparação só pelo diagnóstico (`main.py` L154-156, "Não é usada pelo Kaique") e pelo empacotar. O motor do Kraken
+também pelo atualizador e pelo publicar (pedaços grandes 8 e 10: aqui só o que o leitor faz).
+
+Divisão em pedaços pequenos (escrita antes de começar). Já lido, não se relê: `core/linhas_do_texto.py` (L32, L85-180 no
+FL-16 e no PP-18; aqui só as buscas); `core/ocr_comum.py` L209-221 (FL-19).
+
+| pedaço pequeno | arquivos | situação | começo | fim |
+|---|---|---|---|---|
+| 1. o comum e o diagnóstico | `core/ocr_comum.py` (fora de L209-221), `core/ocr_diagnostico.py` | feito (1 achado, OC-01; confirma a suspeita do FL-16 do lado dos leitores) | 27/11 16:05 | 27/11 16:09 |
+| 2. o docTR | `core/ocr_doctr.py` (e fecha a suspeita do modelo ONNX aberto em três lugares) | a fazer | | |
+| 3. o Kraken e o servidor | `core/ocr_kraken.py`, `motor_kraken/servidor_kraken.py` | a fazer | | |
+| 4. o Tesseract | `core/ocr_tesseract.py` | a fazer | | |
+| 5. a comparação | `core/ocr_comparar.py` | a fazer | | |
 
 ## Pedaços (tela de trabalho, 26/11)
 
