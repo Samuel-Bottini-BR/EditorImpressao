@@ -287,7 +287,7 @@ L270-280, L397-410, L700-720, L935-980, L1790-2053; em `ui/tarefas.py` L115-172,
 | 1. o modelo de dados | `modelos.py` (fora do já lido) | feito (3 achados, AB-03 a AB-05) | 27/11 15:23 | 27/11 15:28 |
 | 2. abrir e guardar o projeto | `projetos.py` (fora do já lido), `historico.py` | feito (7 achados, AB-06 a AB-12) | 27/11 15:28 | 27/11 15:36 |
 | 3. o histórico de ações | `historico_acoes.py` L130-398 (fora do já lido) | feito (1 achado, AB-13; as falhas caladas entram no AB-07, os laços das cópias no AB-08) | 27/11 15:36 | 27/11 15:37 |
-| 4. tarefas por trás e servidor de páginas | `core/pdf_io.py`, `core/paginas_em_outro_processo.py` (e a suspeita do `SEM_SERVIDOR`), `ui/tarefas.py` (fora do já lido) | | | |
+| 4. tarefas por trás e servidor de páginas | `core/pdf_io.py`, `core/paginas_em_outro_processo.py` (e a suspeita do `SEM_SERVIDOR`), `ui/tarefas.py` (fora do já lido) | feito (4 achados, AB-14 a AB-17; fecha a suspeita do `SEM_SERVIDOR`) | 27/11 15:37 | 27/11 15:42 |
 | 5. janela principal, tela inicial, abrir o PDF | `ui/janela_principal.py` (fora do já lido), `ui/tela_inicio.py`, `ui/widgets/area_arrastar.py`, `ui/widgets/folhear_pdf.py`, `ui/tela_de_carregamento.py` | | | |
 | 6. configurações, atalhos, diálogos e o resto | `configuracoes.py` (fora do já lido), `atalhos.py`, `registro.py`, `ui/tela_configuracoes.py`, `ui/dialogos_de_arquivo.py`, `ui/widgets/destino.py` (fora do já lido), `ui/tela_opcoes.py` (se não for código morto inteiro) | | | |
 
@@ -454,14 +454,13 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
   §11.12, ponto 2 ("Nada dá como feito o que não conferiu [...] O que a tela mostra vem dessa conferência, nunca só da
   anotação do próprio programa")? Não decido: fica aberta para o Fable.
 
-- (pedaço grande 6, vista no pedaço 3 do grande 7, 27/11) A prévia do livreto (`core/impressao.previa_da_folha`
-  L983-991) pede a folha ao servidor de páginas e, se ele estiver desligado ou fora do ar (`SEM_SERVIDOR`), monta aqui,
-  "como antes", com a trava do MuPDF (`core/pdf_io._TRANCA`); o comentário diz que montar aqui faz a tela parar
-  ("Arriscado: tirar isto (a tela volta a parar)"). É um segundo caminho de reserva (tipo 4); `SEM_SERVIDOR` aparece
-  17 vezes em `core/` e `ui/`. Quem ler `core/paginas_em_outro_processo.py` e `core/pdf_io.py` (pedaço grande 6) decide se
-  é um achado só, do servidor inteiro, e se a reserva ainda acontece.
-
 ### Fechadas
+
+- (pedaço grande 6, vista no pedaço 3 do grande 7; fechada no pedaço 4 do grande 6, 27/11) A prévia do livreto com o
+  segundo caminho `SEM_SERVIDOR` → **virou parte do achado AB-15** (médio), um achado só, do servidor inteiro: o laço
+  "pedir, trocar o que caiu, tentar de novo" em três cópias, e o desvio "se voltou `SEM_SERVIDOR`, desenhe aqui" nos três
+  lugares que pedem. Dos 17 `SEM_SERVIDOR`, 15 são do próprio módulo. A reserva ainda acontece (o servidor que não sobe,
+  que cai duas vezes, ou `EDITOR_PAGINAS_AQUI=1`), e fica no `erros.log`. A trava do MuPDF usada de fora entrou no AB-14.
 
 - (pedaço grande 6, vista no pedaço 6 do grande 3; fechada no pedaço 0 do grande 6, 27/11) `ui/tela_opcoes.py` sem quem
   a monte → **virou o achado leve AB-01**: código morto desde `e2321b16` (26/10, D-002), junto com
