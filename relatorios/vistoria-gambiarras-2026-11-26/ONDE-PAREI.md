@@ -36,7 +36,7 @@ Divisão em pedaços pequenos (escrita antes de começar):
 |---|---|---|---|---|
 | 0. a suspeita aberta | `core/pipeline._guardar_o_conteudo` e a passada | feito (virou PP-01) | 27/11 13:34 | 27/11 13:35 |
 | 1. painéis | `ui/widgets/paineis.py`, `barra_girar.py`, `escolhas_do_misto.py`, `cartao_filtro.py`, `medidor.py`, `barra_opcoes.py`, `menu_com_amostra.py` | feito (5 achados, PT-01 a PT-05) | 27/11 13:35 | 27/11 13:39 |
-| 2. visualizador e lado a lado | `ui/widgets/visualizador.py`, `paginas_lado_a_lado.py`, `paginas_rolando.py`, `roda_de_lado.py`, `ui/rodinha.py` | a fazer | | |
+| 2. visualizador e lado a lado | `ui/widgets/visualizador.py`, `paginas_lado_a_lado.py`, `paginas_rolando.py`, `roda_de_lado.py`, `ui/rodinha.py` | feito (6 achados, PT-06 a PT-11) | 27/11 13:39 | 27/11 13:43 |
 | 3. tira, miniaturas e grade | `ui/widgets/tira_miniaturas.py`, `miniaturas.py`, `todas_as_paginas.py`, `trilha_agrupada.py`, `trilha_ferramentas.py`, `bolinha.py` | a fazer | | |
 | 4. tela cheia e comparar | `ui/tela_ampliada.py`, `ui/widgets/filtros_tela_cheia.py` | a fazer | | |
 | 5. seleção à mão | `ui/widgets/editor_selecao.py` | a fazer | | |
