@@ -38,7 +38,7 @@ Divisão em pedaços pequenos (escrita antes de começar):
 | 1. painéis | `ui/widgets/paineis.py`, `barra_girar.py`, `escolhas_do_misto.py`, `cartao_filtro.py`, `medidor.py`, `barra_opcoes.py`, `menu_com_amostra.py` | feito (5 achados, PT-01 a PT-05) | 27/11 13:35 | 27/11 13:39 |
 | 2. visualizador e lado a lado | `ui/widgets/visualizador.py`, `paginas_lado_a_lado.py`, `paginas_rolando.py`, `roda_de_lado.py`, `ui/rodinha.py` | feito (6 achados, PT-06 a PT-11) | 27/11 13:39 | 27/11 13:43 |
 | 3. tira, miniaturas e grade | `ui/widgets/tira_miniaturas.py`, `miniaturas.py`, `todas_as_paginas.py`, `trilha_agrupada.py`, `trilha_ferramentas.py`, `bolinha.py` | feito (1 achado, PT-12) | 27/11 13:43 | 27/11 13:44 |
-| 4. tela cheia e comparar | `ui/tela_ampliada.py`, `ui/widgets/filtros_tela_cheia.py` | a fazer | | |
+| 4. tela cheia e comparar | `ui/tela_ampliada.py`, `ui/widgets/filtros_tela_cheia.py` | feito (4 achados, PT-13 a PT-16; e o passo 1,4 da tela ampliada posto no PT-06) | 27/11 13:44 | 27/11 13:46 |
 | 5. seleção à mão | `ui/widgets/editor_selecao.py` | a fazer | | |
 | 6. menu, barras e o resto | `ui/barra_de_menu.py`, `estilo.py`, `perguntas.py`, `janela_confirmar.py`, `dialogo_escolher_paginas.py` (`ui/desfazer_nesta_pagina.py` já foi lido inteiro no pedaço desfazer: não se relê, só se confere o que os outros pedaços apontarem) | a fazer | | |
 | 7. os trechos não lidos da `tela_conferir` | `_montar` e a barra de baixo (L766-1362), `_LugaresDeEncaixe`/`_RotuloDoLivro` (L432-590), o corpo de `_montar_aba_*` fora do já lido (L1916-3653), a "peça" nos pares (L8700-8800), o zoom (L8478-8560, L9006-9088) | a fazer | | |
