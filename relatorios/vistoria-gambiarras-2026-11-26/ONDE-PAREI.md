@@ -15,7 +15,41 @@ código mudou; os únicos arquivos mexidos são este e `lista.md`.
   regra de gambiarras para que ela se aplicasse a tudo né?". O que a vistoria procura é o que essa regra chama de
   gambiarra: conserto só no lugar do defeito, conta copiada, sintoma tratado em vez da causa.
 
-## Pedaços
+- **D-885 (26/11/2026), a ordem de serviço:** "Um agente NOVO, que só lê e não conserta nada, vistoria o programa e
+  escreve uma lista. Nenhuma linha de código muda." · "se não achar, escrever 'não achei o motivo', nunca inventar" ·
+  "Ele nunca para no meio de um pedaço" · "A LISTA NÃO FECHA NADA" · "Sem propostas de conserto na lista, sem plano."
+- **D-886 (27/11/2026), a resposta do Fable:** "Decisão do Samuel: a vistoria continua pelo programa inteiro, antes de
+  qualquer conserto." · "Nenhuma linha de código muda até lá." Ajustes para os pedaços novos (não para a tela já feita):
+  a) "Quando o achado for 'a mesma expressão em N lugares', contar por busca no programa inteiro e listar todas (o G-12
+  dizia 5 lugares; são 12)." b) "GRAVE só quando o conserto errado chega na tela do Kaique ou no PDF; '3 ou mais
+  lugares' sozinho é médio. O resto da régua fica." c) "Em cada achado novo, além do item da Central, dizer a qual
+  achado da tela ele é 'outra cópia', quando for (ex.: 'outra cópia do SP-03')."
+
+## Programa inteiro (D-886): pedaço grande 1, peças da tela de trabalho
+
+Agente novo, 27/11/2026, começou às 13:31 (relógio da máquina, `date`). Leu as regras, a ordem, a resposta do Fable,
+este arquivo, a lista (modelo e os 81 achados, só os títulos), a fila da Central e o índice da memória.
+
+Divisão em pedaços pequenos (escrita antes de começar):
+
+| pedaço pequeno | arquivos | situação | começo | fim |
+|---|---|---|---|---|
+| 0. a suspeita aberta | `core/pipeline._guardar_o_conteudo` e a passada | feito (virou PP-01) | 27/11 13:34 | 27/11 13:35 |
+| 1. painéis | `ui/widgets/paineis.py`, `barra_girar.py`, `escolhas_do_misto.py`, `cartao_filtro.py`, `medidor.py`, `barra_opcoes.py`, `menu_com_amostra.py` | a fazer | | |
+| 2. visualizador e lado a lado | `ui/widgets/visualizador.py`, `paginas_lado_a_lado.py`, `paginas_rolando.py`, `roda_de_lado.py`, `ui/rodinha.py` | a fazer | | |
+| 3. tira, miniaturas e grade | `ui/widgets/tira_miniaturas.py`, `miniaturas.py`, `todas_as_paginas.py`, `trilha_agrupada.py`, `trilha_ferramentas.py`, `bolinha.py` | a fazer | | |
+| 4. tela cheia e comparar | `ui/tela_ampliada.py`, `ui/widgets/filtros_tela_cheia.py` | a fazer | | |
+| 5. seleção à mão | `ui/widgets/editor_selecao.py` | a fazer | | |
+| 6. menu, barras e o resto | `ui/barra_de_menu.py`, `estilo.py`, `perguntas.py`, `janela_confirmar.py`, `dialogo_escolher_paginas.py` (`ui/desfazer_nesta_pagina.py` já foi lido inteiro no pedaço desfazer: não se relê, só se confere o que os outros pedaços apontarem) | a fazer | | |
+| 7. os trechos não lidos da `tela_conferir` | `_montar` e a barra de baixo (L766-1362), `_LugaresDeEncaixe`/`_RotuloDoLivro` (L432-590), o corpo de `_montar_aba_*` fora do já lido (L1916-3653), a "peça" nos pares (L8700-8800), o zoom (L8478-8560, L9006-9088) | a fazer | | |
+
+Como leio cada arquivo: a lista das funções; as buscas por `projeto.`, `pagina.`/`folha.`, campos de
+`ConfigPagina`/`ConfigFolha`, `import` de `core/`, contas (`%`, `round`, `int(`), `if` por caso e `getattr`/`hasattr`;
+leio por inteiro as funções que essas buscas apontam. Desenho puro (montar botões, cores, `paintEvent` sem conta de
+página) não vira achado. Linhas no `cbc9784f` (o mesmo código do `30920fe7`: os commits de depois só mexeram em
+relatórios e no Livro).
+
+## Pedaços (tela de trabalho, 26/11)
 
 | pedaço | situação | começo | fim | tempo |
 |---|---|---|---|---|
@@ -167,13 +201,17 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
 
 ### Abertas
 
-- (fora da tela de trabalho, achada no pedaço 8) `core/pipeline._guardar_o_conteudo` (L1958-1968) não troca o tamanho
-  de uma página já medida (`_TAMANHOS.setdefault`), e o comentário dá o motivo: "A passada mede a DPI_DA_PASSADA e a
-  geometria a 300". Desde o mesmo commit (`57de8af4`, 21/10) a passada mede na resolução do livro e a constante não é
-  usada (RT-02). Conferir se a proteção ainda protege de alguma coisa (prévia e PDF em resoluções diferentes?) ou se
-  ficou sem motivo.
+- (pedaço grande 2, preparar a página; vista no pedaço 0 de 27/11) `core/pipeline._geometria` mede o conteúdo com
+  `em_branco=analise.EM_BRANCO in pagina.alertas` (L1206 e L1359), e o aviso "Parece em branco" não está na chave da
+  geometria (`_chave_da_geometria` L1469). Conferir se o corte guardado pode ficar o de antes do aviso mudar (a mesma
+  família do CF-04: a chave que não conta um campo de que a conta depende).
 
 ### Fechadas
+
+- (fora da tela, achada no pedaço 8; fechada no pedaço 0 de 27/11) `core/pipeline._guardar_o_conteudo` e o
+  `_TAMANHOS.setdefault` → **virou o achado leve PP-01**: a proteção foi posta pelo mesmo commit que tirou a causa
+  (`57de8af4`, 21/10); desde 22/10 (`8e237efe`) todas as nove chamadas medem na resolução do livro, e a chave tem a
+  resolução; não achei caso hoje em que ela mude o resultado. A "reserva" da passada (L2229-2256) entra no mesmo achado.
 
 - (contagens e situação, suspeita 1) "Ficou escura" / "Texto quase sumiu" com duas regras → **virou o achado SP-08**:
   a tela mede e grava; a regra do núcleo (`analise.analisar_resultado`) nunca foi chamada (código morto).
