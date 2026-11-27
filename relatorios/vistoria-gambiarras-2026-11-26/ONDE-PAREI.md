@@ -233,7 +233,7 @@ L4840-4935, L4985-5012, L5034-5210; `ui/dialogo_impressao.py` L845-866; o cabeç
 | 2. a ordem das páginas e os cadernos | `core/ordem_das_paginas.py`, `core/cadernos.py` | feito (4 achados, IM-04 a IM-07; o lado a lado com o vão já era o AV-06) | 27/11 15:04 | 27/11 15:07 |
 | 3. montar para imprimir, no núcleo | `core/impressao.py` | feito (4 achados, IM-08 a IM-11; e a nota do `lu-5-deitada`) | 27/11 15:07 | 27/11 15:09 |
 | 4. a janela "Montar para imprimir" e as folhas do caderno | `ui/dialogo_impressao.py` (fora de L845-866), `ui/widgets/folhas_do_caderno.py` (fora de L458-472), `ui/tarefas.TarefaPreviaDoAutomatico` (L672-775) | feito (3 achados, IM-12 a IM-14; a `TarefaPreviaDoAutomatico` não tem conta própria) | 27/11 15:10 | 27/11 15:12 |
-| 5. impressora e tamanho da folha | `core/impressora.py`, `ui/dialogo_tamanho_da_folha.py` | a fazer | | |
+| 5. impressora e tamanho da folha | `core/impressora.py`, `ui/dialogo_tamanho_da_folha.py` | feito (3 achados, IM-15 a IM-17) | 27/11 15:12 | 27/11 15:13 |
 | 6. a tela final | `ui/tela_final.py` | a fazer | | |
 
 ## Pedaços (tela de trabalho, 26/11)
