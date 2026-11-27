@@ -389,7 +389,7 @@ FL-16 e no PP-18; aqui só as buscas); `core/ocr_comum.py` L209-221 (FL-19).
 | 1. o comum e o diagnóstico | `core/ocr_comum.py` (fora de L209-221), `core/ocr_diagnostico.py` | feito (1 achado, OC-01; confirma a suspeita do FL-16 do lado dos leitores) | 27/11 16:05 | 27/11 16:06 |
 | 2. o docTR | `core/ocr_doctr.py` (e fecha a suspeita do modelo ONNX aberto em três lugares) | feito (1 achado, OC-02; fecha a suspeita) | 27/11 16:06 | 27/11 16:07 |
 | 3. o Kraken e o servidor | `core/ocr_kraken.py`, `motor_kraken/servidor_kraken.py` | feito (2 achados, OC-03 e OC-04) | 27/11 16:07 | 27/11 16:09 |
-| 4. o Tesseract | `core/ocr_tesseract.py` | a fazer | | |
+| 4. o Tesseract | `core/ocr_tesseract.py` | feito (2 achados, OC-05 e OC-06) | 27/11 16:09 | 27/11 16:10 |
 | 5. a comparação | `core/ocr_comparar.py` | a fazer | | |
 
 ## Pedaços (tela de trabalho, 26/11)
