@@ -135,7 +135,31 @@ L4279-4316, L4447-4525; `core/fundo_tirado.py` inteiro; `core/perfis.py` L40-100
 | 3. Só as letras e a letra clara | `core/misto.py`, `core/claro_no_escuro.py` | feito (3 achados, FL-10 a FL-12) | 27/11 14:28 | 27/11 14:31 |
 | 4. camadas e Tirar o fundo | `core/camadas.py`, `core/duas_camadas.py` (`core/fundo_tirado.py` já lido: só as buscas) | feito (2 achados, FL-13 e FL-14) | 27/11 14:31 | 27/11 14:33 |
 | 5. as peças do ScanTailor | `core/preto_e_branco_scantailor.py`, `cores_scantailor.py`, `luz_scantailor.py`, `pontinhos_scantailor.py`, `st_ferramentas.py` | feito (4 achados, FL-15 a FL-18; fecha a suspeita do pedaço 1) | 27/11 14:33 | 27/11 14:37 |
-| 6. perfis, núcleos, aquecimento | `core/perfis.py` (fora de L40-100), `core/nucleos.py`, `core/aquecimento.py` | a fazer | | |
+| 6. perfis, núcleos, aquecimento | `core/perfis.py` (fora de L40-100), `core/nucleos.py`, `core/aquecimento.py` | feito (2 achados, FL-19 e FL-20) | 27/11 14:37 | 27/11 14:39 |
+
+**Pedaço grande 3 terminado (27/11, das 14:14 às 14:40 pelo relógio da máquina; o código, das 14:14 às 14:39).**
+20 achados novos, FL-01 a FL-20. Por tipo (o principal): 15 do tipo 1, nenhum do tipo 2, nenhum do tipo 3 (três têm o
+3 junto: FL-04, FL-06, FL-17), 1 do tipo 4 (FL-02; FL-16 tem o 4 junto) e 4 do tipo 5 (FL-09, FL-14, FL-18, FL-20; FL-13
+tem o 5 junto). Por gravidade, com a régua nova: 1 GRAVE (FL-06: o "Jeito do preto e branco" esquecido na página sem
+marcação e no "só neste pedaço", que é o bug de 06/10 da Lista de bugs, ainda aberto), 12 médios e 7 leves (FL-02,
+FL-08, FL-09, FL-11, FL-14, FL-18, FL-20). "Outra cópia" de achado já listado: FL-01 (CF-03 e MC-04), FL-03 (RT-04),
+FL-05 (PP-05), FL-07 (MC-01). Da mesma família: FL-02 (PP-01), FL-04 (DF-01), FL-06 (CF-01, AP-03), FL-08 (PT-02,
+PT-14), FL-10 (CF-04), FL-12 (CF-01, FL-06), FL-13 (CF-01), FL-15 e FL-19 (RT-01), FL-16 (RT-03), FL-17 (PP-15), FL-20
+(RT-09, PT-04). Central: FL-01 é o lado do núcleo de `lu-3-miniatura`, `k0611-miniatura-branco` e `k0711-grade-branco`
+(a pergunta "esta página sai branca?"); as três da fila que falam de filtro não têm achado aqui: `dv-211-215` (a palavra
+em duas cores no "Reduzir cores", D-701) é a conta da posterização, num lugar só; `lu-1-remendos` (a separação
+pintura/letra) é do detector, pedaço grande 4; `lu-12-p22` (a página sem nada com tracinhos) é a escolha automática do
+jeito do preto e branco (`escolher_algoritmo_automatico`), uma conta só.
+
+O que ficou sem ler neste pedaço grande (só pela lista das funções e pelas buscas, sem cópia achada): em
+`core/filtros.py` as contas de cada filtro (binarizar e o esqueleto, a sombra da lombada, o fundo e o ombro, o CLAHE e
+a saturação, a gravura, a foto, a decoração e o papel, L260-3995 fora do que está no pedaço 2); em `core/misto.py`
+`mascara_das_linhas`, `_desenho_colado_a_tinta_forte`, `_fora_do_texto` e `_gravura_de_traco_com_o_papel_branco`; em
+`core/camadas.py` as contas do fundo, da cor do papel, da escrita fraca, da tinta clara e do branquear (L660-1530, fora
+do detector); `core/duas_camadas.py` por dentro; as chamadas da DLL por dentro (`limpar_pontinhos`, `cores`,
+`binarizar` do ScanTailor). São o algoritmo, uma conta cada; o §9 do CLAUDE.md manda não desfazer a do "magic color".
+
+**Próximo:** o pedaço grande 5, "Automático e avisos" (lista em `resposta-do-fable-2026-11-27.md`). A gerente decide quando.
 
 ## Pedaços (tela de trabalho, 26/11)
 
@@ -289,7 +313,11 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
 
 ### Abertas
 
-(nenhuma)
+- (pedaço grande 6, vista no pedaço 6 do grande 3, 27/11) `ui/tela_opcoes.py` inteiro parece sem quem o monte: nenhum
+  arquivo do programa importa `TelaOpcoes` (só `tests/test_decisoes_automatico.py`, `tests/test_tirar_fundo_no_programa.py`
+  e três scripts de relatório), e o cabeçalho de `ui/automatico.py` diz "ui/tela_opcoes.py, que saiu do caminho". Mas
+  PT-05, PT-24 e FL-08 citam linhas dele entre as cópias. Conferir no pedaço grande 6 se é código morto do tamanho
+  de um arquivo, e se os achados que o citam contam uma cópia que não está mais no caminho.
 
 ### Fechadas
 
