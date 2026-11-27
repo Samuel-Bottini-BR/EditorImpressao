@@ -41,7 +41,7 @@ Divisão em pedaços pequenos (escrita antes de começar):
 | 4. tela cheia e comparar | `ui/tela_ampliada.py`, `ui/widgets/filtros_tela_cheia.py` | feito (4 achados, PT-13 a PT-16; e o passo 1,4 da tela ampliada posto no PT-06) | 27/11 13:44 | 27/11 13:46 |
 | 5. seleção à mão | `ui/widgets/editor_selecao.py` | feito (4 achados, PT-17 a PT-20) | 27/11 13:46 | 27/11 13:48 |
 | 6. menu, barras e o resto | `ui/barra_de_menu.py`, `estilo.py`, `perguntas.py`, `janela_confirmar.py`, `dialogo_escolher_paginas.py` (`ui/desfazer_nesta_pagina.py` já foi lido inteiro no pedaço desfazer: não se relê, só se confere o que os outros pedaços apontarem) | feito (3 achados, PT-21 a PT-23) | 27/11 13:48 | 27/11 13:50 |
-| 7. os trechos não lidos da `tela_conferir` | `_montar` e a barra de baixo (L766-1362), `_LugaresDeEncaixe`/`_RotuloDoLivro` (L432-590), o corpo de `_montar_aba_*` fora do já lido (L1916-3653), a "peça" nos pares (L8700-8800), o zoom (L8478-8560, L9006-9088) | a fazer | | |
+| 7. os trechos não lidos da `tela_conferir` | `_montar` e a barra de baixo (L766-1362), `_LugaresDeEncaixe`/`_RotuloDoLivro` (L432-590), o corpo de `_montar_aba_*` fora do já lido (L1916-3653), a "peça" nos pares (L8700-8800), o zoom (L8478-8560, L9006-9088) | feito (1 achado, PT-24; o resto destes trechos já entrou nos PT de cima) | 27/11 13:50 | 27/11 13:52 |
 
 Como leio cada arquivo: a lista das funções; as buscas por `projeto.`, `pagina.`/`folha.`, campos de
 `ConfigPagina`/`ConfigFolha`, `import` de `core/`, contas (`%`, `round`, `int(`), `if` por caso e `getattr`/`hasattr`;
