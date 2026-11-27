@@ -289,7 +289,38 @@ L270-280, L397-410, L700-720, L935-980, L1790-2053; em `ui/tarefas.py` L115-172,
 | 3. o histórico de ações | `historico_acoes.py` L130-398 (fora do já lido) | feito (1 achado, AB-13; as falhas caladas entram no AB-07, os laços das cópias no AB-08) | 27/11 15:36 | 27/11 15:37 |
 | 4. tarefas por trás e servidor de páginas | `core/pdf_io.py`, `core/paginas_em_outro_processo.py` (e a suspeita do `SEM_SERVIDOR`), `ui/tarefas.py` (fora do já lido) | feito (4 achados, AB-14 a AB-17; fecha a suspeita do `SEM_SERVIDOR`) | 27/11 15:37 | 27/11 15:42 |
 | 5. janela principal, tela inicial, abrir o PDF | `ui/janela_principal.py` (fora do já lido), `ui/tela_inicio.py`, `ui/widgets/area_arrastar.py`, `ui/widgets/folhear_pdf.py`, `ui/tela_de_carregamento.py` | feito (7 achados, AB-18 a AB-24; o `folhear_pdf` é o código morto do AB-01) | 27/11 15:42 | 27/11 15:47 |
-| 6. configurações, atalhos, diálogos e o resto | `configuracoes.py` (fora do já lido), `atalhos.py`, `registro.py`, `ui/tela_configuracoes.py`, `ui/dialogos_de_arquivo.py`, `ui/widgets/destino.py` (fora do já lido), `ui/tela_opcoes.py` (se não for código morto inteiro) | | | |
+| 6. configurações, atalhos, diálogos e o resto | `configuracoes.py` (fora do já lido), `atalhos.py`, `registro.py`, `ui/tela_configuracoes.py`, `ui/dialogos_de_arquivo.py`, `ui/widgets/destino.py` (fora do já lido), `ui/tela_opcoes.py` (se não for código morto inteiro) | feito (4 achados, AB-25 a AB-28; a `tela_opcoes` é o código morto do AB-01, não lida por dentro) | 27/11 15:47 | 27/11 15:50 |
+
+**Pedaço grande 6 terminado (27/11, das 15:16 às 15:51 pelo relógio da máquina; o código, das 15:17 às 15:50).**
+28 achados novos, AB-01 a AB-28. Por tipo (o principal): 14 do tipo 1, 1 do tipo 2 (AB-18; AB-19 e AB-22 têm o 2 junto),
+2 do tipo 3 (AB-27, AB-28), 7 do tipo 4 (AB-02, AB-05, AB-07, AB-13, AB-17, AB-20, AB-23; AB-14, AB-15, AB-16 e AB-28
+têm o 4 junto) e 4 do tipo 5 (AB-01, AB-03, AB-10, AB-11; AB-20 tem o 5 junto). Por gravidade, com a régua nova: 1 GRAVE
+(AB-21: o menu Filtro marca o filtro gravado, e não o que vale no PDF; chega na tela), 13 médios (AB-02, AB-06, AB-07,
+AB-08, AB-09, AB-14, AB-15, AB-16, AB-18, AB-19, AB-22, AB-24, AB-25) e 14 leves. "Outra cópia" de achado já listado:
+AB-01 (RT-02, AV-13; e fecha a cópia contada no PT-05, PT-24 e FL-08), AB-02 (IM-01), AB-03 e AB-11 e AB-20 (RT-02),
+AB-04 (DF-06), AB-07 (RT-03), AB-08 (IM-02, pela `_pasta_livre`), AB-10 (DV-14), AB-16 (AV-11), AB-21 (RT-04), AB-23
+(PT-24), AB-25 (DF-07, DF-04). Da mesma família: AB-05, AB-13, AB-15 e AB-17 (PP-01, AV-18: a reserva "como antes"),
+AB-12 (G-06), AB-16 (RT-03), AB-18 (AB-10), AB-19 (AB-07, AB-08). Central: quatro achados explicam partes do
+`au-d-489` (a regra do "começar de novo"): AB-10 (a cópia morta da regra, com os motivos que a D-489 tirou), AB-18 (a regra
+montada na janela), AB-19 (os três jeitos de jogar o trabalho fora) e AB-22 (o "não é o mesmo livro" com três contas).
+O `lu-8-aviso-salvar` continua no PT-21 (o `destino._conferir`); o AB-28 está no mesmo campo, sem ser a causa.
+
+As três suspeitas que eram deste pedaço grande: a `tela_opcoes` virou o AB-01; o fundo tirado no caminho rápido virou o
+AB-02; o `SEM_SERVIDOR` virou parte do AB-15. A nota da conferência da dobra ficou registrada como suspeita aberta "para
+o Fable decidir" (abaixo), sem decisão minha.
+
+O que ficou sem ler neste pedaço grande (só pela lista das funções e pelas buscas, sem cópia achada): `ui/tela_opcoes.py`
+por dentro (morto, AB-01); em `modelos.py` os comentários de cada campo fora do que a busca apontou (L56-128, L200-490,
+L537-841); em `ui/janela_principal.py` o `__init__` (L97-240), o `_montar_menu` (L240-376), as trocas da tela (L444-700),
+`_escolher_pasta_de_saida` até `avisar` (L670-757), o tirar o fundo do livro inteiro (L934-980), o Automático L1126-1325
+fora do rodar, as conversões e medidas por trás (L1446-1560) e `_frase_do_recomeco`; em `ui/tela_inicio.py` o
+`__init__`, o `_remontar`, o cartão por dentro (L482-600) e o livro aberto (L627-850, L956-1042); em `ui/tarefas.py` o
+`GerenciadorPrevias` por dentro (a chave e as gerações estão no CF-04); em `core/paginas_em_outro_processo.py` o
+`_Servidor` (L95-222) e o `_servir_folha_do_caderno` por dentro; em `core/pdf_io.py` `_acrescentar_so_o_novo` por dentro e a
+compressão (L662-716); em `ui/tela_configuracoes.py` a aparência (L122-197) e os testes à distância (L330-403, do pedaço
+grande 8); em `ui/dialogos_de_arquivo.py` a `JanelaDeArquivo` por dentro (L173-333).
+
+**Próximo:** o pedaço grande 4, "gravuras e marcações" (lista em `resposta-do-fable-2026-11-27.md`). A gerente decide quando.
 
 ## Pedaços (tela de trabalho, 26/11)
 
