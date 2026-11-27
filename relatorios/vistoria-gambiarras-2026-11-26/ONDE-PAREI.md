@@ -285,7 +285,7 @@ L270-280, L397-410, L700-720, L935-980, L1790-2053; em `ui/tarefas.py` L115-172,
 |---|---|---|---|---|
 | 0. as suspeitas abertas | `ui/tela_opcoes.py` (quem a monta), o fundo tirado no caminho rápido (`modelos.so_cadernos` × `core/fundo_tirado`), a nota da conferência da dobra (para o Fable decidir) | feito (2 achados, AB-01 e AB-02; a nota da dobra virou suspeita aberta "para o Fable decidir"; o `SEM_SERVIDOR` fica para o pedaço 4) | 27/11 15:17 | 27/11 15:22 |
 | 1. o modelo de dados | `modelos.py` (fora do já lido) | feito (3 achados, AB-03 a AB-05) | 27/11 15:23 | 27/11 15:28 |
-| 2. abrir e guardar o projeto | `projetos.py` (fora do já lido), `historico.py` | | | |
+| 2. abrir e guardar o projeto | `projetos.py` (fora do já lido), `historico.py` | feito (7 achados, AB-06 a AB-12) | 27/11 15:28 | 27/11 15:36 |
 | 3. o histórico de ações | `historico_acoes.py` L130-398 (fora do já lido) | | | |
 | 4. tarefas por trás e servidor de páginas | `core/pdf_io.py`, `core/paginas_em_outro_processo.py` (e a suspeita do `SEM_SERVIDOR`), `ui/tarefas.py` (fora do já lido) | | | |
 | 5. janela principal, tela inicial, abrir o PDF | `ui/janela_principal.py` (fora do já lido), `ui/tela_inicio.py`, `ui/widgets/area_arrastar.py`, `ui/widgets/folhear_pdf.py`, `ui/tela_de_carregamento.py` | | | |
