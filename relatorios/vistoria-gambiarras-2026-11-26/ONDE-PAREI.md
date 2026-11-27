@@ -89,6 +89,30 @@ abaixo); `core/girar.py`, `core/dividir.py` e `core/dividir_a_mao.py` já foram 
 Fora deste pedaço grande (ficam para os seus): em `core/pipeline.py` os filtros (L3400-4530, pedaço grande 3), a análise
 e os avisos (pedaço grande 5) e o processar/escrever o PDF (L4530-5034, pedaço grande 7), salvo o que a geometria chamar.
 
+**Pedaço grande 2 terminado (27/11, das 13:54 às 14:13 pelo relógio da máquina; o código, das 13:54 às 14:12).**
+19 achados novos, PP-02 a PP-20. Por tipo (o principal): 16 do tipo 1, nenhum do tipo 2 (dois têm o 2 junto: PP-09 e
+PP-10), 1 do tipo 3 (PP-14), 1 do tipo 4 (PP-19; dois têm o 4 junto: PP-05 e PP-06) e 1 do tipo 5 (PP-18). Por
+gravidade, com a régua nova: nenhum GRAVE (os que chegam no PDF ou na tela só chegam com uma opção desligada de fábrica
+ou de vez em quando: a borda preta, o 2.5, as margens iguais, o desentortar, o Mover, o "Tirar o fundo"), 16 médios e
+3 leves (PP-14, PP-18, PP-19). "Outra cópia" de achado da tela: PP-02, PP-03, PP-06 e PP-17 (todos do CF-04: a lista à
+mão do que a imagem guardada depende; aqui são quatro listas no núcleo, `_chave_da_geometria`, `_entradas_do_preparo`,
+`_divisao_da_pagina` e `_chave_das_linhas`, mais a do desentortar, que herda a primeira). Da mesma família: PP-05
+(PP-01), PP-07 e PP-08 (CF-01), PP-11 (SP-09), PP-19 (G-03, DV-01), PP-20 (RT-05, CF-02). Central: nenhum achado
+explica item da fila lida em 26/11 (as perguntas da fila sobre esta parte, `girar-dividir-outros` e
+`girar-dividir-tela`, já estão no G-01 e no G-02).
+
+O que ficou sem ler neste pedaço grande (só pelas buscas e pela lista das funções, sem conta de página achada): em
+`core/recortar.py` o corpo de `detectar_bordas` fora dos ramos de `girada`/`livro_novo` e as contas da máscara
+(`_mascara_de_tinta_local`, riscas, tracejado, borrão, `_numeros_da_margem`, `alargar_para_o_giro` por dentro); em
+`core/corte_pelo_conteudo.py` `caixa_do_corte`, `caixa_vazia`, `tinta_tirada`, `candidatas`, `tiradas_do_corte`,
+`alargar`; em `core/borda_preta.py` o corpo de `so_o_preto`; `core/caixas_scantailor.achar` por dentro (a chamada da
+DLL); `core/endireitar.detectar_angulo`/`rotacionar_e_cortar` por dentro; o corpo de `desentortar_scantailor.desentortar`
+e das contas da proteção (L413-570); `core/guias.py` por dentro; `core/folha.py` L41-130 (as medidas do recorte em cm) e
+`mascara_do_impresso`; `core/paginas_diferentes.py` por dentro; `core/ajustar_pedaco.py` L176-310 e L341-391. São os
+algoritmos (uma conta cada); as buscas por cópias delas no programa não acharam outra.
+
+**Próximo:** o pedaço grande 3, "filtros e limpeza" (lista em `resposta-do-fable-2026-11-27.md`). A gerente decide quando.
+
 ## Pedaços (tela de trabalho, 26/11)
 
 | pedaço | situação | começo | fim | tempo |
