@@ -132,7 +132,7 @@ L4279-4316, L4447-4525; `core/fundo_tirado.py` inteiro; `core/perfis.py` L40-100
 |---|---|---|---|---|
 | 1. o caminho do filtro no pipeline | `core/pipeline.py` L3400-4530, fora do já lido | feito (5 achados, FL-01 a FL-05) | 27/11 14:14 | 27/11 14:21 |
 | 2. os quatro filtros e os ajustes | `core/filtros.py` | feito (4 achados, FL-06 a FL-09) | 27/11 14:21 | 27/11 14:28 |
-| 3. Só as letras e a letra clara | `core/misto.py`, `core/claro_no_escuro.py` | a fazer | | |
+| 3. Só as letras e a letra clara | `core/misto.py`, `core/claro_no_escuro.py` | feito (3 achados, FL-10 a FL-12) | 27/11 14:28 | 27/11 14:31 |
 | 4. camadas e Tirar o fundo | `core/camadas.py`, `core/duas_camadas.py` (`core/fundo_tirado.py` já lido: só as buscas) | a fazer | | |
 | 5. as peças do ScanTailor | `core/preto_e_branco_scantailor.py`, `cores_scantailor.py`, `luz_scantailor.py`, `pontinhos_scantailor.py`, `st_ferramentas.py` | a fazer | | |
 | 6. perfis, núcleos, aquecimento | `core/perfis.py` (fora de L40-100), `core/nucleos.py`, `core/aquecimento.py` | a fazer | | |
