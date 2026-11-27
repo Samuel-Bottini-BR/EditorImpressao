@@ -186,7 +186,32 @@ L463-500, L707-781; em `core/pipeline.py` L180-276).
 | 4. a análise do livro | `core/analise.py` (fora do já lido), as partes da análise de `core/pipeline.py` (o que chama `analisar_folha`/`analisar_pagina` fora de L180-276), `core/automatico.medir_o_livro_ao_abrir` | feito (4 achados, AV-13 a AV-16) | 27/11 14:51 | 27/11 14:54 |
 | 5. o "Para revisar" e os avisos | `core/revisar.py`; `core/analise.Alerta`/`descrever` (L139-462); `core/avisos.py` já lido: só as buscas | feito (2 achados, AV-17 e AV-18) | 27/11 14:54 | 27/11 14:56 |
 | 6. página em branco | `core/paginas_em_branco.py` | feito (3 achados, AV-19 a AV-21) | 27/11 14:56 | 27/11 14:58 |
-| 7. a janela dos avisos | `ui/janela_dos_avisos.py` | a fazer | | |
+| 7. a janela dos avisos | `ui/janela_dos_avisos.py` | feito (1 achado, AV-22) | 27/11 14:58 | 27/11 14:59 |
+
+**Pedaço grande 5 terminado (27/11, das 14:41 às 14:59 pelo relógio da máquina; o código, das 14:42 às 14:59).**
+22 achados novos, AV-01 a AV-22. Por tipo (o principal): 13 do tipo 1, 2 do tipo 2 (AV-02, AV-17), 2 do tipo 3 (AV-18,
+AV-22; AV-09 tem o 3 junto), 1 do tipo 4 (AV-06; AV-05 e AV-08 têm o 4 junto) e 4 do tipo 5 (AV-01, AV-11, AV-13, AV-14;
+AV-16 tem o 5 junto). Por gravidade, com a régua nova: nenhum GRAVE (os que chegam na tela ou no PDF só chegam de vez em
+quando: o "Desligar as marcadas" com a etapa 5, o reforço no "Só as letras", o cartão da tela inicial), 8 médios (AV-04,
+AV-09, AV-12, AV-13, AV-15, AV-17, AV-19, AV-22) e 14 leves. "Outra cópia" de achado já listado: AV-05 (PT-24), AV-08
+(MC-02), AV-12 (FL-04), AV-16 (SP-14), AV-19 (DV-12); e o AV-13 **corrige o caminho** de quatro já listados (SP-02,
+SP-14, DV-09, FL-03: os trechos que eles contam como "a análise ao abrir" são de `analisar_projeto`, que o programa não
+chama desde a etapa 3; só os testes, os scripts e o `teste_velocidade.py`). Da mesma família: AV-01 (FL-20, RT-09),
+AV-02 (RT-11), AV-03 (FL-08, PT-05), AV-04 (PT-13, RT-11), AV-06 (DV-10), AV-07 (AV-03), AV-09 e AV-22 (G-02), AV-10
+(AP-02), AV-11 e AV-14 (RT-02, SP-08), AV-15 (SP-02, SP-10), AV-17 (RT-08, FL-04), AV-18 (PP-01), AV-20 (CF-04, AP-03),
+AV-21 (DF-01, DF-05). Central: nenhum achado explica item da fila lida em 26/11. As do Automático caem aqui mas não são
+dos cinco tipos: `lu-10-codigo` e `nm-codigos` (os três textos com código, L766, L2285 e L2304 de `ui/automatico.py`:
+texto de tela), `lu-11-lista` (`ListaDeEtapas.refazer`, que remonta a lista a cada mudança: uma conta só), e
+`n0411-caixinhas-depois-de-rodar` (D-669, ainda sem código; o que existe é a bandeira do RT-10). O `lu-12-p22` (a página
+sem nada com tracinhos) pode estar perto do AV-15 (três contas de "página vazia"); não confirmei.
+
+O que ficou sem ler neste pedaço grande (só pela lista das funções e pelas buscas, sem cópia achada): em
+`core/revisar.py` as contas do estudo (`_apagado` até `caixas_de`, L213-478); em `core/analise.py` os textos de cada
+aviso em `ALERTAS` (L203-440), lidos só pelos códigos e pelos botões; em `ui/automatico.py` o desenho de `_LinhaQueDobra`
+(L570-620) e o campo do número (L1480-1565, fora do já lido); `ui/tarefas.TarefaPreviaDoAutomatico` e
+`ui/widgets/folhas_do_caderno.py` (são dos pedaços grandes 6 e 7: aqui só o que o Automático chama deles).
+
+**Próximo:** o pedaço grande 7, "gerar o PDF e cadernos" (lista em `resposta-do-fable-2026-11-27.md`). A gerente decide quando.
 
 ## Pedaços (tela de trabalho, 26/11)
 
