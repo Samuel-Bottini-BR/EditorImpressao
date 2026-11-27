@@ -431,7 +431,7 @@ no GV-13), `empacotar.achar_motor_kraken`/`LUGARES_DO_MOTOR` (no OC-03), `empaco
 | pedaço pequeno | arquivos | situação | começo | fim |
 |---|---|---|---|---|
 | 1. o relatório e o brasão | `relatorio.py`, `gerar_brasao.py` | feito (3 achados, FS-01 a FS-03; o achado conhecido do PDF conferido: defeito simples, posto no FS-01; nenhum no `gerar_brasao`) | 27/11 16:12 | 27/11 16:15 |
-| 2. a pasta das ferramentas e os compilar | `core/pasta_das_ferramentas.py`, `compilar_detector_gravura.py`, `compilar_st_ferramentas.py` | a fazer | | |
+| 2. a pasta das ferramentas e os compilar | `core/pasta_das_ferramentas.py`, `compilar_detector_gravura.py`, `compilar_st_ferramentas.py` | feito (3 achados, FS-04 a FS-06; fecha a suspeita da pasta do Samuel) | 27/11 16:15 | 27/11 16:18 |
 | 3. montar o motor do Kraken | `montar_motor_kraken.py` (fora de L160 e L588) | a fazer | | |
 | 4. o empacotar | `empacotar.py` (fora do já lido) | a fazer | | |
 | 5. publicar e servir as versões | `publicar_versao_kaique.py`, `servidor_das_versoes.py` | a fazer | | |
@@ -588,10 +588,11 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
 
 ### Abertas
 
-- (pedaço grande 10, vista no pedaço 1; para o pedaço 2) A pasta `D:\programas\EditorImpressao-arquivos` escrita à mão:
-  em `relatorio.py` duas vezes no mesmo arquivo (L420 `pasta_de_teste` e L464 `main`, a pasta de testes do acervo), e
-  `core/pasta_das_ferramentas.py` existe para escrever a das ferramentas "num lugar só" (D-820). Conferir se a raiz é a
-  mesma constante ou se cada ferramenta a escreve, e contar no programa inteiro (fora dos scripts soltos).
+- (pedaço grande 10, vista no pedaço 2; para os pedaços 3 e 4) "Baixar um arquivo da internet" escrito em cada
+  ferramenta, com o seu `urllib.request.urlopen` e o seu arquivo "parcial": `compilar_detector_gravura._baixar` (L124-130)
+  e a soma do Qt (L166), `montar_motor_kraken.py` (L191, L271), `empacotar.py` (L660-690, o Visual C++) e, no programa do
+  Kaique, `atualizacao.py` (L560-563, do pedaço grande 8). Conferir se diferem (o tempo, o parcial, a soma, o que fazem
+  quando cai no meio) contra o CLAUDE.md §11.12, ponto 1 ("Uma peça só para cada conversa com [...] a rede").
 
 - (pedaço grande 4, vista no pedaço 2; fora deste pedaço grande) "Onde há tinta nesta página" tem mais de uma conta:
   `core/detectar_regioes.mascara_de_tinta` (Sauvola com o `k` do filtro), `core/editar_zonas._tinta_na_area` (o Preto e
@@ -612,6 +613,10 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
   anotação do próprio programa")? Não decido: fica aberta para o Fable.
 
 ### Fechadas
+
+- (pedaço grande 10, vista no pedaço 1; fechada no pedaço 2, 27/11) A pasta `D:\programas\EditorImpressao-arquivos`
+  escrita à mão em `relatorio.py` e a das ferramentas num lugar só → **virou o achado leve FS-04**: só a subpasta das
+  ferramentas tem lugar único (D-820); a do acervo está em `relatorio.py` duas vezes e nos scripts soltos.
 
 - (pedaço grande 4, vista no pedaço 2; fechada no pedaço 2 do grande 9, 27/11) Abrir um modelo da rede (ONNX) em três
   lugares → **virou o achado OC-02** (médio): o que difere é a regra da falha, em seis lugares (o modelo de layout
