@@ -161,6 +161,33 @@ do detector); `core/duas_camadas.py` por dentro; as chamadas da DLL por dentro (
 
 **Próximo:** o pedaço grande 5, "Automático e avisos" (lista em `resposta-do-fable-2026-11-27.md`). A gerente decide quando.
 
+## Programa inteiro (D-886): pedaço grande 5, Automático e avisos
+
+Agente novo, 27/11/2026, começou às 14:41 (relógio da máquina, `date`). Leu as regras do verificador, o CLAUDE.md
+(§11.12), o índice da memória, a ordem, a resposta do Fable, este arquivo inteiro, a lista (o modelo e, por inteiro, os
+achados que tocam o Automático e os avisos: DV-03, DV-09, DV-10, DV-12, DV-16, DF-05, AP-03, SP-01 a SP-15, RT-05,
+RT-10, RT-11, RT-12, FL-03, FL-20, PT-22) e a fila da Central (as do Automático e dos avisos: `lu-10-codigo`,
+`nm-codigos`, `lu-11-lista`, `n0411-caixinhas-depois-de-rodar`, `au-d-489`, `lu-2-numeros`, `k0611-numeros`,
+`lu-12-p22`). As decisões que valem são as copiadas no alto deste arquivo (D-885, D-886, §11.12); conferidas, valem
+também para este pedaço grande. Código: linhas no `cbc9784f` (`git diff cbc9784f HEAD -- core/ ui/` vazio). Prefixo
+dos achados: **AV**.
+
+Divisão em pedaços pequenos (escrita antes de começar). O que outros pedaços já leram não se relê (ver as listas dos
+pedaços da tela, abaixo: em `ui/automatico.py` L277-330, L405-440, L660-700, L1530-1565, L1738-1755, L1785-1870,
+L2575-2600; em `core/automatico.py` L120-200, L396-416, L535-683, L803, L932-990, L1040-1056, L1130-1221,
+L1288-1364, L1527-1575, L1590-1757, L1849-1888; `core/avisos.py` inteiro; em `core/analise.py` L320-332, L434-446,
+L463-500, L707-781; em `core/pipeline.py` L180-276).
+
+| pedaço pequeno | arquivos | situação | começo | fim |
+|---|---|---|---|---|
+| 1. o painel Automático na tela | `ui/automatico.py` L1-836 e L2161-3007 (o estado, a lista das etapas, o painel, as opções, a janela grande, a receita), fora do já lido | feito (5 achados, AV-01 a AV-05) | 27/11 14:42 | 27/11 14:46 |
+| 2. o "antes/depois" | `ui/automatico.py` L837-2160 (a vista, a tela cheia do comparar, a página antes e depois) e, em `core/automatico.py`, L1274-1530 e L1576-1606, L1762-1848 (as cópias, as medidas guardadas, a folha do caderno), fora do já lido | a fazer | | |
+| 3. as etapas do Automático no núcleo | `core/automatico.py` L1-1273, fora do já lido (o pedido, as mexidas, o resumo, o livro leve, `aplicar`, `_capa_aberta`, `_ligar_na_pagina`, `_desligar_as_desmarcadas`, `rodar`) | a fazer | | |
+| 4. a análise do livro | `core/analise.py` (fora do já lido), as partes da análise de `core/pipeline.py` (o que chama `analisar_folha`/`analisar_pagina` fora de L180-276), `core/automatico.medir_o_livro_ao_abrir` | a fazer | | |
+| 5. o "Para revisar" e os avisos | `core/revisar.py`; `core/analise.Alerta`/`descrever` (L139-462); `core/avisos.py` já lido: só as buscas | a fazer | | |
+| 6. página em branco | `core/paginas_em_branco.py` | a fazer | | |
+| 7. a janela dos avisos | `ui/janela_dos_avisos.py` | a fazer | | |
+
 ## Pedaços (tela de trabalho, 26/11)
 
 | pedaço | situação | começo | fim | tempo |
@@ -318,6 +345,9 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
   e três scripts de relatório), e o cabeçalho de `ui/automatico.py` diz "ui/tela_opcoes.py, que saiu do caminho". Mas
   PT-05, PT-24 e FL-08 citam linhas dele entre as cópias. Conferir no pedaço grande 6 se é código morto do tamanho
   de um arquivo, e se os achados que o citam contam uma cópia que não está mais no caminho.
+  (Pedaço grande 5, pedaço 1, 27/11: a busca confirma que nenhuma parte do programa a monta, e `teste_botoes.py` L587
+  cobra "a tela 'O que fazer' não existe mais"; o AV-01 e o AV-04 citam `tela_opcoes` como cópia morta. Fica aberta para
+  o pedaço grande 6 decidir o achado do arquivo inteiro.)
 
 ### Fechadas
 
