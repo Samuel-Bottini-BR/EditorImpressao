@@ -25,6 +25,44 @@ código mudou; os únicos arquivos mexidos são este e `lista.md`.
   lugares' sozinho é médio. O resto da régua fica." c) "Em cada achado novo, além do item da Central, dizer a qual
   achado da tela ele é 'outra cópia', quando for (ex.: 'outra cópia do SP-03')."
 
+## Juntar o que foi achado: as raízes e a Central (D-886, itens 6 e 7)
+
+Agente novo, 27/11/2026, começou às 16:46 (relógio da máquina, `date`). Só lê e escreve documentos: nenhuma linha do
+programa muda; não roda o programa nem os testes; a `lista.md` não muda. Leu as regras do verificador, o CLAUDE.md
+(§11.12, §11.13), o índice da memória, a ordem, a resposta do Fable, este arquivo inteiro, a lista inteira (os 259
+achados) e a fila de 26/11.
+
+### Decisões que esta tarefa precisa cumprir
+
+- **D-886 (27/11), item 6:** "Ao fim de tudo, a mesma pasta para-o-fable refeita, com um resumo novo de duas páginas:
+  as raízes (grupos de achados que são a mesma regra espalhada), quantos achados cada uma junta, e quais itens da
+  Central cada uma explica. O Fable lê antes de qualquer conserto começar."
+- **D-886, item 7:** "ler a Central DE NOVO, da página, como estiver naquele dia (não a cópia de 26/11), e entregar uma
+  tabela com todos os itens em 'pode consertar' / 'na fila' — para cada um, uma de três respostas: 'explicado pelo
+  achado X', 'nenhum achado ainda', ou 'não é gambiarra: defeito simples, conserto próprio'. O que o Samuel responder na
+  Central durante a vistoria entra nessa tabela."
+- **D-885 (26/11):** "A LISTA NÃO FECHA NADA" · "Sem propostas de conserto na lista, sem plano." Vale também para o
+  resumo: raízes, não consertos.
+
+O que já está escolhido e testado aqui: nada do programa é tocado (só documentos desta pasta). Como fica para quem usa e
+no livro: nada muda para o Kaique nem no PDF.
+
+### Como trabalho
+
+- A Central lida de novo: os 353 documentos da coleção `respostas` que a gerente leu da página em 27/11 (fim da tarde),
+  com o mesmo critério da `fila-da-central.md` ("pode consertar" ou "na fila" na opção, no comentário do Samuel ou na
+  resposta da gerente), por um script de contar texto na pasta de rascunho. A frase de cada item vem do título da
+  pergunta (coleção `conferencias`, cópia da gerente de 27/11).
+- As raízes: cada achado numa raiz só. A ligação forte é a coluna "outra cópia de" da lista (e, nos 81 da tela, que não
+  têm essa coluna, a descrição que cita o outro achado como a mesma coisa); a "mesma família" é ligação fraca, dita como
+  tal; o que eu juntei só pelo assunto, sem a lista ligar, vai marcado como juntado por mim.
+
+| parte | situação | começo | fim |
+|---|---|---|---|
+| ler as regras e os insumos | feito | 27/11 16:46 | 27/11 16:55 |
+| a Central de novo (37 itens) | feito | 27/11 16:55 | 27/11 17:05 |
+| as raízes | feito | 27/11 17:05 | 27/11 17:15 |
+
 ## Programa inteiro (D-886): pedaço grande 1, peças da tela de trabalho
 
 Agente novo, 27/11/2026, começou às 13:31 (relógio da máquina, `date`). Leu as regras, a ordem, a resposta do Fable,
