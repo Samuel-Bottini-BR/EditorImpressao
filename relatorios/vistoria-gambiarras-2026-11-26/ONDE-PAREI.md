@@ -66,6 +66,29 @@ leio por inteiro as funções que essas buscas apontam. Desenho puro (montar bot
 página) não vira achado. Linhas no `cbc9784f` (o mesmo código do `30920fe7`: os commits de depois só mexeram em
 relatórios e no Livro).
 
+## Programa inteiro (D-886): pedaço grande 2, preparar a página (geometria)
+
+Agente novo, 27/11/2026, começou às 13:54 (relógio da máquina, `date`). Leu as regras do verificador, o CLAUDE.md, o
+índice da memória, a ordem, a resposta do Fable, este arquivo, a lista (modelo e os títulos dos 106 achados), a fila da
+Central e o começo de `campos.md`. As decisões que valem são as copiadas no alto deste arquivo (D-885, D-886, §11.12);
+conferidas, valem também para este pedaço grande. Código: linhas no `cbc9784f` (`git diff cbc9784f HEAD -- core/` vazio).
+
+Divisão em pedaços pequenos (escrita antes de começar). O que outros pedaços já leram não se relê (lista em cada um
+abaixo); `core/girar.py`, `core/dividir.py` e `core/dividir_a_mao.py` já foram lidos inteiros na tela.
+
+| pedaço pequeno | arquivos | situação | começo | fim |
+|---|---|---|---|---|
+| 0. a suspeita aberta | `core/pipeline._geometria` e `_chave_da_geometria` | feito (virou PP-02) | 27/11 13:54 | 27/11 13:58 |
+| 1. o caminho da página no pipeline e as chaves | `core/pipeline.py` L526-1720 (fora do já lido), L2778-3200, L5034-5210 | a fazer | | |
+| 2. o conteúdo e o tamanho do livro | `core/pipeline.py` L1718-2300 (fora do já lido), `core/corte_pelo_conteudo.py`, `core/folha.py`, `core/unidades.py`, `core/paginas_diferentes.py` | a fazer | | |
+| 3. cortar e borda preta | `core/recortar.py`, `core/borda_preta.py`, `core/caixas_scantailor.py`, `core/margens_scantailor.py`, `core/ajustar_pedaco.py` | a fazer | | |
+| 4. endireitar e desentortar | `core/endireitar.py`, `core/endireitar_scantailor.py`, `core/desentortar_scantailor.py`, `core/guias.py`, `core/linhas_do_texto.py` | a fazer | | |
+| 5. girar e dividir: o que sobra | `core/dividir_scantailor.py`; em `girar.py`, `dividir.py`, `dividir_a_mao.py` só as buscas no programa inteiro (já lidos) | a fazer | | |
+| 6. etapas e ordem do preparo | `core/etapas.py` (fora do já lido), `core/ordem_do_preparo.py` | a fazer | | |
+
+Fora deste pedaço grande (ficam para os seus): em `core/pipeline.py` os filtros (L3400-4530, pedaço grande 3), a análise
+e os avisos (pedaço grande 5) e o processar/escrever o PDF (L4530-5034, pedaço grande 7), salvo o que a geometria chamar.
+
 ## Pedaços (tela de trabalho, 26/11)
 
 | pedaço | situação | começo | fim | tempo |
@@ -218,12 +241,14 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
 
 ### Abertas
 
-- (pedaço grande 2, preparar a página; vista no pedaço 0 de 27/11) `core/pipeline._geometria` mede o conteúdo com
-  `em_branco=analise.EM_BRANCO in pagina.alertas` (L1206 e L1359), e o aviso "Parece em branco" não está na chave da
-  geometria (`_chave_da_geometria` L1469). Conferir se o corte guardado pode ficar o de antes do aviso mudar (a mesma
-  família do CF-04: a chave que não conta um campo de que a conta depende).
+(nenhuma)
 
 ### Fechadas
+
+- (pedaço grande 2, vista no pedaço 0 do grande 1; fechada no pedaço 0 do grande 2, 27/11) `_geometria` mede com o
+  aviso "Parece em branco", que não está na chave → **virou o achado PP-02** (médio): o aviso muda depois de a
+  geometria ser guardada (`renderizar_pagina` guarda em L2859/L2865 e só mede o aviso em L2875; a tela mede por trás
+  depois de dividir), e o corte velho fica até fechar o livro, no PDF também; só com a borda preta "até a moldura".
 
 - (fora da tela, achada no pedaço 8; fechada no pedaço 0 de 27/11) `core/pipeline._guardar_o_conteudo` e o
   `_TAMANHOS.setdefault` → **virou o achado leve PP-01**: a proteção foi posta pelo mesmo commit que tirou a causa
