@@ -342,8 +342,8 @@ aviso uma vez por sessão L1352-1377, no FL-16, e a forma de fábrica do `detect
 | 1. a entrada do detector e as opções | `core/detectar_regioes.py` L1-215 e L1392-1683 (as opções, a assinatura, `detectar`, `refinar_para_tinta`, `explicar_em_portugues`), e quem chama `detectar` no programa | feito (2 achados, GV-01 e GV-02) | 27/11 15:52 | 27/11 15:55 |
 | 2. o detector antigo e o layout | `core/detectar_regioes.py` L215-930 (a rede do layout, as máscaras, a página vazia, o objeto, o meio tom, `_gravura_antiga`) | feito (3 achados, GV-03 a GV-05; a página sem conteúdo já é o AV-15) | 27/11 15:55 | 27/11 15:58 |
 | 3. a gravura do ScanTailor | `core/detectar_regioes.py` L930-1350 (a limpeza, as barras, crescer pela moldura, o DPI, a procura com tempo), `core/gravura_scantailor.py` | feito (3 achados, GV-06 a GV-08; o carregador da DLL já é o FL-15) | 27/11 15:58 | 27/11 16:00 |
-| 4. a seleção (as áreas e as máscaras) | `core/selecao.py` (fora do já lido) | feito (2 achados, GV-09 e GV-10) | 27/11 16:00 | 27/11 16:03 |
-| 5. as zonas na folha | `core/zonas_na_folha.py` (fora do já lido) | a fazer | | |
+| 4. a seleção (as áreas e as máscaras) | `core/selecao.py` (fora do já lido) | feito (2 achados, GV-09 e GV-10) | 27/11 16:00 | 27/11 16:01 |
+| 5. as zonas na folha | `core/zonas_na_folha.py` (fora do já lido) | feito (2 achados, GV-11 e GV-12) | 27/11 16:01 | 27/11 16:03 |
 | 6. editar as áreas e a rede que aponta | `core/editar_zonas.py`, `core/rede_selecao.py` | a fazer | | |
 
 ## Pedaços (tela de trabalho, 26/11)
