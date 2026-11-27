@@ -8,7 +8,7 @@ aprovação do Samuel). Ficha irmã: [testes-a-distancia.md](testes-a-distancia.
 
 ## Situação (27/11/2026)
 
-- **Pronto para o Kaique** (não se sabe se o instalador já foi mandado). O atualizador novo entrou na versão de teste (`obra-2026-10-26`, junção `0e186cc9`, 26/11) depois das rodadas do GitHub (45776649687) e do PC. Publicados no GitHub: `motor-kraken-1` e `v1.1.0` (pacote, índice, assinatura e o .msi). O .msi está em `D:\programas\EditorImpressao-arquivos\instalador-para-o-kaique\`.
+- **Entregue: o Samuel mandou o instalador ao Kaique** (27/11; não se sabe ainda se ele instalou). O atualizador novo entrou na versão de teste (`obra-2026-10-26`, junção `0e186cc9`, 26/11) depois das rodadas do GitHub (45776649687) e do PC. Publicados no GitHub: `motor-kraken-1` e `v1.1.0` (pacote, índice, assinatura e o .msi). O .msi está em `D:\programas\EditorImpressao-arquivos\instalador-para-o-kaique\`.
 - **Provado no PC do Samuel (26/11):** a 1.1.0 instalada pelo .msi lê o GitHub de verdade ("procurei: nenhuma versão nova (esta é a 1.1.0)", sem "fonte de teste"), prepara o computador e põe o motor. Aberta pelo "Iniciar" do instalador, prepara sem a pergunta do Windows (defeito de 22/11, de novo; o resultado é o mesmo). Apagar em `C:\ProgramData\EditorImpressao\` pede administrador.
 - Ver [PARTE -46](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §2 a §4.
 

@@ -14,7 +14,7 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -46 — Checkpoint de 26-27/11/2026: a entrega ao Kaique pronta (testes no GitHub e no PC, atualizador na versão de teste, motor e 1.1.0 publicados no GitHub, instalador provado no PC do Samuel); a vistoria das gambiarras da tela de trabalho (D-885, 81 achados) (leia isto primeiro)
+# PARTE -46 — Checkpoint de 26-27/11/2026: a entrega ao Kaique feita (o instalador mandado por ele) (testes no GitHub e no PC, atualizador na versão de teste, motor e 1.1.0 publicados no GitHub, instalador provado no PC do Samuel); a vistoria das gambiarras da tela de trabalho (D-885, 81 achados) (leia isto primeiro)
 
 Conversa `b5841088`, aberta pelo `/projeto` em 26/11 (~07h30 UTC) e fechada com este checkpoint (27/11, 00h12 UTC). A
 conversa foi resumida uma vez (no meio da rodada do PC); esta parte foi escrita a partir das falas salvas
@@ -32,10 +32,10 @@ relógio do PC é UTC-4: os commits mostram -0400; as falas, UTC.
      pedaço — mas o agente não espera"; dito a ele às 21h23 UTC como "Esperando você"); a lista inteira dos 8 pedaços
      também está pronta;
    - a ordem para vistoriar o resto do programa, fora da tela de trabalho (a ordem de serviço só fala da tela primeiro);
-   - se o instalador já foi mandado ao Kaique e se ele já instalou (ele disse "posso sim" a "Pode mandar o instalador ao
-     Kaique?"; não disse que mandou). **Não perguntado ainda.**
-   - quem desinstalou e reinstalou a 1.1.0 **mais duas vezes** no PC dele depois da prova (13h34 a 13h48 locais, §4);
-     nenhuma fala dele explica. **Não perguntado ainda.**
+   - **Respondido no fecho do checkpoint (27/11):** "já mandei para o kaique, foi eu que fiz sim, amanhã continuaremos a vistoria". O instalador **foi mandado ao Kaique** por ele (não se
+     sabe ainda se o Kaique instalou); as duas reinstalações da 1.1.0 no PC dele (§4) **foram ele**. **A vistoria
+     continua amanhã (28/11)**: o resto do programa, fora da tela de trabalho, começando pela suspeita aberta do
+     ONDE-PAREI (a ordem de serviço é a mesma; o pedido de como dividir em pedaços o resto do programa é com ele).
 4. **Ainda sem resposta, de conversas anteriores:** se a pergunta do Windows **do programa**, no passo 1 refeito (26/11
    ~03h), veio no meio da tela ou piscando na barra; e os itens de arrumação da lista de 22 (apagar
    `C:\EditorImpressaoProva`, 8,5 GB; as worktrees velhas; as cópias no rascunho).
@@ -123,7 +123,7 @@ Rodado da `obra-juncao` (ponta `0e186cc9`), com 38 GB livres no C:.
 - **Depois da prova, a 1.1.0 foi desinstalada e reinstalada mais duas vezes** (registro, horas locais: 13:34:44
   desinstalação, 13:40:17 instalada, preparado, motor posto, "nenhuma versão nova"; 13:45:46 desinstalação, 13:47:29
   instalada, ..., 13:48:48 "nenhuma versão nova"), às 17h34 a 17h48 UTC, depois do "posso sim" (17h31). Nenhuma fala
-  dele explica; a gerente não fez isso. Perguntar (§0.3).
+  dele explicava; a gerente não fez isso. Ele, no fecho do checkpoint: "foi eu que fiz sim".
 - **No PC dele agora está instalada a 1.1.0 de verdade** (a última instalação, 13:47 locais). Registro `d0c691f6` (consertado em `7d790357` e `c1093776`,
   ver §7).
 
