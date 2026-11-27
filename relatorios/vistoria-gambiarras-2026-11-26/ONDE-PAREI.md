@@ -134,7 +134,7 @@ L4279-4316, L4447-4525; `core/fundo_tirado.py` inteiro; `core/perfis.py` L40-100
 | 2. os quatro filtros e os ajustes | `core/filtros.py` | feito (4 achados, FL-06 a FL-09) | 27/11 14:21 | 27/11 14:28 |
 | 3. Só as letras e a letra clara | `core/misto.py`, `core/claro_no_escuro.py` | feito (3 achados, FL-10 a FL-12) | 27/11 14:28 | 27/11 14:31 |
 | 4. camadas e Tirar o fundo | `core/camadas.py`, `core/duas_camadas.py` (`core/fundo_tirado.py` já lido: só as buscas) | feito (2 achados, FL-13 e FL-14) | 27/11 14:31 | 27/11 14:33 |
-| 5. as peças do ScanTailor | `core/preto_e_branco_scantailor.py`, `cores_scantailor.py`, `luz_scantailor.py`, `pontinhos_scantailor.py`, `st_ferramentas.py` | a fazer | | |
+| 5. as peças do ScanTailor | `core/preto_e_branco_scantailor.py`, `cores_scantailor.py`, `luz_scantailor.py`, `pontinhos_scantailor.py`, `st_ferramentas.py` | feito (4 achados, FL-15 a FL-18; fecha a suspeita do pedaço 1) | 27/11 14:33 | 27/11 14:37 |
 | 6. perfis, núcleos, aquecimento | `core/perfis.py` (fora de L40-100), `core/nucleos.py`, `core/aquecimento.py` | a fazer | | |
 
 ## Pedaços (tela de trabalho, 26/11)
@@ -289,12 +289,14 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
 
 ### Abertas
 
-- (pedaço grande 3, vista no pedaço 1, 27/11) O "Suavizar as letras" recebe o DPI do desenho como veio
-  (`core/pipeline._filtrar_preto_no_branco` L3601: `dpi or pontinhos_scantailor.dpi_pela_altura(...)`), e não a conta
-  única dos PDFs que dizem 72 DPI (`dpi_para_os_pontinhos`, PP-15): mais uma peça do ScanTailor fora da conta única?
-  Conferir em `core/luz_scantailor.suavizar_nesta_pagina` (pedaço 5).
+(nenhuma)
 
 ### Fechadas
+
+- (pedaço grande 3, vista no pedaço 1; fechada no pedaço 5, 27/11) O "Suavizar as letras" recebe o DPI do desenho
+  como veio (`core/pipeline._filtrar_preto_no_branco` L3601-3602), e não a conta única dos PDFs que dizem 72 DPI →
+  **virou parte do FL-17**: confirmado (`luz_scantailor.suavizar_nesta_pagina` guarda o que vem; sem DPI, 300), e o
+  DPI só existe quando a página procura gravura ou usa um limpar do ScanTailor.
 
 - (pedaço grande 2, vista no pedaço 1; fechada no pedaço 4, 27/11) `_chave_do_desentortar` e o que o desentortar lê da página → **descartada como achado próprio**: `preparar_no_corte` só lê o modo, o lado (`metade`) e o "aumentando", e os três estão na chave (a metade, pela da geometria). O que falta na chave é o tamanho do livro, já no PP-03.
 - (pedaço grande 2, vista no pedaço 3; fechada no pedaço 4, 27/11) O DPI dito ao ScanTailor → o endireitar chama a conta única (`dpi_para_o_endireitar` → `dpi_para_os_pontinhos`); **o desentortar não: virou o achado PP-15**.
