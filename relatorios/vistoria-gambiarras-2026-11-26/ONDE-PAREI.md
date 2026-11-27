@@ -230,7 +230,7 @@ L4840-4935, L4985-5012, L5034-5210; `ui/dialogo_impressao.py` L845-866; o cabeç
 | pedaço pequeno | arquivos | situação | começo | fim |
 |---|---|---|---|---|
 | 1. gravar o PDF (o processar, página por página) | `core/pipeline.py` L4530-4840, L4936-4985, L5012-5034; `ui/tarefas.TarefaProcessar` e `TarefaMedirAsMargens` (L261-352); para comparar, em `ui/janela_principal.py` só quem dispara a tarefa e recebe o fim | feito (3 achados, IM-01 a IM-03) | 27/11 15:00 | 27/11 15:04 |
-| 2. a ordem das páginas e os cadernos | `core/ordem_das_paginas.py`, `core/cadernos.py` | a fazer | | |
+| 2. a ordem das páginas e os cadernos | `core/ordem_das_paginas.py`, `core/cadernos.py` | feito (4 achados, IM-04 a IM-07; o lado a lado com o vão já era o AV-06) | 27/11 15:04 | 27/11 15:07 |
 | 3. montar para imprimir, no núcleo | `core/impressao.py` | a fazer | | |
 | 4. a janela "Montar para imprimir" e as folhas do caderno | `ui/dialogo_impressao.py` (fora de L845-866), `ui/widgets/folhas_do_caderno.py` (fora de L458-472), `ui/tarefas.TarefaPreviaDoAutomatico` (L672-775) | a fazer | | |
 | 5. impressora e tamanho da folha | `core/impressora.py`, `ui/dialogo_tamanho_da_folha.py` | a fazer | | |
