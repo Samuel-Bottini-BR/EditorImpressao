@@ -83,7 +83,7 @@ abaixo); `core/girar.py`, `core/dividir.py` e `core/dividir_a_mao.py` já foram 
 | 2. o conteúdo e o tamanho do livro | `core/pipeline.py` L1718-2300 (fora do já lido), `core/corte_pelo_conteudo.py`, `core/folha.py`, `core/unidades.py`, `core/paginas_diferentes.py` | feito (4 achados, PP-08 a PP-11) | 27/11 14:03 | 27/11 14:05 |
 | 3. cortar e borda preta | `core/recortar.py`, `core/borda_preta.py`, `core/caixas_scantailor.py`, `core/margens_scantailor.py`, `core/ajustar_pedaco.py` | feito (3 achados, PP-12 a PP-14) | 27/11 14:05 | 27/11 14:07 |
 | 4. endireitar e desentortar | `core/endireitar.py`, `core/endireitar_scantailor.py`, `core/desentortar_scantailor.py`, `core/guias.py`, `core/linhas_do_texto.py` | feito (4 achados, PP-15 a PP-18; fecha as duas suspeitas abertas) | 27/11 14:07 | 27/11 14:09 |
-| 5. girar e dividir: o que sobra | `core/dividir_scantailor.py`; em `girar.py`, `dividir.py`, `dividir_a_mao.py` só as buscas no programa inteiro (já lidos) | a fazer | | |
+| 5. girar e dividir: o que sobra | `core/dividir_scantailor.py`; em `girar.py`, `dividir.py`, `dividir_a_mao.py` só as buscas no programa inteiro (já lidos) | feito (1 achado, PP-19) | 27/11 14:10 | 27/11 14:11 |
 | 6. etapas e ordem do preparo | `core/etapas.py` (fora do já lido), `core/ordem_do_preparo.py` | a fazer | | |
 
 Fora deste pedaço grande (ficam para os seus): em `core/pipeline.py` os filtros (L3400-4530, pedaço grande 3), a análise
