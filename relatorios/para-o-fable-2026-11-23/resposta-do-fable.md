@@ -226,3 +226,19 @@ Relatório lido (`quem-tenta-quebrar-4/relatorio.md`: 1 grave, 6 médios). As tr
 Ninguém questionou o pedido, só o jeito de cumprir; cada peça era o mínimo honesto para "volta sozinho", então a regra contra remendos não pegava; o contador de ciclos parou no quinto em vez de no décimo. A pergunta que faltou no terceiro ciclo, e que vale quando o contador disparar de novo: **os defeitos estão sempre na mesma funcionalidade? O que o Kaique perde se ela ficar para depois?**
 
 Contexto de mercado dado ao Samuel: Chrome, VS Code, Discord e os programas com Velopack/Squirrel não desfazem sozinhos uma versão ruim; testam antes, liberam em etapas e publicam a correção por cima. Volta automática é coisa de sistema operacional (Windows Update, Android A/B), onde não há como publicar nada se o sistema não sobe.
+
+## Entrega ao Kaique (26/11/2026)
+
+- **25/11, 19:25–01:17:** prova à vista no PC do Samuel, 12 passos, tudo como esperado (instalar; aviso; "Reiniciar agora"; "Depois" com "Sim" e "Não" ao fechar; versão quebrada → caixa do Windows uma vez, volta à mão em 11 s; assinatura falsa; sem motor; sem internet; sem atualizador; pasta presa duas vezes; desinstalar). Projetos intactos. Abertura 10–23 s; 35 s na primeira depois de atualizar.
+- **26/11, ~03:00:** passo 1 refeito pelo atalho (caixinha do instalador desmarcada): a pergunta do Windows veio antes do brasão; "Não" não mudou nada; "Sim" preparou; terceira abertura sem pergunta, motor posto sozinho. Conta do Kaique confirmada administradora (23/11).
+- **Decisão do Samuel:** entregar assim. Achado 1 da prova (tela vazia 20–35 s depois da troca → segundo clique abre dois programas; **confirmado por ele na tela**) vai como **primeiro conserto pela própria atualização**: mostrar o brasão desde o começo da reabertura, sem cadeado. Achados 2 (botão OK do Velopack), 3 (caixa em inglês = item 12) e 4 ("projeto com acento no nome é regravado ao abrir — investigar") ficam para depois.
+- **26/11:** merge no programa principal, testes no GitHub e no PC, motor e versão 1.1.0 publicados no GitHub, instalador gerado e **entregue ao Kaique**.
+- Frases para o Kaique: (1) ao rodar o instalador, a pergunta do Windows pode piscar na barra — clicar nela e "Sim"; (2) na primeira abertura, "Sim" uma vez só; (3) depois de uma atualização, esperar até meio minuto com a tela vazia, não clicar de novo (some na próxima versão).
+
+## As frentes depois da entrega (ordem decidida pelo Samuel, 25–26/11)
+
+1. **O jeito de trabalhar** (pedido explícito: resolver antes de tudo na próxima conversa): a conferência do "quem tenta quebrar" com escopo igual ao da mudança; varredura completa só quando o desenho muda. Mais a pergunta a fazer quando o contador de ciclos disparar: *os defeitos estão sempre na mesma funcionalidade? o que o Kaique perde se ela ficar para depois?*
+2. **Primeira atualização para o Kaique:** brasão desde o começo da reabertura (achado 1).
+3. **O programa:** estrutura (apagar código morto — `configuracoes.espaco_livre_mb` e um caça-código-morto no programa inteiro; depois as refatorações 1–3 da Pergunta 2: metadados nos campos, porta única `core/comandos.py`, uma renderização) e então a fila de remendos e bugs. Item 12 (a caixa "continua funcionando" que mente) cedo.
+4. **Testes à distância** (D-705…; levam junto: os 3 testes adiados, a ACL "negar modificar" para a conta `EditorTestes`, e a D-736).
+5. Depois: download do motor do Kraken (só quando uma versão pedir motor novo) e volta automática (D-718; só se fizer falta).

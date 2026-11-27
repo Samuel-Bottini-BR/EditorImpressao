@@ -214,7 +214,7 @@ novo com o PC parado e, se continuar, achar em que commit mudou." Em 14/10 conti
   `gabarito\scantailor-24-09` da pasta principal. **Nunca `Remove-Item -Recurse`** nelas; desfazer **só com
   `(Get-Item <junção>).Delete()`** (PARTE -15 §2). Em 07/10/2026 um `robocopy /MOVE` sem `/XJ` seguiu as junções de um
   scratchpad e esvaziou `modelos\` (18 arquivos) e `gabarito\paginas\` + `scantailor-24-09\` (117 arquivos) das 19h20 às
-  22h; foi restaurado da cópia no D: (PARTE -13 §0).
+  22h; foi restaurado da cópia no D: (PARTE -13 §0). **De novo em 18/11/2026 ~14h** (estudo "publicar rápido"): esvaziou `modelos\` (reposto no mesmo dia) e `gabarito\paginas\` (só notado em 26/11, pelas 30 falhas da rodada do PC; reposto com `git archive origin/dados-de-teste gabarito/paginas | tar -x`, PARTE -46 §2). Depois de mexer em junções, contar os arquivos de `modelos\` e de `gabarito\paginas\` (64).
 - **Apagar arquivo ou pasta** fora do projeto: nunca sem perguntar ao Samuel ([CLAUDE.md §10 item 9](../../CLAUDE.md),
   regra de 29/09/2026, depois que um agente apagou `D:\d`).
 - Ao editar o plano por script: caminhos com `/`, conferir "caracteres de controle = 0" depois; o plano no disco é CRLF

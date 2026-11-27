@@ -6,6 +6,12 @@ como o plano da parte do Windows sugeriu (plano-v2 §6.1, risco 17). **O que man
 parte do Windows (`relatorios/plano-windows-2026-11-18/plano-v2.md`, ramo `plano-windows-2026-11-18`, esperando a
 aprovação do Samuel). Ficha irmã: [testes-a-distancia.md](testes-a-distancia.md). O instalador em si: [itens/6.8.md](../itens/6.8.md).
 
+## Situação (27/11/2026)
+
+- **Pronto para o Kaique** (não se sabe se o instalador já foi mandado). O atualizador novo entrou na versão de teste (`obra-2026-10-26`, junção `0e186cc9`, 26/11) depois das rodadas do GitHub (45776649687) e do PC. Publicados no GitHub: `motor-kraken-1` e `v1.1.0` (pacote, índice, assinatura e o .msi). O .msi está em `D:\programas\EditorImpressao-arquivos\instalador-para-o-kaique\`.
+- **Provado no PC do Samuel (26/11):** a 1.1.0 instalada pelo .msi lê o GitHub de verdade ("procurei: nenhuma versão nova (esta é a 1.1.0)", sem "fonte de teste"), prepara o computador e põe o motor. Aberta pelo "Iniciar" do instalador, prepara sem a pergunta do Windows (defeito de 22/11, de novo; o resultado é o mesmo). Apagar em `C:\ProgramData\EditorImpressao\` pede administrador.
+- Ver [PARTE -46](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §2 a §4.
+
 ## Situação (26/11/2026)
 
 - **O atualizador foi refeito num desenho simples (D-830, 23/11)**, ramo `atualizador-novo-2026-11-23` (worktree `.claude/worktrees/atualizador-novo`), **não juntado**. O Update.exe do Velopack troca a versão depois de a pasta do programa ganhar, uma vez, a licença de Usuários (pergunta única do Windows na primeira abertura, D-834). Cinco voltas, cada uma conferida por um "quem tenta quebrar" novo; a volta automática saiu da primeira entrega (D-867): versão nova reprovada no teste rápido → caixa do Windows (MessageBoxW) uma vez, "A versão nova não funcionou. Não desinstale nada. Avise o Samuel." (D-868); a última boa fica guardada só para a volta à mão (D-869).

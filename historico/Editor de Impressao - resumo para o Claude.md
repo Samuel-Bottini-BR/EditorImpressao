@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 26/11/2026, madrugada (PARTE -45; a anterior, PARTE -44, é da noite de 22/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 27/11/2026, madrugada (PARTE -46; a anterior, PARTE -45, é da madrugada de 26/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -13,6 +13,215 @@ o backup). Repositório git ligado a
 `https://github.com/Samuel-Bottini-BR/EditorImpressao`.
 
 ---
+
+# PARTE -46 — Checkpoint de 26-27/11/2026: a entrega ao Kaique pronta (testes no GitHub e no PC, atualizador na versão de teste, motor e 1.1.0 publicados no GitHub, instalador provado no PC do Samuel); a vistoria das gambiarras da tela de trabalho (D-885, 81 achados) (leia isto primeiro)
+
+Conversa `b5841088`, aberta pelo `/projeto` em 26/11 (~07h30 UTC) e fechada com este checkpoint (27/11, 00h12 UTC). A
+conversa foi resumida uma vez (no meio da rodada do PC); esta parte foi escrita a partir das falas salvas
+(`falas_da_conversa.py --todas --desde 2026-11-26T07:12`), do git de todos os ramos e da Central, não da memória. O
+relógio do PC é UTC-4: os commits mostram -0400; as falas, UTC.
+
+## 0. Para recomeçar
+
+1. `git -C D:\programas\EditorImpressao fetch origin`. Versão oficial `fase-1` (ponta: este checkpoint). **Versão de
+   teste `obra-2026-10-26`** (worktree `.claude\worktrees\obra-juncao`, ponta `65190e78`): tem agora o atualizador novo
+   (avançou para a junção `0e186cc9` em 26/11) e a vistoria. O Livro de decisões está lá (D-885 é a última).
+2. **Nada espera resposta dele na Central** (27/11 00h: 353 respostas, todas `lida: true`; 12 ordens, nenhuma nova).
+3. **O que espera ele:**
+   - a leitura do Fable da lista do pedaço **girar** (a ordem dele: "O Fable lê antes de o agente seguir para o segundo
+     pedaço — mas o agente não espera"; dito a ele às 21h23 UTC como "Esperando você"); a lista inteira dos 8 pedaços
+     também está pronta;
+   - a ordem para vistoriar o resto do programa, fora da tela de trabalho (a ordem de serviço só fala da tela primeiro);
+   - se o instalador já foi mandado ao Kaique e se ele já instalou (ele disse "posso sim" a "Pode mandar o instalador ao
+     Kaique?"; não disse que mandou). **Não perguntado ainda.**
+   - quem desinstalou e reinstalou a 1.1.0 **mais duas vezes** no PC dele depois da prova (13h34 a 13h48 locais, §4);
+     nenhuma fala dele explica. **Não perguntado ainda.**
+4. **Ainda sem resposta, de conversas anteriores:** se a pergunta do Windows **do programa**, no passo 1 refeito (26/11
+   ~03h), veio no meio da tela ou piscando na barra; e os itens de arrumação da lista de 22 (apagar
+   `C:\EditorImpressaoProva`, 8,5 GB; as worktrees velhas; as cópias no rascunho).
+5. Não abrir agente sem a ordem dele. Nenhum agente nem teste rodando no checkpoint (conferido: o último agente da
+   vistoria entregou às 18h29 locais; o vigia do git foi parado).
+
+## 1. As falas dele desde o último checkpoint, e o destino de cada uma (UTC)
+
+| hora | fala | destino |
+|---|---|---|
+| 07:17 (conversa `9fb2a36a`) | "vamos começar isso em outra conversa" | esta conversa |
+| 07:34 | "pode começar" (à pergunta "Posso começar pelo 1?") | item 1 feito (§2). A pergunta "onde entra o atualizador?" não teve resposta própria; a gerente seguiu a D-797 (todo trabalho novo entra na versão de teste) e anotou no Registro |
+| 07:46 | "vai demorar ?" | respondido no chat |
+| 08:14 | "sigo no aguardo" | respondido no chat ("Combinado. A rodada continua no seu PC, e te chamo assim que ela terminar.") |
+| 11:16 | "terminou?" | respondido (95%) |
+| 13:57 | "pode publicar" (a "Posso publicar?") | item 2 feito (§3) |
+| 14:28 | "está pronto?" | a gerente disse que sim, com a ressalva de que o instalador nunca tinha sido instalado, e sugeriu instalar no PC dele antes |
+| 14:36 | "vamos fazer" | a prova no PC dele (§4) |
+| 15:29 | "já desinstalei" | conferido: a 1.9.0 saiu inteira |
+| 16:17 | "pode" (a "Posso apagar o `fonte-de-teste.txt`?") | a gerente tentou; o Windows recusou sem licença de administrador; ele apagou pelo Explorador |
+| 16:17 | "que registro de atualizações" | explicado: é o `atualizacao.log`, fica |
+| 16:22 | "apguei" | conferido: o arquivo sumiu |
+| 16:37 | "eu acho que eu apertei em iniciar sem querer e não abri pelo atalho" | conferido no registro: funcionou do mesmo jeito (§4) |
+| 17:31 | "posso sim" (a "Pode mandar o instalador ao Kaique?") | Registro; não se sabe se mandou |
+| 19:29 | a ordem de serviço da vistoria das gambiarras (texto inteiro colado; guardado palavra por palavra em `relatorios/vistoria-gambiarras-2026-11-26/ordem-de-servico.md` no `obra-2026-10-26`) | **D-885**; feita (§5) |
+| 19:52 | "vamos pausar por enquanto então e esperar a o limite de sessão voltar" | agente parado no começo do dividir, nada pela metade; Registro |
+| 21:23 | "limite voltou, onde paramos?" | respondido |
+| 21:24 | "pode começar" | a vistoria seguiu do dividir ao fim |
+| 00:12 (27/11) | "checkpoint" | este checkpoint |
+
+## 2. Item 1 da entrega: os testes e a junção (feito)
+
+- A junção foi feita **numa cópia à parte**: worktree `.claude\worktrees\juncao-atualizador`, ramo
+  `juncao-atualizador-2026-11-26`, commit `0e186cc9` (o atualizador `431b786b` sobre a versão de teste `9e5d6925`; sem
+  conflito, 197 arquivos). Testou-se a junção, não o ramo sozinho (a versão de teste tinha 23 commits que o ramo não
+  tinha).
+- **GitHub, rodada 45776649687: tudo passou** (porteiro, as cinco partes da suíte, botões e prints).
+- **PC, com nenhum agente rodando:** 41 falhas, 6987 passaram, 117 puladas, 1 xfailed e **1 erro**, em **5h19** (o
+  esperado era ~1h30; o PC estava carregado). O erro é na limpeza de
+  `tests/test_sem_janela_na_tela.py::test_caixa_modal_sem_resposta_e_fechada_pelo_vigia_e_o_teste_falharia`, o mesmo
+  teste que está entre as falhas; o arquivo inteiro passou rodando sozinho. (41 + 6987 + 1 = os 7.029 do Registro.) As 41:
+  - **30 por causa da pasta `gabarito\paginas\` vazia desde 18/11 ~14h** (o mesmo acidente da junção que esvaziou
+    `modelos\`; ninguém tinha notado esta). Reposta do ramo `dados-de-teste`:
+    `git archive origin/dados-de-teste gabarito/paginas | tar -x` na pasta principal (64 arquivos, estava vazia, nada
+    sobrescrito). As 107 provas que a usam passaram depois.
+  - **10 passaram rodando sozinhas** (eram tempo: o PC lento).
+  - **1 falha também sem o atualizador**: `tests/test_gravar_pdf_sem_parar_a_janela.py::test_o_fim_da_gravacao_quase_nao_prende_a_janela`
+    (1,07 a 1,59 s; o limite é 1 s; 2 de 3 vezes no `9e5d6925`). Foi para a **Lista de bugs** (26/11), para a fase de
+    desempenho.
+  - Os testes do desinstalar que falhavam no PC (Lista de bugs, 20/11) **passaram**: com `TEMP`/`TMP` dentro da worktree,
+    a pasta temporária fica no D:.
+- `teste_botoes.py` no PC: 372 ações, 0 falhas.
+- **O `obra-2026-10-26` avançou para `0e186cc9`** (avanço direto) e foi ao GitHub. Registro `9b815d98`.
+- As saídas ficaram em `.claude\worktrees\juncao-atualizador\_tmp\` (`pytest-pc.txt`, `pytest-pc-repete.txt`,
+  `pytest-pc-gabarito.txt`, `botoes-pc.txt`; fora do git, pelo `.gitignore`).
+
+## 3. Item 2: o motor e a versão 1.1.0 publicados no GitHub (feito)
+
+Rodado da `obra-juncao` (ponta `0e186cc9`), com 38 GB livres no C:.
+- `publicar_versao_kaique.py --motor` (13h57 a 14h08 UTC): `motor-kraken-1` publicado (`motor-kraken-1.zip` e
+  `EditorImpressaoMotorKraken-1.assinatura`), lido de volta (somas e assinatura conferidas) e liberado.
+- `publicar_versao_kaique.py --com-instalador` (~14h08 a 14h27 UTC): `v1.1.0` publicada com
+  `EditorImpressaoPrograma-1.1.0-full.nupkg` (462.768.415 bytes, 441 MiB), `releases.win.json`, `EditorImpressaoPrograma-1.1.0.assinatura` e
+  `EditorImpressaoPrograma-1.1.0-win.msi` (787.107.461 bytes, 787 MB); lida de volta (4 arquivos conferidos) e liberada; o Setup.exe não
+  foi a lugar nenhum; o rascunho do C: apagado (conferido).
+- **Item 3:** o .msi copiado para `D:\programas\EditorImpressao-arquivos\instalador-para-o-kaique\` (a pasta é escolha
+  da gerente; soma igual à do publicado). Registro `ccfe3ea6`.
+- Apagar uma publicação, se precisar: `publicar_versao_kaique.py --apagar v1.1.0` (ou `motor-kraken-1`).
+
+## 4. O instalador provado no PC dele antes de ir ao Kaique (feito, com ele)
+
+- Ele desinstalou a 1.9.0 (Configurações > Aplicativos): saíram o programa e a pasta; os projetos ficaram. O registro
+  anotou na desinstalação (10:57:52 locais) "desfazer os testes à distância: não mandado (ERRO: O sistema não pode
+  encontrar o arquivo especificado.)"; a mesma linha volta em cada desinstalação da 1.1.0 (abaixo). Ainda não se sabe
+  se é defeito ou só o aviso de que não havia testes à distância para desfazer; investigar com os testes à distância.
+- O `C:\ProgramData\EditorImpressao\fonte-de-teste.txt` (dentro: `C:\EditorImpressaoProva\prova-a-vista-25-11\fonte`):
+  com o "pode" dele a gerente tentou apagar e o Windows recusou ("acesso negado", precisa de administrador); ele apagou
+  pelo Explorador. Ficou o `atualizacao\atualizacao.log` (o registro antigo).
+- Instalou o .msi da pasta do Kaique e apertou sem querer o "Iniciar" do fim do instalador. O programa abriu já com a
+  licença e preparou o computador **sem** a pergunta do Windows (o defeito de 22/11 da Lista de bugs, de novo; o
+  resultado é o mesmo). O registro (horas locais): `12:25:36 instalada a versão 1.1.0`, `12:25:54 o computador está
+  preparado`, `12:26:59 motor do Kraken 1 posto em C:\Program Files\EditorImpressaoPrograma\motor-kraken\1`,
+  `12:27:00 procurei: nenhuma versão nova (esta é a 1.1.0)`, sem a linha "fonte de teste": lê o GitHub de verdade. Uma
+  janela só (os 2 processos a mais são os servidores de páginas, `--servidor-de-paginas`).
+- **Depois da prova, a 1.1.0 foi desinstalada e reinstalada mais duas vezes** (registro, horas locais: 13:34:44
+  desinstalação, 13:40:17 instalada, preparado, motor posto, "nenhuma versão nova"; 13:45:46 desinstalação, 13:47:29
+  instalada, ..., 13:48:48 "nenhuma versão nova"), às 17h34 a 17h48 UTC, depois do "posso sim" (17h31). Nenhuma fala
+  dele explica; a gerente não fez isso. Perguntar (§0.3).
+- **No PC dele agora está instalada a 1.1.0 de verdade** (a última instalação, 13:47 locais). Registro `d0c691f6` (consertado em `7d790357` e `c1093776`,
+  ver §7).
+
+## 5. A vistoria das gambiarras da tela de trabalho (D-885; feita)
+
+- **O que é** (a ordem dele, inteira no arquivo citado no §1): um agente novo, só de leitura, lista as gambiarras em
+  cinco tipos (1 a mesma regra em mais de um lugar; 2 conta da tela que devia estar em `core/`; 3 desvio por caso; 4 peça
+  que só protege outra; 5 código morto), com grave/médio/leve, o porquê (commit e D-xxx) e o item da Central. "A LISTA
+  NÃO FECHA NADA [...] Sem propostas de conserto na lista, sem plano."
+- **Preparado pela gerente:** `fila-da-central.md` (37 respostas da coleção `respostas` com "pode consertar"/"na fila",
+  lidas da página em 26/11) e a tabela dos campos pela AST, feita por um implementador
+  (`campos_que_gravam.py` + `campos.md`, `556d2228`: 63 campos, 166 gravações diretas, 12 campos gravados em `ui/` e em
+  `core/`; não sabe o tipo do objeto nem pega a gravação por dicionário + `setattr`).
+- **Os 8 pedaços**, por 4 agentes verificadores seguidos (mais o implementador da tabela), cada pedaço com commit e push:
+  girar 12 achados (`1d9ca22f`, 11 min), dividir 16 (`1197669a`, 13 min), desfazer 8 (`aa1f1d09`, 5 min), aplicar em 8
+  (`52e3936a`, 9 min), como fica 5 (`8c33b5e1`, 5 min), marcações 5 (`7e0297df`, 3 min), contagens e situação da página
+  15 (`ee8f531c`, 14 min), o resto da tela 12 (`38e51a1c`, 10 min). De 15h40 a 18h29 locais, com a pausa dele no meio.
+- **Total: 81 achados.** Tipo 1 = 53, tipo 2 = 6, tipo 3 = 10, tipo 4 = 7, tipo 5 = 5. 30 graves, 31 médios, 20 leves.
+  1 suspeita aberta, de fora da tela (`core/pipeline._guardar_o_conteudo` não troca o tamanho de página já medida; o
+  motivo do comentário parece ter sumido no mesmo commit de 21/10).
+- Os mais graves da lista (ditos a ele no chat: G-01, G-02, G-06, DV-02, DF-04, AP-01, CF-03, MC-01, SP-03, RT-01,
+  RT-03, RT-04; os outros citados aqui não foram ditos): o girar com seis caminhos pelo jeito de ver (G-01); o Dividir "Duas lado a lado" só no
+  "todas as folhas" (G-02); a página girada desenhada em cinco lugares (G-06); os três botões de dividir com linhas
+  diferentes (DV-02); juntar/dividir de novo com três jeitos (DV-03, DV-05; `au-d-528`); sete portas do Histórico e
+  Ctrl+Z diferente do painel (DF-01, DF-04); o "usar em todas" com um sentido por ferramenta (AP-01); "o que vai junto
+  com o filtro" em seis listas (AP-03); a conta simples das figurinhas e do "comparar" (CF-01); "sai branca?" em quatro
+  lugares (CF-03; `lu-3-miniatura`, `k0611-miniatura-branco`, `k0711-grade-branco`); a marcação à mão em dez lugares
+  (MC-01, conferido à mão pela gerente: as linhas batem); os avisos à mão em 15 funções (SP-01); três contas de "quantas
+  páginas" em 13 lugares (SP-03; `k0611-numeros`, `lu-2-numeros`); 4 caixas de erro, a da tela dizendo "o seu trabalho
+  está salvo" sem conferir (RT-03, o item 12 do Fable); ~20 decisões da tela lendo o filtro gravado e não o do PDF
+  (RT-04). `configuracoes.espaco_livre_mb` nunca foi chamada (RT-01).
+- **Conferido pela gerente no git a cada pedaço:** só mudaram `lista.md` e `ONDE-PAREI.md` da pasta; nenhuma linha do
+  programa. Nenhum item da Central mudou de estado. Os agentes não rodaram nada: o que depende de uso está "pela leitura,
+  não rodei".
+- **Ressalva da gerente, escrita:** os pedaços foram rápidos (3 a 14 min); a profundidade só foi conferida à mão no MC-01.
+  A leitura do Fable deve dizer se cavaram o bastante. A estimativa da gerente (6 a 10 h) estava errada; foram ~70 min de
+  leitura do código nos 8 pedaços (mais ~18 min dos agentes novos lendo as regras; no chat a gerente disse "uns 75").
+- Arquivos: `relatorios/vistoria-gambiarras-2026-11-26/` no `obra-2026-10-26` (`lista.md`, `ONDE-PAREI.md`, `campos.md`,
+  `campos_que_gravam.py`, `fila-da-central.md`, `ordem-de-servico.md`).
+
+## 6. Decisões desta sessão
+
+- **D-885** (a vistoria), no Livro com o começo das palavras dele e o arquivo da ordem inteira; situação: "tela de
+  trabalho vistoriada [...] o resto do programa espera a ordem dele".
+- Escolhas da gerente (não são decisões dele): testar a junção numa cópia à parte; o atualizador entrar no
+  `obra-2026-10-26` pela D-797; repor o `gabarito\paginas` do `dados-de-teste` sem perguntar (dentro do projeto, pasta
+  vazia, nada sobrescrito); a pasta `instalador-para-o-kaique`; sugerir a prova do instalador no PC dele; a régua de
+  gravidade lida pelo primeiro vistoriador ("o girar da tela" = peça de toda hora; grade e capa do cartão = de vez em
+  quando); fazer um pedaço por agente com volta à gerente, e depois vários pedaços por agente.
+
+## 7. Erros da gerente nesta sessão (não repetir)
+
+- **Um `git checkout 30920fe7 --` (sem caminho) tirou a `obra-juncao` do ramo** (HEAD solto) por segundos, ao conferir o
+  MC-01. Nenhum agente rodando, nada a perder; voltou com `git checkout obra-2026-10-26`. Para ver versão antiga:
+  `git show <commit>:<arquivo>`, nunca `git checkout <commit>`. O pedido ao agente seguinte já dizia isso.
+- **Texto com barra invertida num heredoc de Python estragou o plano:** `\f` e `\a` de `C:\ProgramData\EditorImpressao\fonte...`
+  e `...\atualizacao` viraram caracteres de controle (o heredoc com `'EOF'` não protege o que o Python lê como escape
+  numa string normal). Consertado em `7d790357` e `c1093776`; conferido "caracteres de controle = 0". Usar string crua
+  (`r"..."`) ou escrever o texto num arquivo com a ferramenta Write.
+- A estimativa da vistoria (6 a 10 h) estava muito acima do real (~70 min de leitura do código).
+- **Disse a ele duas vezes (07h47 e 11h17 UTC) que as falhas do PC pareciam "as que já conhecemos" (os testes do
+  desinstalar)**, sem ter conferido; no fim nenhuma era dessas (eram o gabarito vazio e tempo). E estimou ~1h30 para a
+  rodada, que levou 5h19. Dizer "ainda não sei" até conferir.
+
+## 8. Descobertas de comportamento real
+
+- No PC, com `TEMP`/`TMP` na worktree (D:), os testes do desinstalar passam; com o temporário no C:, falham (a proteção do
+  próprio teste recusa "C:\").
+- Abrir o programa pelo botão "Iniciar" do instalador herda a licença de administrador da instalação e prepara o
+  computador sem a pergunta do Windows (de novo, como em 22/11).
+- Apagar arquivo em `C:\ProgramData\EditorImpressao\` pede administrador (o `Remove-Item` da gerente foi recusado).
+- A rodada inteira no PC pode levar 5h19 se o PC estiver carregado; 10 testes de tempo falham nessa situação e passam
+  sozinhos.
+
+## 9. Fora do git, de propósito
+
+- `relatorios/para-o-fable-2026-11-23/resposta-do-fable.md` estava mudado no `fase-1` (16 linhas: "Entrega ao Kaique
+  (26/11/2026)" e "As frentes depois da entrega"), escrito fora desta conversa às 13h58 locais. **Entrou neste
+  checkpoint** para não se perder. Atenção: ele diz "instalador gerado e **entregue ao Kaique**" antes de a prova no PC
+  terminar, e traz "Frases para o Kaique" (3 frases) que a gerente não passou a ele. A ordem das frentes ali põe "o jeito
+  de trabalhar" como frente 1; a ordem da vistoria chamou a si mesma de "frente 1".
+- Continuam fora do git: `gabarito/`, `modelos/`, `dist/` (o .msi em `obra-juncao\dist\publicado\v1.1.0\`), `_tmp/`,
+  `saida_teste/`, `build/` (`.gitignore`).
+
+## 10. Testes
+
+- Última rodada inteira: GitHub 45776649687 (26/11, verde) e PC (26/11, 41 falhas explicadas no §2) sobre `0e186cc9`.
+  Depois disso, nenhuma linha do programa mudou (só documentos e a pasta da vistoria). Não rodados neste checkpoint.
+
+## 11. Próximo passo recomendado
+
+Esperar a leitura do Fable da lista da vistoria e a ordem dele para o resto do programa; enquanto isso, perguntar se o
+instalador já foi ao Kaique e se ele instalou. A fila depois da entrega (D-881 e o `resposta-do-fable.md`): a primeira
+atualização (o brasão desde o começo da reabertura, D-884), a estrutura do programa (a vistoria é o insumo), os testes à
+distância.
+
+---
+
 
 # PARTE -45 — Checkpoint de 26/11/2026, madrugada: o atualizador refeito num desenho simples (D-830), cinco voltas e cinco "quem tenta quebrar"; a prova à vista no PC do Samuel passou; ele decidiu entregar assim (D-884) e refez o passo 1 (passou nos registros; não confirmado se a pergunta do Windows do programa veio no meio da tela); falta gerar o instalador (leia isto primeiro)
 

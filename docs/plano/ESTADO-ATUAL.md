@@ -8,6 +8,13 @@ Escrito em 24/09/2026. A ordem de autoridade é:
 
 O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que vale é o Plano Definitivo.
 
+> **Onde o projeto está em 27/11/2026, madrugada (vale sobre tudo abaixo; detalhe na [PARTE -46](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
+> - **A entrega ao Kaique está pronta** (não se sabe se o instalador já foi mandado). Os testes passaram no GitHub (45776649687) e no PC (as falhas explicadas: a pasta das páginas de conferência estava vazia desde 18/11 e foi reposta; um teste de tempo de gravar o PDF foi para a Lista de bugs). O atualizador novo entrou na versão de teste (`obra-2026-10-26` em `0e186cc9`).
+> - **Publicados no GitHub:** o motor `motor-kraken-1` e a versão `v1.1.0` com o instalador. O instalador está em `D:\programas\EditorImpressao-arquivos\instalador-para-o-kaique\`; foi provado no PC do Samuel (a 1.9.0 de prova desinstalada, o `fonte-de-teste.txt` apagado, a 1.1.0 instalada e lendo o GitHub). Ele disse que pode mandar ao Kaique; não se sabe se mandou.
+> - **Vistoria das gambiarras (D-885), só de leitura:** a tela de trabalho terminada, 81 achados (30 graves) em `relatorios/vistoria-gambiarras-2026-11-26/lista.md` no `obra-2026-10-26`. Nenhuma linha do programa mudou. Espera a leitura do Fable e a ordem dele para o resto do programa.
+> - Nenhum agente rodando; a Central sem nada por ler. Depois: a primeira atualização (o brasão desde o começo da reabertura, D-884), a estrutura do programa, os testes à distância.
+>
+> **Antes (26/11, madrugada), já superado:**
 > **Onde o projeto está em 26/11/2026, madrugada (vale sobre tudo abaixo; detalhe na [PARTE -45](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
 > - **O atualizador foi refeito num desenho simples (D-830)** no ramo `atualizador-novo-2026-11-23` (não juntado): cinco voltas, cada uma conferida por um agente novo; a volta automática saiu da primeira entrega (D-867); GitHub verde (45695180689, 25/11).
 > - **A prova à vista no PC do Samuel passou (25-26/11, D-883)**, e ele refez o passo 1 sozinho (passou nos registros; não confirmado se a pergunta do Windows do programa veio no meio da tela). Ele decidiu **entregar assim (D-884)**: o achado 1 (dois programas abertos com um clique no atalho no fim da troca) é o primeiro conserto depois da entrega; os achados 2, 3 e 4 ficam para depois.
