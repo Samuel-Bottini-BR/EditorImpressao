@@ -265,6 +265,32 @@ final e da janela é a simulação da dobra sobre a conta (`conferir_sequencia`)
 suspeitas abertas abaixo que são dele (a `tela_opcoes`, o fundo tirado no caminho rápido dos cadernos e o `SEM_SERVIDOR`).
 A gerente decide quando.
 
+## Programa inteiro (D-886): pedaço grande 6, abrir, guardar e desfazer
+
+Agente novo, 27/11/2026, começou às 15:16 (relógio da máquina, `date`). Leu as regras do verificador, o CLAUDE.md
+(§11.12, §7: o modelo de dados e onde o programa guarda estado), o índice da memória, a ordem, a resposta do Fable, este
+arquivo inteiro, a lista (o modelo, os títulos e, por inteiro, os que tocam este pedaço: DF-01, DF-04 a DF-06, RT-01 a
+RT-03, PT-21, PT-23, PT-24, IM-01, IM-02) e a fila da Central (as que tocam abrir e guardar: `au-d-489`, o "começar de
+novo"; `lu-8-aviso-salvar`, já no PT-21). As decisões que valem são as copiadas no alto deste arquivo (D-885, D-886,
+§11.12); conferidas, valem também para este pedaço grande. Código: linhas no `cbc9784f` (`git diff cbc9784f HEAD --
+core/ ui/ *.py` vazio). Prefixo dos achados: **AB**.
+
+Divisão em pedaços pequenos (escrita antes de começar). O que outros pedaços já leram não se relê (ver as listas dos
+pedaços acima: em `modelos.py` L45-56, L310-345, L395-425, L490-533, L872-940, L1042-1047, L1060-1104, L1130-1160; em
+`projetos.py` L330-360, L410-440, L1098-1100; em `historico_acoes.py` L1-130 e L398-683; em `ui/janela_principal.py`
+L270-280, L397-410, L700-720, L935-980, L1790-2053; em `ui/tarefas.py` L115-172, L261-520, L672-1036, L1135-1470;
+`configuracoes.py` L185-220; `ui/widgets/destino._conferir`; `ui/tela_inicio.py` L960-980).
+
+| pedaço pequeno | arquivos | situação | começo | fim |
+|---|---|---|---|---|
+| 0. as suspeitas abertas | `ui/tela_opcoes.py` (quem a monta), o fundo tirado no caminho rápido (`modelos.so_cadernos` × `core/fundo_tirado`), a nota da conferência da dobra (para o Fable decidir) | feito (2 achados, AB-01 e AB-02; a nota da dobra virou suspeita aberta "para o Fable decidir"; o `SEM_SERVIDOR` fica para o pedaço 4) | 27/11 15:17 | 27/11 15:22 |
+| 1. o modelo de dados | `modelos.py` (fora do já lido) | | | |
+| 2. abrir e guardar o projeto | `projetos.py` (fora do já lido), `historico.py` | | | |
+| 3. o histórico de ações | `historico_acoes.py` L130-398 (fora do já lido) | | | |
+| 4. tarefas por trás e servidor de páginas | `core/pdf_io.py`, `core/paginas_em_outro_processo.py` (e a suspeita do `SEM_SERVIDOR`), `ui/tarefas.py` (fora do já lido) | | | |
+| 5. janela principal, tela inicial, abrir o PDF | `ui/janela_principal.py` (fora do já lido), `ui/tela_inicio.py`, `ui/widgets/area_arrastar.py`, `ui/widgets/folhear_pdf.py`, `ui/tela_de_carregamento.py` | | | |
+| 6. configurações, atalhos, diálogos e o resto | `configuracoes.py` (fora do já lido), `atalhos.py`, `registro.py`, `ui/tela_configuracoes.py`, `ui/dialogos_de_arquivo.py`, `ui/widgets/destino.py` (fora do já lido), `ui/tela_opcoes.py` (se não for código morto inteiro) | | | |
+
 ## Pedaços (tela de trabalho, 26/11)
 
 | pedaço | situação | começo | fim | tempo |
@@ -417,11 +443,16 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
 
 ### Abertas
 
-- (pedaço grande 7, vista no pedaço 1, 27/11) O caminho rápido dos cadernos (`Projeto.so_cadernos`, IM-01) não pergunta
-  pelo fundo tirado da página (`fundo_tirado.valor(pagina) is True`, que `esta_sem_o_fundo` aceita sem o filtro): só pela
-  marca FILTRO (`etapas.filtro_a_mao`) e pela caixinha "Limpar a folha". Não confirmei se há caminho que deixa o fundo
-  tirado verdadeiro sem a marca FILTRO e sem "Limpar a folha" (o botão do "Tirar o fundo", o Automático). Se houver, o
-  caminho rápido põe a folha com o fundo. Quem ler o pedaço grande 6 (abrir, guardar) ou voltar ao `fundo_tirado` confirma.
+- (**para o Fable decidir**; nota do pedaço 6 do grande 7, registrada como suspeita no pedaço 0 do grande 6, 27/11) O
+  "Conferido: as N páginas saem na ordem certa depois de dobrar" da tela "Ficou pronto!" (`ui/tela_final.TelaFinal.mostrar`
+  L286-297) e do "Montar para imprimir" (`core/impressao.py` L818, `resultado.conferencia`) vem de
+  `core/cadernos.conferir_sequencia` (L209, `6e8a2f7d`, 05/08, a pergunta do Kaique "como ter certeza que estão todas na
+  sequência correta sem ter que olhar folha por folha?"). O que vejo no código: ela recebe só dois números (quantas
+  páginas e quantas por caderno), refaz a ordem pela mesma função que monta os cadernos (`ordem_do_caderno`, que
+  `montar_ordem` L114 também usa) e simula a dobra sobre essa conta. Não abre o PDF gravado, não olha as páginas que
+  entraram nele, e o número de páginas que recebe na tela final é a contagem do SP-03. A pergunta: isso fere o CLAUDE.md
+  §11.12, ponto 2 ("Nada dá como feito o que não conferiu [...] O que a tela mostra vem dessa conferência, nunca só da
+  anotação do próprio programa")? Não decido: fica aberta para o Fable.
 
 - (pedaço grande 6, vista no pedaço 3 do grande 7, 27/11) A prévia do livreto (`core/impressao.previa_da_folha`
   L983-991) pede a folha ao servidor de páginas e, se ele estiver desligado ou fora do ar (`SEM_SERVIDOR`), monta aqui,
@@ -430,16 +461,15 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
   17 vezes em `core/` e `ui/`. Quem ler `core/paginas_em_outro_processo.py` e `core/pdf_io.py` (pedaço grande 6) decide se
   é um achado só, do servidor inteiro, e se a reserva ainda acontece.
 
-- (pedaço grande 6, vista no pedaço 6 do grande 3, 27/11) `ui/tela_opcoes.py` inteiro parece sem quem o monte: nenhum
-  arquivo do programa importa `TelaOpcoes` (só `tests/test_decisoes_automatico.py`, `tests/test_tirar_fundo_no_programa.py`
-  e três scripts de relatório), e o cabeçalho de `ui/automatico.py` diz "ui/tela_opcoes.py, que saiu do caminho". Mas
-  PT-05, PT-24 e FL-08 citam linhas dele entre as cópias. Conferir no pedaço grande 6 se é código morto do tamanho
-  de um arquivo, e se os achados que o citam contam uma cópia que não está mais no caminho.
-  (Pedaço grande 5, pedaço 1, 27/11: a busca confirma que nenhuma parte do programa a monta, e `teste_botoes.py` L587
-  cobra "a tela 'O que fazer' não existe mais"; o AV-01 e o AV-04 citam `tela_opcoes` como cópia morta. Fica aberta para
-  o pedaço grande 6 decidir o achado do arquivo inteiro.)
-
 ### Fechadas
+
+- (pedaço grande 6, vista no pedaço 6 do grande 3; fechada no pedaço 0 do grande 6, 27/11) `ui/tela_opcoes.py` sem quem
+  a monte → **virou o achado leve AB-01**: código morto desde `e2321b16` (26/10, D-002), junto com
+  `ui/widgets/folhear_pdf.py`, que só ela montava; a prova `tests/test_decisoes_automatico.py` L603-608 lê o arquivo
+  morto como gabarito. O PT-05, o PT-24 (L915) e o FL-08 contam uma cópia que não está no caminho.
+- (pedaço grande 7, vista no pedaço 1; fechada no pedaço 0 do grande 6, 27/11) O caminho rápido dos cadernos sem a
+  pergunta do fundo tirado → **virou o achado AB-02** (médio): há caminho, o Automático ("Tirar o fundo" com "Limpar a
+  folha", que grava o fundo tirado sem a marca FILTRO, e depois "Desligar as marcadas" com o Limpar). Não rodei.
 
 - (pedaço grande 3, vista no pedaço 1; fechada no pedaço 5, 27/11) O "Suavizar as letras" recebe o DPI do desenho
   como veio (`core/pipeline._filtrar_preto_no_branco` L3601-3602), e não a conta única dos PDFs que dizem 72 DPI →
