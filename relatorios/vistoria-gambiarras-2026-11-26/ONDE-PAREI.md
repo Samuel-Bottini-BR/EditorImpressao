@@ -59,9 +59,40 @@ no livro: nada muda para o Kaique nem no PDF.
 
 | parte | situação | começo | fim |
 |---|---|---|---|
-| ler as regras e os insumos | feito | 27/11 16:46 | 27/11 16:55 |
-| a Central de novo (37 itens) | feito | 27/11 16:55 | 27/11 17:05 |
-| as raízes | feito | 27/11 17:05 | 27/11 17:15 |
+| ler as regras e os insumos | feito | 27/11 16:46 | 27/11 16:52 |
+| a Central de novo (37 itens): `para-o-fable/5-central` | feito | 27/11 16:52 | 27/11 17:00 |
+| as raízes: `para-o-fable/0-resumo-das-raizes` | feito | 27/11 16:55 | 27/11 17:05 |
+| refazer a pasta `para-o-fable` (cópias, o 2 refeito, o 6 novo) | feito | 27/11 17:05 | 27/11 17:08 |
+
+**O que saiu.** 31 raízes e 12 achados sozinhos (259 ao todo). As cinco maiores: o girar (12 achados, 5 graves), dividir
+e juntar (17, 4), o filtro gravado (6, 4), o preparo da página (12, 3), a marcação à mão (8, 3): 55 achados e 19 dos 38
+graves. Das ligações: 68 achados entram pela "outra cópia de", 106 pela "mesma família" ou pelo texto do achado da tela,
+73 foram juntados por mim só pelo assunto (marcados com "+" no resumo). A Central: os mesmos 37 itens de 26/11 (nenhum
+entrou nem saiu; nenhuma resposta depois de 17/11, nenhuma durante a vistoria); 16 explicados por achado, 6 sem achado
+ainda, 15 que não são gambiarra.
+
+**Erros que achei na lista** (não consertei; a lista é o registro):
+- O SP-06 diz, na coluna Central, explicar o `k0711-pronto-conta`. Com a pergunta na mão (coleção `conferencias`), o
+  item é outro: a tela "Ficou pronto!" diz "16 folhas para imprimir" e a conta dos grupos logo abaixo dá 8 (Siebmacher).
+  O SP-06 é o "conferida". Quem o escreveu anotou "a fila lida não diz mais". Na tabela da Central ficou "nenhum achado
+  ainda" (perto do IM-07 e do IM-10, que dizem que as contas deles hoje dão o mesmo).
+- A legenda da lista descreve só a régua antiga de gravidade; a nova (do PP-01 em diante, D-886 ajuste b) só está neste
+  arquivo.
+
+**O PDF do resumo** sai com duas páginas e um terço no `relatorio.gravar` (letra grande): as 31 raízes cabem nas duas
+primeiras; os totais e o que fica em aberto passam para a terceira. A gerente refaz os PDFs largos.
+
+### Como cumpri cada decisão
+
+- **D-886, item 6:** `para-o-fable/0-resumo-das-raizes` (.md/.html/.pdf): as 31 raízes, cada uma com nome, a regra
+  espalhada, quantos achados, quantos graves (ou a gravidade mais alta), os códigos (com o tipo de ligação) e os itens da
+  Central que explica; no fim, os totais, os sozinhos, o que fica em aberto e o erro da lista. A pasta refeita: `1-` e
+  `4-` copiados, `2-` refeito como "o que foi vistoriado e o que ficou de fora", `3-` mantido, `5-` e `6-` novos.
+- **D-886, item 7:** `para-o-fable/5-central`: os 37 itens da Central lida de novo (27/11), cada um com uma das três
+  respostas palavra por palavra, a data em que entrou na fila e a raiz; as contagens; as notas dos casos em que nenhuma
+  das três cabe bem (`au-d-501`, `k0611-oito-de-funcao`). Nenhuma resposta do Samuel durante a vistoria (conferido pelas
+  datas de todos os 353 documentos).
+- **D-885:** nem o resumo nem a tabela propõem conserto; nenhum item muda de estado.
 
 ## Programa inteiro (D-886): pedaço grande 1, peças da tela de trabalho
 
@@ -706,6 +737,9 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
 ## Suspeitas (dúvidas de outros pedaços; quem ler o pedaço confirma ou descarta)
 
 ### Abertas
+
+(27/11, fim da tarde: as três abaixo continuam abertas; a do pedido antigo de licença e a nota 1 do pedaço 6 do grande 8
+a gerente já conferiu no código e pôs na Lista de bugs em 27/11. Estão no resumo das raízes, "O que fica em aberto".)
 
 - (pedaço grande 8, vista no pedaço 6; **para a gerente**: fora dos tipos 4 e 5 que a D-886 deixou neste pedaço) O pedido
   antigo de licença dos testes à distância (`core/_testes_a_distancia_windows._rodar_elevado`, L81-100) lê o erro do

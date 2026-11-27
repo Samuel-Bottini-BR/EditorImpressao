@@ -1,59 +1,39 @@
-# Vistoria das gambiarras: o que já foi lido e o que falta (27/11/2026)
+# Vistoria das gambiarras: o que foi vistoriado e o que ficou de fora (27/11/2026)
 
-Escrito pela gerente, a partir do `ONDE-PAREI.md` da vistoria e da lista dos arquivos do programa no ramo
-`obra-2026-10-26` (ponta `65190e78`). As contas de linhas são do `wc`, sem os testes.
+**O programa inteiro foi vistoriado, em 11 pedaços grandes, de 26/11 às 15:40 a 27/11 às 16:43 (relógio da máquina).**
+Só leitura: nenhuma linha do programa mudou, e ninguém rodou o programa nem os testes; o que depende de uso está escrito
+"pela leitura, não rodei". O que ficou sem ler por dentro foi lido só pela lista das funções e pelas buscas, sem cópia
+achada; quase sempre é o algoritmo (uma conta só) ou montagem de botões e desenho. O detalhe, com as linhas, está no
+`ONDE-PAREI` (cópia em `4-onde-parei`).
 
-## O que já foi vistoriado
+## Fora da vistoria, por decisão do Samuel (resposta do Fable, 27/11)
 
-**A tela de trabalho** (`ui/tela_conferir.py`, 10.187 linhas, e o que ela chama), em 8 pedaços, em 26/11/2026:
-girar (12 achados), dividir (16), desfazer (8), aplicar em (8), como fica (5), marcações (5), contagens e situação da
-página (15), o resto da tela (12). **81 achados: 30 graves, 31 médios, 20 leves.** Lista completa em `lista.md`.
+- Os 33 scripts soltos de teste e de régua (na raiz do projeto).
+- As regras dos agentes (`regras_dos_agentes/`).
+- No atualizador, os tipos 1 a 3 (a mesma regra em mais de um lugar, conta na tela, desvio por caso): "o resto já passou
+  por cinco rodadas". Lá só se procuraram peças de proteção e código morto.
 
-Dentro da própria tela de trabalho ficou **sem ler**, de propósito (o agente achou só montagem de botões e desenho,
-sem conta, pelas buscas): `_montar` e a barra de baixo (L766-1362), o corpo de `_montar_aba_*` (L1916-3653, fora das
-linhas citadas no ONDE-PAREI), `_LugaresDeEncaixe`/`_RotuloDoLivro` (L432-590), a "peça" nos pares (L8700-8800) e o
-zoom (L8478-8560, L9006-9088).
+## O que ficou sem ler por dentro, em cada pedaço
 
-Dos outros arquivos, a vistoria leu **só os trechos** que a tela chama (estão listados no ONDE-PAREI). Nenhum outro
-arquivo foi lido inteiro.
+| pedaço | achados | o que ficou sem ler por dentro |
+|---|---|---|
+| tela de trabalho (26/11) | 81 | a montagem dos botões e da barra de baixo, o corpo das abas fora do já lido, os encaixes e o rótulo do livro, a "peça" nos pares, o zoom (estes trechos foram lidos depois, no pedaço grande 1) |
+| 1. peças da tela | 25 | a coluna de ícones, a sanfona e o painel solto dos painéis; o desenho do visualizador, da tira, da grade e do editor; a folha de estilo; os 123 `getattr` de página e de folha foram contados, não conferidos campo a campo |
+| 2. preparar a página | 19 | as contas por dentro do cortar, da caixa do impresso, da borda preta, do endireitar e do desentortar, das guias e das páginas diferentes |
+| 3. filtros e limpeza | 20 | as contas de cada filtro (binarizar, sombra da lombada, fundo e ombro, cores), o "Só as letras" por dentro, as camadas, as chamadas das DLLs do ScanTailor |
+| 4. gravuras e marcações | 13 | nenhum arquivo de fora; as contas por dentro do detector, lidas como algoritmo |
+| 5. Automático e avisos | 22 | as contas do estudo do "Para revisar", os textos de cada aviso (lidos só pelos códigos e botões), o desenho de uma linha da lista |
+| 6. abrir, guardar e desfazer | 28 | a tela "O que fazer" (código morto inteiro, AB-01); partes da janela principal (montagem, menu, trocas de tela) e da tela inicial; o servidor de páginas por dentro; a compressão do PDF |
+| 7. gerar o PDF e cadernos | 18 | a montagem dos controles da janela "Montar para imprimir"; o desenho e a tela grande das folhas do caderno |
+| 8. atualizador (só tipos 4 e 5) | 9 | as contas por dentro das licenças de pasta e do pedido de licença do Windows; os comandos do PowerShell dos testes à distância; a assinatura por dentro |
+| 9. achar texto | 8 | a leitura do hOCR do Tesseract; parte do diagnóstico |
+| 10. ferramentas do Samuel | 16 | o leitor de DLL do montar do motor; as mensagens do empacotar; o instalador antigo (não é Python) |
 
-**Uma suspeita ficou aberta**, de fora da tela: `core/pipeline._guardar_o_conteudo` (L1958-1968) não troca o tamanho
-de uma página já medida, e o motivo escrito no comentário parece ter deixado de valer no mesmo commit de 21/10
-(`57de8af4`).
+Total: 259 achados.
 
-**Ressalva da gerente:** os pedaços foram rápidos (3 a 14 minutos cada, ~70 min no total). A profundidade só foi
-conferida à mão num achado (MC-01: as linhas batem). Os agentes não rodaram o programa; o que depende de uso está
-marcado "pela leitura, não rodei".
+## Ressalvas
 
-## O que falta vistoriar: o resto do programa
-
-A ordem de serviço só pediu a tela de trabalho primeiro; o resto **não foi dividido em pedaços por ninguém**. Abaixo,
-uma divisão **sugerida pela gerente** (o Samuel decide), por assunto, na ordem de quanto o Kaique usa:
-
-| nº | pedaço sugerido | arquivos | linhas | o que tem |
-|---|---|---|---|---|
-| 1 | As peças da tela de trabalho | 27 | 15.041 | painéis, visualizador, seleção à mão, tira de miniaturas, grade "Todas as páginas", tela cheia, comparar, botões de girar, menu, desfazer nesta página |
-| 2 | Preparar a página (geometria) | 21 | 13.290 | `core/pipeline.py` (5.323), girar, dividir (automático e à mão), cortar, borda preta, endireitar, desentortar, etapas, ordem do preparo |
-| 3 | Filtros e limpeza | 14 | 9.346 | `core/filtros.py` (4.483), Só as letras, camadas, Tirar o fundo, peças do ScanTailor (preto e branco, cores, luz, pontinhos) |
-| 4 | Gravuras e marcações | 6 | 3.860 | achar gravura, seleção, zonas presas à folha, editar zonas, rede de segmentação |
-| 5 | Automático e avisos | 7 | 7.088 | painel Automático (tela e núcleo), análise, "Para revisar", avisos, página em branco |
-| 6 | Abrir, guardar e desfazer | 19 | 13.021 | projetos, modelos (`ConfigFolha`/`ConfigPagina`), histórico de ações, configurações, ler o PDF, páginas em outro processo, tela inicial, janela principal, tarefas |
-| 7 | Gerar o PDF e cadernos | 8 | 4.748 | impressão, cadernos, impressora, ordem das páginas, janela de montar para imprimir, tela final |
-| 8 | Atualizador, Windows e instalação | 13 | 8.220 | `atualizacao.py`, `core/windows.py` (3.375), fases da atualização, Velopack, testes à distância, `main.py`, assinatura |
-| 9 | Achar texto (OCR) | 7 | 2.551 | Kraken, Tesseract, docTR e o servidor do Kraken |
-| 10 | Ferramentas do Samuel | 9 | 5.624 | empacotar, publicar a versão, servidor das versões, montar o motor, compilar as peças do ScanTailor |
-
-**Total que falta: 131 arquivos, ~82.800 linhas** (a tela de trabalho tinha 10.187).
-
-**Fora da divisão:** 33 scripts soltos de teste e de régua na raiz (`teste_*.py`, `avaliar*.py`, `conferencia.py`,
-`rodada_*.py` etc., ~20.000 linhas) e as regras dos agentes (`regras_dos_agentes/`, 18 arquivos, 5.209 linhas). Não são
-o programa do Kaique; a gerente sugere deixar de fora, a menos que o Samuel ou o Fable queiram.
-
-## Observações para quem decide a ordem
-
-- O pedaço 8 (atualizador) já passou por cinco rodadas de "quem tenta quebrar" entre 23 e 25/11. Pode ir por último,
-  ou só com o tipo 5 (código morto) e o tipo 4 (peças de proteção).
-- Os pedaços 1, 2 e 3 são os que mais aparecem nos achados da tela (a tela chama o núcleo por eles). Muitos achados da
-  lista apontam "a outra cópia" para dentro deles, e eles ainda não foram lidos inteiros.
-- No ritmo da tela de trabalho (~10.000 linhas em ~70 min de leitura), o resto levaria várias horas de agente. A
-  estimativa da gerente da última vez errou para cima; esta também pode errar.
+- Os pedaços foram rápidos (os grandes, de 6 a 35 minutos cada). O Fable conferiu seis achados da tela no código (G-03, G-06, G-12,
+  SP-05, SP-15, DF-01), e os seis bateram; o resto não foi conferido por outra pessoa.
+- A régua de gravidade mudou no meio (resposta do Fable, ajuste b): os 81 da tela usam a antiga, os 178 do programa
+  inteiro usam a nova.

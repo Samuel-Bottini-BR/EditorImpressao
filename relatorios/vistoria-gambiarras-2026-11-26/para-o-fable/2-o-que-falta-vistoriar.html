@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Vistoria das gambiarras: o que já foi lido e o que falta (27/11/2026)</title>
+<title>Vistoria das gambiarras: o que foi vistoriado e o que ficou de fora (27/11/2026)</title>
 <style>
 :root { color-scheme: light dark; }
 * { box-sizing: border-box; }
@@ -62,124 +62,94 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 </style>
 </head>
 <body>
-<h1>Vistoria das gambiarras: o que já foi lido e o que falta (27/11/2026)</h1>
-<p>Escrito pela gerente, a partir do <code>ONDE-PAREI.md</code> da vistoria e da lista dos arquivos do programa no ramo
-<code>obra-2026-10-26</code> (ponta <code>65190e78</code>). As contas de linhas são do <code>wc</code>, sem os testes.</p>
-<h2>O que já foi vistoriado</h2>
-<p><strong>A tela de trabalho</strong> (<code>ui/tela_conferir.py</code>, 10.187 linhas, e o que ela chama), em 8 pedaços, em 26/11/2026:
-girar (12 achados), dividir (16), desfazer (8), aplicar em (8), como fica (5), marcações (5), contagens e situação da
-página (15), o resto da tela (12). <strong>81 achados: 30 graves, 31 médios, 20 leves.</strong> Lista completa em <code>lista.md</code>.</p>
-<p>Dentro da própria tela de trabalho ficou <strong>sem ler</strong>, de propósito (o agente achou só montagem de botões e desenho,
-sem conta, pelas buscas): <code>_montar</code> e a barra de baixo (L766-1362), o corpo de <code>_montar_aba_*</code> (L1916-3653, fora das
-linhas citadas no ONDE-PAREI), <code>_LugaresDeEncaixe</code>/<code>_RotuloDoLivro</code> (L432-590), a "peça" nos pares (L8700-8800) e o
-zoom (L8478-8560, L9006-9088).</p>
-<p>Dos outros arquivos, a vistoria leu <strong>só os trechos</strong> que a tela chama (estão listados no ONDE-PAREI). Nenhum outro
-arquivo foi lido inteiro.</p>
-<p><strong>Uma suspeita ficou aberta</strong>, de fora da tela: <code>core/pipeline._guardar_o_conteudo</code> (L1958-1968) não troca o tamanho
-de uma página já medida, e o motivo escrito no comentário parece ter deixado de valer no mesmo commit de 21/10
-(<code>57de8af4</code>).</p>
-<p><strong>Ressalva da gerente:</strong> os pedaços foram rápidos (3 a 14 minutos cada, ~70 min no total). A profundidade só foi
-conferida à mão num achado (MC-01: as linhas batem). Os agentes não rodaram o programa; o que depende de uso está
-marcado "pela leitura, não rodei".</p>
-<h2>O que falta vistoriar: o resto do programa</h2>
-<p>A ordem de serviço só pediu a tela de trabalho primeiro; o resto <strong>não foi dividido em pedaços por ninguém</strong>. Abaixo,
-uma divisão <strong>sugerida pela gerente</strong> (o Samuel decide), por assunto, na ordem de quanto o Kaique usa:</p>
+<h1>Vistoria das gambiarras: o que foi vistoriado e o que ficou de fora (27/11/2026)</h1>
+<p><strong>O programa inteiro foi vistoriado, em 11 pedaços grandes, de 26/11 às 15:40 a 27/11 às 16:43 (relógio da máquina).</strong>
+Só leitura: nenhuma linha do programa mudou, e ninguém rodou o programa nem os testes; o que depende de uso está escrito
+"pela leitura, não rodei". O que ficou sem ler por dentro foi lido só pela lista das funções e pelas buscas, sem cópia
+achada; quase sempre é o algoritmo (uma conta só) ou montagem de botões e desenho. O detalhe, com as linhas, está no
+<code>ONDE-PAREI</code> (cópia em <code>4-onde-parei</code>).</p>
+<h2>Fora da vistoria, por decisão do Samuel (resposta do Fable, 27/11)</h2>
+<ul>
+<li>Os 33 scripts soltos de teste e de régua (na raiz do projeto).</li>
+<li>As regras dos agentes (<code>regras_dos_agentes/</code>).</li>
+<li>No atualizador, os tipos 1 a 3 (a mesma regra em mais de um lugar, conta na tela, desvio por caso): "o resto já passou
+  por cinco rodadas". Lá só se procuraram peças de proteção e código morto.</li>
+</ul>
+<h2>O que ficou sem ler por dentro, em cada pedaço</h2>
 <table>
 <thead>
 <tr>
-<th>nº</th>
-<th>pedaço sugerido</th>
-<th>arquivos</th>
-<th>linhas</th>
-<th>o que tem</th>
+<th>pedaço</th>
+<th>achados</th>
+<th>o que ficou sem ler por dentro</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>As peças da tela de trabalho</td>
-<td>27</td>
-<td>15.041</td>
-<td>painéis, visualizador, seleção à mão, tira de miniaturas, grade "Todas as páginas", tela cheia, comparar, botões de girar, menu, desfazer nesta página</td>
+<td>tela de trabalho (26/11)</td>
+<td>81</td>
+<td>a montagem dos botões e da barra de baixo, o corpo das abas fora do já lido, os encaixes e o rótulo do livro, a "peça" nos pares, o zoom (estes trechos foram lidos depois, no pedaço grande 1)</td>
 </tr>
 <tr>
-<td>2</td>
-<td>Preparar a página (geometria)</td>
-<td>21</td>
-<td>13.290</td>
-<td><code>core/pipeline.py</code> (5.323), girar, dividir (automático e à mão), cortar, borda preta, endireitar, desentortar, etapas, ordem do preparo</td>
+<td>1. peças da tela</td>
+<td>25</td>
+<td>a coluna de ícones, a sanfona e o painel solto dos painéis; o desenho do visualizador, da tira, da grade e do editor; a folha de estilo; os 123 <code>getattr</code> de página e de folha foram contados, não conferidos campo a campo</td>
 </tr>
 <tr>
-<td>3</td>
-<td>Filtros e limpeza</td>
-<td>14</td>
-<td>9.346</td>
-<td><code>core/filtros.py</code> (4.483), Só as letras, camadas, Tirar o fundo, peças do ScanTailor (preto e branco, cores, luz, pontinhos)</td>
-</tr>
-<tr>
-<td>4</td>
-<td>Gravuras e marcações</td>
-<td>6</td>
-<td>3.860</td>
-<td>achar gravura, seleção, zonas presas à folha, editar zonas, rede de segmentação</td>
-</tr>
-<tr>
-<td>5</td>
-<td>Automático e avisos</td>
-<td>7</td>
-<td>7.088</td>
-<td>painel Automático (tela e núcleo), análise, "Para revisar", avisos, página em branco</td>
-</tr>
-<tr>
-<td>6</td>
-<td>Abrir, guardar e desfazer</td>
+<td>2. preparar a página</td>
 <td>19</td>
-<td>13.021</td>
-<td>projetos, modelos (<code>ConfigFolha</code>/<code>ConfigPagina</code>), histórico de ações, configurações, ler o PDF, páginas em outro processo, tela inicial, janela principal, tarefas</td>
+<td>as contas por dentro do cortar, da caixa do impresso, da borda preta, do endireitar e do desentortar, das guias e das páginas diferentes</td>
 </tr>
 <tr>
-<td>7</td>
-<td>Gerar o PDF e cadernos</td>
-<td>8</td>
-<td>4.748</td>
-<td>impressão, cadernos, impressora, ordem das páginas, janela de montar para imprimir, tela final</td>
+<td>3. filtros e limpeza</td>
+<td>20</td>
+<td>as contas de cada filtro (binarizar, sombra da lombada, fundo e ombro, cores), o "Só as letras" por dentro, as camadas, as chamadas das DLLs do ScanTailor</td>
 </tr>
 <tr>
-<td>8</td>
-<td>Atualizador, Windows e instalação</td>
+<td>4. gravuras e marcações</td>
 <td>13</td>
-<td>8.220</td>
-<td><code>atualizacao.py</code>, <code>core/windows.py</code> (3.375), fases da atualização, Velopack, testes à distância, <code>main.py</code>, assinatura</td>
+<td>nenhum arquivo de fora; as contas por dentro do detector, lidas como algoritmo</td>
 </tr>
 <tr>
-<td>9</td>
-<td>Achar texto (OCR)</td>
-<td>7</td>
-<td>2.551</td>
-<td>Kraken, Tesseract, docTR e o servidor do Kraken</td>
+<td>5. Automático e avisos</td>
+<td>22</td>
+<td>as contas do estudo do "Para revisar", os textos de cada aviso (lidos só pelos códigos e botões), o desenho de uma linha da lista</td>
 </tr>
 <tr>
-<td>10</td>
-<td>Ferramentas do Samuel</td>
+<td>6. abrir, guardar e desfazer</td>
+<td>28</td>
+<td>a tela "O que fazer" (código morto inteiro, AB-01); partes da janela principal (montagem, menu, trocas de tela) e da tela inicial; o servidor de páginas por dentro; a compressão do PDF</td>
+</tr>
+<tr>
+<td>7. gerar o PDF e cadernos</td>
+<td>18</td>
+<td>a montagem dos controles da janela "Montar para imprimir"; o desenho e a tela grande das folhas do caderno</td>
+</tr>
+<tr>
+<td>8. atualizador (só tipos 4 e 5)</td>
 <td>9</td>
-<td>5.624</td>
-<td>empacotar, publicar a versão, servidor das versões, montar o motor, compilar as peças do ScanTailor</td>
+<td>as contas por dentro das licenças de pasta e do pedido de licença do Windows; os comandos do PowerShell dos testes à distância; a assinatura por dentro</td>
+</tr>
+<tr>
+<td>9. achar texto</td>
+<td>8</td>
+<td>a leitura do hOCR do Tesseract; parte do diagnóstico</td>
+</tr>
+<tr>
+<td>10. ferramentas do Samuel</td>
+<td>16</td>
+<td>o leitor de DLL do montar do motor; as mensagens do empacotar; o instalador antigo (não é Python)</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Total que falta: 131 arquivos, ~82.800 linhas</strong> (a tela de trabalho tinha 10.187).</p>
-<p><strong>Fora da divisão:</strong> 33 scripts soltos de teste e de régua na raiz (<code>teste_*.py</code>, <code>avaliar*.py</code>, <code>conferencia.py</code>,
-<code>rodada_*.py</code> etc., ~20.000 linhas) e as regras dos agentes (<code>regras_dos_agentes/</code>, 18 arquivos, 5.209 linhas). Não são
-o programa do Kaique; a gerente sugere deixar de fora, a menos que o Samuel ou o Fable queiram.</p>
-<h2>Observações para quem decide a ordem</h2>
+<p>Total: 259 achados.</p>
+<h2>Ressalvas</h2>
 <ul>
-<li>O pedaço 8 (atualizador) já passou por cinco rodadas de "quem tenta quebrar" entre 23 e 25/11. Pode ir por último,
-  ou só com o tipo 5 (código morto) e o tipo 4 (peças de proteção).</li>
-<li>Os pedaços 1, 2 e 3 são os que mais aparecem nos achados da tela (a tela chama o núcleo por eles). Muitos achados da
-  lista apontam "a outra cópia" para dentro deles, e eles ainda não foram lidos inteiros.</li>
-<li>No ritmo da tela de trabalho (~10.000 linhas em ~70 min de leitura), o resto levaria várias horas de agente. A
-  estimativa da gerente da última vez errou para cima; esta também pode errar.</li>
+<li>Os pedaços foram rápidos (os grandes, de 6 a 35 minutos cada). O Fable conferiu seis achados da tela no código (G-03, G-06, G-12,
+  SP-05, SP-15, DF-01), e os seis bateram; o resto não foi conferido por outra pessoa.</li>
+<li>A régua de gravidade mudou no meio (resposta do Fable, ajuste b): os 81 da tela usam a antiga, os 178 do programa
+  inteiro usam a nova.</li>
 </ul>
-<p class="rodape">Editor de Impressão &middot; gerado em 27/11/2026 às 12:48</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 27/11/2026 às 17:07</p>
 </body>
 </html>

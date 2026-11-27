@@ -15,7 +15,578 @@ código mudou; os únicos arquivos mexidos são este e `lista.md`.
   regra de gambiarras para que ela se aplicasse a tudo né?". O que a vistoria procura é o que essa regra chama de
   gambiarra: conserto só no lugar do defeito, conta copiada, sintoma tratado em vez da causa.
 
-## Pedaços
+- **D-885 (26/11/2026), a ordem de serviço:** "Um agente NOVO, que só lê e não conserta nada, vistoria o programa e
+  escreve uma lista. Nenhuma linha de código muda." · "se não achar, escrever 'não achei o motivo', nunca inventar" ·
+  "Ele nunca para no meio de um pedaço" · "A LISTA NÃO FECHA NADA" · "Sem propostas de conserto na lista, sem plano."
+- **D-886 (27/11/2026), a resposta do Fable:** "Decisão do Samuel: a vistoria continua pelo programa inteiro, antes de
+  qualquer conserto." · "Nenhuma linha de código muda até lá." Ajustes para os pedaços novos (não para a tela já feita):
+  a) "Quando o achado for 'a mesma expressão em N lugares', contar por busca no programa inteiro e listar todas (o G-12
+  dizia 5 lugares; são 12)." b) "GRAVE só quando o conserto errado chega na tela do Kaique ou no PDF; '3 ou mais
+  lugares' sozinho é médio. O resto da régua fica." c) "Em cada achado novo, além do item da Central, dizer a qual
+  achado da tela ele é 'outra cópia', quando for (ex.: 'outra cópia do SP-03')."
+
+## Juntar o que foi achado: as raízes e a Central (D-886, itens 6 e 7)
+
+Agente novo, 27/11/2026, começou às 16:46 (relógio da máquina, `date`). Só lê e escreve documentos: nenhuma linha do
+programa muda; não roda o programa nem os testes; a `lista.md` não muda. Leu as regras do verificador, o CLAUDE.md
+(§11.12, §11.13), o índice da memória, a ordem, a resposta do Fable, este arquivo inteiro, a lista inteira (os 259
+achados) e a fila de 26/11.
+
+### Decisões que esta tarefa precisa cumprir
+
+- **D-886 (27/11), item 6:** "Ao fim de tudo, a mesma pasta para-o-fable refeita, com um resumo novo de duas páginas:
+  as raízes (grupos de achados que são a mesma regra espalhada), quantos achados cada uma junta, e quais itens da
+  Central cada uma explica. O Fable lê antes de qualquer conserto começar."
+- **D-886, item 7:** "ler a Central DE NOVO, da página, como estiver naquele dia (não a cópia de 26/11), e entregar uma
+  tabela com todos os itens em 'pode consertar' / 'na fila' — para cada um, uma de três respostas: 'explicado pelo
+  achado X', 'nenhum achado ainda', ou 'não é gambiarra: defeito simples, conserto próprio'. O que o Samuel responder na
+  Central durante a vistoria entra nessa tabela."
+- **D-885 (26/11):** "A LISTA NÃO FECHA NADA" · "Sem propostas de conserto na lista, sem plano." Vale também para o
+  resumo: raízes, não consertos.
+
+O que já está escolhido e testado aqui: nada do programa é tocado (só documentos desta pasta). Como fica para quem usa e
+no livro: nada muda para o Kaique nem no PDF.
+
+### Como trabalho
+
+- A Central lida de novo: os 353 documentos da coleção `respostas` que a gerente leu da página em 27/11 (fim da tarde),
+  com o mesmo critério da `fila-da-central.md` ("pode consertar" ou "na fila" na opção, no comentário do Samuel ou na
+  resposta da gerente), por um script de contar texto na pasta de rascunho. A frase de cada item vem do título da
+  pergunta (coleção `conferencias`, cópia da gerente de 27/11).
+- As raízes: cada achado numa raiz só. A ligação forte é a coluna "outra cópia de" da lista (e, nos 81 da tela, que não
+  têm essa coluna, a descrição que cita o outro achado como a mesma coisa); a "mesma família" é ligação fraca, dita como
+  tal; o que eu juntei só pelo assunto, sem a lista ligar, vai marcado como juntado por mim.
+
+| parte | situação | começo | fim |
+|---|---|---|---|
+| ler as regras e os insumos | feito | 27/11 16:46 | 27/11 16:52 |
+| a Central de novo (37 itens): `para-o-fable/5-central` | feito | 27/11 16:52 | 27/11 17:00 |
+| as raízes: `para-o-fable/0-resumo-das-raizes` | feito | 27/11 16:55 | 27/11 17:05 |
+| refazer a pasta `para-o-fable` (cópias, o 2 refeito, o 6 novo) | feito | 27/11 17:05 | 27/11 17:08 |
+
+**O que saiu.** 31 raízes e 12 achados sozinhos (259 ao todo). As cinco maiores: o girar (12 achados, 5 graves), dividir
+e juntar (17, 4), o filtro gravado (6, 4), o preparo da página (12, 3), a marcação à mão (8, 3): 55 achados e 19 dos 38
+graves. Das ligações: 68 achados entram pela "outra cópia de", 106 pela "mesma família" ou pelo texto do achado da tela,
+73 foram juntados por mim só pelo assunto (marcados com "+" no resumo). A Central: os mesmos 37 itens de 26/11 (nenhum
+entrou nem saiu; nenhuma resposta depois de 17/11, nenhuma durante a vistoria); 16 explicados por achado, 6 sem achado
+ainda, 15 que não são gambiarra.
+
+**Erros que achei na lista** (não consertei; a lista é o registro):
+- O SP-06 diz, na coluna Central, explicar o `k0711-pronto-conta`. Com a pergunta na mão (coleção `conferencias`), o
+  item é outro: a tela "Ficou pronto!" diz "16 folhas para imprimir" e a conta dos grupos logo abaixo dá 8 (Siebmacher).
+  O SP-06 é o "conferida". Quem o escreveu anotou "a fila lida não diz mais". Na tabela da Central ficou "nenhum achado
+  ainda" (perto do IM-07 e do IM-10, que dizem que as contas deles hoje dão o mesmo).
+- A legenda da lista descreve só a régua antiga de gravidade; a nova (do PP-01 em diante, D-886 ajuste b) só está neste
+  arquivo.
+
+**O PDF do resumo** sai com duas páginas e um terço no `relatorio.gravar` (letra grande): as 31 raízes cabem nas duas
+primeiras; os totais e o que fica em aberto passam para a terceira. A gerente refaz os PDFs largos.
+
+### Como cumpri cada decisão
+
+- **D-886, item 6:** `para-o-fable/0-resumo-das-raizes` (.md/.html/.pdf): as 31 raízes, cada uma com nome, a regra
+  espalhada, quantos achados, quantos graves (ou a gravidade mais alta), os códigos (com o tipo de ligação) e os itens da
+  Central que explica; no fim, os totais, os sozinhos, o que fica em aberto e o erro da lista. A pasta refeita: `1-` e
+  `4-` copiados, `2-` refeito como "o que foi vistoriado e o que ficou de fora", `3-` mantido, `5-` e `6-` novos.
+- **D-886, item 7:** `para-o-fable/5-central`: os 37 itens da Central lida de novo (27/11), cada um com uma das três
+  respostas palavra por palavra, a data em que entrou na fila e a raiz; as contagens; as notas dos casos em que nenhuma
+  das três cabe bem (`au-d-501`, `k0611-oito-de-funcao`). Nenhuma resposta do Samuel durante a vistoria (conferido pelas
+  datas de todos os 353 documentos).
+- **D-885:** nem o resumo nem a tabela propõem conserto; nenhum item muda de estado.
+
+## Programa inteiro (D-886): pedaço grande 1, peças da tela de trabalho
+
+Agente novo, 27/11/2026, começou às 13:31 (relógio da máquina, `date`). Leu as regras, a ordem, a resposta do Fable,
+este arquivo, a lista (modelo e os 81 achados, só os títulos), a fila da Central e o índice da memória.
+
+Divisão em pedaços pequenos (escrita antes de começar):
+
+| pedaço pequeno | arquivos | situação | começo | fim |
+|---|---|---|---|---|
+| 0. a suspeita aberta | `core/pipeline._guardar_o_conteudo` e a passada | feito (virou PP-01) | 27/11 13:34 | 27/11 13:35 |
+| 1. painéis | `ui/widgets/paineis.py`, `barra_girar.py`, `escolhas_do_misto.py`, `cartao_filtro.py`, `medidor.py`, `barra_opcoes.py`, `menu_com_amostra.py` | feito (5 achados, PT-01 a PT-05) | 27/11 13:35 | 27/11 13:39 |
+| 2. visualizador e lado a lado | `ui/widgets/visualizador.py`, `paginas_lado_a_lado.py`, `paginas_rolando.py`, `roda_de_lado.py`, `ui/rodinha.py` | feito (6 achados, PT-06 a PT-11) | 27/11 13:39 | 27/11 13:43 |
+| 3. tira, miniaturas e grade | `ui/widgets/tira_miniaturas.py`, `miniaturas.py`, `todas_as_paginas.py`, `trilha_agrupada.py`, `trilha_ferramentas.py`, `bolinha.py` | feito (1 achado, PT-12) | 27/11 13:43 | 27/11 13:44 |
+| 4. tela cheia e comparar | `ui/tela_ampliada.py`, `ui/widgets/filtros_tela_cheia.py` | feito (4 achados, PT-13 a PT-16; e o passo 1,4 da tela ampliada posto no PT-06) | 27/11 13:44 | 27/11 13:46 |
+| 5. seleção à mão | `ui/widgets/editor_selecao.py` | feito (4 achados, PT-17 a PT-20) | 27/11 13:46 | 27/11 13:48 |
+| 6. menu, barras e o resto | `ui/barra_de_menu.py`, `estilo.py`, `perguntas.py`, `janela_confirmar.py`, `dialogo_escolher_paginas.py` (`ui/desfazer_nesta_pagina.py` já foi lido inteiro no pedaço desfazer: não se relê, só se confere o que os outros pedaços apontarem) | feito (3 achados, PT-21 a PT-23) | 27/11 13:48 | 27/11 13:50 |
+| 7. os trechos não lidos da `tela_conferir` | `_montar` e a barra de baixo (L766-1362), `_LugaresDeEncaixe`/`_RotuloDoLivro` (L432-590), o corpo de `_montar_aba_*` fora do já lido (L1916-3653), a "peça" nos pares (L8700-8800), o zoom (L8478-8560, L9006-9088) | feito (1 achado, PT-24; o resto destes trechos já entrou nos PT de cima) | 27/11 13:50 | 27/11 13:52 |
+
+**Pedaço grande 1 terminado (27/11, das 13:31 às 13:52 pelo relógio da máquina; o código, das 13:34 às 13:52).**
+25 achados novos: PP-01 (a suspeita do pipeline, leve) e PT-01 a PT-24. Por tipo (o principal): 16 do tipo 1, 1 do
+tipo 2, nenhum do tipo 3 (três têm o 3 junto: PT-15, PT-17, PT-20), 3 do tipo 4 (PP-01, PT-11, PT-24) e 5 do tipo 5.
+Por gravidade, com a régua nova (GRAVE só quando chega na tela do Kaique ou no PDF): 4 GRAVE (PT-03, PT-17, PT-20,
+PT-21), 9 médios, 12 leves. "Outra cópia" de achado da tela: PT-03 e PT-16 (RT-04), PT-04 (RT-09), PT-13 (RT-11 e
+AP-03), PT-15 (RT-06); da mesma família: PT-01 (SP-03), PT-17 (MC-01), PT-18 (CF-01), PT-22 (RT-03), PP-01 (RT-02).
+Central: PT-20 explica `lu-7-laranja`, PT-21 explica `lu-8-aviso-salvar`.
+
+O que ficou sem ler neste pedaço grande (só pelas buscas, sem conta de página achada): em `ui/widgets/paineis.py` a
+coluna de ícones, a sanfona, as abas no alto e o painel solto (L2012-2961); o desenho (`paintEvent`) do visualizador,
+da tira, da grade, das trilhas e do editor; a folha de estilo de `ui/estilo.py` (L229-645); os desenhos de
+`ui/widgets/menu_com_amostra.py`. Os `getattr(pagina, ...)` (106) e `getattr(folha, ...)` (17) do PT-24 foram contados,
+não conferidos campo a campo.
+
+**Próximo:** o pedaço grande 2, "preparar a página" (lista em `resposta-do-fable-2026-11-27.md`), começando pela
+suspeita aberta abaixo. A gerente decide quando.
+
+Como leio cada arquivo: a lista das funções; as buscas por `projeto.`, `pagina.`/`folha.`, campos de
+`ConfigPagina`/`ConfigFolha`, `import` de `core/`, contas (`%`, `round`, `int(`), `if` por caso e `getattr`/`hasattr`;
+leio por inteiro as funções que essas buscas apontam. Desenho puro (montar botões, cores, `paintEvent` sem conta de
+página) não vira achado. Linhas no `cbc9784f` (o mesmo código do `30920fe7`: os commits de depois só mexeram em
+relatórios e no Livro).
+
+## Programa inteiro (D-886): pedaço grande 2, preparar a página (geometria)
+
+Agente novo, 27/11/2026, começou às 13:54 (relógio da máquina, `date`). Leu as regras do verificador, o CLAUDE.md, o
+índice da memória, a ordem, a resposta do Fable, este arquivo, a lista (modelo e os títulos dos 106 achados), a fila da
+Central e o começo de `campos.md`. As decisões que valem são as copiadas no alto deste arquivo (D-885, D-886, §11.12);
+conferidas, valem também para este pedaço grande. Código: linhas no `cbc9784f` (`git diff cbc9784f HEAD -- core/` vazio).
+
+Divisão em pedaços pequenos (escrita antes de começar). O que outros pedaços já leram não se relê (lista em cada um
+abaixo); `core/girar.py`, `core/dividir.py` e `core/dividir_a_mao.py` já foram lidos inteiros na tela.
+
+| pedaço pequeno | arquivos | situação | começo | fim |
+|---|---|---|---|---|
+| 0. a suspeita aberta | `core/pipeline._geometria` e `_chave_da_geometria` | feito (virou PP-02) | 27/11 13:54 | 27/11 13:58 |
+| 1. o caminho da página no pipeline e as chaves | `core/pipeline.py` L526-1720 (fora do já lido), L2778-3200, L5034-5210 | feito (5 achados, PP-03 a PP-07) | 27/11 13:58 | 27/11 14:03 |
+| 2. o conteúdo e o tamanho do livro | `core/pipeline.py` L1718-2300 (fora do já lido), `core/corte_pelo_conteudo.py`, `core/folha.py`, `core/unidades.py`, `core/paginas_diferentes.py` | feito (4 achados, PP-08 a PP-11) | 27/11 14:03 | 27/11 14:05 |
+| 3. cortar e borda preta | `core/recortar.py`, `core/borda_preta.py`, `core/caixas_scantailor.py`, `core/margens_scantailor.py`, `core/ajustar_pedaco.py` | feito (3 achados, PP-12 a PP-14) | 27/11 14:05 | 27/11 14:07 |
+| 4. endireitar e desentortar | `core/endireitar.py`, `core/endireitar_scantailor.py`, `core/desentortar_scantailor.py`, `core/guias.py`, `core/linhas_do_texto.py` | feito (4 achados, PP-15 a PP-18; fecha as duas suspeitas abertas) | 27/11 14:07 | 27/11 14:09 |
+| 5. girar e dividir: o que sobra | `core/dividir_scantailor.py`; em `girar.py`, `dividir.py`, `dividir_a_mao.py` só as buscas no programa inteiro (já lidos) | feito (1 achado, PP-19) | 27/11 14:10 | 27/11 14:11 |
+| 6. etapas e ordem do preparo | `core/etapas.py` (fora do já lido), `core/ordem_do_preparo.py` | feito (1 achado, PP-20) | 27/11 14:11 | 27/11 14:12 |
+
+Fora deste pedaço grande (ficam para os seus): em `core/pipeline.py` os filtros (L3400-4530, pedaço grande 3), a análise
+e os avisos (pedaço grande 5) e o processar/escrever o PDF (L4530-5034, pedaço grande 7), salvo o que a geometria chamar.
+
+**Pedaço grande 2 terminado (27/11, das 13:54 às 14:13 pelo relógio da máquina; o código, das 13:54 às 14:12).**
+19 achados novos, PP-02 a PP-20. Por tipo (o principal): 16 do tipo 1, nenhum do tipo 2 (dois têm o 2 junto: PP-09 e
+PP-10), 1 do tipo 3 (PP-14), 1 do tipo 4 (PP-19; dois têm o 4 junto: PP-05 e PP-06) e 1 do tipo 5 (PP-18). Por
+gravidade, com a régua nova: nenhum GRAVE (os que chegam no PDF ou na tela só chegam com uma opção desligada de fábrica
+ou de vez em quando: a borda preta, o 2.5, as margens iguais, o desentortar, o Mover, o "Tirar o fundo"), 16 médios e
+3 leves (PP-14, PP-18, PP-19). "Outra cópia" de achado da tela: PP-02, PP-03, PP-06 e PP-17 (todos do CF-04: a lista à
+mão do que a imagem guardada depende; aqui são quatro listas no núcleo, `_chave_da_geometria`, `_entradas_do_preparo`,
+`_divisao_da_pagina` e `_chave_das_linhas`, mais a do desentortar, que herda a primeira). Da mesma família: PP-05
+(PP-01), PP-07 e PP-08 (CF-01), PP-11 (SP-09), PP-19 (G-03, DV-01), PP-20 (RT-05, CF-02). Central: nenhum achado
+explica item da fila lida em 26/11 (as perguntas da fila sobre esta parte, `girar-dividir-outros` e
+`girar-dividir-tela`, já estão no G-01 e no G-02).
+
+O que ficou sem ler neste pedaço grande (só pelas buscas e pela lista das funções, sem conta de página achada): em
+`core/recortar.py` o corpo de `detectar_bordas` fora dos ramos de `girada`/`livro_novo` e as contas da máscara
+(`_mascara_de_tinta_local`, riscas, tracejado, borrão, `_numeros_da_margem`, `alargar_para_o_giro` por dentro); em
+`core/corte_pelo_conteudo.py` `caixa_do_corte`, `caixa_vazia`, `tinta_tirada`, `candidatas`, `tiradas_do_corte`,
+`alargar`; em `core/borda_preta.py` o corpo de `so_o_preto`; `core/caixas_scantailor.achar` por dentro (a chamada da
+DLL); `core/endireitar.detectar_angulo`/`rotacionar_e_cortar` por dentro; o corpo de `desentortar_scantailor.desentortar`
+e das contas da proteção (L413-570); `core/guias.py` por dentro; `core/folha.py` L41-130 (as medidas do recorte em cm) e
+`mascara_do_impresso`; `core/paginas_diferentes.py` por dentro; `core/ajustar_pedaco.py` L176-310 e L341-391. São os
+algoritmos (uma conta cada); as buscas por cópias delas no programa não acharam outra.
+
+**Próximo:** o pedaço grande 3, "filtros e limpeza" (lista em `resposta-do-fable-2026-11-27.md`). A gerente decide quando.
+
+## Programa inteiro (D-886): pedaço grande 3, filtros e limpeza
+
+Agente novo, 27/11/2026, começou às 14:14 (relógio da máquina, `date`). Leu as regras do verificador, o CLAUDE.md
+(§11.12 e §9: "Não desfazer isso", a correção do "magic color" em `core/filtros.py`), o índice da memória, a ordem, a
+resposta do Fable, este arquivo, a lista (modelo e os títulos dos 125 achados, por inteiro os do filtro: AP-03, CF-01 a
+CF-03, MC-04, RT-04, RT-11, SP-05, SP-08, PT-03, PT-13, PT-16) e a fila da Central (as do filtro: `dv-211-215`,
+`lu-1-remendos`, `lu-12-p22`). As decisões que valem são as copiadas no alto deste arquivo (D-885, D-886, §11.12);
+conferidas, valem também para este pedaço grande. Código: linhas no `cbc9784f` (`git diff cbc9784f HEAD -- core/ ui/`
+vazio). Prefixo dos achados: **FL**.
+
+Divisão em pedaços pequenos (escrita antes de começar). O que outros pedaços já leram não se relê (ver as listas dos
+pedaços da tela, abaixo: em `core/pipeline.py` L3407-3580, L3696-3712, L4030-4070, L4126-4220, L4245-4265,
+L4279-4316, L4447-4525; `core/fundo_tirado.py` inteiro; `core/perfis.py` L40-100; `core/filtros.py` L4300-4308;
+`core/misto.py` L676-681).
+
+| pedaço pequeno | arquivos | situação | começo | fim |
+|---|---|---|---|---|
+| 1. o caminho do filtro no pipeline | `core/pipeline.py` L3400-4530, fora do já lido | feito (5 achados, FL-01 a FL-05) | 27/11 14:14 | 27/11 14:21 |
+| 2. os quatro filtros e os ajustes | `core/filtros.py` | feito (4 achados, FL-06 a FL-09) | 27/11 14:21 | 27/11 14:28 |
+| 3. Só as letras e a letra clara | `core/misto.py`, `core/claro_no_escuro.py` | feito (3 achados, FL-10 a FL-12) | 27/11 14:28 | 27/11 14:31 |
+| 4. camadas e Tirar o fundo | `core/camadas.py`, `core/duas_camadas.py` (`core/fundo_tirado.py` já lido: só as buscas) | feito (2 achados, FL-13 e FL-14) | 27/11 14:31 | 27/11 14:33 |
+| 5. as peças do ScanTailor | `core/preto_e_branco_scantailor.py`, `cores_scantailor.py`, `luz_scantailor.py`, `pontinhos_scantailor.py`, `st_ferramentas.py` | feito (4 achados, FL-15 a FL-18; fecha a suspeita do pedaço 1) | 27/11 14:33 | 27/11 14:37 |
+| 6. perfis, núcleos, aquecimento | `core/perfis.py` (fora de L40-100), `core/nucleos.py`, `core/aquecimento.py` | feito (2 achados, FL-19 e FL-20) | 27/11 14:37 | 27/11 14:39 |
+
+**Pedaço grande 3 terminado (27/11, das 14:14 às 14:40 pelo relógio da máquina; o código, das 14:14 às 14:39).**
+20 achados novos, FL-01 a FL-20. Por tipo (o principal): 15 do tipo 1, nenhum do tipo 2, nenhum do tipo 3 (três têm o
+3 junto: FL-04, FL-06, FL-17), 1 do tipo 4 (FL-02; FL-16 tem o 4 junto) e 4 do tipo 5 (FL-09, FL-14, FL-18, FL-20; FL-13
+tem o 5 junto). Por gravidade, com a régua nova: 1 GRAVE (FL-06: o "Jeito do preto e branco" esquecido na página sem
+marcação e no "só neste pedaço", que é o bug de 06/10 da Lista de bugs, ainda aberto), 12 médios e 7 leves (FL-02,
+FL-08, FL-09, FL-11, FL-14, FL-18, FL-20). "Outra cópia" de achado já listado: FL-01 (CF-03 e MC-04), FL-03 (RT-04),
+FL-05 (PP-05), FL-07 (MC-01). Da mesma família: FL-02 (PP-01), FL-04 (DF-01), FL-06 (CF-01, AP-03), FL-08 (PT-02,
+PT-14), FL-10 (CF-04), FL-12 (CF-01, FL-06), FL-13 (CF-01), FL-15 e FL-19 (RT-01), FL-16 (RT-03), FL-17 (PP-15), FL-20
+(RT-09, PT-04). Central: FL-01 é o lado do núcleo de `lu-3-miniatura`, `k0611-miniatura-branco` e `k0711-grade-branco`
+(a pergunta "esta página sai branca?"); as três da fila que falam de filtro não têm achado aqui: `dv-211-215` (a palavra
+em duas cores no "Reduzir cores", D-701) é a conta da posterização, num lugar só; `lu-1-remendos` (a separação
+pintura/letra) é do detector, pedaço grande 4; `lu-12-p22` (a página sem nada com tracinhos) é a escolha automática do
+jeito do preto e branco (`escolher_algoritmo_automatico`), uma conta só.
+
+O que ficou sem ler neste pedaço grande (só pela lista das funções e pelas buscas, sem cópia achada): em
+`core/filtros.py` as contas de cada filtro (binarizar e o esqueleto, a sombra da lombada, o fundo e o ombro, o CLAHE e
+a saturação, a gravura, a foto, a decoração e o papel, L260-3995 fora do que está no pedaço 2); em `core/misto.py`
+`mascara_das_linhas`, `_desenho_colado_a_tinta_forte`, `_fora_do_texto` e `_gravura_de_traco_com_o_papel_branco`; em
+`core/camadas.py` as contas do fundo, da cor do papel, da escrita fraca, da tinta clara e do branquear (L660-1530, fora
+do detector); `core/duas_camadas.py` por dentro; as chamadas da DLL por dentro (`limpar_pontinhos`, `cores`,
+`binarizar` do ScanTailor). São o algoritmo, uma conta cada; o §9 do CLAUDE.md manda não desfazer a do "magic color".
+
+**Próximo:** o pedaço grande 5, "Automático e avisos" (lista em `resposta-do-fable-2026-11-27.md`). A gerente decide quando.
+
+## Programa inteiro (D-886): pedaço grande 5, Automático e avisos
+
+Agente novo, 27/11/2026, começou às 14:41 (relógio da máquina, `date`). Leu as regras do verificador, o CLAUDE.md
+(§11.12), o índice da memória, a ordem, a resposta do Fable, este arquivo inteiro, a lista (o modelo e, por inteiro, os
+achados que tocam o Automático e os avisos: DV-03, DV-09, DV-10, DV-12, DV-16, DF-05, AP-03, SP-01 a SP-15, RT-05,
+RT-10, RT-11, RT-12, FL-03, FL-20, PT-22) e a fila da Central (as do Automático e dos avisos: `lu-10-codigo`,
+`nm-codigos`, `lu-11-lista`, `n0411-caixinhas-depois-de-rodar`, `au-d-489`, `lu-2-numeros`, `k0611-numeros`,
+`lu-12-p22`). As decisões que valem são as copiadas no alto deste arquivo (D-885, D-886, §11.12); conferidas, valem
+também para este pedaço grande. Código: linhas no `cbc9784f` (`git diff cbc9784f HEAD -- core/ ui/` vazio). Prefixo
+dos achados: **AV**.
+
+Divisão em pedaços pequenos (escrita antes de começar). O que outros pedaços já leram não se relê (ver as listas dos
+pedaços da tela, abaixo: em `ui/automatico.py` L277-330, L405-440, L660-700, L1530-1565, L1738-1755, L1785-1870,
+L2575-2600; em `core/automatico.py` L120-200, L396-416, L535-683, L803, L932-990, L1040-1056, L1130-1221,
+L1288-1364, L1527-1575, L1590-1757, L1849-1888; `core/avisos.py` inteiro; em `core/analise.py` L320-332, L434-446,
+L463-500, L707-781; em `core/pipeline.py` L180-276).
+
+| pedaço pequeno | arquivos | situação | começo | fim |
+|---|---|---|---|---|
+| 1. o painel Automático na tela | `ui/automatico.py` L1-836 e L2161-3007 (o estado, a lista das etapas, o painel, as opções, a janela grande, a receita), fora do já lido | feito (5 achados, AV-01 a AV-05) | 27/11 14:42 | 27/11 14:46 |
+| 2. o "antes/depois" | `ui/automatico.py` L837-2160 (a vista, a tela cheia do comparar, a página antes e depois) e, em `core/automatico.py`, L1274-1530 e L1576-1606, L1762-1848 (as cópias, as medidas guardadas, a folha do caderno), fora do já lido | feito (2 achados, AV-06 e AV-07) | 27/11 14:46 | 27/11 14:48 |
+| 3. as etapas do Automático no núcleo | `core/automatico.py` L1-1273, fora do já lido (o pedido, as mexidas, o resumo, o livro leve, `aplicar`, `_capa_aberta`, `_ligar_na_pagina`, `_desligar_as_desmarcadas`, `rodar`) | feito (5 achados, AV-08 a AV-12) | 27/11 14:48 | 27/11 14:51 |
+| 4. a análise do livro | `core/analise.py` (fora do já lido), as partes da análise de `core/pipeline.py` (o que chama `analisar_folha`/`analisar_pagina` fora de L180-276), `core/automatico.medir_o_livro_ao_abrir` | feito (4 achados, AV-13 a AV-16) | 27/11 14:51 | 27/11 14:54 |
+| 5. o "Para revisar" e os avisos | `core/revisar.py`; `core/analise.Alerta`/`descrever` (L139-462); `core/avisos.py` já lido: só as buscas | feito (2 achados, AV-17 e AV-18) | 27/11 14:54 | 27/11 14:56 |
+| 6. página em branco | `core/paginas_em_branco.py` | feito (3 achados, AV-19 a AV-21) | 27/11 14:56 | 27/11 14:58 |
+| 7. a janela dos avisos | `ui/janela_dos_avisos.py` | feito (1 achado, AV-22) | 27/11 14:58 | 27/11 14:59 |
+
+**Pedaço grande 5 terminado (27/11, das 14:41 às 14:59 pelo relógio da máquina; o código, das 14:42 às 14:59).**
+22 achados novos, AV-01 a AV-22. Por tipo (o principal): 13 do tipo 1, 2 do tipo 2 (AV-02, AV-17), 2 do tipo 3 (AV-18,
+AV-22; AV-09 tem o 3 junto), 1 do tipo 4 (AV-06; AV-05 e AV-08 têm o 4 junto) e 4 do tipo 5 (AV-01, AV-11, AV-13, AV-14;
+AV-16 tem o 5 junto). Por gravidade, com a régua nova: nenhum GRAVE (os que chegam na tela ou no PDF só chegam de vez em
+quando: o "Desligar as marcadas" com a etapa 5, o reforço no "Só as letras", o cartão da tela inicial), 8 médios (AV-04,
+AV-09, AV-12, AV-13, AV-15, AV-17, AV-19, AV-22) e 14 leves. "Outra cópia" de achado já listado: AV-05 (PT-24), AV-08
+(MC-02), AV-12 (FL-04), AV-16 (SP-14), AV-19 (DV-12); e o AV-13 **corrige o caminho** de quatro já listados (SP-02,
+SP-14, DV-09, FL-03: os trechos que eles contam como "a análise ao abrir" são de `analisar_projeto`, que o programa não
+chama desde a etapa 3; só os testes, os scripts e o `teste_velocidade.py`). Da mesma família: AV-01 (FL-20, RT-09),
+AV-02 (RT-11), AV-03 (FL-08, PT-05), AV-04 (PT-13, RT-11), AV-06 (DV-10), AV-07 (AV-03), AV-09 e AV-22 (G-02), AV-10
+(AP-02), AV-11 e AV-14 (RT-02, SP-08), AV-15 (SP-02, SP-10), AV-17 (RT-08, FL-04), AV-18 (PP-01), AV-20 (CF-04, AP-03),
+AV-21 (DF-01, DF-05). Central: nenhum achado explica item da fila lida em 26/11. As do Automático caem aqui mas não são
+dos cinco tipos: `lu-10-codigo` e `nm-codigos` (os três textos com código, L766, L2285 e L2304 de `ui/automatico.py`:
+texto de tela), `lu-11-lista` (`ListaDeEtapas.refazer`, que remonta a lista a cada mudança: uma conta só), e
+`n0411-caixinhas-depois-de-rodar` (D-669, ainda sem código; o que existe é a bandeira do RT-10). O `lu-12-p22` (a página
+sem nada com tracinhos) pode estar perto do AV-15 (três contas de "página vazia"); não confirmei.
+
+O que ficou sem ler neste pedaço grande (só pela lista das funções e pelas buscas, sem cópia achada): em
+`core/revisar.py` as contas do estudo (`_apagado` até `caixas_de`, L213-478); em `core/analise.py` os textos de cada
+aviso em `ALERTAS` (L203-440), lidos só pelos códigos e pelos botões; em `ui/automatico.py` o desenho de `_LinhaQueDobra`
+(L570-620) e o campo do número (L1480-1565, fora do já lido); `ui/tarefas.TarefaPreviaDoAutomatico` e
+`ui/widgets/folhas_do_caderno.py` (são dos pedaços grandes 6 e 7: aqui só o que o Automático chama deles).
+
+**Próximo:** o pedaço grande 7, "gerar o PDF e cadernos" (lista em `resposta-do-fable-2026-11-27.md`). A gerente decide quando.
+
+## Programa inteiro (D-886): pedaço grande 7, gerar o PDF e cadernos
+
+Agente novo, 27/11/2026, começou às 15:00 (relógio da máquina, `date`). Leu as regras do verificador, o CLAUDE.md
+(§11.12), o índice da memória, a ordem, a resposta do Fable, este arquivo inteiro, a lista (o modelo, os títulos e, por
+inteiro, os achados que tocam o PDF e a contagem: SP-03, PT-21, AV-22, RT-04, FL-03) e a fila da Central (as do imprimir:
+`lu-5-deitada`, `n0411-folhas-de-todas`, `n0411-o-que-vai-sair`, `d574-o-que-vai-sair`, `au-d-574`, `lu-8-aviso-salvar`,
+`k0711-pronto-conta`). As decisões que valem são as copiadas no alto deste arquivo (D-885, D-886, §11.12); conferidas,
+valem também para este pedaço grande. Código: linhas no `cbc9784f` (`git diff cbc9784f HEAD -- core/ ui/` vazio).
+Prefixo dos achados: **IM**.
+
+Divisão em pedaços pequenos (escrita antes de começar). O que outros pedaços já leram não se relê (em `core/pipeline.py`
+L4840-4935, L4985-5012, L5034-5210; `ui/dialogo_impressao.py` L845-866; o cabeçalho de `core/ordem_das_paginas.py`;
+`ui/widgets/folhas_do_caderno.py` L458-472; `ui/tarefas.py` L345-416, L792-1036, L1135-1470).
+
+| pedaço pequeno | arquivos | situação | começo | fim |
+|---|---|---|---|---|
+| 1. gravar o PDF (o processar, página por página) | `core/pipeline.py` L4530-4840, L4936-4985, L5012-5034; `ui/tarefas.TarefaProcessar` e `TarefaMedirAsMargens` (L261-352); para comparar, em `ui/janela_principal.py` só quem dispara a tarefa e recebe o fim | feito (3 achados, IM-01 a IM-03) | 27/11 15:00 | 27/11 15:04 |
+| 2. a ordem das páginas e os cadernos | `core/ordem_das_paginas.py`, `core/cadernos.py` | feito (4 achados, IM-04 a IM-07; o lado a lado com o vão já era o AV-06) | 27/11 15:04 | 27/11 15:07 |
+| 3. montar para imprimir, no núcleo | `core/impressao.py` | feito (4 achados, IM-08 a IM-11; e a nota do `lu-5-deitada`) | 27/11 15:07 | 27/11 15:09 |
+| 4. a janela "Montar para imprimir" e as folhas do caderno | `ui/dialogo_impressao.py` (fora de L845-866), `ui/widgets/folhas_do_caderno.py` (fora de L458-472), `ui/tarefas.TarefaPreviaDoAutomatico` (L672-775) | feito (3 achados, IM-12 a IM-14; a `TarefaPreviaDoAutomatico` não tem conta própria) | 27/11 15:10 | 27/11 15:12 |
+| 5. impressora e tamanho da folha | `core/impressora.py`, `ui/dialogo_tamanho_da_folha.py` | feito (3 achados, IM-15 a IM-17) | 27/11 15:12 | 27/11 15:13 |
+| 6. a tela final | `ui/tela_final.py` | feito (1 achado, IM-18; e a nota da conferência da dobra) | 27/11 15:13 | 27/11 15:14 |
+
+**Pedaço grande 7 terminado (27/11, das 15:00 às 15:15 pelo relógio da máquina; o código, das 15:01 às 15:14).**
+18 achados novos, IM-01 a IM-18. Por tipo (o principal): 15 do tipo 1, 1 do tipo 2 (IM-12; IM-10 e IM-15 têm o 2
+junto), nenhum do tipo 3, 2 do tipo 4 (IM-01, IM-03) e nenhum do tipo 5. Por gravidade, com a régua nova: nenhum GRAVE
+(os que chegam no PDF, no papel ou na tela só chegam de vez em quando: o caminho rápido dos cadernos com tudo desmarcado,
+a capa aberta com página em branco posta, páginas de tamanhos diferentes no caderno, o arquivo de impressão antigo
+aberto, a encadernação à direita, a escala de cinza na impressora direto), 10 médios (IM-01, IM-04, IM-05, IM-06,
+IM-08, IM-09, IM-10, IM-12, IM-15, IM-16) e 8 leves (IM-02, IM-03, IM-07, IM-11, IM-13, IM-14, IM-17, IM-18). "Outra
+cópia" de achado já listado: IM-03 (PT-24) e IM-04 (DV-10). Da mesma família: IM-01 (CF-04, G-04), IM-02 e IM-08
+(PT-21), IM-05 (PP-19, AV-19, DV-12), IM-06 e IM-16 (CF-01; IM-06 também PP-11), IM-07 e IM-10 (SP-03), IM-12 (IM-10),
+IM-13, IM-15 e IM-18 (AV-07, AV-03), IM-14 (CF-04). Central: nenhum achado explica item da fila lida em 26/11. O
+`lu-5-deitada` cai aqui, mas não é dos cinco tipos (os avisos do "Montar para imprimir" só são feitos ao gravar; a
+prévia monta a folha pela mesma conta e não os faz: nota no pedaço 3 da lista). O `au-d-574` (ver o livreto pronto)
+fica perto do IM-06 (a tela do caderno com a sua medida), sem ser a causa. O `lu-8-aviso-salvar` é o PT-21; o IM-02 e o
+IM-08 são da mesma família, noutras janelas. O `n0411-folhas-de-todas` (D-670, a caixinha "Imprimir só algumas folhas"
+no lugar do "0 = todas") e o `n0411-o-que-vai-sair`/`d574-o-que-vai-sair` (D-702, o X de fechar) são de tela e ainda
+sem código: não são dos cinco tipos. O `k0711-pronto-conta` não é deste pedaço (está perto do SP-06, não confirmei).
+
+O que ficou sem ler neste pedaço grande (só pela lista das funções e pelas buscas, sem conta de página achada): em
+`ui/dialogo_impressao.py` a montagem dos controles (`_montar_opcoes`, `_montar_resultado`, `_montar_previa`,
+`_montar_botoes`, L537-814; só os rótulos da escala e da encadernação, L584-627); em `ui/widgets/folhas_do_caderno.py`
+o rótulo e a linha que quebra (L123-262) e o desenho e a tela grande (L700-974: `pixmaps`, `_desenhar`, `TelaGrandeDoCaderno`,
+a roda); em `core/impressao.py` o corpo de `_montar_multiplo` e `_montar_poster` foi lido, sem cópia achada. Uma nota que
+não é dos cinco tipos, para a gerente olhar contra o §11.12, ponto 2: o "Conferido: [...] saem na ordem certa" da tela
+final e da janela é a simulação da dobra sobre a conta (`conferir_sequencia`), sem abrir o PDF gravado (pedaço 6 da lista).
+
+**Próximo:** o pedaço grande 6, "abrir, guardar e desfazer" (lista em `resposta-do-fable-2026-11-27.md`), começando pelas
+suspeitas abertas abaixo que são dele (a `tela_opcoes`, o fundo tirado no caminho rápido dos cadernos e o `SEM_SERVIDOR`).
+A gerente decide quando.
+
+## Programa inteiro (D-886): pedaço grande 6, abrir, guardar e desfazer
+
+Agente novo, 27/11/2026, começou às 15:16 (relógio da máquina, `date`). Leu as regras do verificador, o CLAUDE.md
+(§11.12, §7: o modelo de dados e onde o programa guarda estado), o índice da memória, a ordem, a resposta do Fable, este
+arquivo inteiro, a lista (o modelo, os títulos e, por inteiro, os que tocam este pedaço: DF-01, DF-04 a DF-06, RT-01 a
+RT-03, PT-21, PT-23, PT-24, IM-01, IM-02) e a fila da Central (as que tocam abrir e guardar: `au-d-489`, o "começar de
+novo"; `lu-8-aviso-salvar`, já no PT-21). As decisões que valem são as copiadas no alto deste arquivo (D-885, D-886,
+§11.12); conferidas, valem também para este pedaço grande. Código: linhas no `cbc9784f` (`git diff cbc9784f HEAD --
+core/ ui/ *.py` vazio). Prefixo dos achados: **AB**.
+
+Divisão em pedaços pequenos (escrita antes de começar). O que outros pedaços já leram não se relê (ver as listas dos
+pedaços acima: em `modelos.py` L45-56, L310-345, L395-425, L490-533, L872-940, L1042-1047, L1060-1104, L1130-1160; em
+`projetos.py` L330-360, L410-440, L1098-1100; em `historico_acoes.py` L1-130 e L398-683; em `ui/janela_principal.py`
+L270-280, L397-410, L700-720, L935-980, L1790-2053; em `ui/tarefas.py` L115-172, L261-520, L672-1036, L1135-1470;
+`configuracoes.py` L185-220; `ui/widgets/destino._conferir`; `ui/tela_inicio.py` L960-980).
+
+| pedaço pequeno | arquivos | situação | começo | fim |
+|---|---|---|---|---|
+| 0. as suspeitas abertas | `ui/tela_opcoes.py` (quem a monta), o fundo tirado no caminho rápido (`modelos.so_cadernos` × `core/fundo_tirado`), a nota da conferência da dobra (para o Fable decidir) | feito (2 achados, AB-01 e AB-02; a nota da dobra virou suspeita aberta "para o Fable decidir"; o `SEM_SERVIDOR` fica para o pedaço 4) | 27/11 15:17 | 27/11 15:22 |
+| 1. o modelo de dados | `modelos.py` (fora do já lido) | feito (3 achados, AB-03 a AB-05) | 27/11 15:23 | 27/11 15:28 |
+| 2. abrir e guardar o projeto | `projetos.py` (fora do já lido), `historico.py` | feito (7 achados, AB-06 a AB-12) | 27/11 15:28 | 27/11 15:36 |
+| 3. o histórico de ações | `historico_acoes.py` L130-398 (fora do já lido) | feito (1 achado, AB-13; as falhas caladas entram no AB-07, os laços das cópias no AB-08) | 27/11 15:36 | 27/11 15:37 |
+| 4. tarefas por trás e servidor de páginas | `core/pdf_io.py`, `core/paginas_em_outro_processo.py` (e a suspeita do `SEM_SERVIDOR`), `ui/tarefas.py` (fora do já lido) | feito (4 achados, AB-14 a AB-17; fecha a suspeita do `SEM_SERVIDOR`) | 27/11 15:37 | 27/11 15:42 |
+| 5. janela principal, tela inicial, abrir o PDF | `ui/janela_principal.py` (fora do já lido), `ui/tela_inicio.py`, `ui/widgets/area_arrastar.py`, `ui/widgets/folhear_pdf.py`, `ui/tela_de_carregamento.py` | feito (7 achados, AB-18 a AB-24; o `folhear_pdf` é o código morto do AB-01) | 27/11 15:42 | 27/11 15:47 |
+| 6. configurações, atalhos, diálogos e o resto | `configuracoes.py` (fora do já lido), `atalhos.py`, `registro.py`, `ui/tela_configuracoes.py`, `ui/dialogos_de_arquivo.py`, `ui/widgets/destino.py` (fora do já lido), `ui/tela_opcoes.py` (se não for código morto inteiro) | feito (4 achados, AB-25 a AB-28; a `tela_opcoes` é o código morto do AB-01, não lida por dentro) | 27/11 15:47 | 27/11 15:50 |
+
+**Pedaço grande 6 terminado (27/11, das 15:16 às 15:51 pelo relógio da máquina; o código, das 15:17 às 15:50).**
+28 achados novos, AB-01 a AB-28. Por tipo (o principal): 14 do tipo 1, 1 do tipo 2 (AB-18; AB-19 e AB-22 têm o 2 junto),
+2 do tipo 3 (AB-27, AB-28), 7 do tipo 4 (AB-02, AB-05, AB-07, AB-13, AB-17, AB-20, AB-23; AB-14, AB-15, AB-16 e AB-28
+têm o 4 junto) e 4 do tipo 5 (AB-01, AB-03, AB-10, AB-11; AB-20 tem o 5 junto). Por gravidade, com a régua nova: 1 GRAVE
+(AB-21: o menu Filtro marca o filtro gravado, e não o que vale no PDF; chega na tela), 13 médios (AB-02, AB-06, AB-07,
+AB-08, AB-09, AB-14, AB-15, AB-16, AB-18, AB-19, AB-22, AB-24, AB-25) e 14 leves. "Outra cópia" de achado já listado:
+AB-01 (RT-02, AV-13; e fecha a cópia contada no PT-05, PT-24 e FL-08), AB-02 (IM-01), AB-03 e AB-11 e AB-20 (RT-02),
+AB-04 (DF-06), AB-07 (RT-03), AB-08 (IM-02, pela `_pasta_livre`), AB-10 (DV-14), AB-16 (AV-11), AB-21 (RT-04), AB-23
+(PT-24), AB-25 (DF-07, DF-04). Da mesma família: AB-05, AB-13, AB-15 e AB-17 (PP-01, AV-18: a reserva "como antes"),
+AB-12 (G-06), AB-16 (RT-03), AB-18 (AB-10), AB-19 (AB-07, AB-08). Central: quatro achados explicam partes do
+`au-d-489` (a regra do "começar de novo"): AB-10 (a cópia morta da regra, com os motivos que a D-489 tirou), AB-18 (a regra
+montada na janela), AB-19 (os três jeitos de jogar o trabalho fora) e AB-22 (o "não é o mesmo livro" com três contas).
+O `lu-8-aviso-salvar` continua no PT-21 (o `destino._conferir`); o AB-28 está no mesmo campo, sem ser a causa.
+
+As três suspeitas que eram deste pedaço grande: a `tela_opcoes` virou o AB-01; o fundo tirado no caminho rápido virou o
+AB-02; o `SEM_SERVIDOR` virou parte do AB-15. A nota da conferência da dobra ficou registrada como suspeita aberta "para
+o Fable decidir" (abaixo), sem decisão minha.
+
+O que ficou sem ler neste pedaço grande (só pela lista das funções e pelas buscas, sem cópia achada): `ui/tela_opcoes.py`
+por dentro (morto, AB-01); em `modelos.py` os comentários de cada campo fora do que a busca apontou (L56-128, L200-490,
+L537-841); em `ui/janela_principal.py` o `__init__` (L97-240), o `_montar_menu` (L240-376), as trocas da tela (L444-700),
+`_escolher_pasta_de_saida` até `avisar` (L670-757), o tirar o fundo do livro inteiro (L934-980), o Automático L1126-1325
+fora do rodar, as conversões e medidas por trás (L1446-1560) e `_frase_do_recomeco`; em `ui/tela_inicio.py` o
+`__init__`, o `_remontar`, o cartão por dentro (L482-600) e o livro aberto (L627-850, L956-1042); em `ui/tarefas.py` o
+`GerenciadorPrevias` por dentro (a chave e as gerações estão no CF-04); em `core/paginas_em_outro_processo.py` o
+`_Servidor` (L95-222) e o `_servir_folha_do_caderno` por dentro; em `core/pdf_io.py` `_acrescentar_so_o_novo` por dentro e a
+compressão (L662-716); em `ui/tela_configuracoes.py` a aparência (L122-197) e os testes à distância (L330-403, do pedaço
+grande 8); em `ui/dialogos_de_arquivo.py` a `JanelaDeArquivo` por dentro (L173-333).
+
+**Próximo:** o pedaço grande 4, "gravuras e marcações" (lista em `resposta-do-fable-2026-11-27.md`). A gerente decide quando.
+
+## Programa inteiro (D-886): pedaço grande 4, gravuras e marcações
+
+Agente novo, 27/11/2026, começou às 15:51 (relógio da máquina, `date`). Leu as regras do verificador, o CLAUDE.md
+(§11.12; §3: "Rede neural aqui só segmenta: aponta onde estão as coisas, nunca desenha"), o índice da memória, a ordem,
+a resposta do Fable, este arquivo inteiro, a lista (o modelo, os títulos e, por inteiro, os que tocam este pedaço: MC-01
+a MC-05, PT-17 a PT-20, FL-07, FL-13, FL-16) e a fila da Central (as que tocam a gravura: `lu-1-remendos`, `au-d-528`,
+`lu-7-laranja`). As decisões que valem são as copiadas no alto deste arquivo (D-885, D-886, §11.12); conferidas, valem
+também para este pedaço grande. Código: linhas no `cbc9784f` (`git diff cbc9784f HEAD -- core/ ui/ *.py motor_kraken/`
+vazio). Prefixo dos achados: **GV**.
+
+Divisão em pedaços pequenos (escrita antes de começar). O que outros pedaços já leram não se relê (em
+`core/zonas_na_folha.py` `geometria_do_desenho` (docstring), `_converter` L420-463, `acompanhar` L560-583,
+`_corte_efetivo`, `repartir_nas_metades`; em `core/selecao.py` L100-175 e L370-390; em `core/detectar_regioes.py` o
+aviso uma vez por sessão L1352-1377, no FL-16, e a forma de fábrica do `detectar`, no FL-13; `core/gravura_scantailor.figuras_pelo_scantailor`, no FL-13).
+
+| pedaço pequeno | arquivos | situação | começo | fim |
+|---|---|---|---|---|
+| 1. a entrada do detector e as opções | `core/detectar_regioes.py` L1-215 e L1392-1683 (as opções, a assinatura, `detectar`, `refinar_para_tinta`, `explicar_em_portugues`), e quem chama `detectar` no programa | feito (2 achados, GV-01 e GV-02) | 27/11 15:52 | 27/11 15:55 |
+| 2. o detector antigo e o layout | `core/detectar_regioes.py` L215-930 (a rede do layout, as máscaras, a página vazia, o objeto, o meio tom, `_gravura_antiga`) | feito (3 achados, GV-03 a GV-05; a página sem conteúdo já é o AV-15) | 27/11 15:55 | 27/11 15:58 |
+| 3. a gravura do ScanTailor | `core/detectar_regioes.py` L930-1350 (a limpeza, as barras, crescer pela moldura, o DPI, a procura com tempo), `core/gravura_scantailor.py` | feito (3 achados, GV-06 a GV-08; o carregador da DLL já é o FL-15) | 27/11 15:58 | 27/11 16:00 |
+| 4. a seleção (as áreas e as máscaras) | `core/selecao.py` (fora do já lido) | feito (2 achados, GV-09 e GV-10) | 27/11 16:00 | 27/11 16:01 |
+| 5. as zonas na folha | `core/zonas_na_folha.py` (fora do já lido) | feito (2 achados, GV-11 e GV-12) | 27/11 16:01 | 27/11 16:03 |
+| 6. editar as áreas e a rede que aponta | `core/editar_zonas.py`, `core/rede_selecao.py` | feito (1 achado, GV-13; o resto de `editar_zonas` já entrou no GV-02, GV-03 e GV-09) | 27/11 16:03 | 27/11 16:04 |
+
+**Pedaço grande 4 terminado (27/11, das 15:51 às 16:04 pelo relógio da máquina; o código, das 15:52 às 16:04).**
+13 achados novos, GV-01 a GV-13. Por tipo (o principal): 7 do tipo 1 (GV-02, GV-03, GV-05, GV-07, GV-08, GV-09, GV-11),
+nenhum do tipo 2, nenhum do tipo 3 (GV-07 tem o 3 junto), 2 do tipo 4 (GV-06, GV-12) e 4 do tipo 5 (GV-01, GV-04,
+GV-10, GV-13). Por gravidade, com a régua nova: 2 GRAVE (GV-07: o que o ScanTailor deixa de fora da pintura vira letra
+sem a pergunta "parece escrita?", que só o detector antigo faz, a causa do `lu-1-remendos`; GV-11: o preparo da página
+escrito duas vezes, na imagem e na conta das marcações), 4 médios (GV-02, GV-03, GV-06, GV-09) e 7 leves. "Outra cópia"
+de achado já listado: GV-02 (MC-01 e FL-07; com elas, 18 lugares), GV-06 (PP-13), GV-11 (G-06 e G-07), GV-13 (PT-19).
+Da mesma família: GV-03 (AV-15, SP-10), GV-07 (FL-13, GV-03), GV-09 (FL-12), GV-12 (PP-01, AB-05). Central: o GV-07
+explica o `lu-1-remendos` (e o GV-03 diz que a pergunta "parece escrita?" já existe em três medidas); o GV-02 é a
+pergunta que desenha o laranja do `lu-7-laranja` (a causa do aviso continua no PT-20); o `au-d-528` continua no MC-03.
+
+O que ficou sem ler neste pedaço grande (só pela lista das funções e pelas buscas, sem cópia achada): nada dos seis
+arquivos ficou de fora por inteiro; as contas por dentro (`_espalhamento_do_miolo`, `_e_objeto_e_nao_folha`,
+`_papel_a_vista`, `_e_meio_tom`, a rede do layout em `achar`, `_desenhar` das formas, `de_mascara`, as matrizes do giro)
+foram lidas como algoritmo, uma conta cada, sem cópia achada pela busca. O cabeçalho de `core/detectar_regioes.py`
+(L41-43: "o padrão de detectar() para quem não sabe o DPI da imagem (a aba Marcar [...])") ficou para trás como o de
+`core/gravura_scantailor.py` (nota no pedaço 3 da lista).
+
+**Próximo:** o pedaço grande 9, "achar texto".
+
+## Programa inteiro (D-886): pedaço grande 9, achar texto
+
+O mesmo agente do pedaço grande 4, 27/11/2026, começou às 16:05 (relógio da máquina, `date`). As decisões que valem são
+as copiadas no alto deste arquivo (D-885, D-886, §11.12); conferidas, valem também para este pedaço grande. Do Livro,
+sobre os leitores de texto: D-132, D-138 ("todos os OCRs instalados, com ligar/desligar e comparação automática entre
+eles", **pela metade**), D-139, D-140 (o motor do Kraken à parte), D-164 (o Kraken como segunda opinião, **pela
+metade**), D-768, D-788 a D-790, D-833, D-843 (o motor no atualizador). Código: linhas no `cbc9784f` (`git diff
+cbc9784f HEAD -- core/ ui/ *.py motor_kraken/` vazio). Prefixo dos achados: **OC**. Atenção pedida: a suspeita do FL-16
+(falhas do leitor de texto que não vão para o `erros.log`).
+
+Quem chama os leitores no programa do Kaique (busca): só `core/linhas_do_texto.py` (o docTR, para o "Só as letras"; o
+Kraken atrás do gancho desligado do PP-18); `core/misto.py` e `core/revisar.py` recebem os resultados. O Tesseract e a
+comparação só pelo diagnóstico (`main.py` L154-156, "Não é usada pelo Kaique") e pelo empacotar. O motor do Kraken
+também pelo atualizador e pelo publicar (pedaços grandes 8 e 10: aqui só o que o leitor faz).
+
+Divisão em pedaços pequenos (escrita antes de começar). Já lido, não se relê: `core/linhas_do_texto.py` (L32, L85-180 no
+FL-16 e no PP-18; aqui só as buscas); `core/ocr_comum.py` L209-221 (FL-19).
+
+| pedaço pequeno | arquivos | situação | começo | fim |
+|---|---|---|---|---|
+| 1. o comum e o diagnóstico | `core/ocr_comum.py` (fora de L209-221), `core/ocr_diagnostico.py` | feito (1 achado, OC-01; confirma a suspeita do FL-16 do lado dos leitores) | 27/11 16:05 | 27/11 16:06 |
+| 2. o docTR | `core/ocr_doctr.py` (e fecha a suspeita do modelo ONNX aberto em três lugares) | feito (1 achado, OC-02; fecha a suspeita) | 27/11 16:06 | 27/11 16:07 |
+| 3. o Kraken e o servidor | `core/ocr_kraken.py`, `motor_kraken/servidor_kraken.py` | feito (2 achados, OC-03 e OC-04) | 27/11 16:07 | 27/11 16:09 |
+| 4. o Tesseract | `core/ocr_tesseract.py` | feito (2 achados, OC-05 e OC-06) | 27/11 16:09 | 27/11 16:10 |
+| 5. a comparação | `core/ocr_comparar.py` | feito (2 achados, OC-07 e OC-08) | 27/11 16:10 | 27/11 16:11 |
+
+**Pedaço grande 9 terminado (27/11, das 16:05 às 16:11 pelo relógio da máquina).** 8 achados novos, OC-01 a OC-08. Por
+tipo (o principal): 6 do tipo 1 (OC-02, OC-03, OC-04, OC-05, OC-06, OC-07), nenhum do tipo 2 nem do 3, 1 do tipo 4
+(OC-01) e 1 do tipo 5 (OC-08). Por gravidade, com a régua nova: nenhum GRAVE, 2 médios (OC-01: o "Só as letras" A ou C
+sai pela B, calado, quando o docTR falha; OC-02: a falha ao abrir uma peça de fora guardada para a sessão em cinco
+lugares, e só o modelo de layout tenta de novo) e 6 leves (o Kraken e o Tesseract não rodam no programa do Kaique
+hoje). "Outra cópia" de achado já listado: OC-01 (FL-16: **confirma a suspeita do FL-16** do lado dos leitores de texto;
+nenhum arquivo dos leitores chama o `erros.log`, e três comentários dizem que sim), OC-08 (PP-18). Da mesma família:
+OC-02 e OC-03 (FL-15, RT-01), OC-05 (FL-15), OC-06 (AB-24, FL-19), OC-07 (GV-03). Central: nenhum achado explica item
+da fila lida em 26/11 (nenhum item da fila é dos leitores de texto). Fecha a suspeita aberta do modelo ONNX (virou o
+OC-02).
+
+O que ficou sem ler neste pedaço grande: em `core/ocr_tesseract.py` a leitura do hOCR por dentro (`_LeitorHocr`,
+`ler_hocr`, L466-517), lida só pela lista das funções; em `core/ocr_diagnostico.py` o `conferir_gravura` e a linha de
+comando (L108-155), só pelas buscas; o que o atualizador, o empacotar, o publicar e o montar fazem com o motor do Kraken
+(pedaços grandes 8 e 10). Os cabeçalhos de `ocr_doctr`, `ocr_kraken` e `ocr_tesseract` ainda dizem "AINDA NÃO ESTÁ
+LIGADO AO PROGRAMA (29/09/2026)"; o do docTR, também que o empacotar "ainda NÃO inclui este" (notas nos pedaços da
+lista; não são dos cinco tipos).
+
+**Próximo:** parar e entregar à gerente (a tarefa pediu só os pedaços grandes 4 e 9).
+
+## Programa inteiro (D-886): pedaço grande 10, ferramentas do Samuel
+
+Agente novo, 27/11/2026, começou às 16:12 (relógio da máquina, `date`). Leu as regras do verificador, o CLAUDE.md
+(§11.12, inteiro, com a parte "Vale para tudo, sem exceção (18/11/2026)"), o índice da memória, a ficha
+`memoria/geral/atualizador.md`, a ordem, a resposta do Fable, este arquivo inteiro, a lista (o modelo e, por inteiro, os
+que tocam estas ferramentas: RT-01, FL-15, FL-16, FL-19, AB-24, AB-27, GV-13, OC-03 a OC-06, OC-08) e a fila da Central
+(nenhum item da fila é do empacotar, do publicar ou do atualizador). As decisões que valem são as copiadas no alto deste
+arquivo (D-885, D-886, D-876, §11.12); conferidas, valem também para este pedaço grande. Código: linhas no `cbc9784f`
+(`git diff cbc9784f HEAD -- '*.py'` vazio). Prefixo dos achados: **FS**. O Kaique não vê estas ferramentas: "o que o
+Kaique perderia" é o que chegaria ou não no programa dele. Achado conhecido da gerente para conferir: o PDF de
+`relatorio.gravar` corta a última coluna das tabelas largas, e o .html não.
+
+Divisão em pedaços pequenos (escrita antes de começar). Já lido, não se relê: `empacotar.modelos_do_programa` (L292-311,
+no GV-13), `empacotar.achar_motor_kraken`/`LUGARES_DO_MOTOR` (no OC-03), `empacotar.espaco_livre` (só a existência, RT-01),
+`montar_motor_kraken.py` L160 e L588 (no OC-04).
+
+| pedaço pequeno | arquivos | situação | começo | fim |
+|---|---|---|---|---|
+| 1. o relatório e o brasão | `relatorio.py`, `gerar_brasao.py` | feito (3 achados, FS-01 a FS-03; o achado conhecido do PDF conferido: defeito simples, posto no FS-01; nenhum no `gerar_brasao`) | 27/11 16:12 | 27/11 16:15 |
+| 2. a pasta das ferramentas e os compilar | `core/pasta_das_ferramentas.py`, `compilar_detector_gravura.py`, `compilar_st_ferramentas.py` | feito (3 achados, FS-04 a FS-06; fecha a suspeita da pasta do Samuel) | 27/11 16:15 | 27/11 16:18 |
+| 3. montar o motor do Kraken | `montar_motor_kraken.py` (fora de L160 e L588) | feito (2 achados, FS-07 e FS-08; a nota do `--so-servidor`) | 27/11 16:19 | 27/11 16:20 |
+| 4. o empacotar | `empacotar.py` (fora do já lido) | feito (5 achados, FS-09 a FS-13; fecha a suspeita do "baixar"; a nota do `--modo entrega`) | 27/11 16:21 | 27/11 16:23 |
+| 5. publicar e servir as versões | `publicar_versao_kaique.py`, `servidor_das_versoes.py` | feito (3 achados, FS-14 a FS-16) | 27/11 16:24 | 27/11 16:25 |
+
+**Pedaço grande 10 terminado (27/11, das 16:12 às 16:25 pelo relógio da máquina; o código, das 16:12 às 16:25).**
+16 achados novos, FS-01 a FS-16. Por tipo (o principal): 10 do tipo 1 (FS-01, FS-04, FS-05, FS-06, FS-07, FS-10, FS-11,
+FS-13, FS-14, FS-15), nenhum do tipo 2 nem do 3, 2 do tipo 4 (FS-02, FS-09; FS-14 tem o 4 junto) e 4 do tipo 5 (FS-03,
+FS-08, FS-12, FS-16). Por gravidade, com a régua nova: nenhum GRAVE (nada destas ferramentas chega na tela do Kaique nem
+no PDF; o que chega no programa dele é o .msi, a versão e as DLLs), 3 médios (FS-01: três folhas de estilo do relatório;
+FS-05: os dois compilar, e a DLL do detector entra no programa conferida só por "abriu"; FS-10: a cópia conferida em
+cinco jeitos, apesar do "lugar único") e 13 leves. "Outra cópia" de achado já listado: FS-16 (FS-12). Da mesma família:
+FS-02 (OC-01, FL-16), FS-05 (FL-15), FS-06 (AB-24: três das onze perguntas "está empacotado?" são de lá), FS-10 e FS-11
+(RT-01, FL-15), FS-12 (OC-03, FS-05). Central: nenhum achado explica item da fila lida em 26/11 (nenhum item da fila é
+destas ferramentas). O achado conhecido da gerente (o PDF corta a última coluna das tabelas largas) foi conferido pela
+leitura: é defeito simples, não dos cinco tipos; a causa está ao lado do FS-01 (a tabela do .html rola de lado; as do
+PDF não têm para onde ir). Três notas que não são dos cinco tipos: o `--so-servidor` do montar regrava a ficha do motor
+com a mesma versão (pedaço 3); o `--modo entrega` do empacotar apaga pastas na Área de Trabalho sem perguntar (pedaço 4);
+o instalador antigo (Inno) ficou como reserva pela D-730, cuja pergunta de "depois da etapa 5" não achei (FS-09).
+
+O que ficou sem ler neste pedaço grande (só pela lista das funções e pelas buscas, sem cópia achada): em
+`montar_motor_kraken.py` o leitor do PE por dentro (`importacoes_da_dll`, lido como algoritmo); em `empacotar.py` as
+mensagens de cada parada (os `print`), lidas só pelo caminho; o `instalador.iss` (não é Python: só a existência, FS-09);
+os scripts que chamam o `relatorio.py` (são dos scripts soltos, fora da vistoria).
+
+**Próximo:** o pedaço grande 8, "atualizador", só os tipos 4 e 5.
+
+## Programa inteiro (D-886): pedaço grande 8, atualizador (só os tipos 4 e 5)
+
+O mesmo agente do pedaço grande 10, 27/11/2026, começou às 16:27 (relógio da máquina, `date`). As decisões que valem são
+as copiadas no alto deste arquivo (D-885, D-886, D-876, §11.12); conferidas, valem também para este pedaço grande. A
+D-886 manda, aqui, só os tipos 4 e 5: "8 atualizador (só tipos 4 e 5: peças de proteção e código morto; o resto já
+passou por cinco rodadas)". Do Livro, o que mudou o atualizador: a D-830 (23/11, o desenho simples, que trocou o
+caminho dos "4 consertos" da D-824), a D-867 (25/11, a volta automática saiu), a D-868 (a caixa do Windows uma vez) e a
+D-869 (a última boa guardada só para a volta à mão). Pedido da gerente: ver se sobrou algo da volta automática, do
+pedido antigo de licença (`_testes_a_distancia_windows.py`) e do caminho antigo dos "4 consertos". Código: linhas no
+`cbc9784f` (`git diff cbc9784f HEAD -- '*.py'` vazio). Prefixo dos achados: **AT**. Como procuro o código morto: um
+script de contar texto, na pasta de rascunho e sem importar o programa, lista cada função e constante de nível de
+módulo dos 13 arquivos e conta onde mais o nome aparece (programa, testes, scripts); o que só aparece no próprio
+arquivo, ou só nos testes, eu leio.
+
+Divisão em pedaços pequenos (escrita antes de começar). Já lido, não se relê: `main.py` L55-95 (RT); `ui/brasao_girando.py`
+L222-229 (FL-19); `core/_testes_a_distancia_windows.py` L94-99 (FL-19); `core/windows.programa_deste_processo`
+(L3109-3116, AB-24); `core/testes_a_distancia.py` L700-720 (AB-27); `atualizacao.espaco_livre_basta` (RT-01),
+`atualizacao.garantir_o_motor`/`motor_esta_no_lugar` (OC-08), `atualizacao.py` L947-951 (GV-13), L463-500 (FS-10),
+L549-566 (FS-11); `core/fases_da_atualizacao._numeros` (FS-15).
+
+| pedaço pequeno | arquivos | situação | começo | fim |
+|---|---|---|---|---|
+| 0. a contagem dos nomes | o script de contar nos 13 arquivos (rascunho) | feito (nenhum achado próprio: aponta 4 nomes sem uso no programa, lidos nos seus pedaços) | 27/11 16:27 | 27/11 16:29 |
+| 1. o que sobrou da volta automática e dos "4 consertos" | busca nos 13 arquivos e no `git log` (D-867, D-830, D-824) | feito (1 achado, AT-01: só comentários; do código da volta não sobrou nada) | 27/11 16:29 | 27/11 16:30 |
+| 2. o atualizador | `atualizacao.py` | feito (1 achado, AT-02) | 27/11 16:31 | 27/11 16:32 |
+| 3. a entrada, a versão, a assinatura, o brasão | `main.py`, `versao.py`, `assinatura.py`, `brasao.py` | feito (1 achado, AT-03; e lê L518-545 de `core/testes_a_distancia.py`, que o pedaço 6 não relê) | 27/11 16:32 | 27/11 16:34 |
+| 4. a peça única do Windows | `core/windows.py` | feito (3 achados, AT-04 a AT-06) | 27/11 16:34 | 27/11 16:36 |
+| 5. as fases e o Velopack | `core/fases_da_atualizacao.py`, `core/conversa_com_o_velopack.py` | feito (1 achado, AT-07) | 27/11 16:37 | 27/11 16:38 |
+| 6. os testes à distância | `core/testes_a_distancia.py`, `core/_testes_a_distancia_windows.py` | feito (1 achado, AT-08; duas notas fora dos tipos 4 e 5 e uma suspeita aberta) | 27/11 16:40 | 27/11 16:41 |
+| 7. as telas | `ui/aviso_de_atualizacao.py`, `ui/testes_a_distancia_ui.py`, `ui/brasao_girando.py` | feito (1 achado, AT-09) | 27/11 16:42 | 27/11 16:43 |
+
+**Pedaço grande 8 terminado (27/11, das 16:27 às 16:43 pelo relógio da máquina).** Só os tipos 4 e 5 (D-886). 9 achados
+novos, AT-01 a AT-09: 2 do tipo 4 (AT-02: as quatro peças contra o ajudante antigo, que só existiu nas provas do PC do
+Samuel, com a D-838; AT-06: a recusa do rodar genérico da peça do Windows, contra o código de amanhã) e 7 do tipo 5
+(AT-01 e AT-03: comentários que ficaram do que saiu ou mudou de lugar; AT-04: metade de `core/windows.py`, a pasta
+segura, as tarefas, o segredo e sete tipos de passo, feita para os passos 3 a 5 do plano trocado pela D-830, só a janela
+de prova e os testes a usam; AT-05: duas funções da peça sem uso; AT-07: o jeito antigo de ler a versão a conferir, só
+para testes antigos; AT-08: o preparo do "desfazer" na primeira abertura, que saiu, e uma variável que ninguém põe;
+AT-09: os caminhos para fora do Windows). Por gravidade: todos leves (nenhum chega na tela do Kaique nem no PDF). "Outra
+cópia" de achado já listado: AT-03 (AT-01), AT-07 (FS-12). Da mesma família: AT-04 (FL-19, pela frase do cabeçalho),
+AT-06 (FL-19, CLAUDE.md §11.12 ponto 1). Central: nenhum achado explica item da fila lida em 26/11 (nenhum item da fila
+é do atualizador).
+
+O que a gerente pediu para olhar: (1) a volta automática (D-867): do código não sobrou nada; sobraram dois comentários
+(AT-01). (2) O pedido antigo de licença (`core/_testes_a_distancia_windows.py`): continua vivo, pelas Configurações, e não
+é dos tipos 4 e 5; o que dele é morto está no AT-08, e o resto são as duas notas do pedaço 6 da lista (as Configurações
+ligam os testes à distância com a senha, contra o que a D-825 diz da primeira abertura; e o erro lido do jeito que o
+cabeçalho de `core/windows.py` diz ser o defeito 2 da etapa 5, deixado como suspeita aberta). (3) O caminho antigo dos
+"4 consertos" (D-830 substituiu): o que ficou dele é o AT-02 (o ajudante antigo) e o AT-04 (a pasta segura e as tarefas
+do plano-v2, do mesmo tempo).
+
+O que ficou sem ler neste pedaço grande (os tipos 1 a 3 não são deste pedaço; as contas lidas como conversa com o
+Windows ou como algoritmo): em `core/windows.py` as contas por dentro das licenças de pasta, do pedido de licença
+(`ShellExecuteEx`), da lista de processos e da caixa do Windows; em `core/testes_a_distancia.py` os comandos do
+PowerShell de cada plano (L187-660), só pela lista das funções e pelas buscas; em `core/fases_da_atualizacao.py` a regra
+`proxima_fase` só nas transições que falam da volta, do bilhete e da abertura; em `assinatura.py` as contas do Ed25519.
+
+**Próximo:** parar e entregar à gerente (a tarefa pediu só os pedaços grandes 10 e 8).
+
+## Pedaços (tela de trabalho, 26/11)
 
 | pedaço | situação | começo | fim | tempo |
 |---|---|---|---|---|
@@ -167,13 +738,83 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
 
 ### Abertas
 
-- (fora da tela de trabalho, achada no pedaço 8) `core/pipeline._guardar_o_conteudo` (L1958-1968) não troca o tamanho
-  de uma página já medida (`_TAMANHOS.setdefault`), e o comentário dá o motivo: "A passada mede a DPI_DA_PASSADA e a
-  geometria a 300". Desde o mesmo commit (`57de8af4`, 21/10) a passada mede na resolução do livro e a constante não é
-  usada (RT-02). Conferir se a proteção ainda protege de alguma coisa (prévia e PDF em resoluções diferentes?) ou se
-  ficou sem motivo.
+(27/11, fim da tarde: as três abaixo continuam abertas; a do pedido antigo de licença e a nota 1 do pedaço 6 do grande 8
+a gerente já conferiu no código e pôs na Lista de bugs em 27/11. Estão no resumo das raízes, "O que fica em aberto".)
+
+- (pedaço grande 8, vista no pedaço 6; **para a gerente**: fora dos tipos 4 e 5 que a D-886 deixou neste pedaço) O pedido
+  antigo de licença dos testes à distância (`core/_testes_a_distancia_windows._rodar_elevado`, L81-100) lê o erro do
+  `ShellExecuteExW` com `ctypes.get_last_error()` de uma função aberta por `ctypes.windll`, sem `use_last_error`. Pela
+  documentação do ctypes, `get_last_error` só guarda o erro das funções abertas com `use_last_error=True`; aqui ele
+  devolveria um valor velho (ou 0). Com 0, `aplicar_no_windows` (L117-125) dá "deu certo" sem ter rodado, e `ligar`
+  marca a opção como ligada e pronta. É o mesmo defeito que o cabeçalho de `core/windows.py` (L52-53) conta da etapa 5
+  ("sem eles o 'Não' vira 'deu certo'"). O caminho que chega aqui no programa do Kaique: Configurações > Testes à
+  distância (a nota 1 do pedaço 6 da lista). Não rodei: confirmar à vista, se a gerente quiser.
+
+
+- (pedaço grande 4, vista no pedaço 2; fora deste pedaço grande) "Onde há tinta nesta página" tem mais de uma conta:
+  `core/detectar_regioes.mascara_de_tinta` (Sauvola com o `k` do filtro), `core/editar_zonas._tinta_na_area` (o Preto e
+  branco da página), `core/recortar._mascara_de_tinta_local` e, em `core/filtros.py`, `cinza < papel * TINTA_PARA_ORLA`
+  em `_recompor_a_rampa`, `_quase_sem_tinta`, `_alisar_o_papel`, `_empurrar_branco` e `_filtro_so_no_pedaco`. Não confirmei
+  se é a mesma pergunta (cada uma serve a uma coisa) nem se dão respostas diferentes na mesma página: as de `filtros.py`
+  são do pedaço grande 3, que não leu as contas por dentro.
+
+- (**para o Fable decidir**; nota do pedaço 6 do grande 7, registrada como suspeita no pedaço 0 do grande 6, 27/11) O
+  "Conferido: as N páginas saem na ordem certa depois de dobrar" da tela "Ficou pronto!" (`ui/tela_final.TelaFinal.mostrar`
+  L286-297) e do "Montar para imprimir" (`core/impressao.py` L818, `resultado.conferencia`) vem de
+  `core/cadernos.conferir_sequencia` (L209, `6e8a2f7d`, 05/08, a pergunta do Kaique "como ter certeza que estão todas na
+  sequência correta sem ter que olhar folha por folha?"). O que vejo no código: ela recebe só dois números (quantas
+  páginas e quantas por caderno), refaz a ordem pela mesma função que monta os cadernos (`ordem_do_caderno`, que
+  `montar_ordem` L114 também usa) e simula a dobra sobre essa conta. Não abre o PDF gravado, não olha as páginas que
+  entraram nele, e o número de páginas que recebe na tela final é a contagem do SP-03. A pergunta: isso fere o CLAUDE.md
+  §11.12, ponto 2 ("Nada dá como feito o que não conferiu [...] O que a tela mostra vem dessa conferência, nunca só da
+  anotação do próprio programa")? Não decido: fica aberta para o Fable.
 
 ### Fechadas
+
+- (pedaço grande 10, vista no pedaço 2; fechada no pedaço 4, 27/11) "Baixar um arquivo da internet" escrito em cada
+  ferramenta → **virou o achado leve FS-11**: três regras diferentes para o arquivo pela metade e para o errado
+  (apaga, guarda como `.errado`, para e pede para apagar à mão); o atualizador só lê arquivos pequenos.
+
+- (pedaço grande 10, vista no pedaço 1; fechada no pedaço 2, 27/11) A pasta `D:\programas\EditorImpressao-arquivos`
+  escrita à mão em `relatorio.py` e a das ferramentas num lugar só → **virou o achado leve FS-04**: só a subpasta das
+  ferramentas tem lugar único (D-820); a do acervo está em `relatorio.py` duas vezes e nos scripts soltos.
+
+- (pedaço grande 4, vista no pedaço 2; fechada no pedaço 2 do grande 9, 27/11) Abrir um modelo da rede (ONNX) em três
+  lugares → **virou o achado OC-02** (médio): o que difere é a regra da falha, em seis lugares (o modelo de layout
+  tenta de novo desde o conserto de 21/10; o docTR, o motor do Kraken, a rede do clique e as duas DLLs guardam a falha
+  até fechar). O carregador das duas DLLs, igual linha por linha, já era o FL-15.
+
+- (pedaço grande 6, vista no pedaço 3 do grande 7; fechada no pedaço 4 do grande 6, 27/11) A prévia do livreto com o
+  segundo caminho `SEM_SERVIDOR` → **virou parte do achado AB-15** (médio), um achado só, do servidor inteiro: o laço
+  "pedir, trocar o que caiu, tentar de novo" em três cópias, e o desvio "se voltou `SEM_SERVIDOR`, desenhe aqui" nos três
+  lugares que pedem. Dos 17 `SEM_SERVIDOR`, 15 são do próprio módulo. A reserva ainda acontece (o servidor que não sobe,
+  que cai duas vezes, ou `EDITOR_PAGINAS_AQUI=1`), e fica no `erros.log`. A trava do MuPDF usada de fora entrou no AB-14.
+
+- (pedaço grande 6, vista no pedaço 6 do grande 3; fechada no pedaço 0 do grande 6, 27/11) `ui/tela_opcoes.py` sem quem
+  a monte → **virou o achado leve AB-01**: código morto desde `e2321b16` (26/10, D-002), junto com
+  `ui/widgets/folhear_pdf.py`, que só ela montava; a prova `tests/test_decisoes_automatico.py` L603-608 lê o arquivo
+  morto como gabarito. O PT-05, o PT-24 (L915) e o FL-08 contam uma cópia que não está no caminho.
+- (pedaço grande 7, vista no pedaço 1; fechada no pedaço 0 do grande 6, 27/11) O caminho rápido dos cadernos sem a
+  pergunta do fundo tirado → **virou o achado AB-02** (médio): há caminho, o Automático ("Tirar o fundo" com "Limpar a
+  folha", que grava o fundo tirado sem a marca FILTRO, e depois "Desligar as marcadas" com o Limpar). Não rodei.
+
+- (pedaço grande 3, vista no pedaço 1; fechada no pedaço 5, 27/11) O "Suavizar as letras" recebe o DPI do desenho
+  como veio (`core/pipeline._filtrar_preto_no_branco` L3601-3602), e não a conta única dos PDFs que dizem 72 DPI →
+  **virou parte do FL-17**: confirmado (`luz_scantailor.suavizar_nesta_pagina` guarda o que vem; sem DPI, 300), e o
+  DPI só existe quando a página procura gravura ou usa um limpar do ScanTailor.
+
+- (pedaço grande 2, vista no pedaço 1; fechada no pedaço 4, 27/11) `_chave_do_desentortar` e o que o desentortar lê da página → **descartada como achado próprio**: `preparar_no_corte` só lê o modo, o lado (`metade`) e o "aumentando", e os três estão na chave (a metade, pela da geometria). O que falta na chave é o tamanho do livro, já no PP-03.
+- (pedaço grande 2, vista no pedaço 3; fechada no pedaço 4, 27/11) O DPI dito ao ScanTailor → o endireitar chama a conta única (`dpi_para_o_endireitar` → `dpi_para_os_pontinhos`); **o desentortar não: virou o achado PP-15**.
+
+- (pedaço grande 2, vista no pedaço 0 do grande 1; fechada no pedaço 0 do grande 2, 27/11) `_geometria` mede com o
+  aviso "Parece em branco", que não está na chave → **virou o achado PP-02** (médio): o aviso muda depois de a
+  geometria ser guardada (`renderizar_pagina` guarda em L2859/L2865 e só mede o aviso em L2875; a tela mede por trás
+  depois de dividir), e o corte velho fica até fechar o livro, no PDF também; só com a borda preta "até a moldura".
+
+- (fora da tela, achada no pedaço 8; fechada no pedaço 0 de 27/11) `core/pipeline._guardar_o_conteudo` e o
+  `_TAMANHOS.setdefault` → **virou o achado leve PP-01**: a proteção foi posta pelo mesmo commit que tirou a causa
+  (`57de8af4`, 21/10); desde 22/10 (`8e237efe`) todas as nove chamadas medem na resolução do livro, e a chave tem a
+  resolução; não achei caso hoje em que ela mude o resultado. A "reserva" da passada (L2229-2256) entra no mesmo achado.
 
 - (contagens e situação, suspeita 1) "Ficou escura" / "Texto quase sumiu" com duas regras → **virou o achado SP-08**:
   a tela mede e grava; a regra do núcleo (`analise.analisar_resultado`) nunca foi chamada (código morto).
