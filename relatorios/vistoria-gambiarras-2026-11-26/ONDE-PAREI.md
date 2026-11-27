@@ -231,8 +231,8 @@ L4840-4935, L4985-5012, L5034-5210; `ui/dialogo_impressao.py` L845-866; o cabeç
 |---|---|---|---|---|
 | 1. gravar o PDF (o processar, página por página) | `core/pipeline.py` L4530-4840, L4936-4985, L5012-5034; `ui/tarefas.TarefaProcessar` e `TarefaMedirAsMargens` (L261-352); para comparar, em `ui/janela_principal.py` só quem dispara a tarefa e recebe o fim | feito (3 achados, IM-01 a IM-03) | 27/11 15:00 | 27/11 15:04 |
 | 2. a ordem das páginas e os cadernos | `core/ordem_das_paginas.py`, `core/cadernos.py` | feito (4 achados, IM-04 a IM-07; o lado a lado com o vão já era o AV-06) | 27/11 15:04 | 27/11 15:07 |
-| 3. montar para imprimir, no núcleo | `core/impressao.py` | feito (4 achados, IM-08 a IM-11; e a nota do `lu-5-deitada`) | 27/11 15:07 | 27/11 15:10 |
-| 4. a janela "Montar para imprimir" e as folhas do caderno | `ui/dialogo_impressao.py` (fora de L845-866), `ui/widgets/folhas_do_caderno.py` (fora de L458-472), `ui/tarefas.TarefaPreviaDoAutomatico` (L672-775) | a fazer | | |
+| 3. montar para imprimir, no núcleo | `core/impressao.py` | feito (4 achados, IM-08 a IM-11; e a nota do `lu-5-deitada`) | 27/11 15:07 | 27/11 15:09 |
+| 4. a janela "Montar para imprimir" e as folhas do caderno | `ui/dialogo_impressao.py` (fora de L845-866), `ui/widgets/folhas_do_caderno.py` (fora de L458-472), `ui/tarefas.TarefaPreviaDoAutomatico` (L672-775) | feito (3 achados, IM-12 a IM-14; a `TarefaPreviaDoAutomatico` não tem conta própria) | 27/11 15:10 | 27/11 15:12 |
 | 5. impressora e tamanho da folha | `core/impressora.py`, `ui/dialogo_tamanho_da_folha.py` | a fazer | | |
 | 6. a tela final | `ui/tela_final.py` | a fazer | | |
 
@@ -396,7 +396,7 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
 
 - (pedaço grande 6, vista no pedaço 3 do grande 7, 27/11) A prévia do livreto (`core/impressao.previa_da_folha`
   L983-991) pede a folha ao servidor de páginas e, se ele estiver desligado ou fora do ar (`SEM_SERVIDOR`), monta aqui,
-  "como antes", com a trava do MuPDF (`core/pdf_io._TRANCA`); o comentário diz que montar aqui para a tela
+  "como antes", com a trava do MuPDF (`core/pdf_io._TRANCA`); o comentário diz que montar aqui faz a tela parar
   ("Arriscado: tirar isto (a tela volta a parar)"). É um segundo caminho de reserva (tipo 4); `SEM_SERVIDOR` aparece
   17 vezes em `core/` e `ui/`. Quem ler `core/paginas_em_outro_processo.py` e `core/pdf_io.py` (pedaço grande 6) decide se
   é um achado só, do servidor inteiro, e se a reserva ainda acontece.
