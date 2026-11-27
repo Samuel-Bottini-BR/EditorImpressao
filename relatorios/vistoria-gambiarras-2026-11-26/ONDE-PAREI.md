@@ -412,6 +412,30 @@ lista; não são dos cinco tipos).
 
 **Próximo:** parar e entregar à gerente (a tarefa pediu só os pedaços grandes 4 e 9).
 
+## Programa inteiro (D-886): pedaço grande 10, ferramentas do Samuel
+
+Agente novo, 27/11/2026, começou às 16:12 (relógio da máquina, `date`). Leu as regras do verificador, o CLAUDE.md
+(§11.12, inteiro, com a parte "Vale para tudo, sem exceção (18/11/2026)"), o índice da memória, a ficha
+`memoria/geral/atualizador.md`, a ordem, a resposta do Fable, este arquivo inteiro, a lista (o modelo e, por inteiro, os
+que tocam estas ferramentas: RT-01, FL-15, FL-16, FL-19, AB-24, AB-27, GV-13, OC-03 a OC-06, OC-08) e a fila da Central
+(nenhum item da fila é do empacotar, do publicar ou do atualizador). As decisões que valem são as copiadas no alto deste
+arquivo (D-885, D-886, D-876, §11.12); conferidas, valem também para este pedaço grande. Código: linhas no `cbc9784f`
+(`git diff cbc9784f HEAD -- '*.py'` vazio). Prefixo dos achados: **FS**. O Kaique não vê estas ferramentas: "o que o
+Kaique perderia" é o que chegaria ou não no programa dele. Achado conhecido da gerente para conferir: o PDF de
+`relatorio.gravar` corta a última coluna das tabelas largas, e o .html não.
+
+Divisão em pedaços pequenos (escrita antes de começar). Já lido, não se relê: `empacotar.modelos_do_programa` (L292-311,
+no GV-13), `empacotar.achar_motor_kraken`/`LUGARES_DO_MOTOR` (no OC-03), `empacotar.espaco_livre` (só a existência, RT-01),
+`montar_motor_kraken.py` L160 e L588 (no OC-04).
+
+| pedaço pequeno | arquivos | situação | começo | fim |
+|---|---|---|---|---|
+| 1. o relatório e o brasão | `relatorio.py`, `gerar_brasao.py` | feito (3 achados, FS-01 a FS-03; o achado conhecido do PDF conferido: defeito simples, posto no FS-01; nenhum no `gerar_brasao`) | 27/11 16:12 | 27/11 16:15 |
+| 2. a pasta das ferramentas e os compilar | `core/pasta_das_ferramentas.py`, `compilar_detector_gravura.py`, `compilar_st_ferramentas.py` | a fazer | | |
+| 3. montar o motor do Kraken | `montar_motor_kraken.py` (fora de L160 e L588) | a fazer | | |
+| 4. o empacotar | `empacotar.py` (fora do já lido) | a fazer | | |
+| 5. publicar e servir as versões | `publicar_versao_kaique.py`, `servidor_das_versoes.py` | a fazer | | |
+
 ## Pedaços (tela de trabalho, 26/11)
 
 | pedaço | situação | começo | fim | tempo |
@@ -563,6 +587,11 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
 ## Suspeitas (dúvidas de outros pedaços; quem ler o pedaço confirma ou descarta)
 
 ### Abertas
+
+- (pedaço grande 10, vista no pedaço 1; para o pedaço 2) A pasta `D:\programas\EditorImpressao-arquivos` escrita à mão:
+  em `relatorio.py` duas vezes no mesmo arquivo (L420 `pasta_de_teste` e L464 `main`, a pasta de testes do acervo), e
+  `core/pasta_das_ferramentas.py` existe para escrever a das ferramentas "num lugar só" (D-820). Conferir se a raiz é a
+  mesma constante ou se cada ferramenta a escreve, e contar no programa inteiro (fora dos scripts soltos).
 
 - (pedaço grande 4, vista no pedaço 2; fora deste pedaço grande) "Onde há tinta nesta página" tem mais de uma conta:
   `core/detectar_regioes.mascara_de_tinta` (Sauvola com o `k` do filtro), `core/editar_zonas._tinta_na_area` (o Preto e
