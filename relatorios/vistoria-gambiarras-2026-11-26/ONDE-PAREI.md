@@ -432,7 +432,7 @@ no GV-13), `empacotar.achar_motor_kraken`/`LUGARES_DO_MOTOR` (no OC-03), `empaco
 |---|---|---|---|---|
 | 1. o relatório e o brasão | `relatorio.py`, `gerar_brasao.py` | feito (3 achados, FS-01 a FS-03; o achado conhecido do PDF conferido: defeito simples, posto no FS-01; nenhum no `gerar_brasao`) | 27/11 16:12 | 27/11 16:15 |
 | 2. a pasta das ferramentas e os compilar | `core/pasta_das_ferramentas.py`, `compilar_detector_gravura.py`, `compilar_st_ferramentas.py` | feito (3 achados, FS-04 a FS-06; fecha a suspeita da pasta do Samuel) | 27/11 16:15 | 27/11 16:18 |
-| 3. montar o motor do Kraken | `montar_motor_kraken.py` (fora de L160 e L588) | a fazer | | |
+| 3. montar o motor do Kraken | `montar_motor_kraken.py` (fora de L160 e L588) | feito (2 achados, FS-07 e FS-08; a nota do `--so-servidor`) | 27/11 16:19 | 27/11 16:20 |
 | 4. o empacotar | `empacotar.py` (fora do já lido) | a fazer | | |
 | 5. publicar e servir as versões | `publicar_versao_kaique.py`, `servidor_das_versoes.py` | a fazer | | |
 
@@ -592,7 +592,10 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
   ferramenta, com o seu `urllib.request.urlopen` e o seu arquivo "parcial": `compilar_detector_gravura._baixar` (L124-130)
   e a soma do Qt (L166), `montar_motor_kraken.py` (L191, L271), `empacotar.py` (L660-690, o Visual C++) e, no programa do
   Kaique, `atualizacao.py` (L560-563, do pedaço grande 8). Conferir se diferem (o tempo, o parcial, a soma, o que fazem
-  quando cai no meio) contra o CLAUDE.md §11.12, ponto 1 ("Uma peça só para cada conversa com [...] a rede").
+  quando cai no meio) contra o CLAUDE.md §11.12, ponto 1 ("Uma peça só para cada conversa com [...] a rede"). Visto no
+  pedaço 3: o `_baixar` do compilar apaga o arquivo de soma errada ("apaguei. Tente de novo", L169-170, L187-188) e o
+  `_baixar_conferido` do montar o guarda como `.errado` ("não é apagado", L184-197); os dois baixam para `.parcial`,
+  com 120 s. Falta o do empacotar (pedaço 4) e o do atualizador (pedaço grande 8, só se for peça de proteção).
 
 - (pedaço grande 4, vista no pedaço 2; fora deste pedaço grande) "Onde há tinta nesta página" tem mais de uma conta:
   `core/detectar_regioes.mascara_de_tinta` (Sauvola com o `k` do filtro), `core/editar_zonas._tinta_na_area` (o Preto e
