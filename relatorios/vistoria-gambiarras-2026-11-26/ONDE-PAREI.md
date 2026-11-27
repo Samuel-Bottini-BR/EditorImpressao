@@ -213,6 +213,29 @@ aviso em `ALERTAS` (L203-440), lidos só pelos códigos e pelos botões; em `ui/
 
 **Próximo:** o pedaço grande 7, "gerar o PDF e cadernos" (lista em `resposta-do-fable-2026-11-27.md`). A gerente decide quando.
 
+## Programa inteiro (D-886): pedaço grande 7, gerar o PDF e cadernos
+
+Agente novo, 27/11/2026, começou às 15:00 (relógio da máquina, `date`). Leu as regras do verificador, o CLAUDE.md
+(§11.12), o índice da memória, a ordem, a resposta do Fable, este arquivo inteiro, a lista (o modelo, os títulos e, por
+inteiro, os achados que tocam o PDF e a contagem: SP-03, PT-21, AV-22, RT-04, FL-03) e a fila da Central (as do imprimir:
+`lu-5-deitada`, `n0411-folhas-de-todas`, `n0411-o-que-vai-sair`, `d574-o-que-vai-sair`, `au-d-574`, `lu-8-aviso-salvar`,
+`k0711-pronto-conta`). As decisões que valem são as copiadas no alto deste arquivo (D-885, D-886, §11.12); conferidas,
+valem também para este pedaço grande. Código: linhas no `cbc9784f` (`git diff cbc9784f HEAD -- core/ ui/` vazio).
+Prefixo dos achados: **IM**.
+
+Divisão em pedaços pequenos (escrita antes de começar). O que outros pedaços já leram não se relê (em `core/pipeline.py`
+L4840-4935, L4985-5012, L5034-5210; `ui/dialogo_impressao.py` L845-866; o cabeçalho de `core/ordem_das_paginas.py`;
+`ui/widgets/folhas_do_caderno.py` L458-472; `ui/tarefas.py` L345-416, L792-1036, L1135-1470).
+
+| pedaço pequeno | arquivos | situação | começo | fim |
+|---|---|---|---|---|
+| 1. gravar o PDF (o processar, página por página) | `core/pipeline.py` L4530-4840, L4936-4985, L5012-5034; `ui/tarefas.TarefaProcessar` e `TarefaMedirAsMargens` (L261-352); para comparar, em `ui/janela_principal.py` só quem dispara a tarefa e recebe o fim | feito (3 achados, IM-01 a IM-03) | 27/11 15:00 | 27/11 15:04 |
+| 2. a ordem das páginas e os cadernos | `core/ordem_das_paginas.py`, `core/cadernos.py` | a fazer | | |
+| 3. montar para imprimir, no núcleo | `core/impressao.py` | a fazer | | |
+| 4. a janela "Montar para imprimir" e as folhas do caderno | `ui/dialogo_impressao.py` (fora de L845-866), `ui/widgets/folhas_do_caderno.py` (fora de L458-472), `ui/tarefas.TarefaPreviaDoAutomatico` (L672-775) | a fazer | | |
+| 5. impressora e tamanho da folha | `core/impressora.py`, `ui/dialogo_tamanho_da_folha.py` | a fazer | | |
+| 6. a tela final | `ui/tela_final.py` | a fazer | | |
+
 ## Pedaços (tela de trabalho, 26/11)
 
 | pedaço | situação | começo | fim | tempo |
@@ -364,6 +387,12 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
 ## Suspeitas (dúvidas de outros pedaços; quem ler o pedaço confirma ou descarta)
 
 ### Abertas
+
+- (pedaço grande 7, vista no pedaço 1, 27/11) O caminho rápido dos cadernos (`Projeto.so_cadernos`, IM-01) não pergunta
+  pelo fundo tirado da página (`fundo_tirado.valor(pagina) is True`, que `esta_sem_o_fundo` aceita sem o filtro): só pela
+  marca FILTRO (`etapas.filtro_a_mao`) e pela caixinha "Limpar a folha". Não confirmei se há caminho que deixa o fundo
+  tirado verdadeiro sem a marca FILTRO e sem "Limpar a folha" (o botão do "Tirar o fundo", o Automático). Se houver, o
+  caminho rápido põe a folha com o fundo. Quem ler o pedaço grande 6 (abrir, guardar) ou voltar ao `fundo_tirado` confirma.
 
 - (pedaço grande 6, vista no pedaço 6 do grande 3, 27/11) `ui/tela_opcoes.py` inteiro parece sem quem o monte: nenhum
   arquivo do programa importa `TelaOpcoes` (só `tests/test_decisoes_automatico.py`, `tests/test_tirar_fundo_no_programa.py`
