@@ -339,9 +339,9 @@ aviso uma vez por sessão L1352-1377, no FL-16, e a forma de fábrica do `detect
 
 | pedaço pequeno | arquivos | situação | começo | fim |
 |---|---|---|---|---|
-| 1. a entrada do detector e as opções | `core/detectar_regioes.py` L1-215 e L1392-1683 (as opções, a assinatura, `detectar`, `refinar_para_tinta`, `explicar_em_portugues`), e quem chama `detectar` no programa | feito (2 achados, GV-01 e GV-02) | 27/11 15:52 | 27/11 15:56 |
-| 2. o detector antigo e o layout | `core/detectar_regioes.py` L215-930 (a rede do layout, as máscaras, a página vazia, o objeto, o meio tom, `_gravura_antiga`) | feito (3 achados, GV-03 a GV-05; a página sem conteúdo já é o AV-15) | 27/11 15:56 | 27/11 16:01 |
-| 3. a gravura do ScanTailor | `core/detectar_regioes.py` L930-1350 (a limpeza, as barras, crescer pela moldura, o DPI, a procura com tempo), `core/gravura_scantailor.py` | a fazer | | |
+| 1. a entrada do detector e as opções | `core/detectar_regioes.py` L1-215 e L1392-1683 (as opções, a assinatura, `detectar`, `refinar_para_tinta`, `explicar_em_portugues`), e quem chama `detectar` no programa | feito (2 achados, GV-01 e GV-02) | 27/11 15:52 | 27/11 15:55 |
+| 2. o detector antigo e o layout | `core/detectar_regioes.py` L215-930 (a rede do layout, as máscaras, a página vazia, o objeto, o meio tom, `_gravura_antiga`) | feito (3 achados, GV-03 a GV-05; a página sem conteúdo já é o AV-15) | 27/11 15:55 | 27/11 15:58 |
+| 3. a gravura do ScanTailor | `core/detectar_regioes.py` L930-1350 (a limpeza, as barras, crescer pela moldura, o DPI, a procura com tempo), `core/gravura_scantailor.py` | feito (3 achados, GV-06 a GV-08; o carregador da DLL já é o FL-15) | 27/11 15:58 | 27/11 16:00 |
 | 4. a seleção (as áreas e as máscaras) | `core/selecao.py` (fora do já lido) | a fazer | | |
 | 5. as zonas na folha | `core/zonas_na_folha.py` (fora do já lido) | a fazer | | |
 | 6. editar as áreas e a rede que aponta | `core/editar_zonas.py`, `core/rede_selecao.py` | a fazer | | |
@@ -502,7 +502,10 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
   em mais de um lugar: `core/detectar_regioes.DetectorDeLayout._carregar` (L236-268, tenta de novo na página seguinte
   quando a carga falha, conserto de 21/10), `core/rede_selecao._carregar` e, pela busca por `onnxruntime`,
   `core/ocr_doctr.py`. Pode ser a mesma conversa com uma peça de fora escrita três vezes (CLAUDE.md §11.12, ponto 1). Não
-  li as outras duas ainda.
+  li as outras duas ainda. Visto no pedaço 3: a falha ao abrir tem duas regras: o modelo de layout tenta de novo na
+  página seguinte (o conserto de 21/10, "o mesmo código nem sempre dá a mesma imagem"), e as duas DLLs do ScanTailor
+  (`gravura_scantailor` e `st_ferramentas`, `_tentou`) guardam a falha para a sessão inteira (o carregador duplicado já é
+  o FL-15; a regra diferente da falha, não).
 - (pedaço grande 4, vista no pedaço 2; fora deste pedaço grande) "Onde há tinta nesta página" tem mais de uma conta:
   `core/detectar_regioes.mascara_de_tinta` (Sauvola com o `k` do filtro), `core/editar_zonas._tinta_na_area` (o Preto e
   branco da página), `core/recortar._mascara_de_tinta_local` e, em `core/filtros.py`, `cinza < papel * TINTA_PARA_ORLA`
