@@ -1375,7 +1375,7 @@ por `is_junction` e por quem ordena versões. Pela leitura; não rodei.
 ### Atualizador (pedaço grande 8, só os tipos 4 e 5), pedaços 0 e 1: a contagem dos nomes e o que sobrou do que saiu (feitos em 27/11/2026)
 
 A D-886 manda, aqui, só os tipos 4 e 5 ("peças de proteção e código morto; o resto já passou por cinco rodadas"). Pedaço
-0: um script de contar texto (na pasta de rascunho, sem importar o programa) listou as 662 funções, métodos e constantes
+0: um script de contar texto (na pasta de rascunho, sem importar o programa) listou as 649 funções, métodos e constantes
 de nível de módulo dos 13 arquivos e contou onde mais cada nome aparece (o programa, os testes, os relatórios). Sem uso
 nenhum fora da própria definição: `core/windows._programa_com_funcao_propria`; usados só pelos testes:
 `core/windows.bibliotecas_guardam_o_erro`, `core/windows.marca_existe` e `core/fases_da_atualizacao.TIPOS_DE_EVENTO`
@@ -1388,3 +1388,17 @@ para os testes à distância (o pedaço 6). Pela leitura; não rodei.
 | nº | onde | tipo | grav. | outras cópias | outra cópia de | por quê | Central | o que o Kaique perderia |
 |---|---|---|---|---|---|---|---|---|
 | AT-01 | Da volta automática sobraram dois comentários que descrevem o que não existe mais: o docstring de `assinatura.conferir_versao` (L270-273: "Quem chama: atualizacao.procurar_e_preparar (antes de baixar), atualizacao.voltar_para_a_anterior (antes de voltar) e publicar_versao_kaique"), duas funções que saíram com o atualizador novo (`55ffa4f1`, 24/11; quem chama hoje é `atualizacao.guardar_ultima_boa` L485, `conferir_assinatura_do` L925 e `Atualizacao._conferir_assinatura_guardada` L1219); e o comentário da frase da D-839 em `atualizacao.py` L128-129 ("A (1), 'voltou para a versão anterior', fica só para a versão nova que entrou, falhou no teste e voltou"), quando a frase (1) saiu com a volta (o mesmo arquivo, L121-122: "As (1) e (3) da D-778 [...] saíram desta entrega com a volta automática (D-867)") | 5 | leve (só comentário) | os dois ao lado | — | o docstring: `16c838a7` (16/11, etapa 3), não acertado em `55ffa4f1` (24/11, "Atualizador novo, código: o executor refeito"); o comentário da D-839: `4f542399` (24/11, volta 2b), não acertado quando a D-867 (25/11: "Tirar a volta automática: a marca 'sem volta', o 'uma vez só', a segunda tentativa, o `--voltando`, a fase de volta") foi construída. CLAUDE.md §11.12: "Comentário do código que diz [...] 'como o botão X' é conferido na hora" | — | nada |
+
+### Atualizador, pedaço 2: o atualizador (feito em 27/11/2026)
+
+Lido: `atualizacao.py` inteiro, só pelos tipos 4 e 5 (o cabeçalho com a lista "caminho → função", as constantes e as
+frases, o bilhete, a última boa e as marcas, a fonte e a fonte de teste, onde o programa está, o preparo, o Visual C++,
+o Inno antigo, o motor, a assinatura e o teste rápido, o executor inteiro, os vistos, os ganchos e a linha de comando).
+O que não é dos tipos 4 e 5 não se anota aqui (a D-886). A última boa (`ultima-boa\`, a cópia do pacote a cada versão que
+passa no teste) é a D-869 ("a última boa fica guardada só para a volta à mão"): não é peça de proteção sem dono. A
+retirada da instalação antiga do Inno (`achar_instalacao_do_inno`, `comando_para_tirar_o_inno`) é para "a de 28/10 do
+Kaique" (L751), que existe: não é código morto. Pela leitura; não rodei.
+
+| nº | onde | tipo | grav. | outras cópias | outra cópia de | por quê | Central | o que o Kaique perderia |
+|---|---|---|---|---|---|---|---|---|
+| AT-02 | Quatro peças só existem para proteger o computador de um ajudante antigo (a tarefa do Windows "EditorImpressao\Procurar versao nova", que rodava como o sistema até 23/11): o primeiro passo da pergunta do Windows apaga a tarefa, se achar (`atualizacao.passos_do_preparo` L684-696, com `NOME_DA_TAREFA` L94-97); a linha de comando reconhece o pedido dela e sai (`ARG_PROCURAR` L91-93 e `atender_linha_de_comando` L1493-1495: "o ajudante antigo chamou o programa: nada a fazer"); o registro tem uma segunda saída, para o `erros.log`, quando o arquivo "foi criado por outra conta, como o do ajudante antigo no PC do Samuel" (`registrar` L198-215); e o desfazer dos testes à distância apaga a mesma tarefa de novo (`core/testes_a_distancia._passos_das_nossas_tarefas` L518-545, do pedaço 6). Pela ficha do atualizador da memória, o ajudante antigo só rodou nas provas do PC do Samuel (etapas 3 a 5 e a prova nº 1 dos "4 consertos"); não achei outro computador que o tenha tido | 4 | leve (hoje não atrapalha: sem a tarefa, o passo não faz nada) | as quatro ao lado | — | o ajudante: D-733 (17/11, "ajudante como SYSTEM"); apagá-lo no preparo: **D-838** (23/11: "O programa novo só apaga sozinho a tarefa antiga do ajudante, se achar", na "limpeza do PC do Samuel"); o `ARG_PROCURAR` reconhecido e o registro de reserva: `55ffa4f1` (24/11, "Atualizador novo, código: o executor refeito"); não achei decisão sobre essas duas | — | nada: o ajudante nunca esteve no notebook dele, pelo que achei |
