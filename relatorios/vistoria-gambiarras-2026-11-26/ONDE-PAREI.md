@@ -185,7 +185,7 @@ L463-500, L707-781; em `core/pipeline.py` L180-276).
 | 3. as etapas do Automático no núcleo | `core/automatico.py` L1-1273, fora do já lido (o pedido, as mexidas, o resumo, o livro leve, `aplicar`, `_capa_aberta`, `_ligar_na_pagina`, `_desligar_as_desmarcadas`, `rodar`) | feito (5 achados, AV-08 a AV-12) | 27/11 14:48 | 27/11 14:51 |
 | 4. a análise do livro | `core/analise.py` (fora do já lido), as partes da análise de `core/pipeline.py` (o que chama `analisar_folha`/`analisar_pagina` fora de L180-276), `core/automatico.medir_o_livro_ao_abrir` | feito (4 achados, AV-13 a AV-16) | 27/11 14:51 | 27/11 14:54 |
 | 5. o "Para revisar" e os avisos | `core/revisar.py`; `core/analise.Alerta`/`descrever` (L139-462); `core/avisos.py` já lido: só as buscas | feito (2 achados, AV-17 e AV-18) | 27/11 14:54 | 27/11 14:56 |
-| 6. página em branco | `core/paginas_em_branco.py` | a fazer | | |
+| 6. página em branco | `core/paginas_em_branco.py` | feito (3 achados, AV-19 a AV-21) | 27/11 14:56 | 27/11 14:58 |
 | 7. a janela dos avisos | `ui/janela_dos_avisos.py` | a fazer | | |
 
 ## Pedaços (tela de trabalho, 26/11)
