@@ -234,7 +234,36 @@ L4840-4935, L4985-5012, L5034-5210; `ui/dialogo_impressao.py` L845-866; o cabeç
 | 3. montar para imprimir, no núcleo | `core/impressao.py` | feito (4 achados, IM-08 a IM-11; e a nota do `lu-5-deitada`) | 27/11 15:07 | 27/11 15:09 |
 | 4. a janela "Montar para imprimir" e as folhas do caderno | `ui/dialogo_impressao.py` (fora de L845-866), `ui/widgets/folhas_do_caderno.py` (fora de L458-472), `ui/tarefas.TarefaPreviaDoAutomatico` (L672-775) | feito (3 achados, IM-12 a IM-14; a `TarefaPreviaDoAutomatico` não tem conta própria) | 27/11 15:10 | 27/11 15:12 |
 | 5. impressora e tamanho da folha | `core/impressora.py`, `ui/dialogo_tamanho_da_folha.py` | feito (3 achados, IM-15 a IM-17) | 27/11 15:12 | 27/11 15:13 |
-| 6. a tela final | `ui/tela_final.py` | a fazer | | |
+| 6. a tela final | `ui/tela_final.py` | feito (1 achado, IM-18; e a nota da conferência da dobra) | 27/11 15:13 | 27/11 15:14 |
+
+**Pedaço grande 7 terminado (27/11, das 15:00 às 15:15 pelo relógio da máquina; o código, das 15:01 às 15:14).**
+18 achados novos, IM-01 a IM-18. Por tipo (o principal): 15 do tipo 1, 1 do tipo 2 (IM-12; IM-10 e IM-15 têm o 2
+junto), nenhum do tipo 3, 2 do tipo 4 (IM-01, IM-03) e nenhum do tipo 5. Por gravidade, com a régua nova: nenhum GRAVE
+(os que chegam no PDF, no papel ou na tela só chegam de vez em quando: o caminho rápido dos cadernos com tudo desmarcado,
+a capa aberta com página em branco posta, páginas de tamanhos diferentes no caderno, o arquivo de impressão antigo
+aberto, a encadernação à direita, a escala de cinza na impressora direto), 10 médios (IM-01, IM-04, IM-05, IM-06,
+IM-08, IM-09, IM-10, IM-12, IM-15, IM-16) e 8 leves (IM-02, IM-03, IM-07, IM-11, IM-13, IM-14, IM-17, IM-18). "Outra
+cópia" de achado já listado: IM-03 (PT-24) e IM-04 (DV-10). Da mesma família: IM-01 (CF-04, G-04), IM-02 e IM-08
+(PT-21), IM-05 (PP-19, AV-19, DV-12), IM-06 e IM-16 (CF-01; IM-06 também PP-11), IM-07 e IM-10 (SP-03), IM-12 (IM-10),
+IM-13, IM-15 e IM-18 (AV-07, AV-03), IM-14 (CF-04). Central: nenhum achado explica item da fila lida em 26/11. O
+`lu-5-deitada` cai aqui, mas não é dos cinco tipos (os avisos do "Montar para imprimir" só são feitos ao gravar; a
+prévia monta a folha pela mesma conta e não os faz: nota no pedaço 3 da lista). O `au-d-574` (ver o livreto pronto)
+fica perto do IM-06 (a tela do caderno com a sua medida), sem ser a causa. O `lu-8-aviso-salvar` é o PT-21; o IM-02 e o
+IM-08 são da mesma família, noutras janelas. O `n0411-folhas-de-todas` (D-670, a caixinha "Imprimir só algumas folhas"
+no lugar do "0 = todas") e o `n0411-o-que-vai-sair`/`d574-o-que-vai-sair` (D-702, o X de fechar) são de tela e ainda
+sem código: não são dos cinco tipos. O `k0711-pronto-conta` não é deste pedaço (está perto do SP-06, não confirmei).
+
+O que ficou sem ler neste pedaço grande (só pela lista das funções e pelas buscas, sem conta de página achada): em
+`ui/dialogo_impressao.py` a montagem dos controles (`_montar_opcoes`, `_montar_resultado`, `_montar_previa`,
+`_montar_botoes`, L537-814; só os rótulos da escala e da encadernação, L584-627); em `ui/widgets/folhas_do_caderno.py`
+o rótulo e a linha que quebra (L123-262) e o desenho e a tela grande (L700-974: `pixmaps`, `_desenhar`, `TelaGrandeDoCaderno`,
+a roda); em `core/impressao.py` o corpo de `_montar_multiplo` e `_montar_poster` foi lido, sem cópia achada. Uma nota que
+não é dos cinco tipos, para a gerente olhar contra o §11.12, ponto 2: o "Conferido: [...] saem na ordem certa" da tela
+final e da janela é a simulação da dobra sobre a conta (`conferir_sequencia`), sem abrir o PDF gravado (pedaço 6 da lista).
+
+**Próximo:** o pedaço grande 6, "abrir, guardar e desfazer" (lista em `resposta-do-fable-2026-11-27.md`), começando pelas
+suspeitas abertas abaixo que são dele (a `tela_opcoes`, o fundo tirado no caminho rápido dos cadernos e o `SEM_SERVIDOR`).
+A gerente decide quando.
 
 ## Pedaços (tela de trabalho, 26/11)
 
