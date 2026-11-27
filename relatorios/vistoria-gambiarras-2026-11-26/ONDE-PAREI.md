@@ -458,6 +458,37 @@ os scripts que chamam o `relatorio.py` (são dos scripts soltos, fora da vistori
 
 **Próximo:** o pedaço grande 8, "atualizador", só os tipos 4 e 5.
 
+## Programa inteiro (D-886): pedaço grande 8, atualizador (só os tipos 4 e 5)
+
+O mesmo agente do pedaço grande 10, 27/11/2026, começou às 16:27 (relógio da máquina, `date`). As decisões que valem são
+as copiadas no alto deste arquivo (D-885, D-886, D-876, §11.12); conferidas, valem também para este pedaço grande. A
+D-886 manda, aqui, só os tipos 4 e 5: "8 atualizador (só tipos 4 e 5: peças de proteção e código morto; o resto já
+passou por cinco rodadas)". Do Livro, o que mudou o atualizador: a D-830 (23/11, o desenho simples, que trocou o
+caminho dos "4 consertos" da D-824), a D-867 (25/11, a volta automática saiu), a D-868 (a caixa do Windows uma vez) e a
+D-869 (a última boa guardada só para a volta à mão). Pedido da gerente: ver se sobrou algo da volta automática, do
+pedido antigo de licença (`_testes_a_distancia_windows.py`) e do caminho antigo dos "4 consertos". Código: linhas no
+`cbc9784f` (`git diff cbc9784f HEAD -- '*.py'` vazio). Prefixo dos achados: **AT**. Como procuro o código morto: um
+script de contar texto, na pasta de rascunho e sem importar o programa, lista cada função e constante de nível de
+módulo dos 13 arquivos e conta onde mais o nome aparece (programa, testes, scripts); o que só aparece no próprio
+arquivo, ou só nos testes, eu leio.
+
+Divisão em pedaços pequenos (escrita antes de começar). Já lido, não se relê: `main.py` L55-95 (RT); `ui/brasao_girando.py`
+L222-229 (FL-19); `core/_testes_a_distancia_windows.py` L94-99 (FL-19); `core/windows.programa_deste_processo`
+(L3109-3116, AB-24); `core/testes_a_distancia.py` L700-720 (AB-27); `atualizacao.espaco_livre_basta` (RT-01),
+`atualizacao.garantir_o_motor`/`motor_esta_no_lugar` (OC-08), `atualizacao.py` L947-951 (GV-13), L463-500 (FS-10),
+L549-566 (FS-11); `core/fases_da_atualizacao._numeros` (FS-15).
+
+| pedaço pequeno | arquivos | situação | começo | fim |
+|---|---|---|---|---|
+| 0. a contagem dos nomes | o script de contar nos 13 arquivos (rascunho) | feito (nenhum achado próprio: aponta 4 nomes sem uso no programa, lidos nos seus pedaços) | 27/11 16:27 | 27/11 16:31 |
+| 1. o que sobrou da volta automática e dos "4 consertos" | busca nos 13 arquivos e no `git log` (D-867, D-830, D-824) | feito (1 achado, AT-01: só comentários; do código da volta não sobrou nada) | 27/11 16:31 | 27/11 16:30 |
+| 2. o atualizador | `atualizacao.py` | a fazer | | |
+| 3. a entrada, a versão, a assinatura, o brasão | `main.py`, `versao.py`, `assinatura.py`, `brasao.py` | a fazer | | |
+| 4. a peça única do Windows | `core/windows.py` | a fazer | | |
+| 5. as fases e o Velopack | `core/fases_da_atualizacao.py`, `core/conversa_com_o_velopack.py` | a fazer | | |
+| 6. os testes à distância | `core/testes_a_distancia.py`, `core/_testes_a_distancia_windows.py` | a fazer | | |
+| 7. as telas | `ui/aviso_de_atualizacao.py`, `ui/testes_a_distancia_ui.py`, `ui/brasao_girando.py` | a fazer | | |
+
 ## Pedaços (tela de trabalho, 26/11)
 
 | pedaço | situação | começo | fim | tempo |
