@@ -113,6 +113,30 @@ algoritmos (uma conta cada); as buscas por cópias delas no programa não achara
 
 **Próximo:** o pedaço grande 3, "filtros e limpeza" (lista em `resposta-do-fable-2026-11-27.md`). A gerente decide quando.
 
+## Programa inteiro (D-886): pedaço grande 3, filtros e limpeza
+
+Agente novo, 27/11/2026, começou às 14:14 (relógio da máquina, `date`). Leu as regras do verificador, o CLAUDE.md
+(§11.12 e §9: "Não desfazer isso", a correção do "magic color" em `core/filtros.py`), o índice da memória, a ordem, a
+resposta do Fable, este arquivo, a lista (modelo e os títulos dos 125 achados, por inteiro os do filtro: AP-03, CF-01 a
+CF-03, MC-04, RT-04, RT-11, SP-05, SP-08, PT-03, PT-13, PT-16) e a fila da Central (as do filtro: `dv-211-215`,
+`lu-1-remendos`, `lu-12-p22`). As decisões que valem são as copiadas no alto deste arquivo (D-885, D-886, §11.12);
+conferidas, valem também para este pedaço grande. Código: linhas no `cbc9784f` (`git diff cbc9784f HEAD -- core/ ui/`
+vazio). Prefixo dos achados: **FL**.
+
+Divisão em pedaços pequenos (escrita antes de começar). O que outros pedaços já leram não se relê (ver as listas dos
+pedaços da tela, abaixo: em `core/pipeline.py` L3407-3580, L3696-3712, L4030-4070, L4126-4220, L4245-4265,
+L4279-4316, L4447-4525; `core/fundo_tirado.py` inteiro; `core/perfis.py` L40-100; `core/filtros.py` L4300-4308;
+`core/misto.py` L676-681).
+
+| pedaço pequeno | arquivos | situação | começo | fim |
+|---|---|---|---|---|
+| 1. o caminho do filtro no pipeline | `core/pipeline.py` L3400-4530, fora do já lido | feito (5 achados, FL-01 a FL-05) | 27/11 14:14 | 27/11 14:21 |
+| 2. os quatro filtros e os ajustes | `core/filtros.py` | a fazer | | |
+| 3. Só as letras e a letra clara | `core/misto.py`, `core/claro_no_escuro.py` | a fazer | | |
+| 4. camadas e Tirar o fundo | `core/camadas.py`, `core/duas_camadas.py` (`core/fundo_tirado.py` já lido: só as buscas) | a fazer | | |
+| 5. as peças do ScanTailor | `core/preto_e_branco_scantailor.py`, `cores_scantailor.py`, `luz_scantailor.py`, `pontinhos_scantailor.py`, `st_ferramentas.py` | a fazer | | |
+| 6. perfis, núcleos, aquecimento | `core/perfis.py` (fora de L40-100), `core/nucleos.py`, `core/aquecimento.py` | a fazer | | |
+
 ## Pedaços (tela de trabalho, 26/11)
 
 | pedaço | situação | começo | fim | tempo |
@@ -265,7 +289,10 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
 
 ### Abertas
 
-(nenhuma)
+- (pedaço grande 3, vista no pedaço 1, 27/11) O "Suavizar as letras" recebe o DPI do desenho como veio
+  (`core/pipeline._filtrar_preto_no_branco` L3601: `dpi or pontinhos_scantailor.dpi_pela_altura(...)`), e não a conta
+  única dos PDFs que dizem 72 DPI (`dpi_para_os_pontinhos`, PP-15): mais uma peça do ScanTailor fora da conta única?
+  Conferir em `core/luz_scantailor.suavizar_nesta_pagina` (pedaço 5).
 
 ### Fechadas
 
