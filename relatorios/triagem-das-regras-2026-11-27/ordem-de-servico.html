@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parte C: a ordem de serviço dos agentes (27/11/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Parte C: a ordem de serviço dos agentes (27/11/2026)</h1>
+<p><strong>Em uma frase:</strong> hoje cada pedido a agente é escrito de um jeito; o modelo com lista de arquivos e conferência
+automática existiu de 19 a 21/11 e deixou de ser usado; esta parte mostra o que existe, propõe os campos obrigatórios e
+duas opções de onde a trava morar, sem construir nada.</p>
+<p>Feito pelo agente da triagem, só lendo (D-887). Proposta, não plano de construção. Este arquivo não é a ordem do Samuel
+desta triagem (essa é <code>ordem-de-servico-da-triagem.md</code>, que não muda).</p>
+<h2>1. Como os pedidos são escritos hoje</h2>
+<h3>O que as regras mandam pôr no pedido</h3>
+<table>
+<thead>
+<tr>
+<th>desde</th>
+<th>o que manda</th>
+<th>onde está</th>
+<th>situação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>26/10</td>
+<td>as decisões do Livro que tocam o trabalho, com as palavras dele</td>
+<td>CLAUDE.md §11.3 e os 4 agentes</td>
+<td>é seguido (59 dos 60 ONDE-PAREI criados depois de 27/10 têm "Decisões que esta tarefa precisa cumprir"; falta no da prova à vista do atualizador)</td>
+</tr>
+<tr>
+<td>10/11</td>
+<td>pedir sobre a ferramenta inteira e listar todos os lugares (opções, telas, tela grande, tira, PDF)</td>
+<td>CLAUDE.md §11.10</td>
+<td>é o "modelo fixo de 10/11" que achei; não existe um documento separado com esse nome (procurei no CLAUDE.md, na memória e no histórico)</td>
+</tr>
+<tr>
+<td>10/11</td>
+<td>"não abra outros agentes" em todo pedido</td>
+<td>CLAUDE.md §11.11</td>
+<td>seguido; desde 18/11 a ferramenta nem existe (D-793)</td>
+</tr>
+<tr>
+<td>13/11</td>
+<td>pôr a regra "sem gambiarra" em todo pedido de conserto</td>
+<td>CLAUDE.md §11.12</td>
+<td>seguido como texto colado</td>
+</tr>
+<tr>
+<td>09/11</td>
+<td>D-685: "precisamos padronizar isso para quando formos fazer os pedidos, pois estamos fazendo muito retrabalho"</td>
+<td>Livro</td>
+<td>"não construída"; o Livro diz "mostrar a ele o modelo de pedido aos agentes"</td>
+</tr>
+<tr>
+<td>16/11</td>
+<td>D-709: a gerente manda o plano e o guia de leitura; o agente entrega o plano com o porquê do erro</td>
+<td>Livro</td>
+<td>não está no CLAUDE.md nem nos agentes; falta ele responder se o agente espera o "sim" depois do plano</td>
+</tr>
+<tr>
+<td>18/11</td>
+<td>D-784: o pacote (papel, commit de partida, ramo, "Arquivos que vou mexer", as regras pelas etiquetas dos arquivos)</td>
+<td><code>regras_dos_agentes/pedido.py</code>, <code>montar_pacote.py</code></td>
+<td>construído; usado nos passos 0, 1 e 2 (19 a 21/11); <strong>não achei uso depois</strong></td>
+</tr>
+<tr>
+<td>18/11</td>
+<td>D-792: o formulário único da entrega (F1 a F23)</td>
+<td><code>regras_dos_agentes/formulario.py</code></td>
+<td>construído; mesma situação do pacote</td>
+</tr>
+</tbody>
+</table>
+<h3>Exemplos reais (o que o agente copiou do pedido no ONDE-PAREI)</h3>
+<table>
+<thead>
+<tr>
+<th>trabalho</th>
+<th>data</th>
+<th>como o pedido aparece</th>
+<th>o que tinha</th>
+<th>o que faltava</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>gravura à mão (D-659)</td>
+<td>09/11</td>
+<td>"O defeito (Samuel, 09/11)", decisões, já escolhido, como fica, plano</td>
+<td>as palavras dele, as decisões, o plano antes</td>
+<td>lista de arquivos que podem mudar; cópias conhecidas da regra</td>
+</tr>
+<tr>
+<td>passo 2, publicar</td>
+<td>19 a 21/11</td>
+<td>"Pedido" (papel, partida, ramo) e "Arquivos que vou mexer", depois o formulário inteiro</td>
+<td>tudo do pacote; a lista de arquivos; o porteiro conferia</td>
+<td>a regra do programa numa frase; o ONDE-PAREI passou de 3.900 linhas</td>
+</tr>
+<tr>
+<td>atualizador novo, volta 5</td>
+<td>25/11</td>
+<td>"Antes de mexer (§11.12)", decisões, a tabela das falhas</td>
+<td>o porquê, a tabela passos × falhas (pedido do Fable)</td>
+<td>"Pedido" e "Arquivos que vou mexer" sumiram: o porteiro de entrega não tinha o que comparar</td>
+</tr>
+<tr>
+<td>vistoria das gambiarras (D-885)</td>
+<td>26/11</td>
+<td>a ordem do Samuel colada inteira</td>
+<td>o que é, o que ler, os tipos, o formato de cada achado, a entrega, o "não toca em código"</td>
+<td>"Dentro" e "Fora" como lista que se confere (estava só em prosa)</td>
+</tr>
+<tr>
+<td>esta triagem (D-887)</td>
+<td>27/11</td>
+<td>a ordem do Samuel e o pedido da gerente</td>
+<td>as fontes, as decisões, a pasta onde pode gravar, a entrega</td>
+<td>a pasta permitida está só em prosa; nada barra um arquivo fora dela</td>
+</tr>
+</tbody>
+</table>
+<p><strong>O que se repete nos que deram problema (Parte B):</strong> o pedido diz o defeito, mas não diz <strong>a regra do programa</strong> que o
+defeito toca nem <strong>onde ela já está escrita</strong> (E04, E05: a D-662 pedida só no "todas"); a lista de arquivos, quando
+existe, não barra (K14 só avisa: E02); a prova que falha antes está nas regras (§4.7), não no pedido.</p>
+<h2>2. O modelo proposto: os campos obrigatórios</h2>
+<p>Cada campo diz de onde vem e que erro da Parte B ele miraria. Os seis primeiros são os que a ordem do Samuel pede.</p>
+<table>
+<thead>
+<tr>
+<th>campo</th>
+<th>o que vai</th>
+<th>quem preenche</th>
+<th>miraria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A regra do programa</strong></td>
+<td>uma frase: o que o programa decide (ex.: "quais páginas giram quando se escolhe um item do 'aplicar em'")</td>
+<td>a gerente</td>
+<td>E04, E07</td>
+</tr>
+<tr>
+<td><strong>Onde ela deve morar no <code>core/</code></strong></td>
+<td>o arquivo e a função; ou "a decidir no plano, com o porquê"</td>
+<td>a gerente (o agente confirma no plano)</td>
+<td>E05, E06</td>
+</tr>
+<tr>
+<td><strong>Todas as cópias conhecidas</strong></td>
+<td>os achados da vistoria que tocam essa regra (ex.: G-01 a G-06 para o girar), com arquivo e função</td>
+<td>copiado da lista da vistoria</td>
+<td>E04, E05</td>
+</tr>
+<tr>
+<td><strong>Dentro</strong></td>
+<td>os arquivos e pastas que podem mudar (o mesmo formato do "Arquivos que vou mexer" de hoje)</td>
+<td>a gerente</td>
+<td>E02</td>
+</tr>
+<tr>
+<td><strong>Fora</strong></td>
+<td>o que não pode mudar: pastas, telas, decisões que ficam como estão, testes antigos</td>
+<td>a gerente</td>
+<td>E02, E17</td>
+</tr>
+<tr>
+<td><strong>A prova que falha antes e passa depois</strong></td>
+<td>o nome do teste e o commit de partida onde ele tem de falhar</td>
+<td>a gerente diz o que provar; o agente escreve</td>
+<td>E10, E11, E12</td>
+</tr>
+<tr>
+<td><strong>O que o Kaique vê</strong></td>
+<td>antes e depois, passo a passo, e o que muda no PDF</td>
+<td>a gerente esboça; o agente completa (§11.9)</td>
+<td>E01, E18</td>
+</tr>
+<tr>
+<td>Cabeçalho</td>
+<td>papel, cópia de trabalho, ramo, commit de partida</td>
+<td>a gerente</td>
+<td>— (é o "Pedido" de hoje)</td>
+</tr>
+<tr>
+<td>Decisões</td>
+<td>número e palavras, copiadas do Livro (a K20 já confere letra por letra)</td>
+<td>a gerente</td>
+<td>E01, E02</td>
+</tr>
+<tr>
+<td>O que já está escolhido e testado</td>
+<td>decisões e testes que já existem ali (D-605)</td>
+<td>a gerente</td>
+<td>E17</td>
+</tr>
+<tr>
+<td>Guia de leitura</td>
+<td>o que ler antes (D-709)</td>
+<td>a gerente</td>
+<td>E26</td>
+</tr>
+<tr>
+<td>Tamanho da conferência</td>
+<td>conferência curta, do tamanho da mudança, ou completa (D-879)</td>
+<td>a gerente</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Entrega</td>
+<td>o formulário da entrega (F1 a F23) e onde gravar</td>
+<td>fixo</td>
+<td>E29</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Não entra no modelo</strong> o que o Livro ainda não decidiu: se o agente espera o "sim" depois do plano (D-709) e qual
+modelo de agente usar por tipo de tarefa (D-710). Vão como dúvida no resumo.</p>
+<h2>3. Como travar (sem construir)</h2>
+<p>As duas travas que a ordem pede:</p>
+<ol>
+<li><strong>Antes de abrir o agente:</strong> um programinha lê a ordem e recusa se faltar um dos campos obrigatórios (ou se o
+   "Dentro" estiver vazio, ou se uma decisão citada não bater com o Livro).</li>
+<li><strong>Na entrega:</strong> o verificador marca todo arquivo mudado fora do "Dentro". Hoje existe a K14, que compara com a lista
+   do pedido, <strong>mas só avisa</strong>; e a K13 barra só pelo papel (ex.: implementador em <code>ui/</code>).</li>
+</ol>
+<h3>Onde a trava pode morar: duas opções</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Opção 1: no programa das regras dos agentes</th>
+<th>Opção 2: num gancho do Claude Code, antes de abrir o agente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onde</td>
+<td><code>regras_dos_agentes/</code>, ao lado do pacote e do formulário (a leitura do pedido já é uma peça só, <code>pedido.py</code>)</td>
+<td><code>.claude/settings.json</code> do projeto (não existe hoje), um gancho que roda quando a gerente pede para abrir um agente</td>
+</tr>
+<tr>
+<td>quem dispara</td>
+<td>a gerente roda a conferência antes de abrir o agente; o juiz do GitHub confere de novo na entrega</td>
+<td>o próprio Claude Code, sozinho, toda vez que um agente vai ser aberto</td>
+</tr>
+<tr>
+<td>o que já existe</td>
+<td>a lista de arquivos do pedido, a K13, a K14 e os testes delas (<code>test_conferencias_mudancas.py</code>)</td>
+<td>nada; é peça de fora: antes de usar, ler a documentação dos ganchos do Claude Code (§11.12, ponto 6)</td>
+</tr>
+<tr>
+<td>a fraqueza</td>
+<td>depende de a gerente lembrar: o pacote existiu de 19 a 21/11 e deixou de ser usado sem ninguém decidir</td>
+<td>o gancho roda na conversa da gerente; se a ordem for colada no chat (como a da vistoria), ele precisa achar o texto da ordem num arquivo</td>
+</tr>
+<tr>
+<td>"Fora do Dentro"</td>
+<td>a K14 passa de avisar para barrar, na entrega</td>
+<td>o mesmo, mais um aviso na hora em que o agente grava fora (gancho depois de mexer em arquivo)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Recomendação (minha, para o Samuel e o Fable decidirem):</strong> a conferência mora num lugar só, no programa das regras dos
+agentes (opção 1, porque a leitura do pedido e a lista de arquivos já estão lá e já têm teste), e quem a dispara é o
+gancho do Claude Code (opção 2), para não depender de a gerente lembrar. Assim são as duas, mas com uma peça só: o
+gancho não confere nada sozinho, só chama a conferência. O "Fora do Dentro" passa a barrar na entrega.</p>
+<h2>Ressalvas</h2>
+<ul>
+<li><strong>Não achei um documento chamado "modelo fixo de 10/11".</strong> Tratei como modelo de 10/11 o que o CLAUDE.md §11.10 e
+  §11.11 mandam pôr em todo pedido desde 10/11. Se havia um texto da gerente com esse nome (num chat ou na Central), não
+  está nas fontes que li.</li>
+<li><strong>"Não achei uso depois de 21/11"</strong> é por leitura dos ONDE-PAREI (as seções "Pedido" e "Arquivos que vou mexer"); não
+  rodei o porteiro de entrega para confirmar.</li>
+<li><strong>O gancho da opção 2 não foi estudado.</strong> Não li a documentação dos ganchos do Claude Code nesta tarefa (a ordem não
+  pede construção); se o Samuel escolher essa opção, a leitura vem antes.</li>
+<li><strong>A ordem das duas últimas tarefas (vistoria e triagem) foi escrita pelo Samuel</strong>, não pela gerente. O modelo proposto
+  serve para os dois jeitos; quem preenche cada campo está na tabela.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 27/11/2026 às 15:15</p>
+</body>
+</html>
