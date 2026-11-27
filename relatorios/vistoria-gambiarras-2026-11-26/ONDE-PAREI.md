@@ -484,7 +484,7 @@ L549-566 (FS-11); `core/fases_da_atualizacao._numeros` (FS-15).
 | 1. o que sobrou da volta automática e dos "4 consertos" | busca nos 13 arquivos e no `git log` (D-867, D-830, D-824) | feito (1 achado, AT-01: só comentários; do código da volta não sobrou nada) | 27/11 16:29 | 27/11 16:30 |
 | 2. o atualizador | `atualizacao.py` | feito (1 achado, AT-02) | 27/11 16:31 | 27/11 16:32 |
 | 3. a entrada, a versão, a assinatura, o brasão | `main.py`, `versao.py`, `assinatura.py`, `brasao.py` | feito (1 achado, AT-03; e lê L518-545 de `core/testes_a_distancia.py`, que o pedaço 6 não relê) | 27/11 16:32 | 27/11 16:34 |
-| 4. a peça única do Windows | `core/windows.py` | a fazer | | |
+| 4. a peça única do Windows | `core/windows.py` | feito (3 achados, AT-04 a AT-06) | 27/11 16:34 | 27/11 16:36 |
 | 5. as fases e o Velopack | `core/fases_da_atualizacao.py`, `core/conversa_com_o_velopack.py` | a fazer | | |
 | 6. os testes à distância | `core/testes_a_distancia.py`, `core/_testes_a_distancia_windows.py` | a fazer | | |
 | 7. as telas | `ui/aviso_de_atualizacao.py`, `ui/testes_a_distancia_ui.py`, `ui/brasao_girando.py` | a fazer | | |
