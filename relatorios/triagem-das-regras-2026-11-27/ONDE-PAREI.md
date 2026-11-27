@@ -26,7 +26,7 @@ Nada muda no programa nem no PDF. O Samuel e o Fable leem as tabelas.
 ## Andamento
 
 - [x] Parte A — tabela-regras (14:56 a 15:10; 158 regras + porteiro, exceções, gancho, skill)
-- [ ] Parte B — tabela-erros
+- [x] Parte B — tabela-erros (15:10 a 15:25; 31 tipos)
 - [ ] Parte C — ordem-de-servico
 - [ ] resumo
 
