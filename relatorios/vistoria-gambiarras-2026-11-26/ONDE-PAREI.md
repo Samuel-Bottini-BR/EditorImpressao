@@ -43,6 +43,23 @@ Divisão em pedaços pequenos (escrita antes de começar):
 | 6. menu, barras e o resto | `ui/barra_de_menu.py`, `estilo.py`, `perguntas.py`, `janela_confirmar.py`, `dialogo_escolher_paginas.py` (`ui/desfazer_nesta_pagina.py` já foi lido inteiro no pedaço desfazer: não se relê, só se confere o que os outros pedaços apontarem) | feito (3 achados, PT-21 a PT-23) | 27/11 13:48 | 27/11 13:50 |
 | 7. os trechos não lidos da `tela_conferir` | `_montar` e a barra de baixo (L766-1362), `_LugaresDeEncaixe`/`_RotuloDoLivro` (L432-590), o corpo de `_montar_aba_*` fora do já lido (L1916-3653), a "peça" nos pares (L8700-8800), o zoom (L8478-8560, L9006-9088) | feito (1 achado, PT-24; o resto destes trechos já entrou nos PT de cima) | 27/11 13:50 | 27/11 13:52 |
 
+**Pedaço grande 1 terminado (27/11, das 13:31 às 13:52 pelo relógio da máquina; o código, das 13:34 às 13:52).**
+25 achados novos: PP-01 (a suspeita do pipeline, leve) e PT-01 a PT-24. Por tipo (o principal): 16 do tipo 1, 1 do
+tipo 2, nenhum do tipo 3 (três têm o 3 junto: PT-15, PT-17, PT-20), 3 do tipo 4 (PP-01, PT-11, PT-24) e 5 do tipo 5.
+Por gravidade, com a régua nova (GRAVE só quando chega na tela do Kaique ou no PDF): 4 GRAVE (PT-03, PT-17, PT-20,
+PT-21), 9 médios, 12 leves. "Outra cópia" de achado da tela: PT-03 e PT-16 (RT-04), PT-04 (RT-09), PT-13 (RT-11 e
+AP-03), PT-15 (RT-06); da mesma família: PT-01 (SP-03), PT-17 (MC-01), PT-18 (CF-01), PT-22 (RT-03), PP-01 (RT-02).
+Central: PT-20 explica `lu-7-laranja`, PT-21 explica `lu-8-aviso-salvar`.
+
+O que ficou sem ler neste pedaço grande (só pelas buscas, sem conta de página achada): em `ui/widgets/paineis.py` a
+coluna de ícones, a sanfona, as abas no alto e o painel solto (L2012-2961); o desenho (`paintEvent`) do visualizador,
+da tira, da grade, das trilhas e do editor; a folha de estilo de `ui/estilo.py` (L229-645); os desenhos de
+`ui/widgets/menu_com_amostra.py`. Os `getattr(pagina, ...)` (106) e `getattr(folha, ...)` (17) do PT-24 foram contados,
+não conferidos campo a campo.
+
+**Próximo:** o pedaço grande 2, "preparar a página" (lista em `resposta-do-fable-2026-11-27.md`), começando pela
+suspeita aberta abaixo. A gerente decide quando.
+
 Como leio cada arquivo: a lista das funções; as buscas por `projeto.`, `pagina.`/`folha.`, campos de
 `ConfigPagina`/`ConfigFolha`, `import` de `core/`, contas (`%`, `round`, `int(`), `if` por caso e `getattr`/`hasattr`;
 leio por inteiro as funções que essas buscas apontam. Desenho puro (montar botões, cores, `paintEvent` sem conta de
