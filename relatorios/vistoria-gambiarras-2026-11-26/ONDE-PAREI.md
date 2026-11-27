@@ -79,7 +79,7 @@ abaixo); `core/girar.py`, `core/dividir.py` e `core/dividir_a_mao.py` já foram 
 | pedaço pequeno | arquivos | situação | começo | fim |
 |---|---|---|---|---|
 | 0. a suspeita aberta | `core/pipeline._geometria` e `_chave_da_geometria` | feito (virou PP-02) | 27/11 13:54 | 27/11 13:58 |
-| 1. o caminho da página no pipeline e as chaves | `core/pipeline.py` L526-1720 (fora do já lido), L2778-3200, L5034-5210 | a fazer | | |
+| 1. o caminho da página no pipeline e as chaves | `core/pipeline.py` L526-1720 (fora do já lido), L2778-3200, L5034-5210 | feito (5 achados, PP-03 a PP-07) | 27/11 13:58 | 27/11 14:03 |
 | 2. o conteúdo e o tamanho do livro | `core/pipeline.py` L1718-2300 (fora do já lido), `core/corte_pelo_conteudo.py`, `core/folha.py`, `core/unidades.py`, `core/paginas_diferentes.py` | a fazer | | |
 | 3. cortar e borda preta | `core/recortar.py`, `core/borda_preta.py`, `core/caixas_scantailor.py`, `core/margens_scantailor.py`, `core/ajustar_pedaco.py` | a fazer | | |
 | 4. endireitar e desentortar | `core/endireitar.py`, `core/endireitar_scantailor.py`, `core/desentortar_scantailor.py`, `core/guias.py`, `core/linhas_do_texto.py` | a fazer | | |
@@ -241,7 +241,7 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
 
 ### Abertas
 
-(nenhuma)
+- (pedaço grande 2, pedaço 4; vista no pedaço 1) `core/pipeline._chave_do_desentortar` (L937) soma à chave da geometria só o modo e o "aumentando a página". Conferir em `core/desentortar_scantailor.preparar_no_corte` se ele lê outro campo da página ou do livro que não está nessa chave (a mesma família do PP-03).
 
 ### Fechadas
 
