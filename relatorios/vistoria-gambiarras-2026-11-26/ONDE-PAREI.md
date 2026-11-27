@@ -386,8 +386,8 @@ FL-16 e no PP-18; aqui só as buscas); `core/ocr_comum.py` L209-221 (FL-19).
 
 | pedaço pequeno | arquivos | situação | começo | fim |
 |---|---|---|---|---|
-| 1. o comum e o diagnóstico | `core/ocr_comum.py` (fora de L209-221), `core/ocr_diagnostico.py` | feito (1 achado, OC-01; confirma a suspeita do FL-16 do lado dos leitores) | 27/11 16:05 | 27/11 16:09 |
-| 2. o docTR | `core/ocr_doctr.py` (e fecha a suspeita do modelo ONNX aberto em três lugares) | a fazer | | |
+| 1. o comum e o diagnóstico | `core/ocr_comum.py` (fora de L209-221), `core/ocr_diagnostico.py` | feito (1 achado, OC-01; confirma a suspeita do FL-16 do lado dos leitores) | 27/11 16:05 | 27/11 16:06 |
+| 2. o docTR | `core/ocr_doctr.py` (e fecha a suspeita do modelo ONNX aberto em três lugares) | feito (1 achado, OC-02; fecha a suspeita) | 27/11 16:06 | 27/11 16:07 |
 | 3. o Kraken e o servidor | `core/ocr_kraken.py`, `motor_kraken/servidor_kraken.py` | a fazer | | |
 | 4. o Tesseract | `core/ocr_tesseract.py` | a fazer | | |
 | 5. a comparação | `core/ocr_comparar.py` | a fazer | | |
@@ -544,16 +544,6 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
 
 ### Abertas
 
-- (pedaço grande 4, vista no pedaço 2; para o pedaço 6 e o pedaço grande 9) Abrir um modelo da rede (ONNX) está escrito
-  em mais de um lugar: `core/detectar_regioes.DetectorDeLayout._carregar` (L236-268, tenta de novo na página seguinte
-  quando a carga falha, conserto de 21/10), `core/rede_selecao._carregar` e, pela busca por `onnxruntime`,
-  `core/ocr_doctr.py`. Pode ser a mesma conversa com uma peça de fora escrita três vezes (CLAUDE.md §11.12, ponto 1). Não
-  li as outras duas ainda. Visto no pedaço 3: a falha ao abrir tem duas regras: o modelo de layout tenta de novo na
-  página seguinte (o conserto de 21/10, "o mesmo código nem sempre dá a mesma imagem"), e as duas DLLs do ScanTailor
-  (`gravura_scantailor` e `st_ferramentas`, `_tentou`) guardam a falha para a sessão inteira (o carregador duplicado já é
-  o FL-15; a regra diferente da falha, não). Visto no pedaço 6: `core/rede_selecao._carregar` (L45-63) é uma terceira
-  cópia, que guarda a falha para a sessão (`_sessoes` com `None`), mas o módulo só serve à função morta (GV-13). Falta
-  ler o de `core/ocr_doctr.py` (pedaço grande 9) para fechar.
 - (pedaço grande 4, vista no pedaço 2; fora deste pedaço grande) "Onde há tinta nesta página" tem mais de uma conta:
   `core/detectar_regioes.mascara_de_tinta` (Sauvola com o `k` do filtro), `core/editar_zonas._tinta_na_area` (o Preto e
   branco da página), `core/recortar._mascara_de_tinta_local` e, em `core/filtros.py`, `cinza < papel * TINTA_PARA_ORLA`
@@ -573,6 +563,11 @@ busca por `origem` em `core/`, `ui/` e `modelos.py`.
   anotação do próprio programa")? Não decido: fica aberta para o Fable.
 
 ### Fechadas
+
+- (pedaço grande 4, vista no pedaço 2; fechada no pedaço 2 do grande 9, 27/11) Abrir um modelo da rede (ONNX) em três
+  lugares → **virou o achado OC-02** (médio): o que difere é a regra da falha, em seis lugares (o modelo de layout
+  tenta de novo desde o conserto de 21/10; o docTR, o motor do Kraken, a rede do clique e as duas DLLs guardam a falha
+  até fechar). O carregador das duas DLLs, igual linha por linha, já era o FL-15.
 
 - (pedaço grande 6, vista no pedaço 3 do grande 7; fechada no pedaço 4 do grande 6, 27/11) A prévia do livreto com o
   segundo caminho `SEM_SERVIDOR` → **virou parte do achado AB-15** (médio), um achado só, do servidor inteiro: o laço
