@@ -20,6 +20,12 @@ ajudante, tira o Editor antigo), que também pede a licença do Windows ("Deseja
 - As 4 causas (revisão `revisao-distancia-2026-11-18`): a tela mostra o anotado, não o que o Windows tem; ligar não desfaz
   o meio; o programa não lê a resposta de quem trabalhou com licença; a tranca feita à mão.
 
+- **27/11/2026 ([PARTE -47](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §4):** a vistoria achou, e a gerente conferiu no código (não rodado), que na 1.1.0
+  do Kaique a caixinha e o botão "Testes à distância" das **Configurações** ainda ligam pelo pedido antigo de licença
+  (`aplicar_no_windows`, o `runas` de 18/11), contra a D-825 ("nesta entrega a senha não liga nada", que só a janela da
+  primeira abertura cumpre); e que nesse caminho o "Não" do Windows pode virar "Ligado" (`_rodar_elevado` lê
+  `ctypes.get_last_error()` sem `use_last_error=True`). Na Lista de bugs; nada consertado (D-886).
+
 ## O que vale hoje
 
 - **Ligar é tudo ou nada** (D-771, "A"): se um passo falhar, desfaz o que fez naquela vez e diz "Desligado" e o motivo.

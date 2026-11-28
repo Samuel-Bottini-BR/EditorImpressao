@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 27/11/2026, madrugada (PARTE -46; a anterior, PARTE -45, é da madrugada de 26/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 28/11/2026, madrugada (PARTE -47; a anterior, PARTE -46, é da madrugada de 27/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -11,6 +11,206 @@ Pasta do projeto: `D:\programas\EditorImpressao` (mudou de
 `C:\Users\fotog\Desktop\EditorImpressao` em 07/09/2026; essa pasta antiga virou
 o backup). Repositório git ligado a
 `https://github.com/Samuel-Bottini-BR/EditorImpressao`.
+
+---
+
+# PARTE -47 — Checkpoint de 27-28/11/2026: a vistoria do programa inteiro terminada (D-886, 259 achados, 31 raízes) e a triagem das regras e dos erros entregue (D-887); dois defeitos achados na 1.1.0 do Kaique ("Testes à distância" das Configurações); nada do programa mudou (leia isto primeiro)
+
+Conversa `50e82f38`, aberta pelo `/projeto` em 27/11 (~16h40 UTC) e fechada com este checkpoint (28/11, ~04h UTC). A
+conversa foi resumida uma vez; esta parte foi escrita a partir das falas salvas
+(`falas_da_conversa.py --todas --desde 2026-11-27T01:13`, com as respostas), do git de todos os ramos e da Central lida
+da página às 04h UTC de 28/11, não da memória. O relógio do PC é UTC-4: os commits mostram -0400; as falas, UTC.
+
+**Correção da PARTE -46:** ela diz "a vistoria continua amanhã (28/11)". A fala dele ("amanhã continuaremos a vistoria")
+foi às 01h12 UTC de 27/11 = 21h12 locais de 26/11 (o commit `214ea422` é das 21:13); o "amanhã" era 27/11, e foi em 27/11 que a vistoria continuou.
+
+## 0. Para recomeçar
+
+1. `git -C D:\programas\EditorImpressao fetch origin`. Versão oficial `fase-1` (ponta: este checkpoint). **Versão de
+   teste `obra-2026-10-26`** (worktree `.claude\worktrees\obra-juncao`, ponta `540f7495`, igual ao GitHub): tem a vistoria
+   e o Livro de decisões (D-887 é a última). **Triagem** no ramo `triagem-regras-2026-11-27` (worktree
+   `.claude\worktrees\triagem-regras`, ponta `3fbea37c`, igual ao GitHub; tirado do `obra-2026-10-26` em `336d2a37`, não
+   juntado em lugar nenhum).
+2. **Nada espera resposta dele na Central** (28/11 04h UTC: a resposta mais nova é de 17/11, todas `lida: true`; 12
+   ordens, a mais nova de 10/11, todas vistas; `testes` vazia; 1 ideia antiga).
+3. **Pergunta aberta, no chat, sem resposta** (a primeira às 20h46 UTC de 27/11: **"Quer que eu avise o Kaique para
+   não mexer em "Testes à distância" nas Configurações?"**; repetida com outras palavras às 21h11, 21h50 e 01h26 UTC, a
+   das 21h11: "Quer que eu avise o Kaique para não marcar essa caixinha até o conserto?"). Ver §4.
+   **Ainda a perguntar** (nunca feita a ele, nem no chat nem na Central; anotada na Lista de bugs de 27/11): "a D-825
+   vale também para o caminho das Configurações?" (a D-825: "nesta entrega a senha não liga nada").
+4. **Esperando a leitura do Fable e do Samuel** (o Fable lê "antes de qualquer conserto começar", D-886 item 6):
+   - a pasta `para-o-fable` da vistoria (§2);
+   - a triagem (§3), com as 12 dúvidas para o Samuel no `resumo`.
+   **Nenhum conserto começa antes disso.** "Nenhuma linha de código muda até lá." (D-886).
+5. Ainda abertos, de antes (não mudaram nesta sessão): a primeira atualização (o brasão desde o começo da reabertura,
+   D-884); se a pergunta do Windows **do programa**, no passo 1 refeito (26/11), veio no meio da tela; se o Kaique já
+   instalou; os testes que esperam ele (girar com a capa, a folha espremida com a Mão, "Livros recentes" depois do F1); a
+   arrumação (apagar `C:\EditorImpressaoProva`, 8,5 GB; as worktrees velhas; as cópias no rascunho).
+6. Não abrir agente sem a ordem dele. **Nenhum agente nem teste rodando** no checkpoint (conferido: o último agente, o que
+   juntou a pasta do Fable, entregou às ~17h09 locais de 27/11 e encerrou; as duas worktrees estão limpas e iguais ao
+   GitHub).
+
+## 1. As falas dele desde o último checkpoint, e o destino de cada uma (UTC)
+
+| hora | fala | destino |
+|---|---|---|
+| 16:38 (conversa `0ea803cc`, **outro projeto**, o Buscador) | "Guardar o estudo e parar" | é do Buscador e Baixador (o estudo do Editor guardado em `D:\programas\BuscadorBaixador\docs\estudo-do-editor-2026-11-23.html`); nada aqui |
+| 16:46 | "eu preciso dos relatorios para enviar para o fable e preciso saber o que falta para ser vistoriado" | feito: pasta `para-o-fable` (1ª versão, `71731871`) com a folha nova "o que falta vistoriar" |
+| 16:50 | "você está criando o relatorio ou você só está puxando o que já foi feito?" | respondido: a lista era a mesma de 26/11; só se geraram html e pdf; o único texto novo era "o que falta vistoriar" |
+| 17:29 | a resposta do Fable, itens 1 a 7 (texto inteiro em `relatorios/vistoria-gambiarras-2026-11-26/resposta-do-fable-2026-11-27.md` no `obra-2026-10-26`), com "Decisão do Samuel: a vistoria continua pelo programa inteiro, antes de qualquer conserto." e "Nenhuma linha de código muda até lá." | **D-886**; feita (§2) |
+| 17:50 | o pedido do Fable do disco C (colado): copiar os dois settings e o CLAUDE.md da pasta `.claude` do usuário para `relatorios\disco-c\`, listar a pasta, dizer se o workflow roda `tests/test_trava_windows.py`; "Não faça commit dessa pasta." | feito (§5); **sem commit, de propósito** |
+| 18:53 | a ordem da triagem das regras e dos erros (colada; texto inteiro em `relatorios/triagem-das-regras-2026-11-27/ordem-de-servico-da-triagem.md` no ramo da triagem), "SÓ LEITURA: nenhuma regra nova, nenhum arquivo do projeto muda, nenhuma skill ou gancho é criado ainda." | **D-887**; feita (§3) |
+| 01:25 (28/11) | "Terminou todas as revisões?" | respondido: sim, as duas, guardadas no GitHub; repetida a pergunta do §0.3 |
+| 01:36 (28/11) | "ondeo fable pode encontrar essas coisas?" | respondido com as duas pastas e os dois ramos (§2 e §3). **Erro da gerente nessa resposta (§7):** disse "mande os PDFs" depois de, às 16:50, 19:17 e 21:11, ter dito "mande os .md" |
+| ~04:00 (28/11) | "/checkpoint" | este checkpoint |
+
+## 2. A vistoria do programa inteiro (D-886; feita)
+
+- **O que é:** a mesma ordem de serviço da D-885 (só leitura, cinco tipos de gambiarra, grave/médio/leve, o porquê, o item
+  da Central), agora pelo programa inteiro, na ordem do Fable: 1 peças da tela · 2 preparar a página · 3 filtros e limpeza
+  · 5 Automático e avisos · 7 gerar o PDF e cadernos · 6 abrir, guardar e desfazer · 4 gravuras e marcações · 9 achar
+  texto · 10 ferramentas do Samuel · 8 atualizador (só tipos 4 e 5). Os ajustes do Fable: contar "N lugares" no programa
+  inteiro; GRAVE só quando o conserto errado chega na tela do Kaique ou no PDF ("3 ou mais lugares" sozinho é médio);
+  dizer de qual achado cada um é "outra cópia". Fora: os 33 scripts soltos e `regras_dos_agentes/`.
+- **Como foi feita:** um agente verificador novo por pedaço grande (os pedaços 4+9 juntos e 10+8 juntos), de 13h31 a
+  16h43 locais de 27/11, commit e push a cada pedaço menor (`ceb8e5b6` a `234b3fa8`). A gerente conferiu no git a cada
+  pedaço grande (só `lista.md` e `ONDE-PAREI.md` mudaram) e um achado à mão por pedaço: PT-21, PP-15, FL-16, AV-13,
+  IM-16, AB-01, GV-11, e os dois de fora do pedaço 8 (§4). Uma mensagem no chat por pedaço grande (de vários
+  parágrafos, não uma linha; os pedaços 4+9 e 10+8 saíram juntos, às 20h12 e 20h46 UTC).
+- **Contagens por pedaço** (tempo de agente; achados novos): 1 peças da tela 22 min, 25 (PP-01, PT-01 a PT-24; 4 graves) ·
+  2 preparar 19 min, 19 (PP-02 a PP-20; 0 graves) · 3 filtros 26 min, 20 (FL; 1 grave) · 5 Automático 18 min, 22 (AV; 0) ·
+  7 PDF e cadernos 15 min, 18 (IM; 0) · 6 abrir/guardar 35 min, 28 (AB; 1) · 4 gravuras 13 min, 13 (GV; 2) · 9 achar texto
+  6 min, 8 (OC; 0) · 10 ferramentas 14 min, 16 (FS; 0) · 8 atualizador 16 min, 9 (AT; 0).
+- **Total: 259 achados** (81 da tela de 26/11 + 178 novos), **38 graves** (30 deles da tela, pela régua antiga). **31
+  raízes** e 12 achados sozinhos. As cinco raízes mais graves (o girar; dividir e juntar; o filtro gravado diferente do que
+  sai no PDF; o preparo da página refeito em cada lugar; a marcação à mão) juntam 55 achados e 19 dos graves. A ligação
+  entre achados tem três forças: 68 por cópia declarada, 106 por família, 73 só por assunto (marcados para o Fable olhar
+  com mais desconfiança).
+- **A Central lida de novo, da página** (27/11 ~20h45 UTC; 353 respostas, nada novo desde 17/11): dos 37 itens da fila
+  ("pode consertar"/"na fila"), 16 explicados por achado, 6 sem achado ainda, 15 "não é gambiarra: defeito simples".
+- **Descobertas que pesam** (todas pela leitura, nada rodado):
+  - **AV-13: a análise antiga do livro (`TarefaAnalise`) está morta desde 26/10**: o programa não a chama; só
+    os testes (21 arquivos de `tests/`) e 17 scripts soltos, entre eles `conferencia.py` e `teste_velocidade.py`, a
+    criam (e dois scripts em `relatorios/para-revisar-impl/`). Ou seja, **o filtro de velocidade mede uma peça que o programa não usa** como se fosse
+    "abrir o livro". Conferido pela gerente.
+  - A tela "O que fazer" está morta desde 26/10 (só citada em comentários); uma prova das decisões a usa como referência.
+  - O "Jeito do preto e branco" da página não vale sem área marcada nem no "só neste pedaço" (o defeito de 06/10, aberto).
+  - O que o ScanTailor deixa de fora da pintura vira "letra" sem a pergunta "parece escrita?" (chega no PDF; a causa do
+    item "remendos" da Central).
+  - O preparo da página (girar, dividir, endireitar, cortar) escrito duas vezes, uma para a imagem e outra para as
+    marcações ("têm de ser a mesma", diz o código).
+  - "Mandar para a impressora" ignora a escala de cinza; o arquivo gravado obedece (conferido pela gerente).
+  - O menu Filtro e as figurinhas marcam o filtro gravado, não o que sai no PDF.
+- **Ficam para o Fable decidir** (anotados como dúvida, sem decisão): o "Conferido: saem na ordem certa" da tela final
+  refaz a conta com a mesma função que monta os cadernos e não abre o PDF gravado; quatro contas diferentes de "onde há
+  tinta"; um achado parece ligado ao item errado da Central e a legenda da lista só descreve a régua antiga.
+- **A pasta para o Fable, refeita** (`f909738b`; os PDFs 0, 1, 4 e 5 reimpressos pela gerente pelo Edge às 17h09 locais,
+  em folha deitada, porque o gerador de relatório cortava a última coluna — é o achado FS-01):
+  `D:\programas\EditorImpressao\.claude\worktrees\obra-juncao\relatorios\vistoria-gambiarras-2026-11-26\para-o-fable\`
+  — `0-resumo-das-raizes`, `1-lista-dos-achados`, `2-o-que-falta-vistoriar`, `3-ordem-de-servico`, `4-onde-parei`,
+  `5-central`, `6-resposta-do-fable`, cada um em md, html e pdf. **No GitHub (ramo `obra-2026-10-26`) só vão o md e o
+  html; os PDFs ficam só no PC** (`*.pdf` no `.gitignore`).
+- Livro: D-886 (`cbc9784f`), situação marcada como feita em `540f7495`. Plano: `1c8d40df`, `5f4652ad`.
+
+## 3. A triagem das regras e dos erros (D-887; entregue)
+
+- Um agente verificador novo, só de leitura, na cópia própria `triagem-regras` (para não cruzar commits com a vistoria,
+  que rodava ao mesmo tempo), de 14h56 a 15h18 locais de 27/11 (`5eea555f`, `cb2d98f2`, `5202449a`, `3fbea37c`). A
+  gerente leu a Central da página para ele (o agente não tem acesso), em
+  `C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\50e82f38-e05a-42cd-b347-2b8b579ff516\scratchpad\central-27-11\`
+  (fora do git; o rascunho pode ser apagado pelo Windows). Conferido no git: só a pasta da triagem mudou.
+- **Pasta:** `D:\programas\EditorImpressao\.claude\worktrees\triagem-regras\relatorios\triagem-das-regras-2026-11-27\`
+  — `resumo`, `tabela-regras`, `tabela-erros`, `ordem-de-servico` (md, html e pdf), `ordem-de-servico-da-triagem.md` (a
+  ordem dele) e `ONDE-PAREI.md`. **Os PDFs da triagem não foram conferidos pela gerente** (podem cortar tabelas largas, como o FS-01); só
+  existem no PC.
+- **Resultado:** 158 regras (46 viram skill; 40 fiscal rápido, 34 delas o porteiro já confere; 24 ficam no CLAUDE.md; 41
+  entre regra por pasta, permissão, fiscal GitHub e gancho (16 + 10 + 13 + 2); 2 apagar; 5 dúvida). 31 tipos de erro: 29 de causa 1 (o
+  pedido estava claro e foi feito diferente), 2 de dúvida; as 38 vezes de mudança de ideia ficaram só como registro. Os
+  três fiscais que mais teriam evitado: cada dado da página gravado por uma porta só; cada decisão com a sua prova rodando;
+  barrar a entrega com arquivo mudado fora do "Dentro". **12 dúvidas para o Samuel** no `resumo` (entre elas: onde mora a
+  trava do pedido ao agente; se liga o gancho antes do commit; quantos agentes ao mesmo tempo).
+- **Coisas que a ordem não sabia** (as três primeiras conferidas pela gerente no git): o porteiro tem 25 conferências
+  (K01 a K25; o K00 é só o aviso de "não consegui ler"), não 9; o gancho antes do commit nunca foi ligado (`core.hooksPath` vazio); não existe
+  `.claude/settings.json` no projeto (as regras que viram permissão ou gancho ainda não têm onde morar); 135 exceções, não
+  164; 20 decisões dele de 16 a 25/11 sobre o jeito de trabalhar não estão no CLAUDE.md nem nos arquivos dos agentes
+  (algumas só no catálogo do porteiro); o pacote do pedido e o formulário da
+  entrega deixaram de ser usados depois de 21/11.
+- **Dois CLAUDE.md:** o do `obra-2026-10-26` tem 819 linhas (o número da ordem); o do `fase-1` (o que o Claude Code carrega
+  ao abrir na pasta principal) tem 859. A tabela diz, em cada regra, se ela está só num dos dois.
+- Livro: D-887 (`e078bd61`), situação "entregue" em `540f7495`. Plano: `eb3009de`, `5f4652ad`.
+
+## 4. Dois defeitos na versão 1.1.0 do Kaique (achados pela vistoria; na Lista de bugs; não rodados)
+
+Achados pelo agente do pedaço 8 e **conferidos pela gerente no código** (iguais na 1.1.0, `0e186cc9`); Lista de bugs em
+`fbe9ad24` (27/11):
+1. **A caixinha e o botão "Testes à distância" das Configurações ainda ligam pelo pedido antigo de licença** (o `runas` de
+   `core/_testes_a_distancia_windows.aplicar_no_windows`, com os defeitos de 18/11). Caminho:
+   `ui/tela_configuracoes._mudou_testes_a_distancia` e `_por_a_senha_dos_testes` →
+   `ui/testes_a_distancia_ui.pedir_senha_e_ligar` → `core/testes_a_distancia.ligar` → `aplicar_no_windows`. A janela da
+   primeira abertura obedece à D-825 ("nesta entrega a senha não liga nada"); as Configurações não. A pergunta "a D-825
+   vale também para esse caminho?" está anotada na Lista de bugs.
+2. **Nesse caminho, o "Não" na pergunta do Windows pode virar "deu certo":** `_rodar_elevado` (linhas 94-95) lê o erro com
+   `ctypes.get_last_error()` depois de `ctypes.windll.shell32.ShellExecuteExW`, sem `use_last_error=True`, então lê 0;
+   `aplicar_no_windows` trata 0 como sucesso e as Configurações mostram "Ligado. O Samuel pode fazer testes por aqui." sem
+   nada instalado. É o defeito 2 da etapa 5 (18/11), consertado só no caminho novo.
+
+O risco só existe se o Kaique abrir as Configurações e marcar a caixinha. **Pergunta aberta (§0.3):** avisar o Kaique.
+
+## 5. O pedido do disco C (feito; fora do git de propósito)
+
+- `D:\programas\EditorImpressao\relatorios\disco-c\` (pasta principal, `fase-1`): `settings.json` e
+  `settings.local.json` copiados de `C:\Users\fotog\.claude\`; `nao-existe.txt` (diz "CLAUDE.md": não existe);
+  `listagem.txt` (só os nomes do que há na pasta). **Sem commit, como ele mandou.** A pasta **não** está no `.gitignore`:
+  nunca pôr num commit.
+- **Atenção:** o `settings.json` tem um campo "Authorization" (do conector Epidemic Sound). Dito a ele: apagar essa linha
+  na cópia antes de mandar ao Fable. A gerente não mostrou o conteúdo.
+- Item 4: **sim, o workflow "Testes no Windows" roda `tests/test_trava_windows.py`**, por
+  `.github/scripts/rodar_parte.py`, que pega todos os `tests/test_*.py` e roda um arquivo por vez (linha do workflow:
+  `run: python .github/scripts/rodar_parte.py --parte ${{ matrix.parte }} --de 5 --saida relatorio-parte-${{ matrix.parte }}`).
+  Na rodada 45776649687 (26/11), parte 1: `test_trava_windows.py | 42 passed, 3 skipped`; as 3 puladas esperam as peças
+  `core/nativo_dll.py` e `core/processos.py`, que "ainda não existem".
+
+## 6. Decisões desta sessão
+
+- **D-886** e **D-887** (no Livro, com as palavras dele e o arquivo da ordem inteira; as duas cópias do Livro iguais).
+- Escolhas da gerente (não são decisões dele): um agente novo por pedaço grande, e dois pedaços pequenos por agente no
+  fim (4+9, 10+8); a cópia própria para a triagem; ler a Central para os agentes; reimprimir os PDFs largos pelo Edge;
+  pôr os dois defeitos da 1.1.0 na Lista de bugs (e não consertar, pela D-886); perguntar se avisa o Kaique.
+
+## 7. Erros da gerente nesta sessão (não repetir)
+
+- **Às 01:36 UTC de 28/11 disse "Se você for mandar os arquivos para ele, mande os PDFs"**, depois de ter dito três vezes
+  (16:50, 19:17 e 21:11) "mande os .md". Os dois servem; o .md é o que vai completo e o que o Fable lê melhor, e os
+  PDFs da triagem nem foram conferidos. Corrigido na mensagem de fecho deste checkpoint.
+- Às 19:17 UTC disse a ele "39 se dividem entre regra só para certas pastas, proibição, conferência no GitHub e ação
+  automática"; o resumo da triagem dá 41 (16 + 10 + 13 + 2), e a soma só fecha 158 com 41. Achado pelo conferente do
+  checkpoint; corrigido aqui e dito na mensagem de fecho.
+- A PARTE -46 escreveu "amanhã (28/11)" para uma fala de 21h12 locais de 26/11 (o amanhã era 27/11): converter a hora UTC
+  para local antes de dizer "amanhã".
+- O PDF do `relatorio.gravar` corta a última coluna de tabela larga (FS-01); a gerente só viu ao abrir. Para tabela larga:
+  imprimir o html pelo Edge (`msedge --headless=new --print-to-pdf`, com `@page{size:A4 landscape;margin:9mm}`,
+  `table-layout:fixed`, `overflow-wrap:anywhere`), rodado pelo PowerShell com `Start-Process -Wait` (pelo Bash o Edge não
+  gerou o arquivo).
+- `git show <ramo>:<caminho>` no Git Bash quebra o caminho; usar `MSYS_NO_PATHCONV=1` ou o PowerShell.
+
+## 8. Fora do git, de propósito
+
+- `relatorios/disco-c/` (pasta principal): ordem dele, e tem segredo (§5).
+- Os PDFs das duas pastas (`*.pdf` no `.gitignore`).
+- A Central lida para os agentes, no rascunho da conversa (`scratchpad\central-27-11\`, `central-fim-27-11\`,
+  `central-ckpt-28-11\`).
+- Continuam fora: `gabarito/`, `modelos/`, `dist/`, `_tmp/`, `saida_teste/`, `build/` (`.gitignore`).
+
+## 9. Testes
+
+- Nenhuma linha do programa mudou nesta sessão (só documentos, a pasta da vistoria e a da triagem). Não rodados.
+- Última rodada inteira: GitHub 45776649687 (26/11, verde) e PC (26/11, 41 falhas explicadas na PARTE -46 §2) sobre
+  `0e186cc9`.
+
+## 10. Próximo passo recomendado
+
+Esperar a leitura do Fable e do Samuel das duas pastas (a vistoria e a triagem, com as 12 dúvidas) e a resposta sobre
+avisar o Kaique; nenhum conserto nem regra nova antes disso.
 
 ---
 

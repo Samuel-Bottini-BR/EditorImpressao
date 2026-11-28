@@ -8,6 +8,14 @@ Escrito em 24/09/2026. A ordem de autoridade é:
 
 O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que vale é o Plano Definitivo.
 
+> **Onde o projeto está em 28/11/2026, madrugada (vale sobre tudo abaixo; detalhe na [PARTE -47](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
+> - **A vistoria do programa inteiro terminou (D-886), só de leitura:** 259 achados (81 da tela + 178 do resto), 38 graves, 31 raízes. A pasta para o Fable está em `relatorios/vistoria-gambiarras-2026-11-26/para-o-fable/` no `obra-2026-10-26` (resumo das raízes em duas páginas, a lista, a Central lida de novo item por item).
+> - **A triagem das regras e dos erros foi entregue (D-887), só de leitura:** 158 regras e 31 tipos de erro, com o destino de cada um, os 10 fiscais e 12 dúvidas para o Samuel, em `relatorios/triagem-das-regras-2026-11-27/` no ramo `triagem-regras-2026-11-27`.
+> - **Nenhuma linha do programa mudou.** Nenhum conserto nem regra nova antes da leitura do Fable e do Samuel ("Nenhuma linha de código muda até lá.").
+> - **Dois defeitos na 1.1.0 do Kaique** (Lista de bugs, 27/11): a caixinha "Testes à distância" das Configurações liga pelo pedido antigo de licença, e nele o "Não" do Windows pode virar "Ligado". Pergunta aberta no chat: "Quer que eu avise o Kaique para não marcar essa caixinha até o conserto?"
+> - Nenhum agente rodando; a Central sem nada por ler (a resposta mais nova é de 17/11).
+>
+> **Antes (27/11, madrugada), já superado:**
 > **Onde o projeto está em 27/11/2026, madrugada (vale sobre tudo abaixo; detalhe na [PARTE -46](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
 > - **A entrega ao Kaique está feita: ele mandou o instalador** (27/11; não se sabe ainda se o Kaique instalou). Os testes passaram no GitHub (45776649687) e no PC (as falhas explicadas: a pasta das páginas de conferência estava vazia desde 18/11 e foi reposta; um teste de tempo de gravar o PDF foi para a Lista de bugs). O atualizador novo entrou na versão de teste (`obra-2026-10-26` em `0e186cc9`).
 > - **Publicados no GitHub:** o motor `motor-kraken-1` e a versão `v1.1.0` com o instalador. O instalador está em `D:\programas\EditorImpressao-arquivos\instalador-para-o-kaique\`; foi provado no PC do Samuel (a 1.9.0 de prova desinstalada, o `fonte-de-teste.txt` apagado, a 1.1.0 instalada e lendo o GitHub). Ele disse que pode mandar ao Kaique; não se sabe se mandou.
